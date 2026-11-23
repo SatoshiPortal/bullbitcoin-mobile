@@ -1,8 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
+import 'package:settings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

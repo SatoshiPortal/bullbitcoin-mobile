@@ -5,8 +5,7 @@ import 'dart:typed_data';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +16,7 @@ class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 class _MockBitcoinSendPort extends Mock implements BitcoinSendPort {}
 
-class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
+class _MockCoins extends Mock implements Coins {}
 
 WalletUtxo _utxo({required String txId, required int vout}) =>
     WalletUtxo.bitcoin(
@@ -32,7 +31,7 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
 void main() {
   late _MockPayjoinSessions payjoin;
   late _MockBitcoinSendPort bitcoinWallet;
-  late _MockWalletUtxoRepository walletUtxo;
+  late _MockCoins walletUtxo;
   late PrepareBitcoinSendUsecase usecase;
 
   const walletId = 'wallet-1';
@@ -64,10 +63,10 @@ void main() {
   setUp(() {
     payjoin = _MockPayjoinSessions();
     bitcoinWallet = _MockBitcoinSendPort();
-    walletUtxo = _MockWalletUtxoRepository();
+    walletUtxo = _MockCoins();
     usecase = PrepareBitcoinSendUsecase(
       payjoinSessions: payjoin,
-      walletUtxoRepository: walletUtxo,
+      coins: walletUtxo,
       bitcoinWalletRepository: bitcoinWallet,
     );
 
@@ -97,8 +96,8 @@ void main() {
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((_) async => false);
-    when(() => walletUtxo.getWalletUtxos(walletId: any(named: 'walletId')))
-        .thenAnswer((_) async => []);
+    when(() => walletUtxo.load(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => Ok([]));
   });
 
   // Capture the `unspendable` arg passed to buildPsbt.
@@ -120,8 +119,7 @@ void main() {
   test(
     'gate removed: unspendable is ALWAYS computed (both sources read)',
     () async {
-      when(() => walletUtxo.getAllFrozenOutpoints())
-          .thenAnswer((_) async => []);
+      when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
       when(() => payjoin.reservedOutpoints())
           .thenAnswer((_) async => const Ok({}));
 
@@ -135,15 +133,15 @@ void main() {
       );
 
       // Both unspendable sources are consulted on every build — no gate.
-      verify(() => walletUtxo.getAllFrozenOutpoints()).called(1);
+      verify(() => walletUtxo.frozenOutpoints()).called(1);
       verify(() => payjoin.reservedOutpoints()).called(1);
       expect(capturedUnspendable(), isEmpty);
     },
   );
 
   test('remainder send still carries both unspendable sources', () async {
-    when(() => walletUtxo.getAllFrozenOutpoints())
-        .thenAnswer((_) async => [(txId: 'tx-user', vout: 1)]);
+    when(() => walletUtxo.frozenOutpoints())
+        .thenAnswer((_) async => Ok([(txId: 'tx-user', vout: 1)]));
     when(() => payjoin.reservedOutpoints())
         .thenAnswer((_) async => const Ok({(txId: 'tx-payjoin', vout: 2)}));
 
@@ -177,8 +175,7 @@ void main() {
   test(
     'NoSpendableUtxoException is rethrown unchanged (not wrapped)',
     () async {
-      when(() => walletUtxo.getAllFrozenOutpoints())
-          .thenAnswer((_) async => []);
+      when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
       when(() => payjoin.reservedOutpoints())
           .thenAnswer((_) async => const Ok(<Outpoint>{}));
       when(
@@ -207,8 +204,7 @@ void main() {
   test(
     'any other build failure is wrapped in PrepareBitcoinSendException',
     () async {
-      when(() => walletUtxo.getAllFrozenOutpoints())
-          .thenAnswer((_) async => []);
+      when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
       when(() => payjoin.reservedOutpoints())
           .thenAnswer((_) async => const Ok(<Outpoint>{}));
       when(
@@ -238,8 +234,8 @@ void main() {
     'user-frozen ∪ payjoin-derived are merged + deduped into unspendable',
     () async {
       final shared = (txId: 'tx-shared', vout: 0);
-      when(() => walletUtxo.getAllFrozenOutpoints())
-          .thenAnswer((_) async => [(txId: 'tx-user', vout: 1), shared]);
+      when(() => walletUtxo.frozenOutpoints())
+          .thenAnswer((_) async => Ok([(txId: 'tx-user', vout: 1), shared]));
       when(() => payjoin.reservedOutpoints())
           .thenAnswer((_) async => Ok({(txId: 'tx-payjoin', vout: 2), shared}));
 
@@ -263,15 +259,15 @@ void main() {
   );
 
   test('a partly filtered selection fails before buildPsbt', () async {
-    when(() => walletUtxo.getAllFrozenOutpoints())
-        .thenAnswer((_) async => [(txId: 'tx-frozen', vout: 0)]);
+    when(() => walletUtxo.frozenOutpoints())
+        .thenAnswer((_) async => Ok([(txId: 'tx-frozen', vout: 0)]));
     when(() => payjoin.reservedOutpoints())
         .thenAnswer((_) async => const Ok(<Outpoint>{}));
 
     final frozenInput = _utxo(txId: 'tx-frozen', vout: 0);
     final spendableInput = _utxo(txId: 'tx-ok', vout: 1);
-    when(() => walletUtxo.getWalletUtxos(walletId: walletId))
-        .thenAnswer((_) async => [frozenInput, spendableInput]);
+    when(() => walletUtxo.load(walletId: walletId))
+        .thenAnswer((_) async => Ok([frozenInput, spendableInput]));
 
     await expectLater(
       usecase.execute(
@@ -297,12 +293,12 @@ void main() {
 
   test('a Payjoin-reserved selected coin fails before buildPsbt', () async {
     final reservedInput = _utxo(txId: 'tx-reserved', vout: 0);
-    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
     when(() => payjoin.reservedOutpoints()).thenAnswer(
       (_) async => const Ok(<Outpoint>{(txId: 'tx-reserved', vout: 0)}),
     );
-    when(() => walletUtxo.getWalletUtxos(walletId: walletId))
-        .thenAnswer((_) async => [reservedInput]);
+    when(() => walletUtxo.load(walletId: walletId))
+        .thenAnswer((_) async => Ok([reservedInput]));
 
     await expectLater(
       usecase.execute(
@@ -327,7 +323,7 @@ void main() {
   });
 
   test('selected-only drain rejects a Payjoin-reserved input', () async {
-    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
     when(() => payjoin.reservedOutpoints()).thenAnswer(
       (_) async => const Ok(<Outpoint>{(txId: 'tx-reserved', vout: 0)}),
     );
@@ -356,7 +352,7 @@ void main() {
   });
 
   test('selected-only drain rejects a partially reserved selection', () async {
-    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
     when(() => payjoin.reservedOutpoints()).thenAnswer(
       (_) async => const Ok(<Outpoint>{(txId: 'tx-reserved', vout: 0)}),
     );
@@ -390,14 +386,13 @@ void main() {
   test(
     'happy path (no frozen) builds identically with empty unspendable',
     () async {
-      when(() => walletUtxo.getAllFrozenOutpoints())
-          .thenAnswer((_) async => []);
+      when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
       when(() => payjoin.reservedOutpoints())
           .thenAnswer((_) async => const Ok(<Outpoint>{}));
 
       final input = _utxo(txId: 'tx-ok', vout: 0);
-      when(() => walletUtxo.getWalletUtxos(walletId: walletId))
-          .thenAnswer((_) async => [input]);
+      when(() => walletUtxo.load(walletId: walletId))
+          .thenAnswer((_) async => Ok([input]));
 
       final result = await usecase.execute(
         walletId: walletId,
@@ -435,8 +430,7 @@ void main() {
   test(
     'returns the final amount for every fixed and remainder output',
     () async {
-      when(() => walletUtxo.getAllFrozenOutpoints())
-          .thenAnswer((_) async => []);
+      when(() => walletUtxo.frozenOutpoints()).thenAnswer((_) async => Ok([]));
       when(() => payjoin.reservedOutpoints())
           .thenAnswer((_) async => const Ok(<Outpoint>{}));
       when(
@@ -480,7 +474,7 @@ void main() {
       throwsArgumentError,
     );
 
-    verifyNever(() => walletUtxo.getAllFrozenOutpoints());
+    verifyNever(() => walletUtxo.frozenOutpoints());
     verifyNever(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),

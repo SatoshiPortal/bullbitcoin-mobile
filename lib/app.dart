@@ -1,20 +1,21 @@
 import 'package:send/setup.dart' show SendLocalizations;
+import 'package:coins/setup.dart' show CoinsLocalizations;
 import 'package:send/send.dart' show Consolidation;
 import 'package:spend/spend.dart' show Spend;
+import 'package:startup/setup.dart';
 import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_bull_exchange_localizations.dart';
 import 'package:bip85/bip85.dart';
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:backups/backups.dart';
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_receive_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_settings_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
-import 'package:bull_exchange/bull_exchange.dart'
-    show ExchangeLocalizations, ExchangeSessionScope;
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeSessionScope;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:mempool/mempool.dart';
 
@@ -23,15 +24,9 @@ import 'dart:async';
 import 'package:preferences/preferences.dart';
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/language_locale.dart'
-    show LanguageExtension;
-import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_announcements_localizations.dart';
@@ -39,7 +34,7 @@ import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:startup/startup.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -52,6 +47,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:novlang/novlang.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/setup.dart';
 
 @visibleForTesting
 void resumePayjoinsOnAppResume(
@@ -96,8 +93,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Wallet/swap sync on resume is handled by SyncCoordinator's own
-  // AppLifecycleListener — see lib/features/wallet/data/sync_coordinator.dart.
+  // Overview schedules its own resume sync through its lifecycle listener.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
     if (locator.isRegistered<ForegroundWalletStartup>()) {
@@ -121,61 +117,39 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Widget build(BuildContext context) {
     Device.init(context);
 
-    final app = MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
-        BlocProvider(
-          create: (_) =>
-              locator<AppStartupBloc>()..add(const AppStartupStarted()),
-        ),
-        // Make the wallet bloc available to the whole app so environment changes
-        // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-        BlocProvider(create: (_) => locator<WalletBloc>()),
-      ],
-      child: ExchangeSessionScope(
-        exchange: () => locator<Exchange>(),
-        preferences: () => locator<Preferences>(),
-        child: MultiBlocListener(
-          listeners: [
-            SettingsFailureListener(),
-            BlocListener<AppStartupBloc, AppStartupState>(
-              listenWhen: (previous, current) =>
-                  previous != current &&
-                  current is AppStartupSuccess &&
-                  current.hasDefaultWallets &&
-                  !current.isPinCodeSet,
-              listener: (context, settings) async {
-                // If wallets exist and the app has started successfully,
-                // we can start the wallet bloc to fetch the wallets.
-                context.read<WalletBloc>().add(const WalletStarted());
-                final _ = await locator<ExchangeFacade>().resolveAccess();
-              },
-            ),
-            BlocListener<SettingsCubit, SettingsState>(
-              listenWhen: (previous, current) =>
-                  previous.environment != null &&
-                  previous.environment != current.environment,
-              listener: (context, settings) async {
-                // Ark pages must not act for the previous network's wallet.
-                if (locator.isRegistered<ArkForegroundHost>()) {
-                  locator<ArkForegroundHost>().invalidate();
-                }
-                context.read<WalletBloc>().add(const WalletStarted());
-                final _ = await locator<ExchangeFacade>().resolveAccess();
-              },
-            ),
-          ],
-          child:
-              BlocSelector<
-                SettingsCubit,
-                SettingsState,
-                (Language?, AppThemeMode?, bool?)
-              >(
-                selector: (settings) => (
-                  settings.language,
-                  settings.storedSettings?.themeMode,
-                  settings.isSuperuser,
+    final app = locator<Settings>().provide(
+      child: MultiBlocProvider(
+        providers: [
+          // Make the wallet bloc available to the whole app so environment changes
+          // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
+          BlocProvider(create: (_) => locator<WalletBloc>()),
+        ],
+        child: locator<StartupFeature>().scope(
+          onWalletsReady: (context) async {
+            context.read<WalletBloc>().add(const WalletStarted());
+            final _ = await locator<ExchangeFacade>().resolveAccess();
+          },
+          child: ExchangeSessionScope(
+            exchange: () => locator<Exchange>(),
+            preferences: () => locator<Preferences>(),
+            child: MultiBlocListener(
+              listeners: [
+                Settings.failureListener(
+                  resolveOverlay: () =>
+                      AppRouter.rootNavigatorKey.currentState?.overlay,
                 ),
+                Settings.onEnvironmentChanged(
+                  onChanged: (context) async {
+                    // Ark pages must not act for the previous network's wallet.
+                    if (locator.isRegistered<ArkForegroundHost>()) {
+                      locator<ArkForegroundHost>().invalidate();
+                    }
+                    context.read<WalletBloc>().add(const WalletStarted());
+                    final _ = await locator<ExchangeFacade>().resolveAccess();
+                  },
+                ),
+              ],
+              child: Settings.appearance(
                 builder: (context, data) {
                   final (language, themeMode, isSuperuser) = data;
                   final novlangPolicy = resolveNovlangPolicy(
@@ -215,16 +189,18 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       theme: AppTheme.themeData(appThemeType),
                       locale: language?.locale,
                       localizationsDelegates: [
-                        AddressViewLocalizations.delegate,
+                        StartupLocalizations.delegate,
                         SendLocalizations.delegate,
+                        CoinsLocalizations.delegate,
                         NovlangReceiveLocalizationsDelegate(novlangPolicy),
+                        AddressViewLocalizations.delegate,
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
-                        NovlangAnnouncementsLocalizationsDelegate(
-                          novlangPolicy,
-                        ),
+                        NovlangAnnouncementsLocalizationsDelegate(novlangPolicy),
                         NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
+                        NovlangSettingsLocalizationsDelegate(novlangPolicy),
+                        NovlangExchangeLocalizationsDelegate(novlangPolicy),
+                        NovlangOnboardingLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
-                        ExchangeLocalizations.delegate,
                         LogsLocalizations.delegate,
                         NetworkLocalizations.delegate,
                         BtcMapFeature.localizationsDelegate,
@@ -245,11 +221,16 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         // the official bridge supports this transition.
                         // ignore: deprecated_member_use
                         final app = MaterialUiCompatibilityBridge(
-                          child: SettingsFacade.amountScope(
+                          child: Settings.amountScope(
                             navigatorKey: AppRouter.rootNavigatorKey,
                             child: BullSupportScope(
-                              onContactSupport: SupportFacade.contactSupport,
-                              child: AppStartupWidget(
+                              onContactSupport: Support.contactSupport,
+                              child: locator<StartupFeature>().gate(
+                                logs: () => locator<LogsFacade>(),
+                                splash: locator<OnboardingFeature>()
+                                    .buildLoadingSplash(context),
+                                openOnboarding: () =>
+                                    OnboardingNavigation.go(AppRouter.router),
                                 onUnlocked: () =>
                                     AppLocator.startWalletsAfterUnlock(locator),
                                 app: locator<RecoverBullFeature>().withAlerts(
@@ -277,6 +258,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   );
                 },
               ),
+            ),
+          ),
         ),
       ),
     );

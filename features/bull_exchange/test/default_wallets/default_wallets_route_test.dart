@@ -24,8 +24,6 @@ void main() {
         showWebsiteOnly: (_) => false,
         unavailableRedirectPath: '/wallet',
         brandAssetPath: 'unused',
-        copy: (_) => fail('unexpected landing route'),
-        onSignIn: (_) {},
         onExit: (_) {},
         settings: ExchangeSettingsHost(
           exchange: () => exchange,

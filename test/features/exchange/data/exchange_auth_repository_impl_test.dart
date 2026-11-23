@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';

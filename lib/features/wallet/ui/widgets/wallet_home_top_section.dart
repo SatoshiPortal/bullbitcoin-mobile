@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:transactions/routes.dart';
@@ -164,7 +164,7 @@ class _FiatAmt extends StatelessWidget {
     final total = walletState.totalBalance();
     if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
-      onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
+      onCurrencyChanged: Settings.changeDisplayCurrency,
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
     );

@@ -96,7 +96,7 @@ void main() {
         wallet: spends.facade,
         bitcoinBlockchainRepository: bitcoin,
         settingsRepository: settings,
-        walletUtxoRepository: EmptyFrozenOutpoints(),
+        coins: EmptyFrozenOutpoints(),
       );
 
   final built = UnsignedSpend(

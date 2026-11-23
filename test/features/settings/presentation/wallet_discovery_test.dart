@@ -1,9 +1,10 @@
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';

@@ -270,10 +270,6 @@
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
-  "settingsSecurityPinTitle": "Security PIN",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
-  },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -286,37 +282,9 @@
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
   },
-  "settingsAppVersionLabel": "App version: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
-  },
-  "settingsServiceStatusTitle": "Service Status",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "settingsLanguageTitle": "Language",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
-  },
-  "settingsThemeTitle": "Theme",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
-  },
-  "settingsDevModeWarningTitle": "Dev Mode",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
-  "settingsDevModeWarningMessage": "This mode is risky. By enabling it, you acknowledge that you may lose money",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
-  },
-  "settingsDevModeUnderstandButton": "I understand",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
-  },
-  "settingsSuperuserModeDisabledMessage": "Superuser mode disabled.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
   },
   "settingsSuperuserModeUnlockedMessage": "Superuser mode unlocked!",
   "@settingsSuperuserModeUnlockedMessage": {
@@ -410,22 +378,6 @@
   "@mempoolErrorTorNotRunning": {
     "description": "Error when trying to reach a .onion address without Tor"
   },
-  "walletSettingsImportWalletTitle": "Import Wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
-  "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
-  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "logSettingsLogsTitle": "Logs",
   "@logSettingsLogsTitle": {
     "description": "Title for the logs section in settings"
@@ -434,33 +386,9 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "appSettingsDevModeTitle": "Dev Mode",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "exchangeTestnetBasicAuthTitle": "Testnet exchange credentials",
   "@exchangeTestnetBasicAuthTitle": {
     "description": "Title for the testnet exchange basic auth credentials tile and dialog"
-  },
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth for the testnet exchange web pages (login and KYC).",
-  "@exchangeTestnetBasicAuthDescription": {
-    "description": "Explanation of what the testnet exchange basic auth credentials are used for"
-  },
-  "exchangeTestnetBasicAuthUsernameLabel": "Username",
-  "@exchangeTestnetBasicAuthUsernameLabel": {
-    "description": "Label for the username field in the testnet exchange credentials dialog"
-  },
-  "exchangeTestnetBasicAuthPasswordLabel": "Password",
-  "@exchangeTestnetBasicAuthPasswordLabel": {
-    "description": "Label for the password field in the testnet exchange credentials dialog"
-  },
-  "exchangeTestnetBasicAuthClearButton": "Clear",
-  "@exchangeTestnetBasicAuthClearButton": {
-    "description": "Button that clears the saved testnet exchange credentials"
-  },
-  "exchangeTestnetBasicAuthSaveButton": "Save",
-  "@exchangeTestnetBasicAuthSaveButton": {
-    "description": "Button that saves the entered testnet exchange credentials"
   },
   "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
   "@currencySettingsDefaultFiatCurrencyLabel": {
@@ -878,25 +806,9 @@
   "@addressCardBalanceLabel": {
     "description": "Label for the balance field in address card"
   },
-  "onboardingRecoverYourWallet": "Recover your wallet",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "onboardingEncryptedVault": "Encrypted vault",
   "@onboardingEncryptedVault": {
     "description": "Title for the encrypted vault recovery option in onboarding"
-  },
-  "onboardingEncryptedVaultDescription": "Recover your backup via cloud using your PIN.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "onboardingPhysicalBackup": "Physical backup",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
-  "onboardingPhysicalBackupDescription": "Recover your wallet via 12 words.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "onboardingRecover": "Recover",
   "@onboardingRecover": {
@@ -905,26 +817,6 @@
   "onboardingBullBitcoin": "Bull Bitcoin",
   "@onboardingBullBitcoin": {
     "description": "Brand name displayed in onboarding"
-  },
-  "onboardingOwnYourMoney": "Own your Money",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
-  "onboardingSplashDescription": "Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
-  "onboardingRecoverWallet": "Recover Wallet",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
-  },
-  "onboardingRecoverWalletButton": "Recover Wallet",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
-  },
-  "onboardingCreateNewWallet": "Create New Wallet",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "sendTitle": "Send",
   "@sendTitle": {
@@ -7133,42 +7025,6 @@
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
   },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "exchangeLandingConnectAccount": "Connect your Bull Bitcoin exchange account",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
-  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
-  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
-  "exchangeFeatureBankTransfers": "• Send bank transfers and pay bills",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
-  "exchangeFeatureCustomerSupport": "• Chat with customer support",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
-  "exchangeFeatureUnifiedHistory": "• Unified transaction history",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
-  },
   "priceFailedToLoad": "Failed to load price",
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
@@ -7181,21 +7037,9 @@
   "@statusScreenContinue": {
     "description": "Button text to proceed to next step"
   },
-  "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
-  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency exchange services are not available in the Bull Bitcoin mobile application.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "exchangeLoginButton": "Login Or Sign up",
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
-  },
-  "exchangeGoToWebsiteButton": "Go to Bull Bitcoin exchange website",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "exchangeAuthLoginFailedTitle": "Login Failed",
   "@exchangeAuthLoginFailedTitle": {
@@ -7791,46 +7635,6 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "settingsErrorReportingTitle": "Error Reporting",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "Error Reporting Program",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends minimized error reports containing app version, device and operating-system metadata, and a random installation identifier when something breaks. Wallet and transaction payloads are removed.",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
-  },
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
-  },
-  "errorReportingAcceptButton": "Accept",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "Cancel",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "Restart the app to apply this change",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "App failed to start",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -7974,10 +7778,6 @@
   "appInitErrorDetailsToggle": "Show error details",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "@walletSetupErrorTryAgain": {
-    "description": "Generic error shown when default-wallet creation or recovery fails."
   },
   "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
   "@transactionSwapOpenWithin24h": {
@@ -8484,30 +8284,6 @@
   "@autoswapMaximumBalanceLabel": {
     "description": "Label for the maximum instant wallet balance setting in autoswap"
   },
-  "onboardingAdvancedOptionsTitle": "Advanced Options",
-  "@onboardingAdvancedOptionsTitle": {
-    "description": "Title of the advanced options screen shown during onboarding"
-  },
-  "onboardingAdvancedOptionsDescription": "Configure advanced settings before creating or recovering your wallet",
-  "@onboardingAdvancedOptionsDescription": {
-    "description": "Description on the onboarding advanced options screen"
-  },
-  "onboardingAdvancedOptionsCustomElectrum": "Custom Electrum Server",
-  "@onboardingAdvancedOptionsCustomElectrum": {
-    "description": "Entry to configure a custom Electrum server in advanced options"
-  },
-  "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
-  "@onboardingAdvancedOptionsCustomMempool": {
-    "description": "Entry to configure a custom mempool server in advanced options"
-  },
-  "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
-  "@onboardingAdvancedOptionsCustomRecoverbull": {
-    "description": "Entry to configure a custom Recoverbull server in advanced options"
-  },
-  "onboardingAdvancedOptionsFooter": "You can change these settings later in App Settings",
-  "@onboardingAdvancedOptionsFooter": {
-    "description": "Footer note on the onboarding advanced options screen"
-  },
   "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
   "@appStartupContactSupportMessage": {
     "description": "Message shown on the app startup error screen pointing to support"
@@ -8572,141 +8348,9 @@
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXOs}}",
-  "@walletCoinsEntryUtxoCount": {
-    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "walletCoinsEntryFrozen": "{amount} frozen",
-  "@walletCoinsEntryFrozen": {
-    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "coinsTitle": "Coins",
-  "@coinsTitle": {
-    "description": "Title of the Coins (UTXO) screen"
-  },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 coin} other{{count} coins}}",
-  "@coinsSummaryCoinsCount": {
-    "description": "Coin count in the summary bar",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFrozen": "Frozen",
-  "@coinsFrozen": {
-    "description": "Label for the frozen amount stat and frozen pill"
-  },
-  "coinsSpendable": "Spendable",
-  "@coinsSpendable": {
-    "description": "Label for the spendable amount sub-stat"
-  },
-  "coinsNoneFrozen": "None frozen",
-  "@coinsNoneFrozen": {
-    "description": "Sub-text shown in the frozen stat when nothing is frozen"
-  },
-  "coinsSortFilter": "Sort & Filter",
-  "@coinsSortFilter": {
-    "description": "Label for the sort & filter sheet button"
-  },
-  "coinsShownOf": "{visible} of {total} shown",
-  "@coinsShownOf": {
-    "description": "Result count shown when the list is filtered",
-    "placeholders": {
-      "visible": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 unspent output} other{{count} unspent outputs}}",
-  "@coinsUnspentOutputsCount": {
-    "description": "Result count shown when the list is unfiltered",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "coinsSync": "Sync",
   "@coinsSync": {
     "description": "Label for the manual sync button on the Coins screen"
-  },
-  "coinsClearAll": "Clear all",
-  "@coinsClearAll": {
-    "description": "Label for the clear-all-filters action"
-  },
-  "coinsSortAmountDesc": "Amount: High to Low",
-  "@coinsSortAmountDesc": {
-    "description": "Sort option: amount descending"
-  },
-  "coinsSortAmountAsc": "Amount: Low to High",
-  "@coinsSortAmountAsc": {
-    "description": "Sort option: amount ascending"
-  },
-  "coinsSortDateNew": "Date: Newest",
-  "@coinsSortDateNew": {
-    "description": "Sort option: newest first"
-  },
-  "coinsSortDateOld": "Date: Oldest",
-  "@coinsSortDateOld": {
-    "description": "Sort option: oldest first"
-  },
-  "coinsKeychain": "Keychain",
-  "@coinsKeychain": {
-    "description": "Label for the keychain filter segment"
-  },
-  "coinsKeychainAll": "All",
-  "@coinsKeychainAll": {
-    "description": "Keychain filter option: all"
-  },
-  "coinsKeychainReceive": "Receive",
-  "@coinsKeychainReceive": {
-    "description": "Keychain filter / badge: receive (external) keychain"
-  },
-  "coinsKeychainChange": "Change",
-  "@coinsKeychainChange": {
-    "description": "Keychain filter / badge: change (internal) keychain"
-  },
-  "coinsFrozenStatus": "Frozen status",
-  "@coinsFrozenStatus": {
-    "description": "Label for the frozen-status filter segment"
-  },
-  "coinsFrozenStatusAll": "All",
-  "@coinsFrozenStatusAll": {
-    "description": "Frozen-status filter option: all"
-  },
-  "coinsFrozenStatusFrozen": "Frozen",
-  "@coinsFrozenStatusFrozen": {
-    "description": "Frozen-status filter option: frozen only"
-  },
-  "coinsFrozenStatusUnfrozen": "Unfrozen",
-  "@coinsFrozenStatusUnfrozen": {
-    "description": "Frozen-status filter option: unfrozen only"
-  },
-  "coinsLabels": "Labels",
-  "@coinsLabels": {
-    "description": "Label for the labels filter section"
-  },
-  "coinsReset": "Reset",
-  "@coinsReset": {
-    "description": "Reset filters button in the sort & filter sheet"
-  },
-  "coinsApply": "Apply",
-  "@coinsApply": {
-    "description": "Apply filters button in the sort & filter sheet"
   },
   "coinsSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
   "@coinsSelectedCount": {
@@ -8716,114 +8360,6 @@
         "type": "int"
       }
     }
-  },
-  "coinsSelectAll": "Select all",
-  "@coinsSelectAll": {
-    "description": "Selects all unfrozen visible coins"
-  },
-  "coinsFreeze": "Freeze",
-  "@coinsFreeze": {
-    "description": "Freeze action label"
-  },
-  "coinsUnfreeze": "Unfreeze",
-  "@coinsUnfreeze": {
-    "description": "Unfreeze action label"
-  },
-  "coinsUndo": "Undo",
-  "@coinsUndo": {
-    "description": "Undo action on the unfreeze toast"
-  },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Freeze 1 coin?} other{Freeze {count} coins?}}",
-  "@coinsFreezeConfirmTitle": {
-    "description": "Title of the freeze confirmation dialog",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsFreezeConfirmBody": "Frozen coins stay in your wallet but are excluded from spending until you unfreeze them.",
-  "@coinsFreezeConfirmBody": {
-    "description": "Body of the freeze confirmation dialog"
-  },
-  "coinsFreezeZeroWarning": "Freezing these coins will leave you with no spendable balance.",
-  "@coinsFreezeZeroWarning": {
-    "description": "Warning shown when freezing would drop spendable balance to zero"
-  },
-  "coinsFrozenToast": "{count, plural, =1{1 coin frozen · excluded from spending} other{{count} coins frozen · excluded from spending}}",
-  "@coinsFrozenToast": {
-    "description": "Toast shown after freezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsUnfrozenToast": "{count, plural, =1{1 coin unfrozen} other{{count} coins unfrozen}}",
-  "@coinsUnfrozenToast": {
-    "description": "Toast shown after unfreezing coins",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsConfsCount": "{count, plural, =1{1 conf} other{{count} confs}}",
-  "@coinsConfsCount": {
-    "description": "Confirmation count pill",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "coinsPending": "Pending",
-  "@coinsPending": {
-    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
-  },
-  "coinsEmptyTitle": "No coins yet",
-  "@coinsEmptyTitle": {
-    "description": "Empty-state title when the wallet has no UTXOs"
-  },
-  "coinsEmptyBody": "Coins will appear here once you receive bitcoin.",
-  "@coinsEmptyBody": {
-    "description": "Empty-state body when the wallet has no UTXOs"
-  },
-  "coinsFilteredEmptyTitle": "No coins match",
-  "@coinsFilteredEmptyTitle": {
-    "description": "Title shown when filters exclude all coins"
-  },
-  "coinsClearFilters": "Clear filters",
-  "@coinsClearFilters": {
-    "description": "Button to clear filters from the filtered-empty state"
-  },
-  "coinsErrorRetry": "Retry",
-  "@coinsErrorRetry": {
-    "description": "Retry button on the Coins error state"
-  },
-  "coinsSwipeHint": "Swipe a coin to freeze · long-press to select",
-  "@coinsSwipeHint": {
-    "description": "Footer hint shown when not selecting"
-  },
-  "coinsErrorLoadFailed": "Couldn't load your coins. Pull to refresh to try again.",
-  "@coinsErrorLoadFailed": {
-    "description": "Error message when loading UTXOs fails"
-  },
-  "coinsErrorFreezeFailed": "Couldn't freeze the selected coins. Please try again.",
-  "@coinsErrorFreezeFailed": {
-    "description": "Error message when freezing fails"
-  },
-  "coinsErrorUnfreezeFailed": "Couldn't unfreeze the selected coins. Please try again.",
-  "@coinsErrorUnfreezeFailed": {
-    "description": "Error message when unfreezing fails"
-  },
-  "coinsErrorUnexpected": "Something went wrong. Please try again.",
-  "@coinsErrorUnexpected": {
-    "description": "Generic Coins error message for unexpected failures"
-  },
-  "settingsPayjoinTitle": "Payjoin",
-  "@settingsPayjoinTitle": {
-    "description": "Title of the payjoin settings screen"
   },
   "settingsPayjoinPrivacyGainExplanation": "Payjoin is a major privacy gain against blockchain analysis: it breaks the assumption that every input in a transaction belongs to the same person. The trade-off is a risk: accepting a payjoin reveals one of your UTXOs to your counterparty.",
   "@settingsPayjoinPrivacyGainExplanation": {
@@ -8836,46 +8372,6 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin disclaimer",
   "@settingsPayjoinDisclaimerTitle": {
     "description": "Title of the one-time payjoin disclaimer pop-up (also reachable from the payjoin settings screen)."
-  },
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin disclaimer",
-  "@settingsPayjoinDisclaimerRowLabel": {
-    "description": "Settings row that re-opens the payjoin disclaimer pop-up."
-  },
-  "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
-  "@settingsPayjoinAdvancedTitle": {
-    "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
-  },
-  "settingsPayjoinMinAmountTitle": "Minimum amount",
-  "@settingsPayjoinMinAmountTitle": {
-    "description": "Title of the payjoin minimum receive amount field"
-  },
-  "settingsPayjoinMinAmountDescription": "Payjoin is declined below this amount, and the payment is received normally instead.",
-  "@settingsPayjoinMinAmountDescription": {
-    "description": "Explanation under the payjoin minimum receive amount field"
-  },
-  "settingsPayjoinMinAmountRangeError": "Must be between {min} and {max} sats",
-  "@settingsPayjoinMinAmountRangeError": {
-    "description": "Validation error when the payjoin minimum amount is out of bounds",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsPayjoinExpireTitle": "Session expiry",
-  "@settingsPayjoinExpireTitle": {
-    "description": "Title of the payjoin session expiry field"
-  },
-  "settingsPayjoinServersTitle": "Servers",
-  "@settingsPayjoinServersTitle": {
-    "description": "Title of the read-only payjoin servers section"
-  },
-  "bitcoinSettingsPayjoinTitle": "Payjoin",
-  "@bitcoinSettingsPayjoinTitle": {
-    "description": "Entry to the payjoin settings screen from the bitcoin settings screen"
   },
   "sendPayjoinLabel": "Payjoin",
   "@sendPayjoinLabel": {
@@ -9049,130 +8545,6 @@
   "@swapErrorRouteUnavailableGeneric": {
     "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
   },
-  "settingsScreenPrivacyTitle": "Screen Privacy",
-  "@settingsScreenPrivacyTitle": {
-    "description": "Settings entry title for the screen-capture/screenshot protection toggle on sensitive screens"
-  },
-  "settingsScreenPrivacyDisabledMessage": "Screenshots are now allowed on sensitive screens",
-  "@settingsScreenPrivacyDisabledMessage": {
-    "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
-  },
-  "settingsSearchHint": "Search settings",
-  "@settingsSearchHint": {
-    "description": "Placeholder for the settings search field"
-  },
-  "settingsSearchNoResults": "No settings found.",
-  "@settingsSearchNoResults": {
-    "description": "Empty state shown when settings search has no matches"
-  },
-  "settingsSearchMempoolKeywords": "block explorer|fee estimation|transaction fees|mempool API",
-  "@settingsSearchMempoolKeywords": {
-    "description": "Pipe-separated search aliases for Mempool settings. These are search metadata and are not displayed."
-  },
-  "settingsSearchExchangeKeywords": "account|exchange account|trading|buy and sell",
-  "@settingsSearchExchangeKeywords": {
-    "description": "Pipe-separated search aliases for Exchange. Search metadata; not displayed."
-  },
-  "settingsSearchStartBackupKeywords": "create backup|save backup|back up wallet",
-  "@settingsSearchStartBackupKeywords": {
-    "description": "Pipe-separated search aliases for Start Backup. Search metadata; not displayed."
-  },
-  "settingsSearchRecoverbullKeywords": "encrypted backup|cloud backup|encrypted vault|vault recovery",
-  "@settingsSearchRecoverbullKeywords": {
-    "description": "Pipe-separated search aliases for Recoverbull. Search metadata; not displayed."
-  },
-  "settingsSearchLabelsKeywords": "wallet labels|transaction labels|BIP329|import labels|export labels",
-  "@settingsSearchLabelsKeywords": {
-    "description": "Pipe-separated search aliases for Labels. Search metadata; not displayed."
-  },
-  "settingsSearchTransactionHistoryKeywords": "export transactions|transaction export|CSV|wallet history",
-  "@settingsSearchTransactionHistoryKeywords": {
-    "description": "Pipe-separated search aliases for Transaction History. Search metadata; not displayed."
-  },
-  "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
-  "@settingsSearchAppSettingsKeywords": {
-    "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
-  },
-  "settingsSearchTermsOfServiceKeywords": "terms and conditions|legal|user agreement|TOS",
-  "@settingsSearchTermsOfServiceKeywords": {
-    "description": "Pipe-separated search aliases for Terms of Service. Search metadata; not displayed."
-  },
-  "settingsSearchServicesStatusKeywords": "service health|system status|online|outage",
-  "@settingsSearchServicesStatusKeywords": {
-    "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
-  },
-  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
-  "@settingsSearchImportWalletKeywords": {
-    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
-  },
-  "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
-  "@settingsSearchBroadcastTransactionKeywords": {
-    "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
-  },
-  "settingsSearchPayjoinKeywords": "payjoin privacy|collaborative transaction|P2EP",
-  "@settingsSearchPayjoinKeywords": {
-    "description": "Pipe-separated search aliases for Payjoin. Search metadata; not displayed."
-  },
-  "settingsSearchAutoswapKeywords": "autoswap|automatic swap|auto transfer|instant wallet balance",
-  "@settingsSearchAutoswapKeywords": {
-    "description": "Pipe-separated search aliases for Auto Transfer. Search metadata; not displayed."
-  },
-  "settingsSearchElectrumKeywords": "bitcoin node|electrum node|custom server|personal node",
-  "@settingsSearchElectrumKeywords": {
-    "description": "Pipe-separated search aliases for Electrum. Search metadata; not displayed."
-  },
-  "settingsSearchTestnetModeKeywords": "test network|bitcoin testnet|liquid testnet|testing mode",
-  "@settingsSearchTestnetModeKeywords": {
-    "description": "Pipe-separated search aliases for Testnet Mode. Search metadata; not displayed."
-  },
-  "settingsSearchSeedViewerKeywords": "seed phrase|recovery phrase|mnemonic|backup words|show seeds",
-  "@settingsSearchSeedViewerKeywords": {
-    "description": "Pipe-separated search aliases for Seed Viewer. Search metadata; not displayed."
-  },
-  "settingsSearchBip85Keywords": "deterministic entropy|child seeds|derived entropy|BIP85",
-  "@settingsSearchBip85Keywords": {
-    "description": "Pipe-separated search aliases for BIP85. Search metadata; not displayed."
-  },
-  "settingsSearchLanguageKeywords": "locale|translation|display language|preferred language",
-  "@settingsSearchLanguageKeywords": {
-    "description": "Pipe-separated search aliases for Language. Search metadata; not displayed."
-  },
-  "settingsSearchThemeKeywords": "appearance|dark mode|light mode|system theme",
-  "@settingsSearchThemeKeywords": {
-    "description": "Pipe-separated search aliases for Theme. Search metadata; not displayed."
-  },
-  "settingsSearchCurrencyKeywords": "fiat currency|local currency|default currency|exchange currency",
-  "@settingsSearchCurrencyKeywords": {
-    "description": "Pipe-separated search aliases for Currency. Search metadata; not displayed."
-  },
-  "settingsSearchSecurityPinKeywords": "PIN code|passcode|app lock|authentication|change PIN",
-  "@settingsSearchSecurityPinKeywords": {
-    "description": "Pipe-separated search aliases for Security PIN. Search metadata; not displayed."
-  },
-  "settingsSearchLogsKeywords": "debug logs|diagnostic logs|app logs|export logs",
-  "@settingsSearchLogsKeywords": {
-    "description": "Pipe-separated search aliases for Logs. Search metadata; not displayed."
-  },
-  "settingsSearchDevModeKeywords": "developer mode|development settings|debug mode|advanced testing",
-  "@settingsSearchDevModeKeywords": {
-    "description": "Pipe-separated search aliases for Dev Mode. Search metadata; not displayed."
-  },
-  "settingsSearchTestnetCredentialsKeywords": "testnet user credentials|testnet login|testnet username|testnet password|basic auth",
-  "@settingsSearchTestnetCredentialsKeywords": {
-    "description": "Pipe-separated search aliases for Testnet Credentials. Search metadata; not displayed."
-  },
-  "settingsSearchErrorReportingKeywords": "crash reports|bug reports|diagnostics|telemetry|error logs",
-  "@settingsSearchErrorReportingKeywords": {
-    "description": "Pipe-separated search aliases for Error Reporting. Search metadata; not displayed."
-  },
-  "settingsSearchScreenPrivacyKeywords": "screenshots|screen recording|capture protection|privacy",
-  "@settingsSearchScreenPrivacyKeywords": {
-    "description": "Pipe-separated search aliases for Screen Privacy. Search metadata; not displayed."
-  },
-  "settingsSearchStartTyping": "Start typing to see results.",
-  "@settingsSearchStartTyping": {
-    "description": "Prompt shown before the user enters a settings search query."
-  },
   "torStatusReady": "Tor ready",
   "@torStatusReady": {
     "description": "Compact global status shown when embedded Tor is ready."
@@ -9238,45 +8610,9 @@
   "@settingsBackupTitle": {
     "description": "Title for the wallet settings section"
   },
-  "settingsSearchBackupKeywords": "backup|recovery|recover wallet|seed backup",
-  "@settingsSearchBackupKeywords": {
-    "description": "Pipe-separated search aliases for wallet settings"
-  },
-  "settingsAppTitle": "App",
-  "@settingsAppTitle": {
-    "description": "Root settings entry for app preferences"
-  },
-  "settingsWalletTitle": "Wallet",
-  "@settingsWalletTitle": {
-    "description": "Root settings entry for Bitcoin preferences"
-  },
-  "settingsExchangeTitle": "Exchange",
-  "@settingsExchangeTitle": {
-    "description": "Root settings entry for exchange preferences"
-  },
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Bitcoin settings list entry for automatic transfers"
-  },
-  "bitcoinSettingsElectrumServerTitle": "Electrum Server",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Bitcoin settings list entry for Electrum server configuration"
-  },
-  "bitcoinSettingsMempoolServerTitle": "Mempool Server",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Bitcoin settings list entry for Mempool server configuration"
-  },
   "settingsWalletSettingsTitle": "Wallet Settings",
   "@settingsWalletSettingsTitle": {
     "description": "Title of the wallet settings screen"
-  },
-  "settingsSearchWalletSettingsKeywords": "wallet|bitcoin|network settings|on-chain settings|bitcoin settings",
-  "@settingsSearchWalletSettingsKeywords": {
-    "description": "Pipe-separated search aliases for wallet settings"
-  },
-  "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
-  "@onboardingBackupVerificationError": {
-    "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
   },
   "sendErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
   "@sendErrorFeeBelowRelayFloor": {
@@ -9440,14 +8776,6 @@
   },
   "settingsErrorSavingSetting": "That setting could not be saved. Please try again.",
   "@settingsErrorSavingSetting": {
-    "description": "settings user-facing failure message (#1895)."
-  },
-  "settingsErrorConsentNotGiven": "This setting needs your confirmation before it can be changed.",
-  "@settingsErrorConsentNotGiven": {
-    "description": "settings user-facing failure message (#1895)."
-  },
-  "settingsErrorLoadingLogs": "The diagnostic logs could not be prepared. Please try again.",
-  "@settingsErrorLoadingLogs": {
     "description": "settings user-facing failure message (#1895)."
   },
   "withdrawInteracSecurityDetailsTitle": "Transfer security details",
@@ -9994,10 +9322,6 @@
   "@transactionListPending": {
     "description": "Date label for the pending transactions group"
   },
-  "settingsDevModeSpRevokeFailed": "Could not fully delete the Silent Payments wallet. It is disabled and cannot be reloaded. Turn developer mode off again to retry.",
-  "@settingsDevModeSpRevokeFailed": {
-    "description": "Shown when turning developer mode off could not remove the Silent Payments wallet from disk."
-  },
   "fundExchangeErrorNetwork": "Check your internet connection and try again.",
   "@fundExchangeErrorNetwork": {
     "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
@@ -10009,10 +9333,6 @@
   "walletBalancesMayBeStale": "Your balances could not be updated and may be out of date.",
   "@walletBalancesMayBeStale": {
     "description": "Shown on the home screen when a refresh could not sync the wallets: the list is loaded but balances may be stale. Not a failed load. Non-English values are machine generated and want review."
-  },
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
-  "@settingsSearchTorKeywords": {
-    "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
   },
   "limitOrdersInsufficientBalance": "Insufficient balance",
   "@limitOrdersInsufficientBalance": {
@@ -10215,57 +9535,9 @@
   "@copiedToClipboard": {
     "description": "Generic toast message after copying a value to the clipboard"
   },
-  "settingsPayjoinUsersSection": "With other users",
-  "@settingsPayjoinUsersSection": {
-    "description": "Payjoin settings section grouping the switches for payments between users"
-  },
-  "settingsPayjoinSendLabel": "Send",
-  "@settingsPayjoinSendLabel": {
-    "description": "Payjoin switch for paying another user"
-  },
-  "settingsPayjoinReceiveLabel": "Receive",
-  "@settingsPayjoinReceiveLabel": {
-    "description": "Payjoin switch for receiving from another user"
-  },
-  "settingsPayjoinExchangeSection": "With the Bull Bitcoin exchange",
-  "@settingsPayjoinExchangeSection": {
-    "description": "Payjoin settings section grouping the switches for exchange orders"
-  },
-  "settingsPayjoinBuyLabel": "Buy",
-  "@settingsPayjoinBuyLabel": {
-    "description": "Payjoin switch for receiving the payout of a buy order"
-  },
-  "settingsPayjoinSellLabel": "Sell and pay bills",
-  "@settingsPayjoinSellLabel": {
-    "description": "Payjoin switch for paying sell and bill-payment orders"
-  },
-  "settingsPayjoinExpireMinutesDescription": "How long a payjoin session stays open before falling back to a normal payment.",
-  "@settingsPayjoinExpireMinutesDescription": {
-    "description": "Explanation next to the payjoin session expiry field, entered in minutes"
-  },
-  "settingsPayjoinExpireMinutesRangeError": "Must be between {min} and {max} minutes",
-  "@settingsPayjoinExpireMinutesRangeError": {
-    "description": "Validation error when the payjoin session expiry, in minutes, is out of bounds",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
   "settingsPayjoinSatsUnit": "sats",
   "@settingsPayjoinSatsUnit": {
     "description": "Unit shown inside the payjoin minimum amount field"
-  },
-  "settingsPayjoinMinutesUnit": "min",
-  "@settingsPayjoinMinutesUnit": {
-    "description": "Unit shown inside the payjoin session expiry field"
-  },
-  "coinsSweep": "Sweep",
-  "@coinsSweep": {
-    "description": "Action label for spending every satoshi from the selected coins to one recipient."
   },
   "coinsSweepTitle": "Sweep coins",
   "@coinsSweepTitle": {
@@ -10463,14 +9735,6 @@
   "@swapsFailureUnexpected": {
     "description": "Rescue failure: generic catch-all, never shows raw details"
   },
-  "settingsSearchSwapsKeywords": "swaps|boltz|exchange fallback|swap provider|lightning|liquid",
-  "@settingsSearchSwapsKeywords": {
-    "description": "Pipe-separated search keywords for the swap settings row"
-  },
-  "settingsSearchSwapRestoreKeywords": "swap restore|recover swap|rescue swap|refund|stuck swap|boltz",
-  "@settingsSearchSwapRestoreKeywords": {
-    "description": "Pipe-separated search keywords for the swap restore row"
-  },
   "passphraseShow": "Show passphrase",
   "@passphraseShow": {
     "description": "Accessible name of the button that reveals the typed passphrase"
@@ -10551,10 +9815,6 @@
   "@exchangeAccessDisableIncomplete": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "quickActionsSettingsTitle": "Quick Actions",
-  "@quickActionsSettingsTitle": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
   "exchangeTradingUnavailable": "Trading is unavailable.",
   "@exchangeTradingUnavailable": {
     "description": "Exchange access recovery and navigation"
@@ -10607,10 +9867,6 @@
   "@networkFeatureUnavailable": {
     "description": "Refusal when a service does not support the active network"
   },
-  "networkSelectorTitle": "Network",
-  "@networkSelectorTitle": {
-    "description": "Developer-only choice of mainnet, testnet or regtest"
-  },
   "networkWalletSetupTitle": "No wallets on this network",
   "@networkWalletSetupTitle": {
     "description": "Empty-network wallet setup heading"
@@ -10657,26 +9913,8 @@
   "@passphraseBackupPrompt": {},
   "passphraseIncorrect": "Incorrect passphrase.",
   "@passphraseIncorrect": {},
-  "emptyWalletTitle": "This wallet looks empty",
-  "@emptyWalletTitle": {},
-  "emptyWalletMessage": "This wallet looks empty. The passphrase may be wrong.",
-  "@emptyWalletMessage": {},
   "correct": "Correct",
   "@correct": {},
-  "emptyWalletBitcoinOnly": "No Bitcoin transaction history was found. Liquid has not been checked.",
-  "@emptyWalletBitcoinOnly": {},
-  "onboardingScanUnavailableTitle": "Could not check Bitcoin transaction history.",
-  "@onboardingScanUnavailableTitle": {
-    "description": "Title shown when the pre-recovery Bitcoin history scan fails."
-  },
-  "onboardingScanUnavailableMessage": "Your Bitcoin history could not be checked. You can retry or continue without checking.",
-  "@onboardingScanUnavailableMessage": {
-    "description": "Explains the choices when the pre-recovery Bitcoin history scan fails."
-  },
-  "onboardingContinueWithoutChecking": "Continue without checking",
-  "@onboardingContinueWithoutChecking": {
-    "description": "Continue recovering a wallet when the history scan failed."
-  },
   "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
@@ -10684,10 +9922,6 @@
   "settingsDarkModeTitle": "Dark Mode",
   "@settingsDarkModeTitle": {
     "description": "App settings switch: on uses the dark theme, off the light theme."
-  },
-  "settingsSourceCodeTitle": "Source code",
-  "@settingsSourceCodeTitle": {
-    "description": "Settings entry opening the app's public source code repository."
   },
   "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
   "@parentCustodyMetadataUnavailable": {
@@ -10902,18 +10136,6 @@
   "@networkRelaunchRequiredError": {
     "description": "Error shown when a payment cannot start because the app is still running on the network it was launched with"
   },
-  "networkRestartDialogTitle": "Restart required",
-  "@networkRestartDialogTitle": {
-    "description": "Title of the dialog shown after switching to or from regtest in developer settings"
-  },
-  "networkRestartDialogMessage": "Switching to or from regtest takes effect after the app restarts. The app will now close; open it again to continue.",
-  "@networkRestartDialogMessage": {
-    "description": "Body of the restart-required dialog after switching to or from regtest"
-  },
-  "networkRestartDialogAction": "Close the app",
-  "@networkRestartDialogAction": {
-    "description": "Button of the restart-required dialog that closes the app"
-  },
   "backgroundTasksTitle": "Background Tasks",
   "@backgroundTasksTitle": {
     "description": "Switch that lets the app check for payments while it is closed."
@@ -10921,10 +10143,6 @@
   "blockedInSystemSettings": "Blocked in system settings",
   "@blockedInSystemSettings": {
     "description": "Shown under a switch when the system refused the permission."
-  },
-  "notificationsBlockedMessage": "Notifications are blocked in system settings.",
-  "@notificationsBlockedMessage": {
-    "description": "Warning on the permissions screen after the system refused notifications."
   },
   "notificationsTitle": "Notifications",
   "@notificationsTitle": {
@@ -10934,18 +10152,6 @@
   "@openSystemSettings": {
     "description": "Button that opens the app's page in the system settings."
   },
-  "permissionsTitle": "Permissions",
-  "@permissionsTitle": {
-    "description": "Title of the settings screen for background tasks and notifications."
-  },
-  "settingsSearchPermissionsKeywords": "notifications|background tasks|battery|alerts",
-  "@settingsSearchPermissionsKeywords": {
-    "description": "Pipe-separated search aliases for the permissions screen. Search metadata; not displayed."
-  },
-  "amountInputBitcoin": "Bitcoin",
-  "@amountInputBitcoin": {},
-  "amountInputTitle": "Enter amounts in",
-  "@amountInputTitle": {},
   "amountInputStartChanged": "Amounts now start in {currency}",
   "@amountInputStartChanged": {
     "placeholders": {

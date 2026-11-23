@@ -1,3 +1,4 @@
+import 'package:startup/setup.dart' show AppBlocObserver;
 import 'package:labels/labels.dart';
 import 'package:labels/migration.dart';
 import 'package:electrum/electrum.dart';
@@ -18,29 +19,27 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:signers/storage.dart';
 import 'package:sync/storage.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_inventory_setup.dart';
+import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show prepareBackgroundWalletStores;
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:background_tasks/wallet_jobs.dart';
+import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
+import 'package:startup/startup.dart';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/background_setup.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
@@ -363,9 +362,11 @@ class Bull {
       configureLogTorContext(
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
-      await refreshReportingConsent(settings);
-      await prepareBackgroundWalletStores(locator);
-      await configureBackgroundTasks();
+      await settings.refreshReportingConsent();
+      await prepareBackgroundWalletStores(
+        openNotifications: () => locator<PaymentNotificationStore>().open(),
+      );
+      await locator<BackgroundSchedule>().apply();
 
       await Report.recordMigration();
       initialized = true;

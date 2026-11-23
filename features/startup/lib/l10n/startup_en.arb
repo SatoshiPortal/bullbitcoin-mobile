@@ -1,0 +1,104 @@
+{
+  "@@locale": "en",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Recover",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "deleteLogsTitle": "Delete logs",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Logs deleted",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "errorSharingLogsMessage": "Error sharing logs: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appStartupErrorTitle": "Startup Error",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupErrorMessage": "App failed to start up. Try completely stopping the app and restarting it. If the error persists, contact support and share your logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "appStartupContactSupportButton": "Contact Support",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "Page not found",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appInitErrorTitle": "App failed to start",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Share Logs",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Use your backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Thanks to your backup, your funds are safe.\nTry restarting the app first, if it still fails, reinstall and recover with your backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "No backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Do not delete the app.\nContact our support team to attempt a rescue.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contact support",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Show error details",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
+  "@appStartupContactSupportMessage": {
+    "description": "Message shown on the app startup error screen pointing to support"
+  },
+  "logsShareOptionExport": "Export",
+  "@logsShareOptionExport": {
+    "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
+  },
+  "logsExportedMessage": "Logs exported successfully",
+  "@logsExportedMessage": {
+    "description": "Confirmation message when logs are exported as a file"
+  },
+  "logsExportFailedMessage": "Failed to export logs",
+  "@logsExportFailedMessage": {
+    "description": "Error message when log export fails"
+  },
+  "appStartupMissingSecretMessage": "This device no longer holds your wallet’s recovery phrase. Enter it again to get your wallet back.",
+  "@appStartupMissingSecretMessage": {
+    "description": "App startup: the default wallet exists but its recovery phrase is missing from the device keystore"
+  },
+  "appStartupRestoreSecretButton": "Enter my recovery phrase",
+  "@appStartupRestoreSecretButton": {
+    "description": "App startup: button that opens recovery phrase entry to restore a missing default wallet secret"
+  },
+  "appStartupRestoreMismatch": "This recovery phrase belongs to another wallet. Enter the phrase of the wallet on this device.",
+  "@appStartupRestoreMismatch": {
+    "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
+  }
+}

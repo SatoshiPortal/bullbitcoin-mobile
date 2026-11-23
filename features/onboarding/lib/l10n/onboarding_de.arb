@@ -1,0 +1,31 @@
+{
+  "@@locale": "de",
+  "onboardingRecoverYourWallet": "Ihre Wallet wiederherstellen",
+  "onboardingEncryptedVaultDescription": "Stellen Sie Ihre Sicherung über die Cloud mithilfe Ihrer PIN wieder her.",
+  "onboardingSplashDescription": "Souveräne, selbstverwahrte reine Bitcoin-Wallet und Bitcoin-Börse.",
+  "onboardingEncryptedVault": "Verschlüsselter Tresor",
+  "onboardingCreateNewWallet": "Neue Wallet erstellen",
+  "onboardingPhysicalBackupDescription": "Stellen Sie Ihre Wallet mit 12 Wörtern wieder her.",
+  "settingsLanguageTitle": "Sprache",
+  "onboardingRecover": "Wiederherstellen",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "Übernehmen Sie die Kontrolle über Ihr Geld",
+  "onboardingRecoverWallet": "Wallet wiederherstellen",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "onboardingPhysicalBackup": "Physische Sicherung",
+  "onboardingRecoverWalletButton": "Wallet wiederherstellen",
+  "continueButton": "Fortfahren",
+  "torSettingsTitle": "Tor-Einstellungen",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "onboardingAdvancedOptionsTitle": "Erweiterte Optionen",
+  "onboardingAdvancedOptionsDescription": "Konfigurieren Sie erweiterte Einstellungen, bevor Sie Ihre Wallet erstellen oder wiederherstellen.",
+  "onboardingAdvancedOptionsCustomElectrum": "Benutzerdefinierter Electrum-Server",
+  "onboardingAdvancedOptionsCustomMempool": "Benutzerdefinierter Mempool-Server",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Benutzerdefinierter Recoverbull-Server",
+  "onboardingAdvancedOptionsFooter": "Sie können diese Einstellungen später in den App-Einstellungen ändern.",
+  "onboardingBackupVerificationError": "Ihre Wallet wurde wiederhergestellt, aber die Backup-Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+}

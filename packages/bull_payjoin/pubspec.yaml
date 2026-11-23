@@ -18,6 +18,8 @@ dependencies:
   # Use the published archive for its release-locked native Cargo dependencies.
   payjoin: 0.26.0
   primitives:
+  bull_logger:
+  sync:
   sqlite3: ^3.5.2
   synchronized: ^3.4.0
 

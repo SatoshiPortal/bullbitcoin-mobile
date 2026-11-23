@@ -14,6 +14,28 @@ const _searchBar = Key('settings-search-bar');
 const _searchField = Key('settings-search-field');
 
 void main() {
+  test('mounts the preference routes without opening foreground services', () {
+    final feature = SettingsFeature.mount(
+      status: networkStatusForTest(
+        () async => const Err(NoDefaultWalletFailure()),
+      ),
+      settings: () => throw StateError('services must be resolved lazily'),
+      childRoutes: const [],
+    );
+    final children = feature.route.routes.whereType<GoRoute>();
+    expect(
+      children.map((route) => route.name),
+      containsAll([
+        'walletSettings',
+        'payjoinSettings',
+        'payjoinAdvancedSettings',
+      ]),
+    );
+    final app = children.singleWhere((route) => route.name == 'appSettings');
+    expect(app.path, 'app-settings');
+    expect(app.routes.whereType<GoRoute>().single.path, 'permissions');
+  });
+
   testWidgets('keeps the home, search and child route contracts', (
     tester,
   ) async {

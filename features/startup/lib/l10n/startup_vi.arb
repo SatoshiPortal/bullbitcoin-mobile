@@ -1,0 +1,47 @@
+{
+  "appInitErrorTitle": "Ứng dụng không thể khởi động",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Chia sẻ nhật ký",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Sử dụng bản sao lưu của bạn",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Nhờ bản sao lưu, tiền của bạn vẫn an toàn.\nTrước tiên hãy thử khởi động lại ứng dụng; nếu vẫn không chạy, gỡ cài đặt và cài lại rồi khôi phục bằng bản sao lưu.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Không có bản sao lưu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Đừng xóa ứng dụng.\nLiên hệ với đội hỗ trợ của chúng tôi để thử giải cứu.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Liên hệ hỗ trợ",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Hiển thị chi tiết lỗi",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupErrorMessage": "Không thể khởi động ứng dụng. Hãy thử đóng hoàn toàn ứng dụng và khởi động lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ hỗ trợ và gửi nhật ký của bạn.",
+  "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Xuất",
+  "logsExportedMessage": "Nhật ký đã được xuất thành công",
+  "logsExportFailedMessage": "Xuất nhật ký thất bại",
+  "retry": "Thử lại",
+  "onboardingRecover": "Khôi phục",
+  "deleteLogsTitle": "Xóa nhật ký",
+  "logsDeletedMessage": "Đã xóa nhật ký",
+  "errorSharingLogsMessage": "Lỗi khi chia sẻ nhật ký: {error}",
+  "appStartupErrorTitle": "Lỗi khởi động",
+  "appStartupContactSupportButton": "Liên hệ hỗ trợ",
+  "coreScreensPageNotFound": "Không tìm thấy trang"
+}

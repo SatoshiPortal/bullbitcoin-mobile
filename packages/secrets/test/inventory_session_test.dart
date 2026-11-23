@@ -121,6 +121,49 @@ void main() {
     expect(regtest.secretFingerprint, Fingerprint('01234567'));
   });
 
+  test(
+    'recovery evidence comes only from authorized local Bitcoin wallets',
+    () async {
+      const localId = 'wpkh([01234567/84h/1h/0h]):regtest';
+      final local = _registration(
+        localId,
+        network: 'bitcoinRegtest',
+        signer: 'local',
+        isDefault: true,
+      );
+      _value(await inventory.registerWallet(local));
+      _value(
+        await inventory.registerWallet(
+          _registration(
+            'wpkh([01234567/84h/1h/0h])',
+            network: 'bitcoinTestnet',
+            signer: 'remote',
+          ),
+        ),
+      );
+      final evidence = _value(await inventory.recoveryWallets()).single;
+      expect(evidence.id, localId);
+      expect(evidence.network, BitcoinNetwork.regtest);
+      expect(evidence.fingerprint, Fingerprint('01234567'));
+      expect(evidence.isDefault, isTrue);
+      expect(evidence.descriptors, (
+        external: local.externalDescriptor,
+        internal: local.internalDescriptor,
+      ));
+
+      final pending = inventory.recoveryWallets();
+      inventory.lock();
+      expect(
+        await pending,
+        isA<Err<List<BitcoinRecoveryWallet>, SecretFailure>>(),
+      );
+      expect(
+        await inventory.recoveryWallets(),
+        isA<Err<List<BitcoinRecoveryWallet>, SecretFailure>>(),
+      );
+    },
+  );
+
   test('distinguishes absent, unreadable and failed storage reads', () async {
     const id = 'wpkh([01234567/84h/1h/0h])';
     final storage = _value(
@@ -281,6 +324,41 @@ void main() {
       expect(_value(await inventory.listWallets()).single.id, 'test-wallet');
     },
   );
+
+  test('reads distinct public origins across the authorized view', () async {
+    for (final (id, network, fingerprint) in [
+      ('a', 'bitcoinMainnet', '73C5DA0A'),
+      ('b', 'bitcoinRegtest', '73c5da0a'),
+      ('c', 'legacy-unresolved', 'deadbeef'),
+      ('d', 'bitcoinMainnet', ''),
+    ]) {
+      _value(
+        await inventory.registerWallet(
+          RegisteredWallet(
+            id: id,
+            secretFingerprint: null,
+            masterFingerprint: fingerprint,
+            signer: 'none',
+            network: network,
+            xpub: 'public-key-marker',
+            externalDescriptor: 'external-marker',
+            internalDescriptor: 'internal-marker',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+      );
+    }
+    expect(_value(await inventory.referencedFingerprints()), [
+      Fingerprint('73c5da0a'),
+      Fingerprint('deadbeef'),
+    ]);
+    final pending = inventory.referencedFingerprints();
+    inventory.lock();
+    expect(await pending, isA<Err>());
+    expect(await inventory.referencedFingerprints(), isA<Err>());
+  });
 
   test('background opt-out stops descriptor access at the owner', () async {
     expect(

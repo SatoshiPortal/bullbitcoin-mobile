@@ -6,7 +6,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:scanning/scanning.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';

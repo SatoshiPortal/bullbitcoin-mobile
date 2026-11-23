@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
@@ -67,7 +67,8 @@ abstract interface class _ElectrumResults {
 
 class _MockWatchElectrumSyncResults extends Mock implements _ElectrumResults {}
 
-class _MockSyncCoordinator extends Mock implements SyncCoordinator {}
+class _MockSyncCoordinator extends Mock
+    implements SyncCoordinator<Wallet, WalletFailure> {}
 
 class _MockGetUnconfirmed extends Mock
     implements GetUnconfirmedIncomingBalanceUsecase {}

@@ -56,3 +56,22 @@ final class WalletSelection {
   WalletRegistration? get defaultWallet =>
       defaults.length == 1 ? defaults.single : null;
 }
+
+/// Public Bitcoin identity used to verify a recovery phrase before importing it.
+final class BitcoinRecoveryWallet {
+  final String id;
+  final BitcoinNetwork network;
+  final Fingerprint fingerprint;
+  final ScriptType scriptType;
+  final bool isDefault;
+  final ({String external, String internal}) descriptors;
+
+  const BitcoinRecoveryWallet({
+    required this.id,
+    required this.network,
+    required this.fingerprint,
+    required this.scriptType,
+    required this.isDefault,
+    required this.descriptors,
+  });
+}

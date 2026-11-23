@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/settings/settings_core_locator.dart';
+import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';

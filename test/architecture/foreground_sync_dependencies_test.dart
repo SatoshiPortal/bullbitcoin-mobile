@@ -27,24 +27,22 @@ import 'package:path/path.dart' as p;
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
   'all_seed_view': 'access',
-  'app_startup':
-      'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price coins fees',
-  'coins': 'address_view bitcoin_price wallet',
+  'coins': 'address_view bitcoin_price',
   'exchange': 'address_view bull_exchange transactions wallet',
-  'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
   'onboarding':
       'mnemonic_entry network recoverbull settings wallet wallet_import',
+  'overview': 'bitcoin_price quick_actions',
   'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
   'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
   'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
-  'support': 'bull_exchange',
+  'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
   'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
@@ -138,7 +136,7 @@ void main() {
       final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
       for (final path in [
         'lib/features/send/presentation/bloc/send_cubit.dart',
-        'lib/features/settings/presentation/bloc/settings_cubit.dart',
+        'features/settings/lib/src/presentation/bloc/settings_cubit.dart',
         'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {
         expect(

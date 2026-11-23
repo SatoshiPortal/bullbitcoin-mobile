@@ -1,7 +1,7 @@
 import 'package:bull_ark/bull_ark.dart';
 import 'package:primitives/primitives.dart';
 
-import '../send_failure.dart';
+import 'package:send/send.dart';
 
 final class SendArkRequest {
   final String destination;

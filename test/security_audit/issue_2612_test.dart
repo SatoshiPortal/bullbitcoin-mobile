@@ -59,7 +59,7 @@ void main() {
       final initialization = File('lib/init.dart').readAsStringSync();
       final setup = initialization.indexOf('await AppLocator.setup(');
       final cancellation = initialization.indexOf(
-        'await configureBackgroundTasks();',
+        'await locator<BackgroundSchedule>().apply();',
       );
       expect(setup, greaterThanOrEqualTo(0));
       expect(cancellation, greaterThan(setup));

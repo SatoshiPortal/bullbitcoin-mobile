@@ -30,6 +30,10 @@ final class _UnavailableInventory implements WalletInventory {
   final requestedIds = <String>[];
 
   @override
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() =>
+      throw StateError('Spend must resolve the exact wallet ID');
+
+  @override
   Future<Result<WalletRegistration, SecretFailure>> readWallet(
     String id,
   ) async {

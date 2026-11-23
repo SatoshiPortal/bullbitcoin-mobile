@@ -32,7 +32,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
     show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {

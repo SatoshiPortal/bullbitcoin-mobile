@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
     as core_exchange;

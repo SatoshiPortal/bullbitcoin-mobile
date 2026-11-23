@@ -1,7 +1,8 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncBusyFailure;
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
@@ -11,7 +12,7 @@ import 'package:meta/meta.dart';
 /// The wallet-owned coordinator throws `SyncCoordinatorException` aggregating
 /// per-kind failures. This usecase maps those to a typed wallet failure.
 class SyncWalletsUsecase {
-  final SyncCoordinator _syncCoordinator;
+  final SyncCoordinator<Wallet, WalletFailure> _syncCoordinator;
 
   const SyncWalletsUsecase(this._syncCoordinator);
 

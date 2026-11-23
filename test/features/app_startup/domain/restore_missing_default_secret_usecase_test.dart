@@ -1,18 +1,22 @@
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show Wallet, Network;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:startup/testing.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show BitcoinRecoveryWallet;
 import 'package:secrets/testing.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+abstract interface class _RecoveryCatalog {
+  Future<Result<List<Wallet>, SecretFailure>> getWallets();
+}
+
+class _MockWalletRepository extends Mock implements _RecoveryCatalog {}
 
 /// The words the default wallets were built from, and another wallet's.
 const _missing = [
@@ -110,10 +114,26 @@ void main() {
     wallets = _MockWalletRepository();
     final wallet = await realWallet(_missingFingerprint, _missing);
     when(() => wallets.getWallets())
-        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+        .thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([wallet]));
     usecase = RestoreMissingDefaultSecretUsecase(
       secrets: secrets,
-      walletRepository: wallets,
+      recoveryWallets: () async => (await wallets.getWallets()).map(
+        (entries) => entries
+            .map(
+              (entry) => BitcoinRecoveryWallet(
+                id: entry.id,
+                network: entry.network.bitcoin,
+                fingerprint: Fingerprint(entry.masterFingerprint),
+                scriptType: entry.scriptType,
+                isDefault: entry.isDefault,
+                descriptors: (
+                  external: entry.externalPublicDescriptor,
+                  internal: entry.internalPublicDescriptor,
+                ),
+              ),
+            )
+            .toList(),
+      ),
     );
   });
 
@@ -144,7 +164,7 @@ void main() {
     () async {
       when(() => wallets.getWallets()).thenAnswer(
         (_) async =>
-            Ok<List<Wallet>, WalletFailure>([zooDefault(hardenedWithH: true)]),
+            Ok<List<Wallet>, SecretFailure>([zooDefault(hardenedWithH: true)]),
       );
       expect(
         await usecase.execute(
@@ -162,7 +182,7 @@ void main() {
     'a secondary wallet with the same fingerprint cannot veto its default',
     () async {
       when(() => wallets.getWallets()).thenAnswer(
-        (_) async => Ok<List<Wallet>, WalletFailure>([
+        (_) async => Ok<List<Wallet>, SecretFailure>([
           zooDefault(),
           localWallet(_zooFingerprint),
         ]),
@@ -191,7 +211,7 @@ void main() {
       internalPublicDescriptor: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/1/*)",
     );
     when(() => wallets.getWallets()).thenAnswer(
-      (_) async => Ok<List<Wallet>, WalletFailure>([mainnet, testnet]),
+      (_) async => Ok<List<Wallet>, SecretFailure>([mainnet, testnet]),
     );
     expect(
       await usecase.execute(
@@ -222,7 +242,7 @@ void main() {
         origin: 'secondary',
       );
       when(() => wallets.getWallets()).thenAnswer(
-        (_) async => Ok<List<Wallet>, WalletFailure>([zooDefault(), secondary]),
+        (_) async => Ok<List<Wallet>, SecretFailure>([zooDefault(), secondary]),
       );
       expect(
         await usecase.execute(
@@ -255,7 +275,7 @@ void main() {
       ]) {
         when(
           () => wallets.getWallets(),
-        ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([invalid]));
+        ).thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([invalid]));
         expect(
           await usecase.execute(
             language: Language.english,
@@ -280,7 +300,7 @@ void main() {
     final fingerprint = (created as Ok<Secret, SecretFailure>).value.id.hex;
     final wallet = await realWallet(fingerprint, _missing, passphrase);
     when(() => wallets.getWallets())
-        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+        .thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([wallet]));
     expect(
       await secrets.trash(Fingerprint(fingerprint)),
       isA<Ok<void, SecretFailure>>(),
@@ -310,7 +330,7 @@ void main() {
     () async {
       when(() => wallets.getWallets()).thenAnswer(
         (_) async =>
-            Ok<List<Wallet>, WalletFailure>([localWallet(_missingFingerprint)]),
+            Ok<List<Wallet>, SecretFailure>([localWallet(_missingFingerprint)]),
       );
       final result = await usecase.execute(
         language: Language.english,
@@ -325,7 +345,7 @@ void main() {
   test('a second wallet with the same fingerprint cannot mask a descriptor mismatch', () async {
     final matching = await realWallet(_missingFingerprint, _missing, '', false);
     when(() => wallets.getWallets()).thenAnswer(
-      (_) async => Ok<List<Wallet>, WalletFailure>([
+      (_) async => Ok<List<Wallet>, SecretFailure>([
         matching,
         localWallet(_missingFingerprint, isDefault: true),
       ]),
@@ -341,7 +361,7 @@ void main() {
 
   test('refuses to write when no Bitcoin descriptor is available', () async {
     when(() => wallets.getWallets())
-        .thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
+        .thenAnswer((_) async => const Ok<List<Wallet>, SecretFailure>([]));
     final result = await usecase.execute(
       language: Language.english,
       expectedFingerprint: _missingFingerprint,
@@ -410,7 +430,7 @@ void main() {
     final wallet = await realWallet(otherFingerprint, _other, '', false);
     final expectedWallet = await realWallet(_missingFingerprint, _missing);
     when(() => wallets.getWallets()).thenAnswer(
-      (_) async => Ok<List<Wallet>, WalletFailure>([expectedWallet, wallet]),
+      (_) async => Ok<List<Wallet>, SecretFailure>([expectedWallet, wallet]),
     );
 
     final result = await usecase.execute(
@@ -468,7 +488,7 @@ void main() {
         isDefault: true,
       );
       when(() => wallets.getWallets())
-          .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+          .thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([wallet]));
     });
 
     test('is stored back in French', () async {

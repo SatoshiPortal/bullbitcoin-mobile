@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart'
     show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:material_ui/material_ui.dart';

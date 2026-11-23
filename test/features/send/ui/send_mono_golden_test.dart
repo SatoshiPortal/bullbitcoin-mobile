@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 
 // ignore: avoid_relative_lib_imports
-import '../../../../lib/features/send/ui/widgets/send_whole_balance_dialog.dart';
+import 'package:send/send.dart';
 
 // The legacy screen already has a public shell import target.
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
@@ -13,7 +13,6 @@ import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 import 'package:primitives/primitives.dart' show Sats, ScriptType;
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';

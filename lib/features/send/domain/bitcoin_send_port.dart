@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 
 abstract interface class BitcoinSendPort {
   @useResult
