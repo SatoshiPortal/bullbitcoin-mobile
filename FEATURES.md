@@ -106,7 +106,7 @@ graph TB
     EXCHANGE_DOMAIN --> PRIMITIVES
     EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
     EXCHANGE_DOMAIN -->|database key and legacy credential reads| SECRETS
-    EXCHANGE_DOMAIN -->|account, KYC, statistics, support chat, notifications and complete order pages| BBX_API
+    EXCHANGE_DOMAIN -->|account, KYC, statistics, support chat, notifications, limit orders and complete order pages| BBX_API
     BULL_EXCHANGE -->|support chat, account and statistics| EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
 
@@ -164,7 +164,7 @@ graph TB
     RECOVERBULL --> GOOGLE_DRIVE
     FILE_SYSTEM[File System Package]
     RECOVERBULL --> FILE_SYSTEM
-    EXCHANGE_SETTINGS --> FILE_SYSTEM
+    BULL_EXCHANGE --> FILE_SYSTEM
     TX_HISTORY --> FILE_SYSTEM
     LABEL_EDITOR --> FILE_SYSTEM
     LABEL_EDITOR --> LABELS

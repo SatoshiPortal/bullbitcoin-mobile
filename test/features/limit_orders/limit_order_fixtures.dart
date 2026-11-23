@@ -1,6 +1,4 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
 
 UserSummary userSummary({
   List<UserBalance> balances = const [

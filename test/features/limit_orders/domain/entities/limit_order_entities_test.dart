@@ -1,6 +1,4 @@
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

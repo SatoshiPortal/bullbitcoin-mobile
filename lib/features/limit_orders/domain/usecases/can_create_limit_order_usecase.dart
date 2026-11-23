@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
+import 'package:exchange/exchange.dart';
 
 final class CanCreateLimitOrderUsecase {
   static const maximumActiveOrders = 5;

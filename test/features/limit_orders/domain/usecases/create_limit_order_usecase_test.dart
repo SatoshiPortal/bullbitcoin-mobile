@@ -1,16 +1,13 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../limit_order_fixtures.dart';
 
-class MockLimitOrderRepository extends Mock implements LimitOrderRepository {}
+class MockLimitOrderRepository extends Mock implements ExchangeLimitOrders {}
 
 void main() {
   late MockLimitOrderRepository repository;
@@ -118,8 +115,11 @@ void main() {
   });
 
   test('forwards a rate failure untouched', () async {
-    when(() => repository.getRate(any()))
-        .thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
+    when(() => repository.getRate(any())).thenAnswer(
+      (_) async => const Err(
+        ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.load, 'rate'),
+      ),
+    );
 
     final result = await usecase.execute(
       limitPrice: 90000,

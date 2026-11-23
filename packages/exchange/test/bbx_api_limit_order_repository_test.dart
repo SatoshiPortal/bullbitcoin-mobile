@@ -1,19 +1,17 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/limit_orders/data/bbx_api_limit_order_repository.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bbx_api/bbx_api.dart' show Bbx;
+import 'package:bbx_api/bbx_api.dart' show Bbx, BbxCredentialUnavailableFailure;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/exchange_log_capture.dart';
-import '../../exchange/data/bbx_api_test_http.dart';
+import 'exchange_log_capture.dart';
+import 'bbx_api_test_http.dart';
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -51,6 +49,13 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
+Matcher _problem(ExchangeLimitOrderProblem problem) =>
+    isA<ExchangeLimitOrderFailure>().having(
+      (f) => f.problem,
+      'problem',
+      problem,
+    );
+
 void main() {
   late _MockSettingsRepository settings;
 
@@ -71,21 +76,24 @@ void main() {
     useEnvironment(Environment.mainnet);
   });
 
-  BbxApiLimitOrderRepository repository(
-    FakeBbxHttp mainnet, {
-    FakeBbxHttp? testnet,
-  }) => BbxApiLimitOrderRepository(
-    mainnet: mainnet.client(),
-    testnet: (testnet ?? FakeBbxHttp()).client(),
-    settingsRepository: settings,
-  );
+  ExchangeLimitOrders fromClient(Bbx Function(Uri) openClient) =>
+      exchangeWithTransportForTesting(
+        readSession: () => readLegacyExchangeSession(
+          preferences: settings,
+          readEpoch: () => 0,
+          readKey: ({required isTestnet}) async => const Ok('synthetic-key'),
+        ),
+        openClient: (endpoint, _) => openClient(endpoint),
+      ).limitOrders;
 
-  BbxApiLimitOrderRepository withClient(Bbx client) =>
-      BbxApiLimitOrderRepository(
-        mainnet: client,
-        testnet: client,
-        settingsRepository: settings,
+  ExchangeLimitOrders repository(FakeBbxHttp mainnet, {FakeBbxHttp? testnet}) =>
+      fromClient(
+        (endpoint) => endpoint.host.startsWith('testnet')
+            ? (testnet ?? FakeBbxHttp()).client()
+            : mainnet.client(),
       );
+
+  ExchangeLimitOrders withClient(Bbx client) => fromClient((_) => client);
 
   String sent(FakeBbxHttp http, {String path = '/ak/api-ordertrigger'}) {
     final request = http.requests.single;
@@ -331,7 +339,7 @@ void main() {
 
       expect(
         _failureOf(await repository(mainnet, testnet: testnet).listActive()),
-        isA<LimitOrdersUnsupportedNetworkFailure>(),
+        isA<ExchangeUnsupportedNetworkFailure>(),
       );
       expect(mainnet.requests, isEmpty);
       expect(testnet.requests, isEmpty);
@@ -352,14 +360,14 @@ void main() {
                 ),
               ),
         ),
-        isA<LimitOrdersMaximumActiveFailure>(),
+        _problem(ExchangeLimitOrderProblem.maximumActive),
       );
       expect(
         _failureOf(
           await repository(FakeBbxHttp(body: _refusal('ERR_ORDTRG_LO404')))
               .get('lo-1'),
         ),
-        isA<LimitOrderNotFoundFailure>(),
+        _problem(ExchangeLimitOrderProblem.notFound),
       );
       expect(
         _failureOf(
@@ -373,7 +381,7 @@ void main() {
                 ),
               ),
         ),
-        isA<LimitOrderInvalidAddressFailure>(),
+        _problem(ExchangeLimitOrderProblem.invalidAddress),
       );
     });
 
@@ -384,7 +392,7 @@ void main() {
           await repository(FakeBbxHttp(body: _refusal('ERR_SOMETHING_NEW')))
               .listActive(),
         );
-        expect(load, isA<LimitOrdersLoadFailure>());
+        expect(load, _problem(ExchangeLimitOrderProblem.load));
         expect(load.logMessage, isNot(contains('sat@example.com')));
         expect(load.logMessage, contains('ERR_SOMETHING_NEW'));
 
@@ -393,7 +401,7 @@ void main() {
             await repository(FakeBbxHttp(body: _refusal('ERR_SOMETHING_NEW')))
                 .cancel('lo-1'),
           ),
-          isA<LimitOrderCancellationFailure>(),
+          _problem(ExchangeLimitOrderProblem.cancel),
         );
       },
     );
@@ -403,13 +411,13 @@ void main() {
         _failureOf(
           await repository(FakeBbxHttp(status: 204, body: {})).cancelAll(),
         ),
-        isA<LimitOrderCancellationFailure>(),
+        _problem(ExchangeLimitOrderProblem.cancel),
       );
       expect(
         _failureOf(
           await repository(FakeBbxHttp(body: {'result': 'nope'})).get('lo-1'),
         ),
-        isA<LimitOrdersLoadFailure>(),
+        _problem(ExchangeLimitOrderProblem.load),
       );
     });
 
@@ -427,7 +435,7 @@ void main() {
           ).get('lo-1'),
         );
 
-        expect(failure, isA<LimitOrdersUnexpectedFailure>());
+        expect(failure, isA<ExchangeUnexpectedFailure>());
         expect(failure.logMessage, 'FormatException');
         expect(capture.reporter.errors, [
           ('Failed to read the limit order', 'FormatException'),
@@ -449,7 +457,7 @@ void main() {
             ),
           ).get('lo-1'),
         ),
-        isA<LimitOrdersUnexpectedFailure>(),
+        isA<ExchangeUnexpectedFailure>(),
       );
     });
 
@@ -458,7 +466,7 @@ void main() {
         _failureOf(
           await repository(FakeBbxHttp(status: 401, body: {})).listActive(),
         ),
-        isA<LimitOrdersAccountUnavailableFailure>(),
+        isA<ExchangeSessionRejectedFailure>(),
       );
     });
 
@@ -469,7 +477,7 @@ void main() {
             FakeBbxHttp(error: DioExceptionType.connectionTimeout),
           ).listActive(),
         ),
-        isA<LimitOrdersUnexpectedFailure>(),
+        isA<ExchangeUnexpectedFailure>(),
       );
     });
 
@@ -480,7 +488,7 @@ void main() {
           await withClient(http.client(readApiKey: () async => const Ok(null)))
               .listActive(),
         ),
-        isA<LimitOrdersAccountUnavailableFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
       expect(http.requests, isEmpty);
     });
@@ -490,11 +498,12 @@ void main() {
       final failure = _failureOf(
         await withClient(
           http.client(
-            readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+            readApiKey: () async =>
+                const Err(BbxCredentialUnavailableFailure()),
           ),
         ).cancelAll(),
       );
-      expect(failure, isA<LimitOrderCancellationFailure>());
+      expect(failure, _problem(ExchangeLimitOrderProblem.cancel));
       expect(failure.logMessage, 'Exchange credential unavailable');
       expect(http.requests, isEmpty);
     });

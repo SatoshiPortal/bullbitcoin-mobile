@@ -8,4 +8,6 @@ Support chat uses the standard timeout for identity lookup and an untimed client
 
 `Exchange.notifications` publishes decoded notification events for the active environment. Session management owns when to connect and disconnect. `Exchange.close()` releases the socket and its subscriptions; obsolete connect and reconnect attempts do not reopen it.
 
+`Exchange.limitOrders` owns order-trigger operations and rates. It preserves the historical untimed client and maps the transport's rejection codes to typed limit-order problems.
+
 `package:exchange/migration.dart` supplies the Exchange participant for the storage coordinator. It opens the owner database through `Secrets.databaseOpener` and the shared native-close admission, projects both fixed keychain records and all historical Basic Auth rows, and verifies the destination and its import or fresh receipt. The participant is not mounted until coordinator preflight and legacy writer admission are wired. It never deletes or updates either legacy source.

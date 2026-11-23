@@ -1,6 +1,5 @@
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
 
 enum LimitOrderWalletType { bitcoin, lightning, liquid }
 

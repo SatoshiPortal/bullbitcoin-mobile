@@ -14,7 +14,6 @@ import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_us
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -107,7 +106,7 @@ class _GetWallets extends Mock implements GetWalletsUsecase {}
 
 class _Defaults extends Mock implements DefaultWalletsFacade {}
 
-class _Rates extends Mock implements LimitOrderRepository {}
+class _Rates extends Mock implements ExchangeLimitOrders {}
 
 class _ReadDefaults extends Mock implements GetDefaultWalletsUsecase {}
 

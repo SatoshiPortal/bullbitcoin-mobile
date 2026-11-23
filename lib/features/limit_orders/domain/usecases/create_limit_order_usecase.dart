@@ -1,15 +1,14 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:meta/meta.dart';
 
-class CreateLimitOrderUsecase {
-  final LimitOrderRepository _repository;
+import '../map_limit_order_failure.dart';
 
-  const CreateLimitOrderUsecase(this._repository);
+class CreateLimitOrderUsecase {
+  final ExchangeLimitOrders _orders;
+
+  const CreateLimitOrderUsecase(this._orders);
 
   @useResult
   Future<Result<LimitOrder, LimitOrdersFailure>> execute({
@@ -29,10 +28,10 @@ class CreateLimitOrderUsecase {
       return const Err(LimitOrderInvalidTargetFailure('non-positive target'));
     }
 
-    final rateResult = await _repository.getRate(currency.code);
+    final rateResult = await _orders.getRate(currency.code);
     switch (rateResult) {
       case Err(:final failure):
-        return Err(failure);
+        return Err(mapLimitOrderFailure(failure));
       case Ok(:final value):
         if (limitPrice >= value.indexPrice) {
           return const Err(
@@ -41,14 +40,14 @@ class CreateLimitOrderUsecase {
             ),
           );
         }
-        return _repository.create(
+        return (await _orders.create(
           LimitOrderDraft(
             limitPrice: limitPrice,
             fiatAmount: fiatAmount,
             currencyCode: currency.code,
             address: trimmedAddress,
           ),
-        );
+        )).mapErr(mapLimitOrderFailure);
     }
   }
 }

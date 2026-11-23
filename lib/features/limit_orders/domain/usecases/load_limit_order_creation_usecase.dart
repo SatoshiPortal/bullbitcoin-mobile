@@ -7,7 +7,9 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
+
+import '../map_limit_order_failure.dart';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
@@ -15,13 +17,13 @@ class LoadLimitOrderCreationUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final DefaultWalletsFacade _defaultWalletsFacade;
   final GetWalletsUsecase _getWalletsUsecase;
-  final LimitOrderRepository _repository;
+  final ExchangeLimitOrders _orders;
 
   const LoadLimitOrderCreationUsecase(
     this._getExchangeUserSummaryUsecase,
     this._defaultWalletsFacade,
     this._getWalletsUsecase,
-    this._repository,
+    this._orders,
   );
 
   @useResult
@@ -100,7 +102,8 @@ class LoadLimitOrderCreationUsecase {
     ];
 
     // Do not start an unused rate request when a required input failed.
-    final rateResult = await _repository.getRate(selectedCurrency.code);
+    final rateResult = (await _orders.getRate(selectedCurrency.code))
+        .mapErr(mapLimitOrderFailure);
     return switch (rateResult) {
       Err(:final failure) => Err(failure),
       Ok(:final value) => Ok(

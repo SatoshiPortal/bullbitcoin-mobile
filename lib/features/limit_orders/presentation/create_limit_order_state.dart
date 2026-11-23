@@ -1,9 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 
 enum CreateLimitOrderStep { intro, target, amount, wallet, confirmation, done }

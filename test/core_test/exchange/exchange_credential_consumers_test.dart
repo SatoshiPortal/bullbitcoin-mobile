@@ -6,13 +6,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dar
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:exchange/testing.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/limit_orders/data/bbx_api_limit_order_repository.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bbx_api/bbx_api.dart'
@@ -39,17 +36,6 @@ class _NoNetwork implements HttpClientAdapter {
 
   @override
   void close({bool force = false}) {}
-}
-
-class _Settings extends Fake implements Preferences {
-  @override
-  Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
-    const SettingsEntity(
-      environment: Environment.testnet,
-      bitcoinUnit: BitcoinUnit.btc,
-      currencyCode: 'CAD',
-    ),
-  );
 }
 
 void main() {
@@ -205,11 +191,7 @@ void main() {
     () async {
       final funding = BbxApiFundingRepository(api: api);
       final recipients = BbxApiRecipientsRepository(api: api);
-      final limits = BbxApiLimitOrderRepository(
-        mainnet: api,
-        testnet: api,
-        settingsRepository: _Settings(),
-      );
+      final limits = user.limitOrders;
       expect(
         await funding.listInstitutions(
           jurisdiction: FundingJurisdiction.canada,
@@ -233,7 +215,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'limit orders',
-          isA<LimitOrdersAccountUnavailableFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       credential = const Err(ExchangeApiKeyReadFailure());
@@ -260,7 +242,11 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'limit orders unavailable',
-          isA<LimitOrdersLoadFailure>(),
+          isA<ExchangeLimitOrderFailure>().having(
+            (failure) => failure.problem,
+            'problem',
+            ExchangeLimitOrderProblem.load,
+          ),
         ),
       );
     },

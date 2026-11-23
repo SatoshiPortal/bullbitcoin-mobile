@@ -3,6 +3,9 @@ library;
 
 export 'src/domain/entities/announcement.dart';
 export 'src/domain/entities/dca.dart';
+export 'src/domain/entities/limit_order.dart';
+export 'src/domain/entities/limit_order_draft.dart';
+export 'src/domain/entities/limit_order_rate.dart';
 export 'src/domain/entities/notification_message.dart';
 export 'src/domain/entities/order.dart';
 export 'src/domain/entities/order_stats.dart';
@@ -12,3 +15,4 @@ export 'src/domain/entities/user_summary.dart';
 export 'src/domain/exchange_failure.dart';
 export 'src/domain/exchange_environment.dart' show ExchangeEnvironment;
 export 'src/exchange.dart' show Exchange;
+export 'src/domain/exchange_limit_orders.dart' show ExchangeLimitOrders;

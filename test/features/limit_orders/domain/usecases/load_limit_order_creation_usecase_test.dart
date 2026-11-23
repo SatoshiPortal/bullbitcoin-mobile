@@ -8,14 +8,13 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../limit_order_fixtures.dart';
 
-class MockLimitOrderRepository extends Mock implements LimitOrderRepository {}
+class MockLimitOrderRepository extends Mock implements ExchangeLimitOrders {}
 
 class MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -165,8 +164,11 @@ void main() {
 
   test('forwards a rate failure untouched', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
-    when(() => repository.getRate(any()))
-        .thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
+    when(() => repository.getRate(any())).thenAnswer(
+      (_) async => const Err(
+        ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.load, 'rate'),
+      ),
+    );
 
     expect(failureOf(await usecase.execute()), isA<LimitOrdersLoadFailure>());
   });

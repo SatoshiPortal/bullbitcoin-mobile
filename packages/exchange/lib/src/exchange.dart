@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_kyc_repository.dart';
+import 'data/bbx_api_limit_order_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
 import 'data/bbx_api_order_stats_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
@@ -18,6 +19,7 @@ import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
+import 'domain/exchange_limit_orders.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -90,6 +92,7 @@ final class Exchange {
   final _SaveUserPreference _saveUserPreference;
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
+  final ExchangeLimitOrders limitOrders;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -101,6 +104,7 @@ final class Exchange {
     this._saveUserPreference,
     this._chat,
     this._notifications,
+    this.limitOrders,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -200,6 +204,16 @@ final class Exchange {
     final inventory = PendingOrders(
       readSession: sessionSnapshot,
       openClient: openClient,
+    );
+    Future<Result<T, ExchangeFailure>> limitOrder<T>(
+      ExchangeLimitOrderProblem problem,
+      Future<Result<T, ExchangeFailure>> Function(BbxApiLimitOrderRepository)
+      call,
+    ) => withClient(
+      (client, _) => call(BbxApiLimitOrderRepository(client)),
+      untimed: true,
+      credentialReadFailure: () =>
+          ExchangeLimitOrderFailure(problem, 'Exchange credential unavailable'),
     );
     ExchangeNotificationService? notificationService;
     bool closed = false;
@@ -311,6 +325,32 @@ final class Exchange {
           await notificationService?.dispose();
         },
       ),
+      ExchangeLimitOrdersImpl(
+        list: () => limitOrder(
+          ExchangeLimitOrderProblem.load,
+          (repository) => repository.listActive(),
+        ),
+        get: (id) => limitOrder(
+          ExchangeLimitOrderProblem.load,
+          (repository) => repository.get(id),
+        ),
+        create: (draft) => limitOrder(
+          ExchangeLimitOrderProblem.create,
+          (repository) => repository.create(draft),
+        ),
+        cancel: (id) => limitOrder(
+          ExchangeLimitOrderProblem.cancel,
+          (repository) => repository.cancel(id),
+        ),
+        cancelAll: () => limitOrder(
+          ExchangeLimitOrderProblem.cancel,
+          (repository) => repository.cancelAll(),
+        ),
+        rate: (currency) => limitOrder(
+          ExchangeLimitOrderProblem.load,
+          (repository) => repository.getRate(currency),
+        ),
+      ),
     );
   }
 
@@ -414,6 +454,7 @@ Exchange exchangeForTesting({
   saveUserPreference,
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
+  ExchangeLimitOrders? limitOrders,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -450,15 +491,25 @@ Exchange exchangeForTesting({
         disconnect: () {},
         close: () async {},
       ),
+  limitOrders ??
+      ExchangeLimitOrdersImpl(
+        list: () => throw StateError('Unexpected limit order listing'),
+        get: (_) => throw StateError('Unexpected limit order read'),
+        create: (_) => throw StateError('Unexpected limit order create'),
+        cancel: (_) => throw StateError('Unexpected limit order cancel'),
+        cancelAll: () => throw StateError('Unexpected limit order bulk cancel'),
+        rate: (_) => throw StateError('Unexpected limit order rate'),
+      ),
 );
 
 Exchange exchangeWithTransportForTesting({
   required ExchangeSessionReader readSession,
   required OpenInventoryClient openClient,
+  OpenInventoryClient? openUntimedClient,
 }) => Exchange._open(
   mainnetEndpoint: Uri.parse('https://mainnet.example.invalid'),
   testnetEndpoint: Uri.parse('https://testnet.example.invalid'),
   readSession: readSession,
   openClient: openClient,
-  openUntimedClient: openClient,
+  openUntimedClient: openUntimedClient ?? openClient,
 );

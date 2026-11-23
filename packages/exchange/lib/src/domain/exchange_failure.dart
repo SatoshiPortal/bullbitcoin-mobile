@@ -126,3 +126,18 @@ final class ExchangeChatSendMessageFailure extends ExchangeFailure {
 final class ExchangeChatLoadAttachmentFailure extends ExchangeFailure {
   const ExchangeChatLoadAttachmentFailure([super.logMessage]);
 }
+
+enum ExchangeLimitOrderProblem {
+  load,
+  create,
+  cancel,
+  maximumActive,
+  notFound,
+  invalidAddress,
+}
+
+final class ExchangeLimitOrderFailure extends ExchangeFailure {
+  final ExchangeLimitOrderProblem problem;
+
+  const ExchangeLimitOrderFailure(this.problem, [super.logMessage]);
+}
