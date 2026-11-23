@@ -46,6 +46,7 @@ workspace:
   - packages/primitives
   - packages/file_system
   - packages/google_drive
+  - packages/backup_storage
   - packages/background_tasks
   - packages/notifications
   - packages/sync

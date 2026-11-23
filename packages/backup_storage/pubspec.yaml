@@ -1,0 +1,20 @@
+name: backup_storage
+description: Session-bound byte storage for app backups.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  primitives:
+  meta: ^1.17.0
+  google_drive:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
