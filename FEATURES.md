@@ -244,7 +244,7 @@ graph TB
     CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
     AUTOSWAP[Autoswap]
-    SP[Silent Payments]
+    SP[Silent Payments<br/>Workspace Feature]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -437,10 +437,14 @@ graph TB
     SWAPS --> LABELS
     SETTINGS --> SP
     SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM
-    %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
-    WALLETS -->|public wallet/scan capabilities| SP
-    SP -->|wallet balance view and legacy repository| WALLETS
-    SWAPS -->|legacy: wallet choice and wallet navigation| WALLETS
+    %% Silent receives a foreground flag; swap owns the scheduling port implemented by wallet.
+    WALLETS -->|account snapshots and sync| SP
+    CORE -->|exact-network fingerprint and wallet presentation composition| SP
+    SP --> PREFERENCES
+    SP --> PRIMITIVES
+    SP --> BULL_UI
+    SP --> BULL_LOGGER
+    SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
     ELECTRUM --> TOR
@@ -566,9 +570,9 @@ graph TB
 
 ## Foreground synchronization
 
-Wallet owns the private foreground synchronization queue and consumes the SP and swap facades. SP receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing an SP/swap source dependency on wallet synchronization. The swap facade keeps its direct refresh path so a queued pass never enqueues itself.
+Wallet owns the private foreground synchronization queue and consumes the Silent capability and the legacy swap facade. Silent receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing a Silent/swap source dependency on wallet synchronization. The swap facade keeps its direct refresh path so a queued pass never enqueues itself.
 
-The wallet and wallet address repositories live in `lib/features/wallet/data`. Their former `core/wallet` re-exports have been removed. SP imports the wallet repository directly in `get_sp_secret_usecase.dart` and `sp_locator.dart`. Swap imports it in `swap_locator.dart` and imports `wallet_router.dart` in `swap_in_progress_page.dart`. Together with wallet’s facade imports, these retain the legacy wallet↔SP and wallet↔swap cycles. Removing those repository/navigation dependencies is outside the foreground sync scope. `test/architecture/foreground_sync_dependencies_test.dart` resolves feature ownership through imports and transitive exports, including public barrels, and rejects new feature edges against an explicit baseline; it does not claim that the existing graph is acyclic.
+The wallet and wallet address repositories live in `lib/features/wallet/data`. Their former `core/wallet` re-exports have been removed. Silent receives an exact-network default fingerprint reader from wallet composition and no longer imports the wallet feature. Swap still imports the repository in `swap_locator.dart` and `wallet_router.dart` in `swap_in_progress_page.dart`, retaining the legacy wallet↔swap cycle. `test/architecture/foreground_sync_dependencies_test.dart` resolves feature ownership through imports and transitive exports, including public barrels, and rejects new feature edges against an explicit baseline.
 
 ## Core Dependencies
 

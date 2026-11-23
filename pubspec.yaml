@@ -20,6 +20,7 @@ workspace:
   - features/access
   - features/all_seed_view
   - features/bip85
+  - features/silent
   - features/ark
   - features/fees
   - features/swap
@@ -70,6 +71,7 @@ dependencies:
   label_editor:
   network:
   signers:
+  silent:
   ark:
   bull_ark:
   fees:

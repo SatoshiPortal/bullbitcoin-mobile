@@ -1,19 +1,17 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-
-export 'package:bb_mobile/features/sp/public/sp_facade.dart' show SpTxDraft;
+import 'package:silent/silent.dart';
 
 class SendSpPaymentForSendUsecase {
-  final SpFacade _spFacade;
+  final Silent _silent;
 
-  SendSpPaymentForSendUsecase(this._spFacade);
+  SendSpPaymentForSendUsecase(this._silent);
 
   /// Every failure here happened while broadcasting, so none of them maps to a
   /// more specific send failure.
   Future<Result<String, SendFailure>> execute({
-    required SpTxDraft draft,
-  }) async => (await _spFacade.sendPayment(draft: draft)).mapErr(
+    required SilentTxDraft draft,
+  }) async => (await _silent.sendPayment(draft: draft)).mapErr(
     (failure) => SendTransactionConfirmationFailure(
       isBroadcastFailure: true,
       logMessage: failure.logMessage,

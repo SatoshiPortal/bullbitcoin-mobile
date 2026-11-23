@@ -46,24 +46,47 @@ import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/sp/ui/sp_router.dart';
+import 'package:silent/setup.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:bb_mobile/features/wallet/public/silent_bindings.dart'
+    show SilentWalletPresentation;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:preferences/preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// The main router of the app. It is the root of the routing tree and contains
 /// all the entry-level routes.
 class AppRouter {
+  static SilentFeature mountSilent({
+    required GetIt locator,
+    required ReadSilentFingerprint readDefaultFingerprint,
+  }) => SilentFeature.mount(
+    preferences: locator(),
+    secrets: locator(),
+    readDefaultFingerprint: readDefaultFingerprint,
+    readRouteAccess: (context) {
+      final settings = context.read<SettingsCubit>().state;
+      return (
+        environment: settings.environment?.networkEnv,
+        isSuperuser: settings.isSuperuser ?? false,
+        isDevModeEnabled: settings.isDevModeEnabled ?? false,
+      );
+    },
+    walletHomePath: WalletRoute.walletHome.path,
+    openSend: (context) =>
+        context.pushNamed(SendRoute.send.name, extra: const SendRouteArgs.sp()),
+    balanceBuilder: SilentWalletPresentation.balance,
+    settingsIconBuilder: SilentWalletPresentation.settingsIcon,
+  );
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
@@ -140,24 +163,8 @@ class AppRouter {
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
     observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
-    redirect: (BuildContext context, GoRouterState state) {
-      final path = state.uri.path;
-      // Only read the gate providers for SP routes; the decision itself lives
-      // in the SP feature's pure `spRedirect` (unit-testable, no widget tree).
-      if (!isSpPath(path)) return null;
-      final settingsState = context.read<SettingsCubit>().state;
-      return spRedirect(
-        path,
-        environment: settingsState.environment?.networkEnv,
-        isSuperuser: settingsState.isSuperuser ?? false,
-        isDevModeEnabled: settingsState.isDevModeEnabled ?? false,
-        // The SP feature's own synchronous flag, not the wallet feature's copy:
-        // that copy only lands a few turns after setup finishes, which bounced
-        // any navigation to an SP route right after create back to setup.
-        isSpWalletSetup: locator<SpFacade>().isSetUpNow,
-        gateClosedRedirectPath: WalletRoute.walletHome.path,
-      );
-    },
+    redirect: (context, state) =>
+        locator<SilentFeature>().redirect(context, state.uri.path),
     routes: [
       // An admitted regtest Ark profile serves the feature; others stay closed.
       ...(locator.isRegistered<ArkForegroundHost>()
@@ -277,16 +284,7 @@ class AppRouter {
       locator<Bip85Feature>().route,
       ...locator<NetworkFeature>().routes.root,
       ...locator<FeesFeature>().routes,
-      SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
-      SpRouter.route(
-        sendRouteName: SendRoute.send.name,
-        sendRouteExtra: const SendRouteArgs.sp(),
-        exitRedirectPath: WalletRoute.walletHome.path,
-        fiatBalanceBuilder: (balanceSat) => HomeFiatBalance(
-          balanceSat: balanceSat,
-          onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
-        ),
-      ),
+      ...locator<SilentFeature>().routes,
       ...ImportQrDeviceRouter.routes,
       locator<RecoverBullFeature>().route(
         copiedMessage: (context) => context.loc.copiedToClipboard,

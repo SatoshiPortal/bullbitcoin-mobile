@@ -1,0 +1,24 @@
+{
+  "@@locale": "sw",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "viewerTapToCopy": "Gusa kunakili",
+  "viewerViewInExplorer": "Tazama kwenye kivinjari",
+  "viewerCopyLink": "Nakili kiungo",
+  "transactionViewerTitle": "Kitambulisho cha muamala",
+  "coinsTitle": "Sarafu",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "retry": "Jaribu Tena",
+  "transactionStatusPending": "Inasubiri",
+  "transactionListLoadingTransactions": "Inapakia miamala...",
+  "transactionListToday": "Leo",
+  "transactionListYesterday": "Jana",
+  "copyDialogButton": "Nakili",
+  "amountLabel": "Kiasi",
+  "receiveQRCode": "Msimbo wa QR",
+  "cancel": "Ghairi",
+  "delete": "Futa",
+  "save": "Hifadhi",
+  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili"
+}

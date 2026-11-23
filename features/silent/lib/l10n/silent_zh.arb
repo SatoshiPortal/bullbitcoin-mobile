@@ -1,0 +1,27 @@
+{
+  "@@locale": "zh",
+  "save": "Save",
+  "copyDialogButton": "页: 1",
+  "delete": "删除",
+  "transactionListLoadingTransactions": "D. 结算交易.",
+  "receiveQRCode": "QR 法典",
+  "cancel": "Cancel",
+  "transactionStatusPending": "待决",
+  "transactionListYesterday": "昨天",
+  "transactionListToday": "今天",
+  "amountLabel": "数额",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "点击复制",
+  "viewerViewInExplorer": "在浏览器中查看",
+  "transactionViewerTitle": "交易 ID",
+  "viewerCopyLink": "复制链接",
+  "coinsTitle": "币",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "已复制到剪贴板"
+}

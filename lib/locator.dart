@@ -22,7 +22,7 @@ import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:primitives/primitives.dart' show Failure;
+import 'package:primitives/primitives.dart' show Err, Failure;
 import 'package:electrum/setup.dart'
     show RegtestElectrumProfile, ReadElectrumPreferences;
 import 'package:bb_mobile/background_setup.dart';
@@ -65,7 +65,10 @@ import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
-import 'package:bb_mobile/features/sp/sp_locator.dart';
+import 'package:silent/silent.dart';
+import 'package:silent/setup.dart';
+import 'package:bb_mobile/features/wallet/public/silent_bindings.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/swap/boltz_swaps_setup.dart';
@@ -75,6 +78,7 @@ import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
@@ -315,7 +319,19 @@ class AppLocator {
       locator,
       initializeNew: initializeArkFunding && installation.wasNeverProvisioned,
     );
-    SpLocator.setup(locator);
+    final silent = AppRouter.mountSilent(
+      locator: locator,
+      readDefaultFingerprint: WalletSilentBindings.reader(locator),
+    );
+    locator.registerSingleton<SilentFeature>(
+      silent,
+      dispose: (feature) async {
+        if (await feature.close() case Err()) {
+          log.warning('Silent feature close did not release the live account');
+        }
+      },
+    );
+    locator.registerLazySingleton<Silent>(() => silent.silent);
     SettingsLocator.setup(locator);
     setupBackgroundPreferences(
       locator,
@@ -386,7 +402,7 @@ class AppLocator {
       ForegroundWalletStartup(
         initialize: () => initializeWalletRuntime(locator),
         startWatchers: () {
-          SpLocator.startForegroundWatchers(locator);
+          locator<SilentFeature>().startForegroundWatchers();
           if (startOrderSwapWatcher) locator<OrderSwapWatcher>().start();
           if (startAutoswapWatcher) locator<AutoswapWatcher>().start();
           BoltzSwapsSetup.followEnvironment(locator);

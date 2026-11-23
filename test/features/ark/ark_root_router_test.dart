@@ -33,6 +33,7 @@ import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
 
 import '../../support/inventory_fixture.dart';
+import 'package:silent/setup.dart';
 
 class PricePreferences extends Mock
     implements
@@ -41,6 +42,8 @@ class PricePreferences extends Mock
         RuntimeDisplayPreferencesReader {}
 
 class Exchange extends Mock implements ExchangeFacade {}
+
+class SilentPreferences extends Mock implements Preferences {}
 
 class Wallets extends Mock implements RecoverBullWalletPort {}
 
@@ -130,6 +133,19 @@ void main() {
           servers: _UnusedSwapServers(),
         ),
       );
+      locator.registerSingleton(
+        SilentFeature.mount(
+          preferences: SilentPreferences(),
+          secrets: Secrets(scratchDirectory: () async => directory.path),
+          readDefaultFingerprint: (_) async => const Ok(null),
+          readRouteAccess: (_) =>
+              (environment: null, isSuperuser: false, isDevModeEnabled: false),
+          walletHomePath: '/wallet-home',
+          openSend: (_) {},
+          balanceBuilder: (_, _) => const SizedBox(),
+          settingsIconBuilder: (_) => const SizedBox(),
+        ),
+      );
       final preferences = PricePreferences();
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
@@ -179,6 +195,7 @@ void main() {
         await locator.unregister<FeesFeature>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<SilentFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });
@@ -196,6 +213,12 @@ void main() {
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
       expect(router.namedLocation('swapSettings'), '/swap-settings');
+      expect(router.namedLocation('spSetup'), '/sp-setup');
+      expect(router.namedLocation('spWalletDetail'), '/sp-wallet-detail');
+      expect(
+        router.namedLocation('spTransactionDetails'),
+        '/sp-transaction-details',
+      );
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

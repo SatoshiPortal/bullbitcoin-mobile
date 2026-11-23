@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
@@ -210,16 +211,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
     await _spUpdatesSubscription?.cancel();
     if (emit.isDone || catalog != _catalogGeneration) return;
-    _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((update) {
-      switch (update) {
-        case SpBalanceChanged(:final totalUnified):
+    _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((result) {
+      switch (result) {
+        case Ok(value: SilentBalanceChanged(:final totalUnified)):
           add(SetSpWalletBalance(totalUnified.value.toInt()));
-        case SpSetupChanged():
+        case Ok(value: SilentSetupChanged()):
           add(const RefreshSpWallet());
-        case SpChainTipChanged():
+        case Ok(value: SilentChainTipChanged()):
           // Only the SP scan policy cares about the tip; the wallet card
-          // shows a balance, which SpBalanceChanged already covers.
+          // shows a balance, which SilentBalanceChanged already covers.
           break;
+        case Err():
+          log.warning('Silent update unavailable');
       }
     });
 
@@ -576,16 +579,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
 
     emit(state.copyWith(isSpWalletLoading: true));
-    final bool enabled;
-    try {
-      enabled = await _checkSpFeatureGateForWalletUsecase.execute();
-    } catch (_) {
-      if (stale()) return;
-      log.warning('SP feature gate refresh failed category=feature_gate');
-      hide();
-      return;
-    }
+    final gate = await _checkSpFeatureGateForWalletUsecase.execute();
     if (stale()) return;
+    final bool enabled;
+    switch (gate) {
+      case Ok(:final value):
+        enabled = value;
+      case Err():
+        log.warning('SP feature gate refresh failed category=feature_gate');
+        hide();
+        return;
+    }
 
     final setup = await _checkSpWalletSetupForWalletUsecase.execute();
     if (stale()) return;

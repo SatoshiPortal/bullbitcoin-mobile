@@ -1,0 +1,60 @@
+{
+  "@@locale": "ko",
+  "save": "제품 정보",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "관련 기사",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "기타 제품",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "이름 *",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "로딩...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR 코드",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "이름 *",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "관련 기사",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "1 년 전",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "으로",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "계정 정보",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "복사하려면 탭하세요",
+  "viewerViewInExplorer": "탐색기에서 보기",
+  "transactionViewerTitle": "거래 ID",
+  "viewerCopyLink": "링크 복사",
+  "coinsTitle": "코인",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "클립보드에 복사되었습니다"
+}

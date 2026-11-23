@@ -33,8 +33,7 @@ import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
-import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
-import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
+import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:drift/native.dart';
@@ -125,10 +124,6 @@ void main() {
     });
     tearDown(() async {
       if (composed) {
-        if (locator.checkLazySingletonInstanceExists<SpTipWatcher>()) {
-          await locator<SpTipWatcher>().dispose();
-          await locator<SpElectrumReconnectWatcher>().dispose();
-        }
         if (locator.checkLazySingletonInstanceExists<OrderSwapWatcher>()) {
           locator<OrderSwapWatcher>().dispose();
           await locator<AutoswapWatcher>().dispose();
@@ -222,11 +217,7 @@ void main() {
       inventoryFixture.inventory.lock();
       await compose(startWatchers: true);
 
-      expect(locator.checkLazySingletonInstanceExists<SpTipWatcher>(), isFalse);
-      expect(
-        locator.checkLazySingletonInstanceExists<SpElectrumReconnectWatcher>(),
-        isFalse,
-      );
+      expect(locator<SilentFeature>().foregroundWatchersStarted, isFalse);
       expect(
         locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
         isFalse,
@@ -242,11 +233,7 @@ void main() {
         isTrue,
       );
       await locator<ForegroundWalletStartup>().start();
-      expect(locator.checkLazySingletonInstanceExists<SpTipWatcher>(), isTrue);
-      expect(
-        locator.checkLazySingletonInstanceExists<SpElectrumReconnectWatcher>(),
-        isTrue,
-      );
+      expect(locator<SilentFeature>().foregroundWatchersStarted, isTrue);
       expect(
         locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
         isTrue,
@@ -439,8 +426,6 @@ void main() {
       var composed = false;
       addTearDown(() async {
         if (composed) {
-          await locator<SpTipWatcher>().dispose();
-          await locator<SpElectrumReconnectWatcher>().dispose();
           locator<SyncCoordinator>().dispose();
         }
         await locator.reset();
@@ -604,7 +589,7 @@ void main() {
     );
     expect(locator.isRegistered<WalletRepository>(), isFalse);
     expect(locator.isRegistered<SyncCoordinator>(), isFalse);
-    expect(locator.isRegistered<SpTipWatcher>(), isFalse);
+    expect(locator.isRegistered<SilentFeature>(), isFalse);
     expect(
       await electrumDatabase.select(electrumDatabase.electrumServers).get(),
       isEmpty,

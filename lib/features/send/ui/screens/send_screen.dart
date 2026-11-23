@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart'
     as chains
     show BitcoinNetwork, LiquidNetwork;
+import 'package:silent/localizations.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
@@ -517,8 +518,8 @@ class AddressField extends StatelessWidget {
       hint: context.loc.sendPasteAddressOrInvoice,
       onChanged: onInput ?? cubit.onChangedText,
       pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
-      scanLabel: context.loc.spScan,
-      clearLabel: context.loc.spClearButton,
+      scanLabel: context.silentLoc.silentScan,
+      clearLabel: context.silentLoc.silentClearButton,
       onClear: () => (onInput ?? cubit.onChangedText)(''),
       onPaste: () async {
         final clipboard = await Clipboard.getData(Clipboard.kTextPlain);

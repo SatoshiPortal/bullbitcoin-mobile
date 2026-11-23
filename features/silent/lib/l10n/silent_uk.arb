@@ -1,0 +1,27 @@
+{
+  "@@locale": "uk",
+  "transactionStatusPending": "Закінчення",
+  "transactionListToday": "Сьогодні",
+  "transactionListYesterday": "Погода",
+  "transactionListLoadingTransactions": "Завантаження операцій.",
+  "save": "Зберегти",
+  "copyDialogButton": "Партнерство",
+  "delete": "Видалення",
+  "receiveQRCode": "QR-код",
+  "cancel": "Зареєструватися",
+  "amountLabel": "Сума",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Натисніть для копіювання",
+  "viewerViewInExplorer": "Переглянути в оглядачі",
+  "transactionViewerTitle": "ID транзакції",
+  "viewerCopyLink": "Копіювати посилання",
+  "coinsTitle": "Монети",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Скопійовано в буфер обміну"
+}

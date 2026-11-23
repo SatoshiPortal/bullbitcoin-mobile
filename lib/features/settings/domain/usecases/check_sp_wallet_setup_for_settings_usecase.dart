@@ -1,14 +1,16 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-
-export 'package:bb_mobile/features/sp/public/sp_facade.dart' show SpFailure;
+import 'package:silent/silent.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 
 /// Settings feature's own use case wrapping the Silent Payments facade, so the
-/// `SettingsCubit` never calls `SpFacade` directly (AGENTS.md rule #4).
+/// `SettingsCubit` never calls `Silent` directly (AGENTS.md rule #4).
 class CheckSpWalletSetupForSettingsUsecase {
-  final SpFacade _spFacade;
+  final Silent _silent;
 
-  CheckSpWalletSetupForSettingsUsecase({required this._spFacade});
+  CheckSpWalletSetupForSettingsUsecase({required this._silent});
 
-  Future<Result<bool, SpFailure>> execute() => _spFacade.isSetUp();
+  Future<Result<bool, SettingsFailure>> execute() async =>
+      (await _silent.isSetUp()).mapErr(
+        (_) => const SettingsStorageFailure('Silent setup read failed'),
+      );
 }

@@ -1,3 +1,4 @@
+import 'package:silent/localizations.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -129,8 +130,8 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
               : TextInputType.text),
       onChanged: _change,
       pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
-      scanLabel: context.loc.spScan,
-      clearLabel: context.loc.spClearButton,
+      scanLabel: context.silentLoc.silentScan,
+      clearLabel: context.silentLoc.silentClearButton,
       onClear: () => _change(''),
       onPaste: () async {
         final data = await Clipboard.getData(Clipboard.kTextPlain);

@@ -1,0 +1,24 @@
+{
+  "@@locale": "vi",
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
+  "viewerTapToCopy": "Nhấn để sao chép",
+  "viewerViewInExplorer": "Xem trong trình duyệt",
+  "viewerCopyLink": "Sao chép liên kết",
+  "transactionViewerTitle": "Mã giao dịch",
+  "coinsTitle": "Đồng coin",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "retry": "Thử lại",
+  "transactionStatusPending": "Đang chờ",
+  "transactionListLoadingTransactions": "Đang tải giao dịch...",
+  "transactionListToday": "Hôm nay",
+  "transactionListYesterday": "Hôm qua",
+  "copyDialogButton": "Sao chép",
+  "amountLabel": "Số tiền",
+  "receiveQRCode": "Mã QR",
+  "cancel": "Hủy",
+  "delete": "Xóa",
+  "save": "Lưu",
+  "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm"
+}

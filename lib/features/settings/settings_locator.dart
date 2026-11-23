@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaim
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -183,11 +183,11 @@ class SettingsLocator {
     );
 
     locator.registerFactory<RevokeSpWalletForSettingsUsecase>(
-      () => RevokeSpWalletForSettingsUsecase(spFacade: locator<SpFacade>()),
+      () => RevokeSpWalletForSettingsUsecase(silent: locator<Silent>()),
     );
 
     locator.registerFactory<CheckSpWalletSetupForSettingsUsecase>(
-      () => CheckSpWalletSetupForSettingsUsecase(spFacade: locator<SpFacade>()),
+      () => CheckSpWalletSetupForSettingsUsecase(silent: locator<Silent>()),
     );
 
     // Blocs

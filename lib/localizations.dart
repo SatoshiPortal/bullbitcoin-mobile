@@ -6,6 +6,7 @@ import 'package:announcements/announcements.dart'
 import 'package:label_editor/label_editor.dart' show LabelEditorLocalizations;
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:signers/routes.dart' show SignersLocalizations;
+import 'package:silent/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -21,6 +22,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   BitcoinPriceLocalizations.delegate,
   ExchangeLocalizations.delegate,
   SignersLocalizations.delegate,
+  SilentLocalizations.delegate,
   LabelEditorLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,
 ];
