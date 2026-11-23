@@ -168,7 +168,8 @@ final class BbxApiSepaVirtualPayeeRepository
   /// The JSON-RPC error message can quote account details: keep the codes.
   static String _describe(bbx.BbxFailure failure) => switch (failure) {
     bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
+      'BbxRpcFailure(code: $code, apiCode: $apiCode)'
+          '${failure.requestIdLabel}',
     _ => '$failure',
   };
 }

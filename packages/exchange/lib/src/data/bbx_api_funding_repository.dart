@@ -168,9 +168,11 @@ final class BbxApiFundingRepository {
       case BbxRpcFailure(:final code, :final apiCode):
         // A server sentence can quote an IBAN or the request. Only the two
         // allowlisted codes survive in the app failure and its diagnostics.
-        final logMessage = 'BbxRpcFailure(code: $code, apiCode: $apiCode)';
+        final logMessage =
+            'BbxRpcFailure(code: $code, apiCode: $apiCode)'
+            '${failure.requestIdLabel}';
         log.warning(
-          '$method failed',
+          '$method failed${failure.requestIdLabel}',
           error: 'FundingRpcException(apiCode: $apiCode)',
           trace: StackTrace.current,
         );

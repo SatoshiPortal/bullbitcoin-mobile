@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
 import 'package:bb_mobile/features/swap/data/order_swaps_table.drift.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
 import 'package:bb_mobile/features/swap/data/models/order_swap_model.dart';
@@ -1487,6 +1489,56 @@ void main() {
       purpose: OrderSwapPurpose.sendLightning,
     );
     expect((after as Ok<List<OrderSwapRecord>, SwapFailure>).value, isEmpty);
+  });
+
+  test('keeps the request id in the persisted create failure log', () async {
+    final directory = Directory.systemTemp.createTempSync('order-swap-logs-');
+    log = Logger.replace(directory: directory);
+    addTearDown(() async {
+      await log.flush();
+      directory.deleteSync(recursive: true);
+    });
+    repository = OrderSwapRepositoryImpl(
+      remote,
+      mainnetRemote,
+      OrderSwapLocalDatasource(database),
+      now: () => now,
+    );
+    const serverRequestId = '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0';
+    String? sentRequestId;
+    when(
+      () => remote.createOrderSwap(
+        requestId: any(named: 'requestId'),
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((invocation) async {
+      sentRequestId = invocation.namedArguments[#requestId] as String?;
+      throw ExchangeRpcException.fromJson({
+        'code': -32603,
+        'message': 'refused invoice',
+        'data': {
+          'apiError': {'code': 'ERR_ORD_LMT001', 'requestId': serverRequestId},
+        },
+      });
+    });
+
+    final result = await _create(repository);
+
+    expect(result, isA<Err<OrderSwapRecord, SwapFailure>>());
+    expect(sentRequestId, isNotNull);
+    final failureLine = (await log.readLogs()).singleWhere(
+      (line) => line.contains('[OrderSwap] create failed'),
+    );
+    expect(failureLine, contains('requestId=$sentRequestId '));
+    expect(failureLine, contains('apiCode=ERR_ORD_LMT001'));
+    expect(failureLine, contains('serverRequestId=$serverRequestId'));
+    expect(failureLine, isNot(contains('invoice')));
+    expect(failureLine, isNot(contains('fallback')));
   });
 
   test('maps watched order storage errors to a typed failure', () async {

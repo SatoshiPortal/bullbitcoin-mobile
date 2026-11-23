@@ -62,10 +62,16 @@ class BullBitcoinApiConfidentialSepaNotActivatedException implements Exception {
 class BullBitcoinApiOrderException implements Exception {
   final String? apiCode;
   final int? rpcCode;
+  final String? requestId;
 
-  const BullBitcoinApiOrderException({this.apiCode, this.rpcCode});
+  const BullBitcoinApiOrderException({
+    this.apiCode,
+    this.rpcCode,
+    this.requestId,
+  });
 
   @override
   String toString() =>
-      'BullBitcoinApiOrderException(apiCode: $apiCode, rpcCode: $rpcCode)';
+      'BullBitcoinApiOrderException(apiCode: $apiCode, rpcCode: $rpcCode'
+      '${requestId == null ? '' : ', requestId=$requestId'})';
 }

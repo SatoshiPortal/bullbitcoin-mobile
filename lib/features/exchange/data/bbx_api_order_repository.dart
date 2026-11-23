@@ -523,13 +523,25 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
           maxAmount: amount,
           currency: currency,
         ),
-      Err(failure: bbx.BbxRpcFailure(:final apiCode, :final code))
+      Err(
+        failure: bbx.BbxRpcFailure(
+          :final apiCode,
+          :final code,
+          :final requestId,
+        ),
+      )
           when redactError =>
-        throw BullBitcoinApiOrderException(apiCode: apiCode, rpcCode: code),
+        throw BullBitcoinApiOrderException(
+          apiCode: apiCode,
+          rpcCode: code,
+          requestId: requestId,
+        ),
       // The server's message can quote the request, so it is not kept. Other
       // failures retain their safe transport or format classification.
       Err(:final failure) => _throwRequest(
-        failure is bbx.BbxRpcFailure ? contextMessage : _describe(failure),
+        failure is bbx.BbxRpcFailure
+            ? '$contextMessage${failure.requestIdLabel}'
+            : _describe(failure),
         failure.origin,
       ),
     };
@@ -589,7 +601,8 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   /// A JSON-RPC error message can quote the request, so only its code is
   /// kept in exception messages.
   static String _describe(Object e) => switch (e) {
-    bbx.BbxRpcFailure(:final code) => 'BbxRpcFailure(code: $code)',
+    bbx.BbxRpcFailure(:final code, :final requestIdLabel) =>
+      'BbxRpcFailure(code: $code)$requestIdLabel',
     bbx.BbxTimeoutFailure(:final kind) =>
       'DioException(${switch (kind) {
         bbx.BbxTimeoutKind.connect => 'connectionTimeout',

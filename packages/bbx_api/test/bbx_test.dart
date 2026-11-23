@@ -164,6 +164,62 @@ void main() {
       );
     });
 
+    test('keeps the server request id and drops free text', () async {
+      const requestId = '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0';
+      final failure = await summaryFailure(
+        FakeHttp(
+          body: {
+            'error': {
+              'code': -32603,
+              'message': 'refused for jane@example.com',
+              'data': {
+                'apiError': {'code': 'ERR_ORD_500', 'requestId': requestId},
+              },
+            },
+          },
+        ),
+      );
+      expect(
+        failure,
+        isA<BbxRpcFailure>().having((f) => f.requestId, 'requestId', requestId),
+      );
+      expect(failure.requestIdLabel, ' requestId=$requestId');
+      expect(
+        failure.toString(),
+        'BbxRpcFailure(code: -32603, apiCode: ERR_ORD_500, '
+        'requestId=$requestId)',
+      );
+
+      expect(
+        await summaryFailure(
+          FakeHttp(
+            body: {
+              'error': {
+                'code': -32603,
+                'data': {'requestId': 'req-7:0'},
+              },
+            },
+          ),
+        ),
+        isA<BbxRpcFailure>().having((f) => f.requestId, 'requestId', 'req-7:0'),
+      );
+
+      final unlabelled = await summaryFailure(
+        FakeHttp(
+          body: {
+            'error': {
+              'code': -32603,
+              'data': {
+                'apiError': {'requestId': 'order for jane@example.com'},
+              },
+            },
+          },
+        ),
+      );
+      expect(unlabelled.requestId, isNull);
+      expect(unlabelled.requestIdLabel, isEmpty);
+    });
+
     test('a body that is not an object is a format failure', () async {
       expect(
         await summaryFailure(FakeHttp(body: [1, 2])),

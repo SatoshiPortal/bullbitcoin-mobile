@@ -148,6 +148,8 @@ class ExchangePublicApiDatasource {
       'mobile-${DateTime.now().microsecondsSinceEpoch}-${_requestId++}';
 }
 
+final _requestIdPattern = RegExp(r'^[A-Za-z0-9:._-]{1,96}$');
+
 sealed class ExchangeDatasourceException implements Exception {
   final String? logMessage;
 
@@ -184,6 +186,7 @@ final class ExchangeRpcException extends ExchangeDatasourceException {
   final String? fieldCode;
   final String? limit;
   final String? limitOperator;
+  final String? requestId;
 
   const ExchangeRpcException({
     this.rpcCode,
@@ -192,6 +195,7 @@ final class ExchangeRpcException extends ExchangeDatasourceException {
     this.fieldCode,
     this.limit,
     this.limitOperator,
+    this.requestId,
     String? logMessage,
   }) : super(logMessage);
 
@@ -221,6 +225,7 @@ final class ExchangeRpcException extends ExchangeDatasourceException {
         ? reasonFieldsValue.whereType<Map>().map(Map<String, dynamic>.from)
         : const Iterable<Map<String, dynamic>>.empty();
     final reasonField = reasonFields.firstOrNull;
+    final requestId = apiError['requestId'] ?? dataMap['requestId'];
     return ExchangeRpcException(
       rpcCode: json['code'] as int?,
       apiCode: apiError['code'] as String?,
@@ -228,6 +233,9 @@ final class ExchangeRpcException extends ExchangeDatasourceException {
       fieldCode: reasonField?['code'] as String?,
       limit: messageData['limit']?.toString(),
       limitOperator: messageData['operator'] as String?,
+      requestId: requestId is String && _requestIdPattern.hasMatch(requestId)
+          ? requestId
+          : null,
       logMessage: json['message']?.toString(),
     );
   }

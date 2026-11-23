@@ -18,7 +18,9 @@ final class BbxApiUserRepository {
       return switch (result) {
         Ok(value: final summary?) => Ok(userSummaryFromBbxApi(summary)),
         Ok() => _emptySummary(),
-        Err(failure: bbx.BbxRpcFailure(:final code)) => _refusedSummary(code),
+        Err(failure: final bbx.BbxRpcFailure failure) => _refusedSummary(
+          failure,
+        ),
         Err(:final failure) => Err(
           _failureFrom(
             failure,
@@ -46,9 +48,13 @@ final class BbxApiUserRepository {
     return const Err(ExchangeNotAuthenticatedFailure());
   }
 
-  Result<UserSummary, ExchangeFailure> _refusedSummary(int? code) {
+  Result<UserSummary, ExchangeFailure> _refusedSummary(
+    bbx.BbxRpcFailure failure,
+  ) {
     // The old client read an error reply as no account.
-    log.warning('Exchange user summary refused: $code');
+    log.warning(
+      'Exchange user summary refused: ${failure.code}${failure.requestIdLabel}',
+    );
     return const Err(ExchangeNotAuthenticatedFailure());
   }
 
@@ -173,8 +179,10 @@ final class BbxApiUserRepository {
           '$operation unreachable: connectionError',
         );
       default:
-        log.warning('$operation failed: ${failure.runtimeType}', trace: st);
-        return onFailure('$operation failed: ${failure.runtimeType}');
+        final description =
+            '$operation failed: ${failure.runtimeType}${failure.requestIdLabel}';
+        log.warning(description, trace: st);
+        return onFailure(description);
     }
   }
 

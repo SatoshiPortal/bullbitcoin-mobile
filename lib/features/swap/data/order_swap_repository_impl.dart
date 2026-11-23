@@ -76,7 +76,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       log.warning(
         '[OrderSwap] quote failed environment=${environment.name} '
         'route=${inNetwork.name}->${outNetwork.name} '
-        'failure=${failure.runtimeType}',
+        'failure=${failure.runtimeType}${_serverRequestId(error)}',
       );
       return Err(failure);
     }
@@ -269,7 +269,8 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       log.warning(
         '[OrderSwap] create failed requestId=${record.requestId} '
         'failure=${error.runtimeType}'
-        '${error is ExchangeRpcException ? ' apiCode=${error.apiCode}' : ''}',
+        '${error is ExchangeRpcException ? ' apiCode=${error.apiCode}' : ''}'
+        '${_serverRequestId(error)}',
       );
       if (_createOutcomeIsUnknown(error)) {
         try {
@@ -752,6 +753,11 @@ String _randomLocalId() {
   final bytes = List<int>.generate(16, (_) => random.nextInt(256));
   return bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
 }
+
+String _serverRequestId(Object error) =>
+    error is ExchangeRpcException && error.requestId != null
+    ? ' serverRequestId=${error.requestId}'
+    : '';
 
 String _shortOrderId(String orderId) =>
     orderId.substring(0, min(8, orderId.length));

@@ -173,6 +173,29 @@ void main() {
     },
   );
 
+  test('keeps a labelled request id and redacts other long tokens', () async {
+    final directory = await Directory.systemTemp.createTemp('logger-request-');
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    log = Logger.replace(directory: directory);
+    const hex = '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d';
+
+    log.warning('order refused requestId=$hex:0 key $hex');
+    log.warning('swap refused requestId=mobile-$hex serverRequestId=$hex:1');
+    log.warning('unlabelled $hex:0');
+
+    final messages = (await log.readLogs())
+        .map((line) => line.split('\t')[2])
+        .toList();
+    expect(messages, [
+      'order refused requestId=$hex:0 key [REDACTED]',
+      'swap refused requestId=mobile-$hex serverRequestId=$hex:1',
+      'unlabelled [REDACTED]:0',
+    ]);
+  });
+
   test('reports errors immediately and awaits shout reporting', () async {
     final directory = await Directory.systemTemp.createTemp('logger-reporter-');
     addTearDown(() async {

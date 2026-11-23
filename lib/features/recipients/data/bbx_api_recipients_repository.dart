@@ -439,7 +439,7 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
         // The error object can quote the rejected payload: keep its code.
         log.warning(
           'API refused to $operation — '
-          'JSON-RPC error code ${code ?? 'unknown'}',
+          'JSON-RPC error code ${code ?? 'unknown'}${failure.requestIdLabel}',
         );
         return onApiFailure();
       case bbx.BbxTimeoutFailure(:final kind):
