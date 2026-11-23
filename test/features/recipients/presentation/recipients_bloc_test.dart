@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/recipients/domain/usecases/list_cad_billers_u
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details_input.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';

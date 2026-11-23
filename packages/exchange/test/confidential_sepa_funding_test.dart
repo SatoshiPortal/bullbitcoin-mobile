@@ -59,27 +59,78 @@ void main() {
   });
 
   test('offers funding before there is a virtual IBAN', () async {
-    final result = await exchange.isConfidentialSepaFundingAvailable();
-    expect(result, isA<Ok<bool, ExchangeFailure>>());
-    expect((result as Ok<bool, ExchangeFailure>).value, isTrue);
+    final result = await exchange.getConfidentialSepaAvailability();
+    expect(result, isA<Ok<ConfidentialSepaAvailability, ExchangeFailure>>());
+    expect(
+      (result as Ok<ConfidentialSepaAvailability, ExchangeFailure>).value,
+      ConfidentialSepaAvailability.needsVirtualIban,
+    );
     expect(ibans.requests.single.uri.host, startsWith('testnet'));
     expect(ibans.requests.single.path, '/ak/api-recipients');
   });
 
-  test('does not look up IBANs for an ineligible account', () async {
-    account = summary([...eligible, 'KYC_IS_CORPORATE']);
-    final result = await exchange.isConfidentialSepaFundingAvailable();
-    expect(result, isA<Ok<bool, ExchangeFailure>>());
-    expect((result as Ok<bool, ExchangeFailure>).value, isFalse);
+  for (final (name, groups) in [
+    ('corporate', [...eligible, 'KYC_IS_CORPORATE']),
+    ('outside the EU', ['KYC_IDENTITY_VERIFIED']),
+    ('without full KYC', ['KYC_LIGHT_VERIFICATION', 'JURI_EU']),
+  ]) {
+    test('does not look up IBANs for an account $name', () async {
+      account = summary(groups);
+      final result = await exchange.getConfidentialSepaAvailability();
+      expect(
+        (result as Ok<ConfidentialSepaAvailability, ExchangeFailure>).value,
+        ConfidentialSepaAvailability.unavailable,
+      );
+      expect(ibans.requests, isEmpty);
+    });
+  }
+
+  for (final active in [false, true]) {
+    test('distinguishes an active IBAN from a pending one ($active)', () async {
+      ibans = FakeBbxHttp(
+        body: {
+          'result': {
+            'elements': [
+              {
+                'recipientId': 'viban-1',
+                if (active) ...{
+                  'iban': 'FR7616958000016918327146718',
+                  'bicCode': 'FIRPFRP2',
+                  'bankAddress': '1 Rue de la Paix, Paris',
+                  'ibanCountry': 'FR',
+                },
+              },
+            ],
+            'totalElements': 1,
+          },
+        },
+      );
+      final result = await exchange.getConfidentialSepaAvailability();
+      expect(
+        (result as Ok<ConfidentialSepaAvailability, ExchangeFailure>).value,
+        active
+            ? ConfidentialSepaAvailability.ready
+            : ConfidentialSepaAvailability.needsVirtualIban,
+      );
+    });
+  }
+
+  test('an unreadable account is not eligibility', () async {
+    account = FakeBbxHttp(status: 401);
+    final result = await exchange.getConfidentialSepaAvailability();
+    expect(
+      (result as Err<ConfidentialSepaAvailability, ExchangeFailure>).failure,
+      isA<ExchangeAccountUnavailableFailure>(),
+    );
     expect(ibans.requests, isEmpty);
   });
 
   test('a failed IBAN lookup is not eligibility', () async {
     ibans = FakeBbxHttp(error: DioExceptionType.connectionTimeout);
-    final result = await exchange.isConfidentialSepaFundingAvailable();
+    final result = await exchange.getConfidentialSepaAvailability();
     expect(
       result,
-      isA<Err<bool, ExchangeFailure>>().having(
+      isA<Err<ConfidentialSepaAvailability, ExchangeFailure>>().having(
         (result) => result.failure,
         'failure',
         isA<ExchangeNetworkFailure>(),
@@ -107,10 +158,10 @@ void main() {
       ),
     );
     addTearDown(changingExchange.close);
-    final result = await changingExchange.isConfidentialSepaFundingAvailable();
+    final result = await changingExchange.getConfidentialSepaAvailability();
     expect(
       result,
-      isA<Err<bool, ExchangeFailure>>().having(
+      isA<Err<ConfidentialSepaAvailability, ExchangeFailure>>().having(
         (result) => result.failure,
         'failure',
         isA<ExchangeOperationStaleFailure>(),

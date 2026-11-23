@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart' show ConfidentialSepaAvailability;
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:flutter_test/flutter_test.dart';

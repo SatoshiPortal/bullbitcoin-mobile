@@ -7,10 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Future<Result<bool, FundExchangeFailure>> run(
-    Result<bool, ExchangeFailure> availability,
+    Result<ConfidentialSepaAvailability, ExchangeFailure> availability,
   ) => GetConfidentialSepaFundingAvailabilityUsecase(
     exchangeForTesting(
-      isConfidentialSepaFundingAvailable: () async => availability,
+      getConfidentialSepaAvailability: () async => availability,
     ),
   ).execute();
 
@@ -20,12 +20,20 @@ void main() {
   test(
     'is offered to an eligible user before the virtual IBAN exists',
     () async {
-      expect(offered(await run(const Ok(true))), isTrue);
+      expect(
+        offered(
+          await run(const Ok(ConfidentialSepaAvailability.needsVirtualIban)),
+        ),
+        isTrue,
+      );
     },
   );
 
   test('is not offered to a user who cannot use it', () async {
-    expect(offered(await run(const Ok(false))), isFalse);
+    expect(
+      offered(await run(const Ok(ConfidentialSepaAvailability.unavailable))),
+      isFalse,
+    );
   });
 
   test('a network failure keeps its meaning', () async {
