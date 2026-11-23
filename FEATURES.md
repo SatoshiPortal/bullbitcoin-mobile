@@ -86,6 +86,21 @@ graph TB
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
+    EXCHANGE_DOMAIN[Exchange Package<br/>Account, order and DCA domain values]
+    EXCHANGE --> EXCHANGE_DOMAIN
+    EXCHANGE_SETTINGS --> EXCHANGE_DOMAIN
+    BUY --> EXCHANGE_DOMAIN
+    SELL --> EXCHANGE_DOMAIN
+    PAY --> EXCHANGE_DOMAIN
+    WITHDRAW --> EXCHANGE_DOMAIN
+    DCA --> EXCHANGE_DOMAIN
+    AUTOBUY --> EXCHANGE_DOMAIN
+    FUNDING --> EXCHANGE_DOMAIN
+    LIMIT_ORDERS --> EXCHANGE_DOMAIN
+    SETTINGS --> EXCHANGE_DOMAIN
+    TX_HISTORY --> EXCHANGE_DOMAIN
+    CORE --> EXCHANGE_DOMAIN
+    EXCHANGE_DOMAIN --> PRIMITIVES
     EXCHANGE_SETTINGS -->|order statistics| BBX_API
 
     SIGNERS[Signers<br/>Workspace Feature]
@@ -273,7 +288,6 @@ graph TB
     APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Legacy Core-to-feature dependencies, pending extraction
-    CORE --> DCA
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS

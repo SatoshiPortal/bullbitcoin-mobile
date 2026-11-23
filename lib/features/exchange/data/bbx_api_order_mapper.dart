@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 
 /// Whether [s] settled through [txId].

@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 

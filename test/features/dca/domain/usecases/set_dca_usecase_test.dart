@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/features/address_view/domain/repositories/wallet_addre
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';

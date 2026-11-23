@@ -3,7 +3,9 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_access.dart';
 import '../domain/exchange_availability.dart';
-import '../domain/exchange_failure.dart';
+
+import 'package:exchange/exchange.dart';
+
 import '../domain/usecases/get_exchange_account_usecase.dart';
 import '../domain/usecases/save_exchange_preferences_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';
@@ -15,7 +17,6 @@ import 'exchange_account.dart';
 
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
 
-export '../domain/exchange_failure.dart';
 export '../exchange_locator.dart' show ExchangeLocator;
 export '../presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;
 export '../ui/exchange_router.dart'

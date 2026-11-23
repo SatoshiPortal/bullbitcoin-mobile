@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

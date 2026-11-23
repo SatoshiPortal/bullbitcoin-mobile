@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 /// Scoped to one Buy flow. Only creation can associate an order with a wallet.

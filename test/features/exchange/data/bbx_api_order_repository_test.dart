@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';

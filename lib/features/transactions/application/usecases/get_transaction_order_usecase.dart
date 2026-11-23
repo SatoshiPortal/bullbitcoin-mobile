@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';

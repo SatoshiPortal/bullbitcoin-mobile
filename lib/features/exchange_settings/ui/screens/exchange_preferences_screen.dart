@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/exchange_preferences.dart';

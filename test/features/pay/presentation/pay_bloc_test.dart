@@ -6,8 +6,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';

@@ -4,8 +4,7 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';

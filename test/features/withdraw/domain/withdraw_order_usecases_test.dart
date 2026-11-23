@@ -1,7 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';

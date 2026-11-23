@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;

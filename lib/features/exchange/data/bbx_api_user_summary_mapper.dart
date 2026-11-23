@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 
 /// Maps the `bbx_api` user summary to the app entity.

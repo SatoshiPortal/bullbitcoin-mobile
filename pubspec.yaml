@@ -12,6 +12,7 @@ workspace:
   - features/bitcoin_price
   - packages/labels
   - packages/legacy_storage
+  - packages/exchange
   - features/label_editor
   - features/network
   - features/signers
@@ -75,6 +76,7 @@ dependencies:
   bull_payjoin:
   bull_pricer:
   bbx_api:
+  exchange:
   novlang:
   btc_map:
   bull_ui:

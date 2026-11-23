@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:primitives/primitives.dart' show Ok, Result;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';

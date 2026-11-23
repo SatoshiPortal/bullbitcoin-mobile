@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';

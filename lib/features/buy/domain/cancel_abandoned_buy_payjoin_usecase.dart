@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';

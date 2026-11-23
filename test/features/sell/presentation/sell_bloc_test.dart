@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';

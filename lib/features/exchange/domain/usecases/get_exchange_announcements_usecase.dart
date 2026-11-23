@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
 import 'package:meta/meta.dart';
 

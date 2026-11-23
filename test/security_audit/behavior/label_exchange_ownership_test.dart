@@ -5,7 +5,7 @@
 // response. Nothing checks that the wallet owns them, so a compromised or
 // buggy server can still plant privileged, undeletable system labels on
 // arbitrary references.
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';

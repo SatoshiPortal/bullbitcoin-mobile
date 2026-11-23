@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Ok, Result, Sats, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

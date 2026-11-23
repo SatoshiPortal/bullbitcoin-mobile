@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';

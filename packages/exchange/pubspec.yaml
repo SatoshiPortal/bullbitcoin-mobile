@@ -1,0 +1,17 @@
+name: exchange
+description: Domain and capabilities for the Bull Bitcoin exchange.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+
+resolution: workspace
+
+dependencies:
+  freezed_annotation: ^3.1.0
+  primitives:
+
+dev_dependencies:
+  build_runner: ^2.10.4
+  freezed: ^4.0.0

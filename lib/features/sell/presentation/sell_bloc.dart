@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/utils/constants.dart';

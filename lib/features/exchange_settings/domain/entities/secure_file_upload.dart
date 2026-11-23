@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 
 final class SecureFileUpload {
   final String? userId;

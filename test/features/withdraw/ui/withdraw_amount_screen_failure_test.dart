@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';

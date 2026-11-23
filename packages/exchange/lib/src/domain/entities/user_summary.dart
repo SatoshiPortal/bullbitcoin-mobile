@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'dca.dart';
+import 'order.dart';
+
 part 'user_summary.freezed.dart';
-part 'user_summary.g.dart';
 
 /// Status of KYC document uploads
 enum KycDocumentStatus {
@@ -27,9 +26,6 @@ sealed class UserKycDocuments with _$UserKycDocuments {
     required KycDocumentStatus proofOfResidence,
     required KycDocumentStatus selfie,
   }) = _UserKycDocuments;
-
-  factory UserKycDocuments.fromJson(Map<String, dynamic> json) =>
-      _$UserKycDocumentsFromJson(json);
 }
 
 /// Overall KYC document status including secure file upload
@@ -39,9 +35,6 @@ sealed class UserKycDocumentStatus with _$UserKycDocumentStatus {
     required KycDocumentStatus secureFileUpload,
     required UserKycDocuments documents,
   }) = _UserKycDocumentStatus;
-
-  factory UserKycDocumentStatus.fromJson(Map<String, dynamic> json) =>
-      _$UserKycDocumentStatusFromJson(json);
 }
 
 enum ExchangeLanguage {
@@ -75,9 +68,6 @@ sealed class UserProfile with _$UserProfile {
     required String firstName,
     required String lastName,
   }) = _UserProfile;
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileFromJson(json);
 }
 
 @freezed
@@ -86,9 +76,6 @@ sealed class UserBalance with _$UserBalance {
     required double amount,
     required String currencyCode,
   }) = _UserBalance;
-
-  factory UserBalance.fromJson(Map<String, dynamic> json) =>
-      _$UserBalanceFromJson(json);
 }
 
 @freezed
@@ -101,9 +88,6 @@ sealed class UserDca with _$UserDca {
     DcaNetwork? network,
     String? address,
   }) = _UserDca;
-
-  factory UserDca.fromJson(Map<String, dynamic> json) =>
-      _$UserDcaFromJson(json);
 }
 
 @freezed
@@ -113,9 +97,6 @@ sealed class UserAutoBuyAddresses with _$UserAutoBuyAddresses {
     String? lightning,
     String? liquid,
   }) = _UserAutoBuyAddresses;
-
-  factory UserAutoBuyAddresses.fromJson(Map<String, dynamic> json) =>
-      _$UserAutoBuyAddressesFromJson(json);
 }
 
 @freezed
@@ -124,9 +105,6 @@ sealed class UserAutoBuy with _$UserAutoBuy {
     required bool isActive,
     required UserAutoBuyAddresses addresses,
   }) = _UserAutoBuy;
-
-  factory UserAutoBuy.fromJson(Map<String, dynamic> json) =>
-      _$UserAutoBuyFromJson(json);
 }
 
 @freezed
@@ -155,9 +133,6 @@ sealed class UserSummary with _$UserSummary {
     UserKycDocumentStatus? kycDocumentStatus,
   }) = _UserSummary;
 
-  factory UserSummary.fromJson(Map<String, dynamic> json) =>
-      _$UserSummaryFromJson(json);
-
   const UserSummary._();
 
   bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
@@ -180,6 +155,9 @@ sealed class UserSummary with _$UserSummary {
     FiatCurrency.ars,
   };
 
+  static const _cadLimitedKycMaxAmount = 999.0;
+  static const _cadLightKycMaxAmount = 3000.0;
+
   /// Whether the user's KYC level permits transactions in [currency].
   bool isKycOk(FiatCurrency currency) {
     if (isFullyVerifiedKycLevel) return true;
@@ -192,10 +170,8 @@ sealed class UserSummary with _$UserSummary {
   bool isAmountExceeded(double amount, FiatCurrency currency) {
     return !isFullyVerifiedKycLevel &&
         currency == FiatCurrency.cad &&
-        ((isLimitedKycLevel &&
-                amount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
-            (isLightKycLevel &&
-                amount > ExchangeKycConstants.cadLightKycMaxAmount));
+        ((isLimitedKycLevel && amount > _cadLimitedKycMaxAmount) ||
+            (isLightKycLevel && amount > _cadLightKycMaxAmount));
   }
 
   /// Returns true when the user needs to upgrade KYC to proceed.

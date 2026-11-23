@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/exchange_preferences.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:meta/meta.dart';

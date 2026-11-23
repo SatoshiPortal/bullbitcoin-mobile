@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';

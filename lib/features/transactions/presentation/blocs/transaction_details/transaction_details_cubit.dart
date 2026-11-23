@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

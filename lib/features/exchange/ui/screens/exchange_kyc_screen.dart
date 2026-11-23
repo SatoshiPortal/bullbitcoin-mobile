@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_kyc_navigation.dart';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';

@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';

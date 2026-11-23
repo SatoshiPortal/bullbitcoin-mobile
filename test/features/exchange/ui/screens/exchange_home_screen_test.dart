@@ -1,11 +1,10 @@
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';

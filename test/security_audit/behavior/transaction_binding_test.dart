@@ -8,7 +8,7 @@
 // swap's lockup address.
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;

@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dar
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 
 /// The notification socket, as the cubit needs it.

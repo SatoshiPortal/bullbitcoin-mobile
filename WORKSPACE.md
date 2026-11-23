@@ -48,6 +48,8 @@ graph TD
   style bull_ui_catalogue stroke:#7d8de8
   electrum["electrum"]
   style electrum stroke:#87e1d5
+  exchange["exchange"]
+  style exchange stroke:#c2d56b
   fees["fees"]
   style fees stroke:#726a61
   fees_feature["fees_feature"]
@@ -152,6 +154,7 @@ graph TD
   electrum --> legacy_storage
   electrum --> secrets
   electrum --> sync
+  exchange --> primitives
   fees --> bull_payjoin
   fees --> mempool
   fees --> primitives
@@ -254,6 +257,7 @@ graph TD
     bull_ui
     bull_ui_catalogue
     electrum
+    exchange
     fees
     file_system
     google_drive

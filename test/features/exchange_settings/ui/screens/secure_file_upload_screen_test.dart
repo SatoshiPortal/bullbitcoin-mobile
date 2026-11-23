@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/secure_file_upload.dart';

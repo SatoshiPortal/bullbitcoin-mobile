@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The outcome drives what the success screens claim, so the property under test

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
