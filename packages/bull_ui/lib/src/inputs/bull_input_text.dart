@@ -18,6 +18,7 @@ class BullInputText extends StatefulWidget {
     this.controller,
     required this.onChanged,
     required this.value,
+    this.semanticLabel,
     this.hint,
     this.hintStyle,
     this.rightIcon,
@@ -56,6 +57,9 @@ class BullInputText extends StatefulWidget {
 
   /// The current value (the field is controlled by the parent).
   final String value;
+
+  /// Accessible name when the caller displays a separate field label.
+  final String? semanticLabel;
 
   /// Placeholder text.
   final String? hint;
@@ -184,7 +188,7 @@ class _BullInputTextState extends State<BullInputText> {
     final shouldPreventNewlines =
         effectiveMaxLines != null && effectiveMaxLines <= 2;
 
-    return TextField(
+    final field = TextField(
       key: widget.uiKey,
       controller: _controller,
       onChanged: widget.onChanged,
@@ -272,5 +276,6 @@ class _BullInputTextState extends State<BullInputText> {
         fillColor: colors.surface,
       ),
     );
+    return Semantics(label: widget.semanticLabel, child: field);
   }
 }
