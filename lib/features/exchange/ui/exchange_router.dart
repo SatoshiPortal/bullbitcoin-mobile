@@ -14,12 +14,10 @@ import 'dart:async';
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
@@ -100,7 +98,7 @@ class ExchangeRouter {
         : (
             exchange: exchange,
             preferences: preferences,
-            isLoggedIn: ExchangeScope.hasAccountSummary,
+            isLoggedIn: ExchangeSessionScope.hasAccount,
             openOrder: (context, orderId) => context.pushNamed(
               TransactionsRoute.orderTransactionDetails.name,
               pathParameters: {'orderId': orderId},
@@ -112,9 +110,9 @@ class ExchangeRouter {
       preferences: preferences ?? ExchangeScope.preferences,
       currentAccess: ExchangeScope.currentAccess,
       watchAccess: ExchangeScope.accessChanges,
-      watchDashboard: ExchangeScope.watchDashboard,
-      refreshAccount: ExchangeScope.refreshSession,
-      stopDca: ExchangeScope.stopDca,
+      watchDashboard: ExchangeSessionScope.watchDashboard,
+      refreshAccount: ExchangeSessionScope.refresh,
+      stopDca: ExchangeSessionScope.stopDca,
       onOpenSettings: config.onOpenSettings,
       onOpenDca: (context) => context.pushNamed(DcaRoute.dca.name),
       onWithdraw: (context) => context.pushNamed(WithdrawRoute.withdraw.name),
@@ -139,17 +137,13 @@ class ExchangeRouter {
           ),
     funding: exchange == null
         ? null
-        : (
-            exchange: exchange,
-            isLoggedIn: (context) =>
-                !context.read<ExchangeCubit>().state.notLoggedIn,
-          ),
+        : (exchange: exchange, isLoggedIn: ExchangeSessionScope.hasAccount),
     kyc: switch (config.loadKyc) {
       final load? => ExchangeKycHost(
         loadConfiguration: load,
         failureMessage: (context, failure) => failure.toTranslated(context),
         onExit: (context) {
-          unawaited(context.read<ExchangeCubit>().fetchUserSummary());
+          unawaited(ExchangeSessionScope.refresh(context));
           context.pop();
         },
       ),
@@ -160,8 +154,7 @@ class ExchangeRouter {
         : (
             exchange: exchange,
             isLoggedIn: ExchangeScope.isLoggedIn,
-            enableLogin: (context) =>
-                context.read<ExchangeCubit>().enableForSupport(),
+            enableLogin: (_) => exchange().enableAccess(forSupport: true),
             onLogin: (context, draft) => context.goNamed(
               ExchangeRoute.exchangeAuth.name,
               queryParameters: {'from': 'support'},

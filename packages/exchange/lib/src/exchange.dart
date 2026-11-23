@@ -2,6 +2,7 @@ import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxCredentialUnavailableFailure, BbxTimeouts;
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
+import 'package:preferences/preferences.dart';
 
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_exchange_recipient_repository.dart';
@@ -37,6 +38,12 @@ import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
 import 'setup/exchange_access_lifecycle.dart';
 import 'recipients/exchange_recipients.dart';
+import 'session/expire_exchange_session_usecase.dart';
+import 'session/get_exchange_account_usecase.dart';
+import 'session/get_exchange_announcements_usecase.dart';
+import 'session/read_exchange_environment.dart';
+import 'session/save_exchange_preferences_usecase.dart';
+import 'session/watch_exchange_notifications_usecase.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -133,6 +140,7 @@ final class Exchange {
   final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
   _getConfidentialSepaAvailability;
   final ExchangeAccessLifecycle? _access;
+  final Preferences? _sessionPreferences;
   final ExchangeRecipients recipients;
 
   const Exchange._(
@@ -154,6 +162,7 @@ final class Exchange {
     this._getConfidentialSepaAvailability,
     this._access,
     this.recipients,
+    this._sessionPreferences,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -168,6 +177,7 @@ final class Exchange {
     Uri? paymentReturnUrl,
     ExchangeKycSetup? kyc,
     ExchangeAccessLifecycle? access,
+    Preferences? sessionPreferences,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
@@ -176,6 +186,7 @@ final class Exchange {
     paymentReturnUrl: paymentReturnUrl,
     kyc: kyc,
     access: access,
+    sessionPreferences: sessionPreferences,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -195,6 +206,7 @@ final class Exchange {
     Uri? paymentReturnUrl,
     ExchangeKycSetup? kyc,
     ExchangeAccessLifecycle? access,
+    Preferences? sessionPreferences,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -522,6 +534,7 @@ final class Exchange {
           checkCompletion: true,
         ),
       ),
+      sessionPreferences,
     );
   }
 
@@ -538,6 +551,104 @@ final class Exchange {
 
   Stream<ExchangeAccess> watchAccess() =>
       _access?.watch() ?? Stream.value(currentAccess);
+
+  static bool supportsEnvironment(Environment environment) =>
+      exchangeNetworkAvailable(environment);
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> resolveAccess() async =>
+      await _access?.resolve() ?? const Err(ExchangeSessionClearFailure());
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> enableAccess({
+    bool forSupport = false,
+  }) async =>
+      await _access?.enable(forSupport: forSupport) ??
+      const Err(ExchangeSessionClearFailure());
+
+  /// Loads the foreground account and expires only a rejected current session.
+  @useResult
+  Future<Result<UserSummary, ExchangeFailure>> loadCurrentAccount() async {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    if (access == null || preferences == null) {
+      return const Err(ExchangeAccountUnavailableFailure());
+    }
+    return GetExchangeAccountUsecase(
+      exchange: this,
+      settingsRepository: preferences,
+      access: access,
+      expire: ExpireExchangeSessionUsecase(access),
+    ).execute();
+  }
+
+  @useResult
+  Future<Result<List<Announcement>, ExchangeFailure>>
+  loadCurrentAnnouncements() async {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    if (access == null || preferences == null) {
+      return const Err(ExchangeAnnouncementsUnavailableFailure());
+    }
+    return GetExchangeAnnouncementsUsecase(
+      exchange: this,
+      settingsRepository: preferences,
+      access: access,
+    ).execute();
+  }
+
+  /// Merges partial updates with a fresh account summary before saving.
+  @useResult
+  Future<Result<void, ExchangeFailure>> updateCurrentPreferences({
+    String? language,
+    String? currency,
+    bool? emailNotificationsEnabled,
+    bool? dcaEnabled,
+    String? autoBuyEnabled,
+  }) async {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    if (access == null || preferences == null) {
+      return const Err(ExchangePreferencesSaveFailure());
+    }
+    return SaveExchangePreferencesUsecase(
+      exchange: this,
+      settingsRepository: preferences,
+      access: access,
+    ).execute(
+      language: language,
+      currency: currency,
+      emailNotificationsEnabled: emailNotificationsEnabled,
+      dcaEnabled: dcaEnabled,
+      autoBuyEnabled: autoBuyEnabled,
+    );
+  }
+
+  WatchExchangeNotificationsUsecase? get _currentNotifications {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    return access == null || preferences == null
+        ? null
+        : WatchExchangeNotificationsUsecase(
+            exchange: this,
+            settingsRepository: preferences,
+            access: access,
+          );
+  }
+
+  Stream<NotificationMessage> watchAccountChanges() =>
+      _currentNotifications?.accountChanges() ?? const Stream.empty();
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> openCurrentNotifications({
+    bool reconnect = false,
+  }) async {
+    final notifications = _currentNotifications;
+    if (notifications == null) {
+      return const Err(ExchangeNotificationsUnavailableFailure());
+    }
+    return reconnect ? notifications.reconnect() : notifications.connect();
+  }
 
   @useResult
   Future<Result<void, ExchangeFailure>> signOut() async =>
@@ -755,6 +866,7 @@ Exchange exchangeForTesting({
   getConfidentialSepaAvailability,
   ExchangeRecipients? recipients,
   ExchangeAccessLifecycle? access,
+  Preferences? sessionPreferences,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -833,6 +945,7 @@ Exchange exchangeForTesting({
       ExchangeRecipientsImpl(
         <T>(_, _) => throw StateError('Unexpected fiat recipient operation'),
       ),
+  sessionPreferences,
 );
 
 Exchange exchangeWithTransportForTesting({

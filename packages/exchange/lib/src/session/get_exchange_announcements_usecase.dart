@@ -1,9 +1,11 @@
-import 'package:exchange/setup.dart';
+import '../setup/exchange_access_lifecycle.dart';
 
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
+
+import 'read_exchange_environment.dart';
+
 import 'package:meta/meta.dart';
 
 /// Reads the announcement banner content. The repository sanitizes; this only

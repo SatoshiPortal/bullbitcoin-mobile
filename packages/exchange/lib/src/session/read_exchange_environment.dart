@@ -6,21 +6,20 @@ import 'package:meta/meta.dart';
 
 /// The environment every exchange call is scoped to.
 ///
-/// The shared settings repository still throws, so this is its boundary for
-/// the exchange use-cases: they promise a `Result`, and the cubit has no catch
-/// left to stop a throw. [onFailure] builds the caller's own variant, so a
-/// failed read reads as the operation that could not run, not as a generic
-/// error.
+/// [onFailure] identifies the operation that could not run.
 @useResult
 Future<Result<Environment, ExchangeFailure>> readExchangeEnvironment(
   Preferences settingsRepository,
   ExchangeFailure Function([String? logMessage]) onFailure,
 ) async {
   try {
-    final environment = ((await settingsRepository.fetch()).fold(
-      (value) => value,
-      (failure) => throw Exception('Preferences read failed'),
-    )).environment;
+    final Environment environment;
+    switch (await settingsRepository.fetch()) {
+      case Ok(value: final settings):
+        environment = settings.environment;
+      case Err():
+        return Err(onFailure('Preferences read failed'));
+    }
     if (!exchangeNetworkAvailable(environment)) {
       log.info('Exchange capability unavailable network=${environment.name}');
       return const Err(ExchangeUnsupportedNetworkFailure());

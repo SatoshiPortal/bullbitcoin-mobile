@@ -359,7 +359,7 @@ Default payout editing is mounted under Settings and reused by AutoBuy. The edit
 
 The Exchange mount contributes `/auto-buy`; the dashboard uses its reusable AutoBuy card. Both use route- or widget-scoped state and call `Exchange` directly for typed account reads, default payout checks and preference writes. The host supplies the existing address viewer and terms URL.
 
-The Exchange mount owns the Trade dashboard and its KYC child route. It consumes the host's existing account observation while the shared account state moves, and owns the balance layout, shortcuts, DCA card, account announcements and sign-out navigation. Application-level destinations remain explicit navigation callbacks.
+The Exchange mount owns the Trade dashboard and its KYC child route. `ExchangeSessionScope` owns the foreground account state and app-resume refresh. It consumes the Exchange session's guarded account, preference and notification operations; application-level destinations remain explicit navigation callbacks.
 
 The same mount owns the active limit-order card, details and cancellation. Create still uses the legacy foreground wallet catalog until the authorized wallet inventory is mounted; its route uses the workspace's typed details navigation.
 

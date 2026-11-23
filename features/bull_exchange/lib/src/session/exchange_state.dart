@@ -35,10 +35,10 @@ abstract class ExchangeState with _$ExchangeState {
     // If no balances above 0, show the user's default currency
     if (balancesAboveZero.isEmpty) {
       // Return an empty list if currency is null, else
-      if (userSummary?.currency == null) {
-        return [];
-      }
-      return [UserBalance(amount: 0, currencyCode: userSummary!.currency!)];
+      final currency = userSummary?.currency;
+      return currency == null
+          ? []
+          : [UserBalance(amount: 0, currencyCode: currency)];
     }
 
     return balancesAboveZero;

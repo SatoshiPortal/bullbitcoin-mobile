@@ -6,19 +6,12 @@ import 'package:bull_exchange/bull_exchange.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ExchangeScope extends StatelessWidget {
-  final Widget child;
-
-  const ExchangeScope({required this.child, super.key});
-
+abstract final class ExchangeScope {
   static final ExchangeAuthHost authHost = (
     loadConfiguration: () => locator<GetExchangeWebSettingsUsecase>().execute(),
     authenticate:
@@ -27,11 +20,12 @@ class ExchangeScope extends StatelessWidget {
           evaluateJavaScript, {
           required isTestnet,
           required isCurrent,
-        }) => context.read<ExchangeCubit>().completeAuthentication(
+        }) => ExchangeSessionScope.finishAuthentication(
+          context,
           locator<CompleteExchangeAuthenticationUsecase>(
             param1: evaluateJavaScript,
             param2: (isTestnet: isTestnet, isOpen: isCurrent),
-          ),
+          ).execute,
           isCurrent: isCurrent,
         ),
     failureMessage: (context, failure) => failure.toTranslated(context),
@@ -41,28 +35,14 @@ class ExchangeScope extends StatelessWidget {
     testnetKycUrl: Uri.parse(ApiServiceConstants.bbKycTestUrl),
     currentAccess: () => locator<ExchangeFacade>().currentAccess,
     watchAccess: ExchangeScope.accessChanges,
-    accountSignedInChanges: (context) {
-      final cubit = context.read<ExchangeCubit>();
-      return Stream<bool>.multi((controller) {
-        controller.addSync(!cubit.state.notLoggedIn);
-        final subscription = cubit.stream.listen(
-          (state) => controller.addSync(!state.notLoggedIn),
-          onDone: controller.closeSync,
-        );
-        controller.onCancel = subscription.cancel;
-      });
+    accountSignedInChanges: ExchangeSessionScope.accountChanges,
+    retryAccess: (_) async {
+      final _ = await locator<Exchange>().resolveAccess();
     },
-    retryAccess: (context) => context.read<ExchangeCubit>().retryAccess(),
   );
 
   static bool isLoggedIn(BuildContext context) =>
       _signedIn(locator<ExchangeFacade>().currentAccess);
-
-  static bool hasAccountSummary(BuildContext context) =>
-      !context.read<ExchangeCubit>().state.notLoggedIn;
-
-  static bool watchHasAccount(BuildContext context) =>
-      context.select((ExchangeCubit cubit) => cubit.state.hasUser);
 
   static Exchange exchange() => locator<Exchange>();
 
@@ -70,21 +50,6 @@ class ExchangeScope extends StatelessWidget {
 
   static ExchangeAccess currentAccess() =>
       locator<ExchangeFacade>().currentAccess;
-
-  static ExchangeDashboardState watchDashboard(BuildContext context) =>
-      context.select((ExchangeCubit cubit) {
-        final state = cubit.state;
-        return (
-          summary: state.userSummary,
-          displayBalances: state.displayBalances,
-          summaryFailure: state.getUserSummaryFailure,
-          stopDcaFailure: state.stopDcaFailure,
-          announcements: state.announcements,
-        );
-      });
-
-  static Future<void> stopDca(BuildContext context) =>
-      context.read<ExchangeCubit>().stopDca();
 
   static Stream<ExchangeAccess> accessChanges() =>
       locator<ExchangeFacade>().watchAccess();
@@ -94,22 +59,6 @@ class ExchangeScope extends StatelessWidget {
   /// A session that ends while access stays enabled can sign in again.
   static bool isEnabled(BuildContext context) =>
       locator<ExchangeFacade>().currentAccess is ExchangeAccessEnabled;
-
-  static Future<void> refreshSession(BuildContext context) =>
-      context.read<ExchangeCubit>().fetchUserSummary();
-
-  static Future<void> reconnectNotifications(BuildContext context) =>
-      context.read<ExchangeCubit>().reconnectWebSocket();
-
-  @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<ExchangeCubit>(),
-    child: RecipientsScope(
-      exchange: exchange,
-      preferences: preferences,
-      child: ExchangeListener(child: child),
-    ),
-  );
 }
 
 class ExchangeSessionBuilder extends StatelessWidget {

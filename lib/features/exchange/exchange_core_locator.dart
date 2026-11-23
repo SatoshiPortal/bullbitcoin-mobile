@@ -16,6 +16,7 @@ class ExchangeLocator {
         testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
         paymentReturnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
         access: locator<ExchangeAccessLifecycle>(),
+        sessionPreferences: locator<Preferences>(),
         kyc: (
           mainnetUrl: Uri.parse(ApiServiceConstants.bbKycUrl),
           testnetUrl: Uri.parse(ApiServiceConstants.bbKycTestUrl),

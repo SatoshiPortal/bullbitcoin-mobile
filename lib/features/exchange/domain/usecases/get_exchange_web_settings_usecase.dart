@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
@@ -21,7 +20,7 @@ class GetExchangeWebSettingsUsecase {
           log.warning('Could not load exchange web settings: preferences');
           return const Err(ExchangeUnexpectedFailure());
       }
-      if (!exchangeNetworkAvailable(settings.environment)) {
+      if (!Exchange.supportsEnvironment(settings.environment)) {
         return const Err(ExchangeUnsupportedNetworkFailure());
       }
       return Ok(settings);

@@ -3,8 +3,6 @@ import 'package:primitives/primitives.dart';
 
 import 'package:exchange/exchange.dart';
 
-import '../domain/usecases/get_exchange_account_usecase.dart';
-import '../domain/usecases/save_exchange_preferences_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';
 import '../domain/usecases/enable_exchange_usecase.dart';
 import '../domain/usecases/sign_out_exchange_usecase.dart';
@@ -31,22 +29,25 @@ export '../ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
 class ExchangeFacade {
   const ExchangeFacade({
     required GetExchangeWebSettingsUsecase getExchangeWebSettingsUsecase,
-    required GetExchangeAccountUsecase getExchangeAccountUsecase,
-    required SaveExchangePreferencesUsecase saveExchangePreferencesUsecase,
+    required this._loadAccount,
+    required this._saveAccountPreferences,
     required ResolveExchangeAccessUsecase resolveAccess,
     required this._enable,
     required this._signOut,
     required WatchExchangeAccessUsecase watchAccess,
     required this._tradingGuard,
   }) : _getWebSettings = getExchangeWebSettingsUsecase,
-       _getAccount = getExchangeAccountUsecase,
-       _savePreferences = saveExchangePreferencesUsecase,
        _resolve = resolveAccess,
        _watch = watchAccess;
 
   final GetExchangeWebSettingsUsecase _getWebSettings;
-  final GetExchangeAccountUsecase _getAccount;
-  final SaveExchangePreferencesUsecase _savePreferences;
+  final Future<Result<UserSummary, ExchangeFailure>> Function() _loadAccount;
+  final Future<Result<void, ExchangeFailure>> Function({
+    String? language,
+    String? currency,
+    bool? emailNotificationsEnabled,
+  })
+  _saveAccountPreferences;
   final ResolveExchangeAccessUsecase _resolve;
   final EnableExchangeUsecase _enable;
   final SignOutExchangeUsecase _signOut;
@@ -71,7 +72,7 @@ class ExchangeFacade {
       _tradingGuard.execute();
 
   Future<Result<ExchangeAccount, ExchangeFailure>> getAccount() async =>
-      (await _getAccount.execute()).map(
+      (await _loadAccount()).map(
         (account) => ExchangeAccount(
           userNumber: account.userNumber,
           firstName: account.profile.firstName,
@@ -93,7 +94,7 @@ class ExchangeFacade {
     String? language,
     String? currency,
     bool? emailNotificationsEnabled,
-  }) => _savePreferences.execute(
+  }) => _saveAccountPreferences(
     language: language,
     currency: currency,
     emailNotificationsEnabled: emailNotificationsEnabled,

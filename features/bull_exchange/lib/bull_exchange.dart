@@ -37,6 +37,7 @@ export 'src/recipients/ui/screens/sepa_virtual_payee_activation_screen.dart'
     show SepaVirtualPayeeActivationScreen;
 export 'src/recipients/ui/screens/virtual_iban_onboarding_screen.dart'
     show VirtualIbanOnboardingScreen;
+export 'src/session/exchange_session_scope.dart' show ExchangeSessionScope;
 export 'src/settings/ui/exchange_access_settings_route.dart'
     show ExchangeAccessSettingsNavigation;
 export 'src/settings/ui/exchange_settings_route.dart'

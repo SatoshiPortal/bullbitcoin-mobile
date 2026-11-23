@@ -1,9 +1,10 @@
-import 'package:exchange/setup.dart';
+import '../setup/exchange_access_lifecycle.dart';
+
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-import '../read_exchange_environment.dart';
+import 'read_exchange_environment.dart';
 import 'expire_exchange_session_usecase.dart';
 
 /// Only a current, server-rejected request may expire a credential.

@@ -62,7 +62,7 @@ class SettingsRouter {
           currency: currency,
           emailNotificationsEnabled: emailNotificationsEnabled,
         ),
-    refreshSession: ExchangeScope.refreshSession,
+    refreshSession: ExchangeSessionScope.refresh,
     isLoggedIn: ExchangeScope.isLoggedIn,
     sessionChanges: ExchangeScope.signedInChanges,
     isSuperuser: (context) =>
@@ -81,7 +81,7 @@ class SettingsRouter {
     },
     title: (context) => context.loc.settingsExchangeSettingsTitle,
     signedOutMessage: (context) => context.loc.notLoggedInMessage,
-    hasAccount: ExchangeScope.watchHasAccount,
+    hasAccount: ExchangeSessionScope.watchHasAccount,
     accountFailureMessage: (context, failure) => failure.toTranslated(context),
     onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
     onOpenTransactions: (context) =>
