@@ -19,6 +19,7 @@ abstract final class ExchangeAccessSettingsNavigation {
 typedef ExchangeAccessSettingsHost = ({
   ExchangeAccessActions actions,
   ExchangePlatform platform,
+  String Function(BuildContext) description,
   Future<void> Function(BuildContext) onAuthenticate,
   void Function(BuildContext) onDisabled,
 });
@@ -37,6 +38,7 @@ GoRoute exchangeAccessSettingsRoute({
     ),
     child: Builder(
       builder: (context) => ExchangeAccessSettingsScreen(
+        description: host.description(context),
         activationAllowed: ExchangeAvailability.platformAllowed(
           host.platform,
           isSuperuser:

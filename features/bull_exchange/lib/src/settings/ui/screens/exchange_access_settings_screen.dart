@@ -12,6 +12,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
     required this.onOpenAccount,
     required this.onDisabled,
     required this.activationAllowed,
+    required this.description,
     super.key,
   });
   final VoidCallback onBack;
@@ -19,6 +20,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
   final VoidCallback onOpenAccount;
   final VoidCallback onDisabled;
   final bool activationAllowed;
+  final String description;
 
   Future<void> _enable(ExchangeAccessSettingsCubit cubit) async {
     if (!await cubit.setEnabled(true) || cubit.isClosed) return;
@@ -134,7 +136,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                               ),
                               const Gap(12),
                               BullText(
-                                context.loc.exchangeAccessSettingsDescription,
+                                description,
                                 style: context.bullType.body,
                               ),
                               const Gap(12),

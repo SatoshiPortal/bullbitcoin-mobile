@@ -98,6 +98,7 @@ class SettingsRouter {
         resolve: () => locator<ExchangeFacade>().resolveAccess(),
       ),
       platform: Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
+      description: (context) => context.loc.exchangeAccessSettingsDescription,
       onAuthenticate: (context) => context.pushNamed<void>(
         ExchangeRoute.exchangeAuth.name,
         queryParameters: {'from': 'settings'},
