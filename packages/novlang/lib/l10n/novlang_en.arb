@@ -149,10 +149,6 @@
   "@app__exchangeTestnetBasicAuthTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthTitle."
   },
-  "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth for the testnet account web pages (login and KYC).",
-  "@app__exchangeTestnetBasicAuthDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthDescription."
-  },
   "app__walletDeletionErrorOngoingSwaps_apple": "You cannot delete a wallet with ongoing transfers.",
   "@app__walletDeletionErrorOngoingSwaps_apple": {
     "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."
@@ -921,14 +917,6 @@
   "@app__swapErrorRouteUnavailableGeneric_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapErrorRouteUnavailableGeneric."
   },
-  "app__settingsExchangeTitle_apple": "Account",
-  "@app__settingsExchangeTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeTitle."
-  },
-  "app__bitcoinSettingsAutoTransferTitle_apple": "Auto Transfer",
-  "@app__bitcoinSettingsAutoTransferTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key bitcoinSettingsAutoTransferTitle."
-  },
   "app__autoBuyInfoMessage_apple": "Any amount added to your account will be converted to Bitcoin at the current rate and sent to your wallet.",
   "@app__autoBuyInfoMessage_apple": {
     "description": "Apple (App Store) wording for the root catalogue key autoBuyInfoMessage."
@@ -936,10 +924,6 @@
   "app__limitOrdersBackToExchange_apple": "Back to Account",
   "@app__limitOrdersBackToExchange_apple": {
     "description": "Apple (App Store) wording for the root catalogue key limitOrdersBackToExchange."
-  },
-  "app__settingsPayjoinExchangeSection_apple": "With the Bull Bitcoin account",
-  "@app__settingsPayjoinExchangeSection_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key settingsPayjoinExchangeSection."
   },
   "app__exchangePaymentSentPastDeadline_apple": "Payment sent. Bull Bitcoin reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
   "@app__exchangePaymentSentPastDeadline_apple": {

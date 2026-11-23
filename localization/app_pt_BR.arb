@@ -740,10 +740,6 @@
   "@sellCompleteKYC": {
     "description": "Button to start verification process"
   },
-  "bitcoinSettingsTestnetModeTitle": "Modo de Testnet",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "hwConnectTitle": "Conecte a carteira de hardware",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
@@ -1220,10 +1216,6 @@
   "receiveCopyOrScanAddressOnly": "Copiar ou escanear endereço somente",
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
-  },
-  "walletSettingsImportWalletTitle": "Carteira de importação",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "sellSendPaymentAdvanced": "Configurações avançadas",
   "@sellSendPaymentAdvanced": {
@@ -1826,10 +1818,6 @@
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
   },
-  "settingsServiceStatusTitle": "Estado dos serviços",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "selectAmountTitle": "Selecione o valor",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
@@ -2071,10 +2059,6 @@
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
-  "settingsSecurityPinTitle": "Pin de segurança",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
-  },
   "sendErrorAmountAboveSwapLimits": "O montante está acima dos limites de swap",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -2279,10 +2263,6 @@
   "logoutConfirmationCancel": "Cancelar",
   "@logoutConfirmationCancel": {
     "description": "Cancel button label for logout confirmation"
-  },
-  "settingsDevModeUnderstandButton": "Eu compreendo",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "importMnemonicImport": "Importação",
   "@importMnemonicImport": {
@@ -3650,16 +3630,7 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "appSettingsDevModeTitle": "Modo de desenvolvimento",
   "exchangeTestnetBasicAuthTitle": "Credenciais da exchange testnet",
-  "exchangeTestnetBasicAuthDescription": "Autenticação básica HTTP para as páginas web da exchange testnet (login e KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Nome de usuário",
-  "exchangeTestnetBasicAuthPasswordLabel": "Senha",
-  "exchangeTestnetBasicAuthClearButton": "Limpar",
-  "exchangeTestnetBasicAuthSaveButton": "Salvar",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "autoswapMaxFee": "Taxa máxima de swap",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
@@ -4383,10 +4354,6 @@
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
   },
-  "settingsSuperuserModeDisabledMessage": "Modo Superuser desativado.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
     "description": "Payment method title for IBAN USD in method list"
@@ -5057,10 +5024,6 @@
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "Transação de transmissão",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "quickAndEasyTag": "Rápido e fácil",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
@@ -5080,10 +5043,6 @@
   "exchangeAuthLoginFailedTitle": "Login Falhado",
   "@exchangeAuthLoginFailedTitle": {
     "description": "Title of the dialog shown when exchange login fails"
-  },
-  "settingsThemeTitle": "Tema",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payFeeRate": "Taxa de taxa",
   "@payFeeRate": {
@@ -5108,10 +5067,6 @@
   "coreScreensConfirmSend": "Enviar",
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
-  },
-  "settingsDevModeWarningTitle": "Modo de desenvolvimento",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
   },
   "payNotLoggedInDescription": "Você não está conectado. Faça login para continuar usando o recurso de pagamento.",
   "@payNotLoggedInDescription": {
@@ -5181,10 +5136,6 @@
   "fundExchangeCrIbanUsdLabelPaymentDescription": "Descrição do pagamento",
   "@fundExchangeCrIbanUsdLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN USD transfer"
-  },
-  "settingsDevModeWarningMessage": "Este modo é arriscado. Ao habilitar, você reconhece que pode perder dinheiro",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "swapValidationMinimumAmount": "Quantidade mínima é {amount} {currency}",
   "@swapValidationMinimumAmount": {
@@ -5798,10 +5749,6 @@
   "@coldcardStep10": {
     "description": "Coldcard instruction for signing"
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Entropias Deterministas",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "notLoggedInMessage": "Faça login na sua conta Bull Bitcoin para acessar as configurações de troca.",
   "@notLoggedInMessage": {
     "description": "Message prompting user to log in for exchange features"
@@ -5918,10 +5865,6 @@
   "swapFromLabel": "A partir de",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
-  },
-  "settingsAppVersionLabel": "Versão do aplicativo: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "pinConfirmMismatchError": "PINs não correspondem",
   "@pinConfirmMismatchError": {
@@ -7972,16 +7915,6 @@
   "statusScreenContinue": "Continue",
   "viewerAddressTab": "Endereço",
   "viewerPaymentUriTab": "URI de pagamento",
-  "settingsErrorReportingTitle": "Relatório de erros",
-  "errorReportingProgramTitle": "Programa de Relatório de Erros",
-  "errorReportingProgramDescriptionP1": "Ajude-nos a melhorar o Bull contribuindo com nosso programa de relatório de erros.",
-  "errorReportingProgramDescriptionP2": "A Bull Bitcoin envia relatórios de erros anonimizados quando algo dá errado.",
-  "errorReportingProgramDescriptionP3": "Isso nos permite ver quantos usuários cada bug afeta e priorizar as correções de acordo. Sem isso, não temos como medir o impacto.",
-  "errorReportingProgramDescriptionP4": "Os relatórios vão apenas para o servidor da Bull, nunca para terceiros.",
-  "errorReportingProgramDescriptionP5": "A Bull Bitcoin é open source, então você pode verificar o que é enviado.",
-  "errorReportingAcceptButton": "Aceitar",
-  "errorReportingCancelButton": "Cancelar",
-  "errorReportingRestartSnackbar": "Reinicie o aplicativo para aplicar esta alteração",
   "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA",
   "backupWarningBackupNow": "SIM",
   "backupWarningBackupLater": "NÃO, EU ENTENDO O RISCO",
@@ -8005,44 +7938,11 @@
   "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
   "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde.",
   "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
-  "settingsPayjoinAdvancedTitle": "Configurações avançadas do Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
   "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
   "sendSwapExpiredTitle": "Ordem expirada",
   "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira.",
-  "settingsScreenPrivacyTitle": "Privacidade da tela",
-  "settingsScreenPrivacyDisabledMessage": "Agora as capturas de tela são permitidas em telas sensíveis",
-  "settingsSearchHint": "Pesquisar nas configurações",
-  "settingsSearchNoResults": "Nenhuma configuração encontrada.",
-  "settingsSearchMempoolKeywords": "explorador de blocos|estimativa de taxas|taxas de transação|API mempool",
-  "settingsSearchExchangeKeywords": "conta|conta da corretora|negociação|comprar e vender",
-  "settingsSearchStartBackupKeywords": "criar backup|salvar backup|fazer backup da carteira",
-  "settingsSearchRecoverbullKeywords": "backup criptografado|backup na nuvem|cofre criptografado|recuperação do cofre|Recoverbull",
-  "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
-  "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
-  "settingsSearchAppSettingsKeywords": "preferências do aplicativo|configurações do aplicativo|configurações gerais",
-  "settingsSearchTermsOfServiceKeywords": "termos e condições|informações legais|acordo do usuário|TOS",
-  "settingsSearchServicesStatusKeywords": "status dos serviços|status do sistema|online|indisponibilidade",
-  "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemônico|carteira somente leitura|carteira de hardware",
-  "settingsSearchBroadcastTransactionKeywords": "transmitir transação assinada|publicar transação|transação bruta|hexadecimal da transação|PSBT",
-  "settingsSearchPayjoinKeywords": "privacidade Payjoin|transação colaborativa|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "troca automática|swap automático|transferência automática|saldo da carteira instantânea|Autoswap",
-  "settingsSearchElectrumKeywords": "nó Bitcoin|nó Electrum|servidor personalizado|nó próprio|Electrum",
-  "settingsSearchTestnetModeKeywords": "rede de testes|testnet Bitcoin|testnet Liquid|modo de testes|Testnet",
-  "settingsSearchSeedViewerKeywords": "frase seed|frase de recuperação|mnemônico|palavras de backup|mostrar seeds",
-  "settingsSearchBip85Keywords": "entropia determinística|seeds derivadas|entropia derivada|BIP85",
-  "settingsSearchLanguageKeywords": "localidade|tradução|idioma de exibição|idioma preferido",
-  "settingsSearchThemeKeywords": "aparência|modo escuro|modo claro|tema do sistema",
-  "settingsSearchCurrencyKeywords": "moeda fiduciária|moeda local|moeda padrão|moeda de câmbio",
-  "settingsSearchSecurityPinKeywords": "código PIN|senha de acesso|bloqueio do aplicativo|autenticação|alterar PIN",
-  "settingsSearchLogsKeywords": "logs de debug|logs de diagnóstico|logs do aplicativo|exportar logs",
-  "settingsSearchDevModeKeywords": "modo desenvolvedor|configurações de desenvolvimento|modo debug|testes avançados",
-  "settingsSearchTestnetCredentialsKeywords": "credenciais da testnet|login da testnet|usuário da testnet|senha da testnet|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de bugs|diagnóstico|telemetria|logs de erros",
-  "settingsSearchScreenPrivacyKeywords": "capturas de tela|gravação de tela|proteção contra captura|privacidade",
-  "settingsSearchStartTyping": "Comece a digitar para ver os resultados.",
   "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente.",
   "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
@@ -8057,8 +7957,6 @@
   "walletWarningElectrumAction": "Toque para configurar as configurações do servidor",
   "walletLoadFailedRetryHint": "Puxe para baixo para atualizar e tente novamente",
   "settingsErrorSavingSetting": "Não foi possível salvar essa configuração. Por favor, tente novamente.",
-  "settingsErrorConsentNotGiven": "Esta configuração precisa da sua confirmação antes de ser alterada.",
-  "settingsErrorLoadingLogs": "Não foi possível preparar os logs de diagnóstico. Por favor, tente novamente.",
   "exchangeErrorSigningOut": "Não foi possível sair da conta por completo. Por favor, tente novamente.",
   "exchangeErrorSavingPreferences": "Não foi possível salvar suas preferências. Por favor, tente novamente.",
   "exchangeErrorLoadingAnnouncements": "Não foi possível carregar os anúncios.",
@@ -8180,7 +8078,6 @@
   "fundExchangeErrorNetwork": "Verifique sua conexão com a internet e tente novamente.",
   "exchangeErrorNetwork": "Verifique sua conexão com a internet e tente novamente.",
   "walletBalancesMayBeStale": "Não foi possível atualizar seus saldos e eles podem estar desatualizados.",
-  "settingsSearchTorKeywords": "proxy Tor|Orbot|roteamento onion|Tor integrado|rede de privacidade",
   "limitOrdersInsufficientBalance": "Balança insuficiente",
   "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "limitOrdersFundAccount": "Fina sua conta",
@@ -8237,20 +8134,15 @@
   "swapUnderReviewTitle": "Swap em análise",
   "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",
   "swapUnderReviewSupportMessage": "Swap em análise\nID do pedido: {orderId}\nID da solicitação: {requestId}\nNúmero do pedido: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
   "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Ela pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
   "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais.",
   "settingsDarkModeTitle": "Modo escuro",
-  "settingsSourceCodeTitle": "Código-fonte",
   "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado.",
   "backgroundTasksTitle": "Tarefas em segundo plano",
   "blockedInSystemSettings": "Bloqueado nas configurações do sistema",
-  "notificationsBlockedMessage": "As notificações estão bloqueadas nas configurações do sistema.",
   "notificationsTitle": "Notificações",
   "openSystemSettings": "Abrir configurações do sistema",
-  "permissionsTitle": "Permissões",
-  "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
   "sendErrorInvoiceExpiryTooShort": "Esta fatura expira cedo demais. Peça ao destinatário uma nova fatura."
 }

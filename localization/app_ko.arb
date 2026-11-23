@@ -724,10 +724,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "bitcoinSettingsTestnetModeTitle": "Testnet 형태",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "내 계정",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1280,10 +1276,6 @@
   "sellSendPaymentAdvanced": "고급 설정",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "수입 지갑",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google 드라이브에 연결 실패",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -2002,10 +1994,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "서비스 상태",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "가격은 상쾌합니다 ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2102,10 +2090,6 @@
   "exchangeAuthOk": "이름 *",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "안전 Pin",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "지원하다",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2286,10 +2270,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "bull Bitcoin과 공유하십시오.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "나는 이해",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "보안 파일 업로드",
   "@exchangeFileUploadTitle": {
@@ -4127,16 +4107,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev 모드",
   "exchangeTestnetBasicAuthTitle": "Testnet 거래소 자격 증명",
-  "exchangeTestnetBasicAuthDescription": "Testnet 거래소 웹 페이지(로그인 및 KYC)를 위한 HTTP 기본 인증.",
-  "exchangeTestnetBasicAuthUsernameLabel": "사용자 이름",
-  "exchangeTestnetBasicAuthPasswordLabel": "비밀번호",
-  "exchangeTestnetBasicAuthClearButton": "지우기",
-  "exchangeTestnetBasicAuthSaveButton": "저장",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "인보이스를 해독",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4904,10 +4875,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "슈퍼 유저 모드 비활성화.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "이용 약관",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -5157,10 +5124,6 @@
   "sellExchangeRate": "환율",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "이 모드는 위험합니다. 이를 통해 돈을 잃을 수 있음을 인정합니다",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "비트코인",
   "@sellTitle": {
@@ -5543,10 +5506,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "방송 거래",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "Ledger로 로그인",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5649,10 +5608,6 @@
   "quickAndEasyTag": "빠르고 & 쉬운",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "이름 *",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "이름 *",
   "@payEmail": {
@@ -5819,10 +5774,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "Dev 모드",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "Original 거래",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -5834,10 +5785,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "사용자 번호 clipboard에 복사",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "앱 버전: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "선정된 빌러 이름",
   "@payBillerNameValue": {
@@ -6839,10 +6786,6 @@
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 신생 동물",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "스왑 금액",
   "@swapTransferAmount": {
@@ -7858,16 +7801,6 @@
   "priceFailedToLoad": "가격을 불러오지 못했습니다",
   "statusScreenTryAgain": "다시 시도",
   "statusScreenContinue": "계속",
-  "settingsErrorReportingTitle": "오류 보고",
-  "errorReportingProgramTitle": "오류 보고 프로그램",
-  "errorReportingProgramDescriptionP1": "오류 보고 프로그램에 참여하여 Bull을 개선하는 데 도움을 주세요.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin은 문제가 발생하면 익명화된 오류 보고서를 전송합니다.",
-  "errorReportingProgramDescriptionP3": "이를 통해 각 버그가 얼마나 많은 사용자에게 영향을 미치는지 파악하고 그에 따라 수정 우선순위를 정할 수 있습니다. 이 정보가 없으면 영향 범위를 측정할 방법이 없습니다.",
-  "errorReportingProgramDescriptionP4": "보고서는 오직 Bull 서버로만 전송되며, 제3자에게 전달되지 않습니다.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin은 오픈소스이므로 전송되는 내용을 직접 확인할 수 있습니다.",
-  "errorReportingAcceptButton": "수락",
-  "errorReportingCancelButton": "취소",
-  "errorReportingRestartSnackbar": "이 변경 사항을 적용하려면 앱을 재시작하세요",
   "backupWarningTitle": "지금 바로 지갑을 백업하세요",
   "backupWarningBackupNow": "예",
   "backupWarningBackupLater": "아니요, 위험을 이해했습니다",
@@ -7993,44 +7926,11 @@
   "dcaReceiveAddressError": "지갑에서 수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
   "dcaOrderCreationError": "반복 구매를 생성할 수 없습니다. 나중에 다시 시도해 주세요.",
   "settingsPayjoinDisclaimerTitle": "Payjoin 고지사항",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin 고지사항",
-  "settingsPayjoinAdvancedTitle": "Payjoin 고급 설정",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
   "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",
   "sendSwapExpiredTitle": "주문 만료",
   "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다.",
-  "settingsScreenPrivacyTitle": "화면 개인정보 보호",
-  "settingsScreenPrivacyDisabledMessage": "이제 민감한 화면에서 스크린샷이 허용됩니다",
-  "settingsSearchHint": "설정 검색",
-  "settingsSearchNoResults": "설정을 찾을 수 없습니다.",
-  "settingsSearchMempoolKeywords": "블록 탐색기|수수료 추정|거래 수수료|멤풀 API",
-  "settingsSearchExchangeKeywords": "계정|거래소 계정|거래|매수 및 매도",
-  "settingsSearchStartBackupKeywords": "백업 생성|백업 저장|지갑 백업",
-  "settingsSearchRecoverbullKeywords": "암호화 백업|클라우드 백업|암호화 보관소|보관소 복구",
-  "settingsSearchLabelsKeywords": "지갑 라벨|거래 라벨|BIP329|라벨 가져오기|라벨 내보내기",
-  "settingsSearchTransactionHistoryKeywords": "거래 내보내기|거래 내역 내보내기|CSV|지갑 기록",
-  "settingsSearchAppSettingsKeywords": "앱 환경설정|애플리케이션 설정|일반 설정",
-  "settingsSearchTermsOfServiceKeywords": "이용 약관|법률 정보|사용자 계약|TOS",
-  "settingsSearchServicesStatusKeywords": "서비스 상태|시스템 상태|온라인|서비스 중단",
-  "settingsSearchImportWalletKeywords": "지갑 추가|지갑 복구|니모닉 가져오기|읽기 전용 지갑|하드웨어 지갑",
-  "settingsSearchBroadcastTransactionKeywords": "서명된 거래 전파|거래 푸시|원시 거래|거래 16진수|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin 개인정보 보호|협업 거래|P2EP",
-  "settingsSearchAutoswapKeywords": "자동 스왑|자동 교환|자동 전송|즉시 지갑 잔액",
-  "settingsSearchElectrumKeywords": "비트코인 노드|Electrum 노드|사용자 지정 서버|개인 노드",
-  "settingsSearchTestnetModeKeywords": "테스트 네트워크|비트코인 테스트넷|Liquid 테스트넷|테스트 모드",
-  "settingsSearchSeedViewerKeywords": "시드 구문|복구 구문|니모닉|백업 단어|시드 보기",
-  "settingsSearchBip85Keywords": "결정론적 엔트로피|하위 시드|파생 엔트로피|BIP85",
-  "settingsSearchLanguageKeywords": "로케일|번역|표시 언어|선호 언어",
-  "settingsSearchThemeKeywords": "화면 모양|다크 모드|라이트 모드|시스템 테마",
-  "settingsSearchCurrencyKeywords": "법정화폐|현지 통화|기본 통화|환전 통화",
-  "settingsSearchSecurityPinKeywords": "PIN 코드|암호|앱 잠금|인증|PIN 변경",
-  "settingsSearchLogsKeywords": "디버그 로그|진단 로그|앱 로그|로그 내보내기",
-  "settingsSearchDevModeKeywords": "개발자 모드|개발 설정|디버그 모드|고급 테스트",
-  "settingsSearchTestnetCredentialsKeywords": "테스트넷 사용자 자격 증명|테스트넷 로그인|테스트넷 사용자 이름|테스트넷 비밀번호|기본 인증",
-  "settingsSearchErrorReportingKeywords": "충돌 보고서|버그 보고서|진단|원격 측정|오류 로그",
-  "settingsSearchScreenPrivacyKeywords": "스크린샷|화면 녹화|화면 캡처 보호|개인정보 보호",
-  "settingsSearchStartTyping": "결과를 보려면 입력을 시작하세요.",
   "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
   "sendErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sendErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
@@ -8045,8 +7945,6 @@
   "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요",
   "walletLoadFailedRetryHint": "아래로 당겨 새로 고친 후 다시 시도하세요",
   "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요.",
-  "settingsErrorConsentNotGiven": "이 설정을 변경하려면 확인이 필요합니다.",
-  "settingsErrorLoadingLogs": "진단 로그를 준비할 수 없습니다. 다시 시도해 주세요.",
   "exchangeErrorSigningOut": "완전히 로그아웃되지 않았습니다. 다시 시도해 주세요.",
   "exchangeErrorSavingPreferences": "설정을 저장할 수 없습니다. 다시 시도해 주세요.",
   "exchangeErrorLoadingAnnouncements": "공지사항을 불러올 수 없습니다.",
@@ -8168,7 +8066,6 @@
   "fundExchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "exchangeErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "walletBalancesMayBeStale": "잔액을 업데이트하지 못해 최신 상태가 아닐 수 있습니다.",
-  "settingsSearchTorKeywords": "Tor 프록시|Orbot|어니언 라우팅|내장 Tor|개인정보 보호 네트워크",
   "limitOrdersInsufficientBalance": "충분한 균형",
   "limitOrdersInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
   "limitOrdersFundAccount": "계정 생성",
@@ -8225,20 +8122,15 @@
   "swapUnderReviewTitle": "검토 중인 스왑",
   "swapUnderReviewDescription": "이 스왑은 수동 검토가 필요합니다. 지원팀에 문의하세요. 지원 계정이 없다면 계정만 만들면 되며 KYC는 필요하지 않습니다.",
   "swapUnderReviewSupportMessage": "검토 중인 스왑\n주문 ID: {orderId}\n요청 ID: {requestId}\n주문 번호: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "자동 스왑",
   "broadcastSignedTxErrorAlreadyInChain": "이 거래는 이미 블록체인에 있습니다. 더 이상 브로드캐스트할 것이 없습니다.",
   "broadcastSignedTxErrorRejected": "네트워크가 이 거래를 거부했습니다. 서명이 완전하지 않거나, 유효하지 않거나, 다른 결제와 충돌할 수 있습니다.",
   "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
   "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다.",
   "settingsDarkModeTitle": "다크 모드",
-  "settingsSourceCodeTitle": "소스 코드",
   "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
   "backgroundTasksTitle": "백그라운드 작업",
   "blockedInSystemSettings": "시스템 설정에서 차단됨",
-  "notificationsBlockedMessage": "시스템 설정에서 알림이 차단되어 있습니다.",
   "notificationsTitle": "알림",
   "openSystemSettings": "시스템 설정 열기",
-  "permissionsTitle": "권한",
-  "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
   "sendErrorInvoiceExpiryTooShort": "이 인보이스는 너무 빨리 만료됩니다. 수취인에게 새 인보이스를 요청하세요."
 }

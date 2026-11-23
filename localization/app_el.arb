@@ -646,10 +646,6 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "Από",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1122,10 +1118,6 @@
   "sellSendPaymentAdvanced": "Προχωρημένες ρυθμίσεις",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "Εισαγωγή Wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "payEnterInvoice": "Εισάγετε Invoice",
   "@payEnterInvoice": {
@@ -1750,10 +1742,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "Υπηρεσίες status",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -1846,10 +1834,6 @@
   "exchangeAuthOk": "ΕΝΤΆΞΕΙ",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "Ασφάλεια Pin Pin",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "Πλήρης",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2006,10 +1990,6 @@
   "exchangeDcaAddressLabelLiquid": "Liquid διεύθυνση",
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
-  },
-  "settingsDevModeUnderstandButton": "Καταλαβαίνω ότι καταλαβαίνω",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "Secure File Lift",
   "@exchangeFileUploadTitle": {
@@ -3569,16 +3549,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev Mode",
   "exchangeTestnetBasicAuthTitle": "Διαπιστευτήρια ανταλλακτηρίου testnet",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth για τις ιστοσελίδες του ανταλλακτηρίου testnet (σύνδεση και KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Όνομα χρήστη",
-  "exchangeTestnetBasicAuthPasswordLabel": "Κωδικός πρόσβασης",
-  "exchangeTestnetBasicAuthClearButton": "Εκκαθάριση",
-  "exchangeTestnetBasicAuthSaveButton": "Αποθήκευση",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "Αποζημιωμένος να αποκωδικοποιήσει το τιμολόγιο",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4236,10 +4207,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "Superuser mode με αναπηρία.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "Όροι Υπηρεσίας",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -4444,10 +4411,6 @@
   "sellExchangeRate": "Συναλλαγματική ισοτιμία",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "Αυτή η λειτουργία είναι επικίνδυνη. Επιτρέποντάς το, αναγνωρίζετε ότι μπορείτε να χάσετε χρήματα",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "Πουλά Bitcoin",
   "@sellTitle": {
@@ -4768,10 +4731,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "Εγγραφείτε με Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -4843,10 +4802,6 @@
   "sendSlowPaymentWarning": "Αργή προειδοποίηση πληρωμής",
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
-  },
-  "settingsThemeTitle": "Theme",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "E-mail email",
   "@payEmail": {
@@ -4968,10 +4923,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "Dev Mode",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "Original συναλλαγή",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -4983,10 +4934,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "Αριθμός χρήστη που αντιγράφηκε στο clipboard",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "Εφαρμογή έκδοση: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "Επιλέξτε όνομα Biller",
   "@payBillerNameValue": {
@@ -5798,10 +5745,6 @@
   "importMnemonicSelectType": "Επιλέξτε έναν τύπο πορτοφολιού για εισαγωγή",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 προσδιοριστικές εντροπίες",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "Ποσό ανταλλαγής",
   "@swapTransferAmount": {
@@ -7946,16 +7889,6 @@
   "statusScreenContinue": "Συνέχεια",
   "viewerAddressTab": "Διεύθυνση",
   "viewerPaymentUriTab": "URI πληρωμής",
-  "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
-  "errorReportingProgramTitle": "Πρόγραμμα Αναφοράς Σφαλμάτων",
-  "errorReportingProgramDescriptionP1": "Βοηθήστε μας να βελτιώσουμε το Bull συμμετέχοντας στο πρόγραμμα αναφοράς σφαλμάτων μας.",
-  "errorReportingProgramDescriptionP2": "Η Bull Bitcoin στέλνει ανώνυμες αναφορές σφαλμάτων όταν κάτι δεν λειτουργεί σωστά.",
-  "errorReportingProgramDescriptionP3": "Αυτό μας επιτρέπει να δούμε πόσους χρήστες επηρεάζει κάθε σφάλμα και να ιεραρχήσουμε ανάλογα τις διορθώσεις· χωρίς αυτό, δεν έχουμε τρόπο να μετρήσουμε τον αντίκτυπο.",
-  "errorReportingProgramDescriptionP4": "Οι αναφορές αποστέλλονται μόνο στον διακομιστή της Bull, ποτέ σε τρίτους.",
-  "errorReportingProgramDescriptionP5": "Η Bull Bitcoin είναι ανοιχτού κώδικα, οπότε μπορείτε να επαληθεύσετε τι αποστέλλεται.",
-  "errorReportingAcceptButton": "Αποδοχή",
-  "errorReportingCancelButton": "Ακύρωση",
-  "errorReportingRestartSnackbar": "Επανεκκινήστε την εφαρμογή για να εφαρμοστεί αυτή η αλλαγή",
   "backupWarningTitle": "ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ",
   "backupWarningBackupNow": "ΝΑΙ",
   "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
@@ -7982,44 +7915,11 @@
   "dcaReceiveAddressError": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης στο πορτοφόλι σας. Δοκιμάστε ξανά.",
   "dcaOrderCreationError": "Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "settingsPayjoinDisclaimerTitle": "Ενημέρωση για το Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
-  "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
   "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
   "sendSwapExpiredTitle": "Η παραγγελία έληξε",
   "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας.",
-  "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
-  "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες",
-  "settingsSearchHint": "Αναζήτηση ρυθμίσεων",
-  "settingsSearchNoResults": "Δεν βρέθηκαν ρυθμίσεις.",
-  "settingsSearchMempoolKeywords": "εξερευνητής μπλοκ|εκτίμηση προμηθειών|προμήθειες συναλλαγών|mempool API",
-  "settingsSearchExchangeKeywords": "λογαριασμός|λογαριασμός ανταλλακτηρίου|συναλλαγές|αγορά και πώληση",
-  "settingsSearchStartBackupKeywords": "δημιουργία αντιγράφου ασφαλείας|αποθήκευση αντιγράφου ασφαλείας|αντίγραφο πορτοφολιού",
-  "settingsSearchRecoverbullKeywords": "κρυπτογραφημένο αντίγραφο ασφαλείας|αντίγραφο στο cloud|κρυπτογραφημένο θησαυροφυλάκιο|ανάκτηση θησαυροφυλακίου|Recoverbull",
-  "settingsSearchLabelsKeywords": "ετικέτες πορτοφολιού|ετικέτες συναλλαγών|BIP329|εισαγωγή ετικετών|εξαγωγή ετικετών",
-  "settingsSearchTransactionHistoryKeywords": "εξαγωγή συναλλαγών|εξαγωγή ιστορικού|CSV|ιστορικό πορτοφολιού",
-  "settingsSearchAppSettingsKeywords": "προτιμήσεις εφαρμογής|ρυθμίσεις εφαρμογής|γενικές ρυθμίσεις",
-  "settingsSearchTermsOfServiceKeywords": "όροι και προϋποθέσεις|νομικά|συμφωνία χρήστη|TOS",
-  "settingsSearchServicesStatusKeywords": "κατάσταση υπηρεσιών|κατάσταση συστήματος|σε σύνδεση|διακοπή λειτουργίας",
-  "settingsSearchImportWalletKeywords": "προσθήκη πορτοφολιού|ανάκτηση πορτοφολιού|εισαγωγή μνημονικής φράσης|πορτοφόλι μόνο παρακολούθησης|πορτοφόλι υλικού",
-  "settingsSearchBroadcastTransactionKeywords": "μετάδοση υπογεγραμμένης συναλλαγής|δημοσίευση συναλλαγής|ακατέργαστη συναλλαγή|hex συναλλαγής|PSBT",
-  "settingsSearchPayjoinKeywords": "ιδιωτικότητα Payjoin|συνεργατική συναλλαγή|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "αυτόματη ανταλλαγή|αυτόματο swap|αυτόματη μεταφορά|υπόλοιπο άμεσου πορτοφολιού|Autoswap",
-  "settingsSearchElectrumKeywords": "κόμβος Bitcoin|κόμβος Electrum|προσαρμοσμένος διακομιστής|προσωπικός κόμβος|Electrum",
-  "settingsSearchTestnetModeKeywords": "δοκιμαστικό δίκτυο|Bitcoin testnet|Liquid testnet|λειτουργία δοκιμής|Testnet",
-  "settingsSearchSeedViewerKeywords": "φράση seed|φράση ανάκτησης|μνημονική φράση|λέξεις αντιγράφου ασφαλείας|προβολή seed",
-  "settingsSearchBip85Keywords": "ντετερμινιστική εντροπία|παράγωγα seed|παράγωγη εντροπία|BIP85",
-  "settingsSearchLanguageKeywords": "τοπικές ρυθμίσεις|μετάφραση|γλώσσα εμφάνισης|προτιμώμενη γλώσσα",
-  "settingsSearchThemeKeywords": "εμφάνιση|σκοτεινή λειτουργία|φωτεινή λειτουργία|θέμα συστήματος",
-  "settingsSearchCurrencyKeywords": "παραστατικό νόμισμα|τοπικό νόμισμα|προεπιλεγμένο νόμισμα|νόμισμα μετατροπής",
-  "settingsSearchSecurityPinKeywords": "κωδικός PIN|κωδικός πρόσβασης|κλείδωμα εφαρμογής|έλεγχος ταυτότητας|αλλαγή PIN",
-  "settingsSearchLogsKeywords": "αρχεία καταγραφής debug|διαγνωστικά αρχεία|αρχεία εφαρμογής|εξαγωγή αρχείων καταγραφής",
-  "settingsSearchDevModeKeywords": "λειτουργία προγραμματιστή|ρυθμίσεις ανάπτυξης|λειτουργία debug|προηγμένες δοκιμές",
-  "settingsSearchTestnetCredentialsKeywords": "διαπιστευτήρια testnet|σύνδεση testnet|όνομα χρήστη testnet|κωδικός testnet|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "αναφορές σφαλμάτων λειτουργίας|αναφορές προβλημάτων|διαγνωστικά|τηλεμετρία|αρχεία σφαλμάτων",
-  "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο",
-  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα.",
   "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
   "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
@@ -8034,8 +7934,6 @@
   "walletWarningElectrumAction": "Πατήστε για να ρυθμίσετε τον διακομιστή",
   "walletLoadFailedRetryHint": "Τραβήξτε προς τα κάτω για ανανέωση και δοκιμάστε ξανά",
   "settingsErrorSavingSetting": "Δεν ήταν δυνατή η αποθήκευση αυτής της ρύθμισης. Παρακαλώ δοκιμάστε ξανά.",
-  "settingsErrorConsentNotGiven": "Αυτή η ρύθμιση απαιτεί την επιβεβαίωσή σας πριν αλλάξει.",
-  "settingsErrorLoadingLogs": "Δεν ήταν δυνατή η προετοιμασία των αρχείων διαγνωστικών. Παρακαλώ δοκιμάστε ξανά.",
   "exchangeErrorSigningOut": "Δεν ήταν δυνατή η πλήρης αποσύνδεσή σας. Παρακαλώ δοκιμάστε ξανά.",
   "exchangeErrorSavingPreferences": "Δεν ήταν δυνατή η αποθήκευση των προτιμήσεών σας. Παρακαλώ δοκιμάστε ξανά.",
   "exchangeErrorLoadingAnnouncements": "Δεν ήταν δυνατή η φόρτωση των ανακοινώσεων.",
@@ -8157,7 +8055,6 @@
   "fundExchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "exchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "walletBalancesMayBeStale": "Δεν ήταν δυνατή η ενημέρωση των υπολοίπων σας και ενδέχεται να μην είναι ενημερωμένα.",
-  "settingsSearchTorKeywords": "διακομιστής μεσολάβησης Tor|Orbot|δρομολόγηση onion|ενσωματωμένο Tor|δίκτυο ιδιωτικότητας",
   "limitOrdersInsufficientBalance": "Ανεπαρκή ισορροπία",
   "limitOrdersInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
   "limitOrdersFundAccount": "Χρηματοδότηση του λογαριασμού σας",
@@ -8214,20 +8111,15 @@
   "swapUnderReviewTitle": "Ανταλλαγή υπό έλεγχο",
   "swapUnderReviewDescription": "Αυτή η ανταλλαγή απαιτεί χειροκίνητο έλεγχο. Επικοινωνήστε με την υποστήριξη για βοήθεια. Εάν δεν έχετε λογαριασμό υποστήριξης, χρειάζεται μόνο να δημιουργήσετε έναν· δεν απαιτείται KYC.",
   "swapUnderReviewSupportMessage": "Ανταλλαγή υπό έλεγχο\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Αυτόματη ανταλλαγή",
   "broadcastSignedTxErrorAlreadyInChain": "Αυτή η συναλλαγή βρίσκεται ήδη στο blockchain. Δεν υπάρχει τίποτα άλλο προς μετάδοση.",
   "broadcastSignedTxErrorRejected": "Το δίκτυο απέρριψε αυτή τη συναλλαγή. Μπορεί να μην είναι πλήρως υπογεγραμμένη, να είναι άκυρη ή να συγκρούεται με άλλη πληρωμή.",
   "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
   "settingsDarkModeTitle": "Σκούρα λειτουργία",
-  "settingsSourceCodeTitle": "Πηγαίος κώδικας",
   "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
   "backgroundTasksTitle": "Εργασίες στο παρασκήνιο",
   "blockedInSystemSettings": "Αποκλείστηκε στις ρυθμίσεις συστήματος",
-  "notificationsBlockedMessage": "Οι ειδοποιήσεις έχουν αποκλειστεί στις ρυθμίσεις συστήματος.",
   "notificationsTitle": "Ειδοποιήσεις",
   "openSystemSettings": "Άνοιγμα ρυθμίσεων συστήματος",
-  "permissionsTitle": "Άδειες",
-  "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών",
   "sendErrorInvoiceExpiryTooShort": "Αυτό το invoice λήγει πολύ σύντομα. Ζητήστε ένα νέο invoice από τον παραλήπτη."
 }

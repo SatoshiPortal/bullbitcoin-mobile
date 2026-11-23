@@ -658,10 +658,6 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "bitcoinSettingsTestnetModeTitle": "نموذج الاختبار",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "من",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1166,10 +1162,6 @@
   "sellSendPaymentAdvanced": "المراحل المتقدمة",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "جدار استيراد",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "payEnterInvoice": "الفواتير",
   "@payEnterInvoice": {
@@ -1832,10 +1824,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "الخدمات",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "ستنعش الأسعار ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -1924,10 +1912,6 @@
   "exchangeAuthOk": "حسنا",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "الأمن",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "مكتملة",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2092,10 +2076,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "(تشارك مع (بول بيتكين.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "أنا أفهم",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "الشحن الآمن",
   "@exchangeFileUploadTitle": {
@@ -3784,16 +3764,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev Mode",
   "exchangeTestnetBasicAuthTitle": "بيانات اعتماد منصة تبادل testnet",
-  "exchangeTestnetBasicAuthDescription": "مصادقة HTTP الأساسية لصفحات ويب منصة تبادل testnet (تسجيل الدخول و KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "اسم المستخدم",
-  "exchangeTestnetBasicAuthPasswordLabel": "كلمة المرور",
-  "exchangeTestnetBasicAuthClearButton": "مسح",
-  "exchangeTestnetBasicAuthSaveButton": "حفظ",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "فشل في فك شفرة الفاتورة",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4503,10 +4474,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "وضع المستعمل الخارق معطل.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "مدة الخدمة",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -4752,10 +4719,6 @@
   "sellExchangeRate": "سعر الصرف",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "هذه الطريقة خطرة بتمكينها، تعترفين بأنكِ قد تخسرين المال",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "Sell Bitcoin",
   "@sellTitle": {
@@ -5092,10 +5055,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "المعاملات الإذاعية",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "وقع مع ليدجر",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5194,10 +5153,6 @@
   "sendSlowPaymentWarning": "بطء الإنذار بالمدفوعات",
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
-  },
-  "settingsThemeTitle": "الموضوع",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "Email",
   "@payEmail": {
@@ -5346,10 +5301,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "Dev Mode",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "المعاملة الأصلية",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -5361,10 +5312,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "مستعمل رقم مستنسخ",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "نسخة التطبيق: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "Selected Biller Name",
   "@payBillerNameValue": {
@@ -6276,10 +6223,6 @@
   "importMnemonicSelectType": "اختيار نوع المحفظة للاستيراد",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "مبلغ المبادلة",
   "@swapTransferAmount": {
@@ -7846,16 +7789,6 @@
   "statusScreenContinue": "متابعة",
   "viewerAddressTab": "العنوان",
   "viewerPaymentUriTab": "رابط الدفع (URI)",
-  "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
-  "errorReportingProgramTitle": "برنامج الإبلاغ عن الأخطاء",
-  "errorReportingProgramDescriptionP1": "ساعدنا في تحسين Bull من خلال المشاركة في برنامج الإبلاغ عن الأخطاء.",
-  "errorReportingProgramDescriptionP2": "ترسل بول بيتكوين تقارير أخطاء مجهولة الهوية عند حدوث عطل ما.",
-  "errorReportingProgramDescriptionP3": "يتيح لنا هذا معرفة عدد المستخدمين المتأثرين بكل خلل وتحديد أولويات الإصلاح وفقًا لذلك، وبدونه لا نملك وسيلة لقياس التأثير.",
-  "errorReportingProgramDescriptionP4": "تُرسَل التقارير فقط إلى خادم بول، ولا تُرسَل أبدًا إلى أطراف ثالثة.",
-  "errorReportingProgramDescriptionP5": "بول بيتكوين مفتوحة المصدر، لذا يمكنك التحقق مما يتم إرساله.",
-  "errorReportingAcceptButton": "قبول",
-  "errorReportingCancelButton": "إلغاء",
-  "errorReportingRestartSnackbar": "أعِد تشغيل التطبيق لتطبيق هذا التغيير",
   "backupWarningTitle": "انسخ محفظتك احتياطيًا الآن",
   "backupWarningBackupNow": "نعم",
   "backupWarningBackupLater": "لا، أنا أتفهّم المخاطرة",
@@ -7984,44 +7917,11 @@
   "dcaReceiveAddressError": "تعذر تجهيز عنوان استلام في محفظتك. يُرجى المحاولة مرة أخرى.",
   "dcaOrderCreationError": "تعذر إنشاء الشراء المتكرر. يُرجى المحاولة لاحقًا.",
   "settingsPayjoinDisclaimerTitle": "إخلاء مسؤولية Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
-  "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
   "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
   "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
   "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك.",
-  "settingsScreenPrivacyTitle": "خصوصية الشاشة",
-  "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة",
-  "settingsSearchHint": "البحث في الإعدادات",
-  "settingsSearchNoResults": "لم يتم العثور على إعدادات.",
-  "settingsSearchMempoolKeywords": "مستكشف الكتل|تقدير الرسوم|رسوم المعاملات|واجهة mempool API",
-  "settingsSearchExchangeKeywords": "حساب|حساب المنصة|التداول|شراء وبيع",
-  "settingsSearchStartBackupKeywords": "إنشاء نسخة احتياطية|حفظ نسخة احتياطية|نسخ المحفظة احتياطيا",
-  "settingsSearchRecoverbullKeywords": "نسخة احتياطية مشفرة|نسخة احتياطية سحابية|خزنة مشفرة|استرداد الخزنة",
-  "settingsSearchLabelsKeywords": "تسميات المحفظة|تسميات المعاملات|BIP329|استيراد التسميات|تصدير التسميات",
-  "settingsSearchTransactionHistoryKeywords": "تصدير المعاملات|تصدير سجل المعاملات|CSV|سجل المحفظة",
-  "settingsSearchAppSettingsKeywords": "تفضيلات التطبيق|إعدادات التطبيق|الإعدادات العامة",
-  "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
-  "settingsSearchServicesStatusKeywords": "حالة الخدمات|حالة النظام|متصل|انقطاع الخدمة",
-  "settingsSearchImportWalletKeywords": "إضافة محفظة|استعادة محفظة|استيراد عبارة الاسترداد|محفظة للمشاهدة فقط|محفظة أجهزة",
-  "settingsSearchBroadcastTransactionKeywords": "بث معاملة موقعة|إرسال المعاملة|معاملة خام|بيانات المعاملة السداسية|PSBT",
-  "settingsSearchPayjoinKeywords": "خصوصية Payjoin|معاملة تعاونية|P2EP",
-  "settingsSearchAutoswapKeywords": "Autoswap|مبادلة تلقائية|تحويل تلقائي|رصيد المحفظة الفورية",
-  "settingsSearchElectrumKeywords": "عقدة بيتكوين|عقدة Electrum|خادم مخصص|عقدة شخصية",
-  "settingsSearchTestnetModeKeywords": "شبكة اختبار|شبكة اختبار بيتكوين|شبكة اختبار Liquid|وضع الاختبار",
-  "settingsSearchSeedViewerKeywords": "عبارة البذور|عبارة الاسترداد|Mnemonic|كلمات النسخ الاحتياطي|عرض البذور",
-  "settingsSearchBip85Keywords": "إنتروبيا حتمية|بذور فرعية|إنتروبيا مشتقة|BIP85",
-  "settingsSearchLanguageKeywords": "لغة التطبيق|الترجمة|لغة العرض|اللغة المفضلة",
-  "settingsSearchThemeKeywords": "المظهر|الوضع الداكن|الوضع الفاتح|سمة النظام",
-  "settingsSearchCurrencyKeywords": "العملة الورقية|العملة المحلية|العملة الأساسية|عملة الصرف",
-  "settingsSearchSecurityPinKeywords": "رمز PIN|رمز المرور|قفل التطبيق|المصادقة|تغيير رمز PIN",
-  "settingsSearchLogsKeywords": "سجلات التصحيح|سجلات التشخيص|سجلات التطبيق|تصدير السجلات",
-  "settingsSearchDevModeKeywords": "وضع المطور|إعدادات التطوير|وضع التصحيح|اختبارات متقدمة",
-  "settingsSearchTestnetCredentialsKeywords": "بيانات اعتماد شبكة الاختبار|تسجيل دخول شبكة الاختبار|اسم مستخدم شبكة الاختبار|كلمة مرور شبكة الاختبار|مصادقة أساسية",
-  "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
-  "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
-  "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
   "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
@@ -8036,8 +7936,6 @@
   "walletWarningElectrumAction": "اضغط لضبط إعدادات الخادم",
   "walletLoadFailedRetryHint": "اسحب للأسفل للتحديث وحاول مرة أخرى",
   "settingsErrorSavingSetting": "تعذر حفظ هذا الإعداد. يرجى المحاولة مرة أخرى.",
-  "settingsErrorConsentNotGiven": "يتطلب هذا الإعداد تأكيدك قبل تغييره.",
-  "settingsErrorLoadingLogs": "تعذر تجهيز سجلات التشخيص. يرجى المحاولة مرة أخرى.",
   "exchangeErrorSigningOut": "تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.",
   "exchangeErrorSavingPreferences": "تعذر حفظ تفضيلاتك. يرجى المحاولة مرة أخرى.",
   "exchangeErrorLoadingAnnouncements": "تعذر تحميل الإعلانات.",
@@ -8159,7 +8057,6 @@
   "fundExchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "exchangeErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "walletBalancesMayBeStale": "تعذّر تحديث أرصدتك وقد لا تكون محدّثة.",
-  "settingsSearchTorKeywords": "وكيل Tor|Orbot|توجيه بصلي|Tor المدمج|شبكة الخصوصية",
   "limitOrdersInsufficientBalance": "الرصيد غير الكافي",
   "limitOrdersInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
   "limitOrdersFundAccount": "صندوق حسابك",
@@ -8216,20 +8113,15 @@
   "swapUnderReviewTitle": "المبادلة قيد المراجعة",
   "swapUnderReviewDescription": "تتطلب هذه المبادلة مراجعة يدوية. تواصل مع الدعم للحصول على المساعدة. إذا لم يكن لديك حساب دعم، فعليك فقط إنشاء حساب؛ لا يلزم KYC.",
   "swapUnderReviewSupportMessage": "المبادلة قيد المراجعة\nمعرّف الطلبية: {orderId}\nمعرّف الطلب: {requestId}\nرقم الطلبية: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "المبادلة التلقائية",
   "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه.",
   "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
   "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
   "settingsDarkModeTitle": "الوضع الداكن",
-  "settingsSourceCodeTitle": "الشيفرة المصدرية",
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
   "backgroundTasksTitle": "المهام في الخلفية",
   "blockedInSystemSettings": "محظور في إعدادات النظام",
-  "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",
   "notificationsTitle": "الإشعارات",
   "openSystemSettings": "فتح إعدادات النظام",
-  "permissionsTitle": "الأذونات",
-  "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة."
 }

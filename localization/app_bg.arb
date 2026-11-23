@@ -685,10 +685,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "bitcoinSettingsTestnetModeTitle": "Режим тестнета",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "От",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1165,10 +1161,6 @@
   "sellSelectNetwork": "Изберете мрежа",
   "@sellSelectNetwork": {
     "description": "Screen title for network selection"
-  },
-  "walletSettingsImportWalletTitle": "Импортиране на портфейл",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Неуспешно свързване с Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -1759,10 +1751,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "settingsServiceStatusTitle": "Статус на услугите",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "Цената ще се обнови след ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -1834,10 +1822,6 @@
   "receiveLiquidConfirmationMessage": "Ще бъде потвърдена след няколко секунди.",
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
-  },
-  "settingsSecurityPinTitle": "PIN за сигурност",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "sellArsBalance": "Баланс ARS",
   "@sellArsBalance": {
@@ -1974,10 +1958,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "споделено с Bull Bitcoin.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "Разбирам",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "Сигурно качване на файл",
   "@exchangeFileUploadTitle": {
@@ -3409,16 +3389,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Режим за разработчици",
   "exchangeTestnetBasicAuthTitle": "Идентификационни данни за testnet борсата",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth за уеб страниците на testnet борсата (вход и KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Потребителско име",
-  "exchangeTestnetBasicAuthPasswordLabel": "Парола",
-  "exchangeTestnetBasicAuthClearButton": "Изчисти",
-  "exchangeTestnetBasicAuthSaveButton": "Запази",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "Неуспешно декодиране на инвойса",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -3984,10 +3955,6 @@
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
   },
-  "settingsSuperuserModeDisabledMessage": "Режимът на суперпотребителя е деактивиран.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "Условия за ползване",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -4209,10 +4176,6 @@
   "sellExchangeRate": "Курс на обмен",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "Този режим е рискован. При активирането му приемате, че може да загубите пари.",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "Продайте биткойн",
   "@sellTitle": {
@@ -4507,10 +4470,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "Изпрати транзакцията",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "Подпиши с Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -4589,10 +4548,6 @@
   "quickAndEasyTag": "Бързо и лесно",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "Тема",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "Имейл",
   "@payEmail": {
@@ -4716,10 +4671,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "Режим за разработчици",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "Оригинална транзакция.",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -4731,10 +4682,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "Номерът на потребителя е копиран в клипборда",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "Версия на приложението: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "Избрано име на издателя на фактурата",
   "@payBillerNameValue": {
@@ -5562,10 +5509,6 @@
   "importMnemonicSelectType": "Изберете тип портфейл за импортиране",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Детерминирани ентропии",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
   "swapTransferAmount": "Сума за обмен",
   "@swapTransferAmount": {
@@ -6891,16 +6834,6 @@
   "logoutConfirmationDescription": "Сигурни ли сте, че искате да излезете от акаунта си в Bull Bitcoin? Ще трябва да влезете отново, за да получите достъп до функциите на борсата.",
   "logoutConfirmationCancel": "Отказ",
   "logoutConfirmationLogout": "Изход",
-  "settingsErrorReportingTitle": "Отчитане на грешки",
-  "errorReportingProgramTitle": "Програма за отчитане на грешки",
-  "errorReportingProgramDescriptionP1": "Помогнете ни да подобрим Bull, като се включите в нашата програма за отчитане на грешки.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin изпраща анонимизирани доклади за грешки, когато нещо се повреди.",
-  "errorReportingProgramDescriptionP3": "Това ни позволява да виждаме колко потребители засяга всеки бъг и да приоритизираме поправките съответно — без него нямаме начин да измерим въздействието.",
-  "errorReportingProgramDescriptionP4": "Докладите отиват само на сървъра на Bull, никога до трети страни.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin е с отворен код, така че можете да проверите какво се изпраща.",
-  "errorReportingAcceptButton": "Приеми",
-  "errorReportingCancelButton": "Отказ",
-  "errorReportingRestartSnackbar": "Рестартирайте приложението, за да приложите тази промяна",
   "backupWarningTitle": "АРХИВИРАЙТЕ ПОРТФЕЙЛА СИ СЕГА",
   "backupWarningBackupNow": "ДА",
   "backupWarningBackupLater": "НЕ, РАЗБИРАМ РИСКА",
@@ -6927,44 +6860,11 @@
   "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
   "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно.",
   "settingsPayjoinDisclaimerTitle": "Уведомление за Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
-  "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
   "sendSwapExpiredTitle": "Поръчката изтече",
   "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо.",
-  "settingsScreenPrivacyTitle": "Поверителност на екрана",
-  "settingsScreenPrivacyDisabledMessage": "Екранните снимки вече са разрешени на чувствителните екрани",
-  "settingsSearchHint": "Търсене в настройките",
-  "settingsSearchNoResults": "Няма намерени настройки.",
-  "settingsSearchMempoolKeywords": "блоков експлорър|оценка на таксите|такси за транзакции|mempool API",
-  "settingsSearchExchangeKeywords": "акаунт|акаунт в борсата|търговия|купуване и продаване",
-  "settingsSearchStartBackupKeywords": "създаване на резервно копие|запазване на резервно копие|архивиране на портфейла",
-  "settingsSearchRecoverbullKeywords": "криптирано резервно копие|облачно резервно копие|криптиран трезор|възстановяване от трезор|Recoverbull",
-  "settingsSearchLabelsKeywords": "етикети на портфейла|етикети на транзакциите|BIP329|импортиране на етикети|експортиране на етикети",
-  "settingsSearchTransactionHistoryKeywords": "експортиране на транзакции|експорт на транзакции|CSV|история на портфейла",
-  "settingsSearchAppSettingsKeywords": "предпочитания на приложението|настройки на приложението|общи настройки",
-  "settingsSearchTermsOfServiceKeywords": "общи условия|правна информация|потребителско споразумение|TOS",
-  "settingsSearchServicesStatusKeywords": "състояние на услугите|системен статус|онлайн|прекъсване",
-  "settingsSearchImportWalletKeywords": "добавяне на портфейл|възстановяване на портфейл|импортиране на мнемонична фраза|портфейл само за наблюдение|хардуерен портфейл",
-  "settingsSearchBroadcastTransactionKeywords": "излъчване на подписана транзакция|публикуване на транзакция|сурова транзакция|hex на транзакция|PSBT",
-  "settingsSearchPayjoinKeywords": "поверителност с Payjoin|съвместна транзакция|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "автоматичен суап|автоматична размяна|автоматично прехвърляне|баланс на незабавния портфейл|Autoswap",
-  "settingsSearchElectrumKeywords": "биткойн възел|Electrum възел|персонализиран сървър|личен възел|Electrum",
-  "settingsSearchTestnetModeKeywords": "тестова мрежа|Bitcoin testnet|Liquid testnet|тестов режим|Testnet",
-  "settingsSearchSeedViewerKeywords": "seed фраза|фраза за възстановяване|мнемонична фраза|думи за архивиране|показване на seed фразите",
-  "settingsSearchBip85Keywords": "детерминистична ентропия|дъщерни seed фрази|производна ентропия|BIP85",
-  "settingsSearchLanguageKeywords": "регионални настройки|превод|език на интерфейса|предпочитан език",
-  "settingsSearchThemeKeywords": "външен вид|тъмен режим|светъл режим|системна тема",
-  "settingsSearchCurrencyKeywords": "фиатна валута|местна валута|валута по подразбиране|валута за обмен",
-  "settingsSearchSecurityPinKeywords": "PIN код|код за достъп|заключване на приложението|удостоверяване|смяна на PIN",
-  "settingsSearchLogsKeywords": "debug логове|диагностични логове|логове на приложението|експортиране на логове",
-  "settingsSearchDevModeKeywords": "режим за разработчици|настройки за разработка|debug режим|разширено тестване",
-  "settingsSearchTestnetCredentialsKeywords": "данни за вход в testnet|testnet вход|testnet потребителско име|testnet парола|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "доклади за сривове|доклади за грешки|диагностика|телеметрия|логове за грешки",
-  "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност",
-  "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати.",
   "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
   "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
@@ -6979,8 +6879,6 @@
   "walletWarningElectrumAction": "Докоснете, за да настроите сървъра",
   "walletLoadFailedRetryHint": "Плъзнете надолу, за да обновите и опитайте отново",
   "settingsErrorSavingSetting": "Тази настройка не можа да бъде запазена. Моля, опитайте отново.",
-  "settingsErrorConsentNotGiven": "Тази настройка изисква вашето потвърждение, преди да бъде променена.",
-  "settingsErrorLoadingLogs": "Диагностичните дневници не можаха да бъдат подготвени. Моля, опитайте отново.",
   "exchangeErrorSigningOut": "Не можахте да излезете напълно от профила си. Моля, опитайте отново.",
   "exchangeErrorSavingPreferences": "Вашите предпочитания не можаха да бъдат запазени. Моля, опитайте отново.",
   "exchangeErrorLoadingAnnouncements": "Съобщенията не можаха да бъдат заредени.",
@@ -7102,7 +7000,6 @@
   "fundExchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "exchangeErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "walletBalancesMayBeStale": "Балансите ви не можаха да бъдат обновени и може да не са актуални.",
-  "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност",
   "limitOrdersInsufficientBalance": "Недостатъчен баланс",
   "limitOrdersInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
   "limitOrdersFundAccount": "Захрани сметката си",
@@ -7159,20 +7056,15 @@
   "swapUnderReviewTitle": "Обменът се проверява",
   "swapUnderReviewDescription": "Този обмен изисква ръчна проверка. Свържете се с поддръжката за съдействие. Ако нямате акаунт за поддръжка, трябва само да създадете такъв; KYC не се изисква.",
   "swapUnderReviewSupportMessage": "Обменът се проверява\nID на поръчката: {orderId}\nID на заявката: {requestId}\nНомер на поръчката: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Автоматичен обмен",
   "broadcastSignedTxErrorAlreadyInChain": "Тази транзакция вече е в блокчейна. Няма какво повече да се излъчва.",
   "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
   "settingsDarkModeTitle": "Тъмен режим",
-  "settingsSourceCodeTitle": "Изходен код",
   "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси.",
   "backgroundTasksTitle": "Фонови задачи",
   "blockedInSystemSettings": "Блокирано в системните настройки",
-  "notificationsBlockedMessage": "Известията са блокирани в системните настройки.",
   "notificationsTitle": "Известия",
   "openSystemSettings": "Отвори системните настройки",
-  "permissionsTitle": "Разрешения",
-  "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали",
   "sendErrorInvoiceExpiryTooShort": "Валидността на тази фактура изтича твърде скоро. Поискайте нова фактура от получателя."
 }

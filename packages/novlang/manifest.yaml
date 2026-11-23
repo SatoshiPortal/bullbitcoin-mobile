@@ -109,7 +109,6 @@ entries:
   - {catalogue: app, key: coreSwapsChainFailed, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeTestnetBasicAuthDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: wizard, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
@@ -293,11 +292,8 @@ entries:
   - {catalogue: app, key: swapUnderReviewSupportMessage, store: apple, word: swap, euphemism: transfer}
   - {catalogue: announcements, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: settingsExchangeTitle, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: bitcoinSettingsAutoTransferTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: autoBuyInfoMessage, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: limitOrdersBackToExchange, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: settingsPayjoinExchangeSection, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangePaymentSentPastDeadline, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
