@@ -2,22 +2,18 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:sync/sync.dart' show CoinFreezes;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    as app
-    show Network;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
-class _Metadata extends Mock implements WalletRegistrations {}
+class _Inventory extends Mock implements WalletInventory {}
 
 class _Labels extends Mock implements Labels {}
 
@@ -31,7 +27,7 @@ void main() {
 
   late Directory dir;
   late sync.Sync owner;
-  late _Metadata metadata;
+  late _Inventory inventory;
   late _Labels labels;
 
   sync.BitcoinCoin coin(Outpoint outpoint) => sync.BitcoinCoin(
@@ -46,10 +42,12 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('coin-freezes-');
     owner = freezesOnlySync(dir.path);
-    metadata = _Metadata();
+    inventory = _Inventory();
     labels = _Labels();
-    when(() => metadata.fetch(walletId))
-        .thenAnswer((_) async => _row(walletId));
+    when(() => inventory.readWallet(walletId)).thenAnswer(
+      (_) async =>
+          Ok(walletRegistrationForTesting(id: walletId, network: key.network)),
+    );
     when(() => labels.fetch(reference: any(named: 'reference')))
         .thenAnswer((_) async => Ok([]));
   });
@@ -60,7 +58,7 @@ void main() {
 
   WalletUtxoRepositoryImpl repository(sync.Wallet wallet) =>
       WalletUtxoRepositoryImpl(
-        walletRegistrations: metadata,
+        inventory: inventory,
         labelsFacade: labels,
         loadWallet: (_) async => Ok(wallet),
         freezesDatasource: CoinFreezes(sync: () async => owner),
@@ -115,17 +113,3 @@ void main() {
     );
   });
 }
-
-WalletMetadataModel _row(String id) => WalletMetadataModel(
-  id: id,
-  networkCode: app.Network.bitcoinTestnet.name,
-  masterFingerprint: '73c5da0a',
-  xpubFingerprint: 'deadbeef',
-  isEncryptedVaultTested: false,
-  isPhysicalBackupTested: false,
-  xpub: 'public-test-key',
-  externalPublicDescriptor: 'wpkh(public-test-key/0/*)',
-  internalPublicDescriptor: 'wpkh(public-test-key/1/*)',
-  signer: Signer.local,
-  isDefault: true,
-);

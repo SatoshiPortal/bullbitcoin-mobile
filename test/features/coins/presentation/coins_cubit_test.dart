@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:sync/sync.dart'
+    show WalletRevisionState, WalletRevision, WalletKey;
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
 
@@ -56,9 +57,7 @@ void main() {
   const walletId = 'w1';
 
   CoinsCubit buildCubit() => CoinsCubit(
-    watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-      WalletFacade(revisions.stream),
-    ),
+    watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(revisions.stream),
     walletId: walletId,
     getUtxosUsecase: getUtxos,
     freezeUtxosUsecase: freezeUtxos,

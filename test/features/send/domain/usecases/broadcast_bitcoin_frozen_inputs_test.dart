@@ -10,7 +10,7 @@ import 'package:primitives/primitives.dart'
 import 'package:spend/legacy_exceptions.dart';
 import 'package:preferences/preferences.dart';
 import 'package:sync/sync.dart' show CoinFreezes;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:secrets/secrets.dart' show WalletInventory;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
@@ -31,7 +31,7 @@ class _MockSettings extends Mock implements Preferences {}
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
-class _MockWalletRegistrations extends Mock implements WalletRegistrations {}
+class _MockWalletInventory extends Mock implements WalletInventory {}
 
 class _MockLabels extends Mock implements Labels {}
 
@@ -81,7 +81,7 @@ void main() {
     walletUtxoRepository:
         walletUtxoRepository ??
         WalletUtxoRepositoryImpl(
-          walletRegistrations: _MockWalletRegistrations(),
+          inventory: _MockWalletInventory(),
           labelsFacade: _MockLabels(),
           loadWallet: (_) async => throw StateError('Unexpected coin read'),
           freezesDatasource: CoinFreezes(sync: () async => sync),
