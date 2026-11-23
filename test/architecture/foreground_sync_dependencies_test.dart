@@ -41,7 +41,7 @@ const _allowedTargets = <String, String>{
   'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
   'send': 'address_view ark coins fees label_editor receive scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network overview quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange fees label_editor logs network overview quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
   'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',

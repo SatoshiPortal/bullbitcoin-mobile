@@ -8,6 +8,7 @@ import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/novlang/novlang_bull_exchange_localizations.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -37,8 +38,8 @@ BullExchangeFeature _mount({
   onExit: onExit ?? (_) {},
   onOpenSettings: (_) {},
   onAction: (_, _) {},
-  brandAssetPath: 'unused',
-  settingsAssetPath: 'unused',
+  brandAssetPath: Assets.logos.bbLogoSmall.path,
+  settingsAssetPath: Assets.icons.settingsLine.path,
 );
 
 List<RouteBase> _routes(BullExchangeFeature feature) => [
