@@ -1968,4 +1968,121 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
   @override
   String get withdrawConfidentialSepaNotActivatedError =>
       'Activa la opción de pago confidencial para este destinatario SEPA.';
+
+  @override
+  String get limitOrdersTitle => 'Órdenes límite';
+
+  @override
+  String get limitOrdersActiveTitle => 'Órdenes límite activas';
+
+  @override
+  String get limitOrdersCreateNew => 'Crear nueva';
+
+  @override
+  String get limitOrdersMaximumActiveHint =>
+      'Cancela una orden activa antes de crear otra.';
+
+  @override
+  String limitOrdersBuyAt(String price) {
+    return 'Comprar a $price';
+  }
+
+  @override
+  String get limitOrdersCancelAll => 'Cancelar todas';
+
+  @override
+  String get limitOrdersCancelAllTitle =>
+      '¿Cancelar todas las órdenes límite activas?';
+
+  @override
+  String get limitOrdersCancelAllMessage =>
+      'Esta acción es definitiva. Ninguna de estas órdenes se ejecutará tras la cancelación.';
+
+  @override
+  String get limitOrdersDialogConfirm => 'Confirmar';
+
+  @override
+  String get limitOrdersDone => 'Listo';
+
+  @override
+  String get limitOrdersTargetPrice => 'Precio objetivo';
+
+  @override
+  String get limitOrdersFiatAmount => 'Monto';
+
+  @override
+  String get limitOrdersEstimatedBuyPrice => 'Precio de compra estimado';
+
+  @override
+  String get limitOrderDetailsTitle => 'Detalles de la orden límite';
+
+  @override
+  String get limitOrderDetailsStatus => 'Estado';
+
+  @override
+  String get limitOrderDetailsNumber => 'Número de orden';
+
+  @override
+  String get limitOrderDetailsAddress => 'Dirección de destino';
+
+  @override
+  String get limitOrderDetailsCreated => 'Creada';
+
+  @override
+  String get limitOrderDetailsExpires => 'Caduca';
+
+  @override
+  String get limitOrderCancel => 'Cancelar orden límite';
+
+  @override
+  String get limitOrderCancelTitle => '¿Cancelar esta orden límite?';
+
+  @override
+  String get limitOrderCancelMessage =>
+      'La cancelación es definitiva y esta orden ya no se ejecutará.';
+
+  @override
+  String get limitOrderStatusActive => 'Activa';
+
+  @override
+  String get limitOrderStatusExecuted => 'Ejecutada';
+
+  @override
+  String get limitOrderStatusCancelled => 'Cancelada';
+
+  @override
+  String get limitOrderStatusExpired => 'Caducada';
+
+  @override
+  String get limitOrderStatusFailed => 'Fallida';
+
+  @override
+  String get limitOrdersAccountUnavailableError =>
+      'No se pudieron cargar tu cuenta de Bull Bitcoin o tus saldos. Inténtalo de nuevo.';
+
+  @override
+  String get limitOrderNotFoundError => 'No se encontró esta orden límite.';
+
+  @override
+  String get limitOrdersLoadError =>
+      'No se pudieron cargar las órdenes límite. Inténtalo de nuevo.';
+
+  @override
+  String get limitOrderCancellationError =>
+      'No se pudo cancelar la orden límite. Inténtalo de nuevo.';
+
+  @override
+  String get limitOrderDetailsEstimatedBitcoin => 'Bitcoin estimado';
+
+  @override
+  String get limitOrdersMaximumActiveError =>
+      'Ya tienes cinco órdenes límite activas. Cancela una antes de crear otra.';
+
+  @override
+  String get limitOrderInvalidAddressError =>
+      'La dirección de destino seleccionada no es válida.';
+
+  @override
+  String get limitOrderCreationError =>
+      'No se pudo crear la orden límite. Inténtalo de nuevo.';
 }

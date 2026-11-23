@@ -1949,4 +1949,123 @@ class ExchangeLocalizationsDe extends ExchangeLocalizations {
   @override
   String get withdrawConfidentialSepaNotActivatedError =>
       'Bitte aktivieren Sie die vertrauliche Zahlungsoption für diesen SEPA-Empfänger.';
+
+  @override
+  String get limitOrdersTitle => 'Limitaufträge';
+
+  @override
+  String get limitOrdersActiveTitle => 'Aktive Limitaufträge';
+
+  @override
+  String get limitOrdersCreateNew => 'Neue erstellen';
+
+  @override
+  String get limitOrdersMaximumActiveHint =>
+      'Stornieren Sie einen aktiven Auftrag, bevor Sie einen weiteren erstellen.';
+
+  @override
+  String limitOrdersBuyAt(String price) {
+    return 'Kaufen bei $price';
+  }
+
+  @override
+  String get limitOrdersCancelAll => 'Alle stornieren';
+
+  @override
+  String get limitOrdersCancelAllTitle =>
+      'Alle aktiven Limitaufträge stornieren?';
+
+  @override
+  String get limitOrdersCancelAllMessage =>
+      'Dieser Vorgang kann nicht rückgängig gemacht werden. Nach der Stornierung wird keiner dieser Aufträge ausgeführt.';
+
+  @override
+  String get limitOrdersDialogConfirm => 'Bestätigen';
+
+  @override
+  String get limitOrdersDone => 'Fertig';
+
+  @override
+  String get limitOrdersTargetPrice => 'Zielpreis';
+
+  @override
+  String get limitOrdersFiatAmount => 'Betrag';
+
+  @override
+  String get limitOrdersEstimatedBuyPrice => 'Voraussichtlicher Kaufpreis';
+
+  @override
+  String get limitOrderDetailsTitle => 'Details des Limitauftrags';
+
+  @override
+  String get limitOrderDetailsStatus => 'Status';
+
+  @override
+  String get limitOrderDetailsNumber => 'Auftragsnummer';
+
+  @override
+  String get limitOrderDetailsAddress => 'Auszahlungsadresse';
+
+  @override
+  String get limitOrderDetailsCreated => 'Erstellt';
+
+  @override
+  String get limitOrderDetailsExpires => 'Läuft ab';
+
+  @override
+  String get limitOrderCancel => 'Limitauftrag stornieren';
+
+  @override
+  String get limitOrderCancelTitle => 'Diesen Limitauftrag stornieren?';
+
+  @override
+  String get limitOrderCancelMessage =>
+      'Die Stornierung kann nicht rückgängig gemacht werden. Dieser Auftrag wird anschließend nicht mehr ausgeführt.';
+
+  @override
+  String get limitOrderStatusActive => 'Aktiv';
+
+  @override
+  String get limitOrderStatusExecuted => 'Ausgeführt';
+
+  @override
+  String get limitOrderStatusCancelled => 'Storniert';
+
+  @override
+  String get limitOrderStatusExpired => 'Abgelaufen';
+
+  @override
+  String get limitOrderStatusFailed => 'Fehlgeschlagen';
+
+  @override
+  String get limitOrdersAccountUnavailableError =>
+      'Ihr Bull-Bitcoin-Konto oder Ihre Guthaben konnten nicht geladen werden. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get limitOrderNotFoundError =>
+      'Dieser Limitauftrag wurde nicht gefunden.';
+
+  @override
+  String get limitOrdersLoadError =>
+      'Die Limitaufträge konnten nicht geladen werden. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get limitOrderCancellationError =>
+      'Der Limitauftrag konnte nicht storniert werden. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get limitOrderDetailsEstimatedBitcoin =>
+      'Voraussichtlicher Bitcoin-Betrag';
+
+  @override
+  String get limitOrdersMaximumActiveError =>
+      'Sie haben bereits fünf aktive Limitaufträge. Stornieren Sie einen davon, bevor Sie einen weiteren erstellen.';
+
+  @override
+  String get limitOrderInvalidAddressError =>
+      'Die ausgewählte Auszahlungsadresse ist ungültig.';
+
+  @override
+  String get limitOrderCreationError =>
+      'Der Limitauftrag konnte nicht erstellt werden. Bitte versuchen Sie es erneut.';
 }

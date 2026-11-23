@@ -3500,6 +3500,216 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Please activate the confidential payment option for this SEPA recipient.'**
   String get withdrawConfidentialSepaNotActivatedError;
+
+  /// Title for the Limit Orders feature
+  ///
+  /// In en, this message translates to:
+  /// **'Limit orders'**
+  String get limitOrdersTitle;
+
+  /// Heading above active Limit Orders
+  ///
+  /// In en, this message translates to:
+  /// **'Active limit orders'**
+  String get limitOrdersActiveTitle;
+
+  /// Action to create another Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'Create new'**
+  String get limitOrdersCreateNew;
+
+  /// Shown when the five-active-Limit-Order cap has been reached
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel an active order before creating another one.'**
+  String get limitOrdersMaximumActiveHint;
+
+  /// Summary of a Limit Order target price
+  ///
+  /// In en, this message translates to:
+  /// **'Buy at {price}'**
+  String limitOrdersBuyAt(String price);
+
+  /// Action to cancel all active Limit Orders
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel all'**
+  String get limitOrdersCancelAll;
+
+  /// Title of the cancel-all Limit Orders confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel all active limit orders?'**
+  String get limitOrdersCancelAllTitle;
+
+  /// Warning shown before all active Limit Orders are cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'This is permanent. None of these orders will execute after cancellation.'**
+  String get limitOrdersCancelAllMessage;
+
+  /// Confirmation action in Limit Order dialogs
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get limitOrdersDialogConfirm;
+
+  /// Closes a completed Limit Order screen
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get limitOrdersDone;
+
+  /// Label for the Limit Order target price
+  ///
+  /// In en, this message translates to:
+  /// **'Target price'**
+  String get limitOrdersTargetPrice;
+
+  /// Label for the Limit Order fiat amount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get limitOrdersFiatAmount;
+
+  /// Estimated user buy price after spread
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated buy price'**
+  String get limitOrdersEstimatedBuyPrice;
+
+  /// Title of the Limit Order details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Limit order details'**
+  String get limitOrderDetailsTitle;
+
+  /// Limit Order status label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get limitOrderDetailsStatus;
+
+  /// Limit Order number label
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get limitOrderDetailsNumber;
+
+  /// Limit Order payout address label
+  ///
+  /// In en, this message translates to:
+  /// **'Payout address'**
+  String get limitOrderDetailsAddress;
+
+  /// Limit Order creation date label
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get limitOrderDetailsCreated;
+
+  /// Limit Order expiry date label
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get limitOrderDetailsExpires;
+
+  /// Action to cancel one active Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel limit order'**
+  String get limitOrderCancel;
+
+  /// Title of the single Limit Order cancellation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this limit order?'**
+  String get limitOrderCancelTitle;
+
+  /// Warning before one Limit Order is cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation is permanent and this order will no longer execute.'**
+  String get limitOrderCancelMessage;
+
+  /// Active Limit Order status
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get limitOrderStatusActive;
+
+  /// Executed Limit Order status
+  ///
+  /// In en, this message translates to:
+  /// **'Executed'**
+  String get limitOrderStatusExecuted;
+
+  /// Cancelled Limit Order status
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get limitOrderStatusCancelled;
+
+  /// Expired Limit Order status
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get limitOrderStatusExpired;
+
+  /// Failed or unknown Limit Order status
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get limitOrderStatusFailed;
+
+  /// Shown when Limit Order account data is unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Your Bull Bitcoin account or balances could not be loaded. Please try again.'**
+  String get limitOrdersAccountUnavailableError;
+
+  /// Shown when a Limit Order no longer exists
+  ///
+  /// In en, this message translates to:
+  /// **'This limit order could not be found.'**
+  String get limitOrderNotFoundError;
+
+  /// Shown when Limit Orders cannot be loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Limit orders could not be loaded. Please try again.'**
+  String get limitOrdersLoadError;
+
+  /// Shown when one or all Limit Orders cannot be cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'The limit order could not be cancelled. Please try again.'**
+  String get limitOrderCancellationError;
+
+  /// Label for the estimated bitcoin amount row on the limit order details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated bitcoin'**
+  String get limitOrderDetailsEstimatedBitcoin;
+
+  /// Shown when the backend rejects a sixth active Limit Order
+  ///
+  /// In en, this message translates to:
+  /// **'You already have five active limit orders. Cancel one before creating another.'**
+  String get limitOrdersMaximumActiveError;
+
+  /// Shown when the backend rejects a Limit Order payout address
+  ///
+  /// In en, this message translates to:
+  /// **'The selected payout address is not valid.'**
+  String get limitOrderInvalidAddressError;
+
+  /// Shown when a Limit Order cannot be created
+  ///
+  /// In en, this message translates to:
+  /// **'The limit order could not be created. Please try again.'**
+  String get limitOrderCreationError;
 }
 
 class _ExchangeLocalizationsDelegate

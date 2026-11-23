@@ -1924,6 +1924,122 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get withdrawConfidentialSepaNotActivatedError =>
       'कृपया इस SEPA प्राप्तकर्ता के लिए गोपनीय भुगतान विकल्प सक्रिय करें।';
+
+  @override
+  String get limitOrdersTitle => 'Limit orders';
+
+  @override
+  String get limitOrdersActiveTitle => 'Active limit orders';
+
+  @override
+  String get limitOrdersCreateNew => 'Create new';
+
+  @override
+  String get limitOrdersMaximumActiveHint =>
+      'Cancel an active order before creating another one.';
+
+  @override
+  String limitOrdersBuyAt(String price) {
+    return 'Buy at $price';
+  }
+
+  @override
+  String get limitOrdersCancelAll => 'Cancel all';
+
+  @override
+  String get limitOrdersCancelAllTitle => 'Cancel all active limit orders?';
+
+  @override
+  String get limitOrdersCancelAllMessage =>
+      'This is permanent. None of these orders will execute after cancellation.';
+
+  @override
+  String get limitOrdersDialogConfirm => 'Confirm';
+
+  @override
+  String get limitOrdersDone => 'Done';
+
+  @override
+  String get limitOrdersTargetPrice => 'Target price';
+
+  @override
+  String get limitOrdersFiatAmount => 'Amount';
+
+  @override
+  String get limitOrdersEstimatedBuyPrice => 'Estimated buy price';
+
+  @override
+  String get limitOrderDetailsTitle => 'Limit order details';
+
+  @override
+  String get limitOrderDetailsStatus => 'Status';
+
+  @override
+  String get limitOrderDetailsNumber => 'Order number';
+
+  @override
+  String get limitOrderDetailsAddress => 'Payout address';
+
+  @override
+  String get limitOrderDetailsCreated => 'Created';
+
+  @override
+  String get limitOrderDetailsExpires => 'Expires';
+
+  @override
+  String get limitOrderCancel => 'Cancel limit order';
+
+  @override
+  String get limitOrderCancelTitle => 'Cancel this limit order?';
+
+  @override
+  String get limitOrderCancelMessage =>
+      'Cancellation is permanent and this order will no longer execute.';
+
+  @override
+  String get limitOrderStatusActive => 'Active';
+
+  @override
+  String get limitOrderStatusExecuted => 'Executed';
+
+  @override
+  String get limitOrderStatusCancelled => 'Cancelled';
+
+  @override
+  String get limitOrderStatusExpired => 'Expired';
+
+  @override
+  String get limitOrderStatusFailed => 'Failed';
+
+  @override
+  String get limitOrdersAccountUnavailableError =>
+      'Your Bull Bitcoin account or balances could not be loaded. Please try again.';
+
+  @override
+  String get limitOrderNotFoundError => 'This limit order could not be found.';
+
+  @override
+  String get limitOrdersLoadError =>
+      'Limit orders could not be loaded. Please try again.';
+
+  @override
+  String get limitOrderCancellationError =>
+      'The limit order could not be cancelled. Please try again.';
+
+  @override
+  String get limitOrderDetailsEstimatedBitcoin => 'Estimated bitcoin';
+
+  @override
+  String get limitOrdersMaximumActiveError =>
+      'You already have five active limit orders. Cancel one before creating another.';
+
+  @override
+  String get limitOrderInvalidAddressError =>
+      'The selected payout address is not valid.';
+
+  @override
+  String get limitOrderCreationError =>
+      'The limit order could not be created. Please try again.';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3771,4 +3887,117 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get withdrawConfidentialSepaNotActivatedError =>
       'Kripya is SEPA recipient ke liye confidential payment option activate karein.';
+
+  @override
+  String get limitOrdersTitle => 'Limit orders';
+
+  @override
+  String get limitOrdersActiveTitle => 'Active limit orders';
+
+  @override
+  String get limitOrdersCreateNew => 'Create new';
+
+  @override
+  String get limitOrdersMaximumActiveHint =>
+      'Cancel an active order before creating another one.';
+
+  @override
+  String limitOrdersBuyAt(String price) {
+    return 'Buy at $price';
+  }
+
+  @override
+  String get limitOrdersCancelAll => 'Cancel all';
+
+  @override
+  String get limitOrdersCancelAllTitle => 'Cancel all active limit orders?';
+
+  @override
+  String get limitOrdersCancelAllMessage =>
+      'This is permanent. None of these orders will execute after cancellation.';
+
+  @override
+  String get limitOrdersDialogConfirm => 'Confirm';
+
+  @override
+  String get limitOrdersDone => 'Done';
+
+  @override
+  String get limitOrdersTargetPrice => 'Target price';
+
+  @override
+  String get limitOrdersFiatAmount => 'Amount';
+
+  @override
+  String get limitOrdersEstimatedBuyPrice => 'Estimated buy price';
+
+  @override
+  String get limitOrderDetailsTitle => 'Limit order details';
+
+  @override
+  String get limitOrderDetailsStatus => 'Status';
+
+  @override
+  String get limitOrderDetailsNumber => 'Order number';
+
+  @override
+  String get limitOrderDetailsAddress => 'Payout address';
+
+  @override
+  String get limitOrderDetailsCreated => 'Created';
+
+  @override
+  String get limitOrderDetailsExpires => 'Expires';
+
+  @override
+  String get limitOrderCancel => 'Cancel limit order';
+
+  @override
+  String get limitOrderCancelTitle => 'Cancel this limit order?';
+
+  @override
+  String get limitOrderCancelMessage =>
+      'Cancellation is permanent and this order will no longer execute.';
+
+  @override
+  String get limitOrderStatusActive => 'Active';
+
+  @override
+  String get limitOrderStatusExecuted => 'Executed';
+
+  @override
+  String get limitOrderStatusCancelled => 'Cancelled';
+
+  @override
+  String get limitOrderStatusExpired => 'Expired';
+
+  @override
+  String get limitOrderStatusFailed => 'Failed';
+
+  @override
+  String get limitOrdersAccountUnavailableError =>
+      'Your Bull Bitcoin account or balances could not be loaded. Please try again.';
+
+  @override
+  String get limitOrderNotFoundError => 'This limit order could not be found.';
+
+  @override
+  String get limitOrdersLoadError =>
+      'Limit orders could not be loaded. Please try again.';
+
+  @override
+  String get limitOrderCancellationError =>
+      'The limit order could not be cancelled. Please try again.';
+
+  @override
+  String get limitOrdersMaximumActiveError =>
+      'You already have five active limit orders. Cancel one before creating another.';
+
+  @override
+  String get limitOrderInvalidAddressError =>
+      'The selected payout address is not valid.';
+
+  @override
+  String get limitOrderCreationError =>
+      'The limit order could not be created. Please try again.';
 }
