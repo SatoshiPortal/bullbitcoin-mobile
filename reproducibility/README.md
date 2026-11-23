@@ -98,8 +98,6 @@ Then pass `--apk ~/bullbitcoin-splits/` to the script.
 
 ## Verifying the release signature
 
-[GitHub releases](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases) from 6.12.2 onward ship `HASHSUMS256`, the SHA-256 of the APK, and `HASHSUMS256.asc`, its detached GPG signature. 6.13.0 and 6.13.1 were published without a signature. The signing key is published in this repository at [`keys/i5hi.asc`](../keys/i5hi.asc).
-
 | | Fingerprint |
 |---|---|
 | Primary key (Vishal Menon, [i5hi](https://github.com/i5hi)) | `BC5A D8A2 6AAC D383 EF63  0D45 5AE8 AC51 D171 F109` |
