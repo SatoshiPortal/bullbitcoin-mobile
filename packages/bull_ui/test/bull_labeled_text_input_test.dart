@@ -10,6 +10,7 @@ void main() {
         tester.widget<TextField>(find.byType(TextField));
 
     testWidgets('renders the label and reports typed text', (tester) async {
+      final semantics = tester.ensureSemantics();
       String? typed;
       await tester.pumpWidget(
         wrapWithTheme(
@@ -22,10 +23,14 @@ void main() {
       );
 
       expect(find.text('Label'), findsOneWidget);
+      final editor = tester.getSemantics(find.byType(EditableText));
+      expect(editor.getSemanticsData().label, 'Label');
+      expect(editor.getSemanticsData().flagsCollection.isTextField, isTrue);
 
       await tester.enterText(find.byType(TextField), 'hello');
 
       expect(typed, 'hello');
+      semantics.dispose();
     });
 
     testWidgets('disables the field when onChanged is null', (tester) async {

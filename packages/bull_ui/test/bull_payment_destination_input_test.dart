@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsAction;
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +9,7 @@ import 'test_app.dart';
 void main() {
   Widget field({
     String value = '',
+    String? label = 'Destination',
     Widget? validAddress,
     String? error,
     TextInputType keyboardType = TextInputType.text,
@@ -18,7 +21,7 @@ void main() {
     BullPaymentDestinationInput(
       value: value,
       onChanged: onChanged ?? (_) {},
-      label: 'Destination',
+      label: label,
       hint: 'Address',
       pasteLabel: 'Paste',
       scanLabel: 'Scan',
@@ -32,6 +35,36 @@ void main() {
       keyboardType: keyboardType,
     ),
   );
+
+  testWidgets('the destination name stays on the editable node', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    for (final value in ['', 'bc1example']) {
+      await tester.pumpWidget(field(value: value));
+      final fieldFinder = find.byType(EditableText);
+      expect(
+        tester.getSemantics(fieldFinder).getSemanticsData().label,
+        'Destination',
+      );
+      await tester.tap(fieldFinder);
+      await tester.pump();
+      final editor = tester.getSemantics(fieldFinder);
+      final data = editor.getSemanticsData();
+      expect(data.label, 'Destination');
+      expect(data.value, value);
+      expect(data.flagsCollection.isTextField, isTrue);
+      expect(data.hasAction(SemanticsAction.setText), isTrue);
+      expect(find.bySemanticsLabel('Paste'), findsOneWidget);
+      expect(find.bySemanticsLabel('Scan'), findsOneWidget);
+      expect(tester, meetsGuideline(labeledTapTargetGuideline));
+    }
+
+    await tester.pumpWidget(field(label: null, value: 'bc1example'));
+    final editor = tester.getSemantics(find.byType(EditableText));
+    expect(editor.getSemanticsData().label, 'Address');
+    semantics.dispose();
+  });
 
   testWidgets('invalid input stays editable with native keyboard and actions', (
     tester,
