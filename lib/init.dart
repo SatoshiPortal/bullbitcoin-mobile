@@ -178,9 +178,9 @@ class Bull {
         regtestRecoverBull.participant,
         PreferencesImport(
           file: preferencesFile,
+          defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
           readStandalonePermission: () async =>
               (await readLegacyRecoverBullPermission(recoverBull.standalone))
-                  .map((consent) => consent?.permissionGranted)
                   .mapErr((_) => const LegacyImportUnavailable()),
         ),
         MempoolImport(

@@ -11,6 +11,8 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/background_setup.dart'
     show setupArkBackgroundTask;
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:path_provider/path_provider.dart';
 import 'package:preferences/migration.dart';
 
@@ -55,7 +57,10 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
         ElectrumImport(file: File('${support.path}/databases/electrum.sqlite')),
       if (task == BackgroundTask.arkRenewal ||
           task == BackgroundTask.walletsSync)
-        PreferencesImport(file: preferencesFile),
+        PreferencesImport(
+          file: preferencesFile,
+          defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+        ),
     ],
   );
   final admitted = await cutover.admit();

@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -51,7 +53,13 @@ void main() {
           directory: Directory('${dir.path}/coordination'),
           legacy: source,
           expectedOwners: splitV1Owners,
-          participants: [PreferencesImport(file: ownerFile, testingKeys: keys)],
+          participants: [
+            PreferencesImport(
+              file: ownerFile,
+              defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+              testingKeys: keys,
+            ),
+          ],
         );
         Future<Preferences> open(RuntimeAdmission admission) async {
           addTearDown(admission.close);

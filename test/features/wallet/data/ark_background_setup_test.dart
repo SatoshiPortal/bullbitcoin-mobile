@@ -15,6 +15,8 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:preferences/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/ark_background_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -87,6 +89,7 @@ void main() {
     ) as ExclusiveAdmission;
     final prepared = await PreferencesImport(
       file: File('${directory.path}/preferences.sqlite'),
+      defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
       testingKeys: keys,
     ).prepare(exclusive, OwnerOrigin.legacy);
     final owner = (prepared as Ok<PreparedOwner, LegacyImportFailure>).value;

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:bull_recoverbull/migration.dart'
     show readLegacyRecoverBullPermission;
 import 'package:drift/drift.dart';
@@ -20,23 +22,53 @@ import 'generated/schema_v15.dart' as v15;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final delayed in [false, true]) {
-    test(delayed ? 'late activation imports accumulated legacy preferences' : 'published v15 upgrades then admits encrypted preferences foreground and background', () async {
+  for (final (name, delayed, legacyUrl, standaloneState, expectedPermission)
+      in [
+        (
+          'late activation preserves consent for the default v16 server',
+          true,
+          recoverBullDefaultServerUrl,
+          null,
+          true,
+        ),
+        (
+          'initialized v1 denial takes precedence over v16 consent',
+          false,
+          recoverBullDefaultServerUrl,
+          (recoverBullDefaultServerUrl, 0, 1),
+          false,
+        ),
+      ]) {
+    test(name, () async {
       final directory = await Directory.systemTemp.createTemp(
         'preferences-upgrade-',
       );
       final source = File('${directory.path}/legacy.sqlite');
       final file = File('${directory.path}/preferences.sqlite');
       final standalone = File('${directory.path}/recoverbull.sqlite');
-      if (!delayed) {
+      if (standaloneState case (final server, final granted, final complete)) {
         final fixture = sqlite3.open(standalone.path);
         try {
           fixture.userVersion = 1;
           fixture.execute(
             'CREATE TABLE recoverbull_state ('
-            'id INTEGER PRIMARY KEY, permission_granted INTEGER NOT NULL)',
+            'id INTEGER NOT NULL DEFAULT 1 PRIMARY KEY CHECK (id = 1), '
+            "server TEXT NOT NULL DEFAULT '$recoverBullDefaultServerUrl', "
+            'permission_granted INTEGER NOT NULL DEFAULT 0 '
+            'CHECK (permission_granted IN (0, 1)), '
+            'monitoring_enabled INTEGER NOT NULL DEFAULT 1 '
+            'CHECK (monitoring_enabled IN (0, 1)), '
+            'legacy_import_complete INTEGER NOT NULL DEFAULT 0 '
+            'CHECK (legacy_import_complete IN (0, 1)), '
+            'monitoring_revision INTEGER NOT NULL DEFAULT 0, '
+            'generation INTEGER NOT NULL DEFAULT 0 CHECK (generation >= 0))',
           );
-          fixture.execute('INSERT INTO recoverbull_state VALUES (1, 0)');
+          fixture.execute(
+            'INSERT INTO recoverbull_state '
+            '(id, server, permission_granted, legacy_import_complete) '
+            'VALUES (1, ?, ?, ?)',
+            [server, granted, complete],
+          );
         } finally {
           fixture.close();
         }
@@ -50,13 +82,17 @@ void main() {
       );
       final foreground = PreferencesImport(
         file: file,
+        defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
         testingKeys: keys,
         readStandalonePermission: () async =>
             (await readLegacyRecoverBullPermission(standalone))
-                .map((consent) => consent?.permissionGranted)
                 .mapErr((_) => const LegacyImportUnavailable()),
       );
-      final background = PreferencesImport(file: file, testingKeys: keys);
+      final background = PreferencesImport(
+        file: file,
+        defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+        testingKeys: keys,
+      );
       StorageCutover coordinator(List<LegacyImportParticipant> participants) =>
           StorageCutover(
             directory: Directory('${directory.path}/coordination'),
@@ -74,7 +110,8 @@ void main() {
           "UPDATE settings SET currency='CAD',environment='testnet',is_superuser=1,is_dev_mode_enabled=1",
         );
         await db.customStatement(
-          "UPDATE recoverbull SET url='https://historical.invalid',is_permission_granted=1",
+          'UPDATE recoverbull SET url=?,is_permission_granted=1',
+          [legacyUrl],
         );
         await db.customStatement(
           "UPDATE sqlite_sequence SET seq=70 WHERE name='settings'",
@@ -88,9 +125,9 @@ void main() {
         await old.customStatement(
           "INSERT INTO settings (id,environment,bitcoin_unit,language,currency,hide_amounts,is_superuser,is_dev_mode_enabled,use_tor_proxy,tor_proxy_port,tor_transport_mode,last_successful_tor_transport,theme_mode,is_error_reporting_enabled,screen_capture_protection_enabled) VALUES (1,'testnet','sats','unitedStatesEnglish','CAD',1,1,1,0,9050,'automatic',NULL,'system',0,1)",
         );
-        await old.customStatement(
-          "INSERT INTO recoverbull VALUES (1,'https://historical.invalid',1)",
-        );
+        await old.customStatement('INSERT INTO recoverbull VALUES (1,?,1)', [
+          legacyUrl,
+        ]);
         await old.customStatement(
           "UPDATE sqlite_sequence SET seq=70 WHERE name='settings'",
         );
@@ -121,8 +158,8 @@ void main() {
           await preferences.recoverBull.read(),
           isA<Ok<bool?, PreferencesFailure>>().having(
             (result) => result.value,
-            'normal permission (standalone denial or v16 grant)',
-            delayed,
+            'normal permission for the default server',
+            expectedPermission,
           ),
         );
         expect(

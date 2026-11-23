@@ -6,6 +6,8 @@ import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:background_tasks/background_tasks.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -54,7 +56,11 @@ void main() {
       exclusive: true,
       timeout: Duration.zero,
     ) as ExclusiveAdmission;
-    final participant = PreferencesImport(file: ownerFile, testingKeys: keys);
+    final participant = PreferencesImport(
+      file: ownerFile,
+      defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+      testingKeys: keys,
+    );
     final owner = (await participant.prepare(
       exclusive,
       OwnerOrigin.legacy,

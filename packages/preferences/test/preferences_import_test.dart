@@ -14,6 +14,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 const _columns =
     'id,environment,bitcoin_unit,start_amounts_in_fiat,language,currency,hide_amounts,is_superuser,is_dev_mode_enabled,use_tor_proxy,tor_proxy_port,tor_transport_mode,last_successful_tor_transport,theme_mode,is_error_reporting_enabled,screen_capture_protection_enabled';
+const _defaultServer = 'http://default.onion';
 const _values = [
   7,
   'future-network',
@@ -51,6 +52,7 @@ void main() {
       final step = Platform.environment['S1B_PREFERENCES_STEP'];
       final result = await PreferencesImport(
         file: File('${directory.path}/preferences.sqlite'),
+        defaultRecoverBullServerUrl: _defaultServer,
         testingKeys: keys,
         checkpoint: (current) async {
           if (current == step) {
@@ -97,9 +99,14 @@ void main() {
   });
   PreferencesImport participant({
     Future<void> Function(String)? checkpoint,
-    Future<Result<bool?, LegacyImportFailure>> Function()? readPermission,
+    Future<
+      Result<({String sourceUrl, bool permissionGranted})?, LegacyImportFailure>
+    >
+    Function()?
+    readPermission,
   }) => PreferencesImport(
     file: destination,
+    defaultRecoverBullServerUrl: _defaultServer,
     testingKeys: keys,
     checkpoint: checkpoint,
     readStandalonePermission: readPermission,
@@ -182,7 +189,7 @@ void main() {
         recoverbull.map((row) => row.data.values.toList()).toList(),
         mode == 'rows'
             ? [
-                [9, 1],
+                [9, 0],
               ]
             : [],
       );
@@ -217,7 +224,11 @@ void main() {
         final result = await participant(
           readPermission: () async {
             reads++;
-            return Ok(permission);
+            return Ok(
+              permission == null
+                  ? null
+                  : (sourceUrl: _defaultServer, permissionGranted: permission),
+            );
           },
         ).prepare(lease, OwnerOrigin.legacy);
         final owner = (result as Ok<PreparedOwner, LegacyImportFailure>).value;

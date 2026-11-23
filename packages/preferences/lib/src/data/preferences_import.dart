@@ -14,13 +14,18 @@ const preferencesFreshReceipt = 'fresh-v1/preferences';
 
 final class PreferencesImport implements LegacyImportParticipant {
   final File file;
-  final Future<Result<bool?, LegacyImportFailure>> Function()?
+  final String defaultRecoverBullServerUrl;
+  final Future<
+    Result<({String sourceUrl, bool permissionGranted})?, LegacyImportFailure>
+  >
+  Function()?
   readStandalonePermission;
   final DatabaseKeys? testingKeys;
   final Future<void> Function(String)? checkpoint;
 
   PreferencesImport({
     required this.file,
+    required this.defaultRecoverBullServerUrl,
     this.readStandalonePermission,
     this.testingKeys,
     this.checkpoint,
@@ -51,7 +56,12 @@ final class PreferencesImport implements LegacyImportParticipant {
     );
     return switch (store) {
       Ok(:final value) => Ok(
-        _PreparedPreferences(value, readStandalonePermission, checkpoint),
+        _PreparedPreferences(
+          value,
+          defaultRecoverBullServerUrl,
+          readStandalonePermission,
+          checkpoint,
+        ),
       ),
       Err(failure: DatabaseNotReady()) => const Err(LegacyImportDeferred()),
       Err(failure: DatabaseKeyUnavailable(reason: DatabaseKeyProblem.locked)) =>
@@ -109,12 +119,17 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readPreferencesReadiness(
 
 final class _PreparedPreferences implements PreparedOwner {
   final PreferencesStore store;
-  final Future<Result<bool?, LegacyImportFailure>> Function()?
+  final String defaultRecoverBullServerUrl;
+  final Future<
+    Result<({String sourceUrl, bool permissionGranted})?, LegacyImportFailure>
+  >
+  Function()?
   readStandalonePermission;
   final Future<void> Function(String)? checkpoint;
 
   const _PreparedPreferences(
     this.store,
+    this.defaultRecoverBullServerUrl,
     this.readStandalonePermission,
     this.checkpoint,
   );
@@ -155,9 +170,16 @@ final class _PreparedPreferences implements PreparedOwner {
         for (final entry in _columns.entries) {
           final table = entry.key;
           final columns = entry.value;
-          final oldRows = source.select(
-            'SELECT $columns FROM $table ORDER BY id',
-          );
+          // Consent is scoped to the accepted server. Project the permission
+          // without ever copying the historical URL into the destination.
+          final oldRows = table == 'recoverbull'
+              ? source.select(
+                  'SELECT id, CASE WHEN url COLLATE BINARY = ? '
+                  'THEN is_permission_granted ELSE 0 END AS is_permission_granted '
+                  'FROM recoverbull ORDER BY id',
+                  [defaultRecoverBullServerUrl],
+                )
+              : source.select('SELECT $columns FROM $table ORDER BY id');
           final sequences = source.select(
             'SELECT seq FROM sqlite_sequence WHERE name = ?',
             [table],
@@ -259,8 +281,11 @@ final class _PreparedPreferences implements PreparedOwner {
     if (read == null) return;
     final expected = <List<Object?>>[];
     switch (await read()) {
-      case Ok(value: final bool permission):
-        final row = ['default', permission ? 1 : 0];
+      case Ok(value: (:final sourceUrl, permissionGranted: final granted)):
+        final row = [
+          'default',
+          granted && sourceUrl == defaultRecoverBullServerUrl ? 1 : 0,
+        ];
         await store.database.customStatement(
           'INSERT INTO recoverbull_permission_overrides '
           '(family, is_permission_granted) VALUES (?, ?)',
