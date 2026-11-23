@@ -279,6 +279,10 @@ graph TB
     ADDRESS_LABELS -->|typed wallet inventory| SECRETS
     ADDRESS_LABELS --> SYNC
     ADDRESS_LABELS --> SATOSHIFIER[Satoshifier Package]
+    ADDRESS_LABELS -->|regtest Payjoin URI| BULL_PAYJOIN
+    ADDRESS_LABELS -->|destination scanning| SCANNING
+    ADDRESS_LABELS -->|scan and clear labels| SP
+    ADDRESS_LABELS --> PREFERENCES
     PAY -->|indexed address| ADDRESS_LABELS
     RECEIVE -->|indexed address| ADDRESS_LABELS
     SELL -->|indexed address| ADDRESS_LABELS
@@ -339,12 +343,12 @@ graph TB
     SWAPS -->|balance, coins and spend admission| SYNC
     SWAPS -->|wallet inventory| SECRETS
     SWAPS -->|fund and broadcast| SPEND
-    SWAPS -->|fees and preferences| FEES_PACKAGE
-    SWAPS -->|receive and refund addresses| ADDRESS_MGMT
-    RECEIVE_CAPABILITY[Receive address capability<br/>Workspace]
-    SWAPS -->|Ark transfer recipient address| RECEIVE_CAPABILITY
-    SWAPS -->|hardware signer metadata| HW_WALLETS
+    SWAPS -->|fees| FEES_PACKAGE
+    SWAPS -->|destination input, receive and refund addresses| ADDRESS_LABELS
+    SWAPS -->|Ark transfer recipient address| RECEIVE_REQUEST
+    SWAPS -->|hardware signer metadata| SIGNERS
     SWAPS -->|coin selection sheet| COINS
+    SWAPS --> BULL_UI
     SETTINGS -->|typed settings navigation| SWAPS
     SEND --> SWAPS_PKG
     RECEIVE --> SWAPS_PKG
@@ -417,6 +421,7 @@ graph TB
     BACKUPS --> ACCESS
     BACKUPS --> LABEL_EDITOR
     BACKUPS --> PREFERENCES
+    BACKUPS --> SCREEN_PRIVACY
     WALLETS --> BTC_PRICE
     COINS --> BTC_PRICE
     SELL --> BTC_PRICE
@@ -530,19 +535,19 @@ graph TB
     WIZARD[Wizard]
     APP_STARTUP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
-    EXCHANGE -->|supplies shared destination validation and input| WALLETS
+    EXCHANGE -->|shared destination validation and input| ADDRESS_LABELS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
     PAY --> FEES_PACKAGE
     SELL --> FEES_PACKAGE
     SEND_TOOLS --> FEES_PACKAGE
-    SWAPS --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
-    LIMIT_ORDERS -->|public destination input| WALLETS
+    LIMIT_ORDERS -->|public destination input| ADDRESS_LABELS
     PAY --> FEES_UI
     SEND --> SIGNERS
     SEND_TOOLS --> FEES_UI
+    SEND_TOOLS --> BULL_UI
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
@@ -703,7 +708,7 @@ The architecture test records source dependencies, including internal imports an
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `settings → swap` | Owner relocation: Keep existing restore/rescue entry points on the swap facade. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> lib/features/swap/public/swap_facade.dart` |
+| `settings → swaps` | Restore and rescue use the public swap engine capability. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> package:swaps/swaps.dart` |
 | `wizard → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/wizard/ui/screens/wizard_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 
 | `app_startup → mnemonic_entry` | Restore UI uses the typed input widget to preserve explicit language selection. | `restore_default_secret_screen.dart → package:mnemonic_entry/mnemonic_entry.dart` |
