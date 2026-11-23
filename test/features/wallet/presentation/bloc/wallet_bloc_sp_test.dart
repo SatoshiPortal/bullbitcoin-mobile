@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -72,8 +71,6 @@ class _MockSyncCoordinator extends Mock
 
 class _MockGetUnconfirmed extends Mock
     implements GetUnconfirmedIncomingBalanceUsecase {}
-
-class _MockDeleteWallet extends Mock implements DeleteWalletUsecase {}
 
 class _MockRefreshSpWalletForWallet extends Mock
     implements RefreshSpWalletForWalletUsecase {}
@@ -195,7 +192,6 @@ WalletBloc _makeBloc({
     ),
     syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator.sync),
     getUnconfirmedIncomingBalanceUsecase: _MockGetUnconfirmed(),
-    deleteWalletUsecase: _MockDeleteWallet(),
     getExternalTorProxyStatusUsecase: _MockExternalTorStatus(),
     checkSpWalletSetupForWalletUsecase: checkSetup,
     checkSpScanningForWalletUsecase: checkScanning,

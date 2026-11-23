@@ -38,3 +38,5 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  legacy_storage:
+  mocktail: ^1.0.4
