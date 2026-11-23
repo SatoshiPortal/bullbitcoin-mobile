@@ -484,7 +484,8 @@ void main() {
     // The use-cases end in a bare `catch`, so nothing escapes today. This pins
     // the bloc's own invariant: narrowing one of those catches later must not
     // leave the progress bar running and Confirm disabled with no message.
-    test('a throwing confirm still clears the flag and reports', () async {
+    test('a throwing confirm clears the flag and is an unknown outcome, '
+        'not a re-armed Confirm', () async {
       when(
         () => confirmOrder.execute(
           orderId: any(named: 'orderId'),
@@ -504,7 +505,12 @@ void main() {
               .having(
                 (s) => s.failure,
                 'failure',
-                isA<WithdrawUnexpectedFailure>(),
+                isA<WithdrawConfirmOutcomeUnknownFailure>(),
+              )
+              .having(
+                (s) => s.isConfirmOutcomeUnknown,
+                'isConfirmOutcomeUnknown',
+                isTrue,
               )
               .having(
                 (s) => s.isConfirmingWithdrawal,
@@ -520,6 +526,112 @@ void main() {
         isNot(contains('secret123')),
         reason: 'only the type belongs on a failure raised from a throw',
       );
+    });
+
+    group('an unknown confirmation outcome (WD-1)', () {
+      void whenCheck(Result<WithdrawOrder, WithdrawFailure> result) => when(
+        () => confirmOrder.checkConfirmation(
+          orderId: any(named: 'orderId'),
+          interacSecurityDetails: any(named: 'interacSecurityDetails'),
+          saveSecurityDetailsAsDefault: any(
+            named: 'saveSecurityDetailsAsDefault',
+          ),
+        ),
+      ).thenAnswer((_) async => result);
+
+      Future<_SeedableWithdrawBloc> unknown() async {
+        whenConfirm(
+          const Err<WithdrawOrder, WithdrawFailure>(
+            WithdrawConfirmOutcomeUnknownFailure('re-read failed'),
+          ),
+        );
+        final bloc = build()..seed(confirmation());
+        bloc.add(const WithdrawEvent.confirmed());
+        await bloc.stream.firstWhere(
+          (s) => s is WithdrawConfirmationState && s.isConfirmOutcomeUnknown,
+        );
+        return bloc;
+      }
+
+      test('never confirms the order a second time', () async {
+        final bloc = await unknown();
+
+        bloc.add(const WithdrawEvent.confirmed());
+        await pumpEventQueue();
+
+        verify(
+          () => confirmOrder.execute(
+            orderId: any(named: 'orderId'),
+            interacSecurityDetails: any(named: 'interacSecurityDetails'),
+            saveSecurityDetailsAsDefault: any(
+              named: 'saveSecurityDetailsAsDefault',
+            ),
+          ),
+        ).called(1);
+        expect(
+          (bloc.state as WithdrawConfirmationState).isConfirmOutcomeUnknown,
+          isTrue,
+        );
+        await bloc.close();
+      });
+
+      test('re-reading a confirmed order moves to success', () async {
+        final bloc = await unknown();
+        whenCheck(Ok<WithdrawOrder, WithdrawFailure>(_MockWithdrawOrder()));
+
+        bloc.add(const WithdrawEvent.confirmOutcomeCheckRequested());
+        await expectLater(
+          bloc.stream,
+          emitsThrough(isA<WithdrawSuccessState>()),
+        );
+        await bloc.close();
+      });
+
+      test('re-reading an order still awaiting confirmation offers Confirm '
+          'again', () async {
+        final bloc = await unknown();
+        whenCheck(
+          const Err<WithdrawOrder, WithdrawFailure>(
+            WithdrawUnexpectedFailure('order is awaitingConfirmation'),
+          ),
+        );
+
+        bloc.add(const WithdrawEvent.confirmOutcomeCheckRequested());
+        await expectLater(
+          bloc.stream,
+          emitsThrough(
+            isA<WithdrawConfirmationState>()
+                .having(
+                  (s) => s.isConfirmOutcomeUnknown,
+                  'isConfirmOutcomeUnknown',
+                  isFalse,
+                )
+                .having(
+                  (s) => s.failure,
+                  'failure',
+                  isA<WithdrawUnexpectedFailure>(),
+                ),
+          ),
+        );
+        await bloc.close();
+      });
+
+      test('a re-read that still cannot tell stays unknown', () async {
+        final bloc = await unknown();
+        whenCheck(
+          const Err<WithdrawOrder, WithdrawFailure>(
+            WithdrawConfirmOutcomeUnknownFailure('re-read failed'),
+          ),
+        );
+
+        bloc.add(const WithdrawEvent.confirmOutcomeCheckRequested());
+        await pumpEventQueue();
+
+        final state = bloc.state as WithdrawConfirmationState;
+        expect(state.isConfirmOutcomeUnknown, isTrue);
+        expect(state.isConfirmingWithdrawal, isFalse);
+        await bloc.close();
+      });
     });
   });
 

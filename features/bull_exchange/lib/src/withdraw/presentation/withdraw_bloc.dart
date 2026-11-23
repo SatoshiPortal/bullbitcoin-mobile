@@ -34,6 +34,10 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       transformer: droppable(),
     );
     on<WithdrawConfirmed>(_onConfirmed);
+    on<WithdrawConfirmOutcomeCheckRequested>(
+      _onConfirmOutcomeCheckRequested,
+      transformer: droppable(),
+    );
     on<WithdrawVirtualPayeeActivated>(_onVirtualPayeeActivated);
     on<WithdrawRegularSepaChosen>(_onRegularSepaChosen);
     on<WithdrawVirtualPayeeActivationDismissed>(
@@ -311,6 +315,8 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       );
       return;
     }
+    // The order may already be confirmed: only re-reading it may tell.
+    if (confirmationState.isConfirmOutcomeUnknown) return;
     emit(
       confirmationState.copyWith(isConfirmingWithdrawal: true, failure: null),
     );
@@ -324,6 +330,14 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       )) {
         case Ok(:final value):
           emit(confirmationState.toSuccessState(order: value));
+        case Err(failure: final WithdrawConfirmOutcomeUnknownFailure failure):
+          emit(
+            confirmationState.copyWith(
+              isConfirmingWithdrawal: false,
+              isConfirmOutcomeUnknown: true,
+              failure: failure,
+            ),
+          );
         case Err(:final failure):
           emit(
             confirmationState.copyWith(
@@ -338,12 +352,62 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         error: e,
         trace: st,
       );
+      // The confirmation may have reached the server before the throw.
       emit(
         confirmationState.copyWith(
           isConfirmingWithdrawal: false,
-          failure: WithdrawUnexpectedFailure('confirm threw: ${e.runtimeType}'),
+          isConfirmOutcomeUnknown: true,
+          failure: WithdrawConfirmOutcomeUnknownFailure(
+            'confirm threw: ${e.runtimeType}',
+          ),
         ),
       );
+    }
+  }
+
+  /// Re-reads the order of a confirmation whose outcome is unknown: success
+  /// when it is confirmed, Confirm again only when the order says it is still
+  /// awaiting confirmation.
+  Future<void> _onConfirmOutcomeCheckRequested(
+    WithdrawConfirmOutcomeCheckRequested event,
+    Emitter<WithdrawState> emit,
+  ) async {
+    final current = state;
+    if (current is! WithdrawConfirmationState ||
+        !current.isConfirmOutcomeUnknown) {
+      return;
+    }
+    emit(current.copyWith(isConfirmingWithdrawal: true));
+
+    final Result<WithdrawOrder, WithdrawFailure> result;
+    try {
+      result = await _confirmWithdrawOrderUsecase.checkConfirmation(
+        orderId: current.order.orderId,
+        interacSecurityDetails: current.interacSecurityDetails,
+        saveSecurityDetailsAsDefault: current.saveSecurityDetailsAsDefault,
+      );
+    } catch (e, st) {
+      log.severe(
+        message: 'Unexpected error while checking the withdrawal',
+        error: e,
+        trace: st,
+      );
+      emit(current.copyWith(isConfirmingWithdrawal: false));
+      return;
+    }
+    switch (result) {
+      case Ok(:final value):
+        emit(current.toSuccessState(order: value));
+      case Err(failure: final WithdrawConfirmOutcomeUnknownFailure failure):
+        emit(current.copyWith(isConfirmingWithdrawal: false, failure: failure));
+      case Err(:final failure):
+        emit(
+          current.copyWith(
+            isConfirmingWithdrawal: false,
+            isConfirmOutcomeUnknown: false,
+            failure: failure,
+          ),
+        );
     }
   }
 }

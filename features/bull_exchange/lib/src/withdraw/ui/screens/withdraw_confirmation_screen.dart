@@ -34,7 +34,13 @@ class WithdrawConfirmationScreen extends StatelessWidget {
           : null,
     );
 
-    return Scaffold(
+    final isConfirmOutcomeUnknown = context.select(
+      (WithdrawBloc bloc) =>
+          bloc.state is WithdrawConfirmationState &&
+          (bloc.state as WithdrawConfirmationState).isConfirmOutcomeUnknown,
+    );
+
+    final screen = Scaffold(
       appBar: AppBar(title: Image.asset(brandAsset, height: 32, width: 32)),
       body: SafeArea(
         child: Column(
@@ -97,6 +103,17 @@ class WithdrawConfirmationScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+    // Back to the recipients would let a second withdrawal be created while
+    // the first may have gone through: leave the flow instead.
+    return PopScope<Object?>(
+      canPop: !isConfirmOutcomeUnknown,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && isConfirmOutcomeUnknown) {
+          BullExchangeNavigation.goToDashboard(context);
+        }
+      },
+      child: screen,
     );
   }
 
@@ -232,6 +249,11 @@ class _ConfirmButton extends StatelessWidget {
           bloc.state is WithdrawConfirmationState &&
           (bloc.state as WithdrawConfirmationState).isConfirmingWithdrawal,
     );
+    final isConfirmOutcomeUnknown = context.select(
+      (WithdrawBloc bloc) =>
+          bloc.state is WithdrawConfirmationState &&
+          (bloc.state as WithdrawConfirmationState).isConfirmOutcomeUnknown,
+    );
     final withdrawFailure = context.select(
       (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
           ? (bloc.state as WithdrawConfirmationState).failure
@@ -250,10 +272,20 @@ class _ConfirmButton extends StatelessWidget {
           const Gap(16),
         ],
         const Gap(16),
-        BullButton.primary(
-          label: context.loc.withdrawConfirmButton,
-          onPressed: (isConfirmingWithdrawal) ? null : onConfirmPressed,
-        ),
+        if (isConfirmOutcomeUnknown)
+          BullButton.primary(
+            label: context.loc.withdrawConfirmCheckAgainButton,
+            onPressed: isConfirmingWithdrawal
+                ? null
+                : () => context.read<WithdrawBloc>().add(
+                    const WithdrawEvent.confirmOutcomeCheckRequested(),
+                  ),
+          )
+        else
+          BullButton.primary(
+            label: context.loc.withdrawConfirmButton,
+            onPressed: (isConfirmingWithdrawal) ? null : onConfirmPressed,
+          ),
       ],
     );
   }

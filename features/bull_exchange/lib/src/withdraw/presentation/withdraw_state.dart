@@ -35,6 +35,9 @@ sealed class WithdrawState with _$WithdrawState {
     InteracSecurityDetails? interacSecurityDetails,
     @Default(false) bool saveSecurityDetailsAsDefault,
     @Default(false) bool isConfirmingWithdrawal,
+    // The confirmation may have gone through but the order could not say so:
+    // the screen offers to re-read the order, never Confirm.
+    @Default(false) bool isConfirmOutcomeUnknown,
     WithdrawFailure? failure,
   }) = WithdrawConfirmationState;
   const factory WithdrawState.success({required WithdrawOrder order}) =
@@ -49,7 +52,7 @@ sealed class WithdrawState with _$WithdrawState {
           : FiatCurrency.cad,
       recipientInput: (_, _, currency, _, _, _, _) => currency,
       paymentDetailsInput: (_, _, currency, _, _, _) => currency,
-      confirmation: (_, _, currency, _, _, _, _, _, _) => currency,
+      confirmation: (_, _, currency, _, _, _, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
   }
@@ -91,6 +94,7 @@ sealed class WithdrawState with _$WithdrawState {
         interacSecurityDetails,
         saveSecurityDetailsAsDefault,
         isConfirmingWithdrawal,
+        isConfirmOutcomeUnknown,
         failure,
       ) => WithdrawAmountInputState(userSummary: userSummary),
     );
@@ -132,6 +136,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
+            isConfirmOutcomeUnknown,
             failure,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
@@ -153,6 +158,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
+            isConfirmOutcomeUnknown,
             failure,
           ) => WithdrawConfirmationState(
             userSummary: userSummary,
@@ -162,6 +168,7 @@ sealed class WithdrawState with _$WithdrawState {
             order: order,
             interacSecurityDetails: interacSecurityDetails,
             saveSecurityDetailsAsDefault: saveSecurityDetailsAsDefault,
+            isConfirmOutcomeUnknown: isConfirmOutcomeUnknown,
             failure: null,
           ),
     );
@@ -187,6 +194,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
+            isConfirmOutcomeUnknown,
             failure,
           ) => WithdrawPaymentDetailsInputState(
             userSummary: userSummary,

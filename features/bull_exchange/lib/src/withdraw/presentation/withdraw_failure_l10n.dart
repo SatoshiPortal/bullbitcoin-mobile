@@ -29,6 +29,8 @@ extension WithdrawFailureL10n on WithdrawFailure {
       context.loc.withdrawConfidentialSepaNotActivatedError,
     WithdrawUnsupportedNetworkFailure() =>
       context.loc.networkFeatureUnavailable,
+    WithdrawConfirmOutcomeUnknownFailure() =>
+      context.loc.withdrawConfirmOutcomeUnknownError,
     WithdrawUnexpectedFailure() => context.loc.withdrawUnexpectedError,
   };
 }

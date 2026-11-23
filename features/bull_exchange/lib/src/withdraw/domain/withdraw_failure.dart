@@ -46,6 +46,14 @@ final class WithdrawConfidentialSepaNotActivatedFailure
   const WithdrawConfidentialSepaNotActivatedFailure([super.logMessage]);
 }
 
+/// The confirmation failed after it may have reached the server, and the
+/// order could not be re-read to tell whether it was confirmed. The flow
+/// re-reads the order on request and never offers Confirm again until the
+/// order says it is still awaiting confirmation.
+final class WithdrawConfirmOutcomeUnknownFailure extends WithdrawFailure {
+  const WithdrawConfirmOutcomeUnknownFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation

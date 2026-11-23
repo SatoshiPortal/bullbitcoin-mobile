@@ -21,6 +21,7 @@ final _everyFailure = <WithdrawFailure>[
     logMessage: _rawReason,
   ),
   const WithdrawConfidentialSepaNotActivatedFailure(_rawReason),
+  const WithdrawConfirmOutcomeUnknownFailure(_rawReason),
   const WithdrawUnexpectedFailure(_rawReason),
 ];
 
