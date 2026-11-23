@@ -2441,4 +2441,534 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Uza Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'Chagua Pochi';
+
+  @override
+  String get sellWhichWalletQuestion => 'Ni pochi gani unayotaka kuuza kutoka?';
+
+  @override
+  String get sellExternalWallet => 'Pochi ya nje';
+
+  @override
+  String get sellFromAnotherWallet => 'Uza kutoka pochi nyingine ya Bitcoin';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Unajaribu kuuza zaidi ya kiwango cha juu kinachoweza kuuzwa kwa pochi hii.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Unajaribu kuuza chini ya kiwango cha chini kinachoweza kuuzwa kwa pochi hii.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Salio halitoshi kwenye pochi iliyochaguliwa kukamilisha agizo hili la kuuza.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Hujathibitishwa. Tafadhali ingia ili kuendelea.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Agizo la kuuza halikupatikana. Tafadhali jaribu tena.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Agizo hili la kuuza tayari limethibitishwa.';
+
+  @override
+  String get sellSelectNetwork => 'Chagua Mtandao';
+
+  @override
+  String get sellHowToPayInvoice => 'Ungependa kulipa ankara hii vipi?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin kwenye mnyororo';
+
+  @override
+  String get sellLightningNetwork => 'Mtandao wa Lightning';
+
+  @override
+  String get sellLiquidNetwork => 'Mtandao wa Liquid';
+
+  @override
+  String get sellConfirmPayment => 'Thibitisha malipo';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Bei itasasishwa baada ya ';
+
+  @override
+  String get sellOrderNumber => 'Nambari ya agizo';
+
+  @override
+  String get sellPayoutRecipient => 'Mpokeaji wa malipo';
+
+  @override
+  String get sellCadBalance => 'Salio la CAD';
+
+  @override
+  String get sellCrcBalance => 'Salio la CRC';
+
+  @override
+  String get sellEurBalance => 'Salio la EUR';
+
+  @override
+  String get sellUsdBalance => 'Salio la USD';
+
+  @override
+  String get sellMxnBalance => 'Salio la MXN';
+
+  @override
+  String get sellArsBalance => 'Salio la ARS';
+
+  @override
+  String get sellCopBalance => 'Salio la COP';
+
+  @override
+  String get sellPayinAmount => 'Kiasi cha kuingiza';
+
+  @override
+  String get sellPayoutAmount => 'Kiasi cha malipo';
+
+  @override
+  String get sellExchangeRate => 'Kiwango cha ubadilishaji';
+
+  @override
+  String get sellPayFromWallet => 'Lipa kutoka pochi';
+
+  @override
+  String get sellInstantPayments => 'Malipo ya papo hapo';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Pochi salama ya Bitcoin';
+
+  @override
+  String get sellFeePriority => 'Kipaumbele cha Ada';
+
+  @override
+  String get sellFastest => 'Haraka Zaidi';
+
+  @override
+  String get sellAdvancedSettings => 'Mipangilio ya Kina';
+
+  @override
+  String get sellAdvancedOptions => 'Chaguo za kina';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee imewashwa';
+
+  @override
+  String get sellSelectCoinsManually => 'Chagua sarafu wewe mwenyewe';
+
+  @override
+  String get sellDone => 'Imekamilika';
+
+  @override
+  String get sellPleasePayInvoice => 'Tafadhali lipa ankara hii';
+
+  @override
+  String get sellBitcoinAmount => 'Kiasi cha bitcoin';
+
+  @override
+  String get sellCopyInvoice => 'Nakili ankara';
+
+  @override
+  String get sellShowQrCode => 'Onyesha msimbo wa QR';
+
+  @override
+  String get sellQrCode => 'Msimbo wa QR';
+
+  @override
+  String get sellNoInvoiceData => 'Hakuna data ya ankara inayopatikana';
+
+  @override
+  String get sellInProgress => 'Kuuza kunaendelea...';
+
+  @override
+  String get sellGoHome => 'Nenda mwanzo';
+
+  @override
+  String get sellOrderCompleted => 'Agizo limekamilika!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Salio la akaunti yako litaongezwa baada ya muamala wako kupokea uthibitisho 1 kwenye mnyororo.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Lipa';
+
+  @override
+  String get payDescriptionLabel => 'Maelezo ya malipo (hiari)';
+
+  @override
+  String get payDescriptionHint => 'Ongeza dokezo kwa malipo haya';
+
+  @override
+  String get payPaymentDescription => 'Maelezo ya malipo';
+
+  @override
+  String get payRecipientType => 'Aina ya mpokeaji';
+
+  @override
+  String get payRecipientName => 'Jina la mpokeaji';
+
+  @override
+  String get payRecipientDetails => 'Maelezo ya mpokeaji';
+
+  @override
+  String get payNoDetailsAvailable => 'Hakuna maelezo yanayopatikana';
+
+  @override
+  String get paySelectWallet => 'Chagua Pochi';
+
+  @override
+  String get payExternalWallet => 'Pochi ya nje';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Kiasi cha juu unachoweza kulipa kwa pochi hii ni $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Kiasi cha chini unachoweza kulipa kwa pochi hii ni $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Salio halitoshi kwenye pochi iliyochaguliwa kukamilisha agizo hili la malipo.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Hujathibitishwa. Tafadhali ingia ili kuendelea.';
+
+  @override
+  String get paySelectNetwork => 'Chagua Mtandao';
+
+  @override
+  String get payHowToPayInvoice => 'Ungependa kulipa ankara hii vipi?';
+
+  @override
+  String get payLightningNetwork => 'Mtandao wa Lightning';
+
+  @override
+  String get payLiquidNetwork => 'Mtandao wa Liquid';
+
+  @override
+  String get payConfirmPayment => 'Thibitisha Malipo';
+
+  @override
+  String get payOrderNumber => 'Nambari ya agizo';
+
+  @override
+  String get payPayinAmount => 'Kiasi cha kuingiza';
+
+  @override
+  String get payPayoutAmount => 'Kiasi cha malipo';
+
+  @override
+  String get payExchangeRate => 'Kiwango cha ubadilishaji';
+
+  @override
+  String get payPayFromWallet => 'Lipa kutoka pochi';
+
+  @override
+  String get payInstantPayments => 'Malipo ya papo hapo';
+
+  @override
+  String get paySecureBitcoinWallet => 'Pochi salama ya Bitcoin';
+
+  @override
+  String get payFeePriority => 'Kipaumbele cha Ada';
+
+  @override
+  String get payFastest => 'Haraka Zaidi';
+
+  @override
+  String get payNetworkFees => 'Ada za mtandao';
+
+  @override
+  String get payAdvancedSettings => 'Mipangilio ya Kina';
+
+  @override
+  String get payAdvancedOptions => 'Chaguo za kina';
+
+  @override
+  String get paySelectCoinsManually => 'Chagua sarafu wewe mwenyewe';
+
+  @override
+  String get payDone => 'Imekamilika';
+
+  @override
+  String get payContinue => 'Endelea';
+
+  @override
+  String get payPleasePayInvoice => 'Tafadhali lipa ankara hii';
+
+  @override
+  String get payBitcoinAmount => 'Kiasi cha bitcoin';
+
+  @override
+  String get payBitcoinPrice => 'Bei ya Bitcoin';
+
+  @override
+  String get payCopyInvoice => 'Nakili Ankara';
+
+  @override
+  String get payShowQrCode => 'Onyesha msimbo wa QR';
+
+  @override
+  String get payQrCode => 'Msimbo wa QR';
+
+  @override
+  String get payNoInvoiceData => 'Hakuna data ya ankara inayopatikana';
+
+  @override
+  String get payInvalidState => 'Hali batili';
+
+  @override
+  String get payViewDetails => 'Tazama maelezo';
+
+  @override
+  String get paySinpeReceipt => 'Risiti ya SINPE';
+
+  @override
+  String get payCompleted => 'Malipo Yamekamilika!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'Maelezo ya Agizo';
+
+  @override
+  String get paySinpeMonto => 'Kiasi';
+
+  @override
+  String get paySinpeNumeroOrden => 'Nambari ya agizo';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Nambari ya kumbukumbu';
+
+  @override
+  String get paySinpeBeneficiario => 'Mnufaika';
+
+  @override
+  String get paySinpeOrigen => 'Chanzo';
+
+  @override
+  String get payNotAvailable => 'Haipo';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin kwenye mnyororo';
+
+  @override
+  String get payPaymentInProgress => 'Malipo Yanaendelea!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Bei itasasishwa baada ya ';
+
+  @override
+  String get payWhichWallet => 'Ni pochi gani unayotaka kulipa kutoka?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'Lipa kutoka pochi nyingine ya Bitcoin';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee imewashwa';
+
+  @override
+  String get copyDialogButton => 'Nakili';
+
+  @override
+  String get closeDialogButton => 'Funga';
+
+  @override
+  String get sellCompleteKYC => 'Kamilisha KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Ada za mtandao';
+
+  @override
+  String get sellSendPaymentContinue => 'Endelea';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bei ya Bitcoin';
+
+  @override
+  String get sellViewDetailsButton => 'Tazama maelezo';
+
+  @override
+  String get sellKycPendingTitle =>
+      'Uthibitishaji wa Kitambulisho wa KYC Unasubiri';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Lazima ukamilishe kwanza uthibitishaji wa kitambulisho';
+
+  @override
+  String get sellLoadingGeneric => 'Inapakia...';
+
+  @override
+  String get viewerTapToCopy => 'Gusa kunakili';
+
+  @override
+  String get invoiceViewerTitle => 'Ankara';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Imenakiliwa kwenye ubao wa kunakili';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Ongeza kwenye salio la akaunti yangu';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Utoaji wa fedha unaonekana kuwa umetumwa na Leonod';
+
+  @override
+  String get sellPayoutTitle => 'Chagua Mpokeaji';
+
+  @override
+  String get sellPayoutNewBadge => 'MPYA';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Hatukuweza kuthibitisha kwamba muamala wako ulitangazwa. Angalia kwenye kichunguzi cha bloku kabla ya kujaribu tena.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'UTXO zilizochaguliwa hazitoshelezi kiasi kinachohitajika';
+
+  @override
+  String get selectAmountTitle => 'Chagua kiasi';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Kiasi kilichoombwa: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Anwani: ';
+
+  @override
+  String get typeLabel => 'Aina: ';
+
+  @override
+  String get coinsKeychainReceive => 'Pokea';
+
+  @override
+  String get coinsKeychainChange => 'Chenji';
 }

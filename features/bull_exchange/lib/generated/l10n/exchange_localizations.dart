@@ -4418,6 +4418,972 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'This price has expired. A new one is being loaded; check it before confirming.'**
   String get buyQuoteExpiredError;
+
+  /// AppBar title for sell screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sell Bitcoin'**
+  String get sellTitle;
+
+  /// Dropdown to choose source wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Select Wallet'**
+  String get sellSelectWallet;
+
+  /// Question prompting user to select wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Which wallet do you want to sell from?'**
+  String get sellWhichWalletQuestion;
+
+  /// Option for external wallet
+  ///
+  /// In en, this message translates to:
+  /// **'External wallet'**
+  String get sellExternalWallet;
+
+  /// Subtitle for external wallet option
+  ///
+  /// In en, this message translates to:
+  /// **'Sell from another Bitcoin wallet'**
+  String get sellFromAnotherWallet;
+
+  /// Error message for amount above maximum
+  ///
+  /// In en, this message translates to:
+  /// **'You are trying to sell above the maximum amount that can be sold with this wallet.'**
+  String get sellAboveMaxAmountError;
+
+  /// Error message for amount below minimum
+  ///
+  /// In en, this message translates to:
+  /// **'You are trying to sell below the minimum amount that can be sold with this wallet.'**
+  String get sellBelowMinAmountError;
+
+  /// Error message for insufficient balance
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance in the selected wallet to complete this sell order.'**
+  String get sellInsufficientBalanceError;
+
+  /// Error message for unauthenticated user
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authenticated. Please log in to continue.'**
+  String get sellUnauthenticatedError;
+
+  /// Error message for order not found
+  ///
+  /// In en, this message translates to:
+  /// **'The sell order was not found. Please try again.'**
+  String get sellOrderNotFoundError;
+
+  /// Error message for already confirmed order
+  ///
+  /// In en, this message translates to:
+  /// **'This sell order has already been confirmed.'**
+  String get sellOrderAlreadyConfirmedError;
+
+  /// Screen title for network selection
+  ///
+  /// In en, this message translates to:
+  /// **'Select Network'**
+  String get sellSelectNetwork;
+
+  /// Question for payment method selection
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to pay this invoice?'**
+  String get sellHowToPayInvoice;
+
+  /// Option for Bitcoin on-chain payment
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin on-chain'**
+  String get sellBitcoinOnChain;
+
+  /// Option for Lightning Network payment
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning Network'**
+  String get sellLightningNetwork;
+
+  /// Option for Liquid Network payment
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid Network'**
+  String get sellLiquidNetwork;
+
+  /// Screen title for payment confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm payment'**
+  String get sellConfirmPayment;
+
+  /// Text before countdown timer for price refresh
+  ///
+  /// In en, this message translates to:
+  /// **'Price will refresh in '**
+  String get sellPriceWillRefreshIn;
+
+  /// Label for order number
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get sellOrderNumber;
+
+  /// Label for payout recipient
+  ///
+  /// In en, this message translates to:
+  /// **'Payout recipient'**
+  String get sellPayoutRecipient;
+
+  /// Display text for CAD balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'CAD Balance'**
+  String get sellCadBalance;
+
+  /// Display text for CRC balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'CRC Balance'**
+  String get sellCrcBalance;
+
+  /// Display text for EUR balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'EUR Balance'**
+  String get sellEurBalance;
+
+  /// Display text for USD balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'USD Balance'**
+  String get sellUsdBalance;
+
+  /// Display text for MXN balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'MXN Balance'**
+  String get sellMxnBalance;
+
+  /// Display text for ARS balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'ARS Balance'**
+  String get sellArsBalance;
+
+  /// Display text for COP balance payout method
+  ///
+  /// In en, this message translates to:
+  /// **'COP Balance'**
+  String get sellCopBalance;
+
+  /// Label for amount user pays in
+  ///
+  /// In en, this message translates to:
+  /// **'Payin amount'**
+  String get sellPayinAmount;
+
+  /// Label for amount user receives
+  ///
+  /// In en, this message translates to:
+  /// **'Payout amount'**
+  String get sellPayoutAmount;
+
+  /// Label for exchange rate
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate'**
+  String get sellExchangeRate;
+
+  /// Label for wallet used for payment
+  ///
+  /// In en, this message translates to:
+  /// **'Pay from wallet'**
+  String get sellPayFromWallet;
+
+  /// Display text for instant payment wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Instant payments'**
+  String get sellInstantPayments;
+
+  /// Display text for secure Bitcoin wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Bitcoin wallet'**
+  String get sellSecureBitcoinWallet;
+
+  /// Label for fee priority selection
+  ///
+  /// In en, this message translates to:
+  /// **'Fee Priority'**
+  String get sellFeePriority;
+
+  /// Display text for fastest fee option
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest'**
+  String get sellFastest;
+
+  /// Button for advanced settings
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get sellAdvancedSettings;
+
+  /// Title for advanced options bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced options'**
+  String get sellAdvancedOptions;
+
+  /// Label for RBF toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Replace-by-fee activated'**
+  String get sellReplaceByFeeActivated;
+
+  /// Option to manually select UTXOs
+  ///
+  /// In en, this message translates to:
+  /// **'Select coins manually'**
+  String get sellSelectCoinsManually;
+
+  /// Button to close bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get sellDone;
+
+  /// Title for receive payment screen
+  ///
+  /// In en, this message translates to:
+  /// **'Please pay this invoice'**
+  String get sellPleasePayInvoice;
+
+  /// Label for Bitcoin amount
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin amount'**
+  String get sellBitcoinAmount;
+
+  /// Button to copy invoice
+  ///
+  /// In en, this message translates to:
+  /// **'Copy invoice'**
+  String get sellCopyInvoice;
+
+  /// Button to show QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Show QR code'**
+  String get sellShowQrCode;
+
+  /// Title for QR code bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code'**
+  String get sellQrCode;
+
+  /// Message when no invoice data available
+  ///
+  /// In en, this message translates to:
+  /// **'No invoice data available'**
+  String get sellNoInvoiceData;
+
+  /// Message for sell in progress
+  ///
+  /// In en, this message translates to:
+  /// **'Sell in progress…'**
+  String get sellInProgress;
+
+  /// Button to go to home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Go home'**
+  String get sellGoHome;
+
+  /// Success message for completed order
+  ///
+  /// In en, this message translates to:
+  /// **'Order completed!'**
+  String get sellOrderCompleted;
+
+  /// Information about balance crediting
+  ///
+  /// In en, this message translates to:
+  /// **'Your account balance will be credited after your transaction receives 1 confirmation onchain.'**
+  String get sellBalanceWillBeCredited;
+
+  /// Success message with the amount sold and the fiat amount received
+  ///
+  /// In en, this message translates to:
+  /// **'You sold {amount} for {fiatAmount}'**
+  String sellYouSold(String amount, String fiatAmount);
+
+  /// Screen title for pay feature
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get payTitle;
+
+  /// Label for the optional payment description input in the pay flow
+  ///
+  /// In en, this message translates to:
+  /// **'Payment description (optional)'**
+  String get payDescriptionLabel;
+
+  /// Hint text for the optional payment description input in the pay flow
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note for this payment'**
+  String get payDescriptionHint;
+
+  /// Label for the payment description on the pay confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Payment description'**
+  String get payPaymentDescription;
+
+  /// Label for recipient type
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient type'**
+  String get payRecipientType;
+
+  /// Label for recipient name
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient name'**
+  String get payRecipientName;
+
+  /// Label for recipient details
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient details'**
+  String get payRecipientDetails;
+
+  /// Message when recipient details not available
+  ///
+  /// In en, this message translates to:
+  /// **'No details available'**
+  String get payNoDetailsAvailable;
+
+  /// Label for wallet selection dropdown in payment
+  ///
+  /// In en, this message translates to:
+  /// **'Select Wallet'**
+  String get paySelectWallet;
+
+  /// Option for external wallet
+  ///
+  /// In en, this message translates to:
+  /// **'External wallet'**
+  String get payExternalWallet;
+
+  /// Error message for amount above maximum
+  ///
+  /// In en, this message translates to:
+  /// **'The maximum you can pay with this wallet is {amount}.'**
+  String payAboveMaxAmountError(String amount);
+
+  /// Error message for amount below minimum
+  ///
+  /// In en, this message translates to:
+  /// **'The minimum you can pay with this wallet is {amount}.'**
+  String payBelowMinAmountError(String amount);
+
+  /// Error message for insufficient balance
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance in the selected wallet to complete this pay order.'**
+  String get payInsufficientBalanceError;
+
+  /// Error message for unauthenticated user
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authenticated. Please log in to continue.'**
+  String get payUnauthenticatedError;
+
+  /// Screen title for network selection
+  ///
+  /// In en, this message translates to:
+  /// **'Select Network'**
+  String get paySelectNetwork;
+
+  /// Question for payment method selection
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to pay this invoice?'**
+  String get payHowToPayInvoice;
+
+  /// Option for Lightning Network payment
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning Network'**
+  String get payLightningNetwork;
+
+  /// Option for Liquid Network payment
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid Network'**
+  String get payLiquidNetwork;
+
+  /// Button text to confirm and execute payment
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get payConfirmPayment;
+
+  /// Label for order number
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get payOrderNumber;
+
+  /// Label for amount user pays in
+  ///
+  /// In en, this message translates to:
+  /// **'Payin amount'**
+  String get payPayinAmount;
+
+  /// Label for amount user receives
+  ///
+  /// In en, this message translates to:
+  /// **'Payout amount'**
+  String get payPayoutAmount;
+
+  /// Label for exchange rate
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate'**
+  String get payExchangeRate;
+
+  /// Label for wallet used for payment
+  ///
+  /// In en, this message translates to:
+  /// **'Pay from wallet'**
+  String get payPayFromWallet;
+
+  /// Display text for instant payment wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Instant payments'**
+  String get payInstantPayments;
+
+  /// Display text for secure Bitcoin wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Bitcoin wallet'**
+  String get paySecureBitcoinWallet;
+
+  /// Label for fee priority selection
+  ///
+  /// In en, this message translates to:
+  /// **'Fee Priority'**
+  String get payFeePriority;
+
+  /// Display text for fastest fee option
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest'**
+  String get payFastest;
+
+  /// Label for network fees amount
+  ///
+  /// In en, this message translates to:
+  /// **'Network fees'**
+  String get payNetworkFees;
+
+  /// Button for advanced settings
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get payAdvancedSettings;
+
+  /// Title for advanced options bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced options'**
+  String get payAdvancedOptions;
+
+  /// Option to manually select UTXOs
+  ///
+  /// In en, this message translates to:
+  /// **'Select coins manually'**
+  String get paySelectCoinsManually;
+
+  /// Button to close bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get payDone;
+
+  /// Button to continue to next step
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get payContinue;
+
+  /// Title for receive payment screen
+  ///
+  /// In en, this message translates to:
+  /// **'Please pay this invoice'**
+  String get payPleasePayInvoice;
+
+  /// Label for Bitcoin amount
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin amount'**
+  String get payBitcoinAmount;
+
+  /// Label for Bitcoin exchange rate
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin Price'**
+  String get payBitcoinPrice;
+
+  /// Button text to copy invoice to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Invoice'**
+  String get payCopyInvoice;
+
+  /// Button to show QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Show QR code'**
+  String get payShowQrCode;
+
+  /// Title for QR code bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code'**
+  String get payQrCode;
+
+  /// Message when no invoice data available
+  ///
+  /// In en, this message translates to:
+  /// **'No invoice data available'**
+  String get payNoInvoiceData;
+
+  /// Error message for invalid state
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid state'**
+  String get payInvalidState;
+
+  /// Button to view order details
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get payViewDetails;
+
+  /// Title for SINPE receipt bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE Receipt'**
+  String get paySinpeReceipt;
+
+  /// Title for payment completed screen
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Completed!'**
+  String get payCompleted;
+
+  /// Description for payment completed, with the fiat amount and the recipient
+  ///
+  /// In en, this message translates to:
+  /// **'The payment of {fiatAmount} to {recipient} has been completed.'**
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient);
+
+  /// Success message for SINPE payment (Spanish, kept as is)
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE ENVIADO!'**
+  String get paySinpeEnviado;
+
+  /// Title for SINPE order details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Order Details'**
+  String get payOrderDetails;
+
+  /// Label for amount in SINPE order details
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get paySinpeMonto;
+
+  /// Label for order number in SINPE details
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get paySinpeNumeroOrden;
+
+  /// Label for reference number in SINPE details
+  ///
+  /// In en, this message translates to:
+  /// **'Reference number'**
+  String get paySinpeNumeroComprobante;
+
+  /// Label for beneficiary in SINPE details
+  ///
+  /// In en, this message translates to:
+  /// **'Beneficiary'**
+  String get paySinpeBeneficiario;
+
+  /// Label for origin in SINPE details
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get paySinpeOrigen;
+
+  /// Placeholder for unavailable information
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get payNotAvailable;
+
+  /// Option for Bitcoin on-chain payment
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin on-chain'**
+  String get payBitcoinOnchain;
+
+  /// Title for payment in progress screen
+  ///
+  /// In en, this message translates to:
+  /// **'Payment In Progress!'**
+  String get payPaymentInProgress;
+
+  /// Description for payment in progress, before the payin transaction is confirmed onchain
+  ///
+  /// In en, this message translates to:
+  /// **'The payment of {fiatAmount} to {recipient} will be sent after your transaction receives 1 confirmation onchain.'**
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  );
+
+  /// Description for payment in progress, once the payin transaction is confirmed onchain
+  ///
+  /// In en, this message translates to:
+  /// **'Your transaction is confirmed. The payment of {fiatAmount} to {recipient} is being processed.'**
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  );
+
+  /// Text before countdown timer
+  ///
+  /// In en, this message translates to:
+  /// **'Price will refresh in '**
+  String get payPriceRefreshIn;
+
+  /// Question prompt for wallet selection
+  ///
+  /// In en, this message translates to:
+  /// **'Which wallet do you want to pay from?'**
+  String get payWhichWallet;
+
+  /// Description for external wallet option
+  ///
+  /// In en, this message translates to:
+  /// **'Pay from another Bitcoin wallet'**
+  String get payExternalWalletDescription;
+
+  /// Label for RBF toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Replace-by-fee activated'**
+  String get payRbfActivated;
+
+  /// Button in modal dialog to copy value to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyDialogButton;
+
+  /// Button to close the value display modal dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeDialogButton;
+
+  /// Button to start verification process
+  ///
+  /// In en, this message translates to:
+  /// **'Complete KYC'**
+  String get sellCompleteKYC;
+
+  /// Field label for network fees
+  ///
+  /// In en, this message translates to:
+  /// **'Network fees'**
+  String get sellSendPaymentNetworkFees;
+
+  /// Continue button on sell payment
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get sellSendPaymentContinue;
+
+  /// In-flight status shown next to the sell confirm button while the payment transaction is being prepared, signed and broadcast
+  ///
+  /// In en, this message translates to:
+  /// **'Sending payment…'**
+  String get exchangeSendingPayment;
+
+  /// In-flight status shown after the sell payment transaction is broadcast, while waiting for the order to reflect it
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent, refreshing your order…'**
+  String get exchangePaymentSentRefreshingOrder;
+
+  /// Label for Bitcoin price display
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin Price'**
+  String get sellBitcoinPriceLabel;
+
+  /// Button text to view order details
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get sellViewDetailsButton;
+
+  /// Title shown when KYC verification is pending
+  ///
+  /// In en, this message translates to:
+  /// **'KYC ID Verification Pending'**
+  String get sellKycPendingTitle;
+
+  /// Description explaining user must complete KYC before proceeding
+  ///
+  /// In en, this message translates to:
+  /// **'You must complete ID verification first'**
+  String get sellKycPendingDescription;
+
+  /// Generic loading message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get sellLoadingGeneric;
+
+  /// Hint text in viewer detail dialogs
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to copy'**
+  String get viewerTapToCopy;
+
+  /// Title shown in the invoice viewer detail dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get invoiceViewerTitle;
+
+  /// Suffix appended to a completed order summary when the payment used payjoin
+  ///
+  /// In en, this message translates to:
+  /// **'via Payjoin'**
+  String get payjoinViaPayjoin;
+
+  /// Suffix appended to a completed order summary when the payment did not use payjoin
+  ///
+  /// In en, this message translates to:
+  /// **'via regular send'**
+  String get payjoinViaRegularSend;
+
+  /// Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit address'**
+  String get sellDepositAddress;
+
+  /// Pay confirm screen: label of the row showing the exchange deposit address the payin is sent to
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit address'**
+  String get payDepositAddress;
+
+  /// Sell: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused
+  ///
+  /// In en, this message translates to:
+  /// **'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.'**
+  String get sellDepositAddressChangedError;
+
+  /// Pay: error shown when a price-lock refresh returns a different deposit address than the order was created with (possible backend compromise or MITM); the refreshed order is refused
+  ///
+  /// In en, this message translates to:
+  /// **'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.'**
+  String get payDepositAddressChangedError;
+
+  /// Generic catch-all shown for any unexpected sell failure. Deliberately does not include the raw reason: this arm previously returned the exception text verbatim to the user (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Your sell order could not be completed right now. Please try again or contact support.'**
+  String get sellUnexpectedError;
+
+  /// Shown when the built sell payin fee falls under the network relay floor. Actionable: the user must raise the fee. Wording matches the send equivalent.
+  ///
+  /// In en, this message translates to:
+  /// **'Network fee too low. Choose a higher fee.'**
+  String get sellErrorFeeBelowRelayFloor;
+
+  /// Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent.
+  ///
+  /// In en, this message translates to:
+  /// **'Network fees could not be loaded. Check your connection and try again.'**
+  String get sellErrorFeesUnavailable;
+
+  /// Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment could not be completed right now. Please try again or contact support.'**
+  String get payUnexpectedError;
+
+  /// Shown when a built pay payin's fee is under the network relay floor, so no node would accept it. Actionable: the user must raise the fee.
+  ///
+  /// In en, this message translates to:
+  /// **'Network fee too low. Choose a higher fee.'**
+  String get payErrorFeeBelowRelayFloor;
+
+  /// Shown when no fee could be resolved for a pay payin, so it cannot be built.
+  ///
+  /// In en, this message translates to:
+  /// **'Network fees could not be loaded. Check your connection and try again.'**
+  String get payErrorFeesUnavailable;
+
+  /// Instructions on recipients screen
+  ///
+  /// In en, this message translates to:
+  /// **'Where and how should we send the money?'**
+  String get withdrawRecipientsPrompt;
+
+  /// Generic toast message after copying a value to the clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
+
+  /// Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid.
+  ///
+  /// In en, this message translates to:
+  /// **'This price has expired. A new one is being loaded; check it before confirming.'**
+  String get sellQuoteExpiredError;
+
+  /// Shown on the sell or pay confirmation after the payin was broadcast, when the exchange reports the order deadline expired before it saw the payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.'**
+  String get exchangePaymentSentPastDeadline;
+
+  /// Button that leaves the sell or pay confirmation once the exchange reports the payment arrived past the order deadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get exchangePaymentSentLeave;
+
+  /// Shown on the pay confirmation when the price lock expired before the payment was sent; nothing was paid.
+  ///
+  /// In en, this message translates to:
+  /// **'This price has expired. A new one is being loaded; check it before confirming.'**
+  String get payQuoteExpiredError;
+
+  /// EUR Sell payout option matching BBX: credit the user's exchange account balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to my account balance'**
+  String get sellPayoutBalance;
+
+  /// EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawals appear as sent by Leonod'**
+  String get sellPayoutSepaDescription;
+
+  /// Title for the EUR Sell payout selection screen, matching BBX Select recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Select recipient'**
+  String get sellPayoutTitle;
+
+  /// New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get sellPayoutNewBadge;
+
+  /// Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.'**
+  String get walletSpendAwaitingObservation;
+
+  /// A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only.
+  ///
+  /// In en, this message translates to:
+  /// **'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.'**
+  String get sendPayjoinSpendPaused;
+
+  /// Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments.
+  ///
+  /// In en, this message translates to:
+  /// **'The wallet is busy. Try again in a moment.'**
+  String get walletSpendBusy;
+
+  /// Broadcast Transaction error when the failure does not show whether the transaction reached the network
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm that your transaction was broadcast. Check a block explorer before trying again.'**
+  String get broadcastSignedTxErrorOutcomeUnknown;
+
+  /// Error message when selected UTXOs don't cover the required amount
+  ///
+  /// In en, this message translates to:
+  /// **'Selected utxos does not cover required amount'**
+  String get sendSelectedUtxosInsufficient;
+
+  /// Title for manual coin selection bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Select amount'**
+  String get selectAmountTitle;
+
+  /// Shows the requested amount to send
+  ///
+  /// In en, this message translates to:
+  /// **'Amount requested: {amount}'**
+  String amountRequestedLabel(String amount);
+
+  /// Label for UTXO address in coin selection tile
+  ///
+  /// In en, this message translates to:
+  /// **'Address: '**
+  String get addressLabel;
+
+  /// Label for address type (Receive/Change)
+  ///
+  /// In en, this message translates to:
+  /// **'Type: '**
+  String get typeLabel;
+
+  /// Keychain filter / badge: receive (external) keychain
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get coinsKeychainReceive;
+
+  /// Keychain filter / badge: change (internal) keychain
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get coinsKeychainChange;
 }
 
 class _ExchangeLocalizationsDelegate
