@@ -6,6 +6,7 @@ import '../domain/transaction_failure.dart';
 import '../domain/entities/transaction_input.dart';
 import '../domain/entities/transaction_output.dart';
 
+import 'package:transactions/src/data/models/wallet_transaction_model.dart';
 import 'package:transactions/src/data/wallet_history_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:preferences/preferences.dart';
@@ -111,7 +112,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         }
         final walletTransactionModels = switch (loaded) {
           Ok(:final value) => value,
-          Err() => const [],
+          Err() => const <WalletTransactionModel>[],
         };
         return Ok<List<WalletTransaction>, TransactionFailure>(
           await Future.wait(
