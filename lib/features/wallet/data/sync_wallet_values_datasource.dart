@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok, Result;
+    show BitcoinNetwork, Err, Ok;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
@@ -21,7 +21,7 @@ class SyncWalletValuesDatasource {
   /// protocol decision. Retries briefly while the writer is busy.
   Future<sync.CoinList> getExactUtxos({required sync.WalletKey key}) async {
     final handle = await _load(key);
-    return _exact(handle.unspent);
+    return WalletSyncBinding.value(await handle.readExactUnspent());
   }
 
   /// Exact ownership at the latest committed revision: scripts the index
@@ -31,7 +31,7 @@ class SyncWalletValuesDatasource {
     required sync.WalletKey key,
   }) async {
     final handle = await _load(key);
-    return _exact(handle.ownership);
+    return WalletSyncBinding.value(await handle.readExactOwnership());
   }
 
   Future<bool> isMine(Uint8List script, {required sync.WalletKey key}) async =>
@@ -57,20 +57,5 @@ class SyncWalletValuesDatasource {
       }
     }
     return true;
-  }
-
-  static Future<T> _exact<T>(
-    Future<Result<T, sync.SyncFailure>> Function() query,
-  ) async {
-    for (var attempt = 1; ; attempt++) {
-      switch (await query()) {
-        case Ok(:final value):
-          return value;
-        case Err(failure: sync.SyncBusyFailure()) when attempt < 5:
-          await Future<void>.delayed(Duration(milliseconds: 250 * attempt));
-        case Err(:final failure):
-          throw WalletSnapshotException(failure);
-      }
-    }
   }
 }
