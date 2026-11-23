@@ -5,7 +5,6 @@ import 'package:preferences/preferences.dart';
 import 'package:address_view/address_view.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:signers/storage.dart';
 import 'package:sync/sync.dart' as native;
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
@@ -18,8 +17,6 @@ class _Reporter extends Mock implements LoggerReporter {}
 class _Environment extends Mock implements ActiveEnvironmentReader {}
 
 class _Inventory extends Mock implements WalletInventory {}
-
-class _Devices extends Mock implements SignerDevices {}
 
 class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
@@ -47,22 +44,29 @@ void main() {
     );
     late _Environment preferences;
     late _Inventory inventory;
-    late _Devices devices;
     late GetReceiveWalletsUsecase read;
     late List<native.WalletKey> requested;
+    late List<String> signerReads;
 
     setUp(() {
       preferences = _Environment();
       inventory = _Inventory();
-      devices = _Devices();
       requested = [];
+      signerReads = [];
       when(() => preferences.readActiveEnvironment())
           .thenAnswer((_) async => const Ok(Environment.testnet));
-      when(() => devices.read('w1')).thenAnswer((_) async => const Ok(null));
-      read = GetReceiveWalletsUsecase(preferences, inventory, (key) async {
-        requested.add(key);
-        return const Err(native.SyncNotFoundFailure());
-      }, devices);
+      read = GetReceiveWalletsUsecase(
+        preferences,
+        inventory,
+        (key) async {
+          requested.add(key);
+          return const Err(native.SyncNotFoundFailure());
+        },
+        (id) async {
+          signerReads.add(id);
+          return const Ok(null);
+        },
+      );
     });
 
     test(
@@ -98,7 +102,7 @@ void main() {
       );
       expect(result, isA<Err<ReceiveWallet, ReceiveFailure>>());
       expect(requested, isEmpty);
-      verifyZeroInteractions(devices);
+      expect(signerReads, isEmpty);
     });
 
     test('a same-id wallet on the wrong network is not loaded', () async {

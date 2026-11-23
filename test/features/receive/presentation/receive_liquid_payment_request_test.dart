@@ -1,8 +1,7 @@
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:primitives/primitives.dart' show AssetConstants;
 import 'package:receive/receive.dart' show ReceiveWallet;
-import 'package:primitives/primitives.dart'
-    show Network, BitcoinNetwork, LiquidNetwork;
+import 'package:primitives/primitives.dart' show LiquidNetwork;
 import 'package:address_view/address_view.dart';
 import 'package:receive/testing.dart';
 import 'package:flutter_test/flutter_test.dart';

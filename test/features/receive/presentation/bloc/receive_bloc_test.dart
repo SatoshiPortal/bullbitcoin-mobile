@@ -12,15 +12,15 @@ import 'package:transactions/testing.dart'
         WalletTransactionRepository,
         WatchWalletTransactionByAddressUsecase,
         walletHistoryEvents;
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:sync/sync.dart'
+    show WalletRevisionState, WalletRevision, WalletKey;
 
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
-import 'package:primitives/primitives.dart'
-    show Network, BitcoinNetwork, LiquidNetwork;
+import 'package:primitives/primitives.dart' show Network, LiquidNetwork;
 import 'package:transactions/transactions.dart';
 import 'package:receive/receive.dart';
 import 'package:address_view/address_view.dart';
@@ -169,6 +169,7 @@ ReceiveWallet _testWallet({
   signsLocally: signer == SignerEntity.local,
   signerDevice: null,
   balanceSat: balanceSat ?? BigInt.from(50000),
+  confirmedBalanceSat: confirmedBalanceSat ?? balanceSat ?? BigInt.from(50000),
 );
 
 WalletAddress _testAddress({String walletId = 'w1'}) => WalletAddress(
@@ -282,6 +283,7 @@ void main() {
     return ReceiveBloc(
       getReceiveSwapLimitsUsecase: getSwapLimits,
       getReceiveWalletsUsecase: getWallets,
+      resolveEntry: (wallet) async => Ok(wallet),
       refreshAfterLightningPayment: () async {
         lightningRefreshes++;
       },

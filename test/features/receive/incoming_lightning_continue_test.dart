@@ -11,8 +11,7 @@ import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:primitives/primitives.dart'
-    show Network, BitcoinNetwork, LiquidNetwork;
+import 'package:primitives/primitives.dart' show Network, BitcoinNetwork;
 import 'package:transactions/transactions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -131,6 +130,8 @@ void main() {
           () {
             bloc = ReceiveBloc(
               getReceiveWalletsUsecase: wallets,
+              resolveEntry: (wallet) async => Ok(wallet),
+              refreshAfterLightningPayment: () async {},
               receive: operations,
               pollAmountQuotes: false,
               prepareReceiveAddressUsecase: _MockPrepareReceiveAddressUsecase(),

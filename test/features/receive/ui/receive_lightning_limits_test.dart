@@ -1,8 +1,7 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
-import 'package:primitives/primitives.dart'
-    show Network, BitcoinNetwork, LiquidNetwork;
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
