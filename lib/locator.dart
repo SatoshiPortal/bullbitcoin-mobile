@@ -1,6 +1,7 @@
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
 import 'package:sync/write.dart' show ElectrumSync;
+import 'package:sync/storage.dart' show SyncFreshness;
 
 import 'dart:async';
 
@@ -410,6 +411,14 @@ class AppLocator {
     );
     final native = locator<WalletNativeRuntime>();
     final electrumSync = locator<ElectrumSync>();
+    locator.registerSingleton(
+      locator<SyncFreshness>().recordCompletions(
+        electrumSync.finished.map((event) => event.key),
+        inventory,
+      ),
+      instanceName: 'syncFreshness',
+      dispose: (subscription) => subscription.cancel(),
+    );
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
     locator.registerSingleton(
@@ -543,17 +552,14 @@ class AppLocator {
       ),
     );
 
-    locator.registerLazySingleton(() {
-      final operations = WalletLocator.importOperations(locator);
-      return ImportFeature.mount(
+    locator.registerLazySingleton(
+      () => ImportFeature.mount(
         preferences: locator<Preferences>(),
         servers: locator<ElectrumServersPort>(),
         secrets: locator<Secrets>(),
         inventory: inventory,
         admission: locator<ParentCustodyAdmissionPort>(),
-        provisionMnemonic: operations.mnemonic,
-        provisionDescriptor: operations.descriptor,
-        provisionXpub: operations.xpub,
+        accounts: locator<WalletProvisioning>(),
         networkOf: SettingsFacade.networkOf,
         onImported: (context) {
           context.read<WalletBloc>().add(const WalletStarted());
@@ -561,8 +567,8 @@ class AppLocator {
         },
         onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
         qrIllustration: AssetImage(Assets.misc.qRPlaceholder.path),
-      );
-    });
+      ),
+    );
 
     locator.registerSingleton(
       ForegroundWalletStartup(

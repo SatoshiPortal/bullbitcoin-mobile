@@ -28,6 +28,7 @@ dependencies:
   mnemonic_entry:
   preferences:
   primitives:
+  provisioning:
   satoshifier:
   scanning:
   screen_privacy:

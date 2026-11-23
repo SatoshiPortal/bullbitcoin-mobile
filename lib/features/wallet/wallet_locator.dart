@@ -22,6 +22,9 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/storage.dart' show RecoverBullWalletProperties;
+import 'package:signers/storage.dart' show SignerDevices;
+import 'package:sync/storage.dart' show SyncFreshness;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
@@ -59,27 +62,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:wallet_import/setup.dart'
-    show
-        ProvisionDescriptorWallet,
-        ProvisionMnemonicWallet,
-        ProvisionXpubWallet;
 
 class WalletLocator {
-  static ({
-    ProvisionMnemonicWallet mnemonic,
-    ProvisionDescriptorWallet descriptor,
-    ProvisionXpubWallet xpub,
-  })
-  importOperations(GetIt services) {
-    final repository = services<WalletRepository>();
-    return (
-      mnemonic: repository.importWallet,
-      descriptor: repository.importDescriptor,
-      xpub: repository.importWatchOnlyXpub,
-    );
-  }
-
   static void setup(GetIt locator) {
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
@@ -130,43 +114,31 @@ class WalletLocator {
       ),
       dispose: (followUp) => followUp.dispose(),
     );
+    locator.registerLazySingleton<WalletProvisioning>(() {
+      final native = locator<WalletNativeRuntime>();
+      return WalletProvisioning.open(
+        inventory: locator<SecretsInventory>(),
+        native: native,
+        resume: native.resumeProvisioning,
+        properties: [
+          locator<SignerDevices>(),
+          locator<SyncFreshness>(),
+          locator<RecoverBullWalletProperties>(),
+        ],
+      );
+    });
     locator.registerLazySingleton<DefaultWalletRepair>(
-      () => DefaultWalletRepair(locator<Secrets>(), (secret, network) async {
-        await locator<WalletRepository>().createWallet(
-          secret: secret,
-          network: Network.fromEnvironment(
-            environment: network.env,
-            isLiquid: network is LiquidNetwork,
-          ),
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        );
-      }),
+      () => DefaultWalletRepair(
+        locator<Secrets>(),
+        locator<WalletProvisioning>(),
+      ),
     );
     locator.registerFactory<DefaultWalletProvisioning>(
       () => DefaultWalletProvisioning(
         secrets: locator<Secrets>(),
         inventory: locator<SecretsInventory>(),
-        environment: () async =>
-            (await locator<ActiveEnvironmentReader>().readActiveEnvironment())
-                .fold(
-                  (value) => value.networkEnv,
-                  (_) => throw Exception('Preferences read failed'),
-                ),
-        resume: () async => WalletSyncBinding.value(
-          await locator<WalletNativeRuntime>().resumeProvisioning(),
-        ),
-        create: (secret, network, birthday) =>
-            locator<WalletRepository>().createWallet(
-              secret: secret,
-              network: Network.fromEnvironment(
-                environment: network.env,
-                isLiquid: network is LiquidNetwork,
-              ),
-              scriptType: ScriptType.bip84,
-              isDefault: true,
-              birthday: birthday,
-            ),
+        environment: locator<ActiveEnvironmentReader>(),
+        accounts: locator<WalletProvisioning>(),
       ),
     );
 
