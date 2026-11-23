@@ -47,6 +47,7 @@ import 'package:electrum/setup.dart'
         RegtestElectrumProfile;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
+import 'package:settings/setup.dart' show SettingsRecoverBullBindings;
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
