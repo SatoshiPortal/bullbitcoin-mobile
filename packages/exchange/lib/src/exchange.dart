@@ -53,3 +53,8 @@ final class Exchange {
   Future<Result<bool, ExchangeFailure>> hasPendingOrders() =>
       _hasPendingOrders();
 }
+
+/// Builds the public capability with scenario-controlled results.
+Exchange exchangeForTesting({
+  required Future<Result<bool, ExchangeFailure>> Function() hasPendingOrders,
+}) => Exchange._(hasPendingOrders);

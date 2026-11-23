@@ -15,4 +15,6 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.10.4
+  dio: ^5.9.0
   freezed: ^4.0.0
+  test: ^1.26.3
