@@ -14,6 +14,7 @@ import '../presentation/account_info_cubit.dart';
 import '../presentation/exchange_preferences_cubit.dart';
 import '../presentation/secure_file_upload_cubit.dart';
 import '../presentation/statistics_cubit.dart';
+import 'exchange_access_settings_route.dart';
 import 'exchange_settings_route.dart';
 import 'screens/account_info_screen.dart';
 import 'screens/exchange_preferences_screen.dart';
@@ -38,6 +39,7 @@ final class ExchangeSettingsHost {
   final void Function(BuildContext) onOpenTransactions;
   final void Function(BuildContext) onOpenDefaultWallets;
   final void Function(BuildContext) onOpenExchange;
+  final ExchangeAccessSettingsHost? access;
 
   const ExchangeSettingsHost({
     required this.exchange,
@@ -54,11 +56,18 @@ final class ExchangeSettingsHost {
     required this.onOpenTransactions,
     required this.onOpenDefaultWallets,
     required this.onOpenExchange,
+    this.access,
   });
 }
 
 class ExchangeSettingsRouter {
   static List<RouteBase> routes(ExchangeSettingsHost config) => [
+    if (config.access case final access?)
+      exchangeAccessSettingsRoute(
+        host: access,
+        isSuperuser: config.isSuperuser,
+        onOpenAccount: ExchangeSettingsRoute.home.open,
+      ),
     GoRoute(
       name: ExchangeSettingsRoute.home.name,
       path: ExchangeSettingsRoute.home.path,

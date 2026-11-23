@@ -1,6 +1,6 @@
+import 'dart:io';
+
 import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -89,6 +89,21 @@ class SettingsRouter {
         context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
     onOpenExchange: (context) =>
         context.goNamed(ExchangeRoute.exchangeHome.name),
+    access: (
+      actions: (
+        current: () => locator<ExchangeFacade>().currentAccess,
+        watch: () => locator<ExchangeFacade>().watchAccess(),
+        enable: () => locator<ExchangeFacade>().enable(),
+        signOut: () => locator<ExchangeFacade>().logout(),
+        resolve: () => locator<ExchangeFacade>().resolveAccess(),
+      ),
+      platform: Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
+      onAuthenticate: (context) => context.pushNamed<void>(
+        ExchangeRoute.exchangeAuth.name,
+        queryParameters: {'from': 'settings'},
+      ),
+      onDisabled: (context) => context.goNamed(WalletRoute.walletHome.name),
+    ),
   );
 
   static GoRoute route({
@@ -111,22 +126,6 @@ class SettingsRouter {
         name: SettingsRoute.search.name,
         path: SettingsRoute.search.path,
         builder: (context, state) => const SettingsSearchScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeAccess.name,
-        path: SettingsRoute.exchangeAccess.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<ExchangeAccessSettingsCubit>(),
-          child: ExchangeAccessSettingsScreen(
-            onBack: () => context.pop(),
-            onAuthenticate: () => context.pushNamed<void>(
-              ExchangeRoute.exchangeAuth.name,
-              queryParameters: {'from': 'settings'},
-            ),
-            onOpenAccount: () => ExchangeSettingsRoute.home.open(context),
-            onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
-          ),
-        ),
       ),
       GoRoute(
         name: SettingsRoute.quickActions.name,

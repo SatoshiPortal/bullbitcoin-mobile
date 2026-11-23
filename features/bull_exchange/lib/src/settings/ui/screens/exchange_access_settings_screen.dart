@@ -1,12 +1,9 @@
-import 'dart:io';
-
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../exchange_l10n.dart';
+import '../../presentation/exchange_access_settings_cubit.dart';
 
 class ExchangeAccessSettingsScreen extends StatelessWidget {
   const ExchangeAccessSettingsScreen({
@@ -14,14 +11,14 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
     required this.onAuthenticate,
     required this.onOpenAccount,
     required this.onDisabled,
-    this.isIOS,
+    required this.activationAllowed,
     super.key,
   });
   final VoidCallback onBack;
   final Future<void> Function() onAuthenticate;
   final VoidCallback onOpenAccount;
   final VoidCallback onDisabled;
-  final bool? isIOS;
+  final bool activationAllowed;
 
   Future<void> _enable(ExchangeAccessSettingsCubit cubit) async {
     if (!await cubit.setEnabled(true) || cubit.isClosed) return;
@@ -66,10 +63,6 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allowed =
-        !(isIOS ?? Platform.isIOS) ||
-        (context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
-            false);
     final cubit = context.read<ExchangeAccessSettingsCubit>();
     return BullScaffold(
       body: SafeArea(
@@ -103,7 +96,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if ((allowed || signedIn) &&
+                            if ((activationAllowed || signedIn) &&
                                 !incomplete &&
                                 !unreadable) ...[
                               MergeSemantics(
@@ -188,16 +181,17 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                       },
                               ),
                             ],
-                            if (state.failure case final failure?) ...[
+                            if (state.failure != null) ...[
                               const Gap(16),
                               BullText(
-                                failure.toTranslated(context),
+                                context.loc.settingsErrorSavingSetting,
                                 style: context.bullType.body,
                               ),
                             ],
                             if (!incomplete &&
                                 !unreadable &&
-                                (signedIn || (allowed && enabled))) ...[
+                                (signedIn ||
+                                    (activationAllowed && enabled))) ...[
                               const Gap(24),
                               BullButton.primary(
                                 label: signedIn

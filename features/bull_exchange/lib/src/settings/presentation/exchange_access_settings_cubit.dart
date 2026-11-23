@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
+
+import '../domain/manage_exchange_access_usecase.dart';
 
 class ExchangeAccessSettingsState {
   const ExchangeAccessSettingsState(
@@ -14,7 +14,7 @@ class ExchangeAccessSettingsState {
   });
   final ExchangeAccess access;
   final bool busy;
-  final SettingsFailure? failure;
+  final ExchangeFailure? failure;
 }
 
 class ExchangeAccessSettingsCubit extends Cubit<ExchangeAccessSettingsState> {
@@ -32,8 +32,8 @@ class ExchangeAccessSettingsCubit extends Cubit<ExchangeAccessSettingsState> {
       }
     });
   }
-  final WatchSettingsExchangeAccessUsecase _watch;
-  final SetSettingsExchangeAccessUsecase _set;
+  final WatchExchangeAccessUsecase _watch;
+  final ManageExchangeAccessUsecase _set;
   StreamSubscription<ExchangeAccess>? _subscription;
 
   Future<bool> setEnabled(bool enabled) async {

@@ -5,8 +5,6 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
@@ -75,21 +73,6 @@ class SettingsLocator {
         ).execute(),
       ),
       dispose: (cubit) => cubit.close(),
-    );
-    locator.registerFactory<WatchSettingsExchangeAccessUsecase>(
-      () => WatchSettingsExchangeAccessUsecase(locator<ExchangeFacade>()),
-    );
-    locator.registerFactory<SetSettingsExchangeAccessUsecase>(
-      () => SetSettingsExchangeAccessUsecase(
-        locator<ExchangeFacade>(),
-        locator<Preferences>(),
-      ),
-    );
-    locator.registerFactory<ExchangeAccessSettingsCubit>(
-      () => ExchangeAccessSettingsCubit(
-        locator<WatchSettingsExchangeAccessUsecase>(),
-        locator<SetSettingsExchangeAccessUsecase>(),
-      ),
     );
     locator.registerFactory<DiscoverWalletUsecase>(
       () => DiscoverWalletUsecase(locator<WalletFacade>()),
