@@ -26,7 +26,9 @@ graph TB
     ARK --> BULL_UI
     ARK --> BULL_PRICER
     ARK -->|funding and wallet display data| SYNC
-    TX_HISTORY -->|Payjoin signing guard| ARK
+    TX_HISTORY -->|Payjoin signing guard| ARK_PROTOCOL
+    TX_HISTORY -->|Payjoin receiver fees| FEES_PACKAGE
+    TX_HISTORY -->|Payjoin admission| LEGACY_STORAGE
     ARK_PROTOCOL --> PRIMITIVES
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER

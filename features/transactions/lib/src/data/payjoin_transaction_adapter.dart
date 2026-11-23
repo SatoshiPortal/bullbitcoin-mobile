@@ -1,25 +1,28 @@
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:sync/sync.dart'
-    show
-        WalletConnectionPort,
-        SyncUnrecognizedReplyFailure,
-        bitcoinTransactionKnown;
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-
 import 'dart:async';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:transactions/transactions.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart'
+    show
+        WalletConnectionPort,
+        SyncFailure,
+        SyncUnrecognizedReplyFailure,
+        WalletKey,
+        bitcoinTransactionKnown;
+
+import '../../transactions.dart';
 
 final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   static const _reconcileAttempts = 3;
 
-  final WalletRepository _wallets;
+  final WalletInventory _wallets;
+  final Future<Result<void, SyncFailure>> Function(WalletKey) _synchronize;
+  final Stream<WalletKey> _finished;
   final Transactions _transactions;
   final WalletConnectionPort _connections;
-  final WalletFacade? _spendWallet;
+  final Future<bool> Function(String, String) _protectSpend;
   // Pacing between two wallet syncs of [_reconcileWallet]; tests shorten it.
   final Duration reconcileDelay;
 
@@ -27,20 +30,24 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     this._wallets,
     this._transactions,
     this._connections, {
-    this._spendWallet,
+    required Future<Result<void, SyncFailure>> Function(WalletKey) synchronize,
+    required Stream<WalletKey> finished,
+    required Future<bool> Function(String, String) protectSpend,
     this.reconcileDelay = const Duration(seconds: 5),
-  });
+  }) : _synchronize = synchronize,
+       _finished = finished,
+       _protectSpend = protectSpend;
 
   @override
   Future<bool> protectObservedSpend({
     required String walletId,
     required String transactionId,
-  }) async =>
-      _spendWallet?.protectObservedSpend(walletId, transactionId) ?? false;
+  }) => _protectSpend(walletId, transactionId);
 
   @override
-  Stream<void> watchWallet(String walletId) => _wallets.walletSyncFinishedStream
-      .where((wallet) => wallet.id == walletId);
+  Stream<void> watchWallet(String walletId) => _finished.where(
+    (key) => key.id == walletId && key.network is BitcoinNetwork,
+  );
 
   /// A refreshed lookup asks the Electrum server about this one transaction
   /// instead of syncing the whole wallet, which takes 15 to 120 seconds
@@ -59,16 +66,13 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
       return _readTransaction(walletId, transactionId);
     }
 
-    final wallet = (await _wallets.getWallet(walletId)).fold(
-      (wallet) => wallet,
-      (failure) =>
-          throw Exception('Payjoin wallet unavailable: ${failure.runtimeType}'),
-    );
+    final key = await _readKey(walletId);
+    final network = key.network;
+    if (network is! BitcoinNetwork) {
+      throw Exception('Payjoin requires a Bitcoin wallet');
+    }
     final result = await _connections.run(
-      network: Network.fromEnvironment(
-        environment: wallet.network.environment,
-        isLiquid: false,
-      ).bitcoin,
+      network: network,
       operation: (connection) =>
           bitcoinTransactionKnown(transactionId, connection),
       mayRetry: (failure) => failure is! SyncUnrecognizedReplyFailure,
@@ -146,12 +150,17 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
 
   @override
   Future<void> refreshWallet(String walletId) async {
-    // Refresh only: the caller wants the side-effecting sync, not the wallet.
-    (await _wallets.getWallet(walletId, sync: true)).fold(
-      (_) {},
-      (failure) => throw Exception(
-        'Payjoin wallet refresh failed: ${failure.runtimeType}',
-      ),
-    );
+    final result = await _synchronize(await _readKey(walletId));
+    if (result case Err(:final failure)) {
+      throw Exception('Payjoin wallet refresh failed: ${failure.logCode}');
+    }
   }
+
+  Future<WalletKey> _readKey(String id) async =>
+      switch (await _wallets.readWallet(id)) {
+        Ok(:final value) => WalletKey(id: value.id, network: value.network),
+        Err(:final failure) => throw Exception(
+          'Payjoin wallet unavailable: ${failure.runtimeType}',
+        ),
+      };
 }

@@ -57,7 +57,6 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
-import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:swap_feature/swap_feature.dart';
@@ -298,7 +297,7 @@ class AppLocator {
     final swaps = await BoltzSwapsSetup.setup(locator);
     if (swaps case Err()) return swaps;
     CoreLocator.registerUsecases(locator);
-    PayjoinSetup.setup(locator, startRecovery: false);
+    mountPayjoin(locator, startRecovery: false);
 
     SyncLocator.setupForeground(locator);
 

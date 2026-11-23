@@ -1,5 +1,7 @@
 import 'package:sync/sync.dart'
     show
+        SignedPsbt,
+        SpendOwner,
         WalletConnectionPort,
         broadcastBitcoinTransaction,
         SyncBusyFailure,
@@ -10,7 +12,7 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure,
         SyncUnsupportedNetworkFailure;
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:sync/write.dart' show BroadcastSpend;
 
 import 'dart:typed_data';
 
@@ -19,9 +21,9 @@ import 'package:primitives/primitives.dart' hide Network;
 
 final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
   final WalletConnectionPort _connections;
-  final WalletFacade _wallet;
+  final BroadcastSpend _broadcast;
 
-  const AppPayjoinBlockchainAdapter(this._connections, this._wallet);
+  const AppPayjoinBlockchainAdapter(this._connections, this._broadcast);
 
   @override
   Future<void> broadcastTransaction({
@@ -48,7 +50,7 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async {
-    final result = await _wallet.broadcastSpend(
+    final result = await _broadcast(
       walletId,
       SignedPsbt(psbt),
       network: network,
