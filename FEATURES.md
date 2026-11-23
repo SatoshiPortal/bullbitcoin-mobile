@@ -124,7 +124,8 @@ graph TB
     BULL_EXCHANGE -->|receive issuance, fee-estimation addresses, and unspent coins| SYNC
     BULL_EXCHANGE -->|Buy receive and Sell and Pay send sessions| BULL_PAYJOIN
     BULL_EXCHANGE -->|quotes| BULL_PRICER
-    BULL_EXCHANGE -->|spending wallet cards and address viewer| WALLETS
+    BULL_EXCHANGE -->|spending wallet cards and home navigation| WALLETS
+    BULL_EXCHANGE -->|address viewer supplied by the host| ADDRESS_LABELS
     BULL_EXCHANGE --> LABELS
     BULL_EXCHANGE --> FEES_UI
     BULL_EXCHANGE --> FEES_PACKAGE

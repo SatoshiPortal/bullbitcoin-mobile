@@ -1,5 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:address_view/address_view.dart' show AddressViewer;
+import 'package:bb_mobile/features/fees/public/onchain_send_labels.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';

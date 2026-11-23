@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_confirmation_details.dar
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/localizations.dart' show OnchainSendLabelsL10n;
+import 'package:bb_mobile/features/fees/public/onchain_send_labels.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
