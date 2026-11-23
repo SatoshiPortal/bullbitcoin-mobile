@@ -7,7 +7,11 @@ import 'dart:async';
 
 import 'package:ark/funding.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show AccelerateTransactionListTile, BuyRoute, showSinpeReceiptBottomSheet;
+    show
+        AccelerateTransactionListTile,
+        BullExchangeNavigation,
+        BuyRoute,
+        showSinpeReceiptBottomSheet;
 
 import 'package:backups/backups.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotifications;
@@ -80,7 +84,6 @@ import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app_wallet;
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
@@ -471,7 +474,7 @@ class AppLocator {
         orderSwaps: () => locator<OrderSwaps>(),
         actions: TransactionUiActions(
           openExchange: (context) =>
-              context.goNamed(ExchangeRoute.exchangeHome.name),
+              context.goNamed(BullExchangeNavigation.dashboardName),
           openWalletHome: (context) =>
               context.goNamed(WalletRoute.walletHome.name),
           refreshWallets: (context) => context.read<WalletBloc>().refresh(),

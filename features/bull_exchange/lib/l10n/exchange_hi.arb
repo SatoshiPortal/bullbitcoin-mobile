@@ -1579,5 +1579,8 @@
   "exchangeFeatureUnifiedHistory": "• एकीकृत लेनदेन इतिहास",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  }
+  },
+  "exchangeErrorSigningOut": "आपको पूरी तरह साइन आउट नहीं किया जा सका। कृपया पुनः प्रयास करें।",
+  "exchangeErrorLoadingAnnouncements": "घोषणाएँ लोड नहीं हो सकीं।",
+  "exchangeErrorRequestingAccountDeletion": "आपका खाता हटाने का अनुरोध नहीं भेजा जा सका। कृपया पुनः प्रयास करें।"
 }

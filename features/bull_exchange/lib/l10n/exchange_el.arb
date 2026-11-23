@@ -1576,5 +1576,8 @@
   "exchangeGoToWebsiteButton": "Go to Bull Bitcoin ανταλλακτήρια",
   "@exchangeGoToWebsiteButton": {
     "description": "Button label for navigating to the Bull Bitcoin exchange website"
-  }
+  },
+  "exchangeErrorSigningOut": "Δεν ήταν δυνατή η πλήρης αποσύνδεσή σας. Παρακαλώ δοκιμάστε ξανά.",
+  "exchangeErrorLoadingAnnouncements": "Δεν ήταν δυνατή η φόρτωση των ανακοινώσεων.",
+  "exchangeErrorRequestingAccountDeletion": "Δεν ήταν δυνατή η αποστολή του αιτήματος διαγραφής του λογαριασμού σας. Παρακαλώ δοκιμάστε ξανά."
 }

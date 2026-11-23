@@ -11,8 +11,15 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show BuyRoute, ExchangeHomeAction, ExchangeTradingGuard, PayRoute, SellRoute;
-import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
+    show
+        BullExchangeFeature,
+        BullExchangeNavigation,
+        BuyRoute,
+        ExchangeFailureL10n,
+        ExchangeHomeAction,
+        ExchangeTradingGuard,
+        PayRoute,
+        SellRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
@@ -41,8 +48,6 @@ import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
     show SwapFeature, SwapNavigation;
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
@@ -53,6 +58,11 @@ import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
+import 'package:transactions/transactions.dart' show Transactions;
+import 'package:overview/setup.dart' show OverviewSynchronization;
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinPolicyAccess, PayjoinReceiver, PayjoinSessions;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -94,21 +104,6 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
-  static final _exchangeConfig = ExchangeRouterConfig(
-    networkUnavailable: () => locator<Exchange>().networkUnavailable(),
-    loadKyc: () => locator<Exchange>().loadKyc(),
-    isSuperuser: (context) => Settings.readEnvironment(context).isSuperuser,
-    homePath: WalletRoute.walletHome.path,
-    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
-    onOpenSettings: SettingsNavigation.open,
-    onAction: (context, action) => switch (action) {
-      ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
-      ExchangeHomeAction.sell => context.pushNamed<void>(SellRoute.sell.name),
-      ExchangeHomeAction.pay => context.pushNamed<void>(PayRoute.pay.name),
-      ExchangeHomeAction.transfer => SwapNavigation.open(context),
-    },
-  );
-
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
       case QuickAction.toggleAmounts:
@@ -131,7 +126,7 @@ class AppRouter {
         if (locator<Exchange>().currentAccess is ExchangeAccessDisabled) {
           unawaited(_activateExchange(context));
         } else {
-          context.pushNamed(ExchangeRoute.exchangeHome.name);
+          context.pushNamed(BullExchangeNavigation.dashboardName);
         }
     }
   }
@@ -156,18 +151,42 @@ class AppRouter {
       locator<Exchange>().currentAccess,
     );
     if (signedIn) {
-      context.pushNamed(ExchangeRoute.exchangeHome.name);
+      context.pushNamed(BullExchangeNavigation.dashboardName);
     } else {
-      context.goNamed(ExchangeRoute.exchangeAuth.name);
+      context.goNamed(BullExchangeNavigation.authName);
     }
   }
 
-  static final _exchangeFeature = ExchangeRouter.mount(
-    _exchangeConfig,
+  static final _exchangeFeature = BullExchangeFeature.mount(
     exchange: () => locator<Exchange>(),
     preferences: () => locator<Preferences>(),
+    isSuperuser: (context) => Settings.readEnvironment(context).isSuperuser,
+    homePath: WalletRoute.walletHome.path,
+    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
+    onOpenSettings: SettingsNavigation.open,
+    onAction: (context, action) => switch (action) {
+      ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
+      ExchangeHomeAction.sell => context.pushNamed<void>(SellRoute.sell.name),
+      ExchangeHomeAction.pay => context.pushNamed<void>(PayRoute.pay.name),
+      ExchangeHomeAction.transfer => SwapNavigation.open(context),
+    },
+    brandAssetPath: Assets.logos.bbLogoSmall.path,
+    settingsAssetPath: Assets.icons.settingsLine.path,
     settings: SettingsRouter.exchangeSettingsHost,
-    purchases: exchangePurchaseHost(locator),
+    purchases: (
+      displayPreferences: () => locator<AmountDisplayPreferencesReader>(),
+      inventory: () => locator<SecretsInventory>(),
+      native: () => locator<WalletNativeRuntime>(),
+      fees: () => locator<Fees>(),
+      payjoinSessions: () => locator<PayjoinSessions>(),
+      payjoinReceiver: () => locator<PayjoinReceiver>(),
+      payjoinPolicy: () => locator<PayjoinPolicyAccess>(),
+      pollWallet: (id) => locator<OverviewSynchronization>().coordinator
+          .pollWallet(id, isActive: () => true),
+      transactions: () => locator<Transactions>(),
+      bitcoinAsset: Assets.icons.btc.path,
+      onClose: (context) => context.goNamed(WalletRoute.walletHome.name),
+    ),
     payins: exchangePayinHost(locator),
   );
 
@@ -219,7 +238,7 @@ class AppRouter {
         notifyRootObserver: true,
         builder: (context, state, child) {
           final location = state.uri.toString();
-          final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
+          final tabIndex = location.startsWith(BullExchangeNavigation.dashboardPath)
               ? 1
               : 0;
 
@@ -256,10 +275,8 @@ class AppRouter {
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),
-          ...ExchangeRouter.routes(
-            _exchangeConfig,
-            exchangeFeature: _exchangeFeature,
-          ),
+          ?_exchangeFeature.dashboardRoute,
+          ..._exchangeFeature.routes,
         ],
       ),
       ?_exchangeFeature.authRoute,

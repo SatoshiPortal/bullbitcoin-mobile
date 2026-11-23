@@ -1576,5 +1576,8 @@
   "exchangeFeatureUnifiedHistory": "• Birleşik İşlem Tarihi",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  }
+  },
+  "exchangeErrorSigningOut": "Oturumunuz tamamen kapatılamadı. Lütfen tekrar deneyin.",
+  "exchangeErrorLoadingAnnouncements": "Duyurular yüklenemedi.",
+  "exchangeErrorRequestingAccountDeletion": "Hesap silme talebiniz gönderilemedi. Lütfen tekrar deneyin."
 }

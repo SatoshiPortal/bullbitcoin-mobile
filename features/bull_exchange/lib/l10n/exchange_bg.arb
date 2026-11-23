@@ -1373,5 +1373,8 @@
   "exchangeLandingDisclaimerLegal": "Достъпът до услугите на борсата ще бъде ограничен само до държави, в които Bull Bitcoin може законно да оперира, и може да изисква KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Услугите за обмен на криптовалута не са налични в мобилното приложение Bull Bitcoin.",
   "exchangeLoginButton": "Вход или регистрация",
-  "exchangeGoToWebsiteButton": "Отиди на уебсайта на борсата Bull Bitcoin"
+  "exchangeGoToWebsiteButton": "Отиди на уебсайта на борсата Bull Bitcoin",
+  "exchangeErrorSigningOut": "Не можахте да излезете напълно от профила си. Моля, опитайте отново.",
+  "exchangeErrorLoadingAnnouncements": "Съобщенията не можаха да бъдат заредени.",
+  "exchangeErrorRequestingAccountDeletion": "Заявката ви за изтриване на акаунта не можа да бъде изпратена. Моля, опитайте отново."
 }

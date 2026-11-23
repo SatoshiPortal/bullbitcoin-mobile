@@ -860,5 +860,8 @@
   "exchangeFeatureCustomerSupport": "• Զրուցեք հաճախորդների աջակցության հետ",
   "exchangeFeatureUnifiedHistory": "• Միասնական գործարքների պատմություն",
   "exchangeLandingDisclaimerNotAvailable": "Կրիպտոարժույթի փոխանակման ծառայությունները հասանելի չեն Bull Bitcoin բջջային հավելվածում։",
-  "exchangeGoToWebsiteButton": "Անցնել Bull Bitcoin փոխանակման կայք"
+  "exchangeGoToWebsiteButton": "Անցնել Bull Bitcoin փոխանակման կայք",
+  "exchangeErrorSigningOut": "Չհաջողվեց ամբողջությամբ դուրս գալ համակարգից։ Խնդրում ենք փորձել կրկին։",
+  "exchangeErrorLoadingAnnouncements": "Չհաջողվեց բեռնել հայտարարությունները։",
+  "exchangeErrorRequestingAccountDeletion": "Չհաջողվեց ուղարկել հաշվի ջնջման ձեր հարցումը։ Խնդրում ենք փորձել կրկին։"
 }

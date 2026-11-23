@@ -959,5 +959,8 @@
   "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Les services d'échange de cryptomonnaies ne sont pas disponibles dans l'application mobile Bull Bitcoin.",
   "exchangeLoginButton": "Se connecter ou s'inscrire",
-  "exchangeGoToWebsiteButton": "Aller sur le site web de l'échange Bull Bitcoin"
+  "exchangeGoToWebsiteButton": "Aller sur le site web de l'échange Bull Bitcoin",
+  "exchangeErrorSigningOut": "La déconnexion n'a pas pu être menée à bien. Veuillez réessayer.",
+  "exchangeErrorLoadingAnnouncements": "Les annonces n'ont pas pu être chargées.",
+  "exchangeErrorRequestingAccountDeletion": "Votre demande de suppression de compte n'a pas pu être envoyée. Veuillez réessayer."
 }
