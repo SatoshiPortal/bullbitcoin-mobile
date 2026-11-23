@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
+import 'package:swaps/order_swaps.dart';
 
 class WatchReceiveOrderSwapUsecase {
   final ReadOrderSwaps Function() _orderSwaps;
