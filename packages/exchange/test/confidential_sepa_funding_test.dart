@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:exchange/exchange.dart';
@@ -47,12 +49,7 @@ void main() {
       openClient: (endpoint, readKey) => bbxForTesting(
         endpoint: endpoint.toString(),
         readActiveApiKey: readKey,
-        adapter: account,
-      ),
-      openUntimedClient: (endpoint, readKey) => bbxForTesting(
-        endpoint: endpoint.toString(),
-        readActiveApiKey: readKey,
-        adapter: ibans,
+        adapter: _ByPath(() => account, () => ibans),
       ),
     );
     addTearDown(exchange.close);
@@ -149,12 +146,7 @@ void main() {
       openClient: (endpoint, readKey) => bbxForTesting(
         endpoint: endpoint.toString(),
         readActiveApiKey: readKey,
-        adapter: account,
-      ),
-      openUntimedClient: (endpoint, readKey) => bbxForTesting(
-        endpoint: endpoint.toString(),
-        readActiveApiKey: readKey,
-        adapter: ibans,
+        adapter: _ByPath(() => account, () => ibans),
       ),
     );
     addTearDown(changingExchange.close);
@@ -169,4 +161,24 @@ void main() {
     );
     expect(ibans.requests, isEmpty);
   });
+}
+
+/// Sends the recipients calls to [recipients] and every other call to
+/// [others]: one client carries both, as in the app.
+final class _ByPath implements HttpClientAdapter {
+  final FakeBbxHttp Function() others;
+  final FakeBbxHttp Function() recipients;
+
+  _ByPath(this.others, this.recipients);
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) => (options.path.endsWith('/api-recipients') ? recipients() : others())
+      .fetch(options, requestStream, cancelFuture);
+
+  @override
+  void close({bool force = false}) {}
 }

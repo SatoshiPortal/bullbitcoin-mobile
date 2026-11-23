@@ -73,8 +73,7 @@ void main() {
         epoch: http.requests.isEmpty ? 1 : 2,
         apiKey: anonymousTestApiKey,
       )),
-      openClient: (_, _) => fail('unexpected timed operation'),
-      openUntimedClient: (endpoint, readKey) => bbxForTesting(
+      openClient: (endpoint, readKey) => bbxForTesting(
         endpoint: endpoint.toString(),
         adapter: http,
         readActiveApiKey: readKey,

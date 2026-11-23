@@ -213,8 +213,6 @@ final class Exchange {
       readActiveApiKey: readKey,
       timeouts: BbxTimeouts.standard,
     ),
-    openUntimedClient: (endpoint, readKey) =>
-        Bbx.open(endpoint: endpoint.toString(), readActiveApiKey: readKey),
   );
 
   static Exchange _open({
@@ -222,7 +220,6 @@ final class Exchange {
     required Uri testnetEndpoint,
     required ExchangeSessionReader readSession,
     required OpenInventoryClient openClient,
-    required OpenInventoryClient openUntimedClient,
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
     ExchangeKycSetup? kyc,
@@ -244,11 +241,9 @@ final class Exchange {
         );
 
     Future<Result<T, ExchangeFailure>> withClient<T>(
-      Future<Result<T, ExchangeFailure>> Function(Bbx, Bbx Function())
-      operation, {
+      Future<Result<T, ExchangeFailure>> Function(Bbx) operation, {
       ExchangeEnvironment? environment,
       ExchangeFailure Function()? credentialReadFailure,
-      bool untimed = false,
       _CompletionCheck completionCheck = _CompletionCheck.none,
     }) async {
       switch (await sessionSnapshot()) {
@@ -271,21 +266,9 @@ final class Exchange {
             stale = true;
             return const Err(BbxCredentialUnavailableFailure());
           }
-          final client = (untimed ? openUntimedClient : openClient)(
-            value.endpoint,
-            readKey,
-          );
-          Bbx? untimedClient;
+          final client = openClient(value.endpoint, readKey);
           try {
-            final result = await operation(
-              client,
-              () => untimed
-                  ? client
-                  : untimedClient ??= openUntimedClient(
-                      value.endpoint,
-                      readKey,
-                    ),
-            );
+            final result = await operation(client);
             // A committed write remains successful even if the session
             // changes before its response arrives.
             if (completionCheck == _CompletionCheck.write &&
@@ -306,9 +289,7 @@ final class Exchange {
             // A 401 to a key of this session means the key is no longer
             // valid, whatever call got it: expire that session. The access
             // lifecycle ignores an epoch that has already ended.
-            if (access != null &&
-                (client.sessionRejected ||
-                    (untimedClient?.sessionRejected ?? false))) {
+            if (access != null && client.sessionRejected) {
               unawaited(
                 ExpireExchangeSessionUsecase(access).execute(
                   epoch: value.epoch,
@@ -316,7 +297,6 @@ final class Exchange {
                 ),
               );
             }
-            untimedClient?.dispose();
             client.dispose();
           }
       }
@@ -331,8 +311,7 @@ final class Exchange {
       Future<Result<T, ExchangeFailure>> Function(BbxApiLimitOrderRepository)
       call,
     ) => withClient(
-      (client, _) => call(BbxApiLimitOrderRepository(client)),
-      untimed: true,
+      (client) => call(BbxApiLimitOrderRepository(client)),
       credentialReadFailure: () =>
           ExchangeLimitOrderFailure(problem, 'Exchange credential unavailable'),
     );
@@ -341,13 +320,12 @@ final class Exchange {
     Future<Result<T, ExchangeFailure>> fund<T>(
       Future<Result<T, ExchangeFailure>> Function(BbxApiFundingRepository) call,
     ) => withClient(
-      (client, _) => call(
+      (client) => call(
         BbxApiFundingRepository(
           api: client,
           paymentReturnUrl: fundingReturnUrl,
         ),
       ),
-      untimed: true,
       credentialReadFailure: () =>
           const ExchangeUnexpectedFailure('Exchange credential unavailable'),
     );
@@ -400,10 +378,10 @@ final class Exchange {
     return Exchange._(
       inventory.hasPendingOrders,
       () => withClient(
-        (client, _) => BbxApiOrderStatsRepository(api: client).getOrderStats(),
+        (client) => BbxApiOrderStatsRepository(api: client).getOrderStats(),
       ),
       ({required fileBytes, required fileName}) => withClient(
-        (client, _) => BbxApiKycRepository(api: client).uploadDocument(
+        (client) => BbxApiKycRepository(api: client).uploadDocument(
           fileBytes: fileBytes,
           fileName: fileName,
           docType: 'ID',
@@ -411,16 +389,16 @@ final class Exchange {
         ),
       ),
       (environment) => withClient(
-        (client, _) => BbxApiAccountRepository(client).getAccount(),
+        (client) => BbxApiAccountRepository(client).getAccount(),
         environment: environment,
         credentialReadFailure: ExchangeAccountUnavailableFailure.new,
       ),
       (environment) => withClient(
-        (client, _) => BbxApiUserRepository(api: client).getUserSummary(),
+        (client) => BbxApiUserRepository(api: client).getUserSummary(),
         environment: environment,
       ),
       (environment) => withClient(
-        (client, _) => BbxApiUserRepository(api: client).listAnnouncements(),
+        (client) => BbxApiUserRepository(api: client).listAnnouncements(),
         environment: environment,
       ),
       (
@@ -431,7 +409,7 @@ final class Exchange {
         autoBuyEnabled,
         emailNotificationsEnabled,
       }) => withClient(
-        (client, _) => BbxApiUserRepository(api: client).saveUserPreference(
+        (client) => BbxApiUserRepository(api: client).saveUserPreference(
           language: language,
           currency: currency,
           dcaEnabled: dcaEnabled,
@@ -442,7 +420,7 @@ final class Exchange {
       ),
       (
         get: () => withClient(
-          (client, _) =>
+          (client) =>
               BbxApiExchangeRecipientRepository(api: client)
                   .getDefaultWallets(),
           completionCheck: _CompletionCheck.read,
@@ -453,7 +431,7 @@ final class Exchange {
               required address,
               existingRecipientId,
             }) async => switch (await withClient<ExchangeWrite<DefaultWallet>>(
-              (client, _) async => Ok(
+              (client) async => Ok(
                 await BbxApiExchangeRecipientRepository(api: client)
                     .saveDefaultWallet(
                       walletType: walletType,
@@ -469,7 +447,7 @@ final class Exchange {
         delete:
             ({required recipientId, required walletType, required address}) =>
                 withClient(
-                  (client, _) => BbxApiExchangeRecipientRepository(api: client)
+                  (client) => BbxApiExchangeRecipientRepository(api: client)
                       .deleteDefaultWallet(
                         recipientId: recipientId,
                         walletType: walletType,
@@ -481,38 +459,36 @@ final class Exchange {
       (environment) => BbxApiOrderRepository(
         isTestnet: environment == ExchangeEnvironment.testnet,
         read: <T>(operation) => withClient<T>(
-          (client, _) => operation(client),
+          (client) => operation(client),
           environment: environment,
           completionCheck: _CompletionCheck.read,
         ),
         write: <T>(operation) => withClient<T>(
-          (client, _) => operation(client),
+          (client) => operation(client),
           environment: environment,
           completionCheck: _CompletionCheck.write,
         ),
       ),
       (
         getMessages: ({page, pageSize}) => withClient(
-          (timed, getUntimed) => BbxApiSupportChatRepository(
-            users: timed.users,
-            commcenter: getUntimed().commcenter,
+          (client) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
           ).getMessages(page: page, pageSize: pageSize),
           credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
         ),
         sendMessage: ({required text, attachments}) => withClient(
-          (client, _) => BbxApiSupportChatRepository(
+          (client) => BbxApiSupportChatRepository(
             users: client.users,
             commcenter: client.commcenter,
           ).sendMessage(text: text, attachments: attachments),
-          untimed: true,
           credentialReadFailure: ExchangeChatSendMessageFailure.new,
         ),
         getAttachment: (attachmentId) => withClient(
-          (client, _) => BbxApiSupportChatRepository(
+          (client) => BbxApiSupportChatRepository(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessageAttachment(attachmentId),
-          untimed: true,
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
         ),
         getUnreadCount: () => withClient(
@@ -580,18 +556,16 @@ final class Exchange {
       ),
       ExchangeVirtualIbansImpl(
         find: (environment) => withClient(
-          (client, _) => BbxApiVirtualIbanRepository(client).find(),
+          (client) => BbxApiVirtualIbanRepository(client).find(),
           environment: environment,
-          untimed: true,
         ),
         create: (environment) => withClient(
-          (client, _) => BbxApiVirtualIbanRepository(client).create(),
+          (client) => BbxApiVirtualIbanRepository(client).create(),
           environment: environment,
-          untimed: true,
         ),
       ),
       kyc == null ? null : ExchangeKycConfigurationRepository(kyc),
-      () => withClient((client, untimedClient) async {
+      () => withClient((client) async {
         switch (await BbxApiUserRepository(api: client).getUserSummary()) {
           case Err():
             return const Err(ExchangeAccountUnavailableFailure());
@@ -600,7 +574,7 @@ final class Exchange {
               return const Ok(ConfidentialSepaAvailability.unavailable);
             }
         }
-        return (await BbxApiVirtualIbanRepository(untimedClient()).find()).map(
+        return (await BbxApiVirtualIbanRepository(client).find()).map(
           (iban) => iban is ActiveVirtualIban
               ? ConfidentialSepaAvailability.ready
               : ConfidentialSepaAvailability.needsVirtualIban,
@@ -609,15 +583,13 @@ final class Exchange {
       access,
       ExchangeRecipientsImpl(
         read: <T>(environment, operation) => withClient<T>(
-          (client, _) => operation(client),
+          (client) => operation(client),
           environment: environment,
-          untimed: true,
           completionCheck: _CompletionCheck.read,
         ),
         write: <T>(environment, operation) => withClient<T>(
-          (client, _) => operation(client),
+          (client) => operation(client),
           environment: environment,
-          untimed: true,
           completionCheck: _CompletionCheck.write,
         ),
       ),
@@ -1124,13 +1096,11 @@ Exchange exchangeForTesting({
 Exchange exchangeWithTransportForTesting({
   required ExchangeSessionReader readSession,
   required OpenInventoryClient openClient,
-  OpenInventoryClient? openUntimedClient,
   ExchangeAccessLifecycle? access,
 }) => Exchange._open(
   mainnetEndpoint: Uri.parse('https://mainnet.example.invalid'),
   testnetEndpoint: Uri.parse('https://testnet.example.invalid'),
   readSession: readSession,
   openClient: openClient,
-  openUntimedClient: openUntimedClient ?? openClient,
   access: access,
 );
