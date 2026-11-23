@@ -47,10 +47,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
       final bloc = context.read<BuyBloc>();
       final state = bloc.state;
       final order = state.buyOrder;
-      if (order == null ||
-          order.payoutStatus == OrderPayoutStatus.completed ||
-          order.payoutStatus == OrderPayoutStatus.canceled ||
-          order.payoutStatus == OrderPayoutStatus.failed) {
+      if (order == null || order.payoutStatus.isTerminal) {
         _orderRefreshTimer?.cancel();
         // Past the window the payjoin status no longer applies: drop it.
         setState(() {});

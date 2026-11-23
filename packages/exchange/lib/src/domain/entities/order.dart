@@ -77,12 +77,22 @@ enum OrderStatus {
   final String value;
   const OrderStatus(this.value);
 
-  static OrderStatus fromValue(String value) {
-    return OrderStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderStatus.unknown,
-    );
-  }
+  /// Whether the order can no longer change. [unknown] is not terminal: a
+  /// status this build doesn't know may still move.
+  bool get isTerminal => switch (this) {
+    OrderStatus.canceled ||
+    OrderStatus.expired ||
+    OrderStatus.orderExpired ||
+    OrderStatus.completed ||
+    OrderStatus.rejected ||
+    OrderStatus.failed => true,
+    OrderStatus.inProgress ||
+    OrderStatus.awaitingConfirmation ||
+    OrderStatus.unknown => false,
+  };
+
+  bool get isFailed => this == OrderStatus.failed;
+  bool get isRejected => this == OrderStatus.rejected;
 }
 
 enum OrderPayinStatus {
@@ -98,12 +108,20 @@ enum OrderPayinStatus {
   final String value;
   const OrderPayinStatus(this.value);
 
-  static OrderPayinStatus fromValue(String value) {
-    return OrderPayinStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPayinStatus.unknown,
-    );
-  }
+  /// Whether the payin can no longer change. [unknown] is not terminal.
+  bool get isTerminal => switch (this) {
+    OrderPayinStatus.completed || OrderPayinStatus.rejected => true,
+    OrderPayinStatus.notStarted ||
+    OrderPayinStatus.awaitingPayment ||
+    OrderPayinStatus.inProgress ||
+    OrderPayinStatus.underReview ||
+    OrderPayinStatus.awaitingConfirmation ||
+    OrderPayinStatus.unknown => false,
+  };
+
+  /// The payin has no failed status; a refused payin is [rejected].
+  bool get isFailed => false;
+  bool get isRejected => this == OrderPayinStatus.rejected;
 }
 
 enum OrderPayoutStatus {
@@ -119,12 +137,22 @@ enum OrderPayoutStatus {
   final String value;
   const OrderPayoutStatus(this.value);
 
-  static OrderPayoutStatus fromValue(String value) {
-    return OrderPayoutStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPayoutStatus.unknown,
-    );
-  }
+  /// Whether the payout can no longer change. [unknown] is not terminal.
+  bool get isTerminal => switch (this) {
+    OrderPayoutStatus.completed ||
+    OrderPayoutStatus.canceled ||
+    OrderPayoutStatus.failed => true,
+    OrderPayoutStatus.notStarted ||
+    OrderPayoutStatus.inProgress ||
+    OrderPayoutStatus.scheduled ||
+    OrderPayoutStatus.awaitingClaim ||
+    OrderPayoutStatus.unknown => false,
+  };
+
+  bool get isFailed => this == OrderPayoutStatus.failed;
+
+  /// The payout has no rejected status.
+  bool get isRejected => false;
 }
 
 // enum WithdrawalPaymentProcessor {

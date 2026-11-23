@@ -22,3 +22,21 @@ abstract final class UnknownServerValues {
     return true;
   }
 }
+
+/// Maps a server string to one of [values], or to [unknown] when no other
+/// value has [wire] equal to [raw]. An unknown or missing [raw] is reported
+/// through [UnknownServerValues] as a [kind]. [unknown] itself never matches,
+/// so a server that sends the literal name of the fallback is still logged.
+T serverValue<T extends Enum>(
+  String kind,
+  String? raw, {
+  required List<T> values,
+  required String Function(T value) wire,
+  required T unknown,
+}) {
+  for (final value in values) {
+    if (value != unknown && wire(value) == raw) return value;
+  }
+  UnknownServerValues.report(kind, raw);
+  return unknown;
+}
