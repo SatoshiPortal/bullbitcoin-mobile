@@ -235,7 +235,11 @@ void main() {
         (await log.readLogs())
             .where((line) => line.split('\t')[1] == 'WARNING')
             .map((line) => line.split('\t')[2]),
-        ['Wallet creation failed catalog row removed'],
+        [
+          'Wallet creation failed catalog row removed',
+          if (path != 'secret')
+            'Failed to import watch-only wallet: WalletSnapshotException',
+        ],
       );
       verifyZeroInteractions(reporter);
       expect(storage.entries, secretsBefore);
