@@ -30,13 +30,17 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     if (wallet == null) return;
     final network = await _readNetworkUsecase.execute();
     if (isClosed) return;
-    if (network case Err(:final failure)) {
-      emit(state.copyWith(watchOnlyWallet: null, failure: failure));
-      return;
+    final NetworkEnv environment;
+    switch (network) {
+      case Ok(:final value):
+        environment = value;
+      case Err(:final failure):
+        emit(state.copyWith(watchOnlyWallet: null, failure: failure));
+        return;
     }
     switch (const CaptureWatchOnlyNetworkUsecase().execute(
       wallet,
-      environment: (network as Ok).value,
+      environment: environment,
     )) {
       case Ok(:final value):
         emit(state.copyWith(watchOnlyWallet: value));
@@ -73,11 +77,15 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     }
     final network = await _readNetworkUsecase.execute();
     if (isClosed) return;
-    if (network case Err(:final failure)) {
-      emit(state.copyWith(failure: failure));
-      return;
+    final NetworkEnv environment;
+    switch (network) {
+      case Ok(:final value):
+        environment = value;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
     }
-    if (wallet.network.env != (network as Ok).value) {
+    if (wallet.network.env != environment) {
       emit(state.copyWith(failure: const NetworkMismatchFailure()));
       return;
     }
@@ -108,13 +116,17 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     if (trimmed.length >= 111) {
       final network = await _readNetworkUsecase.execute();
       if (isClosed || state.input != trimmed) return;
-      if (network case Err(:final failure)) {
-        emit(state.copyWith(watchOnlyWallet: null, failure: failure));
-        return;
+      final NetworkEnv environment;
+      switch (network) {
+        case Ok(:final value):
+          environment = value;
+        case Err(:final failure):
+          emit(state.copyWith(watchOnlyWallet: null, failure: failure));
+          return;
       }
       final result = await _parseWatchOnlyInputUsecase.execute(
         trimmed,
-        environment: (network as Ok).value,
+        environment: environment,
       );
       if (isClosed || state.input != trimmed) return;
       switch (result) {

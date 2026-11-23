@@ -95,13 +95,15 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
 
     emit(state.copyWith(isLoading: true, failure: null));
 
-    switch (await _importWalletUsecase.execute(
+    final result = await _importWalletUsecase.execute(
       mnemonicWords: mnemonic.words,
       language: mnemonic.language,
       label: mnemonic.label,
       passphrase: mnemonic.passphrase,
       scriptType: state.scriptType,
-    )) {
+    );
+    if (isClosed) return;
+    switch (result) {
       case Ok():
         emit(state.copyWith(imported: true, isLoading: false));
       case Err(:final failure):

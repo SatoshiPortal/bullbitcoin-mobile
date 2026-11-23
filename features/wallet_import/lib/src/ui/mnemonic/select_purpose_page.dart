@@ -1,3 +1,4 @@
+import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:wallet_import/src/presentation/mnemonic_scan_failure_l10n.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bull_ui/app_theme.dart';

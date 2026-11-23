@@ -68,8 +68,7 @@ sealed class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     throw UnimplementedError();
   }
 
-  /// The app's confirmation and storage representation also carries the
-  /// editable label and legacy signer classification.
+  /// The confirmation form carries the editable label and signer selection.
   factory WatchOnlyWalletEntity.fromInput(WatchOnlyInput input) {
     final network = input.selectedNetwork;
     return switch (input) {
@@ -159,6 +158,4 @@ extension WatchOnlyXpubEntityExtension on WatchOnlyXpubEntity {
 
 extension WatchOnlyDescriptorEntityExtension on WatchOnlyDescriptorEntity {
   satoshifier.Descriptor get descriptor => watchOnlyDescriptor.descriptor;
-  String get masterFingerprint => watchOnlyDescriptor.masterFingerprint;
-  String get pubkeyFingerprint => watchOnlyDescriptor.pubkeyFingerprint;
 }
