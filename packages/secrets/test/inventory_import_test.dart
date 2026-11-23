@@ -304,7 +304,59 @@ void main() {
       await admission.close();
     }
   });
+
+  test('fresh initialization ignores orphaned access keys', () async {
+    final keychain = OwnerKeychain();
+    final pin = Random.secure().nextInt(100000000).toString();
+    _expectOk(await keychain.write(OwnerKey.pin, pin));
+    _expectOk(await keychain.write(OwnerKey.attempts, '5'));
+    final exclusiveAdmission = await exclusive();
+    try {
+      final owner = await prepare(exclusiveAdmission, OwnerOrigin.fresh);
+      _expectOk(await owner.initializeFresh());
+      _expectOk(await owner.close());
+    } finally {
+      await exclusiveAdmission.close();
+    }
+    final admission = await runtime();
+    try {
+      final opened = await SecretsInventory.open(
+        file: destination,
+        admission: admission,
+      );
+      final inventory =
+          (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+      expect(
+        (await inventory.isProtected()).fold((value) => value, (_) => true),
+        isFalse,
+      );
+      expect(
+        (await inventory.accessStatus()).fold(
+          (value) => value.failedAttempts,
+          (_) => -1,
+        ),
+        0,
+      );
+      expect(
+        (await inventory.listWallets()).fold(
+          (value) => value.isEmpty,
+          (_) => false,
+        ),
+        isTrue,
+      );
+    } finally {
+      await admission.close();
+    }
+    expect(
+      (await keychain.read(OwnerKey.pin))
+          .fold((value) => value == pin, (_) => false),
+      isTrue,
+    );
+  });
+
 }
+
+void _expectOk(Result<void, Failure> result) => expect(result, isA<Ok>());
 
 void _createSource(File file, {bool includeDerivations = true}) {
   final legacy = sqlite3.open(file.path);
