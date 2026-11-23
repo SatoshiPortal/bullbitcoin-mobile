@@ -273,9 +273,7 @@ class AppRouter {
               ),
               successImage: AssetImage(Assets.animations.successTick.path),
               onTestSucceeded: _onBackupTestSucceeded,
-              onExportTransactions: (context) => context.pushNamed<void>(
-                TransactionsRoute.exportTransactions.name,
-              ),
+              onExportTransactions: TransactionsNavigation.openExport,
             ).route,
           ],
           priceRoutes: locator<BitcoinPriceFeature>().routes,

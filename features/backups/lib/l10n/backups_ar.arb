@@ -229,5 +229,7 @@
   "testBackupErrorNoWalletSelected": "اختر محفظة قبل اختبار نسختها الاحتياطية.",
   "testBackupErrorSeedUnavailable": "تعذّرت قراءة عبارة الاسترداد الخاصة بك. حاول مرة أخرى.",
   "testBackupErrorSeedNotMnemonic": "لا تحتوي هذه المحفظة على عبارة استرداد لاختبارها.",
-  "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى."
+  "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى.",
+  "backupCardTitle": "احمِ بيتكوين الخاص بك.",
+  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن."
 }

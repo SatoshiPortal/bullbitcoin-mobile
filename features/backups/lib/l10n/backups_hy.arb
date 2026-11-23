@@ -58,5 +58,7 @@
   "testBackupErrorNoWalletSelected": "Ընտրեք դրամապանակ՝ նախքան դրա պահուստավորումը ստուգելը։",
   "testBackupErrorSeedUnavailable": "Ձեր վերականգնման արտահայտությունը չհաջողվեց կարդալ։ Փորձեք կրկին։",
   "testBackupErrorSeedNotMnemonic": "Այս դրամապանակը չունի վերականգնման արտահայտություն՝ ստուգելու համար։",
-  "testBackupErrorCompletionFailed": "Ձեր վերականգնման արտահայտությունը ճիշտ էր, բայց չհաջողվեց պահել արդյունքը։ Փորձեք կրկին։"
+  "testBackupErrorCompletionFailed": "Ձեր վերականգնման արտահայտությունը ճիշտ էր, բայց չհաջողվեց պահել արդյունքը։ Փորձեք կրկին։",
+  "backupCardTitle": "Պաշտպանեք ձեր bitcoin-ը։",
+  "backupCardSubtitle": "Կրկնօրինակեք ձեր դրամապանակը հիմա։"
 }

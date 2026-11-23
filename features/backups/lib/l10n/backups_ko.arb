@@ -229,5 +229,7 @@
   "testBackupErrorNoWalletSelected": "백업을 테스트하기 전에 지갑을 선택하세요.",
   "testBackupErrorSeedUnavailable": "복구 문구를 읽을 수 없습니다. 다시 시도해 주세요.",
   "testBackupErrorSeedNotMnemonic": "이 지갑에는 테스트할 복구 문구가 없습니다.",
-  "testBackupErrorCompletionFailed": "복구 문구는 정확했지만 결과를 저장하지 못했습니다. 다시 시도해 주세요."
+  "testBackupErrorCompletionFailed": "복구 문구는 정확했지만 결과를 저장하지 못했습니다. 다시 시도해 주세요.",
+  "backupCardTitle": "비트코인을 보호하세요.",
+  "backupCardSubtitle": "지금 지갑을 백업하세요."
 }

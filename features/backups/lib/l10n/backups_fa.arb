@@ -229,5 +229,7 @@
   "testBackupErrorNoWalletSelected": "پیش از آزمایش نسخهٔ پشتیبان، یک کیف‌پول انتخاب کنید.",
   "testBackupErrorSeedUnavailable": "عبارت بازیابی شما خوانده نشد. لطفاً دوباره تلاش کنید.",
   "testBackupErrorSeedNotMnemonic": "این کیف‌پول عبارت بازیابی برای آزمایش ندارد.",
-  "testBackupErrorCompletionFailed": "عبارت بازیابی شما درست بود، اما نتوانستیم نتیجه را ذخیره کنیم. لطفاً دوباره تلاش کنید."
+  "testBackupErrorCompletionFailed": "عبارت بازیابی شما درست بود، اما نتوانستیم نتیجه را ذخیره کنیم. لطفاً دوباره تلاش کنید.",
+  "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
+  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید."
 }

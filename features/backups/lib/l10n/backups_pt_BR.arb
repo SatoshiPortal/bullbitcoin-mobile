@@ -229,5 +229,7 @@
   "testBackupErrorNoWalletSelected": "Selecione uma carteira antes de testar seu backup.",
   "testBackupErrorSeedUnavailable": "Não foi possível ler sua frase de recuperação. Tente novamente.",
   "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
-  "testBackupErrorCompletionFailed": "Sua frase de recuperação estava correta, mas não conseguimos salvar o resultado. Tente novamente."
+  "testBackupErrorCompletionFailed": "Sua frase de recuperação estava correta, mas não conseguimos salvar o resultado. Tente novamente.",
+  "backupCardTitle": "Proteja seus bitcoins.",
+  "backupCardSubtitle": "Faça o backup da sua carteira agora."
 }

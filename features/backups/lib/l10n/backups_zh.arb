@@ -82,5 +82,7 @@
   "testBackupErrorNoWalletSelected": "请先选择一个钱包，再测试其备份。",
   "testBackupErrorSeedUnavailable": "无法读取您的恢复短语。请重试。",
   "testBackupErrorSeedNotMnemonic": "此钱包没有可测试的恢复短语。",
-  "testBackupErrorCompletionFailed": "您的恢复短语正确，但我们无法保存结果。请重试。"
+  "testBackupErrorCompletionFailed": "您的恢复短语正确，但我们无法保存结果。请重试。",
+  "backupCardTitle": "保护您的比特币。",
+  "backupCardSubtitle": "立即备份您的钱包。"
 }

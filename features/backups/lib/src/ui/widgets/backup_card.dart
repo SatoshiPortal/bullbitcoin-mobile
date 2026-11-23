@@ -1,13 +1,13 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:backups/src/backups_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullIcon, BullShapesX, BullText, BullTextRole, Gap;
 
 class BackupCard extends StatelessWidget {
-  const BackupCard({super.key, required this.onTap});
+  const BackupCard({super.key, required this.icon, required this.onTap});
 
+  final ImageProvider icon;
   final VoidCallback onTap;
 
   @override
@@ -33,12 +33,7 @@ class BackupCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                Assets.misc.passwordbook.path,
-                height: 32,
-                width: 32,
-                color: colors.onBanner,
-              ),
+              Image(image: icon, height: 32, width: 32, color: colors.onBanner),
               const Gap(16),
               Expanded(
                 child: Column(

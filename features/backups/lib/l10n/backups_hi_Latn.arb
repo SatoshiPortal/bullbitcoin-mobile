@@ -230,5 +230,7 @@
   "testBackupErrorNoWalletSelected": "Backup jaanchne se pehle ek wallet chunein.",
   "testBackupErrorSeedUnavailable": "Aapka recovery phrase padha nahin ja saka. Kripya phir se prayas karein.",
   "testBackupErrorSeedNotMnemonic": "Is wallet mein jaanchne ke liye koi recovery phrase nahin hai.",
-  "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein."
+  "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein.",
+  "backupCardTitle": "Apne bitcoin ko surakshit rakho.",
+  "backupCardSubtitle": "Abhi apne wallet ka backup lo."
 }

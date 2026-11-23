@@ -229,5 +229,7 @@
   "testBackupErrorNoWalletSelected": "เลือกกระเป๋าเงินก่อนทดสอบข้อมูลสำรอง",
   "testBackupErrorSeedUnavailable": "ไม่สามารถอ่านวลีกู้คืนของคุณได้ โปรดลองอีกครั้ง",
   "testBackupErrorSeedNotMnemonic": "กระเป๋าเงินนี้ไม่มีวลีกู้คืนให้ทดสอบ",
-  "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง"
+  "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง",
+  "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
+  "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้"
 }

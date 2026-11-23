@@ -91,5 +91,7 @@
   "passphraseWhitespaceWarning": "Los espacios al principio o al final forman parte de tu frase de contraseña.",
   "passphraseBackupPrompt": "Introduce tu frase de contraseña para verificar tu copia de seguridad.",
   "passphraseIncorrect": "Frase de contraseña incorrecta.",
-  "passphraseWordsIncompleteWarning": "Estas palabras por sí solas no pueden restaurar esta billetera. Guarda tu frase de contraseña por separado."
+  "passphraseWordsIncompleteWarning": "Estas palabras por sí solas no pueden restaurar esta billetera. Guarda tu frase de contraseña por separado.",
+  "backupCardTitle": "Protege tus bitcoins.",
+  "backupCardSubtitle": "Haz una copia de seguridad de tu billetera ahora."
 }

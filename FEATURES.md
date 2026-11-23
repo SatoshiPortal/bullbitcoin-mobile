@@ -416,7 +416,7 @@ graph TB
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     SETTINGS -->|start backup| BACKUPS
-    WALLETS -->|start backup| BACKUPS
+    WALLETS -->|backup card and navigation| BACKUPS
     BACKUPS --> BULL_UI
     BACKUPS --> SECRETS
     BACKUPS --> ACCESS
@@ -818,4 +818,4 @@ Settings mounts All Seed View as a workspace route. Access supplies reauthentica
 
 ## Backup verification ownership
 
-Backups mounts the status, options and physical verification routes. It reads the default Bitcoin wallet from the active Secrets inventory and the backup facts keyed by its local secret from RecoverBull. Physical Backup Verification validates the mnemonic and passphrase before Backups records completion against the verified secret in RecoverBull. Access continues to read backup eligibility for default wallets in the active environment.
+Backups mounts the status, options and physical verification routes and provides the wallet home backup card. It reads the default Bitcoin wallet from the active Secrets inventory and the backup facts keyed by its local secret from RecoverBull. Physical Backup Verification validates the mnemonic and passphrase before Backups records completion against the verified secret in RecoverBull. Access continues to read backup eligibility for default wallets in the active environment.

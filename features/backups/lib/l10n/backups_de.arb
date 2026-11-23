@@ -86,5 +86,7 @@
   "settingsBackupTitle": "Sicherung",
   "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen.",
   "passphraseShow": "Passphrase anzeigen",
-  "passphraseHide": "Passphrase verbergen"
+  "passphraseHide": "Passphrase verbergen",
+  "backupCardTitle": "Schützen Sie Ihre Bitcoin.",
+  "backupCardSubtitle": "Sichern Sie jetzt Ihre Wallet."
 }

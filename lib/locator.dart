@@ -1,6 +1,8 @@
-import 'package:ark/funding.dart';
-import 'package:bull_exchange/bull_exchange.dart' show AccelerateTransactionListTile, BuyRoute;
 import 'dart:async';
+
+import 'package:ark/funding.dart';
+import 'package:bull_exchange/bull_exchange.dart'
+    show AccelerateTransactionListTile, BuyRoute;
 
 import 'package:backups/backups.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';

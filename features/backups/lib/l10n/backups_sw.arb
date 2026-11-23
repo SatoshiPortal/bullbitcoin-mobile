@@ -58,5 +58,7 @@
   "testBackupErrorNoWalletSelected": "Chagua pochi kabla ya kujaribu nakala yake rudufu.",
   "testBackupErrorSeedUnavailable": "Kifungu chako cha kurejesha hakikuweza kusomwa. Tafadhali jaribu tena.",
   "testBackupErrorSeedNotMnemonic": "Pochi hii haina kifungu cha kurejesha cha kujaribu.",
-  "testBackupErrorCompletionFailed": "Kifungu chako cha kurejesha kilikuwa sahihi, lakini hatukuweza kuhifadhi matokeo. Tafadhali jaribu tena."
+  "testBackupErrorCompletionFailed": "Kifungu chako cha kurejesha kilikuwa sahihi, lakini hatukuweza kuhifadhi matokeo. Tafadhali jaribu tena.",
+  "backupCardTitle": "Linda bitcoin yako.",
+  "backupCardSubtitle": "Hifadhi nakala ya pochi yako sasa."
 }

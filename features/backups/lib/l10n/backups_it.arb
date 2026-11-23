@@ -83,5 +83,7 @@
   "testBackupErrorSeedUnavailable": "Non è stato possibile leggere la tua frase di recupero. Riprova.",
   "testBackupErrorSeedNotMnemonic": "Questo portafoglio non ha una frase di recupero da verificare.",
   "testBackupErrorCompletionFailed": "La tua frase di recupero era corretta, ma non è stato possibile salvare il risultato. Riprova.",
-  "settingsBackupTitle": "Backup"
+  "settingsBackupTitle": "Backup",
+  "backupCardTitle": "Proteggi i tuoi bitcoin.",
+  "backupCardSubtitle": "Esegui ora il backup del tuo portafoglio."
 }

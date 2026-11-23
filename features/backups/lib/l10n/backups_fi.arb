@@ -83,5 +83,7 @@
   "testBackupErrorNoWalletSelected": "Valitse lompakko ennen sen varmuuskopion testaamista.",
   "testBackupErrorSeedUnavailable": "Palautuslausettasi ei voitu lukea. Yritä uudelleen.",
   "testBackupErrorSeedNotMnemonic": "Tällä lompakolla ei ole testattavaa palautuslausetta.",
-  "testBackupErrorCompletionFailed": "Palautuslauseesi oli oikein, mutta tulosta ei voitu tallentaa. Yritä uudelleen."
+  "testBackupErrorCompletionFailed": "Palautuslauseesi oli oikein, mutta tulosta ei voitu tallentaa. Yritä uudelleen.",
+  "backupCardTitle": "Suojaa bitcoinisi.",
+  "backupCardSubtitle": "Varmuuskopioi lompakkosi nyt."
 }

@@ -280,5 +280,13 @@
   "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
+  },
+  "backupCardTitle": "Protect your bitcoin.",
+  "@backupCardTitle": {
+    "description": "Title of the backup reminder card on the home screen"
+  },
+  "backupCardSubtitle": "Back up your wallet now.",
+  "@backupCardSubtitle": {
+    "description": "Subtitle of the backup reminder card on the home screen"
   }
 }

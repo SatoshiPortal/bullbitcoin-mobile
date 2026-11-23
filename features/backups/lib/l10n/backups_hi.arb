@@ -230,5 +230,7 @@
   "testBackupErrorNoWalletSelected": "बैकअप जाँचने से पहले एक वॉलेट चुनें।",
   "testBackupErrorSeedUnavailable": "आपका रिकवरी वाक्यांश पढ़ा नहीं जा सका। कृपया फिर से प्रयास करें।",
   "testBackupErrorSeedNotMnemonic": "इस वॉलेट में जाँचने के लिए कोई रिकवरी वाक्यांश नहीं है।",
-  "testBackupErrorCompletionFailed": "आपका रिकवरी वाक्यांश सही था, लेकिन हम परिणाम सहेज नहीं सके। कृपया फिर से प्रयास करें।"
+  "testBackupErrorCompletionFailed": "आपका रिकवरी वाक्यांश सही था, लेकिन हम परिणाम सहेज नहीं सके। कृपया फिर से प्रयास करें।",
+  "backupCardTitle": "अपने बिटकॉइन को सुरक्षित रखें।",
+  "backupCardSubtitle": "अभी अपने वॉलेट का बैकअप लें।"
 }

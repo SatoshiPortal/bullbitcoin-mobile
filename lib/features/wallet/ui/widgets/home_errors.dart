@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/backup_settings/public/backup_settings.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:backups/backups.dart';
 import 'package:network/network.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
@@ -75,7 +75,10 @@ class HomeWarnings extends StatelessWidget {
               if (errorCards.isNotEmpty) BullCarousel(children: errorCards),
               if (showBackupWarning) ...[
                 if (errorCards.isNotEmpty) const Gap(5),
-                BackupCard(onTap: () => BackupsNavigation.start(context)),
+                BackupCard(
+                  icon: AssetImage(Assets.misc.passwordbook.path),
+                  onTap: () => BackupsNavigation.start(context),
+                ),
               ],
             ],
           ),

@@ -229,5 +229,7 @@
   "testBackupErrorNoWalletSelected": "Yedeğini test etmeden önce bir cüzdan seçin.",
   "testBackupErrorSeedUnavailable": "Kurtarma ifadeniz okunamadı. Lütfen tekrar deneyin.",
   "testBackupErrorSeedNotMnemonic": "Bu cüzdanın test edilecek bir kurtarma ifadesi yok.",
-  "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin."
+  "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin.",
+  "backupCardTitle": "Bitcoin'inizi koruyun.",
+  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin."
 }

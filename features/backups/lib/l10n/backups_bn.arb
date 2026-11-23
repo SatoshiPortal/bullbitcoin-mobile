@@ -230,5 +230,7 @@
   "testBackupErrorNoWalletSelected": "ব্যাকআপ পরীক্ষা করার আগে একটি ওয়ালেট নির্বাচন করুন।",
   "testBackupErrorSeedUnavailable": "আপনার পুনরুদ্ধার বাক্যাংশ পড়া যায়নি। আবার চেষ্টা করুন।",
   "testBackupErrorSeedNotMnemonic": "এই ওয়ালেটে পরীক্ষা করার মতো কোনো পুনরুদ্ধার বাক্যাংশ নেই।",
-  "testBackupErrorCompletionFailed": "আপনার পুনরুদ্ধার বাক্যাংশ সঠিক ছিল, কিন্তু আমরা ফলাফল সংরক্ষণ করতে পারিনি। আবার চেষ্টা করুন।"
+  "testBackupErrorCompletionFailed": "আপনার পুনরুদ্ধার বাক্যাংশ সঠিক ছিল, কিন্তু আমরা ফলাফল সংরক্ষণ করতে পারিনি। আবার চেষ্টা করুন।",
+  "backupCardTitle": "আপনার বিটকয়েন সুরক্ষিত করুন।",
+  "backupCardSubtitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন।"
 }

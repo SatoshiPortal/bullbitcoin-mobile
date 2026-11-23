@@ -58,5 +58,7 @@
   "testBackupErrorNoWalletSelected": "Hãy chọn một ví trước khi kiểm tra bản sao lưu.",
   "testBackupErrorSeedUnavailable": "Không thể đọc cụm từ khôi phục của bạn. Vui lòng thử lại.",
   "testBackupErrorSeedNotMnemonic": "Ví này không có cụm từ khôi phục để kiểm tra.",
-  "testBackupErrorCompletionFailed": "Cụm từ khôi phục của bạn chính xác, nhưng chúng tôi không thể lưu kết quả. Vui lòng thử lại."
+  "testBackupErrorCompletionFailed": "Cụm từ khôi phục của bạn chính xác, nhưng chúng tôi không thể lưu kết quả. Vui lòng thử lại.",
+  "backupCardTitle": "Bảo vệ bitcoin của bạn.",
+  "backupCardSubtitle": "Sao lưu ví của bạn ngay bây giờ."
 }
