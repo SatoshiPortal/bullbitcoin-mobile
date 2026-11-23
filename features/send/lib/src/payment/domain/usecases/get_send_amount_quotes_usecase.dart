@@ -1,6 +1,8 @@
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+
+import '../send_failure.dart';
+
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart';
 

@@ -9,8 +9,6 @@ import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_u
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
     show WalletSpendBlockedException;
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
-import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 
 import 'send_qr_network_regression.dart';
 
@@ -50,13 +48,11 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selecti
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -118,8 +114,7 @@ class _MockDetectBitcoinStringUsecase extends Mock
 
 class _MockPreferences extends Mock implements Preferences {}
 
-class _MockGetSendExchangeRateUsecase extends Mock
-    implements GetSendExchangeRateUsecase {}
+class _MockSend extends Mock implements Send {}
 
 class _MockFees extends Mock implements Fees {}
 
@@ -286,16 +281,13 @@ class _MockDropPendingSwapLockupUsecase extends Mock
 
 class _MockWatchSwapUsecase extends Mock implements boltz.WatchSwapUsecase {}
 
-class _MockGetSendAmountQuotes extends Mock
-    implements GetSendAmountQuotesUsecase {}
-
 class _MockPrepareInternalRecipient extends Mock
     implements PrepareInternalRecipientUsecase {}
 
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
     super.prepareInternalRecipientUsecase,
-    super.getSendAmountQuotesUsecase,
+    super.readAmountQuotes,
     super.mode,
     super.watchWalletRevisionsUsecase,
     super.wallet,
@@ -306,7 +298,7 @@ class _TestableSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.loadPreferencesUsecase,
-    required super.getSendExchangeRateUsecase,
+    required super.readExchangeRate,
     required super.loadNetworkFeesUsecase,
     required super.getWalletUtxosUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -516,7 +508,7 @@ void main() {
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
   late _MockPreferences getSettingsUsecase;
-  late _MockGetSendExchangeRateUsecase getSendExchangeRateUsecase;
+  late _MockSend send;
   late _MockFees feeEstimates;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
@@ -572,7 +564,7 @@ void main() {
   _TestableSendCubit buildCubit({
     DetectBitcoinStringUsecase? detector,
     PrepareInternalRecipientUsecase? prepareInternalRecipientUsecase,
-    GetSendAmountQuotesUsecase? getSendAmountQuotesUsecase,
+    Send? amountQuotes,
     Wallet? wallet,
     Set<Outpoint> initialSweepOutpoints = const {},
     Set<Outpoint> initialSelectedOutpoints = const {},
@@ -590,7 +582,7 @@ void main() {
     late final _TestableSendCubit flow;
     flow = _TestableSendCubit(
       prepareInternalRecipientUsecase: prepareInternalRecipientUsecase,
-      getSendAmountQuotesUsecase: getSendAmountQuotesUsecase,
+      readAmountQuotes: amountQuotes?.amountQuotes,
       watchWalletRevisionsUsecase: watchWalletRevisionsUsecase,
       mode: isSpMode
           ? SendModeSp(walletLabel: spWalletLabel)
@@ -605,7 +597,7 @@ void main() {
       loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
         getSettingsUsecase,
       ),
-      getSendExchangeRateUsecase: getSendExchangeRateUsecase,
+      readExchangeRate: send.exchangeRate,
       loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: feeEstimates),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       spend: SendSpendTestDouble(
@@ -757,7 +749,7 @@ void main() {
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
     getSettingsUsecase = _MockPreferences();
-    getSendExchangeRateUsecase = _MockGetSendExchangeRateUsecase();
+    send = _MockSend();
     feeEstimates = _MockFees();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
@@ -1151,9 +1143,9 @@ void main() {
   );
 
   test('returning from confirmation refreshes the fiat quotes', () async {
-    final quotes = _MockGetSendAmountQuotes();
-    when(quotes.execute).thenAnswer((_) async => const Ok({}));
-    final cubit = buildCubit(getSendAmountQuotesUsecase: quotes);
+    final quotes = _MockSend();
+    when(quotes.amountQuotes).thenAnswer((_) async => const Ok({}));
+    final cubit = buildCubit(amountQuotes: quotes);
     addTearDown(cubit.close);
     cubit.setStateForTest(
       const SendState(step: SendStep.confirm, amountConfirmedClicked: true),
@@ -1161,7 +1153,7 @@ void main() {
     cubit.backClicked();
     await Future<void>.delayed(Duration.zero);
     expect(cubit.state.step, SendStep.amount);
-    verify(quotes.execute).called(1);
+    verify(quotes.amountQuotes).called(1);
   });
 
   test('Max discards the previous typed fiat conversion', () async {
@@ -1277,11 +1269,8 @@ void main() {
     );
     when(() => getSendPayjoinEnabledUsecase.execute())
         .thenAnswer((_) async => true);
-    when(
-      () => getSendExchangeRateUsecase.execute(
-        currencyCode: any(named: 'currencyCode'),
-      ),
-    ).thenAnswer((_) async => const Ok(50000.0));
+    when(() => send.exchangeRate(currencyCode: any(named: 'currencyCode')))
+        .thenAnswer((_) async => const Ok(50000.0));
     when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) async => utxos);
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
@@ -2174,9 +2163,7 @@ void main() {
           stubSweepLoad(wallet: wallet, utxos: [selected]);
           final currencies = Completer<Result<double, SendFailure>>();
           when(
-            () => getSendExchangeRateUsecase.execute(
-              currencyCode: any(named: 'currencyCode'),
-            ),
+            () => send.exchangeRate(currencyCode: any(named: 'currencyCode')),
           ).thenAnswer((_) => currencies.future);
           final cubit = buildCubit(
             wallet: wallet,
@@ -3566,7 +3553,7 @@ void main() {
     });
 
     test('changing currency keeps the multi-recipient remainder', () async {
-      when(() => getSendExchangeRateUsecase.execute(currencyCode: 'USD'))
+      when(() => send.exchangeRate(currencyCode: 'USD'))
           .thenAnswer((_) async => const Ok(50000.0));
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -6624,7 +6611,7 @@ void main() {
           exchangeRate: 70000,
         ),
       );
-      when(() => getSendExchangeRateUsecase.execute(currencyCode: 'CAD'))
+      when(() => send.exchangeRate(currencyCode: 'CAD'))
           .thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
 
       await cubit.onCurrencyChanged('CAD');
@@ -6639,7 +6626,7 @@ void main() {
       cubit.setStateForTest(
         const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
       );
-      when(() => getSendExchangeRateUsecase.execute(currencyCode: 'USD'))
+      when(() => send.exchangeRate(currencyCode: 'USD'))
           .thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
 
       await cubit.getExchangeRate();
@@ -6655,7 +6642,7 @@ void main() {
         const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
       );
       when(
-        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+        () => send.exchangeRate(currencyCode: 'USD'),
       ).thenAnswer((_) async => const Err(SendUnexpectedFailure('settings')));
 
       await cubit.getExchangeRate();

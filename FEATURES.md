@@ -232,8 +232,8 @@ graph TB
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
     BACKUPS[Backups workspace feature<br/>Backup status and verification]
-    SEND[Send]
-    SEND_TOOLS[Send workspace feature<br/>Signed transaction broadcast, Liquid consolidation and fee replacement]
+    SEND[Legacy Send orchestration]
+    SEND_TOOLS[Send workspace feature<br/>Payment views and quotes, signed transaction broadcast, Liquid consolidation and fee replacement]
     SCANNING[QR and NFC Scanning workspace member]
     SEND_TOOLS -->|public QR and NFC scanning| SCANNING
     CORE -->|composes signer NFC callback| SCANNING
@@ -341,7 +341,8 @@ graph TB
     ALL_SEED_VIEW --> SWAPS_PKG
     APP_STARTUP --> SWAPS_PKG
     RECEIVE --> BULL_PRICER
-    SEND --> BULL_PRICER
+    SEND_TOOLS -->|fiat quotes| BULL_PRICER
+    SEND_TOOLS -->|quote network and currency| PREFERENCES
     SWAPS --> BULL_PRICER
     HW_WALLETS --> SCREEN_AWAKE
     SCREEN_AWAKE --> BULL_LOGGER
@@ -430,7 +431,7 @@ graph TB
     SWAPS -->|legacy Lightning fallback uses receive values| RECEIVE
     WALLETS -->|typed receive navigation| RECEIVE
     RECEIVE --> TX_HISTORY
-    SEND -->|signed transaction handoff and consolidation status| SEND_TOOLS
+    SEND -->|payment views, quotes, signed transaction handoff and consolidation status| SEND_TOOLS
     SEND --> FEES_UI
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN

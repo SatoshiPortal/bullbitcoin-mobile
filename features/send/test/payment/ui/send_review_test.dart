@@ -1,6 +1,6 @@
 // Keep new Send tests independent of the application package namespace.
 // ignore: avoid_relative_lib_imports
-import '../../../../lib/features/send/ui/screens/send_payment_review.dart';
+import 'package:send/send.dart';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';

@@ -52,7 +52,6 @@ import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
-import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -324,11 +323,8 @@ class AppRouter {
       ...locator<TransactionsFeature>().routes,
       ReceiveRouter.route,
       SendRouter.route(
-        openSignedTransactionReader: (context, prepared, network) =>
-            context.pushNamed<String>(
-              BroadcastSignedTxRoute.broadcastHome.name,
-              extra: (prepared: prepared, network: network),
-            ),
+        locator: locator,
+        openSignedTransactionReader: BroadcastSignedTxRoute.readForSend,
       ),
       CoinsRouter.route(
         missingWalletRedirect: WalletRoute.walletHome.path,

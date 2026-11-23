@@ -337,6 +337,7 @@ graph TD
   secrets --> legacy_storage
   send --> address_view
   send --> bull_logger
+  send --> bull_pricer
   send --> bull_ui
   send --> electrum
   send --> fees

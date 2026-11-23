@@ -2,7 +2,6 @@ import 'package:labels/labels.dart';
 import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
@@ -112,7 +111,6 @@ class CoreLocator {
 
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
-    BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     WalletLocator.registerUsecases(locator);
   }

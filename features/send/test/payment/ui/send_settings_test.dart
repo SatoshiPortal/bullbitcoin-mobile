@@ -1,5 +1,5 @@
 // ignore: avoid_relative_lib_imports
-import '../../../../lib/features/send/ui/widgets/send_payment_settings.dart';
+import 'package:send/send.dart';
 
 import 'package:fees/fees.dart';
 import 'package:bull_ui/bull_ui.dart';

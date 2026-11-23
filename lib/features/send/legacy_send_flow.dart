@@ -1,8 +1,6 @@
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 
-import 'domain/usecases/get_send_amount_quotes_usecase.dart';
-
 import 'package:bull_ark/bull_ark.dart' show ArkFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
@@ -34,7 +32,6 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
@@ -66,18 +63,19 @@ import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:silent/silent.dart';
-import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show WalletConnectionPort;
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
 
-class SendLocator {
-  static void setup(GetIt locator) {
+/// Assembles the send flow that still uses the app's wallet and coin readers.
+abstract final class LegacySendFlow {
+  static void mount(GetIt locator) {
     locator.registerLazySingleton<LiquidWalletRepository>(
       () => LiquidWalletRepository(
         walletRegistrations: locator<WalletRegistrations>(),
@@ -86,11 +84,18 @@ class SendLocator {
         freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
-    registerUsecases(locator);
-    registerBlocs(locator);
+    _registerUsecases(locator);
+    _registerBlocs(locator);
   }
 
-  static void registerUsecases(GetIt locator) {
+  static void _registerUsecases(GetIt locator) {
+    locator.registerFactory<BroadcastLiquidTransactionUsecase>(
+      () => BroadcastLiquidTransactionUsecase(
+        wallet: locator<WalletFacade>(),
+        connections: locator<WalletConnectionPort>(),
+        settingsRepository: locator<Preferences>(),
+      ),
+    );
     locator.registerFactory<SendWithPayjoinUsecase>(
       () => SendWithPayjoinUsecase(locator<PayjoinSender>(), locator<Spend>()),
     );
@@ -217,15 +222,12 @@ class SendLocator {
     locator.registerFactory<ValidateCoinControlPaymentRequestUsecase>(
       ValidateCoinControlPaymentRequestUsecase.new,
     );
-    locator.registerFactory<GetSendExchangeRateUsecase>(
-      () => GetSendExchangeRateUsecase(
-        getSettingsUsecase: locator<Preferences>(),
-        getIndexPrice: Pricer.getIndexPrice,
-      ),
+    locator.registerLazySingleton<Send>(
+      () => Send.open(preferences: locator<Preferences>()),
     );
   }
 
-  static void registerBlocs(GetIt locator) {
+  static void _registerBlocs(GetIt locator) {
     locator.registerFactory<SendArkCubit>(
       () => SendArkCubit(
         locator.isRegistered<ArkFacade>()
@@ -269,11 +271,8 @@ class SendLocator {
         loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
           locator<Preferences>(),
         ),
-        getSendExchangeRateUsecase: locator<GetSendExchangeRateUsecase>(),
-        getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
-          settings: locator<Preferences>(),
-          read: Pricer.getIndexPrices,
-        ),
+        readExchangeRate: locator<Send>().exchangeRate,
+        readAmountQuotes: locator<Send>().amountQuotes,
         loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: locator()),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         validateBitcoinSelectionUsecase:

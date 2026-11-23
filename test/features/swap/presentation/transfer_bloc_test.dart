@@ -20,7 +20,6 @@ import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
