@@ -76,8 +76,10 @@ void main() {
         ).readAsStringSync();
         expect(
           notifications,
-          contains(
-            'openExistingNotificationStore(p.join(documents, paymentNotificationOutboxFilename))',
+          matches(
+            RegExp(
+              r'openExistingNotificationStore\(\s*p\.join\(documents, paymentNotificationOutboxFilename\)',
+            ),
           ),
         );
         expect(source, isNot(contains('AppLocator.setup(')));

@@ -1,6 +1,5 @@
 import 'package:notifications/payment_store.dart';
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import 'dart:async';

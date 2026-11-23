@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show BitcoinRecoveryWallet;
 import 'package:secrets/testing.dart';
 
 abstract interface class _RecoveryCatalog {

@@ -61,13 +61,13 @@ void main() {
   late _MockSwapStartup startSwapEngine;
 
   AppStartupBloc buildBloc([Access? access]) => AppStartupBloc(
-    getStartupPinStatusUsecase: GetStartupPinStatusUsecase(
-      access ?? checkPinCodeExists,
+    prepareWalletStartup: PrepareWalletStartupUsecase(
+      GetStartupPinStatusUsecase(access ?? checkPinCodeExists),
+      checkDefaultWallets,
+      startSwapEngine,
+      initializeRequiredTor,
     ),
-    checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
-    initializeRequiredTorUsecase: initializeRequiredTor,
     restoreMissingDefaultSecretUsecase: restoreSecret,
-    swapStartup: startSwapEngine,
   );
 
   setUp(() {
@@ -314,6 +314,8 @@ void main() {
             app: child ?? const SizedBox.shrink(),
             splash: const SizedBox.shrink(),
             openOnboarding: () {},
+            logs: () =>
+                throw StateError('The PIN gate does not render log sharing'),
             onUnlocked: () {
               unlocks++;
               return walletRuntime.future;

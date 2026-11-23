@@ -14,7 +14,7 @@ import 'package:labels/labels.dart';
 import 'package:labels/migration.dart';
 import 'package:labels/setup.dart';
 import 'package:legacy_storage/coordination.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:address_view/address_view.dart';
@@ -50,7 +50,7 @@ Future<void> main({bool isInitialized = false}) async {
     requireSuccessfulBullInitialization(await Bull.init());
   }
 
-  final frozenDatasource = locator<SyncFreezesDatasource>();
+  final frozenDatasource = locator<CoinFreezes>();
   final utxoRepository = locator<WalletUtxoRepository>();
 
   group('Coins / freeze persistence (funds-free)', () {
@@ -89,7 +89,7 @@ Future<void> main({bool isInitialized = false}) async {
       }
 
       Future<T> withReopenedLabels<T>(
-        Future<T> Function(SyncFreezesDatasource) action,
+        Future<T> Function(CoinFreezes) action,
       ) async {
         final admission = await gate.acquire(
           exclusive: false,
@@ -116,9 +116,7 @@ Future<void> main({bool isInitialized = false}) async {
             connections: const _NoConnections(),
           );
           try {
-            return await action(
-              SyncFreezesDatasource(sync: () async => runtime),
-            );
+            return await action(CoinFreezes(sync: () async => runtime));
           } finally {
             await runtime.close();
           }

@@ -15,8 +15,7 @@ void main() {
   late BackgroundTaskResources resources;
   String queuePath() =>
       '${documents.path}/wallet_transaction_sync_queue.sqlite';
-  String storePath() =>
-      '${documents.path}/${paymentNotificationOutboxFilename}';
+  String storePath() => '${documents.path}/$paymentNotificationOutboxFilename';
 
   setUp(() {
     documents = Directory.systemTemp.createTempSync('background-stores-');

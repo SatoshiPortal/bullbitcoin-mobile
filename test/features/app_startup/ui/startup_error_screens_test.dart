@@ -40,7 +40,7 @@ void main() {
       ),
     );
     await tester.pumpWidget(screen(() => attempts++));
-    final loc = AppLocalizations.of(tester.element(find.byType(Scaffold)));
+    final loc = StartupLocalizations.of(tester.element(find.byType(Scaffold)));
     final button = find.text(loc.retry);
     await tester.tap(button);
     await tester.pump();
@@ -80,7 +80,7 @@ void main() {
       await tester.pumpAndSettle();
       final route = find.byType(RouteErrorScreen);
       expect(find.byType(BullScaffold), findsOneWidget);
-      final loc = AppLocalizations.of(tester.element(route));
+      final loc = StartupLocalizations.of(tester.element(route));
       expect(find.text(loc.coreScreensPageNotFound), findsOneWidget);
       expect(find.byType(BullButton), findsNothing);
     });
@@ -102,7 +102,9 @@ void main() {
       await tester.pumpAndSettle();
       final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
       expect(app.theme!.brightness, Brightness.dark);
-      final loc = AppLocalizations.of(tester.element(find.byType(Scaffold)));
+      final loc = StartupLocalizations.of(
+        tester.element(find.byType(Scaffold)),
+      );
       expect(find.text(loc.appInitErrorTitle), findsOneWidget);
       const details = 'Bad state: $example';
       expect(find.text(details), findsNothing);

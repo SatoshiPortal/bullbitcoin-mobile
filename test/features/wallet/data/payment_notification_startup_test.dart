@@ -41,7 +41,7 @@ void main() {
         } else {
           // The foreground created the store; the plugin fails to start.
           switch (openForegroundNotificationStore(
-            '$documents/${paymentNotificationOutboxFilename}',
+            '$documents/$paymentNotificationOutboxFilename',
           )) {
             case Ok(:final value):
               await value.close();
