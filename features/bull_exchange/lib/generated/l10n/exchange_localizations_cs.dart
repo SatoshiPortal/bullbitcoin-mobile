@@ -2037,4 +2037,46 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Přihlásit se';
+
+  @override
+  String get logoutConfirmationTitle => 'Potvrzení přihlášení';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Jste si jisti, že se chcete přihlásit z účtu Bull Bitcoin? Budete muset znovu přihlásit k funkcím výměny.';
+
+  @override
+  String get logoutConfirmationCancel => 'Hledat';
+
+  @override
+  String get logoutConfirmationLogout => 'Čeština';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Tímto odešlete žádost o smazání účtu našemu týmu podpory. Váš účet bude smazán do 5 pracovních dnů.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Žádost o smazání účtu odeslána';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Vaše žádost o smazání účtu byla odeslána. Bude zpracována do 5 pracovních dnů.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

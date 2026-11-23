@@ -2446,5 +2446,57 @@
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
   "@limitOrderCreationError": {
     "description": "Shown when a Limit Order cannot be created"
+  },
+  "exchangeSettingsLogOutTitle": "Log Out",
+  "@exchangeSettingsLogOutTitle": {
+    "description": "Title for the log out option in exchange settings"
+  },
+  "logoutConfirmationTitle": "Confirm Logout",
+  "@logoutConfirmationTitle": {
+    "description": "Title for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationDescription": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.",
+  "@logoutConfirmationDescription": {
+    "description": "Description text for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationCancel": "Cancel",
+  "@logoutConfirmationCancel": {
+    "description": "Cancel button label for logout confirmation"
+  },
+  "logoutConfirmationLogout": "Logout",
+  "@logoutConfirmationLogout": {
+    "description": "Logout button label for logout confirmation"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

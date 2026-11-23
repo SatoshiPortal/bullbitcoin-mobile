@@ -2078,6 +2078,48 @@ class ExchangeLocalizationsPt extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Log out';
+
+  @override
+  String get logoutConfirmationTitle => 'Confirmar saída';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Tem certeza de que deseja sair da sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar os recursos de câmbio.';
+
+  @override
+  String get logoutConfirmationCancel => 'Cancelar';
+
+  @override
+  String get logoutConfirmationLogout => 'Sair';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Isto irá enviar um pedido de eliminação de conta à nossa equipa de suporte. A sua conta será eliminada num prazo de 5 dias úteis.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Eliminação de Conta Solicitada';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'O seu pedido de eliminação de conta foi efetuado. Será processado num prazo de 5 dias úteis.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -4046,4 +4088,46 @@ class ExchangeLocalizationsPtBr extends ExchangeLocalizationsPt {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Log out';
+
+  @override
+  String get logoutConfirmationTitle => 'Confirme o logotipo';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Tem a certeza de que deseja fazer login na sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar recursos de troca.';
+
+  @override
+  String get logoutConfirmationCancel => 'Cancelar';
+
+  @override
+  String get logoutConfirmationLogout => 'Logotipo';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Isso enviará uma solicitação de exclusão de conta à nossa equipe de suporte. Sua conta será excluída em até 5 dias úteis.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Exclusão de Conta Solicitada';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Sua solicitação de exclusão de conta foi realizada. Ela será processada em até 5 dias úteis.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

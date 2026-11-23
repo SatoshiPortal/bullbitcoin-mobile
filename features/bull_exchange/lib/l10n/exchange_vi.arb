@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Điều này sẽ gửi yêu cầu xóa tài khoản đến đội hỗ trợ của chúng tôi. Tài khoản của bạn sẽ bị xóa trong vòng 5 ngày làm việc.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Đã Yêu Cầu Xóa Tài Khoản",
+  "deleteAccountSuccessDescription": "Yêu cầu xóa tài khoản của bạn đã được gửi. Yêu cầu sẽ được xử lý trong vòng 5 ngày làm việc.",
+  "deleteAccountSuccessClose": "Close",
+  "exchangeSettingsLogOutTitle": "Đăng xuất",
+  "logoutConfirmationTitle": "Xác nhận đăng xuất",
+  "logoutConfirmationDescription": "Bạn có chắc muốn đăng xuất khỏi tài khoản Bull Bitcoin của mình không? Bạn sẽ cần đăng nhập lại để sử dụng các tính năng của sàn giao dịch.",
+  "logoutConfirmationCancel": "Hủy",
+  "logoutConfirmationLogout": "Đăng xuất"
 }

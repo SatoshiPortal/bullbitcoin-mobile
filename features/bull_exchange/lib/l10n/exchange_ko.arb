@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "로그아웃",
+  "logoutConfirmationTitle": "로그아웃",
+  "logoutConfirmationCancel": "이름 *",
+  "logoutConfirmationDescription": "Bull Bitcoin 계정에서 로그인 하시겠습니까? 교환 기능을 다시 로그인해야합니다.",
+  "exchangeSettingsLogOutTitle": "로그아웃",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "이 요청을 보내면 저희 지원팀에 계정 삭제 요청이 전달됩니다. 귀하의 계정은 5 영업일 이내에 삭제됩니다.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "계정 삭제 요청됨",
+  "deleteAccountSuccessDescription": "계정 삭제 요청이 접수되었습니다. 5 영업일 이내에 처리됩니다.",
+  "deleteAccountSuccessClose": "Close"
 }

@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "ইয়াৰ ফলত আমাৰ সহায়ক দললৈ এটা একাউণ্ট মচাৰ অনুৰোধ পঠিওৱা হ'ব। আপোনাৰ একাউণ্ট ৫ কৰ্মদিনৰ ভিতৰত মচা হ'ব।",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "একাউণ্ট মচাৰ অনুৰোধ কৰা হৈছে",
+  "deleteAccountSuccessDescription": "আপোনাৰ একাউণ্ট মচাৰ অনুৰোধ কৰা হৈছে। ই ৫ কৰ্মদিনৰ ভিতৰত প্ৰক্ৰিয়াকৰণ কৰা হ'ব।",
+  "deleteAccountSuccessClose": "Close",
+  "exchangeSettingsLogOutTitle": "লগ আউট কৰক",
+  "logoutConfirmationTitle": "লগআউট নিশ্চিত কৰক",
+  "logoutConfirmationDescription": "আপুনি নিশ্চিতভাৱে আপোনাৰ Bull Bitcoin account-ৰ পৰা লগআউট কৰিব বিচাৰে? Exchange সুবিধাসমূহ ব্যৱহাৰ কৰিবলৈ পুনৰ লগইন কৰিব লাগিব।",
+  "logoutConfirmationCancel": "বাতিল কৰক",
+  "logoutConfirmationLogout": "লগআউট"
 }

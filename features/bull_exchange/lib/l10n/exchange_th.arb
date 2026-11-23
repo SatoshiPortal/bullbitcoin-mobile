@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "โลโก้",
+  "logoutConfirmationTitle": "ยืนยันโลโก้",
+  "logoutConfirmationCancel": "ยกเลิก",
+  "logoutConfirmationDescription": "คุณแน่ใจว่าคุณต้องเข้าสู่ระบบบัญชี Bitcoin ของคุณ? คุณจะต้องเข้าสู่ระบบอีกครั้งเพื่อเข้าถึงคุณสมบัติ.",
+  "exchangeSettingsLogOutTitle": "เข้าสู่ระบบ",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "การดำเนินการนี้จะส่งคำขอลบบัญชีไปยังทีมสนับสนุนของเรา บัญชีของคุณจะถูกลบภายใน 5 วันทำการ",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "ส่งคำขอลบบัญชีแล้ว",
+  "deleteAccountSuccessDescription": "คำขอลบบัญชีของคุณถูกส่งแล้ว จะดำเนินการภายใน 5 วันทำการ",
+  "deleteAccountSuccessClose": "Close"
 }

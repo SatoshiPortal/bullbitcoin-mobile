@@ -3710,6 +3710,84 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'The limit order could not be created. Please try again.'**
   String get limitOrderCreationError;
+
+  /// Title for the log out option in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get exchangeSettingsLogOutTitle;
+
+  /// Title for logout confirmation bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Logout'**
+  String get logoutConfirmationTitle;
+
+  /// Description text for logout confirmation bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.'**
+  String get logoutConfirmationDescription;
+
+  /// Cancel button label for logout confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get logoutConfirmationCancel;
+
+  /// Logout button label for logout confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutConfirmationLogout;
+
+  /// Label for the delete account option in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get exchangeSettingsDeleteAccountTitle;
+
+  /// Title for the delete account confirmation bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccountConfirmationTitle;
+
+  /// Description for the delete account confirmation bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'This will send an account deletion request to our support team. Your account will be deleted within 5 working days.'**
+  String get deleteAccountConfirmationDescription;
+
+  /// Cancel button label for delete account confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteAccountConfirmationCancel;
+
+  /// Delete button label for delete account confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccountConfirmationDelete;
+
+  /// Title for the delete account success bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Account Deletion Requested'**
+  String get deleteAccountSuccessTitle;
+
+  /// Description for the delete account success bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Your account deletion request has been made. It will be processed within 5 working days.'**
+  String get deleteAccountSuccessDescription;
+
+  /// Close button label for delete account success bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get deleteAccountSuccessClose;
 }
 
 class _ExchangeLocalizationsDelegate

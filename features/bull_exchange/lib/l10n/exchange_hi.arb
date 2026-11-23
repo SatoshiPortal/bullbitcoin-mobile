@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "लॉग-इन",
+  "logoutConfirmationTitle": "लॉगआउट की पुष्टि करें",
+  "logoutConfirmationCancel": "रद्द करना",
+  "logoutConfirmationDescription": "क्या आपको यकीन है कि आप अपने बुल बिटकॉइन खाते से लॉग आउट करना चाहते हैं? आपको फिर से एक्सचेंज सुविधाओं तक पहुंचने के लिए लॉग इन करना होगा।।",
+  "exchangeSettingsLogOutTitle": "लॉग आउट",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "यह हमारी सहायता टीम को खाता हटाने का अनुरोध भेजेगा। आपका खाता 5 कार्य दिवसों के भीतर हटा दिया जाएगा।",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "खाता हटाने का अनुरोध किया गया",
+  "deleteAccountSuccessDescription": "आपका खाता हटाने का अनुरोध कर दिया गया है। इसे 5 कार्य दिवसों के भीतर संसाधित किया जाएगा।",
+  "deleteAccountSuccessClose": "Close"
 }

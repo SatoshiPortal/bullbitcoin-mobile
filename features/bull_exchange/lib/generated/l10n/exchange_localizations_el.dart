@@ -2085,4 +2085,46 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Συνδεθείτε έξω';
+
+  @override
+  String get logoutConfirmationTitle => 'Επιβεβαίωση Logout';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Είστε σίγουροι ότι θέλετε να συνδεθείτε από το λογαριασμό σας Bitcoin Bull; Θα πρέπει να συνδεθείτε ξανά σε χαρακτηριστικά ανταλλαγής.';
+
+  @override
+  String get logoutConfirmationCancel => 'Ακύρωση';
+
+  @override
+  String get logoutConfirmationLogout => 'Logout';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Αυτό θα στείλει ένα αίτημα διαγραφής λογαριασμού στην ομάδα υποστήριξής μας. Ο λογαριασμός σας θα διαγραφεί εντός 5 εργάσιμων ημερών.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Ζητήθηκε Διαγραφή Λογαριασμού';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Το αίτημά σας για διαγραφή λογαριασμού έχει υποβληθεί. Θα επεξεργαστεί εντός 5 εργάσιμων ημερών.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

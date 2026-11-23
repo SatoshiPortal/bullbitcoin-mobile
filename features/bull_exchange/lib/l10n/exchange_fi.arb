@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsLogOutTitle": "Kirjaudu ulos",
+  "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
+  "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
+  "logoutConfirmationCancel": "Peruuta",
+  "logoutConfirmationLogout": "Kirjaudu ulos",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Tämä lähettää tilin poistopyynnön tukitiimillemme. Tilisi poistetaan 5 arkipäivän kuluessa.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Tilin poistopyyntö lähetetty",
+  "deleteAccountSuccessDescription": "Tilisi poistopyyntö on tehty. Se käsitellään 5 arkipäivän kuluessa.",
+  "deleteAccountSuccessClose": "Close"
 }

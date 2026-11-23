@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Hii itatuma ombi la kufuta akaunti kwa timu yetu ya usaidizi. Akaunti yako itafutwa ndani ya siku 5 za kazi.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Ombi la Kufuta Akaunti Limetumwa",
+  "deleteAccountSuccessDescription": "Ombi lako la kufuta akaunti limetumwa. Litashughulikiwa ndani ya siku 5 za kazi.",
+  "deleteAccountSuccessClose": "Close",
+  "exchangeSettingsLogOutTitle": "Toka",
+  "logoutConfirmationTitle": "Thibitisha Kutoka",
+  "logoutConfirmationDescription": "Una uhakika unataka kutoka kwenye akaunti yako ya Bull Bitcoin? Utahitaji kuingia tena ili kufikia vipengele vya exchange.",
+  "logoutConfirmationCancel": "Ghairi",
+  "logoutConfirmationLogout": "Toka"
 }

@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Logout",
+  "logoutConfirmationTitle": "Επιβεβαίωση Logout",
+  "logoutConfirmationCancel": "Ακύρωση",
+  "logoutConfirmationDescription": "Είστε σίγουροι ότι θέλετε να συνδεθείτε από το λογαριασμό σας Bitcoin Bull; Θα πρέπει να συνδεθείτε ξανά σε χαρακτηριστικά ανταλλαγής.",
+  "exchangeSettingsLogOutTitle": "Συνδεθείτε έξω",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Αυτό θα στείλει ένα αίτημα διαγραφής λογαριασμού στην ομάδα υποστήριξής μας. Ο λογαριασμός σας θα διαγραφεί εντός 5 εργάσιμων ημερών.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Ζητήθηκε Διαγραφή Λογαριασμού",
+  "deleteAccountSuccessDescription": "Το αίτημά σας για διαγραφή λογαριασμού έχει υποβληθεί. Θα επεξεργαστεί εντός 5 εργάσιμων ημερών.",
+  "deleteAccountSuccessClose": "Close"
 }

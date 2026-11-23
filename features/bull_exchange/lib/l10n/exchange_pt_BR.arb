@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Logotipo",
+  "logoutConfirmationTitle": "Confirme o logotipo",
+  "logoutConfirmationCancel": "Cancelar",
+  "logoutConfirmationDescription": "Tem a certeza de que deseja fazer login na sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar recursos de troca.",
+  "exchangeSettingsLogOutTitle": "Log out",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Isso enviará uma solicitação de exclusão de conta à nossa equipe de suporte. Sua conta será excluída em até 5 dias úteis.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Exclusão de Conta Solicitada",
+  "deleteAccountSuccessDescription": "Sua solicitação de exclusão de conta foi realizada. Ela será processada em até 5 dias úteis.",
+  "deleteAccountSuccessClose": "Close"
 }

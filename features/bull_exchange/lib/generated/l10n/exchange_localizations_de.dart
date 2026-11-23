@@ -2068,4 +2068,46 @@ class ExchangeLocalizationsDe extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'Der Limitauftrag konnte nicht erstellt werden. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Abmelden';
+
+  @override
+  String get logoutConfirmationTitle => 'Abmeldung bestätigen';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Möchten Sie sich wirklich von Ihrem Bull-Bitcoin-Konto abmelden? Sie müssen sich erneut anmelden, um auf die Handelsfunktionen zugreifen zu können.';
+
+  @override
+  String get logoutConfirmationCancel => 'Abbrechen';
+
+  @override
+  String get logoutConfirmationLogout => 'Abmelden';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Konto löschen';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Konto löschen';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Dies sendet eine Anforderung zur Kontolöschung an unser Support-Team. Ihr Konto wird innerhalb von 5 Werktagen gelöscht.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Abbrechen';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Konto löschen';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Konto-Löschung angefordert';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Ihre Anfrage zur Kontolöschung wurde eingegangen. Sie wird innerhalb von 5 Werktagen bearbeitet.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Schließen';
 }

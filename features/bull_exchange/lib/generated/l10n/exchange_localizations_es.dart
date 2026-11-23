@@ -2085,4 +2085,46 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'No se pudo crear la orden límite. Inténtalo de nuevo.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Cerrar sesión';
+
+  @override
+  String get logoutConfirmationTitle => 'Confirmar cierre de sesión';
+
+  @override
+  String get logoutConfirmationDescription =>
+      '¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.';
+
+  @override
+  String get logoutConfirmationCancel => 'Cancelar';
+
+  @override
+  String get logoutConfirmationLogout => 'Cerrar sesión';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Esto enviará una solicitud de eliminación de cuenta a nuestro equipo de soporte. Tu cuenta se eliminará dentro de los próximos 5 días hábiles.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancelar';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Eliminación de cuenta solicitada';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Se ha realizado tu solicitud de eliminación de cuenta. Se procesará dentro de los próximos 5 días hábiles.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Cerrar';
 }

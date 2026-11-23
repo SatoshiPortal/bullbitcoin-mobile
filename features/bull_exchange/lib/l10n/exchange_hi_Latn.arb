@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsLogOutTitle": "Log Out",
+  "logoutConfirmationTitle": "Logout Confirm Karo",
+  "logoutConfirmationDescription": "Kya aap sach mein apne Bull Bitcoin account se log out karna chahte hain? Exchange features access karne ke liye aapko dobara login karna hoga.",
+  "logoutConfirmationCancel": "Cancel",
+  "logoutConfirmationLogout": "Logout",
+  "exchangeSettingsDeleteAccountTitle": "Account Delete Karo",
+  "deleteAccountConfirmationTitle": "Account Delete Karo",
+  "deleteAccountConfirmationDescription": "Ye hamare support team ko account deletion request bhejega. Aapka account 5 working days ke andar delete ho jayega.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Account Delete Karo",
+  "deleteAccountSuccessTitle": "Account Deletion Request Gayi",
+  "deleteAccountSuccessDescription": "Aapki account deletion request ho gayi hai. Ye 5 working days ke andar process ho jayegi.",
+  "deleteAccountSuccessClose": "Band Karo"
 }

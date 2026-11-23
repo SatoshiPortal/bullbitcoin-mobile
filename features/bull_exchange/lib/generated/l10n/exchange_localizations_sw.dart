@@ -2051,4 +2051,46 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Toka';
+
+  @override
+  String get logoutConfirmationTitle => 'Thibitisha Kutoka';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Una uhakika unataka kutoka kwenye akaunti yako ya Bull Bitcoin? Utahitaji kuingia tena ili kufikia vipengele vya exchange.';
+
+  @override
+  String get logoutConfirmationCancel => 'Ghairi';
+
+  @override
+  String get logoutConfirmationLogout => 'Toka';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Hii itatuma ombi la kufuta akaunti kwa timu yetu ya usaidizi. Akaunti yako itafutwa ndani ya siku 5 za kazi.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Ombi la Kufuta Akaunti Limetumwa';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Ombi lako la kufuta akaunti limetumwa. Litashughulikiwa ndani ya siku 5 za kazi.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

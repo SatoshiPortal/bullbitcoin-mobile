@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Čeština",
+  "logoutConfirmationTitle": "Potvrzení přihlášení",
+  "logoutConfirmationCancel": "Hledat",
+  "logoutConfirmationDescription": "Jste si jisti, že se chcete přihlásit z účtu Bull Bitcoin? Budete muset znovu přihlásit k funkcím výměny.",
+  "exchangeSettingsLogOutTitle": "Přihlásit se",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Tímto odešlete žádost o smazání účtu našemu týmu podpory. Váš účet bude smazán do 5 pracovních dnů.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Žádost o smazání účtu odeslána",
+  "deleteAccountSuccessDescription": "Vaše žádost o smazání účtu byla odeslána. Bude zpracována do 5 pracovních dnů.",
+  "deleteAccountSuccessClose": "Close"
 }

@@ -1938,4 +1938,46 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => '로그아웃';
+
+  @override
+  String get logoutConfirmationTitle => '로그아웃';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Bull Bitcoin 계정에서 로그인 하시겠습니까? 교환 기능을 다시 로그인해야합니다.';
+
+  @override
+  String get logoutConfirmationCancel => '이름 *';
+
+  @override
+  String get logoutConfirmationLogout => '로그아웃';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      '이 요청을 보내면 저희 지원팀에 계정 삭제 요청이 전달됩니다. 귀하의 계정은 5 영업일 이내에 삭제됩니다.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => '계정 삭제 요청됨';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      '계정 삭제 요청이 접수되었습니다. 5 영업일 이내에 처리됩니다.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

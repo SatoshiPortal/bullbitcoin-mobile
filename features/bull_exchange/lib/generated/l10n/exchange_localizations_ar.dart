@@ -2010,4 +2010,46 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Log Out';
+
+  @override
+  String get logoutConfirmationTitle => 'الموافقة';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'هل أنت متأكد من أنك تريد أن تخرج من حسابك؟ عليك أن تدخل مرة أخرى إلى ملامح التبادل.';
+
+  @override
+  String get logoutConfirmationCancel => 'إلغاء';
+
+  @override
+  String get logoutConfirmationLogout => 'Logout';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'This will send an account deletion request to our support team. Your account will be deleted within 5 working days.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Account Deletion Requested';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Your account deletion request has been made. It will be processed within 5 working days.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

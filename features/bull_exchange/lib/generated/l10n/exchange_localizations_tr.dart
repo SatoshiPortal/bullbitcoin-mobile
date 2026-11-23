@@ -2045,4 +2045,46 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Log Out';
+
+  @override
+  String get logoutConfirmationTitle => 'Onay Logout';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Bull Bitcoin hesabınızdan çıkmak istediğinizden emin misiniz? Değişim özelliklerine erişmek için tekrar giriş yapmanız gerekir.';
+
+  @override
+  String get logoutConfirmationCancel => 'Cancel';
+
+  @override
+  String get logoutConfirmationLogout => 'Logout';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Bu, destek ekibimize bir hesap silme talebi gönderecektir. Hesabınız 5 iş günü içinde silinecektir.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Hesap Silme Talep Edildi';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Hesap silme talebiniz alındı. 5 iş günü içinde işleme konulacaktır.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

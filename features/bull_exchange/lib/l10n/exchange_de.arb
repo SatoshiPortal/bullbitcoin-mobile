@@ -564,5 +564,18 @@
   "limitOrderDetailsEstimatedBitcoin": "Voraussichtlicher Bitcoin-Betrag",
   "limitOrdersMaximumActiveError": "Sie haben bereits fünf aktive Limitaufträge. Stornieren Sie einen davon, bevor Sie einen weiteren erstellen.",
   "limitOrderInvalidAddressError": "Die ausgewählte Auszahlungsadresse ist ungültig.",
-  "limitOrderCreationError": "Der Limitauftrag konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+  "limitOrderCreationError": "Der Limitauftrag konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+  "exchangeSettingsLogOutTitle": "Abmelden",
+  "logoutConfirmationTitle": "Abmeldung bestätigen",
+  "logoutConfirmationDescription": "Möchten Sie sich wirklich von Ihrem Bull-Bitcoin-Konto abmelden? Sie müssen sich erneut anmelden, um auf die Handelsfunktionen zugreifen zu können.",
+  "logoutConfirmationCancel": "Abbrechen",
+  "logoutConfirmationLogout": "Abmelden",
+  "exchangeSettingsDeleteAccountTitle": "Konto löschen",
+  "deleteAccountConfirmationTitle": "Konto löschen",
+  "deleteAccountConfirmationDescription": "Dies sendet eine Anforderung zur Kontolöschung an unser Support-Team. Ihr Konto wird innerhalb von 5 Werktagen gelöscht.",
+  "deleteAccountConfirmationCancel": "Abbrechen",
+  "deleteAccountConfirmationDelete": "Konto löschen",
+  "deleteAccountSuccessTitle": "Konto-Löschung angefordert",
+  "deleteAccountSuccessDescription": "Ihre Anfrage zur Kontolöschung wurde eingegangen. Sie wird innerhalb von 5 Werktagen bearbeitet.",
+  "deleteAccountSuccessClose": "Schließen"
 }

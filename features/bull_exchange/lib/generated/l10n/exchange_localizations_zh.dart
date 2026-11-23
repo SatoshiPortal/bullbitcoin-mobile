@@ -1887,4 +1887,45 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => '记录';
+
+  @override
+  String get logoutConfirmationTitle => '确认退出';
+
+  @override
+  String get logoutConfirmationDescription =>
+      '您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。';
+
+  @override
+  String get logoutConfirmationCancel => '取消';
+
+  @override
+  String get logoutConfirmationLogout => '退出';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      '这将向我们的支持团队发送账户删除请求。您的账户将在 5 个工作日内被删除。';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => '账户删除请求已提交';
+
+  @override
+  String get deleteAccountSuccessDescription => '您的账户删除请求已提交，将在 5 个工作日内处理完成。';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

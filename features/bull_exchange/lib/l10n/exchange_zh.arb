@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsLogOutTitle": "记录",
+  "logoutConfirmationTitle": "确认退出",
+  "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
+  "logoutConfirmationCancel": "取消",
+  "logoutConfirmationLogout": "退出",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "这将向我们的支持团队发送账户删除请求。您的账户将在 5 个工作日内被删除。",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "账户删除请求已提交",
+  "deleteAccountSuccessDescription": "您的账户删除请求已提交，将在 5 个工作日内处理完成。",
+  "deleteAccountSuccessClose": "Close"
 }

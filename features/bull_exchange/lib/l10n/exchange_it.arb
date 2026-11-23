@@ -565,5 +565,18 @@
   "limitOrderDetailsEstimatedBitcoin": "Bitcoin previsti",
   "limitOrdersMaximumActiveError": "Hai già cinque ordini limite attivi. Annullane uno prima di crearne un altro.",
   "limitOrderInvalidAddressError": "L'indirizzo di destinazione selezionato non è valido.",
-  "limitOrderCreationError": "Impossibile creare l'ordine limite. Riprova."
+  "limitOrderCreationError": "Impossibile creare l'ordine limite. Riprova.",
+  "exchangeSettingsLogOutTitle": "Esci",
+  "logoutConfirmationTitle": "Conferma disconnessione",
+  "logoutConfirmationDescription": "Vuoi davvero uscire dal tuo account Bull Bitcoin? Dovrai accedere di nuovo per usare le funzioni dell'exchange.",
+  "logoutConfirmationCancel": "Annulla",
+  "logoutConfirmationLogout": "Disconnetti",
+  "exchangeSettingsDeleteAccountTitle": "Elimina account",
+  "deleteAccountConfirmationTitle": "Elimina account",
+  "deleteAccountConfirmationDescription": "Verrà inviata una richiesta di eliminazione dell'account al nostro team di supporto. Il tuo account sarà eliminato entro 5 giorni lavorativi.",
+  "deleteAccountConfirmationCancel": "Annulla",
+  "deleteAccountConfirmationDelete": "Elimina account",
+  "deleteAccountSuccessTitle": "Eliminazione dell'account richiesta",
+  "deleteAccountSuccessDescription": "La richiesta di eliminazione del tuo account è stata inviata. Verrà elaborata entro 5 giorni lavorativi.",
+  "deleteAccountSuccessClose": "Chiudi"
 }

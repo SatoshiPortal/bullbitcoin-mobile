@@ -2050,4 +2050,47 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'লগ আউট';
+
+  @override
+  String get logoutConfirmationTitle => 'লগআউট নিশ্চিত করুন';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'আপনি কি আপনার Bull Bitcoin অ্যাকাউন্ট থেকে লগআউট করতে চান? এক্সচেঞ্জ বৈশিষ্ট্যগুলি ব্যবহার করতে আপনাকে আবার লগইন করতে হবে।';
+
+  @override
+  String get logoutConfirmationCancel => 'বাতিল';
+
+  @override
+  String get logoutConfirmationLogout => 'লগআউট';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'এটি আমাদের সহায়তা দলের কাছে একটি অ্যাকাউন্ট মুছে ফেলার অনুরোধ পাঠাবে। আপনার অ্যাকাউন্টটি ৫ কার্যদিবসের মধ্যে মুছে ফেলা হবে।';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle =>
+      'অ্যাকাউন্ট মুছে ফেলার অনুরোধ করা হয়েছে';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'আপনার অ্যাকাউন্ট মুছে ফেলার অনুরোধ করা হয়েছে। এটি ৫ কার্যদিবসের মধ্যে প্রক্রিয়া করা হবে।';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

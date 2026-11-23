@@ -2042,4 +2042,46 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Kirjaudu ulos';
+
+  @override
+  String get logoutConfirmationTitle => 'Vahvista uloskirjautuminen';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.';
+
+  @override
+  String get logoutConfirmationCancel => 'Peruuta';
+
+  @override
+  String get logoutConfirmationLogout => 'Kirjaudu ulos';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Tämä lähettää tilin poistopyynnön tukitiimillemme. Tilisi poistetaan 5 arkipäivän kuluessa.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Tilin poistopyyntö lähetetty';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Tilisi poistopyyntö on tehty. Se käsitellään 5 arkipäivän kuluessa.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

@@ -2008,4 +2008,46 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'เข้าสู่ระบบ';
+
+  @override
+  String get logoutConfirmationTitle => 'ยืนยันโลโก้';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'คุณแน่ใจว่าคุณต้องเข้าสู่ระบบบัญชี Bitcoin ของคุณ? คุณจะต้องเข้าสู่ระบบอีกครั้งเพื่อเข้าถึงคุณสมบัติ.';
+
+  @override
+  String get logoutConfirmationCancel => 'ยกเลิก';
+
+  @override
+  String get logoutConfirmationLogout => 'โลโก้';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'การดำเนินการนี้จะส่งคำขอลบบัญชีไปยังทีมสนับสนุนของเรา บัญชีของคุณจะถูกลบภายใน 5 วันทำการ';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'ส่งคำขอลบบัญชีแล้ว';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'คำขอลบบัญชีของคุณถูกส่งแล้ว จะดำเนินการภายใน 5 วันทำการ';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

@@ -2024,4 +2024,46 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'ورود Out';
+
+  @override
+  String get logoutConfirmationTitle => 'تایید Logout';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'آیا مطمئن هستید که می خواهید از حساب Bitcoin بول خود خارج شوید؟ شما باید دوباره برای دسترسی به ویژگی های مبادله وارد شوید.';
+
+  @override
+  String get logoutConfirmationCancel => 'لغو';
+
+  @override
+  String get logoutConfirmationLogout => 'Logout';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'این کار یک درخواست حذف حساب را به تیم پشتیبانی ما ارسال می‌کند. حساب شما ظرف ۵ روز کاری حذف خواهد شد.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'درخواست حذف حساب ثبت شد';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'درخواست حذف حساب شما ثبت شده است. ظرف ۵ روز کاری پردازش خواهد شد.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }

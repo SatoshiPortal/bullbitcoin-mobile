@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationTitle": "تایید Logout",
+  "logoutConfirmationDescription": "آیا مطمئن هستید که می خواهید از حساب Bitcoin بول خود خارج شوید؟ شما باید دوباره برای دسترسی به ویژگی های مبادله وارد شوید.",
+  "logoutConfirmationCancel": "لغو",
+  "logoutConfirmationLogout": "Logout",
+  "exchangeSettingsLogOutTitle": "ورود Out",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "این کار یک درخواست حذف حساب را به تیم پشتیبانی ما ارسال می‌کند. حساب شما ظرف ۵ روز کاری حذف خواهد شد.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "درخواست حذف حساب ثبت شد",
+  "deleteAccountSuccessDescription": "درخواست حذف حساب شما ثبت شده است. ظرف ۵ روز کاری پردازش خواهد شد.",
+  "deleteAccountSuccessClose": "Close"
 }

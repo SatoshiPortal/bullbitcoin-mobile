@@ -2040,6 +2040,48 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'लॉग आउट';
+
+  @override
+  String get logoutConfirmationTitle => 'लॉगआउट की पुष्टि करें';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'क्या आपको यकीन है कि आप अपने बुल बिटकॉइन खाते से लॉग आउट करना चाहते हैं? आपको फिर से एक्सचेंज सुविधाओं तक पहुंचने के लिए लॉग इन करना होगा।।';
+
+  @override
+  String get logoutConfirmationCancel => 'रद्द करना';
+
+  @override
+  String get logoutConfirmationLogout => 'लॉग-इन';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'यह हमारी सहायता टीम को खाता हटाने का अनुरोध भेजेगा। आपका खाता 5 कार्य दिवसों के भीतर हटा दिया जाएगा।';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Delete Account';
+
+  @override
+  String get deleteAccountSuccessTitle => 'खाता हटाने का अनुरोध किया गया';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'आपका खाता हटाने का अनुरोध कर दिया गया है। इसे 5 कार्य दिवसों के भीतर संसाधित किया जाएगा।';
+
+  @override
+  String get deleteAccountSuccessClose => 'Close';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -4000,4 +4042,46 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get limitOrderCreationError =>
       'The limit order could not be created. Please try again.';
+
+  @override
+  String get exchangeSettingsLogOutTitle => 'Log Out';
+
+  @override
+  String get logoutConfirmationTitle => 'Logout Confirm Karo';
+
+  @override
+  String get logoutConfirmationDescription =>
+      'Kya aap sach mein apne Bull Bitcoin account se log out karna chahte hain? Exchange features access karne ke liye aapko dobara login karna hoga.';
+
+  @override
+  String get logoutConfirmationCancel => 'Cancel';
+
+  @override
+  String get logoutConfirmationLogout => 'Logout';
+
+  @override
+  String get exchangeSettingsDeleteAccountTitle => 'Account Delete Karo';
+
+  @override
+  String get deleteAccountConfirmationTitle => 'Account Delete Karo';
+
+  @override
+  String get deleteAccountConfirmationDescription =>
+      'Ye hamare support team ko account deletion request bhejega. Aapka account 5 working days ke andar delete ho jayega.';
+
+  @override
+  String get deleteAccountConfirmationCancel => 'Cancel';
+
+  @override
+  String get deleteAccountConfirmationDelete => 'Account Delete Karo';
+
+  @override
+  String get deleteAccountSuccessTitle => 'Account Deletion Request Gayi';
+
+  @override
+  String get deleteAccountSuccessDescription =>
+      'Aapki account deletion request ho gayi hai. Ye 5 working days ke andar process ho jayegi.';
+
+  @override
+  String get deleteAccountSuccessClose => 'Band Karo';
 }

@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "ეს გაუგზავნის ანგარიშის წაშლის მოთხოვნას ჩვენს მხარდაჭერის გუნდს. თქვენი ანგარიში წაიშლება 5 სამუშაო დღეში.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "ანგარიშის წაშლა მოთხოვნილია",
+  "deleteAccountSuccessDescription": "თქვენი ანგარიშის წაშლის მოთხოვნა გაიგზავნა. ის დამუშავდება 5 სამუშაო დღეში.",
+  "deleteAccountSuccessClose": "Close",
+  "exchangeSettingsLogOutTitle": "გასვლა",
+  "logoutConfirmationTitle": "გასვლის დადასტურება",
+  "logoutConfirmationDescription": "დარწმუნებული ხართ, რომ გსურთ გახვიდეთ თქვენი Bull Bitcoin ანგარიშიდან? გაცვლის ფუნქციებზე წვდომისთვის ხელახლა მოგიწევთ სისტემაში შესვლა.",
+  "logoutConfirmationCancel": "გაუქმება",
+  "logoutConfirmationLogout": "გასვლა"
 }

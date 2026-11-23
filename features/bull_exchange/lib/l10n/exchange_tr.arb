@@ -563,5 +563,18 @@
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "limitOrderCreationError": "The limit order could not be created. Please try again."
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Logout",
+  "logoutConfirmationTitle": "Onay Logout",
+  "logoutConfirmationCancel": "Cancel",
+  "logoutConfirmationDescription": "Bull Bitcoin hesabınızdan çıkmak istediğinizden emin misiniz? Değişim özelliklerine erişmek için tekrar giriş yapmanız gerekir.",
+  "exchangeSettingsLogOutTitle": "Log Out",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Bu, destek ekibimize bir hesap silme talebi gönderecektir. Hesabınız 5 iş günü içinde silinecektir.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Hesap Silme Talep Edildi",
+  "deleteAccountSuccessDescription": "Hesap silme talebiniz alındı. 5 iş günü içinde işleme konulacaktır.",
+  "deleteAccountSuccessClose": "Close"
 }
