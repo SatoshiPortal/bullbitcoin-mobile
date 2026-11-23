@@ -585,7 +585,7 @@ final class _SendPaymentSession {
     if (openCoins == true && !_disposed && context.mounted) {
       final wallet = cubit.state.selectedBitcoinWallet;
       if (wallet != null) {
-        unawaited(CoinsNavigation.replace(context, wallet));
+        CoinsNavigation.replace(context, wallet);
       }
     }
   }

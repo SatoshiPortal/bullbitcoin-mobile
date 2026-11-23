@@ -34,8 +34,6 @@ abstract final class CoinsNavigation {
   static Future<void> open<T extends Object>(BuildContext context, T wallet) =>
       context.pushNamed<void>(coinsRouteName, extra: wallet);
 
-  static Future<void> replace<T extends Object>(
-    BuildContext context,
-    T wallet,
-  ) => context.pushReplacementNamed<void>(coinsRouteName, extra: wallet);
+  static void replace<T extends Object>(BuildContext context, T wallet) =>
+      context.pushReplacementNamed(coinsRouteName, extra: wallet);
 }

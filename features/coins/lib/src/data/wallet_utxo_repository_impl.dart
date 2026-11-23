@@ -128,9 +128,9 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   Future<Result<List<Outpoint>, CoinsFailure>> getAllFrozenOutpoints() => _read(
     () async {
       final sync = _value(await _foreground());
-      return [
+      return {
         for (final row in _value(await sync.coins.listFrozen())) row.outpoint,
-      ].toSet().toList();
+      }.toList();
     },
     CoinsLoadFailure.new,
     'Failed to load frozen outpoints',
