@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
@@ -21,8 +20,6 @@ class _Account extends Mock implements GetExchangeAccountUsecase {}
 class _Preferences extends Mock implements SaveExchangePreferencesUsecase {}
 
 class _Announcements extends Mock implements GetExchangeAnnouncementsUsecase {}
-
-class _Delete extends Mock implements DeleteExchangeAccountUsecase {}
 
 class _WatchAccess extends Mock implements WatchExchangeAccessUsecase {}
 
@@ -52,7 +49,6 @@ void main() {
   late _Account getAccount;
   late _Preferences preferences;
   late _Announcements announcements;
-  late _Delete deletion;
   late _WatchAccess watchAccess;
   late _Enable enable;
   late _Resolve resolve;
@@ -69,7 +65,6 @@ void main() {
     getExchangeAccountUsecase: getAccount,
     saveExchangePreferencesUsecase: preferences,
     getExchangeAnnouncementsUsecase: announcements,
-    deleteAccount: deletion,
     enableAccess: enable,
     resolveAccess: resolve,
     signOut: signOut,
@@ -81,7 +76,6 @@ void main() {
     getAccount = _Account();
     preferences = _Preferences();
     announcements = _Announcements();
-    deletion = _Delete();
     watchAccess = _WatchAccess();
     enable = _Enable();
     resolve = _Resolve();
@@ -178,19 +172,6 @@ void main() {
     );
     expect(saved, isA<Ok<void, ExchangeFailure>>());
     expect(cubit.state.userSummary, account);
-  });
-
-  test('deletion failure is forwarded by the account use case', () async {
-    when(deletion.execute).thenAnswer(
-      (_) async => const Err(ExchangeAccountDeletionRequestFailure()),
-    );
-    final cubit = build();
-    addTearDown(cubit.close);
-    expect(
-      (await cubit.deleteAccount() as Err).failure,
-      isA<ExchangeAccountDeletionRequestFailure>(),
-    );
-    verify(deletion.execute).called(1);
   });
 
   test('a stale account response is not shown after access changes', () async {
