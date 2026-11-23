@@ -74,8 +74,8 @@ class ExchangeSessionScope extends StatefulWidget {
 class _ExchangeSessionScopeState extends State<ExchangeSessionScope> {
   late final Exchange _capability = widget.exchange();
   late final ExchangeBloc _bloc = ExchangeBloc(
-    getAccount: (_) => _capability.loadCurrentAccount(),
-    getAnnouncements: (_) => _capability.loadCurrentAnnouncements(),
+    getAccount: _capability.loadAccount,
+    getAnnouncements: _capability.loadAnnouncements,
     stopDca: (session) => _capability.updatePreferences(
       session,
       const ExchangePreferencesPatch(dcaEnabled: false),

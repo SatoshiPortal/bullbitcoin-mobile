@@ -54,62 +54,37 @@ void main() {
         .thenAnswer((_) async => Ok(_settings(Environment.mainnet)));
   });
 
-  // Preferences is shared core and still throws. These use-cases
-  // promise a Result and the cubit has no catch left, so a throw here would
-  // escape as an unhandled exception and leave the screen waiting.
-  group('a throwing settings read is returned, not thrown', () {
-    const reason = 'settings fetch failed: _Exception';
-
-    setUp(() {
-      when(settings.fetch).thenThrow(Exception('database is locked'));
-    });
-
-    test('GetExchangeAnnouncementsUsecase', () async {
-      final failure = _failureOf(
-        await GetExchangeAnnouncementsUsecase(
-          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-          settingsRepository: settings,
-          access: access,
-        ).execute(),
-      );
-
-      expect(failure, isA<ExchangeAnnouncementsUnavailableFailure>());
-      expect(failure.logMessage, reason);
-    });
+  test('a session that is not current is refused without a read', () async {
+    const ended = ExchangeSession(
+      environment: ExchangeEnvironment.mainnet,
+      epoch: 0,
+      sessionId: 'ended',
+    );
+    final result = await GetExchangeAnnouncementsUsecase(
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
+      access: access,
+    ).execute(ended);
+    expect(_failureOf(result), isA<ExchangeOperationStaleFailure>());
+    verifyZeroInteractions(mainnetUsers);
+    verifyZeroInteractions(testnetUsers);
   });
 
-  test(
-    'regtest refuses exchange operations without historical side effects',
-    () async {
-      when(settings.fetch)
-          .thenAnswer((_) async => Ok(_settings(Environment.regtest)));
-      when(settings.readExchangeWebPreferences).thenAnswer(
-        (_) async => Ok((
-          environment: Environment.regtest,
-          exchangeTestnetBasicAuthUsername: null,
-          exchangeTestnetBasicAuthPassword: null,
-        )),
-      );
-      final results = [
-        await GetExchangeAnnouncementsUsecase(
-          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-          settingsRepository: settings,
-          access: access,
-        ).execute(),
-        await GetExchangeWebSettingsUsecase(preferences: settings).execute(),
-      ];
-      for (final result in results) {
-        expect(_failureOf(result), isA<ExchangeUnsupportedNetworkFailure>());
-      }
-      verifyZeroInteractions(mainnetUsers);
-      verifyZeroInteractions(testnetUsers);
-    },
-  );
+  test('regtest refuses the exchange web settings', () async {
+    when(settings.readExchangeWebPreferences).thenAnswer(
+      (_) async => Ok((
+        environment: Environment.regtest,
+        exchangeTestnetBasicAuthUsername: null,
+        exchangeTestnetBasicAuthPassword: null,
+      )),
+    );
+    final result = await GetExchangeWebSettingsUsecase(preferences: settings)
+        .execute();
+    expect(_failureOf(result), isA<ExchangeUnsupportedNetworkFailure>());
+  });
 
   group('GetExchangeAnnouncementsUsecase', () {
     GetExchangeAnnouncementsUsecase build() => GetExchangeAnnouncementsUsecase(
       exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-      settingsRepository: settings,
       access: access,
     );
 
@@ -119,7 +94,7 @@ void main() {
       );
 
       expect(
-        _failureOf(await build().execute()),
+        _failureOf(await build().execute(_testSession)),
         isA<ExchangeAnnouncementsUnavailableFailure>(),
       );
     });
@@ -129,7 +104,7 @@ void main() {
           .thenAnswer((_) async => const Ok(<Announcement>[]));
 
       expect(
-        await build().execute(),
+        await build().execute(_testSession),
         isA<Ok<List<Announcement>, ExchangeFailure>>(),
       );
     });
@@ -150,9 +125,8 @@ void main() {
     when(mainnetUsers.listAnnouncements).thenAnswer((_) => pending.future);
     final operation = GetExchangeAnnouncementsUsecase(
       exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-      settingsRepository: settings,
       access: access,
-    ).execute();
+    ).execute(_testSession);
     await Future<void>.delayed(Duration.zero);
     epoch++;
     pending.complete(const Err(ExchangeAnnouncementsUnavailableFailure()));

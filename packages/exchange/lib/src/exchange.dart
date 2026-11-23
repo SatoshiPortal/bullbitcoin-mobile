@@ -722,35 +722,40 @@ final class Exchange {
     ).execute(isCurrent: isCurrent);
   }
 
-  /// Loads the foreground account and expires only a rejected current session.
+  /// Loads the account of [session]; see [GetExchangeAccountUsecase].
   @useResult
-  Future<Result<UserSummary, ExchangeFailure>> loadCurrentAccount() async {
+  Future<Result<UserSummary, ExchangeFailure>> loadAccount(
+    ExchangeSession session,
+  ) async {
     final access = _access;
-    final preferences = _sessionPreferences;
-    if (access == null || preferences == null) {
-      return const Err(ExchangeAccountUnavailableFailure());
-    }
+    if (access == null) return const Err(ExchangeAccountUnavailableFailure());
     return GetExchangeAccountUsecase(
       exchange: this,
-      settingsRepository: preferences,
       access: access,
       expire: ExpireExchangeSessionUsecase(access),
-    ).execute();
+    ).execute(session);
   }
 
+  /// [loadAccount] for the session signed in now.
   @useResult
-  Future<Result<List<Announcement>, ExchangeFailure>>
-  loadCurrentAnnouncements() async {
+  Future<Result<UserSummary, ExchangeFailure>> loadCurrentAccount() async =>
+      switch (_access?.session) {
+        null => const Err(ExchangeNotAuthenticatedFailure()),
+        final session => loadAccount(session),
+      };
+
+  @useResult
+  Future<Result<List<Announcement>, ExchangeFailure>> loadAnnouncements(
+    ExchangeSession session,
+  ) async {
     final access = _access;
-    final preferences = _sessionPreferences;
-    if (access == null || preferences == null) {
+    if (access == null) {
       return const Err(ExchangeAnnouncementsUnavailableFailure());
     }
     return GetExchangeAnnouncementsUsecase(
       exchange: this,
-      settingsRepository: preferences,
       access: access,
-    ).execute();
+    ).execute(session);
   }
 
   /// The current session, when signed in.
