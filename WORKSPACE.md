@@ -208,7 +208,9 @@ graph TD
   bull_ark --> legacy_storage
   bull_ark --> preferences
   bull_ark --> bull_ui
+  bull_ark --> bull_logger
   bull_ark --> bull_pricer
+  bull_ark --> scanning
   bull_ark --> background_tasks
   bull_ark --> notifications
   bull_ark --> sync
@@ -239,6 +241,7 @@ graph TD
   bull_quick_actions --> bull_ui
   bull_quick_actions --> primitives
   bull_recoverbull --> primitives
+  bull_recoverbull --> preferences
   bull_recoverbull --> file_system
   bull_recoverbull --> google_drive
   bull_recoverbull --> secrets
@@ -446,14 +449,17 @@ graph TD
   sync --> bull_logger
   sync --> primitives
   sync --> secrets
+  transactions --> ark
   transactions --> bitcoin_price
   transactions --> bull_logger
   transactions --> bull_payjoin
   transactions --> bull_ui
   transactions --> exchange
+  transactions --> fees
   transactions --> file_system
   transactions --> label_editor
   transactions --> labels
+  transactions --> legacy_storage
   transactions --> mempool
   transactions --> preferences
   transactions --> primitives
