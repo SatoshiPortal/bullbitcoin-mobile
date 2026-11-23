@@ -12,8 +12,6 @@ class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
-
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
 
 /// The value of an [Ok], failing the test on an [Err].
@@ -32,7 +30,6 @@ void main() {
   late _MockExchangeOrders mainnetRepository;
   late _MockExchangeOrders testnetRepository;
   late _MockSettingsRepository settingsRepository;
-  late _MockRecipientsFacade recipientsFacade;
   late ConfirmWithdrawOrderUsecase usecase;
   late InteracSecurityDetails interacSecurityDetails;
 
@@ -40,7 +37,6 @@ void main() {
     mainnetRepository = _MockExchangeOrders();
     testnetRepository = _MockExchangeOrders();
     settingsRepository = _MockSettingsRepository();
-    recipientsFacade = _MockRecipientsFacade();
     usecase = ConfirmWithdrawOrderUsecase(
       exchange: exchangeForTesting(
         orders: (environment) => environment == ExchangeEnvironment.testnet
@@ -48,7 +44,6 @@ void main() {
             : mainnetRepository,
       ),
       settingsRepository: settingsRepository,
-      recipientsFacade: recipientsFacade,
     );
     interacSecurityDetails = _ok(
       InteracSecurityDetails.create(
@@ -89,99 +84,37 @@ void main() {
       expect(_err(result), isA<WithdrawUnsupportedNetworkFailure>());
       verifyZeroInteractions(mainnetRepository);
       verifyZeroInteractions(testnetRepository);
-      verifyZeroInteractions(recipientsFacade);
     },
   );
 
-  test('confirms the order before saving Interac defaults', () async {
-    final order = _MockWithdrawOrder();
-    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => Ok(order));
-    when(
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: any(named: 'recipientId'),
-        email: any(named: 'email'),
-        securityQuestion: any(named: 'securityQuestion'),
-        securityAnswer: any(named: 'securityAnswer'),
-      ),
-    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
+  for (final saveDefaults in [true, false]) {
+    test(
+      'confirms with the selected Interac defaults (save: $saveDefaults)',
+      () async {
+        final order = _MockWithdrawOrder();
+        Future<Result<WithdrawOrder, ExchangeFailure>> confirm() =>
+            mainnetRepository.confirmWithdrawOrder(
+              'order-1',
+              interacUpdate: (
+                recipientId: 'recipient-1',
+                email: 'person@example.com',
+                securityQuestion: saveDefaults ? 'Favourite city?' : null,
+                securityAnswer: saveDefaults ? 'Montreal' : null,
+              ),
+            );
+        when(confirm).thenAnswer((_) async => Ok(order));
 
-    final result = await usecase.execute(
-      orderId: 'order-1',
-      interacSecurityDetails: interacSecurityDetails,
-      saveSecurityDetailsAsDefault: true,
+        final result = await usecase.execute(
+          orderId: 'order-1',
+          interacSecurityDetails: interacSecurityDetails,
+          saveSecurityDetailsAsDefault: saveDefaults,
+        );
+
+        expect(_ok(result), same(order));
+        verify(confirm).called(1);
+      },
     );
-
-    expect(_ok(result), same(order));
-    verifyInOrder([
-      () => mainnetRepository.confirmWithdrawOrder('order-1'),
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: 'recipient-1',
-        email: 'person@example.com',
-        securityQuestion: 'Favourite city?',
-        securityAnswer: 'Montreal',
-      ),
-    ]);
-  });
-
-  test('clears saved Interac defaults when save is not selected', () async {
-    final order = _MockWithdrawOrder();
-    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => Ok(order));
-    when(
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: any(named: 'recipientId'),
-        email: any(named: 'email'),
-        securityQuestion: any(named: 'securityQuestion'),
-        securityAnswer: any(named: 'securityAnswer'),
-      ),
-    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
-
-    final result = await usecase.execute(
-      orderId: 'order-1',
-      interacSecurityDetails: interacSecurityDetails,
-    );
-
-    expect(_ok(result), same(order));
-
-    verify(
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: 'recipient-1',
-        email: 'person@example.com',
-        securityQuestion: null,
-        securityAnswer: null,
-      ),
-    ).called(1);
-  });
-
-  test(
-    'does not fail a confirmed order when updating defaults fails',
-    () async {
-      final order = _MockWithdrawOrder();
-      when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-          .thenAnswer((_) async => Ok(order));
-      when(
-        () => recipientsFacade.updateInteracSecurityDetails(
-          recipientId: any(named: 'recipientId'),
-          email: any(named: 'email'),
-          securityQuestion: any(named: 'securityQuestion'),
-          securityAnswer: any(named: 'securityAnswer'),
-        ),
-      ).thenAnswer(
-        (_) async => const Err<void, RecipientsFailure>(
-          RecipientsUnexpectedFailure('update failed'),
-        ),
-      );
-
-      final result = await usecase.execute(
-        orderId: 'order-1',
-        interacSecurityDetails: interacSecurityDetails,
-        saveSecurityDetailsAsDefault: true,
-      );
-
-      expect(_ok(result), same(order));
-    },
-  );
+  }
 
   test('does not update recipients for non-Interac withdrawals', () async {
     final order = _MockWithdrawOrder();
@@ -191,7 +124,7 @@ void main() {
     final result = await usecase.execute(orderId: 'order-1');
 
     expect(_ok(result), same(order));
-    verifyZeroInteractions(recipientsFacade);
+    verify(() => mainnetRepository.confirmWithdrawOrder('order-1')).called(1);
   });
 
   test('routes testnet confirmation to the testnet repository', () async {

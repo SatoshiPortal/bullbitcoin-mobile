@@ -83,9 +83,10 @@ class FakeBbxHttp implements HttpClientAdapter {
   final int status;
   final Object? body;
   final DioExceptionType? error;
+  final Object? Function(RequestOptions)? respond;
   final List<RequestOptions> requests = [];
 
-  FakeBbxHttp({this.status = 200, this.body, this.error});
+  FakeBbxHttp({this.status = 200, this.body, this.error, this.respond});
 
   @override
   Future<ResponseBody> fetch(
@@ -97,8 +98,12 @@ class FakeBbxHttp implements HttpClientAdapter {
     if (error case final type?) {
       throw DioException(requestOptions: options, type: type);
     }
+    final response = switch (respond) {
+      final reply? => reply(options),
+      null => body,
+    };
     return ResponseBody.fromString(
-      jsonEncode(body),
+      jsonEncode(response),
       status,
       headers: {
         Headers.contentTypeHeader: [Headers.jsonContentType],

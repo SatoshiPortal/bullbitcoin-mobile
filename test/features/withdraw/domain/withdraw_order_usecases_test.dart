@@ -3,7 +3,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/load_withdraw_context_usecase.dart';
@@ -17,8 +16,6 @@ class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
-
-class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
 
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
 
@@ -229,7 +226,6 @@ void main() {
             environment == ExchangeEnvironment.testnet ? testnet : mainnet,
       ),
       settingsRepository: settingsRepository,
-      recipientsFacade: _MockRecipientsFacade(),
     );
 
     test('returns the confirmed order', () async {
