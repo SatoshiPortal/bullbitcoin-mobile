@@ -121,7 +121,10 @@ void main() {
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture = await InventoryFixture.open(
+        directory,
+        includeSignerDevices: true,
+      );
       inventoryFixture.register(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
@@ -417,7 +420,10 @@ void main() {
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      final inventoryFixture = await InventoryFixture.open(directory);
+      final inventoryFixture = await InventoryFixture.open(
+        directory,
+        includeSignerDevices: true,
+      );
       inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
@@ -539,7 +545,10 @@ void main() {
     final electrumDatabase = ElectrumTestDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
-    final inventoryFixture = await InventoryFixture.open(directory);
+    final inventoryFixture = await InventoryFixture.open(
+      directory,
+      includeSignerDevices: true,
+    );
     inventoryFixture.register(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {

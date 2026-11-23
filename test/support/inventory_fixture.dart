@@ -11,15 +11,17 @@ import 'package:primitives/primitives.dart' hide Network;
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
+import 'package:signers/storage.dart';
 
 import 'wallet_registrations.dart';
 
 final class InventoryFixture {
   final RuntimeAdmission admission;
   final SecretsInventory inventory;
+  final SignerDevices? signerDevices;
   final backup = const VerifiedBackups();
 
-  InventoryFixture._(this.admission, this.inventory);
+  InventoryFixture._(this.admission, this.inventory, this.signerDevices);
 
   Future<void> addPublicWallet({
     required String id,
@@ -48,22 +50,40 @@ final class InventoryFixture {
     );
   }
 
-  static Future<InventoryFixture> open(Directory directory) async {
+  static Future<InventoryFixture> open(
+    Directory directory, {
+    bool includeSignerDevices = false,
+  }) async {
     final file = File('${directory.path}/test-secrets.sqlite');
+    final signersFile = File('${directory.path}/test-signers.sqlite');
+    final signerKeys = Secrets(scratchDirectory: () async => directory.path)
+        .databaseKeys(module: 'signers');
     final gate = NativeFileGate(File('${directory.path}/test-secrets.gate'));
-    final participant = SecretsImport(file: file);
     final exclusive = await gate.acquire(
       exclusive: true,
       timeout: Duration.zero,
     ) as ExclusiveAdmission;
     try {
-      final prepared = await participant.prepare(exclusive, OwnerOrigin.fresh);
-      final owner = (prepared as Ok<PreparedOwner, LegacyImportFailure>).value;
-      if (await owner.initializeFresh() case Err()) {
-        throw StateError('Inventory initialization failed');
-      }
-      if (await owner.close() case Err()) {
-        throw StateError('Inventory owner close failed');
+      for (final participant in [
+        SecretsImport(file: file),
+        if (includeSignerDevices)
+          signersWalletMetadataImport(file: signersFile, keys: signerKeys),
+      ]) {
+        final prepared = await participant.prepare(
+          exclusive,
+          OwnerOrigin.fresh,
+        );
+        final owner =
+            (prepared as Ok<PreparedOwner, LegacyImportFailure>).value;
+        try {
+          if (await owner.initializeFresh() case Err()) {
+            throw StateError('Inventory fixture initialization failed');
+          }
+        } finally {
+          if (await owner.close() case Err()) {
+            throw StateError('Inventory fixture owner close failed');
+          }
+        }
       }
     } finally {
       await exclusive.close();
@@ -72,17 +92,27 @@ final class InventoryFixture {
       exclusive: false,
       timeout: Duration.zero,
     ) as RuntimeAdmission;
-    final opened = await SecretsInventory.open(
-      file: file,
-      admission: admission,
-    );
-    if (opened case Err()) {
+    try {
+      final inventory =
+          (await SecretsInventory.open(file: file, admission: admission)).fold(
+            (value) => value,
+            (_) => throw StateError('Inventory open failed'),
+          );
+      final signers = includeSignerDevices
+          ? (await SignerDevices.open(
+              file: signersFile,
+              admission: admission,
+              keys: signerKeys,
+            )).fold(
+              (value) => value,
+              (_) => throw StateError('Signer devices open failed'),
+            )
+          : null;
+      return InventoryFixture._(admission, inventory, signers);
+    } catch (_) {
       await admission.close();
-      throw StateError('Inventory open failed');
+      rethrow;
     }
-    final inventory =
-        (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
-    return InventoryFixture._(admission, inventory);
   }
 
   Future<void> registerMnemonic(
@@ -118,6 +148,7 @@ final class InventoryFixture {
 
   void register(GetIt services) {
     services.registerSingleton<SecretsInventory>(inventory);
+    if (signerDevices case final devices?) services.registerSingleton(devices);
     services.registerSingleton<InventoryBackupVerification>(backup);
     services.registerSingleton<WalletRegistrations>(
       MemoryWalletRegistrations(),

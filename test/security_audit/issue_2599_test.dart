@@ -86,7 +86,12 @@ void main() {
         );
         expect(source, isNot(contains('AppLocator.setup(')));
         expect(source, isNot(contains('payjoinDatabaseFilename')));
-        expect(source, isNot(contains('package:secrets/secrets.dart')));
+        expectOnlyBackgroundWalletStorage(
+          bootstrap: File('lib/background_bootstrap.dart').readAsStringSync(),
+          walletSetup: File(
+            'packages/background_tasks/lib/src/wallet_task_setup.dart',
+          ).readAsStringSync(),
+        );
         final admission = source.indexOf(
           'final admitted = await cutover.admit()',
         );

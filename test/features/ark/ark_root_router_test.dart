@@ -11,6 +11,8 @@ import 'package:transactions/setup.dart';
 import '../transactions/support/transaction_ui_actions.dart';
 
 import 'package:fees/fees.dart';
+import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
+import 'package:spend/spend.dart' show Spend;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
@@ -76,6 +78,16 @@ class Memory implements QuickActionsStorage {
 class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
+
+class _UnusedSpend extends Mock implements Spend {}
+
+class _UnusedElectrum extends Mock implements Electrum {
+  @override
+  final transactions = _UnusedElectrumTransactions();
+}
+
+class _UnusedElectrumTransactions extends Mock
+    implements ElectrumTransactions {}
 
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
@@ -298,6 +310,10 @@ void main() {
           orderSwapUnderReview: (_) => const SizedBox(),
         ),
       );
+      locator.registerSingleton<Spend>(_UnusedSpend());
+      locator.registerSingleton<Fees>(_MockFees());
+      locator.registerSingleton<Electrum>(_UnusedElectrum());
+      locator.registerSingleton<ActiveEnvironmentReader>(preferences);
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -324,6 +340,10 @@ void main() {
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
         await locator.unregister<ReceiveFeature>();
+        await locator.unregister<ActiveEnvironmentReader>();
+        await locator.unregister<Electrum>();
+        await locator.unregister<Fees>();
+        await locator.unregister<Spend>();
         await receiveServices.reset();
         await transactionServices.reset();
         await networkServices.reset();

@@ -332,19 +332,23 @@ void main() {
       ('c', 'legacy-unresolved', 'deadbeef'),
       ('d', 'bitcoinMainnet', ''),
     ]) {
-      _value(await inventory.registerWallet(RegisteredWallet(
-        id: id,
-        secretFingerprint: null,
-        masterFingerprint: fingerprint,
-        signer: 'none',
-        network: network,
-        xpub: 'public-key-marker',
-        externalDescriptor: 'external-marker',
-        internalDescriptor: 'internal-marker',
-        label: null,
-        birthday: null,
-        isDefault: false,
-      )));
+      _value(
+        await inventory.registerWallet(
+          RegisteredWallet(
+            id: id,
+            secretFingerprint: null,
+            masterFingerprint: fingerprint,
+            signer: 'none',
+            network: network,
+            xpub: 'public-key-marker',
+            externalDescriptor: 'external-marker',
+            internalDescriptor: 'internal-marker',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+      );
     }
     expect(_value(await inventory.referencedFingerprints()), [
       Fingerprint('73c5da0a'),

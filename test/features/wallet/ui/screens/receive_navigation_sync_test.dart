@@ -1,5 +1,4 @@
 import 'package:preferences/preferences.dart';
-import 'package:secrets/storage.dart' show WalletInventory;
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:secrets/secrets.dart';
 
