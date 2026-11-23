@@ -15,6 +15,9 @@ dependencies:
   meta: ^1.17.0
   primitives:
   backup_storage:
+  labels:
+  secrets:
+  sqlite3: ^3.5.2
 
 dev_dependencies:
   flutter_test:
