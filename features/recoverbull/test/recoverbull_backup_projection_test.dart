@@ -4,6 +4,7 @@ import 'package:bull_recoverbull/src/data/attempt_monitoring_repository_impl.dar
 import 'package:bull_recoverbull/src/data/backup_metadata_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/entities/backup_settings.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_context.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_permission_port.dart';
 import 'package:drift/drift.dart' show Value;
@@ -117,6 +118,48 @@ void main() {
         latestEncryptedBackup: null,
         latestPhysicalBackup: null,
       ));
+    },
+  );
+
+  test(
+    'a tested RecoverBull vault supplies proof without a wallet snapshot',
+    () async {
+      final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(database.close);
+      final metadata = BackupMetadataRepositoryImpl(database);
+      final fingerprint = Fingerprint('00000001');
+      final context = VaultContext(
+        network: BitcoinNetwork.mainnet,
+        fingerprint: fingerprint,
+      );
+      final vault = EncryptedVault(
+        id: '11' * 32,
+        salt: '22' * 16,
+        ciphertext: List.filled(64, 0),
+        createdAt: DateTime.utc(2026),
+      );
+      expect(await metadata.markStored(context, vault), isA<Ok>());
+      expect(
+        (await readSecretBackupProjection(
+          database,
+          fingerprint.hex,
+        )).encryptedVaultTested,
+        isFalse,
+      );
+      expect(await metadata.markVerified(context, vault), isA<Ok>());
+      final projection = await readSecretBackupProjection(
+        database,
+        fingerprint.hex,
+      );
+      expect(projection.encryptedVaultTested, isTrue);
+      expect(projection.latestEncryptedBackup, isNotNull);
+      expect(
+        (await readSecretBackupProjection(
+          database,
+          '00000002',
+        )).encryptedVaultTested,
+        isFalse,
+      );
     },
   );
 }
