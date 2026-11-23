@@ -720,10 +720,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "bitcoinSettingsTestnetModeTitle": "Testnet मोड",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "से",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1276,10 +1272,6 @@
   "sellSendPaymentAdvanced": "उन्नत सेटिंग्स",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "वॉलेट आयात करें",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google ड्राइव से जुड़ने में विफल रहा",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -1994,10 +1986,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "सेवाओं की स्थिति",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "मूल्य रिफ्रेश होगा ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2094,10 +2082,6 @@
   "exchangeAuthOk": "ठीक",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "सुरक्षा PIN",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "पूरा हुआ",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2278,10 +2262,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "बिटकॉइन के साथ साझा किया गया।।",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "मैं समझता/समझती हूँ",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "सुरक्षित फ़ाइल अपलोड",
   "@exchangeFileUploadTitle": {
@@ -4103,16 +4083,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev मोड",
   "exchangeTestnetBasicAuthTitle": "Testnet एक्सचेंज क्रेडेंशियल",
-  "exchangeTestnetBasicAuthDescription": "Testnet एक्सचेंज वेब पेजों के लिए HTTP बेसिक ऑथ (लॉगिन और KYC)।",
-  "exchangeTestnetBasicAuthUsernameLabel": "उपयोगकर्ता नाम",
-  "exchangeTestnetBasicAuthPasswordLabel": "पासवर्ड",
-  "exchangeTestnetBasicAuthClearButton": "साफ़ करें",
-  "exchangeTestnetBasicAuthSaveButton": "सहेजें",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "चालान को डिकोड करने में विफल",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4872,10 +4843,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "सुपरयूज़र मोड अक्षम।",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "सेवा की शर्तें",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -5125,10 +5092,6 @@
   "sellExchangeRate": "विनिमय दर",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "यह मोड जोखिमपूर्ण है। इसे सक्षम करके, आप स्वीकार करते हैं कि आप पैसे खो सकते हैं",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "Bitcoin बेचें",
   "@sellTitle": {
@@ -5511,10 +5474,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "लेनदेन प्रसारित करें",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "लेजर के साथ साइन इन करें",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5617,10 +5576,6 @@
   "quickAndEasyTag": "त्वरित और आसान",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "थीम",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "ईमेल",
   "@payEmail": {
@@ -5787,10 +5742,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "Dev मोड",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "मूल लेनदेन",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -5802,10 +5753,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "उपयोगकर्ता नंबर क्लिपबोर्ड पर कॉपी हो गया",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "ऐप संस्करण: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "चयनित बिलर का नाम",
   "@payBillerNameValue": {
@@ -6796,10 +6743,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 निर्धारित एंट्रॉपी",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "swapTransferAmount": "स्वैप राशि",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -7535,29 +7478,9 @@
   "@statusScreenContinue": {
     "description": "Button text to proceed to next step"
   },
-  "settingsErrorReportingTitle": "त्रुटि रिपोर्टिंग",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "त्रुटि रिपोर्टिंग कार्यक्रम",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
   "errorReportingProgramDescription": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में भाग लेकर Bull Bitcoin को बेहतर बनाने में हमारी मदद करें। इससे सीधे हमें सभी के लिए Bull Bitcoin को बेहतर बनाने में सहायता मिलती है।\n\nसक्षम होने पर, ऐप में कोई समस्या आने पर हम स्वचालित रूप से त्रुटि रिपोर्ट भेजते हैं। यह डेटा हमें दुनिया भर के हमारे उपयोगकर्ताओं के लिए क्या हो रहा है यह समझने और उसी के अनुसार सुधारों को प्राथमिकता देने में मदद करता है।\n\nहम यह जानकारी किसी तृतीय पक्ष के साथ साझा नहीं करते। हम Sentry के ओपन-सोर्स क्लाइंट का उपयोग अपने स्वयं के सेल्फ-होस्टेड बैकएंड सर्वर के साथ करते हैं।",
   "@errorReportingProgramDescription": {
     "description": "Description of the error reporting program"
-  },
-  "errorReportingAcceptButton": "स्वीकार करें",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "रद्द करें",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "यह परिवर्तन लागू करने के लिए ऐप पुनः प्रारंभ करें",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
   },
   "backupWarningTitle": "अभी अपना वॉलेट बैकअप करें",
   "@backupWarningTitle": {
@@ -7575,14 +7498,6 @@
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
   },
-  "errorReportingProgramDescriptionP2": "कुछ समस्या होने पर Bull Bitcoin बेनामी त्रुटि रिपोर्ट भेजता है।",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin ओपन-सोर्स है, इसलिए आप सत्यापित कर सकते हैं कि क्या भेजा जा रहा है।",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
-  },
   "fundExchangeCopSelectBankError": "कृपया एक जारीकर्ता बैंक चुनें",
   "@fundExchangeCopSelectBankError": {
     "description": "Validation error when no bank is selected"
@@ -7599,10 +7514,6 @@
   "@fundExchangeCopIssuingBank": {
     "description": "Label for issuing bank dropdown in COP bank transfer"
   },
-  "errorReportingProgramDescriptionP1": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में योगदान देकर Bull को बेहतर बनाने में हमारी मदद करें।",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
   "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
   "@fundExchangeJurisdictionColombia": {
     "description": "Dropdown option for Colombia jurisdiction"
@@ -7615,17 +7526,9 @@
   "@fundExchangeCopRedirectMessage": {
     "description": "Message about redirect to external payment page"
   },
-  "errorReportingProgramDescriptionP3": "इससे हमें यह देखने में मदद मिलती है कि प्रत्येक बग कितने उपयोगकर्ताओं को प्रभावित करता है और तदनुसार सुधारों को प्राथमिकता देने में मदद मिलती है; इसके बिना, प्रभाव मापने का हमारे पास कोई तरीका नहीं है।",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
   "fundExchangeCopAmount": "Amount",
   "@fundExchangeCopAmount": {
     "description": "Label for amount field in COP bank transfer"
-  },
-  "errorReportingProgramDescriptionP4": "रिपोर्ट केवल Bull के सर्वर पर जाती हैं, कभी भी तृतीय पक्षों को नहीं।",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
   },
   "fundExchangeCopValidAmountError": "कृपया मान्य राशि दर्ज करें",
   "@fundExchangeCopValidAmountError": {
@@ -7875,44 +7778,11 @@
   "dcaReceiveAddressError": "आपके वॉलेट में प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।",
   "dcaOrderCreationError": "आवर्ती खरीद नहीं बनाई जा सकी। कृपया बाद में फिर से प्रयास करें।",
   "settingsPayjoinDisclaimerTitle": "Payjoin अस्वीकरण",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin अस्वीकरण",
-  "settingsPayjoinAdvancedTitle": "उन्नत Payjoin सेटिंग्स",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
   "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
   "sendSwapExpiredTitle": "ऑर्डर समाप्त हो गया",
   "sendSwapExpiredMessage": "कोई भी राशि भेजे जाने से पहले ही यह ऑर्डर समाप्त हो गया। आपके वॉलेट से कुछ भी नहीं भेजा गया।",
-  "settingsScreenPrivacyTitle": "स्क्रीन गोपनीयता",
-  "settingsScreenPrivacyDisabledMessage": "अब संवेदनशील स्क्रीन पर स्क्रीनशॉट लेने की अनुमति है",
-  "settingsSearchHint": "सेटिंग खोजें",
-  "settingsSearchNoResults": "कोई सेटिंग नहीं मिली।",
-  "settingsSearchMempoolKeywords": "ब्लॉक एक्सप्लोरर|फीस अनुमान|लेनदेन शुल्क|mempool API",
-  "settingsSearchExchangeKeywords": "खाता|एक्सचेंज खाता|ट्रेडिंग|खरीदना और बेचना",
-  "settingsSearchStartBackupKeywords": "बैकअप बनाएँ|बैकअप सहेजें|वॉलेट का बैकअप लें",
-  "settingsSearchRecoverbullKeywords": "एन्क्रिप्टेड बैकअप|क्लाउड बैकअप|एन्क्रिप्टेड वॉल्ट|वॉल्ट पुनर्प्राप्ति",
-  "settingsSearchLabelsKeywords": "वॉलेट लेबल|लेनदेन लेबल|BIP329|लेबल आयात करें|लेबल निर्यात करें",
-  "settingsSearchTransactionHistoryKeywords": "लेनदेन निर्यात करें|लेनदेन इतिहास निर्यात करें|CSV|वॉलेट इतिहास",
-  "settingsSearchAppSettingsKeywords": "ऐप प्राथमिकताएँ|एप्लिकेशन सेटिंग्स|सामान्य सेटिंग्स",
-  "settingsSearchTermsOfServiceKeywords": "नियम और शर्तें|कानूनी|उपयोगकर्ता समझौता|TOS",
-  "settingsSearchServicesStatusKeywords": "सेवाओं की स्थिति|सिस्टम की स्थिति|ऑनलाइन|सेवा बाधित",
-  "settingsSearchImportWalletKeywords": "वॉलेट जोड़ें|वॉलेट पुनर्प्राप्त करें|रिकवरी वाक्यांश आयात करें|केवल देखने वाला वॉलेट|हार्डवेयर वॉलेट",
-  "settingsSearchBroadcastTransactionKeywords": "हस्ताक्षरित लेनदेन प्रसारित करें|लेनदेन भेजें|रॉ लेनदेन|लेनदेन hex|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin गोपनीयता|सहयोगी लेनदेन|P2EP",
-  "settingsSearchAutoswapKeywords": "Autoswap|स्वचालित स्वैप|स्वचालित ट्रांसफर|तत्काल वॉलेट बैलेंस",
-  "settingsSearchElectrumKeywords": "बिटकॉइन नोड|Electrum नोड|कस्टम सर्वर|निजी नोड",
-  "settingsSearchTestnetModeKeywords": "टेस्ट नेटवर्क|Bitcoin Testnet|Liquid Testnet|परीक्षण मोड",
-  "settingsSearchSeedViewerKeywords": "सीड वाक्यांश|रिकवरी वाक्यांश|Mnemonic|बैकअप शब्द|सीड दिखाएँ",
-  "settingsSearchBip85Keywords": "नियतात्मक एन्ट्रॉपी|चाइल्ड सीड|व्युत्पन्न एन्ट्रॉपी|BIP85",
-  "settingsSearchLanguageKeywords": "ऐप की भाषा|अनुवाद|डिस्प्ले भाषा|पसंदीदा भाषा",
-  "settingsSearchThemeKeywords": "दिखावट|गहरा मोड|हल्का मोड|सिस्टम थीम|डार्क मोड|लाइट मोड",
-  "settingsSearchCurrencyKeywords": "फ़िएट मुद्रा|स्थानीय मुद्रा|डिफ़ॉल्ट मुद्रा|एक्सचेंज मुद्रा",
-  "settingsSearchSecurityPinKeywords": "PIN कोड|पासकोड|ऐप लॉक|प्रमाणीकरण|PIN बदलें",
-  "settingsSearchLogsKeywords": "Debug लॉग|डायग्नोस्टिक लॉग|ऐप लॉग|लॉग निर्यात करें",
-  "settingsSearchDevModeKeywords": "डेवलपर मोड|डेवलपमेंट सेटिंग्स|Debug मोड|उन्नत परीक्षण",
-  "settingsSearchTestnetCredentialsKeywords": "Testnet उपयोगकर्ता क्रेडेंशियल|Testnet लॉगिन|Testnet उपयोगकर्ता नाम|Testnet पासवर्ड|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "Crash report|त्रुटि रिपोर्ट|डायग्नोस्टिक्स|Telemetry|त्रुटि लॉग",
-  "settingsSearchScreenPrivacyKeywords": "स्क्रीनशॉट|स्क्रीन रिकॉर्डिंग|स्क्रीन कैप्चर सुरक्षा|गोपनीयता",
-  "settingsSearchStartTyping": "परिणाम देखने के लिए टाइप करना शुरू करें।",
   "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
   "sendErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
   "sendErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
@@ -7927,8 +7797,6 @@
   "walletWarningElectrumAction": "सर्वर सेटिंग्स कॉन्फ़िगर करने के लिए टैप करें",
   "walletLoadFailedRetryHint": "रीफ़्रेश करने के लिए नीचे खींचें और फिर से प्रयास करें",
   "settingsErrorSavingSetting": "वह सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।",
-  "settingsErrorConsentNotGiven": "इस सेटिंग को बदलने से पहले आपकी पुष्टि आवश्यक है।",
-  "settingsErrorLoadingLogs": "डायग्नोस्टिक लॉग तैयार नहीं किए जा सके। कृपया पुनः प्रयास करें।",
   "exchangeErrorSigningOut": "आपको पूरी तरह साइन आउट नहीं किया जा सका। कृपया पुनः प्रयास करें।",
   "exchangeErrorSavingPreferences": "आपकी प्राथमिकताएँ सहेजी नहीं जा सकीं। कृपया पुनः प्रयास करें।",
   "exchangeErrorLoadingAnnouncements": "घोषणाएँ लोड नहीं हो सकीं।",
@@ -8050,7 +7918,6 @@
   "fundExchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
   "exchangeErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
   "walletBalancesMayBeStale": "आपके बैलेंस अपडेट नहीं हो सके और वे पुराने हो सकते हैं।",
-  "settingsSearchTorKeywords": "Tor प्रॉक्सी|Orbot|ऑनियन रूटिंग|अंतर्निहित Tor|गोपनीयता नेटवर्क",
   "limitOrdersInsufficientBalance": "अपर्याप्त संतुलन",
   "limitOrdersInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
   "limitOrdersFundAccount": "अपने खाते को फंड करें",
@@ -8107,20 +7974,15 @@
   "swapUnderReviewTitle": "समीक्षा के अधीन स्वैप",
   "swapUnderReviewDescription": "इस स्वैप की मैन्युअल समीक्षा आवश्यक है। सहायता के लिए सपोर्ट से संपर्क करें। यदि आपके पास सपोर्ट खाता नहीं है, तो आपको बस एक बनाना है; KYC आवश्यक नहीं है।",
   "swapUnderReviewSupportMessage": "समीक्षा के अधीन स्वैप\nऑर्डर ID: {orderId}\nअनुरोध ID: {requestId}\nऑर्डर संख्या: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "ऑटो स्वैप",
   "broadcastSignedTxErrorAlreadyInChain": "यह लेनदेन पहले से ही ब्लॉकचेन में है। प्रसारित करने के लिए कुछ भी बाकी नहीं है।",
   "broadcastSignedTxErrorRejected": "नेटवर्क ने इस लेनदेन को अस्वीकार कर दिया। यह अधूरा हस्ताक्षरित, अमान्य, या किसी अन्य भुगतान से टकराव में हो सकता है।",
   "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
   "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।",
   "settingsDarkModeTitle": "डार्क मोड",
-  "settingsSourceCodeTitle": "सोर्स कोड",
   "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।",
   "backgroundTasksTitle": "बैकग्राउंड कार्य",
   "blockedInSystemSettings": "सिस्टम सेटिंग्स में अवरुद्ध",
-  "notificationsBlockedMessage": "सूचनाएँ सिस्टम सेटिंग्स में अवरुद्ध हैं।",
   "notificationsTitle": "सूचनाएँ",
   "openSystemSettings": "सिस्टम सेटिंग्स खोलें",
-  "permissionsTitle": "अनुमतियाँ",
-  "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
   "sendErrorInvoiceExpiryTooShort": "इस चालान की वैधता बहुत जल्द समाप्त हो जाएगी। प्राप्तकर्ता से नया चालान मांगें।"
 }

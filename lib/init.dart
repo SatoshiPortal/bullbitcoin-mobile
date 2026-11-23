@@ -33,14 +33,13 @@ import 'package:startup/startup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/background_setup.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
@@ -363,11 +362,11 @@ class Bull {
       configureLogTorContext(
         () => loadTorDiagnosticContext(settings, locator<Tor>()),
       );
-      await refreshReportingConsent(settings);
+      await settings.refreshReportingConsent();
       await prepareBackgroundWalletStores(
         openNotifications: () => locator<PaymentNotificationStore>().open(),
       );
-      await configureBackgroundTasks();
+      await locator<BackgroundSchedule>().apply();
 
       await Report.recordMigration();
       initialized = true;

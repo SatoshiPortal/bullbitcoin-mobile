@@ -1,3 +1,4 @@
+import 'package:background_tasks/background_tasks.dart';
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
 import 'package:sync/write.dart' show ElectrumSync;
@@ -28,7 +29,8 @@ import 'package:all_seed_view/setup.dart';
 import 'package:access/access.dart' show Access;
 import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
+import 'package:bull_payjoin/bull_payjoin.dart'
+    show PayjoinLifecycle, PayjoinPolicyAccess;
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swaps/swaps.dart' show Swaps;
 import 'package:swaps/order_swaps.dart';
@@ -36,15 +38,20 @@ import 'package:signers/storage.dart' show SignerDevices;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
+import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Err, Failure;
 import 'package:electrum/setup.dart'
-    show ElectrumServersPort, ReadElectrumPreferences, RegtestElectrumProfile;
-import 'package:bb_mobile/background_setup.dart';
+    show
+        ElectrumDefaultsProvisioner,
+        ElectrumServersPort,
+        ReadElectrumPreferences,
+        RegtestElectrumProfile;
+import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
+import 'package:settings/setup.dart' show SettingsRecoverBullBindings;
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
@@ -52,7 +59,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
 import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
@@ -373,10 +380,20 @@ class AppLocator {
     );
     locator.registerLazySingleton<Silent>(() => silent.silent);
     SettingsLocator.setup(locator);
-    setupBackgroundPreferences(
-      locator,
-      configureBackgroundTasks,
-      notificationChannelId: PaymentNotifications.channelId,
+    locator.registerSingleton(
+      BackgroundSchedule.open(dispatcher: backgroundTasksHandler),
+    );
+    locator.registerLazySingleton(
+      () => Settings.open(
+        preferences: locator<Preferences>(),
+        electrum: locator<ElectrumDefaultsProvisioner>(),
+        exchange: locator<Exchange>(),
+        silent: locator<Silent>(),
+        payjoin: locator<PayjoinPolicyAccess>(),
+        backgroundSchedule: locator<BackgroundSchedule>(),
+        notificationChannelId: PaymentNotifications.channelId,
+      ),
+      dispose: (settings) => settings.close(),
     );
     const LogsFeature().setup(locator);
     BtcMapFeature.setup(locator);
@@ -455,7 +472,7 @@ class AppLocator {
               amountSat: amountSat,
               note: note,
             ),
-        setPayjoinEnabled: locator<SettingsFacade>().setPayjoinReceiveEnabled,
+        setPayjoinEnabled: locator<Settings>().setPayjoinReceiveEnabled,
         openHome: (context) => context.goNamed(WalletRoute.walletHome.name),
         openPayjoinSettings: (context) =>
             context.pushNamed(SettingsRoute.payjoinSettings.name),
@@ -557,7 +574,7 @@ class AppLocator {
         provisionMnemonic: operations.mnemonic,
         provisionDescriptor: operations.descriptor,
         provisionXpub: operations.xpub,
-        networkOf: SettingsFacade.networkOf,
+        networkOf: Settings.networkOf,
         onImported: (context) {
           context.read<WalletBloc>().add(const WalletStarted());
           context.goNamed(WalletRoute.walletHome.name);

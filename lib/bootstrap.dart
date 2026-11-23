@@ -1,12 +1,10 @@
-import 'package:settings/settings.dart'
-    show SettingsLocalizations, TranslationWarningBottomSheet;
 import 'package:primitives/primitives.dart' show Err;
 
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
 import 'package:startup/startup.dart' show AppInitErrorScreen;
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -102,7 +100,7 @@ Future<void> _retryStorage(LegacyImportFailure failure) async {
 void _showInitError(Object error, {VoidCallback? onRetry}) {
   runApp(
     BullSupportScope(
-      onContactSupport: SupportFacade.contactSupport,
+      onContactSupport: Support.contactSupport,
       child: AppInitErrorScreen(
         error: error,
         onRetry: onRetry,

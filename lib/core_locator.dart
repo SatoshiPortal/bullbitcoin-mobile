@@ -4,7 +4,7 @@ import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:preferences/preferences.dart' as settings;
-import 'package:bb_mobile/features/settings/settings_core_locator.dart';
+import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';

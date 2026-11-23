@@ -1,12 +1,10 @@
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:settings/settings.dart' show TranslationWarningBottomSheet;
 import 'package:network/network.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/settings.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullLanguagePicker,
@@ -20,10 +18,8 @@ class AdvancedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentLanguage = context.select(
-      (SettingsCubit cubit) =>
-          cubit.state.language ?? Language.unitedStatesEnglish,
-    );
+    final currentLanguage =
+        Settings.languageOf(context) ?? Language.unitedStatesEnglish;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.onboardingAdvancedOptionsTitle)),
@@ -65,7 +61,7 @@ class AdvancedOptions extends StatelessWidget {
                               ),
                           ],
                           onChanged: (lang) {
-                            context.read<SettingsCubit>().changeLanguage(lang);
+                            Settings.changeLanguage(context, lang);
                             if (lang.isMachineTranslated) {
                               TranslationWarningBottomSheet.show(context);
                             }

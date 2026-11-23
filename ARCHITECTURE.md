@@ -421,6 +421,8 @@ Dependencies stay acyclic and point from shell to features and packages, from a 
 
 **Shared presentation boundaries.** Shared widgets live in `bull_ui`; app-specific screens and localized content belong to their respective features. Address View's public payment-destination input retains the original scanned request and applies each consumer's supported payment types. Buy, DCA and default payouts get that input through host composition; Limit Orders and Swap consume the published surface directly.
 
+Settings owns the app, wallet and Payjoin preference screens, their shared search catalogue, and support navigation. Foreground scheduling and diagnostics for interval changes belong to `background_tasks`; the Permissions screen independently calls `notifications` for permission requests. After startup admits Preferences, it refreshes the in-memory `bull_reporting` gate without rewriting the boot mirror. Selected-wallet settings and swap rescue still depend on the app wallet catalogue; their routes remain in the legacy app feature.
+
 Each extracted package gets `resolution: workspace` and is listed under a `workspace:` key in the root `pubspec.yaml`; the root app keeps `useRootAsPackage: true` and consumes the members. Dependencies point one way and stay acyclic: **shell → features → packages**. `packages/` never import `features/`; a feature touches a package only through its published API.
 
 ### Member API checklist

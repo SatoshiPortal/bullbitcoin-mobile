@@ -1,14 +1,13 @@
 import 'package:coins/coins.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
+import 'package:settings/testing.dart';
 import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -209,7 +208,7 @@ void main() {
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.themeData(type),
                 routerConfig: router,
-                builder: (context, child) => SettingsFacade.amountScope(
+                builder: (context, child) => Settings.amountScope(
                   navigatorKey: navigatorKey,
                   child: child ?? const SizedBox.shrink(),
                 ),

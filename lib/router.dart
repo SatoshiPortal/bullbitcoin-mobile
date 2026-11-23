@@ -18,11 +18,10 @@ import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:startup/startup.dart' show RouteErrorScreen;
@@ -41,7 +40,6 @@ import 'package:spend/spend.dart' show Spend;
 import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
 import 'package:network/network.dart';
-import 'package:settings/settings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
     show SwapFeature, SwapNavigation;
@@ -53,8 +51,6 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
@@ -84,11 +80,11 @@ class AppRouter {
     secrets: locator(),
     readDefaultFingerprint: readDefaultFingerprint,
     readRouteAccess: (context) {
-      final settings = context.read<SettingsCubit>().state;
+      final settings = Settings.readEnvironment(context);
       return (
         environment: settings.environment?.networkEnv,
-        isSuperuser: settings.isSuperuser ?? false,
-        isDevModeEnabled: settings.isDevModeEnabled ?? false,
+        isSuperuser: settings.isSuperuser,
+        isDevModeEnabled: settings.isDevModeEnabled,
       );
     },
     walletHomePath: WalletRoute.walletHome.path,
@@ -103,8 +99,7 @@ class AppRouter {
   static final _exchangeConfig = ExchangeRouterConfig(
     networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
     loadKyc: () => locator<Exchange>().loadKyc(),
-    isSuperuser: (context) =>
-        context.read<SettingsCubit>().state.isSuperuser ?? false,
+    isSuperuser: (context) => Settings.readEnvironment(context).isSuperuser,
     homePath: WalletRoute.walletHome.path,
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: SettingsNavigation.open,
@@ -119,7 +114,7 @@ class AppRouter {
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
       case QuickAction.toggleAmounts:
-        SettingsFacade.toggleAmountVisibility(context);
+        Settings.toggleAmountVisibility(context);
       case QuickAction.map:
         context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
@@ -129,7 +124,7 @@ class AppRouter {
       case QuickAction.settings:
         SettingsNavigation.open(context);
       case QuickAction.support:
-        SupportFacade.contactSupport(context);
+        Support.contactSupport(context);
       case QuickAction.priceHistory:
         BitcoinPriceFeature.openHistory(context);
       case QuickAction.pay:
@@ -280,9 +275,9 @@ class AppRouter {
       ),
       _sendRoutes.consolidation,
       SettingsFeature.mount(
-        menuOf: SettingsHubBindings.menuOf,
-        labelsOf: SettingsHubBindings.labelsOf,
-        menuScope: SettingsHubBindings.menuScope,
+        menuScope: SettingsRouter.menuScope,
+        settings: locator.call<Settings>,
+        appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
@@ -290,7 +285,6 @@ class AppRouter {
           accessRoutes: locator<AccessFeature>().routes.settings,
           seedViewRoute: locator<AllSeedViewFeature>().route,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
-          appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
           backupRoutes: [
             BackupsFeature.mount(
               secrets: () => locator<Secrets>(),

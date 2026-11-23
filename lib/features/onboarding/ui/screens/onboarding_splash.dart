@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.
 import 'package:bb_mobile/features/onboarding/ui/screens/advanced_options.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SuperuserTapUnlocker;
+import 'package:settings/settings.dart' show SuperuserTapUnlocker;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';

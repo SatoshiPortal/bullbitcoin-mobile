@@ -716,10 +716,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "From",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1268,10 +1264,6 @@
   "sellSendPaymentAdvanced": "Gelişmiş Ayarlar",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "Import Wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google Drive'a bağlanmak için başarısız oldu",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -1986,10 +1978,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "Servis Durumu",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "Fiyat yenilenecek ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2082,10 +2070,6 @@
   "exchangeAuthOk": "TAMAM TAMAM",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "Güvenlik Pin",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "Tamamlandı",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2266,10 +2250,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "bull Bitcoin ile paylaşılan.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "Anlıyorum",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "Secure File Upload",
   "@exchangeFileUploadTitle": {
@@ -4075,16 +4055,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Dev Mode",
   "exchangeTestnetBasicAuthTitle": "Testnet borsa kimlik bilgileri",
-  "exchangeTestnetBasicAuthDescription": "Testnet borsa web sayfaları için HTTP basic auth (giriş ve KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Kullanıcı adı",
-  "exchangeTestnetBasicAuthPasswordLabel": "Parola",
-  "exchangeTestnetBasicAuthClearButton": "Temizle",
-  "exchangeTestnetBasicAuthSaveButton": "Kaydet",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "Faturayı bozmaya başarısız oldu",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4818,10 +4789,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "Superuser modu engelli.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "Hizmet Şartları",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -5054,10 +5021,6 @@
   "sellExchangeRate": "Değişim oranı",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "Bu mod risklidir. Buna izin vererek, para kaybettiğinizi kabul ediyorsunuz",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "Bitcoin satmak",
   "@sellTitle": {
@@ -5436,10 +5399,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "Yayın İşlemleri",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "Ledger ile oturum açın",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5542,10 +5501,6 @@
   "quickAndEasyTag": "Hızlı ve kolay",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "Tema",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "E-posta e-posta e-posta",
   "@payEmail": {
@@ -5712,10 +5667,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "Dev Mode",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "Orijinal işlem",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -5727,10 +5678,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "Kullanıcı numarası klibi için kopyalandı",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "App version: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "Seçilmiş Biller Name",
   "@payBillerNameValue": {
@@ -6708,10 +6655,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministik Entropiler",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "swapTransferAmount": "Takas miktarı",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -7570,16 +7513,6 @@
   "statusScreenContinue": "Devam Et",
   "viewerAddressTab": "Adres",
   "viewerPaymentUriTab": "Ödeme URI'si",
-  "settingsErrorReportingTitle": "Hata bildirimi",
-  "errorReportingProgramTitle": "Hata Bildirimi Programı",
-  "errorReportingProgramDescriptionP1": "Hata bildirimi programımıza katkıda bulunarak Bull'u geliştirmemize yardımcı olun.",
-  "errorReportingProgramDescriptionP2": "Bir şeyler bozulduğunda Bull Bitcoin anonimleştirilmiş hata raporları gönderir.",
-  "errorReportingProgramDescriptionP3": "Bu, her bir hatanın kaç kullanıcıyı etkilediğini görmemizi ve buna göre düzeltmelere öncelik vermemizi sağlar; bu olmadan etkiyi ölçmenin bir yolu yoktur.",
-  "errorReportingProgramDescriptionP4": "Raporlar yalnızca Bull'un sunucusuna gider, asla üçüncü taraflara gönderilmez.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin açık kaynaklıdır, bu yüzden nelerin gönderildiğini doğrulayabilirsiniz.",
-  "errorReportingAcceptButton": "Kabul Et",
-  "errorReportingCancelButton": "İptal",
-  "errorReportingRestartSnackbar": "Bu değişikliği uygulamak için uygulamayı yeniden başlatın",
   "backupWarningTitle": "CÜZDANINIZI ŞİMDİ YEDEKLEYİN",
   "backupWarningBackupNow": "EVET",
   "backupWarningBackupLater": "HAYIR, RİSKİ ANLIYORUM",
@@ -7709,44 +7642,11 @@
   "dcaReceiveAddressError": "Cüzdanınızda alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
   "dcaOrderCreationError": "Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin.",
   "settingsPayjoinDisclaimerTitle": "Payjoin bilgilendirmesi",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
-  "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
   "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
   "sendSwapExpiredTitle": "Sipariş Süresi Doldu",
   "sendSwapExpiredMessage": "Bu siparişin süresi, herhangi bir fon gönderilmeden önce doldu. Cüzdanınızdan hiçbir şey gönderilmedi.",
-  "settingsScreenPrivacyTitle": "Ekran gizliliği",
-  "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor",
-  "settingsSearchHint": "Ayarlarda ara",
-  "settingsSearchNoResults": "Ayar bulunamadı.",
-  "settingsSearchMempoolKeywords": "blok gezgini|ücret tahmini|işlem ücretleri|mempool API",
-  "settingsSearchExchangeKeywords": "hesap|borsa hesabı|alım satım|satın alma ve satma",
-  "settingsSearchStartBackupKeywords": "yedek oluşturma|yedeği kaydetme|cüzdanı yedekleme",
-  "settingsSearchRecoverbullKeywords": "şifreli yedek|bulut yedeği|şifreli kasa|kasa kurtarma|Recoverbull",
-  "settingsSearchLabelsKeywords": "cüzdan etiketleri|işlem etiketleri|BIP329|etiketleri içe aktar|etiketleri dışa aktar",
-  "settingsSearchTransactionHistoryKeywords": "işlemleri dışa aktar|işlem dışa aktarma|CSV|cüzdan geçmişi",
-  "settingsSearchAppSettingsKeywords": "uygulama tercihleri|uygulama ayarları|genel ayarlar",
-  "settingsSearchTermsOfServiceKeywords": "şartlar ve koşullar|yasal bilgiler|kullanıcı sözleşmesi|TOS",
-  "settingsSearchServicesStatusKeywords": "hizmet durumu|sistem durumu|çevrimiçi|kesinti",
-  "settingsSearchImportWalletKeywords": "cüzdan ekle|cüzdanı kurtar|anımsatıcı ifadeyi içe aktar|sadece izleme cüzdanı|donanım cüzdanı",
-  "settingsSearchBroadcastTransactionKeywords": "imzalı işlemi yayınla|işlemi gönder|ham işlem|işlem hex kodu|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin gizliliği|ortak işlem|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "otomatik takas|otomatik swap|otomatik aktarım|anlık cüzdan bakiyesi|Autoswap",
-  "settingsSearchElectrumKeywords": "Bitcoin düğümü|Electrum düğümü|özel sunucu|kişisel düğüm|Electrum",
-  "settingsSearchTestnetModeKeywords": "test ağı|Bitcoin testnet|Liquid testnet|test modu|Testnet",
-  "settingsSearchSeedViewerKeywords": "seed ifadesi|kurtarma ifadesi|anımsatıcı ifade|yedek kelimeleri|seed göster",
-  "settingsSearchBip85Keywords": "deterministik entropi|türetilmiş seedler|türetilmiş entropi|BIP85",
-  "settingsSearchLanguageKeywords": "yerel ayar|çeviri|görüntüleme dili|tercih edilen dil",
-  "settingsSearchThemeKeywords": "görünüm|karanlık mod|aydınlık mod|sistem teması",
-  "settingsSearchCurrencyKeywords": "itibari para birimi|yerel para birimi|varsayılan para birimi|döviz kuru para birimi",
-  "settingsSearchSecurityPinKeywords": "PIN kodu|geçiş kodu|uygulama kilidi|kimlik doğrulama|PIN değiştir",
-  "settingsSearchLogsKeywords": "debug günlükleri|tanılama günlükleri|uygulama günlükleri|günlükleri dışa aktar",
-  "settingsSearchDevModeKeywords": "geliştirici modu|geliştirme ayarları|debug modu|gelişmiş test",
-  "settingsSearchTestnetCredentialsKeywords": "testnet kimlik bilgileri|testnet girişi|testnet kullanıcı adı|testnet parolası|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "çökme raporları|hata raporları|tanılama|telemetri|hata günlükleri",
-  "settingsSearchScreenPrivacyKeywords": "ekran görüntüleri|ekran kaydı|ekran yakalama koruması|gizlilik",
-  "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
   "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
   "sendErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
@@ -7761,8 +7661,6 @@
   "walletWarningElectrumAction": "Sunucu ayarlarınızı yapılandırmak için dokunun",
   "walletLoadFailedRetryHint": "Yenilemek için aşağı çekin ve tekrar deneyin",
   "settingsErrorSavingSetting": "Bu ayar kaydedilemedi. Lütfen tekrar deneyin.",
-  "settingsErrorConsentNotGiven": "Bu ayarın değiştirilebilmesi için onayınız gerekiyor.",
-  "settingsErrorLoadingLogs": "Tanılama günlükleri hazırlanamadı. Lütfen tekrar deneyin.",
   "exchangeErrorSigningOut": "Oturumunuz tamamen kapatılamadı. Lütfen tekrar deneyin.",
   "exchangeErrorSavingPreferences": "Tercihleriniz kaydedilemedi. Lütfen tekrar deneyin.",
   "exchangeErrorLoadingAnnouncements": "Duyurular yüklenemedi.",
@@ -7884,7 +7782,6 @@
   "fundExchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "exchangeErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "walletBalancesMayBeStale": "Bakiyeleriniz güncellenemedi ve güncel olmayabilir.",
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion yönlendirme|gömülü Tor|gizlilik ağı",
   "limitOrdersInsufficientBalance": "Yeterli bakiye",
   "limitOrdersInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
   "limitOrdersFundAccount": "Hesabınızı finanse edin",
@@ -7941,20 +7838,15 @@
   "swapUnderReviewTitle": "Takas inceleniyor",
   "swapUnderReviewDescription": "Bu takas manuel inceleme gerektiriyor. Yardım için destekle iletişime geçin. Destek hesabınız yoksa yalnızca bir hesap oluşturmanız yeterlidir; KYC gerekmez.",
   "swapUnderReviewSupportMessage": "Takas inceleniyor\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Otomatik Takas",
   "broadcastSignedTxErrorAlreadyInChain": "Bu işlem zaten blokzincirde. Yayınlanacak başka bir şey yok.",
   "broadcastSignedTxErrorRejected": "Ağ bu işlemi reddetti. İşlem eksik imzalanmış, geçersiz veya başka bir ödemeyle çakışıyor olabilir.",
   "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil.",
   "settingsDarkModeTitle": "Karanlık mod",
-  "settingsSourceCodeTitle": "Kaynak kodu",
   "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
   "backgroundTasksTitle": "Arka plan görevleri",
   "blockedInSystemSettings": "Sistem ayarlarında engellendi",
-  "notificationsBlockedMessage": "Bildirimler sistem ayarlarında engellendi.",
   "notificationsTitle": "Bildirimler",
   "openSystemSettings": "Sistem ayarlarını aç",
-  "permissionsTitle": "İzinler",
-  "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
   "sendErrorInvoiceExpiryTooShort": "Bu faturanın süresi çok erken doluyor. Alıcıdan yeni bir fatura isteyin."
 }

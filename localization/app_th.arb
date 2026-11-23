@@ -720,10 +720,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "bitcoinSettingsTestnetModeTitle": "โหมดทดสอบ",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "จาก",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1276,10 +1272,6 @@
   "sellSendPaymentAdvanced": "การตั้งค่าขั้นสูง",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "รหัส",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "เชื่อมต่อกับ Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -1994,10 +1986,6 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServiceStatusTitle": "บริการ",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
-  },
   "sellPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -2094,10 +2082,6 @@
   "exchangeAuthOk": "ตกลง",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "settingsSecurityPinTitle": "ความปลอดภัย",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
   },
   "transactionDetailLabelPayjoinCompleted": "สมบูรณ์",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2278,10 +2262,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "แชร์กับ Bull Bitcoin.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "settingsDevModeUnderstandButton": "ผมเข้าใจ",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
   },
   "exchangeFileUploadTitle": "อัพโหลดไฟล์",
   "@exchangeFileUploadTitle": {
@@ -4103,16 +4083,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "หน่วยความจํา",
   "exchangeTestnetBasicAuthTitle": "ข้อมูลรับรองการแลกเปลี่ยน testnet",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth สำหรับหน้าเว็บการแลกเปลี่ยน testnet (เข้าสู่ระบบและ KYC)",
-  "exchangeTestnetBasicAuthUsernameLabel": "ชื่อผู้ใช้",
-  "exchangeTestnetBasicAuthPasswordLabel": "รหัสผ่าน",
-  "exchangeTestnetBasicAuthClearButton": "ล้าง",
-  "exchangeTestnetBasicAuthSaveButton": "บันทึก",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "กรอกใบแจ้งหนี้",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -4876,10 +4847,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "โหมดที่ใช้งานง่าย.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
-  },
   "settingsTermsOfServiceTitle": "ข้อกําหนดในการให้บริการ",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
@@ -5125,10 +5092,6 @@
   "sellExchangeRate": "อัตราแลกเปลี่ยน",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "settingsDevModeWarningMessage": "โหมดนี้มีความเสี่ยง โดยช่วยให้คุณสามารถสูญเสียเงิน",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
   },
   "sellTitle": "ขาย Bitcoin",
   "@sellTitle": {
@@ -5511,10 +5474,6 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "การทําธุรกรรม",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "ลงชื่อเข้าใช้",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -5617,10 +5576,6 @@
   "quickAndEasyTag": "ง่ายและรวดเร็ว",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "settingsThemeTitle": "ธีม",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
   },
   "payEmail": "อีเมล",
   "@payEmail": {
@@ -5787,10 +5742,6 @@
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
   },
-  "settingsDevModeWarningTitle": "หน่วยความจํา",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
   "rbfOriginalTransaction": "ธุรกรรมทั่วไป",
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
@@ -5802,10 +5753,6 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "จํานวนผู้ใช้คัดลอก",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
-  },
-  "settingsAppVersionLabel": "รุ่น: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
   },
   "payBillerNameValue": "ชื่อคูปอง",
   "@payBillerNameValue": {
@@ -6796,10 +6743,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 การกําหนดข้อมูล",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "swapTransferAmount": "จำนวนเงินที่Swap",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -7574,16 +7517,6 @@
   "statusScreenContinue": "อ่านต่อ",
   "viewerAddressTab": "ที่อยู่",
   "viewerPaymentUriTab": "Payment URI",
-  "settingsErrorReportingTitle": "การรายงานข้อผิดพลาด",
-  "errorReportingProgramTitle": "โปรแกรมรายงานข้อผิดพลาด",
-  "errorReportingProgramDescriptionP1": "ช่วยเราปรับปรุง Bull ให้ดีขึ้นด้วยการเข้าร่วมโปรแกรมรายงานข้อผิดพลาดของเรา",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin ส่งรายงานข้อผิดพลาดแบบไม่ระบุตัวตนเมื่อเกิดปัญหาขึ้น",
-  "errorReportingProgramDescriptionP3": "ข้อมูลนี้ช่วยให้เราทราบว่าแต่ละบั๊กส่งผลกระทบต่อผู้ใช้กี่คน และจัดลำดับความสำคัญในการแก้ไขได้อย่างเหมาะสม หากไม่มีข้อมูลนี้ เราจะไม่มีทางวัดผลกระทบได้",
-  "errorReportingProgramDescriptionP4": "รายงานจะถูกส่งไปยังเซิร์ฟเวอร์ของ Bull เท่านั้น ไม่ส่งให้บุคคลที่สาม",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin เป็นโอเพนซอร์ส คุณจึงสามารถตรวจสอบได้ว่ามีการส่งข้อมูลอะไรบ้าง",
-  "errorReportingAcceptButton": "ยอมรับ",
-  "errorReportingCancelButton": "ยกเลิก",
-  "errorReportingRestartSnackbar": "รีสตาร์ทแอปเพื่อให้การเปลี่ยนแปลงนี้มีผล",
   "backupWarningTitle": "สำรองกระเป๋าสตางค์ของคุณตอนนี้",
   "backupWarningBackupNow": "ใช่",
   "backupWarningBackupLater": "ไม่ ฉันเข้าใจความเสี่ยง",
@@ -7713,44 +7646,11 @@
   "dcaReceiveAddressError": "ไม่สามารถเตรียมที่อยู่รับในกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
   "dcaOrderCreationError": "ไม่สามารถสร้างการซื้อแบบประจำได้ โปรดลองอีกครั้งภายหลัง",
   "settingsPayjoinDisclaimerTitle": "ข้อควรทราบเกี่ยวกับ Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "ข้อควรทราบเกี่ยวกับ Payjoin",
-  "settingsPayjoinAdvancedTitle": "การตั้งค่า Payjoin ขั้นสูง",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
   "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
   "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ",
-  "settingsScreenPrivacyTitle": "ความเป็นส่วนตัวของหน้าจอ",
-  "settingsScreenPrivacyDisabledMessage": "ตอนนี้อนุญาตให้จับภาพหน้าจอในหน้าจอที่ละเอียดอ่อนได้แล้ว",
-  "settingsSearchHint": "ค้นหาการตั้งค่า",
-  "settingsSearchNoResults": "ไม่พบการตั้งค่า",
-  "settingsSearchMempoolKeywords": "ตัวสำรวจบล็อก|ประมาณค่าธรรมเนียม|ค่าธรรมเนียมธุรกรรม|API เมมพูล",
-  "settingsSearchExchangeKeywords": "บัญชี|บัญชีเอ็กซ์เชนจ์|ซื้อขาย|ซื้อและขาย",
-  "settingsSearchStartBackupKeywords": "สร้างข้อมูลสำรอง|บันทึกข้อมูลสำรอง|สำรองกระเป๋า",
-  "settingsSearchRecoverbullKeywords": "ข้อมูลสำรองเข้ารหัส|ข้อมูลสำรองบนคลาวด์|ห้องนิรภัยเข้ารหัส|กู้คืนห้องนิรภัย",
-  "settingsSearchLabelsKeywords": "ป้ายกำกับกระเป๋า|ป้ายกำกับธุรกรรม|BIP329|นำเข้าป้ายกำกับ|ส่งออกป้ายกำกับ",
-  "settingsSearchTransactionHistoryKeywords": "ส่งออกธุรกรรม|ส่งออกประวัติธุรกรรม|CSV|ประวัติกระเป๋า",
-  "settingsSearchAppSettingsKeywords": "การกำหนดค่าแอป|การตั้งค่าแอปพลิเคชัน|การตั้งค่าทั่วไป",
-  "settingsSearchTermsOfServiceKeywords": "ข้อกำหนดและเงื่อนไข|ข้อมูลทางกฎหมาย|ข้อตกลงผู้ใช้|TOS",
-  "settingsSearchServicesStatusKeywords": "สถานะบริการ|สถานะระบบ|ออนไลน์|บริการขัดข้อง",
-  "settingsSearchImportWalletKeywords": "เพิ่มกระเป๋า|กู้คืนกระเป๋า|นำเข้าคำช่วยจำ|กระเป๋าดูอย่างเดียว|กระเป๋าฮาร์ดแวร์",
-  "settingsSearchBroadcastTransactionKeywords": "เผยแพร่ธุรกรรมที่ลงนามแล้ว|ส่งธุรกรรม|ธุรกรรมดิบ|เลขฐานสิบหกของธุรกรรม|PSBT",
-  "settingsSearchPayjoinKeywords": "ความเป็นส่วนตัวของ Payjoin|ธุรกรรมร่วมกัน|P2EP",
-  "settingsSearchAutoswapKeywords": "สวอปอัตโนมัติ|แลกเปลี่ยนอัตโนมัติ|โอนอัตโนมัติ|ยอดคงเหลือกระเป๋าทันที",
-  "settingsSearchElectrumKeywords": "โหนดบิตคอยน์|โหนด Electrum|เซิร์ฟเวอร์กำหนดเอง|โหนดส่วนตัว",
-  "settingsSearchTestnetModeKeywords": "เครือข่ายทดสอบ|บิตคอยน์เทสต์เน็ต|Liquid เทสต์เน็ต|โหมดทดสอบ",
-  "settingsSearchSeedViewerKeywords": "วลีซีด|วลีกู้คืน|คำช่วยจำ|คำสำรอง|ดูซีด",
-  "settingsSearchBip85Keywords": "เอนโทรปีแบบกำหนดได้|ซีดย่อย|เอนโทรปีที่ได้มา|BIP85",
-  "settingsSearchLanguageKeywords": "ภูมิภาคภาษา|การแปล|ภาษาที่แสดง|ภาษาที่ต้องการ",
-  "settingsSearchThemeKeywords": "ลักษณะที่ปรากฏ|โหมดมืด|โหมดสว่าง|ธีมระบบ",
-  "settingsSearchCurrencyKeywords": "สกุลเงินเฟียต|สกุลเงินท้องถิ่น|สกุลเงินเริ่มต้น|สกุลเงินแลกเปลี่ยน",
-  "settingsSearchSecurityPinKeywords": "รหัส PIN|รหัสผ่าน|ล็อกแอป|การยืนยันตัวตน|เปลี่ยน PIN",
-  "settingsSearchLogsKeywords": "บันทึกดีบัก|บันทึกการวินิจฉัย|บันทึกแอป|ส่งออกบันทึก",
-  "settingsSearchDevModeKeywords": "โหมดนักพัฒนา|การตั้งค่านักพัฒนา|โหมดดีบัก|การทดสอบขั้นสูง",
-  "settingsSearchTestnetCredentialsKeywords": "ข้อมูลรับรองผู้ใช้เทสต์เน็ต|เข้าสู่ระบบเทสต์เน็ต|ชื่อผู้ใช้เทสต์เน็ต|รหัสผ่านเทสต์เน็ต|การยืนยันตัวตนพื้นฐาน",
-  "settingsSearchErrorReportingKeywords": "รายงานข้อขัดข้อง|รายงานข้อบกพร่อง|การวินิจฉัย|ข้อมูลการใช้งาน|บันทึกข้อผิดพลาด",
-  "settingsSearchScreenPrivacyKeywords": "ภาพหน้าจอ|การบันทึกหน้าจอ|การป้องกันการจับภาพ|ความเป็นส่วนตัว",
-  "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์",
   "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
   "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
@@ -7765,8 +7665,6 @@
   "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์",
   "walletLoadFailedRetryHint": "ดึงลงเพื่อรีเฟรชแล้วลองอีกครั้ง",
   "settingsErrorSavingSetting": "ไม่สามารถบันทึกการตั้งค่านี้ได้ โปรดลองอีกครั้ง",
-  "settingsErrorConsentNotGiven": "การตั้งค่านี้ต้องได้รับการยืนยันจากคุณก่อนจึงจะเปลี่ยนได้",
-  "settingsErrorLoadingLogs": "ไม่สามารถเตรียมบันทึกการวินิจฉัยได้ โปรดลองอีกครั้ง",
   "exchangeErrorSigningOut": "ไม่สามารถออกจากระบบได้อย่างสมบูรณ์ โปรดลองอีกครั้ง",
   "exchangeErrorSavingPreferences": "ไม่สามารถบันทึกการตั้งค่าของคุณได้ โปรดลองอีกครั้ง",
   "exchangeErrorLoadingAnnouncements": "ไม่สามารถโหลดประกาศได้",
@@ -7888,7 +7786,6 @@
   "fundExchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "exchangeErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "walletBalancesMayBeStale": "ไม่สามารถอัปเดตยอดคงเหลือของคุณได้ และยอดอาจไม่เป็นปัจจุบัน",
-  "settingsSearchTorKeywords": "พร็อกซี Tor|Orbot|การกำหนดเส้นทางแบบหัวหอม|Tor ในตัว|เครือข่ายความเป็นส่วนตัว",
   "limitOrdersInsufficientBalance": "สมดุล",
   "limitOrdersInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
   "limitOrdersFundAccount": "บัญชีบัญชีของคุณ",
@@ -7945,20 +7842,15 @@
   "swapUnderReviewTitle": "Swap อยู่ระหว่างการตรวจสอบ",
   "swapUnderReviewDescription": "Swap นี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",
   "swapUnderReviewSupportMessage": "Swap อยู่ระหว่างการตรวจสอบ\nOrder ID: {orderId}\nRequest ID: {requestId}\nหมายเลขคำสั่งซื้อ: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
   "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
   "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
   "settingsDarkModeTitle": "โหมดมืด",
-  "settingsSourceCodeTitle": "ซอร์สโค้ด",
   "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
   "backgroundTasksTitle": "งานเบื้องหลัง",
   "blockedInSystemSettings": "ถูกบล็อกในการตั้งค่าระบบ",
-  "notificationsBlockedMessage": "การแจ้งเตือนถูกบล็อกในการตั้งค่าระบบ",
   "notificationsTitle": "การแจ้งเตือน",
   "openSystemSettings": "เปิดการตั้งค่าระบบ",
-  "permissionsTitle": "สิทธิ์",
-  "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
   "sendErrorInvoiceExpiryTooShort": "ใบแจ้งหนี้นี้จะหมดอายุเร็วเกินไป โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ"
 }

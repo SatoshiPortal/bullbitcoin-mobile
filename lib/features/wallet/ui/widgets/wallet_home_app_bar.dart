@@ -1,7 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSpacing;
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SuperuserTapUnlocker;
+import 'package:settings/settings.dart' show SuperuserTapUnlocker;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';

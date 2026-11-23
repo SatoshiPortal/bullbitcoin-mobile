@@ -91,10 +91,6 @@
   "@translationWarningDismissButton": {
     "description": "Button to dismiss the translation warning"
   },
-  "settingsSecurityPinTitle": "Bezpečnostní Pin",
-  "@settingsSecurityPinTitle": {
-    "description": "Title for the security PIN section in the settings menu"
-  },
   "settingsCurrencyTitle": "Čeština",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -107,33 +103,9 @@
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
   },
-  "settingsAppVersionLabel": "Verze aplikace: ",
-  "@settingsAppVersionLabel": {
-    "description": "Label displayed before the app version number in settings"
-  },
   "settingsLanguageTitle": "Čeština",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
-  },
-  "settingsThemeTitle": "Čeština",
-  "@settingsThemeTitle": {
-    "description": "Title for the theme selection in app settings"
-  },
-  "settingsDevModeWarningTitle": "Režim Dev",
-  "@settingsDevModeWarningTitle": {
-    "description": "Title for the developer mode warning dialog"
-  },
-  "settingsDevModeWarningMessage": "Tento režim je rizikový. Tím, že to umožňuje, Berete na vědomí, že můžete ztratit peníze",
-  "@settingsDevModeWarningMessage": {
-    "description": "Warning message displayed when enabling developer mode"
-  },
-  "settingsDevModeUnderstandButton": "Souhlasím",
-  "@settingsDevModeUnderstandButton": {
-    "description": "Button label to acknowledge developer mode warning"
-  },
-  "settingsSuperuserModeDisabledMessage": "Režim Superuser vypnutý.",
-  "@settingsSuperuserModeDisabledMessage": {
-    "description": "Message shown when superuser mode is disabled"
   },
   "settingsSuperuserModeUnlockedMessage": "Režim Superuser odemknout!",
   "@settingsSuperuserModeUnlockedMessage": {
@@ -853,10 +825,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "bitcoinSettingsTestnetModeTitle": "Testnet režim",
-  "@bitcoinSettingsTestnetModeTitle": {
-    "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
   "fromLabel": "Odhlásit se",
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
@@ -1397,10 +1365,6 @@
   "sellSendPaymentAdvanced": "Pokročilé nastavení",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "Import Peněženka",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Připojil se k Disku Google",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -2098,10 +2062,6 @@
   "sellSendPaymentPayFromWallet": "Platit z peněženky",
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
-  },
-  "settingsServiceStatusTitle": "Stav služby",
-  "@settingsServiceStatusTitle": {
-    "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "Cena bude obnovena v ",
   "@sellPriceWillRefreshIn": {
@@ -4086,16 +4046,7 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "appSettingsDevModeTitle": "Režim Dev",
   "exchangeTestnetBasicAuthTitle": "Přihlašovací údaje testnet burzy",
-  "exchangeTestnetBasicAuthDescription": "HTTP basic auth pro webové stránky testnet burzy (přihlášení a KYC).",
-  "exchangeTestnetBasicAuthUsernameLabel": "Uživatelské jméno",
-  "exchangeTestnetBasicAuthPasswordLabel": "Heslo",
-  "exchangeTestnetBasicAuthClearButton": "Vymazat",
-  "exchangeTestnetBasicAuthSaveButton": "Uložit",
-  "@appSettingsDevModeTitle": {
-    "description": "Title for the developer mode toggle in app settings"
-  },
   "payDecodeFailed": "Vypnuto dekódovat fakturu",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
@@ -5430,10 +5381,6 @@
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "Vysílání transakcí",
-  "@bitcoinSettingsBroadcastTransactionTitle": {
-    "description": "Title for the broadcast transaction option in Bitcoin settings"
-  },
   "sendSignWithLedger": "Přihlaste se s Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
@@ -6655,10 +6602,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 determinační entropies",
-  "@bitcoinSettingsBip85EntropiesTitle": {
-    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
-  },
   "swapTransferAmount": "Částka swapu",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -7661,16 +7604,6 @@
   "statusScreenContinue": "Pokračovat",
   "viewerAddressTab": "Adresa",
   "viewerPaymentUriTab": "Platební URI",
-  "settingsErrorReportingTitle": "Hlášení chyb",
-  "errorReportingProgramTitle": "Program hlášení chyb",
-  "errorReportingProgramDescriptionP1": "Pomozte nám vylepšit Bull tím, že se zapojíte do našeho programu hlášení chyb.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin odesílá anonymizovaná hlášení o chybách, když něco přestane fungovat.",
-  "errorReportingProgramDescriptionP3": "Díky tomu vidíme, kolik uživatelů daná chyba postihuje, a můžeme podle toho stanovit prioritu oprav. Bez toho nemáme žádný způsob, jak dopad změřit.",
-  "errorReportingProgramDescriptionP4": "Hlášení jsou odesílána pouze na server Bull, nikdy třetím stranám.",
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin je open source, takže si můžete ověřit, co se odesílá.",
-  "errorReportingAcceptButton": "Přijmout",
-  "errorReportingCancelButton": "Zrušit",
-  "errorReportingRestartSnackbar": "Restartujte aplikaci, aby se tato změna projevila",
   "backupWarningTitle": "ZÁLOHUJTE SVOU PENĚŽENKU HNED TEĎ",
   "backupWarningBackupNow": "ANO",
   "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
@@ -7697,44 +7630,11 @@
   "dcaReceiveAddressError": "V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.",
   "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.",
   "settingsPayjoinDisclaimerTitle": "Upozornění k Payjoin",
-  "settingsPayjoinDisclaimerRowLabel": "Upozornění k Payjoin",
-  "settingsPayjoinAdvancedTitle": "Rozšířená nastavení Payjoin",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
   "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
   "sendSwapExpiredTitle": "Objednávka vypršela",
   "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno.",
-  "settingsScreenPrivacyTitle": "Soukromí obrazovky",
-  "settingsScreenPrivacyDisabledMessage": "Snímky obrazovky jsou nyní na citlivých obrazovkách povoleny",
-  "settingsSearchHint": "Hledat v nastavení",
-  "settingsSearchNoResults": "Nebyla nalezena žádná nastavení.",
-  "settingsSearchMempoolKeywords": "průzkumník bloků|odhad poplatků|transakční poplatky|mempool API",
-  "settingsSearchExchangeKeywords": "účet|účet u směnárny|obchodování|nákup a prodej",
-  "settingsSearchStartBackupKeywords": "vytvořit zálohu|uložit zálohu|zálohovat peněženku",
-  "settingsSearchRecoverbullKeywords": "šifrovaná záloha|cloudová záloha|šifrovaný trezor|obnovení z trezoru|Recoverbull",
-  "settingsSearchLabelsKeywords": "štítky peněženky|štítky transakcí|BIP329|import štítků|export štítků",
-  "settingsSearchTransactionHistoryKeywords": "export transakcí|vyexportovat transakce|CSV|historie peněženky",
-  "settingsSearchAppSettingsKeywords": "předvolby aplikace|nastavení aplikace|obecná nastavení",
-  "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",
-  "settingsSearchServicesStatusKeywords": "stav služeb|stav systému|online|výpadek",
-  "settingsSearchImportWalletKeywords": "přidat peněženku|obnovit peněženku|importovat mnemonickou frázi|peněženka pouze pro sledování|hardwarová peněženka",
-  "settingsSearchBroadcastTransactionKeywords": "odeslat podepsanou transakci|publikovat transakci|surová transakce|hex transakce|PSBT",
-  "settingsSearchPayjoinKeywords": "soukromí Payjoin|společná transakce|Payjoin|P2EP",
-  "settingsSearchAutoswapKeywords": "automatická směna|automatický swap|automatický převod|zůstatek okamžité peněženky|Autoswap",
-  "settingsSearchElectrumKeywords": "bitcoinový uzel|uzel Electrum|vlastní server|osobní uzel|Electrum",
-  "settingsSearchTestnetModeKeywords": "testovací síť|Bitcoin testnet|Liquid testnet|testovací režim|Testnet",
-  "settingsSearchSeedViewerKeywords": "seed fráze|fráze pro obnovení|mnemonická fráze|záložní slova|zobrazit seed",
-  "settingsSearchBip85Keywords": "deterministická entropie|odvozené seedy|odvozená entropie|BIP85",
-  "settingsSearchLanguageKeywords": "národní prostředí|překlad|jazyk zobrazení|preferovaný jazyk",
-  "settingsSearchThemeKeywords": "vzhled|tmavý režim|světlý režim|systémový motiv",
-  "settingsSearchCurrencyKeywords": "fiat měna|místní měna|výchozí měna|směnná měna",
-  "settingsSearchSecurityPinKeywords": "PIN kód|přístupový kód|zámek aplikace|ověření|změnit PIN",
-  "settingsSearchLogsKeywords": "debug logy|diagnostické logy|protokoly aplikace|exportovat logy",
-  "settingsSearchDevModeKeywords": "vývojářský režim|vývojová nastavení|debug režim|pokročilé testování",
-  "settingsSearchTestnetCredentialsKeywords": "přihlašovací údaje testnetu|přihlášení k testnetu|uživatelské jméno testnetu|heslo testnetu|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "hlášení pádů|hlášení chyb|diagnostika|telemetrie|chybové logy",
-  "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí",
-  "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky.",
   "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
   "sendErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sendErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
@@ -7749,8 +7649,6 @@
   "walletWarningElectrumAction": "Klepnutím nastavíte server",
   "walletLoadFailedRetryHint": "Přetažením dolů obnovte a zkuste to znovu",
   "settingsErrorSavingSetting": "Toto nastavení se nepodařilo uložit. Zkuste to prosím znovu.",
-  "settingsErrorConsentNotGiven": "Toto nastavení vyžaduje před změnou vaše potvrzení.",
-  "settingsErrorLoadingLogs": "Diagnostické protokoly se nepodařilo připravit. Zkuste to prosím znovu.",
   "exchangeErrorSigningOut": "Odhlášení se nepodařilo dokončit. Zkuste to prosím znovu.",
   "exchangeErrorSavingPreferences": "Vaše předvolby se nepodařilo uložit. Zkuste to prosím znovu.",
   "exchangeErrorLoadingAnnouncements": "Oznámení se nepodařilo načíst.",
@@ -7872,7 +7770,6 @@
   "fundExchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "exchangeErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "walletBalancesMayBeStale": "Vaše zůstatky se nepodařilo aktualizovat a nemusí být aktuální.",
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí",
   "limitOrdersInsufficientBalance": "Nedostatečná rovnováha",
   "limitOrdersInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
   "limitOrdersFundAccount": "Fond vašeho účtu",
@@ -7929,20 +7826,15 @@
   "swapUnderReviewTitle": "Swap je v kontrole",
   "swapUnderReviewDescription": "Tento swap vyžaduje ruční kontrolu. Obraťte se na podporu. Pokud nemáte účet podpory, stačí si jej vytvořit; KYC není vyžadováno.",
   "swapUnderReviewSupportMessage": "Swap je v kontrole\nID objednávky: {orderId}\nID požadavku: {requestId}\nČíslo objednávky: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Automatický swap",
   "broadcastSignedTxErrorAlreadyInChain": "Tato transakce už je v blockchainu. Není co dalšího vysílat.",
   "broadcastSignedTxErrorRejected": "Síť tuto transakci odmítla. Možná není úplně podepsaná, je neplatná nebo je v konfliktu s jinou platbou.",
   "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno.",
   "settingsDarkModeTitle": "Tmavý režim",
-  "settingsSourceCodeTitle": "Zdrojový kód",
   "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
   "backgroundTasksTitle": "Úlohy na pozadí",
   "blockedInSystemSettings": "Zablokováno v nastavení systému",
-  "notificationsBlockedMessage": "Oznámení jsou v nastavení systému zablokována.",
   "notificationsTitle": "Oznámení",
   "openSystemSettings": "Otevřít nastavení systému",
-  "permissionsTitle": "Oprávnění",
-  "settingsSearchPermissionsKeywords": "oznámení|úlohy na pozadí|baterie|upozornění",
   "sendErrorInvoiceExpiryTooShort": "Platnost této faktury vyprší příliš brzy. Požádejte příjemce o novou fakturu."
 }

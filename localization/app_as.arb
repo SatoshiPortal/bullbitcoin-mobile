@@ -169,18 +169,10 @@
   "fiatCurrencySettingsLabel": "Fiat মুদ্ৰা",
   "languageSettingsScreenTitle": "ভাষা",
   "settingsExchangeSettingsTitle": "Exchange ছেটিংছ",
-  "settingsSecurityPinTitle": "নিৰাপত্তা PIN",
   "settingsCurrencyTitle": "মুদ্ৰা",
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
-  "settingsAppVersionLabel": "এপ্প সংস্কৰণ: ",
-  "settingsServiceStatusTitle": "সেৱাৰ স্থিতি",
   "settingsLanguageTitle": "ভাষা",
-  "settingsThemeTitle": "থিম",
-  "settingsDevModeWarningTitle": "Dev মোড",
-  "settingsDevModeWarningMessage": "এই মোড বিপজ্জনক। ইয়াক সামৰ্থ্য কৰি আপুনি স্বীকাৰ কৰিছে যে আপুনি ধন হেৰুৱাব পাৰে",
-  "settingsDevModeUnderstandButton": "মই বুজি পাইছোঁ",
-  "settingsSuperuserModeDisabledMessage": "Superuser মোড অক্ষম কৰা হৈছে।",
   "settingsSuperuserModeUnlockedMessage": "Superuser মোড আনলক হৈছে!",
   "walletDetailsUnnamedWalletFallback": "নামহীন Wallet",
   "addressViewAddressesTitle": "ঠিকনাসমূহ",
@@ -203,19 +195,9 @@
   "mempoolCustomServerUrl": "চাৰ্ভাৰ URL",
   "mempoolCustomServerSaveSuccess": "কাষ্টম চাৰ্ভাৰ সফলভাৱে সংৰক্ষণ হৈছে",
   "mempoolServerStatusUnknown": "অজ্ঞাত",
-  "walletSettingsImportWalletTitle": "Wallet আমদানি কৰক",
-  "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্ৰচাৰ কৰক",
-  "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 নিৰ্ণায়ক Entropies",
   "logSettingsLogsTitle": "লগসমূহ",
   "logSettingsErrorLoadingMessage": "লগ লোড কৰিবলৈ ভুল: ",
-  "appSettingsDevModeTitle": "Dev মোড",
   "exchangeTestnetBasicAuthTitle": "Testnet এক্সচেঞ্জ ক্ৰিডেনশিয়েল",
-  "exchangeTestnetBasicAuthDescription": "Testnet এক্সচেঞ্জ ৱেব পৃষ্ঠাৰ বাবে HTTP বেচিক অথ (লগইন আৰু KYC)।",
-  "exchangeTestnetBasicAuthUsernameLabel": "ব্যৱহাৰকাৰীৰ নাম",
-  "exchangeTestnetBasicAuthPasswordLabel": "পাছৱৰ্ড",
-  "exchangeTestnetBasicAuthClearButton": "পৰিষ্কাৰ কৰক",
-  "exchangeTestnetBasicAuthSaveButton": "সংৰক্ষণ কৰক",
   "currencySettingsDefaultFiatCurrencyLabel": "ডিফল্ট fiat মুদ্ৰা",
   "exchangeSettingsAccountInformationTitle": "একাউন্ট তথ্য",
   "exchangeSettingsSecuritySettingsTitle": "নিৰাপত্তা ছেটিংছ",
@@ -5104,26 +5086,6 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "settingsErrorReportingTitle": "ত্ৰুটি প্ৰতিবেদন",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "ত্ৰুটি প্ৰতিবেদন কাৰ্যক্ৰম",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingAcceptButton": "গ্ৰহণ কৰক",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "বাতিল কৰক",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "এই পৰিৱৰ্তন প্ৰয়োগ কৰিবলৈ এপটো পুনৰ আৰম্ভ কৰক",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "backupWarningTitle": "এতিয়াই আপোনাৰ WALLET বেকআপ কৰক",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
@@ -5139,14 +5101,6 @@
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
-  },
-  "errorReportingProgramDescriptionP2": "কিবা ভুল হ'লে Bull Bitcoin-এ বেনামী ত্ৰুটি প্ৰতিবেদন পঠিয়ায়।",
-  "@errorReportingProgramDescriptionP2": {
-    "description": "Bold paragraph: anonymized error reports fact"
-  },
-  "errorReportingProgramDescriptionP5": "Bull Bitcoin ওপেন ছ'ৰ্চ, সেয়েহে আপুনি কি পঠিওৱা হৈছে সেয়া যাচাই কৰিব পাৰে।",
-  "@errorReportingProgramDescriptionP5": {
-    "description": "Bold paragraph: open source verification fact"
   },
   "fundExchangeCopSelectBankError": "অনুগ্ৰহ কৰি এটা জাৰীকৰ্তা বেংক নিৰ্বাচন কৰক",
   "@fundExchangeCopSelectBankError": {
@@ -5164,10 +5118,6 @@
   "@fundExchangeCopIssuingBank": {
     "description": "Label for issuing bank dropdown in COP bank transfer"
   },
-  "errorReportingProgramDescriptionP1": "আমাৰ ত্ৰুটি প্ৰতিবেদন কাৰ্যক্ৰমত অৱদান দি Bull উন্নত কৰাত আমাক সহায় কৰক।",
-  "@errorReportingProgramDescriptionP1": {
-    "description": "Intro paragraph of error reporting program description"
-  },
   "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
   "@fundExchangeJurisdictionColombia": {
     "description": "Dropdown option for Colombia jurisdiction"
@@ -5180,17 +5130,9 @@
   "@fundExchangeCopRedirectMessage": {
     "description": "Message about redirect to external payment page"
   },
-  "errorReportingProgramDescriptionP3": "ইয়াৰ ফলত আমি চাব পাৰোঁ যে প্ৰতিটো bug-এ কিমান ব্যৱহাৰকাৰীক প্ৰভাৱিত কৰে আৰু তদনুসৰি সমাধানৰ অগ্ৰাধিকাৰ দিব পাৰোঁ; ইয়াৰ অবিহনে প্ৰভাৱ জোখাৰ আমাৰ কোনো উপায় নাই।",
-  "@errorReportingProgramDescriptionP3": {
-    "description": "Impact paragraph of error reporting program description"
-  },
   "fundExchangeCopAmount": "Amount",
   "@fundExchangeCopAmount": {
     "description": "Label for amount field in COP bank transfer"
-  },
-  "errorReportingProgramDescriptionP4": "প্ৰতিবেদনসমূহ কেৱল Bull ৰ চাৰ্ভাৰলৈহে যায়, কেতিয়াও তৃতীয় পক্ষলৈ নাযায়।",
-  "@errorReportingProgramDescriptionP4": {
-    "description": "Privacy paragraph of error reporting program description"
   },
   "fundExchangeCopValidAmountError": "অনুগ্ৰহ কৰি এটা বৈধ পৰিমাণ লিখক",
   "@fundExchangeCopValidAmountError": {
@@ -5436,44 +5378,11 @@
   "dcaReceiveAddressError": "আপোনাৰ ৱালেটত এটা গ্ৰহণ কৰা ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
   "settingsPayjoinDisclaimerTitle": "Payjoin দাবীত্যাগ",
-  "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবীত্যাগ",
-  "settingsPayjoinAdvancedTitle": "Payjoin ৰ উন্নত ছেটিংছ",
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
   "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
   "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
-  "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
-  "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে",
-  "settingsSearchHint": "ছেটিংছ সন্ধান কৰক",
-  "settingsSearchNoResults": "কোনো ছেটিংছ পোৱা নগ'ল।",
-  "settingsSearchMempoolKeywords": "ব্লক এক্সপ্লোৰাৰ|মাচুলৰ অনুমান|লেনদেনৰ মাচুল|mempool API",
-  "settingsSearchExchangeKeywords": "একাউণ্ট|এক্সচেঞ্জ একাউণ্ট|ট্ৰেডিং|ক্ৰয় আৰু বিক্ৰয়",
-  "settingsSearchStartBackupKeywords": "বেকআপ তৈয়াৰ কৰক|বেকআপ সংৰক্ষণ কৰক|ৱালেট বেকআপ কৰক",
-  "settingsSearchRecoverbullKeywords": "এনক্ৰিপ্টেড বেকআপ|ক্লাউড বেকআপ|এনক্ৰিপ্টেড ভল্ট|ভল্ট পুনৰুদ্ধাৰ",
-  "settingsSearchLabelsKeywords": "ৱালেট লেবেল|লেনদেনৰ লেবেল|BIP329|লেবেল আমদানি|লেবেল ৰপ্তানি",
-  "settingsSearchTransactionHistoryKeywords": "লেনদেন ৰপ্তানি|লেনদেনৰ ইতিহাস ৰপ্তানি|CSV|ৱালেটৰ ইতিহাস",
-  "settingsSearchAppSettingsKeywords": "এপ পছন্দসমূহ|এপ্লিকেশ্যন ছেটিংছ|সাধাৰণ ছেটিংছ",
-  "settingsSearchTermsOfServiceKeywords": "চৰ্ত আৰু নিয়মাৱলী|আইনী|ব্যৱহাৰকাৰী চুক্তি|TOS",
-  "settingsSearchServicesStatusKeywords": "সেৱাৰ স্বাস্থ্য|চিষ্টেমৰ স্থিতি|অনলাইন|সেৱা বন্ধ",
-  "settingsSearchImportWalletKeywords": "ৱালেট যোগ কৰক|ৱালেট পুনৰুদ্ধাৰ|Mnemonic আমদানি|Watch-only ৱালেট|হাৰ্ডৱেৰ ৱালেট",
-  "settingsSearchBroadcastTransactionKeywords": "স্বাক্ষৰিত লেনদেন প্ৰচাৰ|লেনদেন পঠিয়াওক|কেঁচা লেনদেন|লেনদেন hex|PSBT",
-  "settingsSearchPayjoinKeywords": "Payjoin গোপনীয়তা|সহযোগিতামূলক লেনদেন|P2EP",
-  "settingsSearchAutoswapKeywords": "Autoswap|স্বয়ংক্ৰিয় swap|স্বয়ংক্ৰিয় transfer|তাৎক্ষণিক ৱালেট বেলেঞ্চ",
-  "settingsSearchElectrumKeywords": "বিটকইন নোড|Electrum নোড|কাষ্টম চাৰ্ভাৰ|নিজা নোড",
-  "settingsSearchTestnetModeKeywords": "পৰীক্ষামূলক নেটৱৰ্ক|Bitcoin Testnet|Liquid Testnet|পৰীক্ষা মোড",
-  "settingsSearchSeedViewerKeywords": "ছীড বাক্যাংশ|পুনৰুদ্ধাৰ বাক্যাংশ|Mnemonic|বেকআপ শব্দ|ছীড দেখুৱাওক",
-  "settingsSearchBip85Keywords": "নিৰ্ধাৰিত এণ্ট্ৰপি|চাইল্ড ছীড|উৎপন্ন এণ্ট্ৰপি|BIP85",
-  "settingsSearchLanguageKeywords": "এপৰ ভাষা|অনুবাদ|প্ৰদৰ্শনৰ ভাষা|পছন্দৰ ভাষা",
-  "settingsSearchThemeKeywords": "এপৰ ৰূপ|আন্ধাৰ মোড|পোহৰ মোড|চিষ্টেম থিম|ডাৰ্ক মোড|লাইট মোড",
-  "settingsSearchCurrencyKeywords": "Fiat মুদ্ৰা|স্থানীয় মুদ্ৰা|ডিফল্ট মুদ্ৰা|Exchange মুদ্ৰা",
-  "settingsSearchSecurityPinKeywords": "PIN কোড|পাছকোড|এপ লক|প্ৰমাণীকৰণ|PIN সলনি কৰক",
-  "settingsSearchLogsKeywords": "Debug লগ|Diagnostic লগ|এপ লগ|লগ ৰপ্তানি",
-  "settingsSearchDevModeKeywords": "Developer মোড|Development ছেটিংছ|Debug মোড|উন্নত পৰীক্ষণ",
-  "settingsSearchTestnetCredentialsKeywords": "Testnet ব্যৱহাৰকাৰীৰ তথ্য|Testnet লগইন|Testnet ব্যৱহাৰকাৰীৰ নাম|Testnet পাছৱৰ্ড|Basic Auth",
-  "settingsSearchErrorReportingKeywords": "Crash report|ত্ৰুটি প্ৰতিবেদন|Diagnostic|Telemetry|ত্ৰুটি লগ",
-  "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা",
-  "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।",
   "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
@@ -5488,8 +5397,6 @@
   "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক",
   "walletLoadFailedRetryHint": "ৰিফ্ৰেছ কৰিবলৈ তললৈ টানক আৰু পুনৰ চেষ্টা কৰক",
   "settingsErrorSavingSetting": "সেই ছেটিংটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "settingsErrorConsentNotGiven": "এই ছেটিং সলনি কৰাৰ আগতে আপোনাৰ নিশ্চিতকৰণৰ প্ৰয়োজন।",
-  "settingsErrorLoadingLogs": "নিদান লগসমূহ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorSigningOut": "আপোনাক সম্পূৰ্ণৰূপে ছাইন আউট কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorSavingPreferences": "আপোনাৰ পছন্দসমূহ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorLoadingAnnouncements": "ঘোষণাসমূহ ল'ড কৰিব পৰা নগ'ল।",
@@ -5611,7 +5518,6 @@
   "fundExchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "walletBalancesMayBeStale": "আপোনাৰ বেলেঞ্চ আপডেট কৰিব পৰা নগ'ল আৰু সেয়া পুৰণি হ'ব পাৰে।",
-  "settingsSearchTorKeywords": "Tor প্ৰক্সী|Orbot|Onion routing|অন্তৰ্নিহিত Tor|গোপনীয়তা নেটৱৰ্ক",
   "limitOrdersInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
   "limitOrdersInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
   "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
@@ -5668,20 +5574,15 @@
   "swapUnderReviewTitle": "Swap পৰ্যালোচনাধীন",
   "swapUnderReviewDescription": "এই Swap ৰ বাবে হাতে-কলমে পৰ্যালোচনাৰ প্ৰয়োজন। সহায়তাৰ বাবে সহায়তা দলৰ সৈতে যোগাযোগ কৰক। আপোনাৰ সহায়তা একাউন্ট নাথাকিলে, আপুনি কেৱল এটা সৃষ্টি কৰিলেই হ'ব; KYC প্ৰয়োজন নাই।",
   "swapUnderReviewSupportMessage": "Swap পৰ্যালোচনাধীন\nঅৰ্ডাৰ আইডি: {orderId}\nৰিকুৱেষ্ট আইডি: {requestId}\nঅৰ্ডাৰ নম্বৰ: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্ৰিয় Swap",
   "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটো ইতিমধ্যে ব্লকচেইনত আছে। সম্প্ৰচাৰ কৰিবলৈ একো বাকী নাই।",
   "broadcastSignedTxErrorRejected": "নেটৱৰ্কে এই লেনদেনটো নাকচ কৰিলে। ই হয়তো সম্পূৰ্ণভাৱে স্বাক্ষৰিত নহয়, অবৈধ, বা আন এটা পৰিশোধৰ সৈতে সংঘাতত আছে।",
   "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
   "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
   "settingsDarkModeTitle": "আন্ধাৰ ম'ড",
-  "settingsSourceCodeTitle": "উৎস ক'ড",
   "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।",
   "backgroundTasksTitle": "নেপথ্যৰ কাম",
   "blockedInSystemSettings": "ছিষ্টেম ছেটিংছত অৱৰুদ্ধ",
-  "notificationsBlockedMessage": "ছিষ্টেম ছেটিংছত জাননী অৱৰুদ্ধ কৰা আছে।",
   "notificationsTitle": "জাননী",
   "openSystemSettings": "ছিষ্টেম ছেটিংছ খোলক",
-  "permissionsTitle": "অনুমতি",
-  "settingsSearchPermissionsKeywords": "জাননী|নেপথ্যৰ কাম|বেটাৰী|সতৰ্কবাণী",
   "sendErrorInvoiceExpiryTooShort": "এই invoice ৰ মেয়াদ অতি সোনকালে উকলিব। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।"
 }
