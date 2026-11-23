@@ -7,10 +7,9 @@ final class MetadataBackupReadiness implements BackupReadinessPort {
   final Future<bool> Function() _isAtCurrentSchema;
 
   const MetadataBackupReadiness({
-    required bool Function() hasStorageAdmission,
-    required Future<bool> Function() isAtCurrentSchema,
-  }) : _hasStorageAdmission = hasStorageAdmission,
-       _isAtCurrentSchema = isAtCurrentSchema;
+    required this._hasStorageAdmission,
+    required this._isAtCurrentSchema,
+  });
 
   @override
   Future<bool> databaseReady() async {

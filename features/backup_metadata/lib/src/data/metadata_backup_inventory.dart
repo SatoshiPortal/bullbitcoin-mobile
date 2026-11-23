@@ -18,20 +18,13 @@ final class MetadataBackupInventory implements BackupInventoryPort {
   final Future<bool> Function(Fingerprint, BitcoinNetwork) _backupVerified;
 
   MetadataBackupInventory({
-    required Future<Result<List<secrets.MetadataBackupWallet>, SecretFailure>>
-    Function()
-    wallets,
-    required String groupIdsPath,
-    required Future<bool> Function() hasSilentPaymentsWallet,
-    required String defaultBitcoinWalletLabel,
-    required String unnamedWalletLabel,
-    required Future<bool> Function(Fingerprint, BitcoinNetwork) backupVerified,
-  }) : _wallets = wallets,
-       _groupIdsPath = groupIdsPath,
-       _hasSilentPaymentsWallet = hasSilentPaymentsWallet,
-       _defaultBitcoinWalletLabel = defaultBitcoinWalletLabel,
-       _unnamedWalletLabel = unnamedWalletLabel,
-       _backupVerified = backupVerified;
+    required this._wallets,
+    required this._groupIdsPath,
+    required this._hasSilentPaymentsWallet,
+    required this._defaultBitcoinWalletLabel,
+    required this._unnamedWalletLabel,
+    required this._backupVerified,
+  });
 
   @override
   Future<Result<BackupInventory, BackupMetadataFailure>> read() async {

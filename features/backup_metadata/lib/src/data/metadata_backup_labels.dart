@@ -11,11 +11,8 @@ final class MetadataBackupLabels implements BackupLabelsPort {
   final BackupInventoryPort _inventory;
   final LabelBackups _labels;
 
-  MetadataBackupLabels({
-    required BackupInventoryPort inventory,
-    required Labels labels,
-  }) : _inventory = inventory,
-       _labels = labels.backup;
+  MetadataBackupLabels({required this._inventory, required Labels labels})
+    : _labels = labels.backup;
 
   @override
   Stream<void> get changes => _labels.changes;
