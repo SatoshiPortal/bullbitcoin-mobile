@@ -1305,4 +1305,544 @@ class ExchangeLocalizationsRu extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'Поиск получателей по имени или этикетке';
+
+  @override
+  String get recipientsScreenTitle => 'Выбрать получателя';
+
+  @override
+  String get recipientsScreenSubtitle => 'Кому вы платите?';
+
+  @override
+  String get recipientsTabNew => 'Новый получатель';
+
+  @override
+  String get recipientsTabList => 'Мои фиатные получатели';
+
+  @override
+  String get recipientsPayoutMethod => 'Способ выплаты';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'Фильтр по юрисдикции:';
+
+  @override
+  String get recipientsListEmpty => 'Получатели не найдены.';
+
+  @override
+  String get recipientsContinue => 'Продолжить';
+
+  @override
+  String get recipientsJurisdictionAll => 'Все юрисдикции';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Канада';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Европа (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Мексика';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Коста-Рика';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Аргентина';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Колумбия';
+
+  @override
+  String get recipientsTypeInteracEmail => 'Денежный перевод по email';
+
+  @override
+  String get recipientsTypeBillPayment => 'Оплата счёта';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Банковский перевод';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA-перевод';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI Карта';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Аргентина';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Банковский счёт COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'Эл. почта';
+
+  @override
+  String get recipientsInfoPayee => 'Получатель';
+
+  @override
+  String get recipientsInfoAccount => 'Счёт';
+
+  @override
+  String get recipientsInfoPhone => 'Телефон';
+
+  @override
+  String get recipientsInfoCard => 'Карта';
+
+  @override
+  String get recipientsInfoLabel => 'Метка';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'Это поле не может быть пустым';
+
+  @override
+  String get recipientsLabelOptional => 'Метка (необязательно)';
+
+  @override
+  String get recipientsLabelHint => 'Введите метку для этого получателя';
+
+  @override
+  String get recipientsFieldName => 'Имя';
+
+  @override
+  String get recipientsFieldNameHint => 'Введите имя получателя';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Имя получателя';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Номер телефона';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Введите номер телефона';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '8 цифр без кода страны';
+
+  @override
+  String get recipientsFieldDocumentType => 'Тип ID получателя';
+
+  @override
+  String get recipientsFieldDocumentNumberHint => 'Введите номер ID получателя';
+
+  @override
+  String get recipientsFieldOwnerName => 'Имя владельца';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Введите имя владельца';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Кому принадлежит этот счёт?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Это мой счёт';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'Это счёт другого лица';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'Введите IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'Введите номер CLABE';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'Введите номер CVU/CBU';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Банковское учреждение';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'Выберите банковское учреждение';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'Пожалуйста, выберите банковское учреждение';
+
+  @override
+  String get recipientsFieldAccountType => 'Тип счёта';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Сберегательный';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Расчётный';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Номер банковского счёта';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'Введите номер банковского счёта';
+
+  @override
+  String get recipientsCopDocCc =>
+      'Удостоверение гражданина (Cédula de Ciudadanía)';
+
+  @override
+  String get recipientsCopDocCe =>
+      'Удостоверение иностранца (Cédula de Extranjería)';
+
+  @override
+  String get recipientsCopDocNit => 'Налоговый идентификатор (NIT)';
+
+  @override
+  String get recipientsCopDocPassport => 'Паспорт';
+
+  @override
+  String get recipientsCopDocTi =>
+      'Удостоверение личности (Tarjeta de Identidad)';
+
+  @override
+  String get recipientsCopDocRegistroCivil =>
+      'Запись актов гражданского состояния (Registro Civil)';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'Номер cédula получателя';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Номер cédula de extranjería получателя';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber => 'Налоговый ID получателя';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'Номер паспорта получателя';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Номер удостоверения личности получателя';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Номер записи гражданского реестра получателя';
+
+  @override
+  String get recipientsFieldDebitCard => 'Номер дебетовой карты';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Введите номер дебетовой карты';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Имя владельца появится здесь';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Удалите код страны (+506). Введите только 8-значный номер';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Используйте только цифры (без букв или символов)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Введите все 8 цифр номера телефона';
+
+  @override
+  String get recipientsValidationSinpeOwner =>
+      'Пожалуйста, подтвердите номер телефона';
+
+  @override
+  String get recipientsFieldEmailAddress => 'Адрес электронной почты';
+
+  @override
+  String get recipientsFieldEmailAddressHint =>
+      'Введите адрес электронной почты';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Контрольный вопрос';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Введите контрольный вопрос (10-40 символов)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Ответ на контрольный вопрос';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint =>
+      'Введите ответ на контрольный вопрос';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Контрольный вопрос должен содержать не менее 10 символов';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 символов';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Код учреждения';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Введите код учреждения';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Номер учреждения';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'Введите номер учреждения';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Транзитный номер';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Введите транзитный номер';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Номер счёта';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Введите номер счёта';
+
+  @override
+  String get recipientsFieldDefaultComment =>
+      'Комментарий по умолчанию (необязательно)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint =>
+      'Введите комментарий по умолчанию';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Корпоративный счёт';
+
+  @override
+  String get recipientsFieldFirstName => 'Имя';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Введите имя';
+
+  @override
+  String get recipientsFieldLastName => 'Фамилия';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Введите фамилию';
+
+  @override
+  String get recipientsFieldCorporateName => 'Название организации';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Введите название организации';
+
+  @override
+  String get recipientsFieldBillerName => 'Название поставщика';
+
+  @override
+  String get recipientsFieldBillerNameHint => 'Найдите и выберите поставщика';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Введите 3 или более символов для поиска';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Пожалуйста, выберите поставщика из списка';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'Номер счёта получателя';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Не удалось загрузить ваших получателей. Попробуйте ещё раз.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Не удалось сохранить этого получателя. Проверьте данные и попробуйте ещё раз.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Не удалось проверить этот номер телефона. Проверьте его и попробуйте ещё раз.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Не удалось выполнить поиск получателей платежей. Попробуйте ещё раз.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'Проверьте подключение к интернету и попробуйте ещё раз.';
+
+  @override
+  String get recipientsListPullToRetry => 'Потяните вниз, чтобы повторить.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Получатель сохранён, но продолжить не удалось. Найдите его в списке, чтобы продолжить.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'Конфиденциальный SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'У вас нет необходимых разрешений для доступа к этому способу пополнения. Либо ваш KYC недостаточен, либо этот способ недоступен для вашего аккаунта';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Чтобы активировать конфиденциальный SEPA, вы должны быть резидентом Европейского союза.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'Активация получателя';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Ваш получатель активируется для Конфиденциального SEPA. Это может занять несколько минут.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Получатель не активирован для Конфиденциального SEPA';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Этот получатель ещё не активирован для Конфиденциального SEPA. Сейчас мы его активируем. Это может занять несколько минут. Пока вы можете использовать Мгновенный и обычный SEPA.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle =>
+      'Получатель активирован';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Ваш получатель теперь активен для Конфиденциального SEPA.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Использовать Мгновенный и обычный SEPA вместо этого';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle =>
+      'Активировать Конфиденциальный SEPA?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Новое';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Пополняйте счёт конфиденциально с помощью личного виртуального IBAN на ваше имя. Это бесплатно.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Когда вы отправляете средства из своего банка в Bull Bitcoin, это выглядит как перевод самому себе.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Код перевода не нужен.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Важно: имя должно совпадать';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Имя владельца банковского счёта должно точно совпадать с именем вашего виртуального IBAN в Bull Bitcoin, иначе перевод будет автоматически возвращён. Имена не совпадают? Свяжитесь с поддержкой.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'Имя владельца счёта';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'Подтверждаю, что имя совпадает с моим банковским счётом (счетами)';
+
+  @override
+  String get recipientsVirtualIbanActivate =>
+      'Активировать Конфиденциальный SEPA';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'Активация Конфиденциального SEPA...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Создаём ваш виртуальный IBAN. Это может занять несколько минут.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle =>
+      'Конфиденциальный SEPA активирован';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Теперь вы можете использовать личный виртуальный IBAN, чтобы выводить деньги конфиденциально.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'Копируется в буфер обмена';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Дон';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Имя получателя';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'Номер виртуального счёта IBAN';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Страна с банковским счетом';
+
+  @override
+  String get recipientsVirtualIbanBic => 'Код BIC';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Теперь вы можете использовать личный виртуальный IBAN, чтобы вносить деньги конфиденциально.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Показать реквизиты моего виртуального IBAN';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Пополняйте счёт конфиденциально с помощью личного виртуального IBAN на ваше имя. Пополнение будет выглядеть как платёж самому себе, без кода перевода.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Адрес банка';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Официальный адрес банка, если ваш банк его запросит.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Имена в вашем банке и в виртуальном IBAN должны совпадать, иначе переводы будут автоматически возвращены.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'Номер банковского счёта (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Выводы средств отображаются как перевод самому себе с именем вашего счёта';
 }

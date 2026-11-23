@@ -1296,4 +1296,537 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint =>
+      'Etsi vastaanottajia nimen tai tunnisteen perusteella.';
+
+  @override
+  String get recipientsScreenTitle => 'Valitse vastaanottaja';
+
+  @override
+  String get recipientsScreenSubtitle => 'Kenelle olet maksamassa?';
+
+  @override
+  String get recipientsTabNew => 'Uusi vastaanottaja';
+
+  @override
+  String get recipientsTabList => 'Omat fiat-vastaanottajani';
+
+  @override
+  String get recipientsPayoutMethod => 'Maksutapa';
+
+  @override
+  String get recipientsFilterByJurisdiction =>
+      'Suodata lainkäyttöalueen mukaan:';
+
+  @override
+  String get recipientsListEmpty => 'Vastaanottajia ei löytynyt.';
+
+  @override
+  String get recipientsContinue => 'Jatka';
+
+  @override
+  String get recipientsJurisdictionAll => 'Kaikki lainkäyttöalueet';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Kanada';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Eurooppa (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Meksiko';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Costa Rica';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Argentiina';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Kolumbia';
+
+  @override
+  String get recipientsTypeInteracEmail => 'Rahansiirto sähköpostilla';
+
+  @override
+  String get recipientsTypeBillPayment => 'Laskunmaksu';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Tilisiirto';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA-tilisiirto';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI-kortti';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Argentiina';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Pankkitili COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'Sähköposti';
+
+  @override
+  String get recipientsInfoPayee => 'Saaja';
+
+  @override
+  String get recipientsInfoAccount => 'Tili';
+
+  @override
+  String get recipientsInfoPhone => 'Puhelin';
+
+  @override
+  String get recipientsInfoCard => 'Kortti';
+
+  @override
+  String get recipientsInfoLabel => 'Tunniste';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'Tämä kenttä ei voi olla tyhjä';
+
+  @override
+  String get recipientsLabelOptional => 'Tunniste (valinnainen)';
+
+  @override
+  String get recipientsLabelHint => 'Syötä tunniste tälle vastaanottajalle';
+
+  @override
+  String get recipientsFieldName => 'Nimi';
+
+  @override
+  String get recipientsFieldNameHint => 'Syötä vastaanottajan nimi';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Vastaanottajan nimi';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Puhelinnumero';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Syötä puhelinnumero';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '8 numeroa ilman maakoodia';
+
+  @override
+  String get recipientsFieldDocumentType => 'Vastaanottajan tunnistetyyppi';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'Anna vastaanottajan tunnistenumero';
+
+  @override
+  String get recipientsFieldOwnerName => 'Tilinhaltijan nimi';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Syötä tilinhaltijan nimi';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Kenelle tämä tili kuuluu?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Tili on minun';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'Tili on jonkun muun';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'Syötä IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'Syötä CLABE-numero';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'Syötä CVU/CBU-numero';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Pankkilaitos';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'Valitse pankkilaitos';
+
+  @override
+  String get recipientsValidationBankInstitution => 'Valitse pankkilaitos';
+
+  @override
+  String get recipientsFieldAccountType => 'Tilityyppi';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Säästötili';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Käyttötili';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Pankkitilin numero';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint => 'Syötä pankkitilin numero';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'Número de Identificación Tributaria';
+
+  @override
+  String get recipientsCopDocPassport => 'Passi';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber =>
+      'Vastaanottajan cédula-numero';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Vastaanottajan cédula de extranjería -numero';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber =>
+      'Vastaanottajan vero-ID-numero';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'Vastaanottajan passinumero';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Vastaanottajan henkilökortin numero';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Vastaanottajan väestörekisterinumero';
+
+  @override
+  String get recipientsFieldDebitCard => 'Debit-kortin numero';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Syötä debit-kortin numero';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Tilinhaltijan nimi näkyy tässä';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Poista maakoodi (+506). Anna vain 8-numeroinen numero';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Käytä vain numeroita (ei kirjaimia tai symboleita)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Anna kaikki 8 puhelinnumeron numeroa';
+
+  @override
+  String get recipientsValidationSinpeOwner => 'Vahvista puhelinnumero';
+
+  @override
+  String get recipientsFieldEmailAddress => 'Sähköpostiosoite';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'Syötä sähköpostiosoite';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Turvakysymys';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Syötä turvakysymys (10-40 merkkiä)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Turvavastaus';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'Syötä turvavastaus';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Turvakysymyksen on oltava vähintään 10 merkkiä';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 merkkiä';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Laitoksen koodi';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Syötä laitoksen koodi';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Laitoksen numero';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'Syötä laitoksen numero';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Transit-numero';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Syötä transit-numero';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Tilinumero';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Syötä tilinumero';
+
+  @override
+  String get recipientsFieldDefaultComment => 'Oletuskommentti (valinnainen)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'Syötä oletuskommentti';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Yritystili';
+
+  @override
+  String get recipientsFieldFirstName => 'Etunimi';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Syötä etunimi';
+
+  @override
+  String get recipientsFieldLastName => 'Sukunimi';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Syötä sukunimi';
+
+  @override
+  String get recipientsFieldCorporateName => 'Yrityksen nimi';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Syötä yrityksen nimi';
+
+  @override
+  String get recipientsFieldBillerName => 'Maksunsaajan nimi';
+
+  @override
+  String get recipientsFieldBillerNameHint => 'Etsi ja valitse maksunsaaja';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Syötä 3 tai useampi merkki hakua varten';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Valitse maksunsaaja luettelosta';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'Maksunsaajan tilinumero';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Vastaanottajiasi ei voitu ladata. Yritä uudelleen.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Tätä vastaanottajaa ei voitu tallentaa. Tarkista tiedot ja yritä uudelleen.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Emme voineet vahvistaa tätä puhelinnumeroa. Tarkista se ja yritä uudelleen.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Laskuttajien haku epäonnistui. Yritä uudelleen.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'Tarkista internet-yhteytesi ja yritä uudelleen.';
+
+  @override
+  String get recipientsListPullToRetry => 'Vedä alas yrittääksesi uudelleen.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Vastaanottaja tallennettiin, mutta emme voineet jatkaa. Etsi hänet listaltasi jatkaaksesi.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'Luottamuksellinen SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'Sinulla ei ole tarvittavia käyttöoikeuksia tämän rahoitusvaihtoehdon käyttämiseen. Joko KYC-tietosi ovat riittämättömät tai tämä vaihtoehto ei ole käytettävissä tililläsi';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Sinun on asuttava Euroopan unionissa aktivoidaksesi luottamuksellisen SEPAn.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'Vastaanottajaa aktivoidaan';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Vastaanottajaasi aktivoidaan Luottamuksellista SEPAa varten. Tämä voi kestää muutaman minuutin.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Vastaanottajaa ei ole aktivoitu Luottamuksellista SEPAa varten';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Tätä vastaanottajaa ei ole vielä aktivoitu Luottamuksellista SEPAa varten. Aktivoimme sitä parhaillaan. Tämä voi kestää muutaman minuutin. Voit käyttää sen sijaan Pika- ja tavallista SEPAa.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle =>
+      'Vastaanottaja aktivoitu';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Vastaanottajasi on nyt aktiivinen Luottamuksellista SEPAa varten.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Käytä sen sijaan Pika- ja tavallista SEPAa';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle =>
+      'Aktivoidaanko luottamuksellinen SEPA?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Uusi';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Rahoita tiliäsi yksityisesti käyttämällä henkilökohtaista virtuaalista IBAN-tiliä omalla nimelläsi. Se on ilmaista.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Kun lähetät varoja Bull Bitcoinille pankistasi, se näkyy siirtona itsellesi.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Siirtokoodia ei tarvita.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Tärkeää: Nimien vastaavuus vaaditaan';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Pankkitilin nimen on vastattava täsmälleen Bull Bitcoinin virtuaalisen IBAN-tilisi nimeä, tai siirto palautetaan automaattisesti. Eivätkö nimet vastaa toisiaan? Ota yhteyttä tukeen.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'Tilin omistajan nimi';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'Vahvistan, että nimi vastaa pankkitilejäni';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'Aktivoi luottamuksellinen SEPA';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'Aktivoidaan luottamuksellista SEPAa...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Luodaan virtuaalista IBAN-tiliäsi. Tämä saattaa kestää muutaman minuutin.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle =>
+      'Luottamuksellinen SEPA aktivoitu';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan nostamiseen yksityisesti.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'Kopioitu leikepöydälle';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Valmis';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Vastaanottajan nimi';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'Virtuaalisen IBAN-tilin numero';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Tilin maa';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC-koodi';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Voit nyt käyttää henkilökohtaista virtuaalista IBAN-tiliäsi rahan tallettamiseen yksityisesti.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Näytä virtuaalisen IBAN-tilini tiedot';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Rahoita tiliäsi yksityisesti käyttämällä henkilökohtaista virtuaalista IBAN-tiliä omalla nimelläsi. Talletus näkyy maksuna itsellesi, eikä siirtokoodia tarvita.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Pankin osoite';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Virallinen pankin osoite siltä varalta, että pankkisi vaatii sitä.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Pankkisi ja virtuaalisten IBAN-tiliesi nimien on vastattava toisiaan, tai siirrot palautetaan automaattisesti.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'Pankkitilin numero (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Nostot näkyvät siirtoina itsellesi tilisi nimellä';
 }

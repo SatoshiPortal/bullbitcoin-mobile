@@ -1300,4 +1300,540 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'Tafuta wapokeaji kwa jina au lebo';
+
+  @override
+  String get recipientsScreenTitle => 'Chagua Mpokeaji';
+
+  @override
+  String get recipientsScreenSubtitle => 'Unamlipa nani?';
+
+  @override
+  String get recipientsTabNew => 'Mpokeaji Mpya';
+
+  @override
+  String get recipientsTabList => 'Wapokeaji Wangu wa Fedha za Kawaida';
+
+  @override
+  String get recipientsPayoutMethod => 'Njia ya malipo';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'Chuja kwa Mamlaka:';
+
+  @override
+  String get recipientsListEmpty => 'Hakuna wapokeaji waliopatikana.';
+
+  @override
+  String get recipientsContinue => 'Endelea';
+
+  @override
+  String get recipientsJurisdictionAll => 'Mamlaka Zote';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Kanada';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Ulaya (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Meksiko';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Costa Rica';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Ajentina';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Kolombia';
+
+  @override
+  String get recipientsTypeInteracEmail => 'Uhamisho wa pesa kwa barua pepe';
+
+  @override
+  String get recipientsTypeBillPayment => 'Malipo ya Bili';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Uhamisho wa Benki';
+
+  @override
+  String get recipientsTypeSepa => 'Uhamisho wa SEPA';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI Kadi';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Ajentina';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Akaunti ya Benki COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'Barua pepe';
+
+  @override
+  String get recipientsInfoPayee => 'Mpokeaji wa Malipo';
+
+  @override
+  String get recipientsInfoAccount => 'Akaunti';
+
+  @override
+  String get recipientsInfoPhone => 'Simu';
+
+  @override
+  String get recipientsInfoCard => 'Kadi';
+
+  @override
+  String get recipientsInfoLabel => 'Lebo';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'Sehemu hii haiwezi kuwa tupu';
+
+  @override
+  String get recipientsLabelOptional => 'Lebo (hiari)';
+
+  @override
+  String get recipientsLabelHint => 'Weka lebo kwa mpokeaji huyu';
+
+  @override
+  String get recipientsFieldName => 'Jina';
+
+  @override
+  String get recipientsFieldNameHint => 'Weka jina la mpokeaji';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Jina la mpokeaji';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Nambari ya Simu';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Weka nambari ya simu';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint =>
+      'Tarakimu 8 bila msimbo wa nchi';
+
+  @override
+  String get recipientsFieldDocumentType => 'Aina ya kitambulisho cha mpokeaji';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'Weka nambari ya kitambulisho cha mpokeaji';
+
+  @override
+  String get recipientsFieldOwnerName => 'Jina la Mmiliki';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Weka jina la mmiliki';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Akaunti hii ni ya nani?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Hii ni akaunti yangu';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse =>
+      'Hii ni akaunti ya mtu mwingine';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'Weka IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'Weka nambari ya CLABE';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'Weka nambari ya CVU/CBU';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Taasisi ya Benki';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'Chagua Taasisi ya Benki';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'Tafadhali chagua taasisi ya benki';
+
+  @override
+  String get recipientsFieldAccountType => 'Aina ya Akaunti';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Akiba';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Akaunti ya Malipo';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Nambari ya Akaunti ya Benki';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'Weka nambari ya akaunti ya benki';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'Número de Identificación Tributaria';
+
+  @override
+  String get recipientsCopDocPassport => 'Pasipoti';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber =>
+      'Nambari ya cédula ya mpokeaji';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Nambari ya cédula de extranjería ya mpokeaji';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber =>
+      'Nambari ya utambulisho wa kodi ya mpokeaji';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'Nambari ya pasipoti ya mpokeaji';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Nambari ya kadi ya kitambulisho ya mpokeaji';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Nambari ya usajili wa kiraia ya mpokeaji';
+
+  @override
+  String get recipientsFieldDebitCard => 'Nambari ya Kadi ya Debit';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Weka nambari ya kadi ya debit';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Jina la mmiliki litaonekana hapa';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Ondoa msimbo wa nchi (+506). Weka nambari ya tarakimu 8 tu';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Tumia tarakimu tu (hakuna herufi au alama)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Weka tarakimu zote 8 za nambari ya simu';
+
+  @override
+  String get recipientsValidationSinpeOwner =>
+      'Tafadhali thibitisha nambari ya simu';
+
+  @override
+  String get recipientsFieldEmailAddress => 'Anwani ya Barua Pepe';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'Weka anwani ya barua pepe';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Swali la Usalama';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Weka swali la usalama (herufi 10-40)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Jibu la Usalama';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'Weka jibu la usalama';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Swali la usalama lazima liwe na angalau herufi 10';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return 'herufi $count/40';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Msimbo wa Taasisi';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Weka msimbo wa taasisi';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Nambari ya Taasisi';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'Weka nambari ya taasisi';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Nambari ya Transit';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Weka nambari ya transit';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Nambari ya Akaunti';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Weka nambari ya akaunti';
+
+  @override
+  String get recipientsFieldDefaultComment => 'Maoni Chaguo-msingi (hiari)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'Weka maoni chaguo-msingi';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Akaunti ya kampuni';
+
+  @override
+  String get recipientsFieldFirstName => 'Jina la Kwanza';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Weka jina la kwanza';
+
+  @override
+  String get recipientsFieldLastName => 'Jina la Ukoo';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Weka jina la ukoo';
+
+  @override
+  String get recipientsFieldCorporateName => 'Jina la Kampuni';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Weka jina la kampuni';
+
+  @override
+  String get recipientsFieldBillerName => 'Jina la Anayelipwa Bili';
+
+  @override
+  String get recipientsFieldBillerNameHint =>
+      'Tafuta na uchague anayelipwa bili';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Weka herufi 3 au zaidi ili kutafuta';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Tafadhali chagua anayelipwa bili kwenye orodha';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber =>
+      'Nambari ya Akaunti ya Mpokeaji';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Wapokeaji wako hawakuweza kupakiwa. Tafadhali jaribu tena.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Mpokeaji huyu hakuweza kuhifadhiwa. Angalia maelezo na ujaribu tena.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Hatukuweza kuthibitisha nambari hii ya simu. Iangalie na ujaribu tena.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Haikuwezekana kutafuta watoza bili. Tafadhali jaribu tena.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'Angalia muunganisho wako wa intaneti na ujaribu tena.';
+
+  @override
+  String get recipientsListPullToRetry => 'Vuta chini ili ujaribu tena.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Mpokeaji huyu amehifadhiwa, lakini hatukuweza kuendelea. Mtafute kwenye orodha yako ili kuendelea.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'SEPA ya Siri';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'Huna ruhusa zinazohitajika kufikia chaguo hili la ufadhili. KYC yako haitoshi au chaguo hili halipatikani kwa akaunti yako';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Unahitaji kuwa mkazi wa Umoja wa Ulaya ili kuwasha SEPA ya siri.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle => 'Inawasha mpokeaji';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Mpokeaji wako anawashwa kwa ajili ya SEPA ya Siri. Hii inaweza kuchukua dakika chache.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Mpokeaji hajawashwa kwa ajili ya SEPA ya Siri';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Mpokeaji huyu bado hajawashwa kwa ajili ya SEPA ya Siri. Tunamwasha sasa. Hii inaweza kuchukua dakika chache. Badala yake unaweza kutumia SEPA ya Papo hapo na ya Kawaida.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => 'Mpokeaji amewashwa';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Mpokeaji wako sasa yuko hai kwa ajili ya SEPA ya Siri.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Tumia SEPA ya Papo hapo na ya Kawaida badala yake';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle => 'Washa SEPA ya Siri?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Mpya';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Weka pesa kwenye akaunti yako kwa faragha ukitumia IBAN pepe ya kibinafsi kwa jina lako. Ni bure.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Unapotuma pesa kutoka benki yako kwenda Bull Bitcoin, inaonekana kama uhamisho kwako mwenyewe.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Hakuna msimbo wa uhamisho unaohitajika.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Muhimu: Jina lazima lilingane';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Jina la akaunti ya benki lazima lilingane kabisa na jina la IBAN pepe yako ya Bull Bitcoin, la sivyo uhamisho utarudishwa kiotomatiki. Majina hayalingani? Wasiliana na usaidizi.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName =>
+      'Jina la mmiliki wa akaunti';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'Ninathibitisha kuwa jina linalingana na akaunti yangu ya benki';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'Washa SEPA ya Siri';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle => 'Inawasha SEPA ya Siri...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Tunaunda IBAN pepe yako. Hii inaweza kuchukua dakika chache.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle => 'SEPA ya Siri imewashwa';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Sasa unaweza kutumia IBAN pepe yako ya kibinafsi kutoa pesa kwa faragha.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'Imenakiliwa';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Imekamilika';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Jina la mpokeaji';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel =>
+      'Nambari ya akaunti ya IBAN pepe';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Nchi ya akaunti ya benki';
+
+  @override
+  String get recipientsVirtualIbanBic => 'Msimbo wa BIC';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Sasa unaweza kutumia IBAN pepe yako ya kibinafsi kuweka pesa kwa faragha.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Onyesha maelezo ya IBAN pepe yangu';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Weka pesa kwenye akaunti yako kwa faragha ukitumia IBAN pepe ya kibinafsi kwa jina lako. Amana itaonekana kama malipo kwako mwenyewe, bila msimbo wa uhamisho.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Anwani ya benki';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Anwani rasmi ya benki, ikiwa benki yako itaiomba.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Majina kwenye benki yako na akaunti ya IBAN pepe lazima yalingane, la sivyo uhamisho utarudishwa kiotomatiki.';
+
+  @override
+  String get recipientsFieldBankAccountIban =>
+      'Nambari ya akaunti ya benki (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Uondoaji huonekana kama uhamisho kwenda kwako mwenyewe kwa jina la akaunti yako';
 }

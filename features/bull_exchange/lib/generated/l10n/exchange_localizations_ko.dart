@@ -1222,4 +1222,510 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => '이름 또는 상표로 받는 사람 검색';
+
+  @override
+  String get recipientsScreenTitle => '수신자 선택';
+
+  @override
+  String get recipientsScreenSubtitle => '누구에게 결제하시겠습니까?';
+
+  @override
+  String get recipientsTabNew => '새 수신자';
+
+  @override
+  String get recipientsTabList => '내 법정화폐 수신자';
+
+  @override
+  String get recipientsPayoutMethod => '출금 방법';
+
+  @override
+  String get recipientsFilterByJurisdiction => '관할 지역으로 필터링:';
+
+  @override
+  String get recipientsListEmpty => '수신자를 찾을 수 없습니다.';
+
+  @override
+  String get recipientsContinue => '계속';
+
+  @override
+  String get recipientsJurisdictionAll => '전체 관할 지역';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 캐나다';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 유럽 (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 멕시코';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 코스타리카';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 아르헨티나';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 콜롬비아';
+
+  @override
+  String get recipientsTypeInteracEmail => '이메일 송금';
+
+  @override
+  String get recipientsTypeBillPayment => '청구서 납부';
+
+  @override
+  String get recipientsTypeBankTransfer => '계좌 이체';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA 이체';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI 카드';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU 아르헨티나';
+
+  @override
+  String get recipientsTypeBankAccountCo => '은행 계좌 (COP)';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => '이메일';
+
+  @override
+  String get recipientsInfoPayee => '수취인';
+
+  @override
+  String get recipientsInfoAccount => '계좌';
+
+  @override
+  String get recipientsInfoPhone => '전화번호';
+
+  @override
+  String get recipientsInfoCard => '카드';
+
+  @override
+  String get recipientsInfoLabel => '라벨';
+
+  @override
+  String get recipientsValidationFieldRequired => '이 필드는 비워둘 수 없습니다';
+
+  @override
+  String get recipientsLabelOptional => '라벨 (선택 사항)';
+
+  @override
+  String get recipientsLabelHint => '이 수신자의 라벨을 입력하세요';
+
+  @override
+  String get recipientsFieldName => '이름';
+
+  @override
+  String get recipientsFieldNameHint => '수신자 이름을 입력하세요';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => '수신자의 이름';
+
+  @override
+  String get recipientsFieldPhoneNumber => '전화번호';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => '전화번호를 입력하세요';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '국가 코드 없이 8자리';
+
+  @override
+  String get recipientsFieldDocumentType => '수신자 신분증 유형';
+
+  @override
+  String get recipientsFieldDocumentNumberHint => '수신자 신분증 번호 입력';
+
+  @override
+  String get recipientsFieldOwnerName => '예금주 이름';
+
+  @override
+  String get recipientsFieldOwnerNameHint => '예금주 이름을 입력하세요';
+
+  @override
+  String get recipientsAccountOwnerQuestion => '이 계좌는 누구의 것인가요?';
+
+  @override
+  String get recipientsAccountOwnerMine => '제 계좌입니다';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => '다른 사람의 계좌입니다';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'IBAN을 입력하세요';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'CLABE 번호를 입력하세요';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'CVU/CBU 번호를 입력하세요';
+
+  @override
+  String get recipientsFieldBankInstitution => '은행';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder => '은행 선택';
+
+  @override
+  String get recipientsValidationBankInstitution => '은행을 선택해 주세요';
+
+  @override
+  String get recipientsFieldAccountType => '계좌 유형';
+
+  @override
+  String get recipientsAccountTypeSavings => '저축예금';
+
+  @override
+  String get recipientsAccountTypeChecking => '당좌예금';
+
+  @override
+  String get recipientsFieldBankAccountNumber => '은행 계좌번호';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint => '은행 계좌번호를 입력하세요';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'Número de Identificación Tributaria';
+
+  @override
+  String get recipientsCopDocPassport => '여권';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => '수신자 cédula 번호';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      '수신자 cédula de extranjería 번호';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber => '수신자 세금 ID 번호';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber => '수신자 여권 번호';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber => '수신자 신분증 번호';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber => '수신자 민법등록 번호';
+
+  @override
+  String get recipientsFieldDebitCard => '직불카드 번호';
+
+  @override
+  String get recipientsFieldDebitCardHint => '직불카드 번호를 입력하세요';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint => '예금주 이름이 여기에 표시됩니다';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      '국가 코드(+506)를 제거하세요. 8자리 번호만 입력하세요';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      '숫자만 사용하세요 (글자나 기호 금지)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort => '전화번호 8자리를 모두 입력하세요';
+
+  @override
+  String get recipientsValidationSinpeOwner => '전화번호를 인증해 주세요';
+
+  @override
+  String get recipientsFieldEmailAddress => '이메일 주소';
+
+  @override
+  String get recipientsFieldEmailAddressHint => '이메일 주소를 입력하세요';
+
+  @override
+  String get recipientsFieldSecurityQuestion => '보안 질문';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint => '보안 질문을 입력하세요 (10~40자)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => '보안 답변';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => '보안 답변을 입력하세요';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      '보안 질문은 최소 10자 이상이어야 합니다';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40자';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => '기관 코드';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => '기관 코드를 입력하세요';
+
+  @override
+  String get recipientsFieldInstitutionNumber => '기관 번호';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => '기관 번호를 입력하세요';
+
+  @override
+  String get recipientsFieldTransitNumber => '지점 번호';
+
+  @override
+  String get recipientsFieldTransitNumberHint => '지점 번호를 입력하세요';
+
+  @override
+  String get recipientsFieldAccountNumber => '계좌번호';
+
+  @override
+  String get recipientsFieldAccountNumberHint => '계좌번호를 입력하세요';
+
+  @override
+  String get recipientsFieldDefaultComment => '기본 메모 (선택 사항)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => '기본 메모를 입력하세요';
+
+  @override
+  String get recipientsFieldCorporateAccount => '법인 계좌';
+
+  @override
+  String get recipientsFieldFirstName => '이름';
+
+  @override
+  String get recipientsFieldFirstNameHint => '이름을 입력하세요';
+
+  @override
+  String get recipientsFieldLastName => '성';
+
+  @override
+  String get recipientsFieldLastNameHint => '성을 입력하세요';
+
+  @override
+  String get recipientsFieldCorporateName => '법인명';
+
+  @override
+  String get recipientsFieldCorporateNameHint => '법인명을 입력하세요';
+
+  @override
+  String get recipientsFieldBillerName => '청구 기관명';
+
+  @override
+  String get recipientsFieldBillerNameHint => '청구 기관을 검색하여 선택하세요';
+
+  @override
+  String get recipientsValidationBillerSearchMin => '검색하려면 3자 이상 입력하세요';
+
+  @override
+  String get recipientsValidationBillerSelect => '목록에서 청구 기관을 선택해 주세요';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => '수취인 계좌번호';
+
+  @override
+  String get recipientsErrorLoadFailed => '수취인을 불러올 수 없습니다. 다시 시도해 주세요.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      '이 수취인을 저장할 수 없습니다. 정보를 확인한 후 다시 시도해 주세요.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      '이 전화번호를 확인할 수 없습니다. 번호를 확인한 후 다시 시도해 주세요.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      '청구 기관을 검색할 수 없습니다. 다시 시도해 주세요.';
+
+  @override
+  String get recipientsErrorNetwork => '인터넷 연결을 확인한 후 다시 시도해 주세요.';
+
+  @override
+  String get recipientsListPullToRetry => '아래로 당겨 다시 시도하세요.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      '이 수취인은 저장되었지만 계속할 수 없습니다. 목록에서 찾아 계속하세요.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => '기밀 SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      '이 자금 조달 옵션에 액세스할 수 있는 권한이 없습니다. KYC가 부족하거나 이 옵션이 귀하의 계정에서 사용할 수 없습니다';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      '기밀 SEPA를 활성화하려면 유럽 연합 거주자여야 합니다.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle => '수신자 활성화 중';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      '수신자를 기밀 SEPA용으로 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      '수신자가 기밀 SEPA용으로 활성화되지 않음';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      '이 수신자는 아직 기밀 SEPA용으로 활성화되지 않았습니다. 지금 활성화하고 있습니다. 몇 분 정도 걸릴 수 있습니다. 대신 즉시 및 일반 SEPA를 사용할 수 있습니다.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => '수신자 활성화됨';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      '이제 수신자가 기밀 SEPA용으로 활성화되었습니다.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa => '대신 즉시 및 일반 SEPA 사용';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle => '기밀 SEPA를 활성화할까요?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => '신규';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      '본인 명의의 개인 가상 IBAN으로 계정에 비공개로 입금하세요. 무료입니다.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      '은행에서 Bull Bitcoin으로 자금을 보내면 본인에게 송금한 것으로 표시됩니다.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode => '송금 코드가 필요하지 않습니다.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle => '중요: 이름이 일치해야 합니다';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      '은행 계좌 이름이 Bull Bitcoin 가상 IBAN 이름과 정확히 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다. 이름이 일치하지 않나요? 지원팀에 문의하세요.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => '계좌 소유자 이름';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation => '이름이 내 은행 계좌와 일치함을 확인합니다';
+
+  @override
+  String get recipientsVirtualIbanActivate => '기밀 SEPA 활성화';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle => '기밀 SEPA 활성화 중...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      '가상 IBAN을 생성하는 중입니다. 몇 분 정도 걸릴 수 있습니다.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle => '기밀 SEPA가 활성화되었습니다';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      '이제 개인 가상 IBAN을 사용해 비공개로 출금할 수 있습니다.';
+
+  @override
+  String get recipientsVirtualIbanCopied => '클립보드에 복사';
+
+  @override
+  String get recipientsVirtualIbanDone => '한국어';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => '이름 *';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => '가상 IBAN 계좌번호';
+
+  @override
+  String get recipientsVirtualIbanCountry => '은행 계좌';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC 코드';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      '이제 개인 가상 IBAN을 사용해 비공개로 입금할 수 있습니다.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails => '내 가상 IBAN 정보 보기';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      '본인 명의의 개인 가상 IBAN으로 계정에 비공개로 입금하세요. 입금은 본인에게 보낸 결제로 표시되며 송금 코드가 필요하지 않습니다.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => '은행 주소';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      '은행에서 요구하는 경우 사용할 공식 은행 주소입니다.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      '은행 계좌와 가상 IBAN 계좌의 이름이 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다.';
+
+  @override
+  String get recipientsFieldBankAccountIban => '은행 계좌번호 (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      '출금 내역은 본인 계좌명으로 자신에게 이체한 것으로 표시됩니다';
 }

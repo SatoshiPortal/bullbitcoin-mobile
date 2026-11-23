@@ -1270,4 +1270,528 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'ค้นหาชื่อหรือฉลาก';
+
+  @override
+  String get recipientsScreenTitle => 'เลือกผู้รับเงิน';
+
+  @override
+  String get recipientsScreenSubtitle => 'คุณกำลังจ่ายเงินให้ใคร?';
+
+  @override
+  String get recipientsTabNew => 'ผู้รับเงินใหม่';
+
+  @override
+  String get recipientsTabList => 'ผู้รับเงินสกุลเงิน Fiat ของฉัน';
+
+  @override
+  String get recipientsPayoutMethod => 'วิธีการจ่ายเงิน';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'กรองตามเขตอำนาจศาล:';
+
+  @override
+  String get recipientsListEmpty => 'ไม่พบผู้รับเงิน';
+
+  @override
+  String get recipientsContinue => 'อ่านต่อ';
+
+  @override
+  String get recipientsJurisdictionAll => 'ทุกเขตอำนาจศาล';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 แคนาดา';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 ยุโรป (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 เม็กซิโก';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 คอสตาริกา';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 อาร์เจนตินา';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 โคลอมเบีย';
+
+  @override
+  String get recipientsTypeInteracEmail => 'โอนเงินผ่านอีเมล';
+
+  @override
+  String get recipientsTypeBillPayment => 'ชำระบิล';
+
+  @override
+  String get recipientsTypeBankTransfer => 'โอนเงินผ่านธนาคาร';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA Transfer';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI Card';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU อาร์เจนตินา';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'บัญชีธนาคาร COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'อีเมล';
+
+  @override
+  String get recipientsInfoPayee => 'ผู้รับเงิน';
+
+  @override
+  String get recipientsInfoAccount => 'บัญชี';
+
+  @override
+  String get recipientsInfoPhone => 'โทรศัพท์';
+
+  @override
+  String get recipientsInfoCard => 'บัตร';
+
+  @override
+  String get recipientsInfoLabel => 'ป้ายกำกับ';
+
+  @override
+  String get recipientsValidationFieldRequired => 'ช่องนี้ต้องไม่เว้นว่าง';
+
+  @override
+  String get recipientsLabelOptional => 'ป้ายกำกับ (ไม่บังคับ)';
+
+  @override
+  String get recipientsLabelHint => 'กรอกป้ายกำกับสำหรับผู้รับเงินนี้';
+
+  @override
+  String get recipientsFieldName => 'ชื่อ';
+
+  @override
+  String get recipientsFieldNameHint => 'กรอกชื่อผู้รับเงิน';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'ชื่อของผู้รับเงิน';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'หมายเลขโทรศัพท์';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'กรอกหมายเลขโทรศัพท์';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '8 หลักโดยไม่มีรหัสประเทศ';
+
+  @override
+  String get recipientsFieldDocumentType => 'ประเภทบัตรของผู้รับ';
+
+  @override
+  String get recipientsFieldDocumentNumberHint => 'ป้อนหมายเลขบัตรของผู้รับ';
+
+  @override
+  String get recipientsFieldOwnerName => 'ชื่อเจ้าของบัญชี';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'กรอกชื่อเจ้าของบัญชี';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'บัญชีนี้เป็นของใคร?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'นี่คือบัญชีของฉัน';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'นี่คือบัญชีของบุคคลอื่น';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'กรอก IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'กรอกหมายเลข CLABE';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'กรอกหมายเลข CVU/CBU';
+
+  @override
+  String get recipientsFieldBankInstitution => 'สถาบันธนาคาร';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder => 'เลือกสถาบันธนาคาร';
+
+  @override
+  String get recipientsValidationBankInstitution => 'กรุณาเลือกสถาบันธนาคาร';
+
+  @override
+  String get recipientsFieldAccountType => 'ประเภทบัญชี';
+
+  @override
+  String get recipientsAccountTypeSavings => 'ออมทรัพย์';
+
+  @override
+  String get recipientsAccountTypeChecking => 'กระแสรายวัน';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'หมายเลขบัญชีธนาคาร';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint => 'กรอกหมายเลขบัญชีธนาคาร';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'หมายเลขประจำตัวผู้เสียภาษี (NIT)';
+
+  @override
+  String get recipientsCopDocPassport => 'หนังสือเดินทาง';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'หมายเลข cédula ของผู้รับ';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'หมายเลข cédula de extranjería ของผู้รับ';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber =>
+      'หมายเลขประจำตัวผู้เสียภาษีของผู้รับ';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'หมายเลขหนังสือเดินทางของผู้รับ';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'หมายเลขบัตรประจำตัวของผู้รับ';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'หมายเลขทะเบียนราษฎรของผู้รับ';
+
+  @override
+  String get recipientsFieldDebitCard => 'หมายเลขบัตรเดบิต';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'กรอกหมายเลขบัตรเดบิต';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'ชื่อเจ้าของบัญชีจะแสดงที่นี่';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'ลบรหัสประเทศ (+506) ป้อนเฉพาะหมายเลข 8 หลัก';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'ใช้ตัวเลขเท่านั้น (ไม่ใช้ตัวอักษรหรือสัญลักษณ์)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'ป้อนตัวเลขทั้ง 8 หลักของหมายเลขโทรศัพท์';
+
+  @override
+  String get recipientsValidationSinpeOwner => 'กรุณายืนยันหมายเลขโทรศัพท์';
+
+  @override
+  String get recipientsFieldEmailAddress => 'ที่อยู่อีเมล';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'กรอกที่อยู่อีเมล';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'คำถามความปลอดภัย';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'กรอกคำถามความปลอดภัย (10-40 ตัวอักษร)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'คำตอบความปลอดภัย';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'กรอกคำตอบความปลอดภัย';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'คำถามความปลอดภัยต้องมีอย่างน้อย 10 ตัวอักษร';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 ตัวอักษร';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'รหัสสถาบัน';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'กรอกรหัสสถาบัน';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'หมายเลขสถาบัน';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'กรอกหมายเลขสถาบัน';
+
+  @override
+  String get recipientsFieldTransitNumber => 'หมายเลขสาขา (Transit Number)';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'กรอกหมายเลขสาขา';
+
+  @override
+  String get recipientsFieldAccountNumber => 'หมายเลขบัญชี';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'กรอกหมายเลขบัญชี';
+
+  @override
+  String get recipientsFieldDefaultComment => 'ข้อความเริ่มต้น (ไม่บังคับ)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'กรอกข้อความเริ่มต้น';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'บัญชีนิติบุคคล';
+
+  @override
+  String get recipientsFieldFirstName => 'ชื่อจริง';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'กรอกชื่อจริง';
+
+  @override
+  String get recipientsFieldLastName => 'นามสกุล';
+
+  @override
+  String get recipientsFieldLastNameHint => 'กรอกนามสกุล';
+
+  @override
+  String get recipientsFieldCorporateName => 'ชื่อนิติบุคคล';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'กรอกชื่อนิติบุคคล';
+
+  @override
+  String get recipientsFieldBillerName => 'ชื่อผู้ออกบิล';
+
+  @override
+  String get recipientsFieldBillerNameHint => 'ค้นหาและเลือกผู้ออกบิล';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'กรอกอย่างน้อย 3 ตัวอักษรเพื่อค้นหา';
+
+  @override
+  String get recipientsValidationBillerSelect => 'กรุณาเลือกผู้ออกบิลจากรายการ';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'หมายเลขบัญชีผู้รับเงิน';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'ไม่สามารถโหลดผู้รับของคุณได้ โปรดลองอีกครั้ง';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'ไม่สามารถบันทึกผู้รับรายนี้ได้ โปรดตรวจสอบข้อมูลแล้วลองอีกครั้ง';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'เราไม่สามารถยืนยันหมายเลขโทรศัพท์นี้ได้ โปรดตรวจสอบแล้วลองอีกครั้ง';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'ไม่สามารถค้นหาผู้เรียกเก็บเงินได้ โปรดลองอีกครั้ง';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง';
+
+  @override
+  String get recipientsListPullToRetry => 'ดึงลงเพื่อลองอีกครั้ง';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'บันทึกผู้รับรายนี้แล้ว แต่เราไม่สามารถดำเนินการต่อได้ ค้นหาในรายการของคุณเพื่อดำเนินการต่อ';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'SEPA แบบเป็นความลับ';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'คุณไม่มีสิทธิ์ที่จำเป็นในการเข้าถึงตัวเลือกการเติมเงินนี้ KYC ของคุณไม่เพียงพอหรือตัวเลือกนี้ไม่พร้อมใช้งานสำหรับบัญชีของคุณ';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'คุณต้องเป็นผู้พำนักในสหภาพยุโรปเพื่อเปิดใช้งาน SEPA แบบเป็นความลับ';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'กำลังเปิดใช้งานผู้รับเงิน';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'กำลังเปิดใช้งานผู้รับเงินของคุณสำหรับ SEPA แบบเป็นความลับ อาจใช้เวลาสักครู่';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'ผู้รับเงินยังไม่ได้เปิดใช้งานสำหรับ SEPA แบบเป็นความลับ';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'ผู้รับเงินรายนี้ยังไม่ได้เปิดใช้งานสำหรับ SEPA แบบเป็นความลับ เรากำลังเปิดใช้งานอยู่ในขณะนี้ อาจใช้เวลาสักครู่ คุณสามารถใช้ SEPA แบบทันทีและแบบปกติแทนได้';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle =>
+      'เปิดใช้งานผู้รับเงินแล้ว';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'ตอนนี้ผู้รับเงินของคุณเปิดใช้งานสำหรับ SEPA แบบเป็นความลับแล้ว';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'ใช้ SEPA แบบทันทีและแบบปกติแทน';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle =>
+      'เปิดใช้งาน SEPA แบบเป็นความลับหรือไม่?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'ใหม่';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'เติมเงินเข้าบัญชีอย่างเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง ไม่มีค่าใช้จ่าย';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'เมื่อคุณโอนเงินจากธนาคารไปยัง Bull Bitcoin รายการจะแสดงเป็นการโอนให้ตัวคุณเอง';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode => 'ไม่ต้องใช้รหัสการโอน';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle => 'สำคัญ: ชื่อต้องตรงกัน';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'ชื่อบัญชีธนาคารต้องตรงกับชื่อ IBAN เสมือนของคุณที่ Bull Bitcoin ทุกตัวอักษร มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ ชื่อไม่ตรงกันใช่ไหม? ติดต่อฝ่ายสนับสนุน';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'ชื่อเจ้าของบัญชี';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'ฉันยืนยันว่าชื่อตรงกับบัญชีธนาคารของฉัน';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'เปิดใช้งาน SEPA แบบเป็นความลับ';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'กำลังเปิดใช้งาน SEPA แบบเป็นความลับ...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'กำลังสร้าง IBAN เสมือนของคุณ อาจใช้เวลาสักครู่';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle =>
+      'เปิดใช้งาน SEPA แบบเป็นความลับแล้ว';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อถอนเงินอย่างเป็นส่วนตัวได้แล้ว';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'ติดตามคลิปบอร์ด';
+
+  @override
+  String get recipientsVirtualIbanDone => 'อย่าลืม';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'ชื่อ';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'หมายเลขบัญชี IBAN เสมือน';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'ธนาคารธนาคาร';
+
+  @override
+  String get recipientsVirtualIbanBic => 'รหัส BIC';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'ตอนนี้คุณใช้ IBAN เสมือนส่วนบุคคลเพื่อฝากเงินอย่างเป็นส่วนตัวได้แล้ว';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'แสดงรายละเอียด IBAN เสมือนของฉัน';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'เติมเงินเข้าบัญชีอย่างเป็นส่วนตัวด้วย IBAN เสมือนส่วนบุคคลในชื่อของคุณเอง รายการฝากจะแสดงเป็นการชำระเงินให้ตัวคุณเอง โดยไม่ต้องใช้รหัสการโอน';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'ที่อยู่ธนาคาร';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'ที่อยู่อย่างเป็นทางการของธนาคาร ในกรณีที่ธนาคารของคุณขอ';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'ชื่อในบัญชีธนาคารและบัญชี IBAN เสมือนของคุณต้องตรงกัน มิฉะนั้นการโอนจะถูกส่งคืนโดยอัตโนมัติ';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'หมายเลขบัญชีธนาคาร (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ';
 }

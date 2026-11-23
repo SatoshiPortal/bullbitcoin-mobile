@@ -1524,5 +1524,650 @@
   "priceChartShowTooltip": "Show price chart",
   "@priceChartShowTooltip": {
     "description": "Accessible name of the Exchange home button that opens the price chart"
+  },
+  "recipientsSearchHint": "Search recipients by name or label",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
+  "recipientsScreenTitle": "Select Recipient",
+  "@recipientsScreenTitle": {
+    "description": "App bar title for the recipients selection screen."
+  },
+  "recipientsScreenSubtitle": "Who are you paying?",
+  "@recipientsScreenSubtitle": {
+    "description": "Subtitle shown on the recipients screen prompting the user to choose a recipient."
+  },
+  "recipientsTabNew": "New Recipient",
+  "@recipientsTabNew": {
+    "description": "Label for the tab to add a new recipient."
+  },
+  "recipientsTabList": "My Fiat Recipients",
+  "@recipientsTabList": {
+    "description": "Label for the tab listing the user's saved fiat recipients."
+  },
+  "recipientsPayoutMethod": "Payout method",
+  "@recipientsPayoutMethod": {
+    "description": "Label for the payout method selector in the new recipient form."
+  },
+  "recipientsFilterByJurisdiction": "Filter by Jurisdiction:",
+  "@recipientsFilterByJurisdiction": {
+    "description": "Label above the jurisdiction filter on the recipients list."
+  },
+  "recipientsListEmpty": "No recipients found.",
+  "@recipientsListEmpty": {
+    "description": "Empty state message when no recipients match the current filters."
+  },
+  "recipientsContinue": "Continue",
+  "@recipientsContinue": {
+    "description": "Continue button label used on recipient forms and the recipients list."
+  },
+  "recipientsJurisdictionAll": "All Jurisdictions",
+  "@recipientsJurisdictionAll": {
+    "description": "Dropdown option to show recipients from all jurisdictions."
+  },
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "@recipientsJurisdictionCanada": {
+    "description": "Canada jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@recipientsJurisdictionEurope": {
+    "description": "Europe (SEPA) jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "@recipientsJurisdictionMexico": {
+    "description": "Mexico jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@recipientsJurisdictionCostaRica": {
+    "description": "Costa Rica jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "@recipientsJurisdictionArgentina": {
+    "description": "Argentina jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "@recipientsJurisdictionColombia": {
+    "description": "Colombia jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsTypeInteracEmail": "Email Money Transfer",
+  "@recipientsTypeInteracEmail": {
+    "description": "Display name for the Canadian email money transfer recipient type. Do not use the Interac trademark."
+  },
+  "recipientsTypeBillPayment": "Bill Payment",
+  "@recipientsTypeBillPayment": {
+    "description": "Display name for the Canadian Bill Payment recipient type."
+  },
+  "recipientsTypeBankTransfer": "Bank Transfer",
+  "@recipientsTypeBankTransfer": {
+    "description": "Display name for the Canadian Bank Transfer recipient type."
+  },
+  "recipientsTypeSepa": "SEPA Transfer",
+  "@recipientsTypeSepa": {
+    "description": "Display name for the European SEPA Transfer recipient type."
+  },
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "@recipientsTypeSpeiClabe": {
+    "description": "Display name for the Mexican SPEI CLABE recipient type."
+  },
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "@recipientsTypeSpeiSms": {
+    "description": "Display name for the Mexican SPEI SMS recipient type."
+  },
+  "recipientsTypeSpeiCard": "SPEI Card",
+  "@recipientsTypeSpeiCard": {
+    "description": "Display name for the Mexican SPEI debit card recipient type."
+  },
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "@recipientsTypeSinpeIbanUsd": {
+    "description": "Display name for the Costa Rican SINPE IBAN USD recipient type."
+  },
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "@recipientsTypeSinpeIbanCrc": {
+    "description": "Display name for the Costa Rican SINPE IBAN CRC recipient type."
+  },
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "@recipientsTypeSinpeMovil": {
+    "description": "Display name for the Costa Rican SINPE Móvil recipient type."
+  },
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "@recipientsTypeBankAccountAr": {
+    "description": "Display name for the Argentinian CBU/CVU bank account recipient type."
+  },
+  "recipientsTypeBankAccountCo": "Bank Account COP",
+  "@recipientsTypeBankAccountCo": {
+    "description": "Display name for the Colombian bank account (COP) recipient type."
+  },
+  "recipientsTypeNequi": "Nequi",
+  "@recipientsTypeNequi": {
+    "description": "Display name for the Colombian Nequi recipient type."
+  },
+  "recipientsInfoEmail": "Email",
+  "@recipientsInfoEmail": {
+    "description": "Info-row label for an email value on a recipient list tile."
+  },
+  "recipientsInfoPayee": "Payee",
+  "@recipientsInfoPayee": {
+    "description": "Info-row label for a payee value on a recipient list tile."
+  },
+  "recipientsInfoAccount": "Account",
+  "@recipientsInfoAccount": {
+    "description": "Info-row label for a bank account value on a recipient list tile."
+  },
+  "recipientsInfoPhone": "Phone",
+  "@recipientsInfoPhone": {
+    "description": "Info-row label for a phone number value on a recipient list tile."
+  },
+  "recipientsInfoCard": "Card",
+  "@recipientsInfoCard": {
+    "description": "Info-row label for a card value on a recipient list tile."
+  },
+  "recipientsInfoLabel": "Label",
+  "@recipientsInfoLabel": {
+    "description": "Info-row label for the user-set label of a recipient on a list tile."
+  },
+  "recipientsValidationFieldRequired": "This field can't be empty",
+  "@recipientsValidationFieldRequired": {
+    "description": "Validation error shown when a required recipient form field is empty."
+  },
+  "recipientsLabelOptional": "Label (optional)",
+  "@recipientsLabelOptional": {
+    "description": "Label for the optional recipient label/nickname field in recipient forms."
+  },
+  "recipientsLabelHint": "Enter a label for this recipient",
+  "@recipientsLabelHint": {
+    "description": "Hint text for the optional recipient label/nickname field."
+  },
+  "recipientsFieldName": "Name",
+  "@recipientsFieldName": {
+    "description": "Label for the recipient name field used in several recipient forms."
+  },
+  "recipientsFieldNameHint": "Enter recipient name",
+  "@recipientsFieldNameHint": {
+    "description": "Hint text for the recipient name field."
+  },
+  "recipientsFieldRecipientNameLabel": "Name of the recipient",
+  "@recipientsFieldRecipientNameLabel": {
+    "description": "Longer label for the recipient name field used in the Colombia forms."
+  },
+  "recipientsFieldPhoneNumber": "Phone Number",
+  "@recipientsFieldPhoneNumber": {
+    "description": "Label for the recipient phone number field."
+  },
+  "recipientsFieldPhoneNumberHint": "Enter phone number",
+  "@recipientsFieldPhoneNumberHint": {
+    "description": "Hint text for the recipient phone number field."
+  },
+  "recipientsFieldSinpePhoneNumberHint": "8 digits without country code",
+  "@recipientsFieldSinpePhoneNumberHint": {
+    "description": "Hint text for the SINPE Móvil phone number field."
+  },
+  "recipientsFieldDocumentType": "Recipient ID type",
+  "@recipientsFieldDocumentType": {
+    "description": "Label for the ID document type selector in Colombia recipient forms."
+  },
+  "recipientsFieldDocumentNumberHint": "Enter recipient ID number",
+  "@recipientsFieldDocumentNumberHint": {
+    "description": "Hint text for the ID document number field."
+  },
+  "recipientsFieldOwnerName": "Owner Name",
+  "@recipientsFieldOwnerName": {
+    "description": "Label for the account owner name field in SINPE recipient forms."
+  },
+  "recipientsFieldOwnerNameHint": "Enter owner name",
+  "@recipientsFieldOwnerNameHint": {
+    "description": "Hint text for the account owner name field."
+  },
+  "recipientsAccountOwnerQuestion": "Who does this account belong to?",
+  "@recipientsAccountOwnerQuestion": {
+    "description": "Section header asking whose account is being added in recipient forms."
+  },
+  "recipientsAccountOwnerMine": "This is my account",
+  "@recipientsAccountOwnerMine": {
+    "description": "Radio option indicating the recipient account belongs to the current user."
+  },
+  "recipientsAccountOwnerSomeoneElse": "This is someone else's account",
+  "@recipientsAccountOwnerSomeoneElse": {
+    "description": "Radio option indicating the recipient account belongs to a third party."
+  },
+  "recipientsFieldIban": "IBAN",
+  "@recipientsFieldIban": {
+    "description": "Label for the IBAN field used in SEPA and SINPE forms."
+  },
+  "recipientsFieldIbanHint": "Enter IBAN",
+  "@recipientsFieldIbanHint": {
+    "description": "Hint text for the IBAN field."
+  },
+  "recipientsFieldClabe": "CLABE",
+  "@recipientsFieldClabe": {
+    "description": "Label for the Mexican CLABE field."
+  },
+  "recipientsFieldClabeHint": "Enter CLABE number",
+  "@recipientsFieldClabeHint": {
+    "description": "Hint text for the Mexican CLABE field."
+  },
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "@recipientsFieldCvuCbu": {
+    "description": "Label for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldCvuCbuHint": "Enter CVU/CBU number",
+  "@recipientsFieldCvuCbuHint": {
+    "description": "Hint text for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldBankInstitution": "Bank Institution",
+  "@recipientsFieldBankInstitution": {
+    "description": "Label for the bank institution selector in the Colombia bank account form."
+  },
+  "recipientsFieldBankInstitutionPlaceholder": "Select Bank Institution",
+  "@recipientsFieldBankInstitutionPlaceholder": {
+    "description": "Placeholder option in the bank institution selector."
+  },
+  "recipientsValidationBankInstitution": "Please select a bank institution",
+  "@recipientsValidationBankInstitution": {
+    "description": "Validation error when no bank institution is selected."
+  },
+  "recipientsFieldAccountType": "Account Type",
+  "@recipientsFieldAccountType": {
+    "description": "Label for the bank account type selector in the Colombia bank account form."
+  },
+  "recipientsAccountTypeSavings": "Savings",
+  "@recipientsAccountTypeSavings": {
+    "description": "Bank account type option for savings."
+  },
+  "recipientsAccountTypeChecking": "Checking",
+  "@recipientsAccountTypeChecking": {
+    "description": "Bank account type option for checking."
+  },
+  "recipientsFieldBankAccountNumber": "Bank Account Number",
+  "@recipientsFieldBankAccountNumber": {
+    "description": "Label for the bank account number field in the Colombia bank account form."
+  },
+  "recipientsFieldBankAccountNumberHint": "Enter bank account number",
+  "@recipientsFieldBankAccountNumberHint": {
+    "description": "Hint text for the bank account number field."
+  },
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "@recipientsCopDocCc": {
+    "description": "Colombia ID document type: citizenship card."
+  },
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "@recipientsCopDocCe": {
+    "description": "Colombia ID document type: foreign resident ID."
+  },
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "@recipientsCopDocNit": {
+    "description": "Colombia ID document type: tax identification number."
+  },
+  "recipientsCopDocPassport": "Passport",
+  "@recipientsCopDocPassport": {
+    "description": "Colombia ID document type: passport."
+  },
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "@recipientsCopDocTi": {
+    "description": "Colombia ID document type: minor identity card."
+  },
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "@recipientsCopDocRegistroCivil": {
+    "description": "Colombia ID document type: civil registry."
+  },
+  "recipientsCopDocCcRecipientNumber": "Recipient cédula number",
+  "@recipientsCopDocCcRecipientNumber": {
+    "description": "Label for the recipient cédula de ciudadanía number field."
+  },
+  "recipientsCopDocCeRecipientNumber": "Recipient cédula de extranjería number",
+  "@recipientsCopDocCeRecipientNumber": {
+    "description": "Label for the recipient cédula de extranjería number field."
+  },
+  "recipientsCopDocNitRecipientNumber": "Recipient tax ID number",
+  "@recipientsCopDocNitRecipientNumber": {
+    "description": "Label for the recipient NIT number field."
+  },
+  "recipientsCopDocPassportRecipientNumber": "Recipient passport number",
+  "@recipientsCopDocPassportRecipientNumber": {
+    "description": "Label for the recipient passport number field."
+  },
+  "recipientsCopDocTiRecipientNumber": "Recipient identity card number",
+  "@recipientsCopDocTiRecipientNumber": {
+    "description": "Label for the recipient tarjeta de identidad number field."
+  },
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient civil registry number",
+  "@recipientsCopDocRegistroCivilRecipientNumber": {
+    "description": "Label for the recipient registro civil number field."
+  },
+  "recipientsFieldDebitCard": "Debit Card Number",
+  "@recipientsFieldDebitCard": {
+    "description": "Label for the debit card number field in the SPEI Card form."
+  },
+  "recipientsFieldDebitCardHint": "Enter debit card number",
+  "@recipientsFieldDebitCardHint": {
+    "description": "Hint text for the debit card number field."
+  },
+  "recipientsFieldOwnerNameSinpeHint": "Owner name will appear here",
+  "@recipientsFieldOwnerNameSinpeHint": {
+    "description": "Hint text for the owner name field while SINPE Móvil validation runs."
+  },
+  "recipientsValidationSinpePhoneCountryCode": "Remove the country code (+506). Enter only the 8-digit number",
+  "@recipientsValidationSinpePhoneCountryCode": {
+    "description": "Validation error when a SINPE Móvil phone number includes the Costa Rica country code."
+  },
+  "recipientsValidationSinpePhoneInvalidChars": "Use digits only (no letters or symbols)",
+  "@recipientsValidationSinpePhoneInvalidChars": {
+    "description": "Validation error when a SINPE Móvil phone number contains non-digit characters."
+  },
+  "recipientsValidationSinpePhoneTooShort": "Enter all 8 digits of the phone number",
+  "@recipientsValidationSinpePhoneTooShort": {
+    "description": "Validation error when a SINPE Móvil phone number has fewer than 8 digits."
+  },
+  "recipientsValidationSinpeOwner": "Please validate the phone number",
+  "@recipientsValidationSinpeOwner": {
+    "description": "Validation error when SINPE Móvil owner name is not validated yet."
+  },
+  "recipientsFieldEmailAddress": "Email Address",
+  "@recipientsFieldEmailAddress": {
+    "description": "Label for the email address field in the Interac e-Transfer form."
+  },
+  "recipientsFieldEmailAddressHint": "Enter email address",
+  "@recipientsFieldEmailAddressHint": {
+    "description": "Hint text for the email address field."
+  },
+  "recipientsFieldSecurityQuestion": "Security Question",
+  "@recipientsFieldSecurityQuestion": {
+    "description": "Label for the security question field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityQuestionHint": "Enter security question (10-40 characters)",
+  "@recipientsFieldSecurityQuestionHint": {
+    "description": "Hint text for the security question field."
+  },
+  "recipientsFieldSecurityAnswer": "Security Answer",
+  "@recipientsFieldSecurityAnswer": {
+    "description": "Label for the security answer field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityAnswerHint": "Enter security answer",
+  "@recipientsFieldSecurityAnswerHint": {
+    "description": "Hint text for the security answer field."
+  },
+  "recipientsValidationSecurityQuestionMin": "Security question must be at least 10 characters",
+  "@recipientsValidationSecurityQuestionMin": {
+    "description": "Validation error shown when the security question is shorter than 10 characters."
+  },
+  "recipientsCharCounter": "{count}/40 characters",
+  "@recipientsCharCounter": {
+    "description": "Character counter displayed below the security question field.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recipientsFieldInstitutionCode": "Institution Code",
+  "@recipientsFieldInstitutionCode": {
+    "description": "Label for the institution code field in SPEI SMS/Card forms."
+  },
+  "recipientsFieldInstitutionCodeHint": "Enter institution code",
+  "@recipientsFieldInstitutionCodeHint": {
+    "description": "Hint text for the institution code field."
+  },
+  "recipientsFieldInstitutionNumber": "Institution Number",
+  "@recipientsFieldInstitutionNumber": {
+    "description": "Label for the institution number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldInstitutionNumberHint": "Enter institution number",
+  "@recipientsFieldInstitutionNumberHint": {
+    "description": "Hint text for the institution number field."
+  },
+  "recipientsFieldTransitNumber": "Transit Number",
+  "@recipientsFieldTransitNumber": {
+    "description": "Label for the transit number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldTransitNumberHint": "Enter transit number",
+  "@recipientsFieldTransitNumberHint": {
+    "description": "Hint text for the transit number field."
+  },
+  "recipientsFieldAccountNumber": "Account Number",
+  "@recipientsFieldAccountNumber": {
+    "description": "Label for the account number field used in multiple recipient forms."
+  },
+  "recipientsFieldAccountNumberHint": "Enter account number",
+  "@recipientsFieldAccountNumberHint": {
+    "description": "Hint text for the account number field."
+  },
+  "recipientsFieldDefaultComment": "Default Comment (optional)",
+  "@recipientsFieldDefaultComment": {
+    "description": "Label for the optional default comment field in the Canadian bank transfer form."
+  },
+  "recipientsFieldDefaultCommentHint": "Enter default comment",
+  "@recipientsFieldDefaultCommentHint": {
+    "description": "Hint text for the optional default comment field."
+  },
+  "recipientsFieldCorporateAccount": "Corporate account",
+  "@recipientsFieldCorporateAccount": {
+    "description": "Checkbox label indicating the SEPA recipient is a corporate account."
+  },
+  "recipientsFieldFirstName": "First Name",
+  "@recipientsFieldFirstName": {
+    "description": "Label for the first name field in the SEPA recipient form."
+  },
+  "recipientsFieldFirstNameHint": "Enter first name",
+  "@recipientsFieldFirstNameHint": {
+    "description": "Hint text for the first name field."
+  },
+  "recipientsFieldLastName": "Last Name",
+  "@recipientsFieldLastName": {
+    "description": "Label for the last name field in the SEPA recipient form."
+  },
+  "recipientsFieldLastNameHint": "Enter last name",
+  "@recipientsFieldLastNameHint": {
+    "description": "Hint text for the last name field."
+  },
+  "recipientsFieldCorporateName": "Corporate Name",
+  "@recipientsFieldCorporateName": {
+    "description": "Label for the corporate name field in the SEPA recipient form."
+  },
+  "recipientsFieldCorporateNameHint": "Enter corporate name",
+  "@recipientsFieldCorporateNameHint": {
+    "description": "Hint text for the corporate name field."
+  },
+  "recipientsFieldBillerName": "Biller Name",
+  "@recipientsFieldBillerName": {
+    "description": "Label for the biller search field in the Canadian bill payment form."
+  },
+  "recipientsFieldBillerNameHint": "Search and select a biller",
+  "@recipientsFieldBillerNameHint": {
+    "description": "Hint text for the biller search field."
+  },
+  "recipientsValidationBillerSearchMin": "Enter 3 or more characters to search",
+  "@recipientsValidationBillerSearchMin": {
+    "description": "Validation error shown when biller search input is too short."
+  },
+  "recipientsValidationBillerSelect": "Please select a biller from the list",
+  "@recipientsValidationBillerSelect": {
+    "description": "Validation error shown when no biller is selected from the list."
+  },
+  "recipientsFieldPayeeAccountNumber": "Payee Account Number",
+  "@recipientsFieldPayeeAccountNumber": {
+    "description": "Label for the payee account number field in the bill payment form."
+  },
+  "recipientsErrorLoadFailed": "Your recipients could not be loaded. Please try again.",
+  "@recipientsErrorLoadFailed": {
+    "description": "Shown when the recipient list cannot be loaded from the API."
+  },
+  "recipientsErrorSaveFailed": "This recipient could not be saved. Please check the details and try again.",
+  "@recipientsErrorSaveFailed": {
+    "description": "Shown when creating a recipient fails."
+  },
+  "recipientsErrorSinpeLookupFailed": "We could not verify this phone number. Please check it and try again.",
+  "@recipientsErrorSinpeLookupFailed": {
+    "description": "Shown when the SINPE phone number lookup fails."
+  },
+  "recipientsErrorBillerSearchFailed": "Billers could not be searched. Please try again.",
+  "@recipientsErrorBillerSearchFailed": {
+    "description": "Shown when searching the CAD biller directory fails."
+  },
+  "recipientsErrorNetwork": "Check your internet connection and try again.",
+  "@recipientsErrorNetwork": {
+    "description": "Shown when a recipients request could not reach the server or timed out."
+  },
+  "recipientsListPullToRetry": "Pull down to retry.",
+  "@recipientsListPullToRetry": {
+    "description": "Hint under a recipients load failure. A pull-to-refresh affordance of the list screen, kept separate from the failure message itself."
+  },
+  "recipientsErrorSavedButNotSelected": "This recipient was saved, but we could not continue. Find them in your list to carry on.",
+  "@recipientsErrorSavedButNotSelected": {
+    "description": "Shown when a recipient saved successfully but the calling flow could not continue. Must not imply the save failed, or the user retries and creates a duplicate."
+  },
+  "recipientsTypeConfidentialSepa": "Confidential SEPA",
+  "@recipientsTypeConfidentialSepa": {
+    "description": "Recipient type label for a Confidential SEPA recipient"
+  },
+  "recipientsErrorVirtualIbanNotAvailable": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@recipientsErrorVirtualIbanNotAvailable": {
+    "description": "Shown when the user cannot get a virtual IBAN because their KYC is insufficient or Confidential SEPA is not offered to them"
+  },
+  "recipientsErrorEuResidencyRequired": "You need to be a resident of the European Union to activate Confidential SEPA.",
+  "@recipientsErrorEuResidencyRequired": {
+    "description": "Shown when virtual IBAN creation is rejected because the user is not an EU resident"
+  },
+  "recipientsConfidentialSepaActivatingTitle": "Activating recipient",
+  "@recipientsConfidentialSepaActivatingTitle": {
+    "description": "Title of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaActivatingDescription": "Your recipient is being activated for Confidential SEPA. This may take a few minutes. We'll notify you when ready.",
+  "@recipientsConfidentialSepaActivatingDescription": {
+    "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
+  },
+  "recipientsConfidentialSepaNotActivatedTitle": "Recipient not activated for Confidential SEPA",
+  "@recipientsConfidentialSepaNotActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaNotActivatedDescription": "This recipient is not activated for Confidential SEPA yet. We are activating it now. This may take a few minutes. We'll notify you when ready. You can use Instant and Regular SEPA instead.",
+  "@recipientsConfidentialSepaNotActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen when the recipient is not activated yet"
+  },
+  "recipientsConfidentialSepaActivatedTitle": "Recipient activated",
+  "@recipientsConfidentialSepaActivatedTitle": {
+    "description": "Title of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaActivatedDescription": "Your recipient is now active for Confidential SEPA.",
+  "@recipientsConfidentialSepaActivatedDescription": {
+    "description": "Description of the Confidential SEPA activation screen once the recipient is active"
+  },
+  "recipientsConfidentialSepaUseRegularSepa": "Use Instant and Regular SEPA instead",
+  "@recipientsConfidentialSepaUseRegularSepa": {
+    "description": "Button that pays the recipient through regular SEPA instead of Confidential SEPA"
+  },
+  "recipientsReturnHome": "Return Home",
+  "@recipientsReturnHome": {
+    "description": "Button that leaves the activation screen and returns to the app home; activation continues and the user is notified when ready"
+  },
+  "recipientsVirtualIbanIntroTitle": "Activate Confidential SEPA?",
+  "@recipientsVirtualIbanIntroTitle": {
+    "description": "Title of the virtual IBAN onboarding screen"
+  },
+  "recipientsVirtualIbanNewBadge": "New",
+  "@recipientsVirtualIbanNewBadge": {
+    "description": "Badge that marks Confidential SEPA as a new feature"
+  },
+  "recipientsVirtualIbanIntroDescription": "Fund your account privately using a personal virtual IBAN in your own name. It's free.",
+  "@recipientsVirtualIbanIntroDescription": {
+    "description": "Explains what the virtual IBAN is on the onboarding screen"
+  },
+  "recipientsVirtualIbanIntroSelfTransfer": "When sending funds to Bull Bitcoin from your bank, it appears as a transfer to yourself.",
+  "@recipientsVirtualIbanIntroSelfTransfer": {
+    "description": "Bullet point: a deposit appears as a transfer to yourself"
+  },
+  "recipientsVirtualIbanIntroNoTransferCode": "No transfer code required.",
+  "@recipientsVirtualIbanIntroNoTransferCode": {
+    "description": "Bullet point: no transfer code is needed"
+  },
+  "recipientsVirtualIbanNameWarningTitle": "Important: Name Matching Required",
+  "@recipientsVirtualIbanNameWarningTitle": {
+    "description": "Title of the warning that the bank account name must match"
+  },
+  "recipientsVirtualIbanNameWarningDescription": "Bank account name must exactly match your Bull Bitcoin virtual IBAN name, or the transfer will be returned automatically. Names don't match? Contact support.",
+  "@recipientsVirtualIbanNameWarningDescription": {
+    "description": "Warning that a transfer from a bank account with a different name is returned"
+  },
+  "recipientsVirtualIbanAccountOwnerName": "Account Owner Name",
+  "@recipientsVirtualIbanAccountOwnerName": {
+    "description": "Label above the name the virtual IBAN is issued in"
+  },
+  "recipientsVirtualIbanNameConfirmation": "I confirm the name matches my bank account(s)",
+  "@recipientsVirtualIbanNameConfirmation": {
+    "description": "Checkbox to confirm the name matches the user's bank accounts"
+  },
+  "recipientsVirtualIbanActivate": "Activate Confidential SEPA",
+  "@recipientsVirtualIbanActivate": {
+    "description": "Button that creates the virtual IBAN"
+  },
+  "recipientsVirtualIbanActivatingTitle": "Activating Confidential SEPA...",
+  "@recipientsVirtualIbanActivatingTitle": {
+    "description": "Title while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatingDescription": "Creating your virtual IBAN. This may take a few minutes. We'll notify you when ready.",
+  "@recipientsVirtualIbanActivatingDescription": {
+    "description": "Description while the virtual IBAN is being created"
+  },
+  "recipientsVirtualIbanActivatedTitle": "Confidential SEPA Activated",
+  "@recipientsVirtualIbanActivatedTitle": {
+    "description": "Title once the virtual IBAN is active"
+  },
+  "recipientsVirtualIbanActivatedDescription": "You can now use your personal virtual IBAN to withdraw money privately.",
+  "@recipientsVirtualIbanActivatedDescription": {
+    "description": "Description once the virtual IBAN is active, before creating a Confidential SEPA recipient for a withdrawal"
+  },
+  "recipientsVirtualIbanCopied": "Copied to clipboard",
+  "@recipientsVirtualIbanCopied": {
+    "description": "Toast shown after copying a virtual IBAN detail"
+  },
+  "recipientsVirtualIbanDone": "Done",
+  "@recipientsVirtualIbanDone": {
+    "description": "Button that leaves the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanRecipientName": "Recipient name",
+  "@recipientsVirtualIbanRecipientName": {
+    "description": "Label of the name to use as recipient when depositing to the virtual IBAN"
+  },
+  "recipientsVirtualIbanIbanLabel": "Virtual IBAN Account Number",
+  "@recipientsVirtualIbanIbanLabel": {
+    "description": "Label of the virtual IBAN account number"
+  },
+  "recipientsVirtualIbanCountry": "Bank account country",
+  "@recipientsVirtualIbanCountry": {
+    "description": "Label of the country of the virtual IBAN account"
+  },
+  "recipientsVirtualIbanBic": "BIC code",
+  "@recipientsVirtualIbanBic": {
+    "description": "Label of the BIC code of the virtual IBAN account"
+  },
+  "recipientsVirtualIbanActivatedFundingDescription": "You can now use your personal virtual IBAN to deposit money privately.",
+  "@recipientsVirtualIbanActivatedFundingDescription": {
+    "description": "Description once the virtual IBAN is active, when started from funding"
+  },
+  "recipientsVirtualIbanShowDetails": "Show my virtual IBAN details",
+  "@recipientsVirtualIbanShowDetails": {
+    "description": "Button that shows the virtual IBAN deposit details"
+  },
+  "recipientsVirtualIbanDetailsDescription": "Fund your account privately using a personal virtual IBAN in your own name. The deposit will appear as a payment to yourself, with no transfer code required.",
+  "@recipientsVirtualIbanDetailsDescription": {
+    "description": "Explains how to deposit with the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddress": "Bank address",
+  "@recipientsVirtualIbanBankAddress": {
+    "description": "Label of the address of the bank that holds the virtual IBAN"
+  },
+  "recipientsVirtualIbanBankAddressHelp": "The official bank address, in case your bank asks for it.",
+  "@recipientsVirtualIbanBankAddressHelp": {
+    "description": "Explains when the bank address of the virtual IBAN is needed"
+  },
+  "recipientsConfidentialSepaNameMustMatchHint": "Names must match between your bank and virtual IBAN accounts or transfers will be returned automatically.",
+  "@recipientsConfidentialSepaNameMustMatchHint": {
+    "description": "Hint under the read-only account owner name on the Confidential SEPA recipient form"
+  },
+  "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
+  "@recipientsFieldBankAccountIban": {
+    "description": "Label for the destination bank account IBAN on the SEPA recipient form"
+  },
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
+  "@recipientsTypeConfidentialSepaDescription": {
+    "description": "Explanation of Confidential SEPA in the payout method selector"
   }
 }

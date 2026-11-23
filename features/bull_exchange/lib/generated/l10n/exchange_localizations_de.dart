@@ -1311,4 +1311,542 @@ class ExchangeLocalizationsDe extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'Empfänger anhand Name oder Label suchen…';
+
+  @override
+  String get recipientsScreenTitle => 'Empfänger auswählen';
+
+  @override
+  String get recipientsScreenSubtitle => 'An wen zahlen Sie?';
+
+  @override
+  String get recipientsTabNew => 'Neuer Empfänger';
+
+  @override
+  String get recipientsTabList => 'Meine Fiat-Empfänger';
+
+  @override
+  String get recipientsPayoutMethod => 'Auszahlungsmethode';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'Nach Land filtern:';
+
+  @override
+  String get recipientsListEmpty => 'Keine Empfänger gefunden.';
+
+  @override
+  String get recipientsContinue => 'Fortfahren';
+
+  @override
+  String get recipientsJurisdictionAll => 'Alle Länder';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Kanada';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Europa (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Mexiko';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Costa Rica';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Argentinien';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Kolumbien';
+
+  @override
+  String get recipientsTypeInteracEmail => 'E-Mail-Geldtransfer';
+
+  @override
+  String get recipientsTypeBillPayment => 'Rechnungszahlung';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Banküberweisung';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA-Überweisung';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI Karte';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Mobil (Costa Rica)';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Argentinien';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Bankkonto COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'E-Mail';
+
+  @override
+  String get recipientsInfoPayee => 'Zahlungsempfänger';
+
+  @override
+  String get recipientsInfoAccount => 'Konto';
+
+  @override
+  String get recipientsInfoPhone => 'Telefon';
+
+  @override
+  String get recipientsInfoCard => 'Karte';
+
+  @override
+  String get recipientsInfoLabel => 'Bezeichnung';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'Dieses Feld darf nicht leer sein';
+
+  @override
+  String get recipientsLabelOptional => 'Bezeichnung (optional)';
+
+  @override
+  String get recipientsLabelHint =>
+      'Geben Sie eine Bezeichnung für diesen Empfänger ein';
+
+  @override
+  String get recipientsFieldName => 'Name';
+
+  @override
+  String get recipientsFieldNameHint => 'Name des Empfängers eingeben';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Name des Empfängers';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Telefonnummer';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Telefonnummer eingeben';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint =>
+      '8 Ziffern ohne Landesvorwahl';
+
+  @override
+  String get recipientsFieldDocumentType => 'Ausweistyp des Empfängers';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'Ausweisnummer des Empfängers eingeben';
+
+  @override
+  String get recipientsFieldOwnerName => 'Name des Eigentümers';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Name des Eigentümers eingeben';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Wem gehört dieses Konto?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Dies ist mein Konto';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse =>
+      'Dies ist das Konto einer anderen Person';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'IBAN eingeben';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'CLABE-Nummer eingeben';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'Geben Sie die CVU/CBU-Nummer ein';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Bankinstitut';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'Bankinstitut auswählen';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'Bitte wählen Sie ein Bankinstitut aus.';
+
+  @override
+  String get recipientsFieldAccountType => 'Kontotyp';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Sparkonto';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Girokonto';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Bankkontonummer';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'Geben Sie die Bankkontonummer ein';
+
+  @override
+  String get recipientsCopDocCc => 'Bürgerausweis (Kolumbien)';
+
+  @override
+  String get recipientsCopDocCe => 'Ausländerausweis (Kolumbien)';
+
+  @override
+  String get recipientsCopDocNit => 'Steueridentifikationsnummer (Kolumbien)';
+
+  @override
+  String get recipientsCopDocPassport => 'Reisepass';
+
+  @override
+  String get recipientsCopDocTi => 'Identitätskarte (Kolumbien)';
+
+  @override
+  String get recipientsCopDocRegistroCivil =>
+      'Personenstandsregister (Kolumbien)';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber =>
+      'Bürgerausweisnummer des Empfängers (Kolumbien)';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Ausländerausweisnummer des Empfängers (Kolumbien)';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber =>
+      'Steuer-ID-Nummer des Empfängers';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'Reisepassnummer des Empfängers';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Personalausweisnummer des Empfängers';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Standesamt-Registernummer des Empfängers';
+
+  @override
+  String get recipientsFieldDebitCard => 'Debitkartennummer';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Debitkartennummer eingeben';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Der Name des Kontoinhabers erscheint hier';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Entfernen Sie die Landesvorwahl (+506). Geben Sie nur die 8-stellige Nummer ein.';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Nur Ziffern verwenden (keine Buchstaben oder Symbole)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Geben Sie alle 8 Ziffern der Telefonnummer ein.';
+
+  @override
+  String get recipientsValidationSinpeOwner =>
+      'Bitte überprüfen Sie die Telefonnummer.';
+
+  @override
+  String get recipientsFieldEmailAddress => 'E-Mail-Adresse';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'E-Mail-Adresse eingeben';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Sicherheitsfrage';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Sicherheitsfrage eingeben (10–40 Zeichen).';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Sicherheitsantwort';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'Sicherheitsantwort eingeben';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Die Sicherheitsfrage muss mindestens 10 Zeichen lang sein';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 Zeichen';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Institutscode';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Institutscode eingeben';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Institutsnummer';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'Institutsnummer eingeben';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Transitnummer';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Transitnummer eingeben';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Kontonummer';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Kontonummer eingeben';
+
+  @override
+  String get recipientsFieldDefaultComment => 'Standardkommentar (optional)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'Standardkommentar eingeben';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Firmenkonto';
+
+  @override
+  String get recipientsFieldFirstName => 'Vorname';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Vornamen eingeben';
+
+  @override
+  String get recipientsFieldLastName => 'Nachname';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Nachnamen eingeben';
+
+  @override
+  String get recipientsFieldCorporateName => 'Firmenname';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Firmenname eingeben';
+
+  @override
+  String get recipientsFieldBillerName => 'Name des Rechnungsstellers';
+
+  @override
+  String get recipientsFieldBillerNameHint =>
+      'Rechnungssteller suchen und auswählen';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Geben Sie 3 oder mehr Zeichen für die Suchen Sie ein.';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Bitte wählen Sie einen Rechnungssteller aus der Liste.';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'Kontonummer des Empfängers';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Ihre Empfänger konnten nicht geladen werden. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Dieser Empfänger konnte nicht gespeichert werden. Bitte überprüfen Sie die Angaben und versuchen Sie es erneut.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Wir konnten diese Telefonnummer nicht überprüfen. Bitte prüfen Sie sie und versuchen Sie es erneut.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Die Suche nach Zahlungsempfängern ist fehlgeschlagen. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+
+  @override
+  String get recipientsListPullToRetry => 'Zum Wiederholen nach unten ziehen.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Dieser Empfänger wurde gespeichert, aber wir konnten nicht fortfahren. Sie finden ihn in Ihrer Liste.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'Vertrauliches SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'Sie haben nicht die erforderlichen Berechtigungen, um auf diese Finanzierungsoption zuzugreifen. Entweder ist Ihr KYC unzureichend oder diese Option ist für Ihr Konto nicht verfügbar.';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Sie müssen in der Europäischen Union ansässig sein, um vertrauliches SEPA zu aktivieren.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'Empfänger wird aktiviert';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Ihr Empfänger wird für Vertrauliches SEPA aktiviert. Das kann einige Minuten dauern.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Empfänger nicht für Vertrauliches SEPA aktiviert';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Dieser Empfänger ist noch nicht für Vertrauliches SEPA aktiviert. Wir aktivieren ihn gerade. Das kann einige Minuten dauern. Sie können stattdessen Sofort- und Standard-SEPA verwenden.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => 'Empfänger aktiviert';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Ihr Empfänger ist jetzt für Vertrauliches SEPA aktiviert.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Stattdessen Sofort- und Standard-SEPA verwenden';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle =>
+      'Vertrauliches SEPA aktivieren?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Neu';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Zahlen Sie privat auf Ihr Konto ein – mit einer persönlichen virtuellen IBAN auf Ihren eigenen Namen. Kostenlos.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Wenn Sie Geld von Ihrer Bank an Bull Bitcoin senden, erscheint es als Überweisung an sich selbst.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Kein Überweisungscode erforderlich.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Wichtig: Namensübereinstimmung erforderlich';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Der Name des Bankkontos muss exakt mit dem Namen Ihrer virtuellen Bull Bitcoin IBAN übereinstimmen, sonst wird die Überweisung automatisch zurückgesendet. Die Namen stimmen nicht überein? Kontaktieren Sie den Support.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'Name des Kontoinhabers';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'Ich bestätige, dass der Name mit meinem Bankkonto bzw. meinen Bankkonten übereinstimmt';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'Vertrauliches SEPA aktivieren';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'Vertrauliches SEPA wird aktiviert…';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Ihre virtuelle IBAN wird erstellt. Dies kann einige Minuten dauern.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle =>
+      'Vertrauliches SEPA aktiviert';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Sie können jetzt Ihre persönliche virtuelle IBAN nutzen, um privat Geld auszuzahlen.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'In die Zwischenablage kopiert';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Fertig';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Empfängername';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'Virtuelle IBAN-Kontonummer';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Land des Bankkontos';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC-Code';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Sie können jetzt Ihre persönliche virtuelle IBAN nutzen, um privat Geld einzuzahlen.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Details meiner virtuellen IBAN anzeigen';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Zahlen Sie privat auf Ihr Konto ein – mit einer persönlichen virtuellen IBAN auf Ihren eigenen Namen. Die Einzahlung erscheint als Zahlung an Sie selbst, ohne dass ein Überweisungscode erforderlich ist.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Bankadresse';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Die offizielle Bankadresse, falls Ihre Bank diese benötigt.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Die Namen Ihres Bankkontos und Ihres virtuellen IBAN-Kontos müssen übereinstimmen, sonst werden Überweisungen automatisch zurückgesendet.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'Bankkontonummer (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen.';
 }

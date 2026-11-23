@@ -1306,4 +1306,548 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'მოძებნეთ მიმღებები სახელით ან ლეიბლით';
+
+  @override
+  String get recipientsScreenTitle => 'აირჩიეთ მიმღები';
+
+  @override
+  String get recipientsScreenSubtitle => 'ვის უხდით?';
+
+  @override
+  String get recipientsTabNew => 'ახალი მიმღები';
+
+  @override
+  String get recipientsTabList => 'ჩემი ფიატ მიმღებები';
+
+  @override
+  String get recipientsPayoutMethod => 'გადახდის მეთოდი';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'გაფილტვრა იურისდიქციით:';
+
+  @override
+  String get recipientsListEmpty => 'მიმღებები ვერ მოიძებნა.';
+
+  @override
+  String get recipientsContinue => 'გაგრძელება';
+
+  @override
+  String get recipientsJurisdictionAll => 'ყველა იურისდიქცია';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 კანადა';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 ევროპა (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 მექსიკა';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 კოსტა-რიკა';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 არგენტინა';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 კოლუმბია';
+
+  @override
+  String get recipientsTypeInteracEmail => 'ფულის გადარიცხვა ელფოსტით';
+
+  @override
+  String get recipientsTypeBillPayment => 'ინვოისის გადახდა';
+
+  @override
+  String get recipientsTypeBankTransfer => 'საბანკო გადარიცხვა';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA გადარიცხვა';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI ბარათი';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU არგენტინა';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'საბანკო ანგარიში (COP)';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'ელფოსტა';
+
+  @override
+  String get recipientsInfoPayee => 'გადამხდელი';
+
+  @override
+  String get recipientsInfoAccount => 'ანგარიში';
+
+  @override
+  String get recipientsInfoPhone => 'ტელეფონი';
+
+  @override
+  String get recipientsInfoCard => 'ბარათი';
+
+  @override
+  String get recipientsInfoLabel => 'იარლიყი';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'ეს ველი არ შეიძლება იყოს ცარიელი';
+
+  @override
+  String get recipientsLabelOptional => 'იარლიყი (არასავალდებულო)';
+
+  @override
+  String get recipientsLabelHint => 'შეიყვანეთ ამ მიმღების იარლიყი';
+
+  @override
+  String get recipientsFieldName => 'სახელი';
+
+  @override
+  String get recipientsFieldNameHint => 'შეიყვანეთ მიმღების სახელი';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'მიმღების სახელი';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'ტელეფონის ნომერი';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'შეიყვანეთ ტელეფონის ნომერი';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint =>
+      '8 ციფრი ქვეყნის კოდის გარეშე';
+
+  @override
+  String get recipientsFieldDocumentType => 'მიმღების პირადობის ტიპი';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'შეიყვანეთ მიმღების პირადობის ნომერი';
+
+  @override
+  String get recipientsFieldOwnerName => 'მფლობელის სახელი';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'შეიყვანეთ მფლობელის სახელი';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'ვის ეკუთვნის ეს ანგარიში?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'ეს ჩემი ანგარიშია';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'ეს სხვის ანგარიშია';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'შეიყვანეთ IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'შეიყვანეთ CLABE ნომერი';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'შეიყვანეთ CVU/CBU ნომერი';
+
+  @override
+  String get recipientsFieldBankInstitution => 'საბანკო დაწესებულება';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'აირჩიეთ საბანკო დაწესებულება';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'გთხოვთ, აირჩიოთ საბანკო დაწესებულება';
+
+  @override
+  String get recipientsFieldAccountType => 'ანგარიშის ტიპი';
+
+  @override
+  String get recipientsAccountTypeSavings => 'შემნახველი';
+
+  @override
+  String get recipientsAccountTypeChecking => 'მიმდინარე';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'საბანკო ანგარიშის ნომერი';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'შეიყვანეთ საბანკო ანგარიშის ნომერი';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'საგადასახადო საიდენტიფიკაციო ნომერი (NIT)';
+
+  @override
+  String get recipientsCopDocPassport => 'პასპორტი';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'მიმღების cédula ნომერი';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'მიმღების cédula de extranjería ნომერი';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber =>
+      'მიმღების საგადასახადო ID ნომერი';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'მიმღების პასპორტის ნომერი';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'მიმღების პირადობის მოწმობის ნომერი';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'მიმღების სამოქალაქო რეესტრის ნომერი';
+
+  @override
+  String get recipientsFieldDebitCard => 'სადებეტო ბარათის ნომერი';
+
+  @override
+  String get recipientsFieldDebitCardHint =>
+      'შეიყვანეთ სადებეტო ბარათის ნომერი';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'მფლობელის სახელი გამოჩნდება აქ';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'წაშალეთ ქვეყნის კოდი (+506). შეიყვანეთ მხოლოდ 8-ციფრიანი ნომერი';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'გამოიყენეთ მხოლოდ ციფრები (ასოები ან სიმბოლოები არ შეიძლება)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'შეიყვანეთ ტელეფონის ნომრის ყველა 8 ციფრი';
+
+  @override
+  String get recipientsValidationSinpeOwner =>
+      'გთხოვთ, დაადასტუროთ ტელეფონის ნომერი';
+
+  @override
+  String get recipientsFieldEmailAddress => 'ელფოსტის მისამართი';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'შეიყვანეთ ელფოსტის მისამართი';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'უსაფრთხოების კითხვა';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'შეიყვანეთ უსაფრთხოების კითხვა (10-40 სიმბოლო)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'უსაფრთხოების პასუხი';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint =>
+      'შეიყვანეთ უსაფრთხოების პასუხი';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'უსაფრთხოების კითხვა უნდა შეიცავდეს მინიმუმ 10 სიმბოლოს';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 სიმბოლო';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'დაწესებულების კოდი';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint =>
+      'შეიყვანეთ დაწესებულების კოდი';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'დაწესებულების ნომერი';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint =>
+      'შეიყვანეთ დაწესებულების ნომერი';
+
+  @override
+  String get recipientsFieldTransitNumber => 'ფილიალის ნომერი (Transit Number)';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'შეიყვანეთ ფილიალის ნომერი';
+
+  @override
+  String get recipientsFieldAccountNumber => 'ანგარიშის ნომერი';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'შეიყვანეთ ანგარიშის ნომერი';
+
+  @override
+  String get recipientsFieldDefaultComment =>
+      'ნაგულისხმევი კომენტარი (არასავალდებულო)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint =>
+      'შეიყვანეთ ნაგულისხმევი კომენტარი';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'კორპორატიული ანგარიში';
+
+  @override
+  String get recipientsFieldFirstName => 'სახელი';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'შეიყვანეთ სახელი';
+
+  @override
+  String get recipientsFieldLastName => 'გვარი';
+
+  @override
+  String get recipientsFieldLastNameHint => 'შეიყვანეთ გვარი';
+
+  @override
+  String get recipientsFieldCorporateName => 'კორპორატიული დასახელება';
+
+  @override
+  String get recipientsFieldCorporateNameHint =>
+      'შეიყვანეთ კორპორატიული დასახელება';
+
+  @override
+  String get recipientsFieldBillerName => 'გადამხდელის დასახელება';
+
+  @override
+  String get recipientsFieldBillerNameHint => 'მოძებნეთ და აირჩიეთ გადამხდელი';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'საძიებლად შეიყვანეთ 3 ან მეტი სიმბოლო';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'გთხოვთ, აირჩიოთ გადამხდელი სიიდან';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'მიმღების ანგარიშის ნომერი';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'თქვენი მიმღებების ჩატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'ამ მიმღების შენახვა ვერ მოხერხდა. შეამოწმეთ მონაცემები და სცადეთ ხელახლა.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'ამ ტელეფონის ნომრის დადასტურება ვერ მოხერხდა. შეამოწმეთ და სცადეთ ხელახლა.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'გადამხდელების ძებნა ვერ მოხერხდა. სცადეთ ხელახლა.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.';
+
+  @override
+  String get recipientsListPullToRetry => 'თავიდან საცდელად ჩამოწიეთ.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'ეს მიმღები შენახულია, მაგრამ ვერ გავაგრძელეთ. იპოვეთ იგი თქვენს სიაში გასაგრძელებლად.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'კონფიდენციალური SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'ამ დაფინანსების ვარიანტზე წვდომისთვის საჭირო ნებართვები არ გაქვთ. ან თქვენი KYC არასაკმარისია, ან ეს ვარიანტი თქვენს ანგარიშზე არ არის ხელმისაწვდომი';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'კონფიდენციალური SEPA-ს გასააქტიურებლად უნდა იყოთ ევროკავშირის რეზიდენტი.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'მიმღების გააქტიურება';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'თქვენი მიმღები აქტიურდება კონფიდენციალური SEPA-სთვის. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'მიმღები არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'ეს მიმღები ჯერ არ არის გააქტიურებული კონფიდენციალური SEPA-სთვის. ჩვენ ვააქტიურებთ მას ახლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს. სანაცვლოდ შეგიძლიათ გამოიყენოთ მყისიერი და ჩვეულებრივი SEPA.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => 'მიმღები გააქტიურდა';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'თქვენი მიმღები ახლა აქტიურია კონფიდენციალური SEPA-სთვის.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'სანაცვლოდ გამოიყენეთ მყისიერი და ჩვეულებრივი SEPA';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle =>
+      'გავააქტიუროთ კონფიდენციალური SEPA?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'ახალი';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'შეავსეთ ანგარიში კონფიდენციალურად თქვენს სახელზე გაცემული პირადი ვირტუალური IBAN-ით. ეს უფასოა.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'როცა ბანკიდან Bull Bitcoin-ში თანხას აგზავნით, ის ჩანს როგორც გადარიცხვა საკუთარ თავზე.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'გადარიცხვის კოდი საჭირო არ არის.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'მნიშვნელოვანია: სახელი უნდა ემთხვეოდეს';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'საბანკო ანგარიშის სახელი ზუსტად უნდა ემთხვეოდეს თქვენი Bull Bitcoin ვირტუალური IBAN-ის სახელს, წინააღმდეგ შემთხვევაში გადარიცხვა ავტომატურად დაბრუნდება. სახელები არ ემთხვევა? დაუკავშირდით მხარდაჭერას.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName =>
+      'ანგარიშის მფლობელის სახელი';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'ვადასტურებ, რომ სახელი ემთხვევა ჩემს საბანკო ანგარიშ(ებ)ს';
+
+  @override
+  String get recipientsVirtualIbanActivate =>
+      'კონფიდენციალური SEPA-ს გააქტიურება';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'კონფიდენციალური SEPA აქტიურდება...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'იქმნება თქვენი ვირტუალური IBAN. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle =>
+      'კონფიდენციალური SEPA გააქტიურდა';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად გატანა.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'დაკოპირდა';
+
+  @override
+  String get recipientsVirtualIbanDone => 'დასრულდა';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'მიმღების სახელი';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel =>
+      'ვირტუალური IBAN ანგარიშის ნომერი';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'საბანკო ანგარიშის ქვეყანა';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC კოდი';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'ახლა შეგიძლიათ პირადი ვირტუალური IBAN-ით თანხის კონფიდენციალურად შეტანა.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'ჩემი ვირტუალური IBAN-ის დეტალების ჩვენება';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'შეავსეთ ანგარიში კონფიდენციალურად თქვენს სახელზე გაცემული პირადი ვირტუალური IBAN-ით. შენატანი გამოჩნდება როგორც გადახდა საკუთარ თავზე, გადარიცხვის კოდის გარეშე.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'ბანკის მისამართი';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'ბანკის ოფიციალური მისამართი, თუ თქვენი ბანკი მოითხოვს.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'თქვენი ბანკისა და ვირტუალური IBAN ანგარიშების სახელები უნდა ემთხვეოდეს, წინააღმდეგ შემთხვევაში გადარიცხვები ავტომატურად დაბრუნდება.';
+
+  @override
+  String get recipientsFieldBankAccountIban =>
+      'საბანკო ანგარიშის ნომერი (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'გატანილი თანხები გამოჩნდება როგორც საკუთარ ანგარიშზე გადარიცხვა თქვენი ანგარიშის სახელით';
 }

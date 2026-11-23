@@ -1182,4 +1182,501 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => '按名称或标签搜索收件人';
+
+  @override
+  String get recipientsScreenTitle => '选择收件人';
+
+  @override
+  String get recipientsScreenSubtitle => '您要支付给谁？';
+
+  @override
+  String get recipientsTabNew => '新增收件人';
+
+  @override
+  String get recipientsTabList => '我的法币收件人';
+
+  @override
+  String get recipientsPayoutMethod => '付款方式';
+
+  @override
+  String get recipientsFilterByJurisdiction => '按辖区筛选：';
+
+  @override
+  String get recipientsListEmpty => '未找到收件人。';
+
+  @override
+  String get recipientsContinue => '继续';
+
+  @override
+  String get recipientsJurisdictionAll => '所有辖区';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 加拿大';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 欧洲（SEPA）';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 墨西哥';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 哥斯达黎加';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 阿根廷';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 哥伦比亚';
+
+  @override
+  String get recipientsTypeInteracEmail => '电子邮件转账';
+
+  @override
+  String get recipientsTypeBillPayment => '账单付款';
+
+  @override
+  String get recipientsTypeBankTransfer => '银行转账';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA 转账';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI 短信';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI 银行卡';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN（美元）';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN（科朗）';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU（阿根廷）';
+
+  @override
+  String get recipientsTypeBankAccountCo => '银行账户（COP）';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => '邮箱';
+
+  @override
+  String get recipientsInfoPayee => '收款人';
+
+  @override
+  String get recipientsInfoAccount => '账户';
+
+  @override
+  String get recipientsInfoPhone => '电话';
+
+  @override
+  String get recipientsInfoCard => '银行卡';
+
+  @override
+  String get recipientsInfoLabel => '标签';
+
+  @override
+  String get recipientsValidationFieldRequired => '此字段不能为空';
+
+  @override
+  String get recipientsLabelOptional => '标签（可选）';
+
+  @override
+  String get recipientsLabelHint => '为此收件人输入一个标签';
+
+  @override
+  String get recipientsFieldName => '姓名';
+
+  @override
+  String get recipientsFieldNameHint => '输入收件人姓名';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => '收件人姓名';
+
+  @override
+  String get recipientsFieldPhoneNumber => '电话号码';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => '输入电话号码';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '不含国家代码的8位数字';
+
+  @override
+  String get recipientsFieldDocumentType => '收件人证件类型';
+
+  @override
+  String get recipientsFieldDocumentNumberHint => '输入收件人证件号码';
+
+  @override
+  String get recipientsFieldOwnerName => '户主姓名';
+
+  @override
+  String get recipientsFieldOwnerNameHint => '输入户主姓名';
+
+  @override
+  String get recipientsAccountOwnerQuestion => '此账户属于谁？';
+
+  @override
+  String get recipientsAccountOwnerMine => '这是我的账户';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => '这是他人的账户';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => '输入 IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => '输入 CLABE 号码';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => '输入 CVU/CBU 号码';
+
+  @override
+  String get recipientsFieldBankInstitution => '银行机构';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder => '选择银行机构';
+
+  @override
+  String get recipientsValidationBankInstitution => '请选择银行机构';
+
+  @override
+  String get recipientsFieldAccountType => '账户类型';
+
+  @override
+  String get recipientsAccountTypeSavings => '储蓄账户';
+
+  @override
+  String get recipientsAccountTypeChecking => '支票账户';
+
+  @override
+  String get recipientsFieldBankAccountNumber => '银行账号';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint => '输入银行账号';
+
+  @override
+  String get recipientsCopDocCc => '公民身份证（哥伦比亚）';
+
+  @override
+  String get recipientsCopDocCe => '外国人身份证（哥伦比亚）';
+
+  @override
+  String get recipientsCopDocNit => '税务识别号（哥伦比亚）';
+
+  @override
+  String get recipientsCopDocPassport => '护照';
+
+  @override
+  String get recipientsCopDocTi => '未成年人身份证（哥伦比亚）';
+
+  @override
+  String get recipientsCopDocRegistroCivil => '户籍登记证明（哥伦比亚）';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => '收件人cédula号码';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber => '收件人cédula de extranjería号码';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber => '收件人税务ID号码';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber => '收件人护照号码';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber => '收件人身份证号码';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber => '收件人民事登记号码';
+
+  @override
+  String get recipientsFieldDebitCard => '借记卡号';
+
+  @override
+  String get recipientsFieldDebitCardHint => '输入借记卡号';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint => '户主姓名将显示在此处';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      '移除国家代码 (+506)。仅输入8位数字';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars => '只使用数字（不包含字母或符号）';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort => '请输入完整的8位电话号码';
+
+  @override
+  String get recipientsValidationSinpeOwner => '请验证电话号码';
+
+  @override
+  String get recipientsFieldEmailAddress => '电子邮箱地址';
+
+  @override
+  String get recipientsFieldEmailAddressHint => '输入电子邮箱地址';
+
+  @override
+  String get recipientsFieldSecurityQuestion => '安全问题';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint => '输入安全问题（10-40 个字符）';
+
+  @override
+  String get recipientsFieldSecurityAnswer => '安全答案';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => '输入安全答案';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin => '安全问题至少需要 10 个字符';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 个字符';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => '机构代码';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => '输入机构代码';
+
+  @override
+  String get recipientsFieldInstitutionNumber => '机构编号';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => '输入机构编号';
+
+  @override
+  String get recipientsFieldTransitNumber => '转账代码';
+
+  @override
+  String get recipientsFieldTransitNumberHint => '输入转账代码';
+
+  @override
+  String get recipientsFieldAccountNumber => '账号';
+
+  @override
+  String get recipientsFieldAccountNumberHint => '输入账号';
+
+  @override
+  String get recipientsFieldDefaultComment => '默认备注（可选）';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => '输入默认备注';
+
+  @override
+  String get recipientsFieldCorporateAccount => '公司账户';
+
+  @override
+  String get recipientsFieldFirstName => '名字';
+
+  @override
+  String get recipientsFieldFirstNameHint => '输入名字';
+
+  @override
+  String get recipientsFieldLastName => '姓氏';
+
+  @override
+  String get recipientsFieldLastNameHint => '输入姓氏';
+
+  @override
+  String get recipientsFieldCorporateName => '公司名称';
+
+  @override
+  String get recipientsFieldCorporateNameHint => '输入公司名称';
+
+  @override
+  String get recipientsFieldBillerName => '账单机构名称';
+
+  @override
+  String get recipientsFieldBillerNameHint => '搜索并选择账单机构';
+
+  @override
+  String get recipientsValidationBillerSearchMin => '请输入 3 个或以上字符进行搜索';
+
+  @override
+  String get recipientsValidationBillerSelect => '请从列表中选择一个账单机构';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => '收款人账号';
+
+  @override
+  String get recipientsErrorLoadFailed => '无法加载您的收款人。请重试。';
+
+  @override
+  String get recipientsErrorSaveFailed => '无法保存此收款人。请检查信息后重试。';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed => '我们无法验证此电话号码。请检查后重试。';
+
+  @override
+  String get recipientsErrorBillerSearchFailed => '无法搜索账单机构。请重试。';
+
+  @override
+  String get recipientsErrorNetwork => '请检查您的网络连接后重试。';
+
+  @override
+  String get recipientsListPullToRetry => '下拉以重试。';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      '该收款人已保存，但我们无法继续。请在列表中找到它以继续。';
+
+  @override
+  String get recipientsTypeConfidentialSepa => '保密 SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      '您没有访问此充值选项所需的权限。您的 KYC 可能不足，或此选项不适用于您的账户';
+
+  @override
+  String get recipientsErrorEuResidencyRequired => '您需要是欧盟居民才能激活保密 SEPA。';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle => '正在激活收件人';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      '正在为保密 SEPA 激活您的收件人。这可能需要几分钟。';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle => '收件人尚未激活保密 SEPA';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      '此收件人尚未激活保密 SEPA。我们正在激活中。这可能需要几分钟。您可以改用即时和常规 SEPA。';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => '收件人已激活';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      '您的收件人现已激活保密 SEPA。';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa => '改用即时和常规 SEPA';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle => '启用保密 SEPA？';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => '新';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      '使用以您本人名义开设的个人虚拟 IBAN 私密地为账户充值。完全免费。';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      '从您的银行向 Bull Bitcoin 汇款时，会显示为转账给您本人。';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode => '无需转账代码。';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle => '重要：姓名必须一致';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      '银行账户姓名必须与您的 Bull Bitcoin 虚拟 IBAN 姓名完全一致，否则转账将被自动退回。姓名不一致？请联系客服。';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => '账户持有人姓名';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation => '我确认该姓名与我的银行账户一致';
+
+  @override
+  String get recipientsVirtualIbanActivate => '启用保密 SEPA';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle => '正在启用保密 SEPA...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      '正在创建您的虚拟 IBAN，可能需要几分钟。';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle => '保密 SEPA 已启用';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      '您现在可以使用个人虚拟 IBAN 私密地提取资金。';
+
+  @override
+  String get recipientsVirtualIbanCopied => '涂料';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Done';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => '客户名称';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => '虚拟 IBAN 账号';
+
+  @override
+  String get recipientsVirtualIbanCountry => '银行账户';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC 守则';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      '您现在可以使用个人虚拟 IBAN 私密地存入资金。';
+
+  @override
+  String get recipientsVirtualIbanShowDetails => '显示我的虚拟 IBAN 详情';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      '使用以您本人名义开设的个人虚拟 IBAN 私密地为账户充值。存款将显示为付款给您本人，无需转账代码。';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => '银行地址';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp => '银行的官方地址，以备您的银行要求时使用。';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      '您的银行账户与虚拟 IBAN 账户的姓名必须一致，否则转账将被自动退回。';
+
+  @override
+  String get recipientsFieldBankAccountIban => '银行账户号码 (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      '提现将显示为使用您账户名称的本人账户间转账';
 }

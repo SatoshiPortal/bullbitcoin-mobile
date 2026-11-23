@@ -2366,6 +2366,966 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Show price chart'**
   String get priceChartShowTooltip;
+
+  /// Hint text for recipients search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search recipients by name or label'**
+  String get recipientsSearchHint;
+
+  /// App bar title for the recipients selection screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Recipient'**
+  String get recipientsScreenTitle;
+
+  /// Subtitle shown on the recipients screen prompting the user to choose a recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Who are you paying?'**
+  String get recipientsScreenSubtitle;
+
+  /// Label for the tab to add a new recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'New Recipient'**
+  String get recipientsTabNew;
+
+  /// Label for the tab listing the user's saved fiat recipients.
+  ///
+  /// In en, this message translates to:
+  /// **'My Fiat Recipients'**
+  String get recipientsTabList;
+
+  /// Label for the payout method selector in the new recipient form.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout method'**
+  String get recipientsPayoutMethod;
+
+  /// Label above the jurisdiction filter on the recipients list.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Jurisdiction:'**
+  String get recipientsFilterByJurisdiction;
+
+  /// Empty state message when no recipients match the current filters.
+  ///
+  /// In en, this message translates to:
+  /// **'No recipients found.'**
+  String get recipientsListEmpty;
+
+  /// Continue button label used on recipient forms and the recipients list.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get recipientsContinue;
+
+  /// Dropdown option to show recipients from all jurisdictions.
+  ///
+  /// In en, this message translates to:
+  /// **'All Jurisdictions'**
+  String get recipientsJurisdictionAll;
+
+  /// Canada jurisdiction option in the jurisdictions dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'🇨🇦 Canada'**
+  String get recipientsJurisdictionCanada;
+
+  /// Europe (SEPA) jurisdiction option in the jurisdictions dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'🇪🇺 Europe (SEPA)'**
+  String get recipientsJurisdictionEurope;
+
+  /// Mexico jurisdiction option in the jurisdictions dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'🇲🇽 Mexico'**
+  String get recipientsJurisdictionMexico;
+
+  /// Costa Rica jurisdiction option in the jurisdictions dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'🇨🇷 Costa Rica'**
+  String get recipientsJurisdictionCostaRica;
+
+  /// Argentina jurisdiction option in the jurisdictions dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'🇦🇷 Argentina'**
+  String get recipientsJurisdictionArgentina;
+
+  /// Colombia jurisdiction option in the jurisdictions dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'🇨🇴 Colombia'**
+  String get recipientsJurisdictionColombia;
+
+  /// Display name for the Canadian email money transfer recipient type. Do not use the Interac trademark.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Money Transfer'**
+  String get recipientsTypeInteracEmail;
+
+  /// Display name for the Canadian Bill Payment recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill Payment'**
+  String get recipientsTypeBillPayment;
+
+  /// Display name for the Canadian Bank Transfer recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get recipientsTypeBankTransfer;
+
+  /// Display name for the European SEPA Transfer recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SEPA Transfer'**
+  String get recipientsTypeSepa;
+
+  /// Display name for the Mexican SPEI CLABE recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SPEI CLABE'**
+  String get recipientsTypeSpeiClabe;
+
+  /// Display name for the Mexican SPEI SMS recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SPEI SMS'**
+  String get recipientsTypeSpeiSms;
+
+  /// Display name for the Mexican SPEI debit card recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SPEI Card'**
+  String get recipientsTypeSpeiCard;
+
+  /// Display name for the Costa Rican SINPE IBAN USD recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE IBAN (USD)'**
+  String get recipientsTypeSinpeIbanUsd;
+
+  /// Display name for the Costa Rican SINPE IBAN CRC recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE IBAN (CRC)'**
+  String get recipientsTypeSinpeIbanCrc;
+
+  /// Display name for the Costa Rican SINPE Móvil recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE Móvil'**
+  String get recipientsTypeSinpeMovil;
+
+  /// Display name for the Argentinian CBU/CVU bank account recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'CBU/CVU Argentina'**
+  String get recipientsTypeBankAccountAr;
+
+  /// Display name for the Colombian bank account (COP) recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Account COP'**
+  String get recipientsTypeBankAccountCo;
+
+  /// Display name for the Colombian Nequi recipient type.
+  ///
+  /// In en, this message translates to:
+  /// **'Nequi'**
+  String get recipientsTypeNequi;
+
+  /// Info-row label for an email value on a recipient list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get recipientsInfoEmail;
+
+  /// Info-row label for a payee value on a recipient list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Payee'**
+  String get recipientsInfoPayee;
+
+  /// Info-row label for a bank account value on a recipient list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get recipientsInfoAccount;
+
+  /// Info-row label for a phone number value on a recipient list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get recipientsInfoPhone;
+
+  /// Info-row label for a card value on a recipient list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get recipientsInfoCard;
+
+  /// Info-row label for the user-set label of a recipient on a list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get recipientsInfoLabel;
+
+  /// Validation error shown when a required recipient form field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'This field can\'t be empty'**
+  String get recipientsValidationFieldRequired;
+
+  /// Label for the optional recipient label/nickname field in recipient forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get recipientsLabelOptional;
+
+  /// Hint text for the optional recipient label/nickname field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a label for this recipient'**
+  String get recipientsLabelHint;
+
+  /// Label for the recipient name field used in several recipient forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get recipientsFieldName;
+
+  /// Hint text for the recipient name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter recipient name'**
+  String get recipientsFieldNameHint;
+
+  /// Longer label for the recipient name field used in the Colombia forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Name of the recipient'**
+  String get recipientsFieldRecipientNameLabel;
+
+  /// Label for the recipient phone number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get recipientsFieldPhoneNumber;
+
+  /// Hint text for the recipient phone number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter phone number'**
+  String get recipientsFieldPhoneNumberHint;
+
+  /// Hint text for the SINPE Móvil phone number field.
+  ///
+  /// In en, this message translates to:
+  /// **'8 digits without country code'**
+  String get recipientsFieldSinpePhoneNumberHint;
+
+  /// Label for the ID document type selector in Colombia recipient forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient ID type'**
+  String get recipientsFieldDocumentType;
+
+  /// Hint text for the ID document number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter recipient ID number'**
+  String get recipientsFieldDocumentNumberHint;
+
+  /// Label for the account owner name field in SINPE recipient forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Name'**
+  String get recipientsFieldOwnerName;
+
+  /// Hint text for the account owner name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter owner name'**
+  String get recipientsFieldOwnerNameHint;
+
+  /// Section header asking whose account is being added in recipient forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Who does this account belong to?'**
+  String get recipientsAccountOwnerQuestion;
+
+  /// Radio option indicating the recipient account belongs to the current user.
+  ///
+  /// In en, this message translates to:
+  /// **'This is my account'**
+  String get recipientsAccountOwnerMine;
+
+  /// Radio option indicating the recipient account belongs to a third party.
+  ///
+  /// In en, this message translates to:
+  /// **'This is someone else\'s account'**
+  String get recipientsAccountOwnerSomeoneElse;
+
+  /// Label for the IBAN field used in SEPA and SINPE forms.
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN'**
+  String get recipientsFieldIban;
+
+  /// Hint text for the IBAN field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter IBAN'**
+  String get recipientsFieldIbanHint;
+
+  /// Label for the Mexican CLABE field.
+  ///
+  /// In en, this message translates to:
+  /// **'CLABE'**
+  String get recipientsFieldClabe;
+
+  /// Hint text for the Mexican CLABE field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter CLABE number'**
+  String get recipientsFieldClabeHint;
+
+  /// Label for the Argentinian CBU/CVU field.
+  ///
+  /// In en, this message translates to:
+  /// **'CBU/CVU'**
+  String get recipientsFieldCvuCbu;
+
+  /// Hint text for the Argentinian CBU/CVU field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter CVU/CBU number'**
+  String get recipientsFieldCvuCbuHint;
+
+  /// Label for the bank institution selector in the Colombia bank account form.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Institution'**
+  String get recipientsFieldBankInstitution;
+
+  /// Placeholder option in the bank institution selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Bank Institution'**
+  String get recipientsFieldBankInstitutionPlaceholder;
+
+  /// Validation error when no bank institution is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a bank institution'**
+  String get recipientsValidationBankInstitution;
+
+  /// Label for the bank account type selector in the Colombia bank account form.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Type'**
+  String get recipientsFieldAccountType;
+
+  /// Bank account type option for savings.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings'**
+  String get recipientsAccountTypeSavings;
+
+  /// Bank account type option for checking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking'**
+  String get recipientsAccountTypeChecking;
+
+  /// Label for the bank account number field in the Colombia bank account form.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Account Number'**
+  String get recipientsFieldBankAccountNumber;
+
+  /// Hint text for the bank account number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter bank account number'**
+  String get recipientsFieldBankAccountNumberHint;
+
+  /// Colombia ID document type: citizenship card.
+  ///
+  /// In en, this message translates to:
+  /// **'Cédula de Ciudadanía'**
+  String get recipientsCopDocCc;
+
+  /// Colombia ID document type: foreign resident ID.
+  ///
+  /// In en, this message translates to:
+  /// **'Cédula de Extranjería'**
+  String get recipientsCopDocCe;
+
+  /// Colombia ID document type: tax identification number.
+  ///
+  /// In en, this message translates to:
+  /// **'Número de Identificación Tributaria'**
+  String get recipientsCopDocNit;
+
+  /// Colombia ID document type: passport.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport'**
+  String get recipientsCopDocPassport;
+
+  /// Colombia ID document type: minor identity card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tarjeta de Identidad'**
+  String get recipientsCopDocTi;
+
+  /// Colombia ID document type: civil registry.
+  ///
+  /// In en, this message translates to:
+  /// **'Registro Civil'**
+  String get recipientsCopDocRegistroCivil;
+
+  /// Label for the recipient cédula de ciudadanía number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient cédula number'**
+  String get recipientsCopDocCcRecipientNumber;
+
+  /// Label for the recipient cédula de extranjería number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient cédula de extranjería number'**
+  String get recipientsCopDocCeRecipientNumber;
+
+  /// Label for the recipient NIT number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient tax ID number'**
+  String get recipientsCopDocNitRecipientNumber;
+
+  /// Label for the recipient passport number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient passport number'**
+  String get recipientsCopDocPassportRecipientNumber;
+
+  /// Label for the recipient tarjeta de identidad number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient identity card number'**
+  String get recipientsCopDocTiRecipientNumber;
+
+  /// Label for the recipient registro civil number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient civil registry number'**
+  String get recipientsCopDocRegistroCivilRecipientNumber;
+
+  /// Label for the debit card number field in the SPEI Card form.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit Card Number'**
+  String get recipientsFieldDebitCard;
+
+  /// Hint text for the debit card number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter debit card number'**
+  String get recipientsFieldDebitCardHint;
+
+  /// Hint text for the owner name field while SINPE Móvil validation runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner name will appear here'**
+  String get recipientsFieldOwnerNameSinpeHint;
+
+  /// Validation error when a SINPE Móvil phone number includes the Costa Rica country code.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the country code (+506). Enter only the 8-digit number'**
+  String get recipientsValidationSinpePhoneCountryCode;
+
+  /// Validation error when a SINPE Móvil phone number contains non-digit characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use digits only (no letters or symbols)'**
+  String get recipientsValidationSinpePhoneInvalidChars;
+
+  /// Validation error when a SINPE Móvil phone number has fewer than 8 digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter all 8 digits of the phone number'**
+  String get recipientsValidationSinpePhoneTooShort;
+
+  /// Validation error when SINPE Móvil owner name is not validated yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Please validate the phone number'**
+  String get recipientsValidationSinpeOwner;
+
+  /// Label for the email address field in the Interac e-Transfer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get recipientsFieldEmailAddress;
+
+  /// Hint text for the email address field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter email address'**
+  String get recipientsFieldEmailAddressHint;
+
+  /// Label for the security question field in the Interac e-Transfer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Question'**
+  String get recipientsFieldSecurityQuestion;
+
+  /// Hint text for the security question field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter security question (10-40 characters)'**
+  String get recipientsFieldSecurityQuestionHint;
+
+  /// Label for the security answer field in the Interac e-Transfer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Answer'**
+  String get recipientsFieldSecurityAnswer;
+
+  /// Hint text for the security answer field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter security answer'**
+  String get recipientsFieldSecurityAnswerHint;
+
+  /// Validation error shown when the security question is shorter than 10 characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Security question must be at least 10 characters'**
+  String get recipientsValidationSecurityQuestionMin;
+
+  /// Character counter displayed below the security question field.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/40 characters'**
+  String recipientsCharCounter(int count);
+
+  /// Label for the institution code field in SPEI SMS/Card forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Institution Code'**
+  String get recipientsFieldInstitutionCode;
+
+  /// Hint text for the institution code field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter institution code'**
+  String get recipientsFieldInstitutionCodeHint;
+
+  /// Label for the institution number field in the Canadian bank transfer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Institution Number'**
+  String get recipientsFieldInstitutionNumber;
+
+  /// Hint text for the institution number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter institution number'**
+  String get recipientsFieldInstitutionNumberHint;
+
+  /// Label for the transit number field in the Canadian bank transfer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Transit Number'**
+  String get recipientsFieldTransitNumber;
+
+  /// Hint text for the transit number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter transit number'**
+  String get recipientsFieldTransitNumberHint;
+
+  /// Label for the account number field used in multiple recipient forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Number'**
+  String get recipientsFieldAccountNumber;
+
+  /// Hint text for the account number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter account number'**
+  String get recipientsFieldAccountNumberHint;
+
+  /// Label for the optional default comment field in the Canadian bank transfer form.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Comment (optional)'**
+  String get recipientsFieldDefaultComment;
+
+  /// Hint text for the optional default comment field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter default comment'**
+  String get recipientsFieldDefaultCommentHint;
+
+  /// Checkbox label indicating the SEPA recipient is a corporate account.
+  ///
+  /// In en, this message translates to:
+  /// **'Corporate account'**
+  String get recipientsFieldCorporateAccount;
+
+  /// Label for the first name field in the SEPA recipient form.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get recipientsFieldFirstName;
+
+  /// Hint text for the first name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter first name'**
+  String get recipientsFieldFirstNameHint;
+
+  /// Label for the last name field in the SEPA recipient form.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get recipientsFieldLastName;
+
+  /// Hint text for the last name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter last name'**
+  String get recipientsFieldLastNameHint;
+
+  /// Label for the corporate name field in the SEPA recipient form.
+  ///
+  /// In en, this message translates to:
+  /// **'Corporate Name'**
+  String get recipientsFieldCorporateName;
+
+  /// Hint text for the corporate name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter corporate name'**
+  String get recipientsFieldCorporateNameHint;
+
+  /// Label for the biller search field in the Canadian bill payment form.
+  ///
+  /// In en, this message translates to:
+  /// **'Biller Name'**
+  String get recipientsFieldBillerName;
+
+  /// Hint text for the biller search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and select a biller'**
+  String get recipientsFieldBillerNameHint;
+
+  /// Validation error shown when biller search input is too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 3 or more characters to search'**
+  String get recipientsValidationBillerSearchMin;
+
+  /// Validation error shown when no biller is selected from the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a biller from the list'**
+  String get recipientsValidationBillerSelect;
+
+  /// Label for the payee account number field in the bill payment form.
+  ///
+  /// In en, this message translates to:
+  /// **'Payee Account Number'**
+  String get recipientsFieldPayeeAccountNumber;
+
+  /// Shown when the recipient list cannot be loaded from the API.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recipients could not be loaded. Please try again.'**
+  String get recipientsErrorLoadFailed;
+
+  /// Shown when creating a recipient fails.
+  ///
+  /// In en, this message translates to:
+  /// **'This recipient could not be saved. Please check the details and try again.'**
+  String get recipientsErrorSaveFailed;
+
+  /// Shown when the SINPE phone number lookup fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not verify this phone number. Please check it and try again.'**
+  String get recipientsErrorSinpeLookupFailed;
+
+  /// Shown when searching the CAD biller directory fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Billers could not be searched. Please try again.'**
+  String get recipientsErrorBillerSearchFailed;
+
+  /// Shown when a recipients request could not reach the server or timed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get recipientsErrorNetwork;
+
+  /// Hint under a recipients load failure. A pull-to-refresh affordance of the list screen, kept separate from the failure message itself.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull down to retry.'**
+  String get recipientsListPullToRetry;
+
+  /// Shown when a recipient saved successfully but the calling flow could not continue. Must not imply the save failed, or the user retries and creates a duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'This recipient was saved, but we could not continue. Find them in your list to carry on.'**
+  String get recipientsErrorSavedButNotSelected;
+
+  /// Recipient type label for a Confidential SEPA recipient
+  ///
+  /// In en, this message translates to:
+  /// **'Confidential SEPA'**
+  String get recipientsTypeConfidentialSepa;
+
+  /// Shown when the user cannot get a virtual IBAN because their KYC is insufficient or Confidential SEPA is not offered to them
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account'**
+  String get recipientsErrorVirtualIbanNotAvailable;
+
+  /// Shown when virtual IBAN creation is rejected because the user is not an EU resident
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be a resident of the European Union to activate Confidential SEPA.'**
+  String get recipientsErrorEuResidencyRequired;
+
+  /// Title of the Confidential SEPA activation screen while the recipient is being activated
+  ///
+  /// In en, this message translates to:
+  /// **'Activating recipient'**
+  String get recipientsConfidentialSepaActivatingTitle;
+
+  /// Description of the Confidential SEPA activation screen while the recipient is being activated
+  ///
+  /// In en, this message translates to:
+  /// **'Your recipient is being activated for Confidential SEPA. This may take a few minutes. We\'ll notify you when ready.'**
+  String get recipientsConfidentialSepaActivatingDescription;
+
+  /// Title of the Confidential SEPA activation screen when the recipient is not activated yet
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient not activated for Confidential SEPA'**
+  String get recipientsConfidentialSepaNotActivatedTitle;
+
+  /// Description of the Confidential SEPA activation screen when the recipient is not activated yet
+  ///
+  /// In en, this message translates to:
+  /// **'This recipient is not activated for Confidential SEPA yet. We are activating it now. This may take a few minutes. We\'ll notify you when ready. You can use Instant and Regular SEPA instead.'**
+  String get recipientsConfidentialSepaNotActivatedDescription;
+
+  /// Title of the Confidential SEPA activation screen once the recipient is active
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient activated'**
+  String get recipientsConfidentialSepaActivatedTitle;
+
+  /// Description of the Confidential SEPA activation screen once the recipient is active
+  ///
+  /// In en, this message translates to:
+  /// **'Your recipient is now active for Confidential SEPA.'**
+  String get recipientsConfidentialSepaActivatedDescription;
+
+  /// Button that pays the recipient through regular SEPA instead of Confidential SEPA
+  ///
+  /// In en, this message translates to:
+  /// **'Use Instant and Regular SEPA instead'**
+  String get recipientsConfidentialSepaUseRegularSepa;
+
+  /// Button that leaves the activation screen and returns to the app home; activation continues and the user is notified when ready
+  ///
+  /// In en, this message translates to:
+  /// **'Return Home'**
+  String get recipientsReturnHome;
+
+  /// Title of the virtual IBAN onboarding screen
+  ///
+  /// In en, this message translates to:
+  /// **'Activate Confidential SEPA?'**
+  String get recipientsVirtualIbanIntroTitle;
+
+  /// Badge that marks Confidential SEPA as a new feature
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get recipientsVirtualIbanNewBadge;
+
+  /// Explains what the virtual IBAN is on the onboarding screen
+  ///
+  /// In en, this message translates to:
+  /// **'Fund your account privately using a personal virtual IBAN in your own name. It\'s free.'**
+  String get recipientsVirtualIbanIntroDescription;
+
+  /// Bullet point: a deposit appears as a transfer to yourself
+  ///
+  /// In en, this message translates to:
+  /// **'When sending funds to Bull Bitcoin from your bank, it appears as a transfer to yourself.'**
+  String get recipientsVirtualIbanIntroSelfTransfer;
+
+  /// Bullet point: no transfer code is needed
+  ///
+  /// In en, this message translates to:
+  /// **'No transfer code required.'**
+  String get recipientsVirtualIbanIntroNoTransferCode;
+
+  /// Title of the warning that the bank account name must match
+  ///
+  /// In en, this message translates to:
+  /// **'Important: Name Matching Required'**
+  String get recipientsVirtualIbanNameWarningTitle;
+
+  /// Warning that a transfer from a bank account with a different name is returned
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account name must exactly match your Bull Bitcoin virtual IBAN name, or the transfer will be returned automatically. Names don\'t match? Contact support.'**
+  String get recipientsVirtualIbanNameWarningDescription;
+
+  /// Label above the name the virtual IBAN is issued in
+  ///
+  /// In en, this message translates to:
+  /// **'Account Owner Name'**
+  String get recipientsVirtualIbanAccountOwnerName;
+
+  /// Checkbox to confirm the name matches the user's bank accounts
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm the name matches my bank account(s)'**
+  String get recipientsVirtualIbanNameConfirmation;
+
+  /// Button that creates the virtual IBAN
+  ///
+  /// In en, this message translates to:
+  /// **'Activate Confidential SEPA'**
+  String get recipientsVirtualIbanActivate;
+
+  /// Title while the virtual IBAN is being created
+  ///
+  /// In en, this message translates to:
+  /// **'Activating Confidential SEPA...'**
+  String get recipientsVirtualIbanActivatingTitle;
+
+  /// Description while the virtual IBAN is being created
+  ///
+  /// In en, this message translates to:
+  /// **'Creating your virtual IBAN. This may take a few minutes. We\'ll notify you when ready.'**
+  String get recipientsVirtualIbanActivatingDescription;
+
+  /// Title once the virtual IBAN is active
+  ///
+  /// In en, this message translates to:
+  /// **'Confidential SEPA Activated'**
+  String get recipientsVirtualIbanActivatedTitle;
+
+  /// Description once the virtual IBAN is active, before creating a Confidential SEPA recipient for a withdrawal
+  ///
+  /// In en, this message translates to:
+  /// **'You can now use your personal virtual IBAN to withdraw money privately.'**
+  String get recipientsVirtualIbanActivatedDescription;
+
+  /// Toast shown after copying a virtual IBAN detail
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get recipientsVirtualIbanCopied;
+
+  /// Button that leaves the virtual IBAN deposit details
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get recipientsVirtualIbanDone;
+
+  /// Label of the name to use as recipient when depositing to the virtual IBAN
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient name'**
+  String get recipientsVirtualIbanRecipientName;
+
+  /// Label of the virtual IBAN account number
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual IBAN Account Number'**
+  String get recipientsVirtualIbanIbanLabel;
+
+  /// Label of the country of the virtual IBAN account
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account country'**
+  String get recipientsVirtualIbanCountry;
+
+  /// Label of the BIC code of the virtual IBAN account
+  ///
+  /// In en, this message translates to:
+  /// **'BIC code'**
+  String get recipientsVirtualIbanBic;
+
+  /// Description once the virtual IBAN is active, when started from funding
+  ///
+  /// In en, this message translates to:
+  /// **'You can now use your personal virtual IBAN to deposit money privately.'**
+  String get recipientsVirtualIbanActivatedFundingDescription;
+
+  /// Button that shows the virtual IBAN deposit details
+  ///
+  /// In en, this message translates to:
+  /// **'Show my virtual IBAN details'**
+  String get recipientsVirtualIbanShowDetails;
+
+  /// Explains how to deposit with the virtual IBAN
+  ///
+  /// In en, this message translates to:
+  /// **'Fund your account privately using a personal virtual IBAN in your own name. The deposit will appear as a payment to yourself, with no transfer code required.'**
+  String get recipientsVirtualIbanDetailsDescription;
+
+  /// Label of the address of the bank that holds the virtual IBAN
+  ///
+  /// In en, this message translates to:
+  /// **'Bank address'**
+  String get recipientsVirtualIbanBankAddress;
+
+  /// Explains when the bank address of the virtual IBAN is needed
+  ///
+  /// In en, this message translates to:
+  /// **'The official bank address, in case your bank asks for it.'**
+  String get recipientsVirtualIbanBankAddressHelp;
+
+  /// Hint under the read-only account owner name on the Confidential SEPA recipient form
+  ///
+  /// In en, this message translates to:
+  /// **'Names must match between your bank and virtual IBAN accounts or transfers will be returned automatically.'**
+  String get recipientsConfidentialSepaNameMustMatchHint;
+
+  /// Label for the destination bank account IBAN on the SEPA recipient form
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account number (IBAN)'**
+  String get recipientsFieldBankAccountIban;
+
+  /// Explanation of Confidential SEPA in the payout method selector
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawals appear as a self-transfer with your account name'**
+  String get recipientsTypeConfidentialSepaDescription;
 }
 
 class _ExchangeLocalizationsDelegate

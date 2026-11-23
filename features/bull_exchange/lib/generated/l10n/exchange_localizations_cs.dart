@@ -1295,4 +1295,532 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'Hledání příjemců podle jména nebo štítku';
+
+  @override
+  String get recipientsScreenTitle => 'Vybrat příjemce';
+
+  @override
+  String get recipientsScreenSubtitle => 'Komu platíš?';
+
+  @override
+  String get recipientsTabNew => 'Nový příjemce';
+
+  @override
+  String get recipientsTabList => 'Moji fiat příjemci';
+
+  @override
+  String get recipientsPayoutMethod => 'Způsob platby';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'Filtrovat podle jurisdikce:';
+
+  @override
+  String get recipientsListEmpty => 'Nenalezeni žádní příjemci.';
+
+  @override
+  String get recipientsContinue => 'Pokračovat';
+
+  @override
+  String get recipientsJurisdictionAll => 'Všechny jurisdikce';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Kanada';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Evropa (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Mexiko';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Kostarika';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Argentina';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Kolumbie';
+
+  @override
+  String get recipientsTypeInteracEmail => 'Převod peněz e-mailem';
+
+  @override
+  String get recipientsTypeBillPayment => 'Platba účtu';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Bankovní převod';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA převod';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI Karta';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Argentina';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Bankovní účet COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'E-mail';
+
+  @override
+  String get recipientsInfoPayee => 'Příjemce';
+
+  @override
+  String get recipientsInfoAccount => 'Účet';
+
+  @override
+  String get recipientsInfoPhone => 'Telefon';
+
+  @override
+  String get recipientsInfoCard => 'Karta';
+
+  @override
+  String get recipientsInfoLabel => 'Štítek';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'Toto pole nemůže být prázdné';
+
+  @override
+  String get recipientsLabelOptional => 'Štítek (volitelné)';
+
+  @override
+  String get recipientsLabelHint => 'Zadejte štítek pro tohoto příjemce';
+
+  @override
+  String get recipientsFieldName => 'Jméno';
+
+  @override
+  String get recipientsFieldNameHint => 'Zadejte jméno příjemce';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Jméno příjemce';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Telefonní číslo';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Zadejte telefonní číslo';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '8 číslic bez kódu země';
+
+  @override
+  String get recipientsFieldDocumentType => 'Typ dokladu příjemce';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'Zadejte číslo dokladu příjemce';
+
+  @override
+  String get recipientsFieldOwnerName => 'Jméno majitele';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Zadejte jméno majitele';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Komu patří tento účet?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Je to můj účet';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'Je to účet někoho jiného';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'Zadejte IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'Zadejte číslo CLABE';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'Zadejte číslo CVU/CBU';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Bankovní instituce';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'Vyberte bankovní instituci';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'Vyberte prosím bankovní instituci';
+
+  @override
+  String get recipientsFieldAccountType => 'Typ účtu';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Spořicí';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Běžný';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Číslo bankovního účtu';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'Zadejte číslo bankovního účtu';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'Daňové identifikační číslo (NIT)';
+
+  @override
+  String get recipientsCopDocPassport => 'Pas';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'Číslo cédula příjemce';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Číslo cédula de extranjería příjemce';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber => 'Daňové ID číslo příjemce';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber => 'Číslo pasu příjemce';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Číslo občanského průkazu příjemce';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Číslo z matriky příjemce';
+
+  @override
+  String get recipientsFieldDebitCard => 'Číslo debetní karty';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Zadejte číslo debetní karty';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Jméno majitele se zobrazí zde';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Odstraňte kód země (+506). Zadejte pouze 8místné číslo';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Použijte pouze číslice (žádná písmena ani symboly)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Zadejte všech 8 číslic telefonního čísla';
+
+  @override
+  String get recipientsValidationSinpeOwner => 'Ověřte telefonní číslo';
+
+  @override
+  String get recipientsFieldEmailAddress => 'E-mailová adresa';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'Zadejte e-mailovou adresu';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Bezpečnostní otázka';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Zadejte bezpečnostní otázku (10-40 znaků)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Bezpečnostní odpověď';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint =>
+      'Zadejte bezpečnostní odpověď';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Bezpečnostní otázka musí mít alespoň 10 znaků';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 znaků';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Kód instituce';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Zadejte kód instituce';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Číslo instituce';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'Zadejte číslo instituce';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Tranzitní číslo';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Zadejte tranzitní číslo';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Číslo účtu';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Zadejte číslo účtu';
+
+  @override
+  String get recipientsFieldDefaultComment => 'Výchozí komentář (volitelné)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'Zadejte výchozí komentář';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Firemní účet';
+
+  @override
+  String get recipientsFieldFirstName => 'Jméno';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Zadejte jméno';
+
+  @override
+  String get recipientsFieldLastName => 'Příjmení';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Zadejte příjmení';
+
+  @override
+  String get recipientsFieldCorporateName => 'Název firmy';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Zadejte název firmy';
+
+  @override
+  String get recipientsFieldBillerName => 'Název poskytovatele';
+
+  @override
+  String get recipientsFieldBillerNameHint =>
+      'Vyhledejte a vyberte poskytovatele';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Pro vyhledávání zadejte 3 nebo více znaků';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Vyberte poskytovatele ze seznamu';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'Číslo účtu příjemce';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Vaše příjemce se nepodařilo načíst. Zkuste to prosím znovu.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Tohoto příjemce se nepodařilo uložit. Zkontrolujte údaje a zkuste to znovu.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Toto telefonní číslo se nepodařilo ověřit. Zkontrolujte je a zkuste to znovu.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Vyhledávání inkasních subjektů se nezdařilo. Zkuste to prosím znovu.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'Zkontrolujte připojení k internetu a zkuste to znovu.';
+
+  @override
+  String get recipientsListPullToRetry => 'Zkuste to znovu přetažením dolů.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Tento příjemce byl uložen, ale nepodařilo se pokračovat. Najděte jej ve svém seznamu.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'Důvěrný SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Pro aktivaci důvěrného SEPA musíte být rezidentem Evropské unie.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle => 'Aktivace příjemce';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Váš příjemce se aktivuje pro Důvěrný SEPA. Může to trvat několik minut.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Příjemce není aktivován pro Důvěrný SEPA';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Tento příjemce zatím není aktivován pro Důvěrný SEPA. Právě jej aktivujeme. Může to trvat několik minut. Mezitím můžete použít Okamžitý a běžný SEPA.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => 'Příjemce aktivován';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Váš příjemce je nyní aktivní pro Důvěrný SEPA.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Použít místo toho Okamžitý a běžný SEPA';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle => 'Aktivovat Důvěrný SEPA?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Nové';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Je to zdarma.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Když posíláte prostředky ze své banky do Bull Bitcoin, zobrazí se to jako převod sobě samému.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Není potřeba kód převodu.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Důležité: Jména se musí shodovat';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Jméno bankovního účtu se musí přesně shodovat se jménem vašeho virtuálního IBAN u Bull Bitcoin, jinak bude převod automaticky vrácen. Jména se neshodují? Kontaktujte podporu.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'Jméno majitele účtu';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'Potvrzuji, že jméno odpovídá mému bankovnímu účtu/účtům';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'Aktivovat Důvěrný SEPA';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'Aktivace Důvěrného SEPA...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Vytváříme váš virtuální IBAN. Může to trvat několik minut.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle => 'Důvěrný SEPA aktivován';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Nyní můžete svůj osobní virtuální IBAN používat k soukromým výběrům peněz.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'Připojil se do schránky';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Čeština';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Název příjemce';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'Číslo virtuálního účtu IBAN';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Bankovní účet';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC kód';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Nyní můžete svůj osobní virtuální IBAN používat k soukromým vkladům peněz.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Zobrazit údaje mého virtuálního IBAN';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Financujte svůj účet soukromě pomocí osobního virtuálního IBAN na vaše jméno. Vklad se zobrazí jako platba sobě samému, bez kódu převodu.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Adresa banky';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Oficiální adresa banky pro případ, že ji vaše banka vyžaduje.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'Číslo bankovního účtu (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu';
 }

@@ -1276,4 +1276,525 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'متلقي البحث بالاسم أو الوسم';
+
+  @override
+  String get recipientsScreenTitle => 'اختر المستلم';
+
+  @override
+  String get recipientsScreenSubtitle => 'لمن تدفع؟';
+
+  @override
+  String get recipientsTabNew => 'مستلم جديد';
+
+  @override
+  String get recipientsTabList => 'مستلمو عملتي الورقية';
+
+  @override
+  String get recipientsPayoutMethod => 'طريقة الدفع';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'تصفية حسب الدولة:';
+
+  @override
+  String get recipientsListEmpty => 'لم يُعثر على مستلمين.';
+
+  @override
+  String get recipientsContinue => 'متابعة';
+
+  @override
+  String get recipientsJurisdictionAll => 'جميع الدول';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 كندا';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 أوروبا (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 المكسيك';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 كوستاريكا';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 الأرجنتين';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 كولومبيا';
+
+  @override
+  String get recipientsTypeInteracEmail => 'تحويل مالي عبر البريد الإلكتروني';
+
+  @override
+  String get recipientsTypeBillPayment => 'دفع فاتورة';
+
+  @override
+  String get recipientsTypeBankTransfer => 'تحويل مصرفي';
+
+  @override
+  String get recipientsTypeSepa => 'تحويل SEPA';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI عبر SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'بطاقة SPEI';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (بالدولار)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (بالكولون)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU الأرجنتين';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'حساب مصرفي (بيزو كولومبي)';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'البريد الإلكتروني';
+
+  @override
+  String get recipientsInfoPayee => 'المستفيد';
+
+  @override
+  String get recipientsInfoAccount => 'الحساب';
+
+  @override
+  String get recipientsInfoPhone => 'الهاتف';
+
+  @override
+  String get recipientsInfoCard => 'البطاقة';
+
+  @override
+  String get recipientsInfoLabel => 'التسمية';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'لا يمكن ترك هذا الحقل فارغًا';
+
+  @override
+  String get recipientsLabelOptional => 'تسمية (اختياري)';
+
+  @override
+  String get recipientsLabelHint => 'أدخل تسمية لهذا المستلم';
+
+  @override
+  String get recipientsFieldName => 'الاسم';
+
+  @override
+  String get recipientsFieldNameHint => 'أدخل اسم المستلم';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'اسم المستلم';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'رقم الهاتف';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'أدخل رقم الهاتف';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => '8 أرقام بدون رمز الدولة';
+
+  @override
+  String get recipientsFieldDocumentType => 'نوع هوية المستلم';
+
+  @override
+  String get recipientsFieldDocumentNumberHint => 'أدخل رقم هوية المستلم';
+
+  @override
+  String get recipientsFieldOwnerName => 'اسم صاحب الحساب';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'أدخل اسم صاحب الحساب';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'لمن يعود هذا الحساب؟';
+
+  @override
+  String get recipientsAccountOwnerMine => 'هذا حسابي';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'هذا حساب شخص آخر';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'أدخل رقم IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'أدخل رقم CLABE';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'أدخل رقم CVU/CBU';
+
+  @override
+  String get recipientsFieldBankInstitution => 'المؤسسة المصرفية';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'اختر المؤسسة المصرفية';
+
+  @override
+  String get recipientsValidationBankInstitution => 'يرجى اختيار مؤسسة مصرفية';
+
+  @override
+  String get recipientsFieldAccountType => 'نوع الحساب';
+
+  @override
+  String get recipientsAccountTypeSavings => 'توفير';
+
+  @override
+  String get recipientsAccountTypeChecking => 'جاري';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'رقم الحساب المصرفي';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint => 'أدخل رقم الحساب المصرفي';
+
+  @override
+  String get recipientsCopDocCc => 'بطاقة المواطنة (Cédula de Ciudadanía)';
+
+  @override
+  String get recipientsCopDocCe =>
+      'بطاقة الإقامة الأجنبية (Cédula de Extranjería)';
+
+  @override
+  String get recipientsCopDocNit => 'رقم التعريف الضريبي (NIT)';
+
+  @override
+  String get recipientsCopDocPassport => 'جواز السفر';
+
+  @override
+  String get recipientsCopDocTi =>
+      'بطاقة الهوية للقاصرين (Tarjeta de Identidad)';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'السجل المدني (Registro Civil)';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'رقم cédula المستلم';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'رقم cédula de extranjería للمستلم';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber => 'الرقم الضريبي للمستلم';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber => 'رقم جواز سفر المستلم';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber => 'رقم بطاقة هوية المستلم';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'رقم السجل المدني للمستلم';
+
+  @override
+  String get recipientsFieldDebitCard => 'رقم بطاقة الخصم';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'أدخل رقم بطاقة الخصم';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint => 'سيظهر اسم صاحب الحساب هنا';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'احذف رمز الدولة (506+). أدخل الأرقام الثمانية فقط';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'استخدم الأرقام فقط (بدون حروف أو رموز)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'أدخل جميع الأرقام الثمانية لرقم الهاتف';
+
+  @override
+  String get recipientsValidationSinpeOwner => 'يرجى التحقق من رقم الهاتف';
+
+  @override
+  String get recipientsFieldEmailAddress => 'البريد الإلكتروني';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'أدخل عنوان البريد الإلكتروني';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'سؤال الأمان';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'أدخل سؤال الأمان (10-40 حرفًا)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'إجابة الأمان';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'أدخل إجابة الأمان';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'يجب أن يتكون سؤال الأمان من 10 أحرف على الأقل';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 حرفًا';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'رمز المؤسسة';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'أدخل رمز المؤسسة';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'رقم المؤسسة';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'أدخل رقم المؤسسة';
+
+  @override
+  String get recipientsFieldTransitNumber => 'رقم الفرع المصرفي';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'أدخل رقم الفرع المصرفي';
+
+  @override
+  String get recipientsFieldAccountNumber => 'رقم الحساب';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'أدخل رقم الحساب';
+
+  @override
+  String get recipientsFieldDefaultComment => 'تعليق افتراضي (اختياري)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'أدخل تعليقًا افتراضيًا';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'حساب تجاري';
+
+  @override
+  String get recipientsFieldFirstName => 'الاسم الأول';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'أدخل الاسم الأول';
+
+  @override
+  String get recipientsFieldLastName => 'اسم العائلة';
+
+  @override
+  String get recipientsFieldLastNameHint => 'أدخل اسم العائلة';
+
+  @override
+  String get recipientsFieldCorporateName => 'اسم الشركة';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'أدخل اسم الشركة';
+
+  @override
+  String get recipientsFieldBillerName => 'اسم جهة الفوترة';
+
+  @override
+  String get recipientsFieldBillerNameHint => 'ابحث عن جهة الفوترة واخترها';
+
+  @override
+  String get recipientsValidationBillerSearchMin => 'أدخل 3 أحرف أو أكثر للبحث';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'يرجى اختيار جهة فوترة من القائمة';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'رقم حساب المستفيد';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'تعذّر تحميل المستفيدين لديك. حاول مرة أخرى.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'تعذّر حفظ هذا المستفيد. تحقق من البيانات وحاول مرة أخرى.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'لم نتمكن من التحقق من رقم الهاتف هذا. تحقق منه وحاول مرة أخرى.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'تعذّر البحث عن جهات الفوترة. حاول مرة أخرى.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'تحقق من اتصالك بالإنترنت وحاول مرة أخرى.';
+
+  @override
+  String get recipientsListPullToRetry => 'اسحب للأسفل لإعادة المحاولة.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'تم حفظ هذا المستفيد، لكن لم نتمكن من المتابعة. ابحث عنه في قائمتك للمتابعة.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'SEPA السري';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'يجب أن تكون مقيماً في الاتحاد الأوروبي لتفعيل SEPA السري.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle => 'جارٍ تفعيل المستلم';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'جارٍ تفعيل المستلم الخاص بك لخدمة SEPA السري. قد يستغرق ذلك بضع دقائق.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'المستلم غير مُفعَّل لخدمة SEPA السري';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'لم يتم بعد تفعيل هذا المستلم لخدمة SEPA السري. نقوم بتفعيله الآن. قد يستغرق ذلك بضع دقائق. يمكنك استخدام SEPA الفوري والعادي بدلاً من ذلك.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle => 'تم تفعيل المستلم';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'أصبح المستلم الخاص بك الآن مُفعَّلاً لخدمة SEPA السري.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'استخدم SEPA الفوري والعادي بدلاً من ذلك';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle => 'تفعيل SEPA السري؟';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'جديد';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. الخدمة مجانية.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'عند إرسال الأموال من مصرفك إلى Bull Bitcoin، تظهر كتحويل إلى نفسك.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'لا حاجة إلى رمز تحويل.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'مهم: يجب أن يتطابق الاسم';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'يجب أن يطابق اسم الحساب المصرفي اسم رقم IBAN الافتراضي لدى Bull Bitcoin تمامًا، وإلا فسيُعاد التحويل تلقائيًا. الأسماء غير متطابقة؟ تواصل مع الدعم.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'اسم صاحب الحساب';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'أؤكد أن الاسم يطابق حسابي/حساباتي المصرفية';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'تفعيل SEPA السري';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle => 'جارٍ تفعيل SEPA السري...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'جارٍ إنشاء رقم IBAN الافتراضي الخاص بك. قد يستغرق ذلك بضع دقائق.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle => 'تم تفعيل SEPA السري';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لسحب الأموال بخصوصية.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'مركب على لوح مشبك';
+
+  @override
+  String get recipientsVirtualIbanDone => 'تم';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'الاسم المستقبِل';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'رقم حساب IBAN الافتراضي';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'بلد الحساب المصرفي';
+
+  @override
+  String get recipientsVirtualIbanBic => 'رمز BIC';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'يمكنك الآن استخدام رقم IBAN الافتراضي الشخصي لإيداع الأموال بخصوصية.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'عرض تفاصيل رقم IBAN الافتراضي';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'موّل حسابك بخصوصية باستخدام رقم IBAN افتراضي شخصي باسمك. سيظهر الإيداع كدفعة إلى نفسك، دون الحاجة إلى رمز تحويل.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'عنوان المصرف';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'العنوان الرسمي للمصرف، إذا طلبه مصرفك.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'رقم الحساب المصرفي (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك';
 }

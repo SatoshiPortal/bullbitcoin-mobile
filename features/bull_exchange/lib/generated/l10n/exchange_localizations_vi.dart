@@ -1304,4 +1304,539 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'Tìm người nhận theo tên hoặc nhãn';
+
+  @override
+  String get recipientsScreenTitle => 'Chọn người nhận';
+
+  @override
+  String get recipientsScreenSubtitle => 'Bạn đang thanh toán cho ai?';
+
+  @override
+  String get recipientsTabNew => 'Người nhận mới';
+
+  @override
+  String get recipientsTabList => 'Người nhận tiền pháp định của tôi';
+
+  @override
+  String get recipientsPayoutMethod => 'Phương thức chi trả';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'Lọc theo khu vực pháp lý:';
+
+  @override
+  String get recipientsListEmpty => 'Không tìm thấy người nhận nào.';
+
+  @override
+  String get recipientsContinue => 'Tiếp tục';
+
+  @override
+  String get recipientsJurisdictionAll => 'Tất cả khu vực pháp lý';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Canada';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Châu Âu (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Mexico';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Costa Rica';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Argentina';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Colombia';
+
+  @override
+  String get recipientsTypeInteracEmail => 'Chuyển tiền qua email';
+
+  @override
+  String get recipientsTypeBillPayment => 'Thanh toán hóa đơn';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Chuyển khoản ngân hàng';
+
+  @override
+  String get recipientsTypeSepa => 'Chuyển khoản SEPA';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'Thẻ SPEI';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Argentina';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Tài khoản ngân hàng COP';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'Email';
+
+  @override
+  String get recipientsInfoPayee => 'Người nhận thanh toán';
+
+  @override
+  String get recipientsInfoAccount => 'Tài khoản';
+
+  @override
+  String get recipientsInfoPhone => 'Điện thoại';
+
+  @override
+  String get recipientsInfoCard => 'Thẻ';
+
+  @override
+  String get recipientsInfoLabel => 'Nhãn';
+
+  @override
+  String get recipientsValidationFieldRequired =>
+      'Trường này không được để trống';
+
+  @override
+  String get recipientsLabelOptional => 'Nhãn (tùy chọn)';
+
+  @override
+  String get recipientsLabelHint => 'Nhập nhãn cho người nhận này';
+
+  @override
+  String get recipientsFieldName => 'Tên';
+
+  @override
+  String get recipientsFieldNameHint => 'Nhập tên người nhận';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Tên của người nhận';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Số điện thoại';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Nhập số điện thoại';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint =>
+      '8 chữ số không bao gồm mã quốc gia';
+
+  @override
+  String get recipientsFieldDocumentType =>
+      'Loại giấy tờ tùy thân của người nhận';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'Nhập số giấy tờ tùy thân của người nhận';
+
+  @override
+  String get recipientsFieldOwnerName => 'Tên chủ sở hữu';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Nhập tên chủ sở hữu';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Tài khoản này thuộc về ai?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Đây là tài khoản của tôi';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse =>
+      'Đây là tài khoản của người khác';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'Nhập IBAN';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'Nhập số CLABE';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'Nhập số CVU/CBU';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Tổ chức ngân hàng';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder =>
+      'Chọn tổ chức ngân hàng';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'Vui lòng chọn một tổ chức ngân hàng';
+
+  @override
+  String get recipientsFieldAccountType => 'Loại tài khoản';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Tiết kiệm';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Thanh toán';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Số tài khoản ngân hàng';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'Nhập số tài khoản ngân hàng';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'Número de Identificación Tributaria';
+
+  @override
+  String get recipientsCopDocPassport => 'Hộ chiếu';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'Số cédula của người nhận';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Số cédula de extranjería của người nhận';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber => 'Mã số thuế của người nhận';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'Số hộ chiếu của người nhận';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Số chứng minh thư của người nhận';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Số đăng ký hộ tịch của người nhận';
+
+  @override
+  String get recipientsFieldDebitCard => 'Số thẻ ghi nợ';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Nhập số thẻ ghi nợ';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Tên chủ sở hữu sẽ hiển thị ở đây';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Bỏ mã quốc gia (+506). Chỉ nhập số 8 chữ số';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Chỉ dùng chữ số (không chữ cái hay ký hiệu)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Nhập đầy đủ 8 chữ số của số điện thoại';
+
+  @override
+  String get recipientsValidationSinpeOwner =>
+      'Vui lòng xác thực số điện thoại';
+
+  @override
+  String get recipientsFieldEmailAddress => 'Địa chỉ email';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'Nhập địa chỉ email';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Câu hỏi bảo mật';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Nhập câu hỏi bảo mật (10-40 ký tự)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Câu trả lời bảo mật';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'Nhập câu trả lời bảo mật';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Câu hỏi bảo mật phải có ít nhất 10 ký tự';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 ký tự';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Mã tổ chức';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Nhập mã tổ chức';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Số định danh tổ chức';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint =>
+      'Nhập số định danh tổ chức';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Số chi nhánh (transit)';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Nhập số chi nhánh (transit)';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Số tài khoản';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Nhập số tài khoản';
+
+  @override
+  String get recipientsFieldDefaultComment => 'Nội dung mặc định (tùy chọn)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'Nhập nội dung mặc định';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Tài khoản doanh nghiệp';
+
+  @override
+  String get recipientsFieldFirstName => 'Tên';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Nhập tên';
+
+  @override
+  String get recipientsFieldLastName => 'Họ';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Nhập họ';
+
+  @override
+  String get recipientsFieldCorporateName => 'Tên doanh nghiệp';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Nhập tên doanh nghiệp';
+
+  @override
+  String get recipientsFieldBillerName => 'Tên đơn vị nhận thanh toán';
+
+  @override
+  String get recipientsFieldBillerNameHint =>
+      'Tìm kiếm và chọn một đơn vị nhận thanh toán';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Nhập từ 3 ký tự trở lên để tìm kiếm';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Vui lòng chọn một đơn vị nhận thanh toán từ danh sách';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'Số tài khoản người nhận';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Không thể tải danh sách người nhận của bạn. Vui lòng thử lại.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Không thể lưu người nhận này. Vui lòng kiểm tra thông tin và thử lại.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Chúng tôi không thể xác minh số điện thoại này. Vui lòng kiểm tra và thử lại.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Không thể tìm kiếm đơn vị thanh toán. Vui lòng thử lại.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'Vui lòng kiểm tra kết nối Internet và thử lại.';
+
+  @override
+  String get recipientsListPullToRetry => 'Kéo xuống để thử lại.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Người nhận này đã được lưu, nhưng chúng tôi không thể tiếp tục. Hãy tìm trong danh sách của bạn để tiếp tục.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'SEPA Bảo mật';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Bạn cần là cư dân của Liên minh Châu Âu để kích hoạt SEPA bảo mật.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'Đang kích hoạt người nhận';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Người nhận của bạn đang được kích hoạt cho SEPA Bảo mật. Quá trình này có thể mất vài phút.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Người nhận chưa được kích hoạt cho SEPA Bảo mật';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Người nhận này chưa được kích hoạt cho SEPA Bảo mật. Chúng tôi đang kích hoạt ngay bây giờ. Quá trình này có thể mất vài phút. Trong thời gian chờ, bạn có thể sử dụng SEPA Tức thì và Thông thường.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle =>
+      'Đã kích hoạt người nhận';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Người nhận của bạn hiện đã được kích hoạt cho SEPA Bảo mật.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Sử dụng SEPA Tức thì và Thông thường thay thế';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle => 'Kích hoạt SEPA Bảo mật?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Mới';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Nạp tiền vào tài khoản một cách riêng tư bằng IBAN ảo cá nhân đứng tên bạn. Hoàn toàn miễn phí.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Khi bạn chuyển tiền từ ngân hàng đến Bull Bitcoin, giao dịch sẽ hiển thị là chuyển cho chính bạn.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Không cần mã chuyển khoản.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Quan trọng: Tên phải khớp';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Tên tài khoản ngân hàng phải khớp chính xác với tên IBAN ảo Bull Bitcoin của bạn, nếu không giao dịch chuyển tiền sẽ tự động bị hoàn trả. Tên không khớp? Hãy liên hệ bộ phận hỗ trợ.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'Tên chủ tài khoản';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'Tôi xác nhận tên khớp với (các) tài khoản ngân hàng của tôi';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'Kích hoạt SEPA Bảo mật';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'Đang kích hoạt SEPA Bảo mật...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Đang tạo IBAN ảo của bạn. Việc này có thể mất vài phút.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle => 'Đã kích hoạt SEPA Bảo mật';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Giờ bạn có thể dùng IBAN ảo cá nhân để rút tiền một cách riêng tư.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'Đã sao chép vào bộ nhớ tạm';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Xong';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Tên người nhận';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'Số tài khoản IBAN ảo';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Quốc gia tài khoản ngân hàng';
+
+  @override
+  String get recipientsVirtualIbanBic => 'Mã BIC';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Giờ bạn có thể dùng IBAN ảo cá nhân để nạp tiền một cách riêng tư.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Hiển thị thông tin IBAN ảo của tôi';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Nạp tiền vào tài khoản một cách riêng tư bằng IBAN ảo cá nhân đứng tên bạn. Khoản nạp sẽ hiển thị là thanh toán cho chính bạn, không cần mã chuyển khoản.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Địa chỉ ngân hàng';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Địa chỉ chính thức của ngân hàng, phòng khi ngân hàng của bạn yêu cầu.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Tên tại ngân hàng và tài khoản IBAN ảo của bạn phải khớp nhau, nếu không giao dịch chuyển sẽ bị hoàn lại tự động.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'Số tài khoản ngân hàng (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Các khoản rút tiền hiển thị như giao dịch chuyển cho chính bạn với tên tài khoản của bạn';
 }

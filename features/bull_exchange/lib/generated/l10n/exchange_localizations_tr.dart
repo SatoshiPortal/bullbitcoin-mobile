@@ -1297,4 +1297,537 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
 
   @override
   String get priceChartShowTooltip => 'Show price chart';
+
+  @override
+  String get recipientsSearchHint => 'Arama alıcılar isim veya etiket';
+
+  @override
+  String get recipientsScreenTitle => 'Alıcı Seç';
+
+  @override
+  String get recipientsScreenSubtitle => 'Kime ödeme yapıyorsunuz?';
+
+  @override
+  String get recipientsTabNew => 'Yeni Alıcı';
+
+  @override
+  String get recipientsTabList => 'Fiat Alıcılarım';
+
+  @override
+  String get recipientsPayoutMethod => 'Ödeme yöntemi';
+
+  @override
+  String get recipientsFilterByJurisdiction => 'Ülkeye Göre Filtrele:';
+
+  @override
+  String get recipientsListEmpty => 'Alıcı bulunamadı.';
+
+  @override
+  String get recipientsContinue => 'Devam Et';
+
+  @override
+  String get recipientsJurisdictionAll => 'Tüm Ülkeler';
+
+  @override
+  String get recipientsJurisdictionCanada => '🇨🇦 Kanada';
+
+  @override
+  String get recipientsJurisdictionEurope => '🇪🇺 Avrupa (SEPA)';
+
+  @override
+  String get recipientsJurisdictionMexico => '🇲🇽 Meksika';
+
+  @override
+  String get recipientsJurisdictionCostaRica => '🇨🇷 Kosta Rika';
+
+  @override
+  String get recipientsJurisdictionArgentina => '🇦🇷 Arjantin';
+
+  @override
+  String get recipientsJurisdictionColombia => '🇨🇴 Kolombiya';
+
+  @override
+  String get recipientsTypeInteracEmail => 'E-posta ile para transferi';
+
+  @override
+  String get recipientsTypeBillPayment => 'Fatura Ödemesi';
+
+  @override
+  String get recipientsTypeBankTransfer => 'Banka Transferi';
+
+  @override
+  String get recipientsTypeSepa => 'SEPA Transferi';
+
+  @override
+  String get recipientsTypeSpeiClabe => 'SPEI CLABE';
+
+  @override
+  String get recipientsTypeSpeiSms => 'SPEI SMS';
+
+  @override
+  String get recipientsTypeSpeiCard => 'SPEI Kart';
+
+  @override
+  String get recipientsTypeSinpeIbanUsd => 'SINPE IBAN (USD)';
+
+  @override
+  String get recipientsTypeSinpeIbanCrc => 'SINPE IBAN (CRC)';
+
+  @override
+  String get recipientsTypeSinpeMovil => 'SINPE Móvil';
+
+  @override
+  String get recipientsTypeBankAccountAr => 'CBU/CVU Arjantin';
+
+  @override
+  String get recipientsTypeBankAccountCo => 'Banka Hesabı (COP)';
+
+  @override
+  String get recipientsTypeNequi => 'Nequi';
+
+  @override
+  String get recipientsInfoEmail => 'E-posta';
+
+  @override
+  String get recipientsInfoPayee => 'Alıcı';
+
+  @override
+  String get recipientsInfoAccount => 'Hesap';
+
+  @override
+  String get recipientsInfoPhone => 'Telefon';
+
+  @override
+  String get recipientsInfoCard => 'Kart';
+
+  @override
+  String get recipientsInfoLabel => 'Etiket';
+
+  @override
+  String get recipientsValidationFieldRequired => 'Bu alan boş bırakılamaz';
+
+  @override
+  String get recipientsLabelOptional => 'Etiket (isteğe bağlı)';
+
+  @override
+  String get recipientsLabelHint => 'Bu alıcı için bir etiket girin';
+
+  @override
+  String get recipientsFieldName => 'Ad';
+
+  @override
+  String get recipientsFieldNameHint => 'Alıcı adını girin';
+
+  @override
+  String get recipientsFieldRecipientNameLabel => 'Alıcının adı';
+
+  @override
+  String get recipientsFieldPhoneNumber => 'Telefon Numarası';
+
+  @override
+  String get recipientsFieldPhoneNumberHint => 'Telefon numarasını girin';
+
+  @override
+  String get recipientsFieldSinpePhoneNumberHint => 'Ülke kodu olmadan 8 hane';
+
+  @override
+  String get recipientsFieldDocumentType => 'Alıcı kimlik türü';
+
+  @override
+  String get recipientsFieldDocumentNumberHint =>
+      'Alıcının kimlik numarasını girin';
+
+  @override
+  String get recipientsFieldOwnerName => 'Hesap Sahibinin Adı';
+
+  @override
+  String get recipientsFieldOwnerNameHint => 'Hesap sahibinin adını girin';
+
+  @override
+  String get recipientsAccountOwnerQuestion => 'Bu hesap kime ait?';
+
+  @override
+  String get recipientsAccountOwnerMine => 'Bu benim hesabım';
+
+  @override
+  String get recipientsAccountOwnerSomeoneElse => 'Bu başka birinin hesabı';
+
+  @override
+  String get recipientsFieldIban => 'IBAN';
+
+  @override
+  String get recipientsFieldIbanHint => 'IBAN girin';
+
+  @override
+  String get recipientsFieldClabe => 'CLABE';
+
+  @override
+  String get recipientsFieldClabeHint => 'CLABE numarasını girin';
+
+  @override
+  String get recipientsFieldCvuCbu => 'CBU/CVU';
+
+  @override
+  String get recipientsFieldCvuCbuHint => 'CVU/CBU numarasını girin';
+
+  @override
+  String get recipientsFieldBankInstitution => 'Banka Kurumu';
+
+  @override
+  String get recipientsFieldBankInstitutionPlaceholder => 'Banka Kurumu Seçin';
+
+  @override
+  String get recipientsValidationBankInstitution =>
+      'Lütfen bir banka kurumu seçin';
+
+  @override
+  String get recipientsFieldAccountType => 'Hesap Türü';
+
+  @override
+  String get recipientsAccountTypeSavings => 'Tasarruf';
+
+  @override
+  String get recipientsAccountTypeChecking => 'Vadesiz';
+
+  @override
+  String get recipientsFieldBankAccountNumber => 'Banka Hesap Numarası';
+
+  @override
+  String get recipientsFieldBankAccountNumberHint =>
+      'Banka hesap numarasını girin';
+
+  @override
+  String get recipientsCopDocCc => 'Cédula de Ciudadanía';
+
+  @override
+  String get recipientsCopDocCe => 'Cédula de Extranjería';
+
+  @override
+  String get recipientsCopDocNit => 'Número de Identificación Tributaria';
+
+  @override
+  String get recipientsCopDocPassport => 'Pasaport';
+
+  @override
+  String get recipientsCopDocTi => 'Tarjeta de Identidad';
+
+  @override
+  String get recipientsCopDocRegistroCivil => 'Registro Civil';
+
+  @override
+  String get recipientsCopDocCcRecipientNumber => 'Alıcının cédula numarası';
+
+  @override
+  String get recipientsCopDocCeRecipientNumber =>
+      'Alıcının cédula de extranjería numarası';
+
+  @override
+  String get recipientsCopDocNitRecipientNumber =>
+      'Alıcının vergi kimlik numarası';
+
+  @override
+  String get recipientsCopDocPassportRecipientNumber =>
+      'Alıcının pasaport numarası';
+
+  @override
+  String get recipientsCopDocTiRecipientNumber =>
+      'Alıcının kimlik kartı numarası';
+
+  @override
+  String get recipientsCopDocRegistroCivilRecipientNumber =>
+      'Alıcının nüfus kayıt numarası';
+
+  @override
+  String get recipientsFieldDebitCard => 'Banka Kartı Numarası';
+
+  @override
+  String get recipientsFieldDebitCardHint => 'Banka kartı numarasını girin';
+
+  @override
+  String get recipientsFieldOwnerNameSinpeHint =>
+      'Hesap sahibinin adı burada görünecek';
+
+  @override
+  String get recipientsValidationSinpePhoneCountryCode =>
+      'Ülke kodunu (+506) kaldırın. Yalnızca 8 haneli numarayı girin';
+
+  @override
+  String get recipientsValidationSinpePhoneInvalidChars =>
+      'Yalnızca rakam kullanın (harf veya sembol yok)';
+
+  @override
+  String get recipientsValidationSinpePhoneTooShort =>
+      'Telefon numarasının 8 hanesini de girin';
+
+  @override
+  String get recipientsValidationSinpeOwner =>
+      'Lütfen telefon numarasını doğrulayın';
+
+  @override
+  String get recipientsFieldEmailAddress => 'E-posta Adresi';
+
+  @override
+  String get recipientsFieldEmailAddressHint => 'E-posta adresini girin';
+
+  @override
+  String get recipientsFieldSecurityQuestion => 'Güvenlik Sorusu';
+
+  @override
+  String get recipientsFieldSecurityQuestionHint =>
+      'Güvenlik sorusunu girin (10-40 karakter)';
+
+  @override
+  String get recipientsFieldSecurityAnswer => 'Güvenlik Cevabı';
+
+  @override
+  String get recipientsFieldSecurityAnswerHint => 'Güvenlik cevabını girin';
+
+  @override
+  String get recipientsValidationSecurityQuestionMin =>
+      'Güvenlik sorusu en az 10 karakter olmalıdır';
+
+  @override
+  String recipientsCharCounter(int count) {
+    return '$count/40 karakter';
+  }
+
+  @override
+  String get recipientsFieldInstitutionCode => 'Kurum Kodu';
+
+  @override
+  String get recipientsFieldInstitutionCodeHint => 'Kurum kodunu girin';
+
+  @override
+  String get recipientsFieldInstitutionNumber => 'Kurum Numarası';
+
+  @override
+  String get recipientsFieldInstitutionNumberHint => 'Kurum numarasını girin';
+
+  @override
+  String get recipientsFieldTransitNumber => 'Şube Numarası';
+
+  @override
+  String get recipientsFieldTransitNumberHint => 'Şube numarasını girin';
+
+  @override
+  String get recipientsFieldAccountNumber => 'Hesap Numarası';
+
+  @override
+  String get recipientsFieldAccountNumberHint => 'Hesap numarasını girin';
+
+  @override
+  String get recipientsFieldDefaultComment =>
+      'Varsayılan Açıklama (isteğe bağlı)';
+
+  @override
+  String get recipientsFieldDefaultCommentHint => 'Varsayılan açıklamayı girin';
+
+  @override
+  String get recipientsFieldCorporateAccount => 'Kurumsal hesap';
+
+  @override
+  String get recipientsFieldFirstName => 'Ad';
+
+  @override
+  String get recipientsFieldFirstNameHint => 'Adı girin';
+
+  @override
+  String get recipientsFieldLastName => 'Soyad';
+
+  @override
+  String get recipientsFieldLastNameHint => 'Soyadı girin';
+
+  @override
+  String get recipientsFieldCorporateName => 'Şirket Adı';
+
+  @override
+  String get recipientsFieldCorporateNameHint => 'Şirket adını girin';
+
+  @override
+  String get recipientsFieldBillerName => 'Fatura Kuruluşu Adı';
+
+  @override
+  String get recipientsFieldBillerNameHint =>
+      'Bir fatura kuruluşu arayın ve seçin';
+
+  @override
+  String get recipientsValidationBillerSearchMin =>
+      'Arama yapmak için 3 veya daha fazla karakter girin';
+
+  @override
+  String get recipientsValidationBillerSelect =>
+      'Lütfen listeden bir fatura kuruluşu seçin';
+
+  @override
+  String get recipientsFieldPayeeAccountNumber => 'Alıcı Hesap Numarası';
+
+  @override
+  String get recipientsErrorLoadFailed =>
+      'Alıcılarınız yüklenemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get recipientsErrorSaveFailed =>
+      'Bu alıcı kaydedilemedi. Bilgileri kontrol edip tekrar deneyin.';
+
+  @override
+  String get recipientsErrorSinpeLookupFailed =>
+      'Bu telefon numarasını doğrulayamadık. Numarayı kontrol edip tekrar deneyin.';
+
+  @override
+  String get recipientsErrorBillerSearchFailed =>
+      'Fatura kurumları aranamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get recipientsErrorNetwork =>
+      'İnternet bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
+  String get recipientsListPullToRetry => 'Yeniden denemek için aşağı çekin.';
+
+  @override
+  String get recipientsErrorSavedButNotSelected =>
+      'Bu alıcı kaydedildi, ancak devam edemedik. Devam etmek için listenizde bulun.';
+
+  @override
+  String get recipientsTypeConfidentialSepa => 'Gizli SEPA';
+
+  @override
+  String get recipientsErrorVirtualIbanNotAvailable =>
+      'Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC\'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor';
+
+  @override
+  String get recipientsErrorEuResidencyRequired =>
+      'Gizli SEPA\'yı etkinleştirmek için Avrupa Birliği\'nde ikamet ediyor olmanız gerekir.';
+
+  @override
+  String get recipientsConfidentialSepaActivatingTitle =>
+      'Alıcı etkinleştiriliyor';
+
+  @override
+  String get recipientsConfidentialSepaActivatingDescription =>
+      'Alıcınız Gizli SEPA için etkinleştiriliyor. Bu işlem birkaç dakika sürebilir.';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedTitle =>
+      'Alıcı Gizli SEPA için etkinleştirilmedi';
+
+  @override
+  String get recipientsConfidentialSepaNotActivatedDescription =>
+      'Bu alıcı henüz Gizli SEPA için etkinleştirilmedi. Şimdi etkinleştiriyoruz. Bu işlem birkaç dakika sürebilir. Bunun yerine Anında ve Normal SEPA\'yı kullanabilirsiniz.';
+
+  @override
+  String get recipientsConfidentialSepaActivatedTitle =>
+      'Alıcı etkinleştirildi';
+
+  @override
+  String get recipientsConfidentialSepaActivatedDescription =>
+      'Alıcınız artık Gizli SEPA için etkin.';
+
+  @override
+  String get recipientsConfidentialSepaUseRegularSepa =>
+      'Bunun yerine Anında ve Normal SEPA kullan';
+
+  @override
+  String get recipientsReturnHome => 'Return Home';
+
+  @override
+  String get recipientsVirtualIbanIntroTitle =>
+      'Gizli SEPA etkinleştirilsin mi?';
+
+  @override
+  String get recipientsVirtualIbanNewBadge => 'Yeni';
+
+  @override
+  String get recipientsVirtualIbanIntroDescription =>
+      'Kendi adınıza açılmış kişisel bir sanal IBAN ile hesabınıza gizlice para yatırın. Ücretsizdir.';
+
+  @override
+  String get recipientsVirtualIbanIntroSelfTransfer =>
+      'Bankanızdan Bull Bitcoin’e para gönderdiğinizde, kendinize yapılmış bir transfer olarak görünür.';
+
+  @override
+  String get recipientsVirtualIbanIntroNoTransferCode =>
+      'Transfer kodu gerekmez.';
+
+  @override
+  String get recipientsVirtualIbanNameWarningTitle =>
+      'Önemli: İsim eşleşmesi gerekli';
+
+  @override
+  String get recipientsVirtualIbanNameWarningDescription =>
+      'Banka hesabı adı, Bull Bitcoin sanal IBAN adınızla tam olarak eşleşmelidir; aksi takdirde transfer otomatik olarak iade edilir. İsimler eşleşmiyor mu? Destekle iletişime geçin.';
+
+  @override
+  String get recipientsVirtualIbanAccountOwnerName => 'Hesap sahibinin adı';
+
+  @override
+  String get recipientsVirtualIbanNameConfirmation =>
+      'İsmin banka hesap(lar)ımla eşleştiğini onaylıyorum';
+
+  @override
+  String get recipientsVirtualIbanActivate => 'Gizli SEPA’yı etkinleştir';
+
+  @override
+  String get recipientsVirtualIbanActivatingTitle =>
+      'Gizli SEPA etkinleştiriliyor...';
+
+  @override
+  String get recipientsVirtualIbanActivatingDescription =>
+      'Sanal IBAN’ınız oluşturuluyor. Bu birkaç dakika sürebilir.';
+
+  @override
+  String get recipientsVirtualIbanActivatedTitle =>
+      'Gizli SEPA etkinleştirildi';
+
+  @override
+  String get recipientsVirtualIbanActivatedDescription =>
+      'Artık kişisel sanal IBAN’ınızı gizlice para çekmek için kullanabilirsiniz.';
+
+  @override
+  String get recipientsVirtualIbanCopied => 'Copied to klibi';
+
+  @override
+  String get recipientsVirtualIbanDone => 'Done';
+
+  @override
+  String get recipientsVirtualIbanRecipientName => 'Recipient name';
+
+  @override
+  String get recipientsVirtualIbanIbanLabel => 'Sanal IBAN hesap numarası';
+
+  @override
+  String get recipientsVirtualIbanCountry => 'Banka hesabı ülke';
+
+  @override
+  String get recipientsVirtualIbanBic => 'BIC kodu';
+
+  @override
+  String get recipientsVirtualIbanActivatedFundingDescription =>
+      'Artık kişisel sanal IBAN’ınızı gizlice para yatırmak için kullanabilirsiniz.';
+
+  @override
+  String get recipientsVirtualIbanShowDetails =>
+      'Sanal IBAN bilgilerimi göster';
+
+  @override
+  String get recipientsVirtualIbanDetailsDescription =>
+      'Kendi adınıza açılmış kişisel bir sanal IBAN ile hesabınıza gizlice para yatırın. Yatırım, transfer kodu gerekmeden kendinize yapılmış bir ödeme olarak görünür.';
+
+  @override
+  String get recipientsVirtualIbanBankAddress => 'Banka adresi';
+
+  @override
+  String get recipientsVirtualIbanBankAddressHelp =>
+      'Bankanız isterse diye resmi banka adresi.';
+
+  @override
+  String get recipientsConfidentialSepaNameMustMatchHint =>
+      'Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir.';
+
+  @override
+  String get recipientsFieldBankAccountIban => 'Banka hesap numarası (IBAN)';
+
+  @override
+  String get recipientsTypeConfidentialSepaDescription =>
+      'Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür';
 }
