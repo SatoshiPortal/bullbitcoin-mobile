@@ -26,11 +26,16 @@ class GetSwapRescueWalletsUsecase {
     final Network network = actsOnLiquid
         ? LiquidNetwork.fromName(environment.name)
         : BitcoinNetwork.fromName(environment.name);
-    return (await _inventory.walletsForNetwork(network))
-        .map((selection) => selection.wallets)
-        .mapErr(
-          (failure) =>
-              SwapsUnexpectedFailure('Inventory: ${failure.runtimeType}'),
-        );
+    return switch (await _inventory.walletsForNetwork(network)) {
+      // An unreadable account may be the one the swap should pay into:
+      // offer no destination rather than a silently shorter list.
+      Ok(value: WalletSelection(isComplete: false)) => const Err(
+        SwapsUnexpectedFailure('Inventory: incomplete'),
+      ),
+      Ok(:final value) => Ok(value.wallets),
+      Err(:final failure) => Err(
+        SwapsUnexpectedFailure('Inventory: ${failure.runtimeType}'),
+      ),
+    };
   }
 }
