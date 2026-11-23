@@ -5,7 +5,13 @@ import 'package:signers/signers.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, NetworkEnv, Ok, ScriptType;
+    show
+        BitcoinNetwork,
+        Err,
+        NetworkEnv,
+        Ok,
+        ScriptType,
+        UnsupportedNetworkException;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 

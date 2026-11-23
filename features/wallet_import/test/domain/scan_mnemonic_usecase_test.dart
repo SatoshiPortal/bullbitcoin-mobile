@@ -1,5 +1,3 @@
-import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
-
 import 'dart:async';
 import 'dart:io';
 

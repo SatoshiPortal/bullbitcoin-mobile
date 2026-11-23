@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
-import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
 import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';

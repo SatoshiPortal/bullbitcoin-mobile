@@ -13,6 +13,7 @@ WalletRegistration walletRegistrationForTesting({
   scriptType: ScriptType.bip84,
   signer: signer,
   secretFingerprint: null,
+  masterFingerprint: null,
   derivationPath: null,
   label: null,
   birthday: null,
@@ -20,4 +21,4 @@ WalletRegistration walletRegistrationForTesting({
 );
 
 WalletSelection walletSelectionForTesting(List<WalletRegistration> wallets) =>
-    WalletSelection(wallets);
+    WalletSelection(wallets, isComplete: true);

@@ -1,4 +1,3 @@
-import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';

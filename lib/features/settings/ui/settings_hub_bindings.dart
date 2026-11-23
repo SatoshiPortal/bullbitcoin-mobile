@@ -2,6 +2,8 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:exchange/exchange.dart'
+    show ExchangeAccess, ExchangeAvailability;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:settings/settings.dart';
 

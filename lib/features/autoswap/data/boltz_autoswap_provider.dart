@@ -6,7 +6,6 @@ import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:labels/labels.dart';
 import 'package:bull_logger/bull_logger.dart';

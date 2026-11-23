@@ -3,7 +3,6 @@ import 'package:primitives/primitives.dart' show ScriptType;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';

@@ -367,11 +367,6 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseFileUnavailable',
       'DatabaseCipherUnavailable',
       'DatabaseNotReady',
-      // scoped wallet inventory reads
-      'WalletInventory',
-      'WalletRegistration',
-      'WalletSelection',
-      'WalletSigner',
       // the failure family
       'SecretFailure',
       'SecretAlreadyExistsFailure',

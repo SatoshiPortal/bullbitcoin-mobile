@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart'
     as chains
     show BitcoinNetwork, LiquidNetwork;
 import 'package:silent/localizations.dart';
-import 'package:swaps/order_swaps.dart';
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
@@ -38,7 +37,7 @@ import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
 import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/localizations.dart' show OnchainSendLabelsL10n;
+import 'package:bb_mobile/localization/onchain_send_labels_l10n.dart';
 import 'package:satoshifier/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';

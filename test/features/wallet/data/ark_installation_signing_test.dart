@@ -1,5 +1,6 @@
 import 'package:ark/funding.dart';
 import 'package:ark/ark.dart' show ArkWalletFailure;
+
 import 'dart:io';
 
 import 'package:bull_ark/ark_wallet_setup.dart';

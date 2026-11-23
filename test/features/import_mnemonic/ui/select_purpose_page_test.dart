@@ -1,7 +1,6 @@
 import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/select_purpose_page.dart';

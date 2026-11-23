@@ -1,5 +1,3 @@
-import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
-
 import 'dart:async';
 
 import 'package:electrum/setup.dart';
