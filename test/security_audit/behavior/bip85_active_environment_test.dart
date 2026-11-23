@@ -1,13 +1,13 @@
 import 'package:bb_mobile/features/wallet/domain/read_default_bip85_parent_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok, ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Fingerprint, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -15,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:secrets/storage.dart';
 
 class _MockBip85Repository extends Mock implements Bip85Repository {}
 
@@ -50,7 +51,7 @@ void main() {
   late WithDefaultBip85WalletUsecase withDefault;
 
   setUpAll(() {
-    registerFallbackValue(Bip85Application.bip39);
+    registerFallbackValue(Fingerprint('00000000'));
     registerFallbackValue(bip39.MnemonicLength.words12);
   });
 
@@ -113,25 +114,41 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok(<Wallet>[testnetWallet]));
 
-    when(() => bip85Repository.fetchNextIndexForApplication(any()))
-        .thenAnswer((_) async => const Ok(0));
     when(
-      () => bip85Repository.recordMnemonic(
-        xprvFingerprint: any(named: 'xprvFingerprint'),
+      () => bip85Repository.reserveMnemonic(
+        parent: any(named: 'parent'),
         length: any(named: 'length'),
-        index: any(named: 'index'),
         alias: any(named: 'alias'),
         language: bip39.Language.english,
       ),
-    ).thenAnswer((_) async => const Ok("83696968'/39'/0'/12'/0'"));
+    ).thenAnswer(
+      (_) async => Ok(
+        RecordedDerivation(
+          path: "39'/0'/12'/0'",
+          parentFingerprint: stored.value.id.hex,
+          application: 'bip39',
+          status: 'active',
+          alias: null,
+        ),
+      ),
+    );
     when(
-      () => bip85Repository.recordHex(
-        xprvFingerprint: any(named: 'xprvFingerprint'),
+      () => bip85Repository.reserveHex(
+        parent: any(named: 'parent'),
         length: any(named: 'length'),
-        index: any(named: 'index'),
         alias: any(named: 'alias'),
       ),
-    ).thenAnswer((_) async => const Ok("83696968'/128169'/30'/0'"));
+    ).thenAnswer(
+      (_) async => Ok(
+        RecordedDerivation(
+          path: "128169'/30'/0'",
+          parentFingerprint: stored.value.id.hex,
+          application: 'hex',
+          status: 'active',
+          alias: null,
+        ),
+      ),
+    );
   });
 
   test(
