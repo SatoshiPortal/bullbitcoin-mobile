@@ -1,12 +1,18 @@
+import 'package:swaps/order_swaps.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/testing.dart'
+    show
+        WalletTransactionRepository,
+        WatchWalletTransactionByAddressUsecase,
+        walletHistoryEvents;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
 
 import 'dart:typed_data';
 
@@ -14,16 +20,11 @@ import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
+import 'package:transactions/transactions.dart';
+import 'package:receive/receive.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -53,12 +54,6 @@ class _MockSettings extends Mock implements Preferences {}
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
 
-class _MockGetReceiveSettingsUsecase extends Mock
-    implements GetReceiveSettingsUsecase {}
-
-class _MockConvertReceiveAmountUsecase extends Mock
-    implements ConvertReceiveAmountUsecase {}
-
 class _MockPrepareReceiveAddressUsecase extends Mock
     implements PrepareReceiveAddressUsecase {}
 
@@ -82,19 +77,10 @@ class _MockBroadcastOriginalTransactionUsecase extends Mock
 class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 
 class _MockWatchWalletTransactionByAddressUsecase extends Mock
-    implements WatchWalletTransactionByAddressUsecase {}
+    implements Transactions {}
 
 class _MockWatchReceiveOrderSwapUsecase extends Mock
     implements WatchReceiveOrderSwapUsecase {}
-
-class _MockLoadReceiveAddressLabelUsecase extends Mock
-    implements LoadReceiveAddressLabelUsecase {}
-
-class _MockSaveReceiveAddressLabelUsecase extends Mock
-    implements SaveReceiveAddressLabelUsecase {}
-
-class _MockFetchReceiveNoteSuggestionsUsecase extends Mock
-    implements FetchReceiveNoteSuggestionsUsecase {}
 
 class _MockWatchReceivePayjoinEnabledUsecase extends Mock
     implements WatchReceivePayjoinEnabledUsecase {}
@@ -250,19 +236,20 @@ swaps.LnReceiveSwap _boltzReceiveSwap({
   receiveAddress: receiveAddress,
 ) as swaps.LnReceiveSwap;
 
+class _MockReceive extends Mock implements Receive {}
+
+class _MockLabels extends Mock implements Labels {}
+
 class _MockTransactions extends Mock implements WalletTransactionRepository {}
 
 void main() {
+  late _MockReceive receive;
   late _MockGetReceiveWalletsUsecase getWallets;
-  late _MockGetReceiveSettingsUsecase getSettings;
-  late _MockConvertReceiveAmountUsecase convertSatsToCurrency;
   late _MockPrepareReceiveAddressUsecase getReceiveAddress;
   late _MockReceiveWithPayjoinUsecase receiveWithPayjoin;
   late _MockBroadcastOriginalTransactionUsecase broadcastOriginalTransaction;
   late _MockWatchPayjoinUsecase watchPayjoin;
   late _MockWatchWalletTransactionByAddressUsecase watchWalletTransaction;
-  late _MockLoadReceiveAddressLabelUsecase loadAddressLabel;
-  late _MockSaveReceiveAddressLabelUsecase saveAddressLabel;
   late _MockWatchReceivePayjoinEnabledUsecase watchPayjoinEnabledChanges;
   late _MockGetReceivePayjoinPolicyUsecase getPayjoinPolicy;
   late _MockSetReceivePayjoinEnabledUsecase setPayjoinEnabled;
@@ -284,36 +271,57 @@ void main() {
   ReceiveBloc buildBloc({
     Wallet? wallet,
     bool withPresetWallet = true,
-    WatchWalletTransactionByAddressUsecase? observation,
-    GetReceiveSettingsUsecase? settings,
-  }) => ReceiveBloc(
-    getReceiveSwapLimitsUsecase: getSwapLimits,
-    getReceiveWalletsUsecase: getWallets,
-    getReceiveSettingsUsecase: settings ?? getSettings,
-    convertReceiveAmountUsecase: convertSatsToCurrency,
-    prepareReceiveAddressUsecase: getReceiveAddress,
-    createReceiveOrderSwapUsecase: createOrderSwap,
-    getReceiveSwapRouteUsecase: getSwapRoute,
-    createBoltzReceiveSwapUsecase: createBoltzSwap,
-    watchSwapUsecase: watchSwap,
-    receiveWithPayjoinUsecase: receiveWithPayjoin,
-    broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
-    watchPayjoinUsecase: watchPayjoin,
-    watchWalletTransactionByAddressUsecase:
-        observation ?? watchWalletTransaction,
-    watchReceiveOrderSwapUsecase: watchOrderSwap,
-    loadReceiveAddressLabelUsecase: loadAddressLabel,
-    saveReceiveAddressLabelUsecase: saveAddressLabel,
-    fetchReceiveNoteSuggestionsUsecase:
-        _MockFetchReceiveNoteSuggestionsUsecase(),
-    watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
-    watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
-    getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
-    setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
-    wallet: withPresetWallet ? (wallet ?? _testWallet()) : null,
-  );
+    Transactions? observation,
+    Preferences? settings,
+  }) {
+    if (settings != null) {
+      final operations = Receive.open(
+        addresses: _ReceiveAddressView(),
+        labels: _MockLabels(),
+        preferences: settings,
+        readPrice: Pricer.getIndexPrice,
+        readPrices: Pricer.getIndexPrices,
+      );
+      when(
+        () => receive.settings(
+          mode: any(named: 'mode'),
+          selectedNetwork: any(named: 'selectedNetwork'),
+        ),
+      ).thenAnswer(
+        (call) => operations.settings(
+          mode: call.namedArguments[#mode] as ReceiveNetworkType?,
+          selectedNetwork:
+              call.namedArguments[#selectedNetwork] as primitives.Network?,
+        ),
+      );
+    }
+    return ReceiveBloc(
+      getReceiveSwapLimitsUsecase: getSwapLimits,
+      getReceiveWalletsUsecase: getWallets,
+      receive: receive,
+      pollAmountQuotes: false,
+      prepareReceiveAddressUsecase: getReceiveAddress,
+      createReceiveOrderSwapUsecase: createOrderSwap,
+      getReceiveSwapRouteUsecase: getSwapRoute,
+      createBoltzReceiveSwapUsecase: createBoltzSwap,
+      watchSwapUsecase: watchSwap,
+      receiveWithPayjoinUsecase: receiveWithPayjoin,
+      broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
+      watchPayjoinUsecase: watchPayjoin,
+      transactions: observation ?? watchWalletTransaction,
+      watchReceiveOrderSwapUsecase: watchOrderSwap,
+      watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
+      watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
+      getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
+      setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
+      wallet: withPresetWallet ? (wallet ?? _testWallet()) : null,
+    );
+  }
 
   setUp(() {
+    receive = _MockReceive();
+    when(receive.addressNoteSuggestions)
+        .thenAnswer((_) async => const Ok(<String>{}));
     getSwapLimits = _MockGetReceiveSwapLimitsUsecase();
     when(() => getSwapLimits.execute(isLiquid: any(named: 'isLiquid')))
         .thenAnswer(
@@ -323,8 +331,6 @@ void main() {
     getWallets = _MockGetReceiveWalletsUsecase();
     when(() => getWallets.execute(onlyBitcoin: true))
         .thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
-    getSettings = _MockGetReceiveSettingsUsecase();
-    convertSatsToCurrency = _MockConvertReceiveAmountUsecase();
     getReceiveAddress = _MockPrepareReceiveAddressUsecase();
     receiveWithPayjoin = _MockReceiveWithPayjoinUsecase();
     broadcastOriginalTransaction = _MockBroadcastOriginalTransactionUsecase();
@@ -339,8 +345,6 @@ void main() {
     watchSwap = _MockWatchSwapUsecase();
     when(() => watchSwap.execute(any()))
         .thenAnswer((_) => const Stream.empty());
-    loadAddressLabel = _MockLoadReceiveAddressLabelUsecase();
-    saveAddressLabel = _MockSaveReceiveAddressLabelUsecase();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
     getPayjoinPolicy = _MockGetReceivePayjoinPolicyUsecase();
     payjoinEnabledChangeController = StreamController<bool>.broadcast();
@@ -367,21 +371,20 @@ void main() {
     // Payjoin is enabled by default here so the guard group can create a
     // session; the gated group overrides this stub to disable it.
     when(
-      () => getSettings.execute(
+      () => receive.settings(
         mode: any(named: 'mode'),
         selectedNetwork: any(named: 'selectedNetwork'),
       ),
     ).thenAnswer(
       (_) async => const Ok(
-        SettingsEntity(
-          environment: Environment.mainnet,
+        ReceiveDisplayPreferences(
           bitcoinUnit: BitcoinUnit.sats,
           currencyCode: 'USD',
         ),
       ),
     );
     when(
-      () => convertSatsToCurrency.execute(
+      () => receive.convertAmount(
         amountSat: any(named: 'amountSat'),
         currencyCode: any(named: 'currencyCode'),
       ),
@@ -394,10 +397,10 @@ void main() {
         address: any(named: 'address'),
       ),
     ).thenAnswer((_) async => Ok(_receiver()));
-    when(() => loadAddressLabel.execute(any()))
+    when(() => receive.loadAddressNote(any()))
         .thenAnswer((_) async => const Ok(''));
     when(
-      () => saveAddressLabel.execute(
+      () => receive.saveAddressNote(
         address: any(named: 'address'),
         walletId: any(named: 'walletId'),
         note: any(named: 'note'),
@@ -408,7 +411,7 @@ void main() {
       (_) => const Stream<Result<PayjoinSession, ReceiveFailure>>.empty(),
     );
     when(
-      () => watchWalletTransaction.execute(
+      () => watchWalletTransaction.watchWalletTransactionByAddress(
         walletId: any(named: 'walletId'),
         toAddress: any(named: 'toAddress'),
       ),
@@ -574,7 +577,7 @@ void main() {
           final bloc = buildBloc(
             wallet: selected,
             withPresetWallet: preset,
-            settings: GetReceiveSettingsUsecase(inner),
+            settings: inner,
           );
           addTearDown(bloc.close);
           if (warm) {
@@ -673,10 +676,7 @@ void main() {
     final selected = _testWallet(network: Network.bitcoinRegtest);
     when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
         .thenAnswer((_) async => const Ok([]));
-    final bloc = buildBloc(
-      wallet: selected,
-      settings: GetReceiveSettingsUsecase(inner),
-    );
+    final bloc = buildBloc(wallet: selected, settings: inner);
     addTearDown(bloc.close);
     final settled = bloc.stream.firstWhere((s) => s.failure != null);
 
@@ -1133,7 +1133,7 @@ void main() {
 
     test('when a startup read fails', () async {
       when(
-        () => getSettings.execute(
+        () => receive.settings(
           mode: any(named: 'mode'),
           selectedNetwork: any(named: 'selectedNetwork'),
         ),
@@ -1757,10 +1757,10 @@ void main() {
 
       // An empty note must reach the use-case as an empty note — that is what
       // makes it a delete rather than a store. The trash-vs-store decision
-      // itself now lives in SaveReceiveAddressLabelUsecase and is covered by
+      // itself now lives in the Receive capability and is covered by
       // its own test.
       verify(
-        () => saveAddressLabel.execute(
+        () => receive.saveAddressNote(
           address: 'bc1qtest',
           walletId: any(named: 'walletId'),
           note: '',
@@ -1770,7 +1770,7 @@ void main() {
 
     test('a failed note save surfaces a sanitized failure', () async {
       when(
-        () => saveAddressLabel.execute(
+        () => receive.saveAddressNote(
           address: any(named: 'address'),
           walletId: any(named: 'walletId'),
           note: any(named: 'note'),
@@ -1800,7 +1800,7 @@ void main() {
   group('no price', () {
     test('receiving works on, with no fiat value and no failure', () async {
       when(
-        () => convertSatsToCurrency.execute(
+        () => receive.convertAmount(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
@@ -1818,7 +1818,7 @@ void main() {
         BitcoinUnit.sats.code,
       ]);
       verify(
-        () => watchWalletTransaction.execute(
+        () => watchWalletTransaction.watchWalletTransactionByAddress(
           walletId: any(named: 'walletId'),
           toAddress: any(named: 'toAddress'),
         ),
@@ -1830,7 +1830,7 @@ void main() {
     test('a failed rate fetch surfaces a failure instead of escaping the '
         'handler', () async {
       when(
-        () => convertSatsToCurrency.execute(
+        () => receive.convertAmount(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
@@ -1878,7 +1878,7 @@ void main() {
 
     test('a currency whose price does not come is not taken', () async {
       when(
-        () => convertSatsToCurrency.execute(
+        () => receive.convertAmount(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
@@ -1898,7 +1898,7 @@ void main() {
 
     test('switches currency and rate on success', () async {
       when(
-        () => convertSatsToCurrency.execute(
+        () => receive.convertAmount(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
@@ -1926,7 +1926,7 @@ void main() {
       await pumpEventQueue();
 
       when(
-        () => getSettings.execute(
+        () => receive.settings(
           mode: any(named: 'mode'),
           selectedNetwork: any(named: 'selectedNetwork'),
         ),
@@ -2133,14 +2133,14 @@ void main() {
         ),
       ).called(1);
       verify(
-        () => saveAddressLabel.execute(
+        () => receive.saveAddressNote(
           address: 'tlq1-claim',
           walletId: any(named: 'walletId'),
           note: 'coffee',
         ),
       ).called(1);
       verify(
-        () => watchWalletTransaction.execute(
+        () => watchWalletTransaction.watchWalletTransactionByAddress(
           walletId: any(named: 'walletId'),
           toAddress: 'tlq1-claim',
         ),
@@ -2506,7 +2506,7 @@ void main() {
               ? const Err(ReceiveAddressUnavailableFailure('busy'))
               : Ok(address),
         );
-        when(() => loadAddressLabel.execute(address.address))
+        when(() => receive.loadAddressNote(address.address))
             .thenAnswer((_) => labelLoad.future);
         final bloc = buildBloc(wallet: wallet);
         addTearDown(() async {
@@ -2577,7 +2577,7 @@ void main() {
     final address = _testAddress(walletId: wallet.id);
     when(() => getReceiveAddress.execute(walletId: wallet.id))
         .thenAnswer((_) async => Ok(address));
-    when(() => loadAddressLabel.execute(address.address))
+    when(() => receive.loadAddressNote(address.address))
         .thenAnswer((_) async => const Ok('stored'));
     final bloc = buildBloc(wallet: wallet);
     addTearDown(bloc.close);
@@ -3182,7 +3182,7 @@ void main() {
         when(() => getWallets.execute(onlyBitcoin: true))
             .thenAnswer((_) async => Ok([walletA, walletB]));
         when(
-          () => watchWalletTransaction.execute(
+          () => watchWalletTransaction.watchWalletTransactionByAddress(
             walletId: walletA.id,
             toAddress: any(named: 'toAddress'),
           ),
@@ -3213,7 +3213,7 @@ void main() {
 
         final payment = WalletTransaction(
           walletId: walletA.id,
-          network: walletA.network,
+          network: walletA.network.shared,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.pending,
           txId: 'payment-for-a',
@@ -3257,7 +3257,7 @@ void main() {
         await pumpEventQueue();
         expect(bloc.state.wallet?.id, walletA.id);
         verifyNever(
-          () => watchWalletTransaction.execute(
+          () => watchWalletTransaction.watchWalletTransactionByAddress(
             walletId: walletB.id,
             toAddress: any(named: 'toAddress'),
           ),
@@ -3275,12 +3275,12 @@ void main() {
         final wallet = _testWallet();
         final address = _testAddress(walletId: wallet.id);
         final revisions = StreamController<WalletRevisionState>.broadcast();
-        final facade = WalletFacade(revisions.stream);
+        final facade = walletHistoryEvents(revisions.stream);
         final transactions = _MockTransactions();
         final price = Completer<Result<double, ReceiveFailure>>();
         final payment = WalletTransaction(
           walletId: wallet.id,
-          network: wallet.network,
+          network: wallet.network.shared,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'confirmed-during-receive-preparation',
@@ -3302,7 +3302,7 @@ void main() {
           ),
         ).thenAnswer((_) async {
           reads++;
-          return persistedPayments;
+          return Ok(persistedPayments);
         });
         final observation = WatchWalletTransactionByAddressUsecase(
           walletTransactionRepository: transactions,
@@ -3313,9 +3313,20 @@ void main() {
         when(() => getPayjoinPolicy.execute()).thenAnswer(
           (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
         );
-        when(() => convertSatsToCurrency.execute())
-            .thenAnswer((_) => price.future);
-        final bloc = buildBloc(wallet: wallet, observation: observation);
+        when(() => receive.convertAmount()).thenAnswer((_) => price.future);
+        final capability = _MockWatchWalletTransactionByAddressUsecase();
+        when(
+          () => capability.watchWalletTransactionByAddress(
+            walletId: wallet.id,
+            toAddress: address.address,
+          ),
+        ).thenAnswer(
+          (_) => observation.execute(
+            walletId: wallet.id,
+            toAddress: address.address,
+          ),
+        );
+        final bloc = buildBloc(wallet: wallet, observation: capability);
         addTearDown(() async {
           if (!price.isCompleted) price.complete(const Ok(1.0));
           await pumpEventQueue();
@@ -3367,10 +3378,11 @@ void main() {
       () async {
         final revisions = StreamController<WalletRevisionState>.broadcast();
         final transactions = _MockTransactions();
-        final first = Completer<List<WalletTransaction>>();
+        final first =
+            Completer<Result<List<WalletTransaction>, TransactionFailure>>();
         final payment = WalletTransaction(
           walletId: 'w1',
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'payment',
@@ -3390,12 +3402,12 @@ void main() {
         ).thenAnswer((_) {
           expect(revisions.hasListener, isTrue);
           reads++;
-          return reads == 1 ? first.future : Future.value([payment]);
+          return reads == 1 ? first.future : Future.value(Ok([payment]));
         });
         final received = <WalletTransaction>[];
         final subscription = WatchWalletTransactionByAddressUsecase(
           walletTransactionRepository: transactions,
-          walletFacade: WalletFacade(revisions.stream),
+          walletFacade: walletHistoryEvents(revisions.stream),
         ).execute(walletId: 'w1', toAddress: 'current').listen(received.add);
         await pumpEventQueue();
         expect(reads, 1);
@@ -3414,7 +3426,7 @@ void main() {
         await pumpEventQueue();
         expect(reads, 1);
         if (cancel) await subscription.cancel();
-        first.complete([]);
+        first.complete(const Ok([]));
         await pumpEventQueue();
         expect(reads, cancel ? 1 : 2);
         expect(received, cancel ? isEmpty : [payment]);
@@ -3442,7 +3454,7 @@ void main() {
               generateNew: true,
             ),
           ).thenAnswer((_) => next.future);
-          when(() => loadAddressLabel.execute(any()))
+          when(() => receive.loadAddressNote(any()))
               .thenAnswer((_) => label.future);
           when(() => getPayjoinPolicy.execute()).thenAnswer(
             (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
@@ -3529,3 +3541,5 @@ OrderSwapRecord _receiveOrderSwapRecord() => OrderSwapRecord(
   createdAt: DateTime.utc(2026),
   localStatus: OrderSwapLocalStatus.awaitingUserConfirmation,
 );
+
+class _ReceiveAddressView extends Mock implements AddressView {}

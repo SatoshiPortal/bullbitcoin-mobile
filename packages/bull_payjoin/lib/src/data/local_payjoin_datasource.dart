@@ -39,6 +39,28 @@ class LocalPayjoinDatasource {
         .write(PayjoinSendersCompanion(sender: Value(sender.sender)));
   }
 
+  /// Arms the exact reservation Sync admitted. Restore the PDK event log and
+  /// set write-ahead publication evidence in the same durable transition.
+  Future<bool> admitSenderPublication(PayjoinSenderModel sender) =>
+      _writeTransition(() {
+        return (_db.update(_db.payjoinSenders)..where(
+              (row) =>
+                  row.uri.equals(sender.id) &
+                  row.sender.equals(PayjoinSenderAdmission.pendingState) &
+                  row.originalTxId.equals(sender.originalTxId) &
+                  row.createdAt.equals(sender.createdAt) &
+                  row.isExpired.equals(false) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(
+              PayjoinSendersCompanion(
+                sender: Value(sender.sender),
+                hasNetworkEvidence: const Value(true),
+              ),
+            );
+      });
+
   /// Replaces only a sender that expired without a known broadcast outcome.
   /// Completed and aborted payments remain immutable so retry cannot create a
   /// second payment for an already-resolved request.
@@ -108,6 +130,7 @@ class LocalPayjoinDatasource {
         return (_db.update(_db.payjoinReceivers)..where(
               (row) =>
                   row.id.equals(receiver.id) &
+                  row.proposalPsbt.isNull() &
                   row.isCompleted.equals(false) &
                   row.isAborted.equals(false),
             ))
@@ -262,12 +285,19 @@ class LocalPayjoinDatasource {
     }
 
     return _writeTransition(() {
+      final pending =
+          payjoin is PayjoinSenderModel && payjoin.isAwaitingAdmission;
       return (_db.update(_db.payjoinSenders)..where(
             (row) =>
                 row.uri.equals(payjoin.id) &
                 row.isCompleted.equals(false) &
                 row.isAborted.equals(false) &
-                row.isExpired.equals(false),
+                row.isExpired.equals(false) &
+                (pending
+                    ? row.sender.equals(PayjoinSenderAdmission.pendingState) &
+                          row.originalTxId.equals(payjoin.originalTxId) &
+                          row.createdAt.equals(payjoin.createdAt)
+                    : const Constant(true)),
           ))
           .write(
             PayjoinSendersCompanion(
@@ -281,6 +311,7 @@ class LocalPayjoinDatasource {
   Future<List<PayjoinModel>> fetchAll({
     String? walletId,
     bool onlyUnfinished = false,
+    bool includeExpiredReservations = false,
     BitcoinNetwork? network,
   }) async {
     final isTestnet = network == null ? null : !network.isMainnet;
@@ -317,7 +348,9 @@ class LocalPayjoinDatasource {
       if (onlyUnfinished) {
         expr =
             expr &
-            row.isExpired.equals(false) &
+            (row.isExpired.equals(false) |
+                (row.hasNetworkEvidence.equals(true) &
+                    Constant(includeExpiredReservations))) &
             row.isCompleted.equals(false) &
             row.isAborted.equals(false);
       }

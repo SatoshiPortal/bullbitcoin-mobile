@@ -2093,4 +2093,352 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Weka kiasi';
+
+  @override
+  String get buyPaymentMethod => 'Njia ya malipo';
+
+  @override
+  String get buyMax => 'Kiwango cha Juu';
+
+  @override
+  String get buySelectWallet => 'Chagua pochi';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Weka anwani ya bitcoin';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Thibitisha ununuzi';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Umenunua $amount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Malipo yako yatatumwa baada ya ';
+
+  @override
+  String get buyViewDetails => 'Tazama maelezo';
+
+  @override
+  String get buyAccelerateTransaction => 'Harakisha Muamala';
+
+  @override
+  String get buyGetConfirmedFaster => 'Ipate ithibitishwe haraka zaidi';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Thibitisha uondoaji wa haraka';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Ada ya mtandao wa Bitcoin itaondolewa kutoka kwa kiasi utakachopokea na kukusanywa na wachimbaji wa Bitcoin';
+
+  @override
+  String get buyNetworkFees => 'Ada za mtandao';
+
+  @override
+  String get buyEstimatedFeeValue => 'Thamani ya ada iliyokadiriwa';
+
+  @override
+  String get buyNetworkFeeRate => 'Kiwango cha ada ya mtandao';
+
+  @override
+  String get buyConfirmationTime => 'Muda wa uthibitisho';
+
+  @override
+  String get buyConfirmationTimeValue => '~dakika 10';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Subiri uondoaji wa bure';
+
+  @override
+  String get buyConfirmExpress => 'Thibitisha uondoaji wa haraka';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin imetumwa!';
+
+  @override
+  String get buyThatWasFast => 'Hiyo ilikuwa haraka, sivyo?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Bitcoin Salama';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Malipo ya papo hapo';
+
+  @override
+  String get dcaSuccessTitle => 'Ununuzi wa Kujirudia Umewashwa!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Utanunua $amount kila saa';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Utanunua $amount kila siku';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Utanunua $amount kila wiki';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Utanunua $amount kila mwezi';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Rudi mwanzo';
+
+  @override
+  String get dcaChooseWalletTitle => 'Chagua Pochi ya Bitcoin';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Ununuzi wa Bitcoin utafanywa kiotomatiki kulingana na ratiba hii.';
+
+  @override
+  String get dcaNetworkValidationError => 'Tafadhali chagua mtandao';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Weka Anwani ya Lightning';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Tumia anwani yangu chaguo-msingi ya Lightning.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Endelea';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Chagua Mzunguko';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Chagua Aina ya Pochi ya Bitcoin';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Mtandao wa Lightning (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Liquid (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Kiwango cha chini 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Inahitaji pochi inayoendana, kiwango cha juu 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Inahitaji pochi inayoendana';
+
+  @override
+  String get dcaSetupTitle => 'Weka Ununuzi wa Kujirudia';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Salio Halitoshi';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Huna salio la kutosha kuunda agizo hili.';
+
+  @override
+  String get dcaSetupFundAccount => 'Weka fedha kwenye akaunti yako';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Ununuzi wa Bitcoin utafanywa kiotomatiki kulingana na ratiba hii.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Tafadhali chagua mzunguko';
+
+  @override
+  String get dcaSetupContinue => 'Endelea';
+
+  @override
+  String get dcaConfirmTitle => 'Thibitisha Ununuzi wa Kujirudia';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Maagizo ya ununuzi yatafanywa kiotomatiki kulingana na mipangilio hii. Unaweza kuyazima wakati wowote.';
+
+  @override
+  String get dcaConfirmFrequency => 'Mzunguko';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Kila saa';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Kila siku';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Kila wiki';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Kila mwezi';
+
+  @override
+  String get dcaConfirmAmount => 'Kiasi';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Njia ya malipo';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return 'Salio la $currency';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Aina ya agizo';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Ununuzi wa kujirudia';
+
+  @override
+  String get dcaConfirmNetwork => 'Mtandao';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Liquid';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Anwani ya Lightning';
+
+  @override
+  String get dcaConfirmContinue => 'Endelea';
+
+  @override
+  String get buyInputTitle => 'Nunua Bitcoin';
+
+  @override
+  String get buyInputMinAmountError => 'Unapaswa kununua angalau';
+
+  @override
+  String get buyInputMaxAmountError => 'Huwezi kununua zaidi ya';
+
+  @override
+  String get buyInputKycPending =>
+      'Uthibitishaji wa Kitambulisho wa KYC Unasubiri';
+
+  @override
+  String get buyInputKycMessage =>
+      'Lazima ukamilishe kwanza Uthibitishaji wa Kitambulisho';
+
+  @override
+  String get buyInputCompleteKyc => 'Kamilisha KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Salio halitoshi';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Huna salio la kutosha kuunda agizo hili.';
+
+  @override
+  String get buyInputFundAccount => 'Weka fedha kwenye akaunti yako';
+
+  @override
+  String get buyInputContinue => 'Endelea';
+
+  @override
+  String get buyConfirmTitle => 'Nunua Bitcoin';
+
+  @override
+  String get buyConfirmYouPay => 'Unalipa';
+
+  @override
+  String get buyConfirmYouReceive => 'Unapokea';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bei ya Bitcoin';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Pochi ya malipo';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Njia ya malipo';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC kwenye Liquid';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC kwenye chaini ya Bitcoin';
+
+  @override
+  String get buyConfirmExternalWallet => 'Pochi ya nje ya Bitcoin';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Inasubiri uthibitisho ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Hujathibitishwa. Tafadhali ingia ili kuendelea.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Unajaribu kununua chini ya kiwango cha chini.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Unajaribu kununua zaidi ya kiwango cha juu.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Oda yako haikuweza kuundwa kwa sasa. Tafadhali jaribu tena au wasiliana na usaidizi.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Akaunti yako haikuweza kupakiwa. Angalia muunganisho wako, hakikisha umeingia, kisha ujaribu tena.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Weka anwani ya Lightning ili kupokea manunuzi yako.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Haikuwezekana kuandaa anwani ya kupokea kwenye pochi yako. Tafadhali jaribu tena.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Ununuzi wa mara kwa mara haukuweza kuundwa. Tafadhali jaribu tena baadaye.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

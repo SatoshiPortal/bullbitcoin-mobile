@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:exchange/testing.dart';
 
 // Behavioral proof for two audit findings on GetTransactionsUsecase
@@ -14,20 +15,11 @@ import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' as bb;
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 /// The use case returns a `Result`; these tests are about what it binds, so a
 /// failure is a test failure rather than a case to assert on.
@@ -63,7 +55,7 @@ WalletTransaction _walletTransaction({
   String walletId = 'wallet-1',
 }) => WalletTransaction(
   walletId: walletId,
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   direction: direction,
   status: WalletTransactionStatus.confirmed,
   txId: txId,
@@ -159,7 +151,7 @@ void main() {
           sync: any(named: 'sync'),
           environment: any(named: 'environment'),
         ),
-      ).thenAnswer((_) async => [tx]);
+      ).thenAnswer((_) async => Ok([tx]));
       when(() => orderRepository.getOrders()).thenAnswer(
         (_) async => Ok([
           Order.buy(
@@ -214,7 +206,7 @@ void main() {
           sync: any(named: 'sync'),
           environment: any(named: 'environment'),
         ),
-      ).thenAnswer((_) async => [tx]);
+      ).thenAnswer((_) async => Ok([tx]));
       when(() => swapStore.all(walletId: any(named: 'walletId'))).thenAnswer(
         (_) async => Ok([
           Swap.lnSend(

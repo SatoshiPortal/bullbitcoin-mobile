@@ -1,4 +1,4 @@
-import '../receive_lightning_limits.dart';
+import 'package:receive/receive.dart';
 
 import 'package:swaps/swaps.dart' show SwapRoute, SwapRouting;
 

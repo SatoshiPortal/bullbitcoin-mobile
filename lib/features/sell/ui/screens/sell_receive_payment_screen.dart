@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:material_ui/material_ui.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 
 enum OrderSwapPollingKind { active, idle, rateLimited }
 

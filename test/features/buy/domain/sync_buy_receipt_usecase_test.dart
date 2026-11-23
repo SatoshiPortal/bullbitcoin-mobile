@@ -1,8 +1,8 @@
+import 'package:bull_exchange/testing.dart';
+
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -20,16 +20,10 @@ void main() {
     test('payout $status requests only completed destination once', () async {
       final requested = <String>[];
       final sync = Completer<void>();
-      final usecase = SyncBuyReceiptUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          pollWallet: (id, {required isActive}) {
-            expect(isActive(), isTrue);
-            requested.add(id);
-            return sync.future;
-          },
-        ),
-      );
+      final usecase = SyncBuyReceiptUsecase((id) {
+        requested.add(id);
+        return sync.future;
+      });
       usecase.execute(
         order: order('buy', OrderPayoutStatus.notStarted),
         destinationWalletId: 'destination',
@@ -49,15 +43,10 @@ void main() {
 
   test('immediate completion is quiet on sync failure; unknown destination is skipped', () async {
     var requests = 0;
-    final usecase = SyncBuyReceiptUsecase(
-      WalletFacade(
-        const Stream.empty(),
-        pollWallet: (id, {required isActive}) async {
-          requests++;
-          throw Exception('unavailable');
-        },
-      ),
-    );
+    final usecase = SyncBuyReceiptUsecase((id) async {
+      requests++;
+      throw Exception('unavailable');
+    });
     final completed = order('buy', OrderPayoutStatus.completed);
     usecase.execute(order: completed);
     expect(requests, 0);

@@ -5,7 +5,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -165,9 +165,9 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                     BullButton.secondary(
                       label: context.loc.payViewDetails,
                       onPressed: () {
-                        context.pushNamed(
-                          TransactionsRoute.orderTransactionDetails.name,
-                          pathParameters: {'orderId': order.orderId},
+                        TransactionsNavigation.openDetails(
+                          context,
+                          TransactionDetailsTarget.order(order.orderId),
                         );
                       },
                     ),

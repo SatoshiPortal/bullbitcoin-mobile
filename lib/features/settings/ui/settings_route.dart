@@ -2,7 +2,6 @@ enum SettingsRoute {
   language('language'),
   backupSettings('backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
-  walletAddresses('wallet-details/:walletId/addresses'),
   experimental('experimental-settings'),
   quickActions('quick-actions'),
   walletSettings('bitcoin-settings'),

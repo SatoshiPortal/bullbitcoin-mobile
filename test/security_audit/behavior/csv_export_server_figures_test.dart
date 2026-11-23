@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+
 // Behavioral proof for the second half of the CSV export finding
 // (issue #2625 fix).
 //
@@ -7,11 +9,7 @@
 import 'dart:typed_data';
 
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -21,7 +19,7 @@ void main() {
 
     final walletTransaction = WalletTransaction(
       walletId: 'wallet-1',
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       direction: WalletTransactionDirection.outgoing,
       status: WalletTransactionStatus.confirmed,
       txId: 'lockup-txid',

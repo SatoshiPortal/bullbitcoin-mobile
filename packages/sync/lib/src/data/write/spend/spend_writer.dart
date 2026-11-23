@@ -524,6 +524,92 @@ final class SpendWriter implements WalletSpender {
     }
   }
 
+  /// Publishes a protocol reservation while the exact coins are still
+  /// admitted. The callback must only write to Payjoin's local store.
+  Future<Result<void, SyncFailure>> reservePayjoinInputs(
+    WalletKey key,
+    int generation,
+    Set<Outpoint> inputs,
+    String sessionId,
+    Future<void> Function() persist,
+  ) {
+    final operation = _reservePayjoinInputs(
+      key,
+      generation,
+      Set.unmodifiable(inputs),
+      sessionId,
+      persist,
+    );
+    late final Future<void> tracked;
+    tracked = operation
+        .then<void>((_) {}, onError: (Object _, StackTrace _) {})
+        .whenComplete(() => _requests.remove(tracked));
+    _requests.add(tracked);
+    return operation;
+  }
+
+  Future<Result<void, SyncFailure>> _reservePayjoinInputs(
+    WalletKey key,
+    int generation,
+    Set<Outpoint> inputs,
+    String sessionId,
+    Future<void> Function() persist,
+  ) async {
+    if (_closed()) return const Err(SyncClosedFailure());
+    if (key.network is! BitcoinNetwork || inputs.isEmpty || sessionId.isEmpty) {
+      return const Err(SyncSpendRefusedFailure());
+    }
+    final admission = await _gate.acquire(key);
+    if (admission case BitcoinSpendRefused(:final status)) {
+      return Err(
+        status == BitcoinSpendStatus.busy
+            ? const SyncBusyFailure()
+            : SyncSpendBlockedFailure(status),
+      );
+    }
+    final lease = admission as BitcoinSpendAdmission;
+    try {
+      if (_closed()) return const Err(SyncClosedFailure());
+      if (lease.revision.generation != generation) {
+        return const Err(SyncNotFoundFailure());
+      }
+      final descriptor = await _session.descriptor(key);
+      if (descriptor is! BitcoinWalletDescriptor) {
+        return const Err(SyncSpendRefusedFailure());
+      }
+      return await _freezes.guard<void>((frozen) async {
+        final policy = await _policyWith(key, null, frozen);
+        if (policy.check(inputs) case final failure?) {
+          throw WriterRefusal(failure);
+        }
+        final native = await _natives.bitcoin(descriptor);
+        try {
+          if (!native.unspent().containsAll(inputs)) {
+            throw const WriterRefusal(SyncNoSpendableInputsFailure());
+          }
+        } finally {
+          native.close();
+        }
+        await persist();
+        final published = await _policyWith(
+          key,
+          SpendOwner(protocol: 'payjoin', session: sessionId),
+          frozen,
+        );
+        if (published.check(inputs, exempt: published.owned) case final hit?) {
+          throw WriterRefusal(hit);
+        }
+        if (!published.owned.containsAll(inputs)) {
+          throw const WriterRefusal(SyncSpendRefusedFailure());
+        }
+      });
+    } on Exception catch (error) {
+      return Err(WriterSession.mapFailure(error));
+    } finally {
+      lease.close();
+    }
+  }
+
   List<Outpoint> _liquidInputs(String pset) => _natives.psetInputs(pset);
 
   void _checkLiquid(String pset, _Policy policy, Set<Outpoint> exclude) {

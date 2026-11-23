@@ -2,10 +2,10 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -52,10 +52,12 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
           previous.payjoin?.isCompleted != true &&
           current.payjoin?.isCompleted == true,
       listener: (context, state) {
-        context.goNamed(
-          TransactionsRoute.payjoinTransactionDetails.name,
-          pathParameters: {'payjoinId': state.payjoin!.id},
-          queryParameters: {'returnHome': 'true'},
+        final payjoin = state.payjoin;
+        if (payjoin == null) return;
+        TransactionsNavigation.goToDetails(
+          context,
+          TransactionDetailsTarget.payjoin(payjoin.id),
+          returnHome: true,
         );
       },
       // TODO: PopScope can be removed since we can do pop here now
@@ -308,10 +310,10 @@ class PayjoinInProgressPage extends StatelessWidget {
           if (isFallbackCompleted && payjoinId != null)
             BullButton.secondary(
               label: context.loc.receiveViewDetails,
-              onPressed: () => context.goNamed(
-                TransactionsRoute.payjoinTransactionDetails.name,
-                pathParameters: {'payjoinId': payjoinId},
-                queryParameters: {'returnHome': 'true'},
+              onPressed: () => TransactionsNavigation.goToDetails(
+                context,
+                TransactionDetailsTarget.payjoin(payjoinId),
+                returnHome: true,
               ),
             )
           else if (canManuallyBroadcastOriginal)

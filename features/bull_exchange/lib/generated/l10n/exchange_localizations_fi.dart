@@ -2084,4 +2084,349 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Syötä määrä';
+
+  @override
+  String get buyPaymentMethod => 'Maksutapa';
+
+  @override
+  String get buyMax => 'Maksimi';
+
+  @override
+  String get buySelectWallet => 'Valitse lompakko';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Syötä Bitcoin-osoite';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Vahvista osto';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Ostit $amount hintaan $fiatAmount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Maksusi lähetetään ';
+
+  @override
+  String get buyViewDetails => 'Näytä tiedot';
+
+  @override
+  String get buyAccelerateTransaction => 'Kiihdytä transaktiota';
+
+  @override
+  String get buyGetConfirmedFaster => 'Saat vahvistuksen nopeammin';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Vahvista pikanosto';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Bitcoin-louhijoille menevät Bitcoin-verkon kulut vähennetään saamastasi summasta.';
+
+  @override
+  String get buyNetworkFees => 'Verkkokulut';
+
+  @override
+  String get buyEstimatedFeeValue => 'Arvioitu kulujen määrä';
+
+  @override
+  String get buyNetworkFeeRate => 'Verkkokulujen määrä';
+
+  @override
+  String get buyConfirmationTime => 'Vahvistusviive';
+
+  @override
+  String get buyConfirmationTimeValue => '~10 minuuttia';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Odota ilmaista nostoa';
+
+  @override
+  String get buyConfirmExpress => 'Vahvista pikamaksu';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin lähetetty!';
+
+  @override
+  String get buyThatWasFast => 'Se oli nopeaa, eikö ollutkin?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Turvallinen Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Pikamaksulompakko';
+
+  @override
+  String get dcaSuccessTitle => 'Toistuva osto on aktiivinen!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Ostat $amount joka tunti';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Ostat $amount joka päivä';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Ostat $amount joka viikko';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Ostat $amount joka kuukausi';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Kotisivulle';
+
+  @override
+  String get dcaChooseWalletTitle => 'Valitse Bitcoin-lompakko';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.';
+
+  @override
+  String get dcaNetworkValidationError => 'Valitse verkko';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Syötä Lightning-osoite';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Käytä oletus Lightning-osoitettani.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Jatka';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Aikataulu';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Valitse Bitcoin-lompakon tyyppi';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Lightning-verkko (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Liquid (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Vähintään 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Vaatii yhteensopivan lompakon, enintään 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Vaatii yhteensopivan lompakon';
+
+  @override
+  String get dcaSetupTitle => 'Aseta toistuva osto';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Riittämätön saldo';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.';
+
+  @override
+  String get dcaSetupFundAccount => 'Talletus';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Valitse aikataulu';
+
+  @override
+  String get dcaSetupContinue => 'Jatka';
+
+  @override
+  String get dcaConfirmTitle => 'Vahvista toistuva osto';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Ostotoimeksiannot suoritetaan automaattisesti näiden asetusten mukaan. Voit poistaa ne käytöstä milloin tahansa.';
+
+  @override
+  String get dcaConfirmFrequency => 'Aikataulu';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Joka tunti';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Joka päivä';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Joka viikko';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Joka kuukausi';
+
+  @override
+  String get dcaConfirmAmount => 'Määrä';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Maksutapa';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency-saldo';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Toimeksiantotyyppi';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Toistuva osto';
+
+  @override
+  String get dcaConfirmNetwork => 'Verkko';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Liquid';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Lightning-osoite';
+
+  @override
+  String get dcaConfirmContinue => 'Jatka';
+
+  @override
+  String get buyInputTitle => 'Osta Bitcoinia';
+
+  @override
+  String get buyInputMinAmountError => 'Sinun tulee ostaa vähintään';
+
+  @override
+  String get buyInputMaxAmountError => 'Et voi ostaa enempää kuin';
+
+  @override
+  String get buyInputKycPending => 'KYC-vahvistus odottaa';
+
+  @override
+  String get buyInputKycMessage =>
+      'Sinun täytyy suorittaa henkilöllisyyden vahvistus ensin';
+
+  @override
+  String get buyInputCompleteKyc => 'Suorita KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Riittämätön saldo';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.';
+
+  @override
+  String get buyInputFundAccount => 'Talletus';
+
+  @override
+  String get buyInputContinue => 'Jatka';
+
+  @override
+  String get buyConfirmTitle => 'Osta Bitcoinia';
+
+  @override
+  String get buyConfirmYouPay => 'Maksat';
+
+  @override
+  String get buyConfirmYouReceive => 'Saat';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoinin hinta';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Maksun lompakko';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Maksutapa';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC Liquid-verkossa';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC Bitcoin-lohkoketjussa';
+
+  @override
+  String get buyConfirmExternalWallet => 'Ulkoinen Bitcoin-lompakko';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Odottaa vahvistusta ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.';
+
+  @override
+  String get buyBelowMinAmountError => 'Yrität ostaa alle vähimmäismäärän.';
+
+  @override
+  String get buyAboveMaxAmountError => 'Yrität ostaa yli enimmäismäärän.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Tiliäsi ei voitu ladata. Tarkista yhteytesi, varmista että olet kirjautunut sisään ja yritä uudelleen.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Anna Lightning-osoite ostojesi vastaanottamista varten.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Lompakkoosi ei voitu valmistella vastaanotto-osoitetta. Yritä uudelleen.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Toistuvaa ostoa ei voitu luoda. Yritä myöhemmin uudelleen.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

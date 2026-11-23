@@ -577,5 +577,153 @@
   "deleteAccountConfirmationDelete": "Konto löschen",
   "deleteAccountSuccessTitle": "Konto-Löschung angefordert",
   "deleteAccountSuccessDescription": "Ihre Anfrage zur Kontolöschung wurde eingegangen. Sie wird innerhalb von 5 Werktagen bearbeitet.",
-  "deleteAccountSuccessClose": "Schließen"
+  "deleteAccountSuccessClose": "Schließen",
+  "buyPayoutWillBeSentIn": "Die Auszahlung erfolgt in ",
+  "dcaChooseWalletTitle": "Bitcoin-Wallet wählen",
+  "buyConfirmExternalWallet": "Externe Bitcoin-Wallet",
+  "buyConfirmExpressWithdrawal": "Express-Auszahlung bestätigen",
+  "globalDefaultBitcoinWalletLabel": "Sichere Bitcoin-Wallet",
+  "dcaWalletLiquidSubtitle": "Erfordert kompatible Wallet",
+  "buyConfirmYouReceive": "Sie erhalten",
+  "buyAboveMaxAmountError": "Sie versuchen, über dem Höchstbetrag zu kaufen.",
+  "buyBelowMinAmountError": "Sie versuchen, unter dem Mindestbetrag zu kaufen.",
+  "buyConfirmPayoutWallet": "Auszahlungs-Wallet",
+  "buyPayoutMethodLiquid": "L-BTC auf Liquid",
+  "buyPayoutMethodBitcoin": "BTC auf der Bitcoin-Blockchain",
+  "buyConfirmPayoutMethod": "Auszahlungsmethode",
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "dcaWalletBitcoinSubtitle": "Mindestens 0,001 BTC",
+  "dcaWalletSelectionContinueButton": "Fortfahren",
+  "dcaSetupInsufficientBalance": "Unzureichendes Guthaben",
+  "dcaSuccessMessageHourly": "Sie kaufen {amount} jede Stunde.",
+  "@dcaSuccessMessageHourly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Ihre Kaufanfrage konnte derzeit nicht erstellt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+  "dcaConfirmPaymentMethod": "Zahlungsmethode",
+  "buyConfirmBitcoinPrice": "Bitcoin-Preis",
+  "buyEstimatedFeeValue": "Geschätzte Gebühren",
+  "buyEnterAmount": "Betrag eingeben",
+  "dcaNetworkValidationError": "Bitte wählen Sie ein Netzwerk aus.",
+  "buyInputContinue": "Fortfahren",
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "buyConfirmationTime": "Bestätigungszeit",
+  "buyYouBought": "Sie haben {amount} für {fiatAmount} gekauft",
+  "@buyYouBought": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Transaktion beschleunigen",
+  "buyMax": "Max",
+  "buyInputTitle": "Bitcoin kaufen",
+  "buySelectWallet": "Wallet auswählen",
+  "buyInputKycPending": "KYC-Identitätsprüfung ausstehend",
+  "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
+  "buyInputKycMessage": "Sie müssen zuerst die Identitätsprüfung abschließen.",
+  "buyNetworkFees": "Netzwerkgebühren",
+  "dcaSuccessMessageMonthly": "Sie kaufen {amount} jeden Monat.",
+  "@dcaSuccessMessageMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "dcaSelectFrequencyLabel": "Häufigkeit auswählen",
+  "dcaEnterLightningAddressLabel": "Lightning-Adresse eingeben",
+  "dcaConfirmPaymentBalance": "{currency}-Guthaben",
+  "@dcaConfirmPaymentBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Bitcoin-Käufe werden automatisch nach diesem Zeitplan platziert.",
+  "buyInputCompleteKyc": "KYC abschließen",
+  "dcaConfirmFrequency": "Häufigkeit",
+  "dcaConfirmOrderType": "Auftragstyp",
+  "dcaSuccessMessageDaily": "Sie kaufen {amount} jeden Tag.",
+  "@dcaSuccessMessageDaily": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Auf kostenlose Auszahlung warten",
+  "dcaWalletLightningSubtitle": "Erfordert kompatible Wallet, maximal 0,25 BTC",
+  "buyInputFundAccount": "Konto aufladen",
+  "buyConfirmationTimeValue": "~10 Minuten",
+  "buyConfirmAwaitingConfirmation": "Warten auf Bestätigung",
+  "dcaSuccessTitle": "Sparplan ist aktiv!",
+  "dcaSetupFrequencyError": "Bitte wählen Sie eine Häufigkeit.",
+  "buyConfirmTitle": "Bitcoin kaufen",
+  "buyThatWasFast": "Das ging schnell, oder?",
+  "dcaConfirmFrequencyDaily": "Jeden Tag",
+  "buyConfirmPurchase": "Kauf bestätigen",
+  "buyInputMaxAmountError": "Sie können nicht mehr kaufen als.",
+  "buyNetworkFeeRate": "Netzwerkgebühren",
+  "dcaBackToHomeButton": "Zurück zum Startbildschirm",
+  "globalDefaultLiquidWalletLabel": "Sofortzahlungen",
+  "dcaConfirmNetwork": "Netzwerk",
+  "dcaConfirmTitle": "Sparplan bestätigen",
+  "dcaSetupContinue": "Fortfahren",
+  "buyConfirmYouPay": "Sie zahlen",
+  "dcaSelectWalletTypeLabel": "Wählen Sie Bitcoin-Wallet-Typ",
+  "buyInputInsufficientBalance": "Unzureichendes Guthaben",
+  "dcaSuccessMessageWeekly": "Sie kaufen {amount} jede Woche.",
+  "@dcaSuccessMessageWeekly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "Sie haben nicht genug Guthaben, um diese Bestellung zu erstellen.",
+  "dcaConfirmAmount": "Betrag",
+  "dcaConfirmFrequencyWeekly": "Jede Woche",
+  "dcaSetupFundAccount": "Konto aufladen",
+  "buyEnterBitcoinAddress": "Bitcoin-Adresse eingeben",
+  "dcaSetupInsufficientBalanceMessage": "Sie haben nicht genug Guthaben, um diese Bestellung zu erstellen.",
+  "dcaConfirmAutoMessage": "Bestellungen werden automatisch nach diesen Einstellungen platziert. Sie können sie jederzeit deaktivieren.",
+  "dcaWalletTypeLightning": "Lightning-Netzwerk (LN)",
+  "buyNetworkFeeExplanation": "Die Bitcoin-Netzwerkgebühr wird von dem Betrag, den Sie erhalten, abgezogen und geht an die Bitcoin-Miner.",
+  "dcaSetupScheduleMessage": "Bitcoin-Käufe werden automatisch nach diesem Zeitplan platziert.",
+  "dcaConfirmContinue": "Fortfahren",
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "buyViewDetails": "Details anzeigen",
+  "dcaConfirmFrequencyHourly": "Jede Stunde",
+  "dcaConfirmLightningAddress": "Lightning-Adresse",
+  "buyPaymentMethod": "Zahlungsmethode",
+  "dcaConfirmFrequencyMonthly": "Jeden Monat",
+  "buyBitcoinSent": "Bitcoin gesendet!",
+  "buyUnauthenticatedError": "Sie sind nicht authentifiziert. Bitte melden Sie sich an, um fortzufahren.",
+  "buyInputMinAmountError": "Mindestbetrag",
+  "dcaUseDefaultLightningAddress": "Verwenden Sie meine Standard-Lightning-Adresse.",
+  "buyGetConfirmedFaster": "Beschleunige die Bestätigung",
+  "buyConfirmExpress": "Express-Zahlung bestätigen",
+  "dcaConfirmOrderTypeValue": "Wiederkehrender Kauf",
+  "dcaWalletTypeLiquid": "Liquid (L-BTC)",
+  "dcaSetupTitle": "Sparplan einrichten",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaAccountUnavailableError": "Ihr Konto konnte nicht geladen werden. Prüfen Sie Ihre Verbindung, stellen Sie sicher, dass Sie angemeldet sind, und versuchen Sie es erneut.",
+  "dcaLightningAddressRequiredError": "Geben Sie eine Lightning-Adresse ein, um Ihre Käufe zu erhalten.",
+  "dcaReceiveAddressError": "In Ihrer Wallet konnte keine Empfangsadresse vorbereitet werden. Bitte versuchen Sie es erneut.",
+  "dcaOrderCreationError": "Der Sparplan konnte nicht erstellt werden. Bitte versuchen Sie es später erneut.",
+  "payjoinBuyRegularSend": "Bitcoin per regulärer Transaktion an Ihre Wallet gesendet.",
+  "payjoinInProgress": "Payjoin wird durchgeführt…",
+  "payjoinSucceeded": "Payjoin erfolgreich abgeschlossen",
+  "payjoinUseToggle": "Payjoin verwenden",
+  "limitOrdersLightningAddressHint": "sie@domain.de"
 }

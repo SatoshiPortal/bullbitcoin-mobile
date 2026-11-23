@@ -1,6 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/transactions/transactions_facade.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 /// Writes the privileged exchange-sell labels when a sell order explicitly
 /// completes
 class LabelCompletedSellOrderUsecase {
-  final TransactionsFacade _transactionsFacade;
+  final Transactions _transactionsFacade;
 
   LabelCompletedSellOrderUsecase({required this._transactionsFacade});
 

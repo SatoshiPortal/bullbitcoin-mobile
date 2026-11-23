@@ -1,22 +1,23 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:address_view/address_view.dart';
+import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class CreateReceiveOrderSwapUsecase {
   final SwapFacade _swapFacade;
-  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
+  final AddressView _addresses;
   final DateTime Function() _now;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
   CreateReceiveOrderSwapUsecase(
     this._swapFacade,
-    this._getReceiveAddressUsecase, {
+    this._addresses, {
     DateTime Function()? now,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _now = now ?? DateTime.now,
@@ -68,10 +69,16 @@ class CreateReceiveOrderSwapUsecase {
     }
 
     try {
-      final destination = await _getReceiveAddressUsecase.execute(
+      final WalletAddress destination;
+      switch (await _addresses.receiveAddress(
         walletId: wallet.id,
-        generateNew: true,
-      );
+        advance: true,
+      )) {
+        case Err():
+          return const Err(ReceiveAddressUnavailableFailure());
+        case Ok(:final value):
+          destination = value;
+      }
       final createResult = await _swapFacade.createOrder(
         amountSat: BigInt.from(amountSat),
         isInAmountFixed: true,
@@ -95,8 +102,9 @@ class CreateReceiveOrderSwapUsecase {
           );
           return Err(_mapFailure(failure));
       }
-      final invoice = record.order?.lightningInvoice;
-      if (invoice == null || invoice.isEmpty) {
+      final order = record.order;
+      final invoice = order?.lightningInvoice;
+      if (order == null || invoice == null || invoice.isEmpty) {
         log.warning('[ReceiveOrderSwap] create returned no invoice');
         return const Err(
           ReceiveInvalidInvoiceFailure(
@@ -119,7 +127,7 @@ class CreateReceiveOrderSwapUsecase {
         request.expiresAt * 1000,
         isUtc: true,
       );
-      final deadline = record.order!.confirmationDeadline.toUtc();
+      final deadline = order.confirmationDeadline.toUtc();
       final deadlineAtInvoicePrecision = DateTime.fromMillisecondsSinceEpoch(
         deadline.millisecondsSinceEpoch ~/ 1000 * 1000,
         isUtc: true,

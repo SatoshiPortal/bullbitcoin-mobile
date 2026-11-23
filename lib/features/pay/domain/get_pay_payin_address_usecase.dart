@@ -1,34 +1,22 @@
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 /// Derives one of our own addresses, used as the stand-in a payin is priced
 /// against before the order has one.
 class GetPayPayinAddressUsecase {
-  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
+  final AddressView _addresses;
 
-  const GetPayPayinAddressUsecase({required this._getAddressAtIndexUsecase});
+  const GetPayPayinAddressUsecase({required this._addresses});
 
   @useResult
   Future<Result<String, PayFailure>> execute({
     required String walletId,
     int index = 0,
-  }) async {
-    try {
-      final address = await _getAddressAtIndexUsecase.execute(
-        walletId: walletId,
-        index: index,
+  }) async => (await _addresses.at(walletId: walletId, index: index))
+      .map((address) => address.address)
+      .mapErr(
+        (failure) => PayUnexpectedFailure(failure.runtimeType.toString()),
       );
-      return Ok(address.address);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to derive the pay fee-estimation address',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
-    }
-  }
 }

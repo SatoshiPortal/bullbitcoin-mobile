@@ -1,9 +1,7 @@
+import 'package:address_view/address_view.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show LiquidWalletRepository;
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
@@ -27,6 +25,7 @@ import 'package:swaps/swaps.dart'
         SwapRouting,
         SwapsUnsupportedNetworkFailure;
 import 'package:get_it/get_it.dart';
+import 'package:spend/spend.dart';
 
 class AutoSwapLocator {
   static void setup(GetIt locator) {
@@ -46,9 +45,8 @@ class AutoSwapLocator {
         locator<DropPendingSwapLockupUsecase>(),
         locator<WalletRepository>(),
         locator<Preferences>(),
-        locator<LiquidWalletRepository>(),
-        locator<GetReceiveAddressUsecase>(),
-        locator<BroadcastLiquidTransactionUsecase>(),
+        locator<Spend>(),
+        locator<AddressView>(),
         locator<Labels>(),
       ),
     );
@@ -56,9 +54,8 @@ class AutoSwapLocator {
       () => ExchangeAutoswapProvider(
         locator<WalletRepository>(),
         locator<Preferences>(),
-        locator<LiquidWalletRepository>(),
-        locator<GetReceiveAddressUsecase>(),
-        locator<BroadcastLiquidTransactionUsecase>(),
+        locator<Spend>(),
+        locator<AddressView>(),
         locator<SwapFacade>(),
         locator<Labels>(),
       ),

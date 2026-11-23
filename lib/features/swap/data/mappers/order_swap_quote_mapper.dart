@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/swap/data/models/order_swap_quote_model.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_amount_codec.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
 import 'package:decimal/decimal.dart';
 

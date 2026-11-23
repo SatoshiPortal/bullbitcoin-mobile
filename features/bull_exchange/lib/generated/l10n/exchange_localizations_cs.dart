@@ -2079,4 +2079,350 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Zadejte částku';
+
+  @override
+  String get buyPaymentMethod => 'Způsob platby';
+
+  @override
+  String get buyMax => 'Čeština';
+
+  @override
+  String get buySelectWallet => 'Vyberte peněženku';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Zadejte adresu Bitcoin';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H ...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Potvrzení nákupu';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Koupili jste $amount za $fiatAmount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Vaše platba bude zaslána v ';
+
+  @override
+  String get buyViewDetails => 'Zobrazit podrobnosti';
+
+  @override
+  String get buyAccelerateTransaction => 'Zrychlení Transakce';
+
+  @override
+  String get buyGetConfirmedFaster => 'Potvrdit rychleji';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Potvrzení o odstoupení od smlouvy';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Poplatek za síť Bitcoin bude odečtena z částky, kterou obdržíte a shromáždil Bitcoin horníci';
+
+  @override
+  String get buyNetworkFees => 'Síťové poplatky';
+
+  @override
+  String get buyEstimatedFeeValue => 'Odhadovaná hodnota poplatku';
+
+  @override
+  String get buyNetworkFeeRate => 'Síťový poplatek';
+
+  @override
+  String get buyConfirmationTime => 'Doba potvrzení';
+
+  @override
+  String get buyConfirmationTimeValue => '~10 minut';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Počkejte zdarma výběr';
+
+  @override
+  String get buyConfirmExpress => 'Potvrzení';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin poslal!';
+
+  @override
+  String get buyThatWasFast => 'To bylo rychlé, nebylo to?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Bezpečné Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Okamžité platby';
+
+  @override
+  String get dcaSuccessTitle => 'Opakovaný nákup je aktivní!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Můžeš koupit $amount každou hodinu';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Můžeš koupit $amount každý den';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Můžeš koupit $amount každý týden';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Můžeš koupit $amount každý měsíc';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Zpět na domov';
+
+  @override
+  String get dcaChooseWalletTitle => 'Vyberte Bitcoin Peněženka';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Nákupy Bitcoin budou umístěny automaticky na tento plán.';
+
+  @override
+  String get dcaNetworkValidationError => 'Vyberte síť';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Zadejte adresu blesku';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Používejte výchozí adresu blesku.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Pokračovat';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Vyberte četnost';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Vyberte typ Bitcoin Peněženky';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Bleskové sítě (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Kapalina (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Minimální 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Vyžaduje kompatibilní peněženku, maximální 0,25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Vyžaduje kompatibilní peněženku';
+
+  @override
+  String get dcaSetupTitle => 'Sada opakování nákupu';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Nedostatečná rovnováha';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.';
+
+  @override
+  String get dcaSetupFundAccount => 'Fond vašeho účtu';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Nákupy Bitcoin budou umístěny automaticky na tento plán.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Vyberte frekvenci';
+
+  @override
+  String get dcaSetupContinue => 'Pokračovat';
+
+  @override
+  String get dcaConfirmTitle => 'Potvrzení opakování Koupit';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Koupit objednávky budou automaticky umístěny na tyto nastavení. Můžete je kdykoli vypnout.';
+
+  @override
+  String get dcaConfirmFrequency => 'Čeština';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Každou hodinu';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Každý den';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Každý týden';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Každý měsíc';
+
+  @override
+  String get dcaConfirmAmount => 'Množství';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Způsob platby';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency rovnováhu';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Typ objednávky';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Nákup';
+
+  @override
+  String get dcaConfirmNetwork => 'Čeština';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Čeština';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Blesk';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Čeština';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Blesková adresa';
+
+  @override
+  String get dcaConfirmContinue => 'Pokračovat';
+
+  @override
+  String get buyInputTitle => 'Koupit Bitcoin';
+
+  @override
+  String get buyInputMinAmountError => 'Měli byste si koupit alespoň';
+
+  @override
+  String get buyInputMaxAmountError => 'Není možné koupit více než';
+
+  @override
+  String get buyInputKycPending => 'KYC ID Ověřování';
+
+  @override
+  String get buyInputKycMessage => 'Musíte dokončit ověření totožnosti nejprve';
+
+  @override
+  String get buyInputCompleteKyc => 'Kompletní KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Nedostatečná rovnováha';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.';
+
+  @override
+  String get buyInputFundAccount => 'Fond vašeho účtu';
+
+  @override
+  String get buyInputContinue => 'Pokračovat';
+
+  @override
+  String get buyConfirmTitle => 'Koupit Bitcoin';
+
+  @override
+  String get buyConfirmYouPay => 'Platit';
+
+  @override
+  String get buyConfirmYouReceive => 'Dostanete se';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoin Cena';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Peněženka pro výplatu';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Metoda výplaty';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC na Liquid';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC na blockchainu Bitcoin';
+
+  @override
+  String get buyConfirmExternalWallet => 'Externí Bitcoin peněženku';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Potvrzení o registraci ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Nejste autentická. Přihlaste se a pokračujte.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Pokuste se koupit pod minimálním množstvím.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Snažte se koupit nad maximálním množstvím.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Zadejte Lightning adresu pro příjem vašich nákupů.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

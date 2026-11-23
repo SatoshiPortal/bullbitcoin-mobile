@@ -1,0 +1,361 @@
+{
+  "@@locale": "bn",
+  "importQrDeviceSpecterStep2": "আপনার পিন প্রবেশ করান",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "XPUB - QR কোডে ক্লিক করুন",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "Krux",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "যদি প্রয়োজন হয় ঠিকানা টাইপ পরিবর্তন করতে, 'অপশন' নির্বাচন করুন",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "স্পেক্টার",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "“SLIP-132 ব্যবহার নিষ্ক্রিয় করুন”",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "বিকল্প তালিকা থেকে 'ওয়ালেট' নির্বাচন করুন",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceSeedsignerName": "SeedSigner",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "emptyMnemonicWordsError": "আপনার mnemonic-এর সব শব্দ লিখুন",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "ক্যামেরা খোলার বোতামে ক্লিক করুন",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKeystoneStep3": "উপরের ডান কোণায় *** (তিনটি ডট) ট্যাপ করুন",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceJadeStep6": "ওয়ালেট মেনু থেকে 'এক্সপোর্ট Xpub'",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceSeedsignerStep5": "\"Single Sig\" বেছে নিন, তারপর আপনার পছন্দসই স্ক্রিপ্ট টাইপ নির্বাচন করুন (যদি নিশ্চিত না থাকেন তবে Native Segwit বেছে নিন)।",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "আপনার ডিভাইসটি সর্বশেষ ফার্মওয়্যার আপডেট করা আছে তা নিশ্চিত করুন",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "Jade আনলক করতে ডিভাইস নির্দেশনা অনুসরণ করুন",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "Specter ওয়ালেটের জন্য একটি লেবেল দিন এবং ইমপোর্ট বোতামে ট্যাপ করুন",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep1": "আপনার Specter ডিভাইসটি চালু করুন",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceKeystoneStep10": "আপনার Keystone এখন সংযুক্ত এবং BULL Wallet-এ ব্যবহার করতে প্রস্তুত",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep9": "SeedSigner ওয়ালেটের জন্য একটি লেবেল লিখুন এবং Import-এ ট্যাপ করুন",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceKeystoneStep5": "ওয়ালেটগুলির তালিকা থেকে \"BULL\" নির্বাচন করুন",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceJadeStep9": "আপনার ডিভাইসে আপনি যে QR কোডটি দেখছেন সেটি স্ক্যান করুন",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceKeystoneStep6": "আপনার মোবাইলে \"ক্যামেরা চালু করুন\" চাপ দিন",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceSpecterStep3": "আপনার সিড/কি প্রবেশ করান (যে কোন বিকল্প আপনার জন্য উপযোগী তা বেছে নিন)",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDevicePassportStep2": "আপনার PIN লিখুন",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceSpecterStep8": "আপনার মোবাইল ডিভাইসে, Open Camera-এ ট্যাপ করুন",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "মূল মেনু থেকে \"QR মোড\" নির্বাচন করুন",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "আপনার {deviceName} থেকে QR কোড স্ক্যান করুন",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "আপনার Specter-এ প্রদর্শিত QR কোডটি স্ক্যান করুন",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "উৎপত্তি পথ নির্বাচন করুন",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importQrDevicePassportStep4": "নির্বাচন করুন \"Connect App\"",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "requiredHint": "আবশ্যক",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDevicePassportStep7": "BULL Wallet অ্যাপে, ডিরিভেশন অপশন হিসেবে \"Segwit (BIP84)\" নির্বাচন করুন",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "BULL ওয়ালেটে, আপনার পছন্দসই ডিরিভেশন টাইপ বেছে নিন। নিশ্চিত না থাকলে, \"Segwit (BIP84)\" নির্বাচন করুন",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep6": "Export বিকল্প হিসেবে \"Animated\" বেছে নিন। SeedSigner-এর পুরোনো ফার্মওয়্যারে \"Sparrow\" বেছে নিন।",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep3": "একটি SeedQR স্ক্যান করুন অথবা আপনার ১২- বা ২৪-শব্দের সিড ফ্রেজ লিখুন",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceKruxStep1": "আপনার Krux ডিভাইস চালু করুন",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceSpecterStep4": "আপনার নির্বাচিত পদ্ধতির অনুযায়ী নির্দেশনা অনুসরণ করুন",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDevicePassportStep1": "আপনার Passport ডিভাইস চালু করুন",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "Keystone-এ প্রদর্শিত QR কোড স্ক্যান করুন",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceButtonOpenCamera": "ক্যামেরা খুলুন",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "importQrDevicePassportName": "Foundation Passport",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "passphraseLabel": "গোপন বাক্য",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "Specter নির্দেশনা",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDevicePassportStep9": "সেটআপ সম্পন্ন।",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "সেটআপ সম্পন্ন",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceKeystoneStep9": "Keystone ওয়ালেট-এর জন্য একটি লেবেল লিখুন এবং \"ইমপোর্ট\" চাপুন",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDevicePassportStep6": "আপনার Passport-এ প্রদর্শিত QR কোড স্ক্যান করুন",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" বেছে নিন",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "\"Master public keys\" বেছে নিন",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "Krux নির্দেশনা",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "Keystone নির্দেশনা",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDevicePassportInstructionsTitle": "Foundation Passport নির্দেশনা",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "submitButton": "জমা দিন",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "Keystone",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep1": "আপনার SeedSigner ডিভাইসটি চালু করুন",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "আপনার Jade ডিভাইস চালু করুন",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "\"Seeds\" মেনু খুলুন",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceJadeStep8": "ক্যামেরা খোলার বোতামে ক্লিক করুন",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "সেটআপ সম্পূর্ণ হয়েছে",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDevicePassportStep5": "নির্বাচন করুন \"Bull\"",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "নির্বাচন করুন \"Wallet\"",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep8": "আপনার SeedSigner-এ প্রদর্শিত QR কোড স্ক্যান করুন",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSpecterStep6": "“Single key” বেছে নিন",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "এটাই!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDevicePassportStep8": "আপনার Passport ওয়ালেটের জন্য একটি লেবেল লিখুন এবং \"আমদানি করুন\" চাপুন",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep4": "স্পর্শ করুন \"সফটওয়্যার ওয়ালেট সংযোগ করুন\"",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceKeystoneStep2": "PIN দিয়ে এটি আনলক করুন",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "আপনার মোবাইল ডিভাইসে, Open Camera-এ ট্যাপ করুন",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep5": "আপনার ডিভাইসে আপনি যে QR কোডটি দেখছেন সেটি স্ক্যান করুন",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "বিস্তৃত পাবলিক কী-এ ক্লিক করুন",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner নির্দেশনা",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceKruxStep6": "এটাই!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "ঐচ্ছিক পাসফ্রেজ",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "সংযোগ করুন {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "নির্দেশনা",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "মূল মেনু থেকে \"বিকল্প\" নির্বাচন করুন",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade নির্দেশাবলী",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "Keystone ডিভাইস চালু করুন",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importColdcardQInstructionsTitle": "Coldcard Q নির্দেশনা",
+  "importColdcardQStep1": "আপনার Coldcard Q ডিভাইসে লগইন করুন",
+  "importColdcardQStep2": "যদি আপনার একটি পাসফ্রেজ থাকে তবে যোগ করুন (ঐচ্ছিক)",
+  "importColdcardQStep3": "অ্যাডভান্সড/সেটিংস মেনু নির্বাচন করুন",
+  "importColdcardQStep4": "\"export wallet\" ক্লিক করুন",
+  "importColdcardQStep5": "এক্সপোর্ট টাইপ হিসেবে \"descriptor\" নির্বাচন করুন",
+  "importColdcardQStep6": "প্রথম স্ক্রিনে \"Enter\" চাপুন",
+  "importColdcardQStep7": "দ্বিতীয় স্ক্রিনে \"Enter\" চাপুন",
+  "importColdcardQStep8": "আপনার ঠিকানার ধরন নির্বাচন করুন (নিশ্চিত না হলে Segwit ব্যবহার করুন)",
+  "importColdcardQStep9": "QR-এর জন্য, ডিভাইসে QR কোড বোতামে ক্লিক করুন। এটি ডিভাইসে একটি QR কোড দেখাবে",
+  "importColdcardQStep10": "NFC-এর জন্য, ডিভাইসে NFC বোতামে ক্লিক করুন",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" বোতামে ক্লিক করুন",
+  "importColdcardQStep12": "আপনার ডিভাইসে দেখানো QR কোডটি স্ক্যান করুন অথবা ফোনের NFC-টি Coldcard-এর NFC-এর ওপর রাখুন",
+  "importColdcardQStep13": "এটাই!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 নির্দেশনা",
+  "importColdcardMk4Step1": "আপনার Coldcard Mk4 ডিভাইসে লগইন করুন",
+  "importColdcardMk4Step2": "যদি আপনার একটি পাসফ্রেজ থাকে তবে যোগ করুন (ঐচ্ছিক)",
+  "importColdcardMk4Step3": "অ্যাডভান্সড/সেটিংস মেনু নির্বাচন করুন",
+  "importColdcardMk4Step4": "\"export wallet\" ক্লিক করুন",
+  "importColdcardMk4Step5": "এক্সপোর্ট টাইপ হিসেবে \"descriptor\" নির্বাচন করুন",
+  "importColdcardMk4Step6": "প্রথম স্ক্রিনে \"Enter\" চাপুন",
+  "importColdcardMk4Step7": "দ্বিতীয় স্ক্রিনে \"Enter\" চাপুন",
+  "importColdcardMk4Step8": "আপনার ঠিকানার ধরন নির্বাচন করুন (নিশ্চিত না হলে Segwit ব্যবহার করুন)",
+  "importColdcardMk4Step9": "Coldcard NFC চালু করতে 3 নম্বরে ক্লিক করুন",
+  "importColdcardMk4Step10": "\"Scan NFC\" বোতামে ক্লিক করুন",
+  "importColdcardMk4Step11": "ফোনের NFC-টি Coldcard-এর NFC-এর ওপর রাখুন",
+  "importColdcardMk4Step12": "এটাই!",
+  "recipientsInfoLabel": "লেবেল"
+}

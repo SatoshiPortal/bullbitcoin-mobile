@@ -1,21 +1,19 @@
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, ScriptType;
+    show BitcoinUnit, Err, Ok, Sats, ScriptType;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 
 class _MockGetSwapLimitsAndFees extends Mock
     implements GetSwapLimitsAndFeesUsecase {}
@@ -35,13 +33,9 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockPreferences extends Mock implements Preferences {}
 
-class _MockLiquidWalletRepository extends Mock
-    implements LiquidWalletRepository {}
+class _MockSpend extends Mock implements Spend {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
-
-class _MockBroadcastLiquid extends Mock
-    implements BroadcastLiquidTransactionUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockLabels extends Mock implements Labels {}
 
@@ -70,11 +64,16 @@ void main() {
   late _MockDropPendingLockup dropPendingLockup;
   late _MockWalletRepository walletRepository;
   late _MockPreferences settingsRepository;
-  late _MockLiquidWalletRepository liquidWalletRepository;
+  late _MockSpend spend;
   late _MockGetReceiveAddress getReceiveAddress;
-  late _MockBroadcastLiquid broadcastLiquid;
   late _MockLabels labelsFacade;
   late BoltzAutoswapProvider provider;
+  final prepared = SpendFixtures.preparedLiquid(
+    unsignedPset: 'pset',
+    fee: Sats.fromInt(500),
+    amountSent: Sats.fromInt(2_499_500),
+  );
+  final signed = SpendFixtures.signedLiquid('signed-pset');
 
   const settings = AutoSwap(
     enabled: true,
@@ -87,6 +86,8 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const RelativeFee(25));
+    registerFallbackValue(prepared);
+    registerFallbackValue(signed);
     registerFallbackValue(SwapType.liquidToBitcoin);
     registerFallbackValue(const ToWallet(''));
     registerFallbackValue(
@@ -124,9 +125,8 @@ void main() {
         .thenAnswer((_) async => const Ok(null));
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockPreferences();
-    liquidWalletRepository = _MockLiquidWalletRepository();
+    spend = _MockSpend();
     getReceiveAddress = _MockGetReceiveAddress();
-    broadcastLiquid = _MockBroadcastLiquid();
     labelsFacade = _MockLabels();
     provider = BoltzAutoswapProvider(
       getLimitsAndFees,
@@ -136,9 +136,8 @@ void main() {
       dropPendingLockup,
       walletRepository,
       settingsRepository,
-      liquidWalletRepository,
+      spend,
       getReceiveAddress,
-      broadcastLiquid,
       labelsFacade,
     );
 
@@ -155,25 +154,26 @@ void main() {
         .thenAnswer(
           (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
         );
-    when(() => getReceiveAddress.execute(walletId: 'liquid-wallet')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'liquid-wallet',
-        index: 0,
-        address: 'tlq1fallback',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'liquid-wallet'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'liquid-wallet',
+              index: 0,
+              address: 'tlq1fallback',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
-      () => liquidWalletRepository.buildPset(
+      () => spend.prepareLiquid(
         walletId: 'liquid-wallet',
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
         feeRate: any(named: 'feeRate'),
       ),
-    ).thenAnswer((_) async => const Ok('pset'));
-    when(() => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'))
-        .thenAnswer((_) async => (100, 500));
+    ).thenAnswer((_) async => Ok(prepared));
     when(() => getLimitsAndFees.execute(SwapType.liquidToBitcoin)).thenAnswer(
       (_) async => const Ok((
         SwapLimits(min: 3_570, max: 10_000_000),
@@ -205,21 +205,11 @@ void main() {
         ) as ChainSwap,
       ),
     );
-    when(
-      () => liquidWalletRepository.getAmountSentToAddress(
-        pset: 'pset',
-        address: 'tlq1payin',
-        walletId: 'liquid-wallet',
-      ),
-    ).thenAnswer((_) async => 2_499_500);
-    when(
-      () => liquidWalletRepository.signPset(
-        walletId: 'liquid-wallet',
-        pset: 'pset',
-      ),
-    ).thenAnswer((_) async => 'signed-pset');
-    when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-        .thenAnswer((_) async => 'txid');
+    when(() => spend.signLiquid(prepared: prepared))
+        .thenAnswer((_) async => Ok(signed));
+    when(() => spend.broadcastLiquid(signed)).thenAnswer(
+      (_) async => const Ok((txid: 'txid', guarded: false, durable: false)),
+    );
     when(
       () => recordLockup.execute(
         swapId: 'swap-id',
@@ -234,7 +224,7 @@ void main() {
   test('stops before signing when Liquid build 1 returns Err', () async {
     var builds = 0;
     when(
-      () => liquidWalletRepository.buildPset(
+      () => spend.prepareLiquid(
         walletId: 'liquid-wallet',
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
@@ -242,25 +232,20 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => builds++ == 0
-          ? const Err(WalletNoSpendableInputsFailure())
-          : const Ok('pset'),
+          ? const Err(SpendNoSpendableInputsFailure())
+          : Ok(prepared),
     );
     final result = await provider.execute(settings);
     expect(result, isA<Err<String, AutoswapFailure>>());
     expect(builds, 1);
-    verifyNever(
-      () => liquidWalletRepository.signPset(
-        walletId: any(named: 'walletId'),
-        pset: any(named: 'pset'),
-      ),
-    );
-    verifyZeroInteractions(broadcastLiquid);
+    verifyNever(() => spend.signLiquid(prepared: any(named: 'prepared')));
+    verifyNever(() => spend.broadcastLiquid(any()));
   });
 
   test('stops before signing when Liquid build 2 returns Err', () async {
     var builds = 0;
     when(
-      () => liquidWalletRepository.buildPset(
+      () => spend.prepareLiquid(
         walletId: 'liquid-wallet',
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
@@ -268,19 +253,14 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => builds++ == 1
-          ? const Err(WalletNoSpendableInputsFailure())
-          : const Ok('pset'),
+          ? const Err(SpendNoSpendableInputsFailure())
+          : Ok(prepared),
     );
     final result = await provider.execute(settings);
     expect(result, isA<Err<String, AutoswapFailure>>());
     expect(builds, 2);
-    verifyNever(
-      () => liquidWalletRepository.signPset(
-        walletId: any(named: 'walletId'),
-        pset: any(named: 'pset'),
-      ),
-    );
-    verifyZeroInteractions(broadcastLiquid);
+    verifyNever(() => spend.signLiquid(prepared: any(named: 'prepared')));
+    verifyNever(() => spend.broadcastLiquid(any()));
   });
 
   test(
@@ -300,8 +280,7 @@ void main() {
           ),
         ),
       ).called(1);
-      verify(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
-          .called(1);
+      verify(() => spend.broadcastLiquid(signed)).called(1);
       verify(
         () => recordLockup.execute(
           swapId: 'swap-id',
@@ -320,7 +299,7 @@ void main() {
         swapId: 'swap-id',
         signedTx: 'signed-pset',
       ),
-      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
+      () => spend.broadcastLiquid(signed),
     ]);
   });
 
@@ -335,9 +314,38 @@ void main() {
     final result = await provider.execute(settings);
 
     expect((result as Err).failure, isA<AutoswapExecutionFailure>());
-    verifyNever(
-      () => broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
+    verifyNever(() => spend.broadcastLiquid(any()));
+  });
+
+  test('keeps the pending lockup after an uncertain broadcast', () async {
+    when(
+      () => spend.broadcastLiquid(signed),
+    ).thenAnswer((_) async => const Err(SpendBroadcastOutcomeUnknownFailure()));
+    expect(
+      await provider.execute(settings),
+      isA<Err<String, AutoswapFailure>>(),
     );
+    verifyNever(() => dropPendingLockup.execute(any()));
+    verifyNever(
+      () => recordLockup.execute(
+        swapId: any(named: 'swapId'),
+        txid: any(named: 'txid'),
+        lockupFeeSat: any(named: 'lockupFeeSat'),
+      ),
+    );
+  });
+
+  test('drops the pending lockup after a definitive rejection', () async {
+    when(() => spend.broadcastLiquid(signed)).thenAnswer(
+      (_) async => const Err(
+        SpendBroadcastRejectedFailure(SpendBroadcastRejection.nodeRejected),
+      ),
+    );
+    expect(
+      await provider.execute(settings),
+      isA<Err<String, AutoswapFailure>>(),
+    );
+    verify(() => dropPendingLockup.execute('swap-id')).called(1);
   });
 
   test('Boltz unreachable is reported before anything is created', () async {
@@ -375,10 +383,7 @@ void main() {
       final result = await provider.execute(settings);
 
       expect((result as Err).failure, isA<AutoswapAmountOutOfBoundsFailure>());
-      verifyNever(
-        () =>
-            broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
-      );
+      verifyNever(() => spend.broadcastLiquid(any()));
     },
   );
 }

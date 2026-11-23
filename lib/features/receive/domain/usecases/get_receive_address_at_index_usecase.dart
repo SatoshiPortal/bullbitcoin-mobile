@@ -1,39 +1,20 @@
 import 'package:primitives/primitives.dart';
-import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:address_view/address_view.dart';
+import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
 
-/// Receive-owned boundary for the shared address-at-index use-case, which
-/// still throws (a `GetAddressAtIndexException`).
+/// Reads the indexed address through Address View.
 class GetReceiveAddressAtIndexUsecase {
-  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
+  final AddressView _addresses;
 
-  const GetReceiveAddressAtIndexUsecase(this._getAddressAtIndexUsecase);
+  const GetReceiveAddressAtIndexUsecase(this._addresses);
 
   @useResult
   Future<Result<WalletAddress, ReceiveFailure>> execute({
     required String walletId,
     required int index,
-  }) async {
-    try {
-      return Ok(
-        await _getAddressAtIndexUsecase.execute(
-          walletId: walletId,
-          index: index,
-        ),
-      );
-    } on Object catch (e, st) {
-      // Logged HERE, at the boundary that owns the raw reason. The failure's
-      // logMessage stays secondary (equality, debug): if a caller chooses not
-      // to log, the diagnostic must still exist.
-      log.severe(
-        message: 'Failed to read the receive address at index',
-        error: e,
-        trace: st,
-      );
-      return Err(ReceiveAddressUnavailableFailure(e.toString()));
-    }
-  }
+  }) async => (await _addresses.at(walletId: walletId, index: index)).mapErr(
+    (failure) =>
+        ReceiveAddressUnavailableFailure(failure.runtimeType.toString()),
+  );
 }

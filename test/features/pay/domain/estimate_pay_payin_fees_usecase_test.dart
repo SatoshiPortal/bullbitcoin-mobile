@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
@@ -22,9 +21,6 @@ class _MockPrepareBitcoin extends Mock
 
 class _MockPrepareLiquid extends Mock implements PreparePayLiquidPayinUsecase {}
 
-class _MockCalculateFees extends Mock
-    implements CalculatePayAbsoluteFeesUsecase {}
-
 class _MockWallet extends Mock implements Wallet {}
 
 void main() {
@@ -45,7 +41,6 @@ void main() {
       loadPayNetworkFeesUsecase: _MockLoadNetworkFees(),
       preparePayBitcoinPayinUsecase: _MockPrepareBitcoin(),
       preparePayLiquidPayinUsecase: _MockPrepareLiquid(),
-      calculatePayAbsoluteFeesUsecase: _MockCalculateFees(),
     );
   });
 

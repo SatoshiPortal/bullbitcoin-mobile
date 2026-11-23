@@ -1,0 +1,114 @@
+{
+  "addressViewAddressesTitle": "Addresses",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressCardUsedLabel": "Used",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressCardUnusedLabel": "Unused",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardIndexLabel": "Index: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressCardBalanceLabel": "Balance: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "okButton": "OK",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewReceiveType": "Receive",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeType": "Change",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "addressViewTitle": "Address Details",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "addressViewAddress": "Address",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewBalance": "Balance",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewTransactions": "Transactions",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewCopyAddress": "Copy Address",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressViewShowQR": "Show QR Code",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewNoAddressesFound": "No addresses found",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "addressViewChangeAddressesComingSoon": "Change addresses coming soon",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressViewChangeAddressesDescription": "Display wallet Change addresses",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewerTitle": "Address",
+  "@addressViewerTitle": {
+    "description": "Title shown in the address detail dialog"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "viewerViewInExplorer": "View in explorer",
+  "@viewerViewInExplorer": {
+    "description": "Button to open address or transaction in block explorer"
+  },
+  "viewerCopyLink": "Copy link",
+  "@viewerCopyLink": {
+    "description": "Button to copy the block explorer URL to clipboard"
+  },
+  "viewerAddressTab": "Address",
+  "@viewerAddressTab": {
+    "description": "Segment label to show/copy the bare address in the address viewer dialog"
+  },
+  "viewerPaymentUriTab": "Payment URI",
+  "@viewerPaymentUriTab": {
+    "description": "Segment label to show/copy the BIP21 payment URI in the address viewer dialog"
+  },
+  "addressViewErrorWalletNotFound": "This wallet could not be found.",
+  "@addressViewErrorWalletNotFound": {
+    "description": "Shown when the wallet backing the addresses screen has no stored metadata"
+  },
+  "addressViewErrorLoadFailed": "Your addresses could not be loaded. Please try again.",
+  "@addressViewErrorLoadFailed": {
+    "description": "Shown when loading or paginating the wallet address list fails"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Generic toast message after copying a value to the clipboard"
+  },
+  "comingSoonTitle": "Feature Coming Soon",
+  "@comingSoonTitle": {
+    "description": "Title for the coming soon bottom sheet"
+  }
+}

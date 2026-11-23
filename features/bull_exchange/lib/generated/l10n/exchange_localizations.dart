@@ -3788,6 +3788,636 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get deleteAccountSuccessClose;
+
+  /// Label for amount input field in buy flow
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get buyEnterAmount;
+
+  /// Label for payment method dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get buyPaymentMethod;
+
+  /// Button to fill maximum amount
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get buyMax;
+
+  /// Label for wallet selection dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Select wallet'**
+  String get buySelectWallet;
+
+  /// Label for bitcoin address input field
+  ///
+  /// In en, this message translates to:
+  /// **'Enter bitcoin address'**
+  String get buyEnterBitcoinAddress;
+
+  /// Placeholder hint for bitcoin address input
+  ///
+  /// In en, this message translates to:
+  /// **'BC1QYL7J673H…6Y6ALV70M0'**
+  String get buyBitcoinAddressHint;
+
+  /// Button to confirm purchase
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm purchase'**
+  String get buyConfirmPurchase;
+
+  /// Success message with amount bought and the fiat amount debited
+  ///
+  /// In en, this message translates to:
+  /// **'You bought {amount} with {fiatAmount}'**
+  String buyYouBought(String amount, String fiatAmount);
+
+  /// Text before countdown timer for payout
+  ///
+  /// In en, this message translates to:
+  /// **'Your payout will be sent in '**
+  String get buyPayoutWillBeSentIn;
+
+  /// Button to view order details
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get buyViewDetails;
+
+  /// Title for transaction acceleration option
+  ///
+  /// In en, this message translates to:
+  /// **'Accelerate Transaction'**
+  String get buyAccelerateTransaction;
+
+  /// Subtitle for acceleration option
+  ///
+  /// In en, this message translates to:
+  /// **'Get it confirmed faster'**
+  String get buyGetConfirmedFaster;
+
+  /// Title for express withdrawal confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm express withdrawal'**
+  String get buyConfirmExpressWithdrawal;
+
+  /// Explanation of network fees for express withdrawal
+  ///
+  /// In en, this message translates to:
+  /// **'The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners'**
+  String get buyNetworkFeeExplanation;
+
+  /// Label for network fees amount
+  ///
+  /// In en, this message translates to:
+  /// **'Network fees'**
+  String get buyNetworkFees;
+
+  /// Label for estimated fee value in fiat
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated fee value'**
+  String get buyEstimatedFeeValue;
+
+  /// Label for network fee rate
+  ///
+  /// In en, this message translates to:
+  /// **'Network fee rate'**
+  String get buyNetworkFeeRate;
+
+  /// Label for estimated confirmation time
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation time'**
+  String get buyConfirmationTime;
+
+  /// Value for estimated confirmation time
+  ///
+  /// In en, this message translates to:
+  /// **'~10 minutes'**
+  String get buyConfirmationTimeValue;
+
+  /// Button to wait for free (slower) withdrawal
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for free withdrawal'**
+  String get buyWaitForFreeWithdrawal;
+
+  /// Button to confirm express withdrawal
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm express'**
+  String get buyConfirmExpress;
+
+  /// Success message for accelerated transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin sent!'**
+  String get buyBitcoinSent;
+
+  /// Additional success message for accelerated transaction
+  ///
+  /// In en, this message translates to:
+  /// **'That was fast, wasn\'t it?'**
+  String get buyThatWasFast;
+
+  /// Default label for Bitcoin wallets when used as the default wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Bitcoin'**
+  String get globalDefaultBitcoinWalletLabel;
+
+  /// Default label for Liquid/instant payments wallets when used as the default wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Instant payments'**
+  String get globalDefaultLiquidWalletLabel;
+
+  /// Success screen title after DCA is activated
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Buy is Active!'**
+  String get dcaSuccessTitle;
+
+  /// Success message for hourly frequency
+  ///
+  /// In en, this message translates to:
+  /// **'You will buy {amount} every hour'**
+  String dcaSuccessMessageHourly(String amount);
+
+  /// Success message for daily frequency
+  ///
+  /// In en, this message translates to:
+  /// **'You will buy {amount} every day'**
+  String dcaSuccessMessageDaily(String amount);
+
+  /// Success message for weekly frequency
+  ///
+  /// In en, this message translates to:
+  /// **'You will buy {amount} every week'**
+  String dcaSuccessMessageWeekly(String amount);
+
+  /// Success message for monthly frequency
+  ///
+  /// In en, this message translates to:
+  /// **'You will buy {amount} every month'**
+  String dcaSuccessMessageMonthly(String amount);
+
+  /// Button label to return to exchange home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get dcaBackToHomeButton;
+
+  /// AppBar title for wallet selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Bitcoin Wallet'**
+  String get dcaChooseWalletTitle;
+
+  /// Explanation text at the top of wallet selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin purchases will be placed automatically per this schedule.'**
+  String get dcaWalletSelectionDescription;
+
+  /// Form validation error when no network is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a network'**
+  String get dcaNetworkValidationError;
+
+  /// Label for Lightning address text input field
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Lightning Address'**
+  String get dcaEnterLightningAddressLabel;
+
+  /// Checkbox label to use default Lightning address
+  ///
+  /// In en, this message translates to:
+  /// **'Use my default Lightning address.'**
+  String get dcaUseDefaultLightningAddress;
+
+  /// Button label to proceed to confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get dcaWalletSelectionContinueButton;
+
+  /// Label above frequency selection radio buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Select Frequency'**
+  String get dcaSelectFrequencyLabel;
+
+  /// Label above wallet type selection radio buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Select Bitcoin Wallet Type'**
+  String get dcaSelectWalletTypeLabel;
+
+  /// Radio button option for Bitcoin wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin (BTC)'**
+  String get dcaWalletTypeBitcoin;
+
+  /// Radio button option for Lightning wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning Network (LN)'**
+  String get dcaWalletTypeLightning;
+
+  /// Radio button option for Liquid wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid (LBTC)'**
+  String get dcaWalletTypeLiquid;
+
+  /// Subtitle/description for Bitcoin wallet option
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 0.001 BTC'**
+  String get dcaWalletBitcoinSubtitle;
+
+  /// Subtitle/description for Lightning wallet option
+  ///
+  /// In en, this message translates to:
+  /// **'Requires compatible wallet, maximum 0.25 BTC'**
+  String get dcaWalletLightningSubtitle;
+
+  /// Subtitle/description for Liquid wallet option
+  ///
+  /// In en, this message translates to:
+  /// **'Requires compatible wallet'**
+  String get dcaWalletLiquidSubtitle;
+
+  /// AppBar title for DCA setup screen
+  ///
+  /// In en, this message translates to:
+  /// **'Set Recurring Buy'**
+  String get dcaSetupTitle;
+
+  /// Insufficient balance error title
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient Balance'**
+  String get dcaSetupInsufficientBalance;
+
+  /// Insufficient balance error message
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have enough balance to create this order.'**
+  String get dcaSetupInsufficientBalanceMessage;
+
+  /// Button to fund account
+  ///
+  /// In en, this message translates to:
+  /// **'Fund your account'**
+  String get dcaSetupFundAccount;
+
+  /// DCA schedule explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin purchases will be placed automatically per this schedule.'**
+  String get dcaSetupScheduleMessage;
+
+  /// Frequency validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a frequency'**
+  String get dcaSetupFrequencyError;
+
+  /// Continue button on DCA setup
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get dcaSetupContinue;
+
+  /// AppBar title for DCA confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Recurring Buy'**
+  String get dcaConfirmTitle;
+
+  /// DCA auto-placement message
+  ///
+  /// In en, this message translates to:
+  /// **'Buy orders will be placed automatically per these settings. You can disable them anytime.'**
+  String get dcaConfirmAutoMessage;
+
+  /// Field label for frequency
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get dcaConfirmFrequency;
+
+  /// Hourly frequency label
+  ///
+  /// In en, this message translates to:
+  /// **'Every hour'**
+  String get dcaConfirmFrequencyHourly;
+
+  /// Daily frequency label
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get dcaConfirmFrequencyDaily;
+
+  /// Weekly frequency label
+  ///
+  /// In en, this message translates to:
+  /// **'Every week'**
+  String get dcaConfirmFrequencyWeekly;
+
+  /// Monthly frequency label
+  ///
+  /// In en, this message translates to:
+  /// **'Every month'**
+  String get dcaConfirmFrequencyMonthly;
+
+  /// Field label for amount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get dcaConfirmAmount;
+
+  /// Field label for payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get dcaConfirmPaymentMethod;
+
+  /// Payment method balance format
+  ///
+  /// In en, this message translates to:
+  /// **'{currency} balance'**
+  String dcaConfirmPaymentBalance(String currency);
+
+  /// Field label for order type
+  ///
+  /// In en, this message translates to:
+  /// **'Order type'**
+  String get dcaConfirmOrderType;
+
+  /// Order type value
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring buy'**
+  String get dcaConfirmOrderTypeValue;
+
+  /// Field label for network
+  ///
+  /// In en, this message translates to:
+  /// **'Network'**
+  String get dcaConfirmNetwork;
+
+  /// Bitcoin network label
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin'**
+  String get dcaConfirmNetworkBitcoin;
+
+  /// Lightning network label
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning'**
+  String get dcaConfirmNetworkLightning;
+
+  /// Liquid network label
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid'**
+  String get dcaConfirmNetworkLiquid;
+
+  /// Field label for Lightning address
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning address'**
+  String get dcaConfirmLightningAddress;
+
+  /// Continue button on DCA confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get dcaConfirmContinue;
+
+  /// AppBar title for buy input screen
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Bitcoin'**
+  String get buyInputTitle;
+
+  /// Minimum amount error message
+  ///
+  /// In en, this message translates to:
+  /// **'You should buy at least'**
+  String get buyInputMinAmountError;
+
+  /// Maximum amount error message
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t buy more than'**
+  String get buyInputMaxAmountError;
+
+  /// KYC pending info card title
+  ///
+  /// In en, this message translates to:
+  /// **'KYC ID Verification Pending'**
+  String get buyInputKycPending;
+
+  /// KYC pending info card message
+  ///
+  /// In en, this message translates to:
+  /// **'You must complete ID Verification first'**
+  String get buyInputKycMessage;
+
+  /// Button to complete KYC
+  ///
+  /// In en, this message translates to:
+  /// **'Complete KYC'**
+  String get buyInputCompleteKyc;
+
+  /// Insufficient balance info card title
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get buyInputInsufficientBalance;
+
+  /// Insufficient balance message
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have enough balance to create this order.'**
+  String get buyInputInsufficientBalanceMessage;
+
+  /// Button to fund account
+  ///
+  /// In en, this message translates to:
+  /// **'Fund your account'**
+  String get buyInputFundAccount;
+
+  /// Continue button on buy input
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get buyInputContinue;
+
+  /// AppBar title for buy confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Bitcoin'**
+  String get buyConfirmTitle;
+
+  /// Field label for payment amount
+  ///
+  /// In en, this message translates to:
+  /// **'You pay'**
+  String get buyConfirmYouPay;
+
+  /// Field label for receive amount
+  ///
+  /// In en, this message translates to:
+  /// **'You receive'**
+  String get buyConfirmYouReceive;
+
+  /// Field label for Bitcoin price
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin Price'**
+  String get buyConfirmBitcoinPrice;
+
+  /// Field label for the wallet a buy pays out to
+  ///
+  /// In en, this message translates to:
+  /// **'Payout wallet'**
+  String get buyConfirmPayoutWallet;
+
+  /// Field label for payout method
+  ///
+  /// In en, this message translates to:
+  /// **'Payout method'**
+  String get buyConfirmPayoutMethod;
+
+  /// Payout method for buys paid out over the Liquid network
+  ///
+  /// In en, this message translates to:
+  /// **'L-BTC on Liquid'**
+  String get buyPayoutMethodLiquid;
+
+  /// Payout method for buys paid out over the Bitcoin network
+  ///
+  /// In en, this message translates to:
+  /// **'BTC on Bitcoin chain'**
+  String get buyPayoutMethodBitcoin;
+
+  /// External wallet payout method
+  ///
+  /// In en, this message translates to:
+  /// **'External Bitcoin wallet'**
+  String get buyConfirmExternalWallet;
+
+  /// Awaiting confirmation label
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting confirmation '**
+  String get buyConfirmAwaitingConfirmation;
+
+  /// Error message for unauthenticated user during buy
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authenticated. Please log in to continue.'**
+  String get buyUnauthenticatedError;
+
+  /// Error message for amount below minimum during buy
+  ///
+  /// In en, this message translates to:
+  /// **'You are trying to buy below the minimum amount.'**
+  String get buyBelowMinAmountError;
+
+  /// Error message for amount above maximum during buy
+  ///
+  /// In en, this message translates to:
+  /// **'You are trying to buy above the maximum amount.'**
+  String get buyAboveMaxAmountError;
+
+  /// Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount
+  ///
+  /// In en, this message translates to:
+  /// **'Your order could not be created right now. Please try again or contact support.'**
+  String get buyUnexpectedError;
+
+  /// Shown when the exchange account summary cannot be loaded, so DCA setup cannot start. Deliberately covers three causes the boundary cannot tell apart: not logged in, no connection, and a backend error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your account. Check your connection, make sure you are logged in, and try again.'**
+  String get dcaAccountUnavailableError;
+
+  /// Shown when Lightning was chosen as the DCA payout network but no lightning address was provided.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a Lightning address to receive your purchases.'**
+  String get dcaLightningAddressRequiredError;
+
+  /// Shown when no default wallet exists for the chosen DCA network or generating a receive address failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not prepare a receiving address in your wallet. Please try again.'**
+  String get dcaReceiveAddressError;
+
+  /// Shown when the exchange rejects creating the recurring buy order.
+  ///
+  /// In en, this message translates to:
+  /// **'The recurring buy could not be created. Please try again later.'**
+  String get dcaOrderCreationError;
+
+  /// Shown while a payjoin negotiation is still running, before its outcome is known
+  ///
+  /// In en, this message translates to:
+  /// **'Payjoin in progress'**
+  String get payjoinInProgress;
+
+  /// Shown when the payjoin negotiation completed and the payjoin transaction was broadcast
+  ///
+  /// In en, this message translates to:
+  /// **'Payjoin succeeded'**
+  String get payjoinSucceeded;
+
+  /// Shown on a buy when the payout did not use payjoin and arrived as a plain transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin sent to your wallet via regular send'**
+  String get payjoinBuyRegularSend;
+
+  /// Label of the toggle that lets the customer opt out of payjoin before confirming an order
+  ///
+  /// In en, this message translates to:
+  /// **'Use payjoin'**
+  String get payjoinUseToggle;
+
+  /// Hint for the lightning-address field showing the expected lightning address format
+  ///
+  /// In en, this message translates to:
+  /// **'you@domain.com'**
+  String get limitOrdersLightningAddressHint;
+
+  /// Shown on the buy, sell or pay confirmation when the price lock lapsed and the bounded quote refreshes brought no usable price back; nothing was paid.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t get a fresh price. Try again, or go back and start a new order.'**
+  String get exchangeQuoteUnavailableError;
+
+  /// Shown on the buy confirmation when the price lock expired before the order was confirmed; nothing was bought.
+  ///
+  /// In en, this message translates to:
+  /// **'This price has expired. A new one is being loaded; check it before confirming.'**
+  String get buyQuoteExpiredError;
 }
 
 class _ExchangeLocalizationsDelegate

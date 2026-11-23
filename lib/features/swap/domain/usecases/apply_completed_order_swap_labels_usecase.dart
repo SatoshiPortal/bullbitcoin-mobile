@@ -1,16 +1,14 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_labels_applied_usecase.dart';
 
 class ApplyCompletedOrderSwapLabelsUsecase {
   final GetOrderSwapsAwaitingLabelsUsecase _getOrders;
   final MarkOrderSwapLabelsAppliedUsecase _markApplied;
-  final WalletTransactionRepository _walletTransactions;
+  final Transactions _walletTransactions;
   final Labels _labelsFacade;
   final DateTime Function() _now;
 
@@ -54,14 +52,17 @@ class ApplyCompletedOrderSwapLabelsUsecase {
                 };
       if (walletId == null || transactionId == null) continue;
 
-      try {
-        final transaction = await _walletTransactions.getWalletTransaction(
-          transactionId,
-          walletId: walletId,
-        );
-        if (transaction?.isConfirmed != true) continue;
-      } catch (error) {
-        return Err(SwapUnexpectedFailure(error.runtimeType.toString()));
+      final history = await _walletTransactions.getWalletTransaction(
+        transactionId,
+        walletId: walletId,
+      );
+      switch (history) {
+        case Ok(:final value) when value?.isConfirmed == true:
+          break;
+        case Ok():
+          continue;
+        case Err(:final failure):
+          return Err(SwapUnexpectedFailure(failure.runtimeType.toString()));
       }
 
       final labels = [

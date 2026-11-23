@@ -27,8 +27,13 @@ void main() {
         // Published BIP84 test account, as entered in the FIX device campaign.
         const vpub =
             'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc';
-        final wallet = (await WatchOnlyWalletEntity.parse(vpub))
-            .copyWith(label: labelCorrection ? '' : 'NeverScanned');
+        final parsed = await ParseWatchOnlyInputUsecase().execute(
+          vpub,
+          environment: Environment.testnet.networkEnv,
+        );
+        final wallet = ((parsed as Ok).value as WatchOnlyWalletEntity).copyWith(
+          label: labelCorrection ? '' : 'NeverScanned',
+        );
         final settings = _Settings();
         final importer = _Xpub();
         when(settings.readActiveEnvironment)

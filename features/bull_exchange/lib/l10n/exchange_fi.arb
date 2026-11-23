@@ -576,5 +576,148 @@
   "deleteAccountConfirmationDelete": "Delete Account",
   "deleteAccountSuccessTitle": "Tilin poistopyyntö lähetetty",
   "deleteAccountSuccessDescription": "Tilisi poistopyyntö on tehty. Se käsitellään 5 arkipäivän kuluessa.",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessClose": "Close",
+  "buyEnterAmount": "Syötä määrä",
+  "buyPaymentMethod": "Maksutapa",
+  "buyMax": "Maksimi",
+  "buySelectWallet": "Valitse lompakko",
+  "buyEnterBitcoinAddress": "Syötä Bitcoin-osoite",
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "buyConfirmPurchase": "Vahvista osto",
+  "buyYouBought": "Ostit {amount} hintaan {fiatAmount}",
+  "@buyYouBought": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyPayoutWillBeSentIn": "Maksusi lähetetään ",
+  "buyViewDetails": "Näytä tiedot",
+  "buyAccelerateTransaction": "Kiihdytä transaktiota",
+  "buyGetConfirmedFaster": "Saat vahvistuksen nopeammin",
+  "buyConfirmExpressWithdrawal": "Vahvista pikanosto",
+  "buyNetworkFeeExplanation": "Bitcoin-louhijoille menevät Bitcoin-verkon kulut vähennetään saamastasi summasta.",
+  "buyNetworkFees": "Verkkokulut",
+  "buyEstimatedFeeValue": "Arvioitu kulujen määrä",
+  "buyNetworkFeeRate": "Verkkokulujen määrä",
+  "buyConfirmationTime": "Vahvistusviive",
+  "buyConfirmationTimeValue": "~10 minuuttia",
+  "buyWaitForFreeWithdrawal": "Odota ilmaista nostoa",
+  "buyConfirmExpress": "Vahvista pikamaksu",
+  "buyBitcoinSent": "Bitcoin lähetetty!",
+  "buyThatWasFast": "Se oli nopeaa, eikö ollutkin?",
+  "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
+  "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
+  "dcaSuccessTitle": "Toistuva osto on aktiivinen!",
+  "dcaSuccessMessageHourly": "Ostat {amount} joka tunti",
+  "@dcaSuccessMessageHourly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageDaily": "Ostat {amount} joka päivä",
+  "@dcaSuccessMessageDaily": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageWeekly": "Ostat {amount} joka viikko",
+  "@dcaSuccessMessageWeekly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageMonthly": "Ostat {amount} joka kuukausi",
+  "@dcaSuccessMessageMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaBackToHomeButton": "Kotisivulle",
+  "dcaChooseWalletTitle": "Valitse Bitcoin-lompakko",
+  "dcaWalletSelectionDescription": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
+  "dcaNetworkValidationError": "Valitse verkko",
+  "dcaEnterLightningAddressLabel": "Syötä Lightning-osoite",
+  "dcaUseDefaultLightningAddress": "Käytä oletus Lightning-osoitettani.",
+  "dcaWalletSelectionContinueButton": "Jatka",
+  "dcaSelectFrequencyLabel": "Aikataulu",
+  "dcaSelectWalletTypeLabel": "Valitse Bitcoin-lompakon tyyppi",
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "dcaWalletTypeLightning": "Lightning-verkko (LN)",
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "dcaWalletBitcoinSubtitle": "Vähintään 0.001 BTC",
+  "dcaWalletLightningSubtitle": "Vaatii yhteensopivan lompakon, enintään 0.25 BTC",
+  "dcaWalletLiquidSubtitle": "Vaatii yhteensopivan lompakon",
+  "dcaSetupTitle": "Aseta toistuva osto",
+  "dcaSetupInsufficientBalance": "Riittämätön saldo",
+  "dcaSetupInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
+  "dcaSetupFundAccount": "Talletus",
+  "dcaSetupScheduleMessage": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
+  "dcaSetupFrequencyError": "Valitse aikataulu",
+  "dcaSetupContinue": "Jatka",
+  "dcaConfirmTitle": "Vahvista toistuva osto",
+  "dcaConfirmAutoMessage": "Ostotoimeksiannot suoritetaan automaattisesti näiden asetusten mukaan. Voit poistaa ne käytöstä milloin tahansa.",
+  "dcaConfirmFrequency": "Aikataulu",
+  "dcaConfirmFrequencyHourly": "Joka tunti",
+  "dcaConfirmFrequencyDaily": "Joka päivä",
+  "dcaConfirmFrequencyWeekly": "Joka viikko",
+  "dcaConfirmFrequencyMonthly": "Joka kuukausi",
+  "dcaConfirmAmount": "Määrä",
+  "dcaConfirmPaymentMethod": "Maksutapa",
+  "dcaConfirmPaymentBalance": "{currency}-saldo",
+  "@dcaConfirmPaymentBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmOrderType": "Toimeksiantotyyppi",
+  "dcaConfirmOrderTypeValue": "Toistuva osto",
+  "dcaConfirmNetwork": "Verkko",
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "dcaConfirmNetworkLightning": "Lightning",
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "dcaConfirmLightningAddress": "Lightning-osoite",
+  "dcaConfirmContinue": "Jatka",
+  "buyInputTitle": "Osta Bitcoinia",
+  "buyInputMinAmountError": "Sinun tulee ostaa vähintään",
+  "buyInputMaxAmountError": "Et voi ostaa enempää kuin",
+  "buyInputKycPending": "KYC-vahvistus odottaa",
+  "buyInputKycMessage": "Sinun täytyy suorittaa henkilöllisyyden vahvistus ensin",
+  "buyInputCompleteKyc": "Suorita KYC",
+  "buyInputInsufficientBalance": "Riittämätön saldo",
+  "buyInputInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
+  "buyInputFundAccount": "Talletus",
+  "buyInputContinue": "Jatka",
+  "buyConfirmTitle": "Osta Bitcoinia",
+  "buyConfirmYouPay": "Maksat",
+  "buyConfirmYouReceive": "Saat",
+  "buyConfirmBitcoinPrice": "Bitcoinin hinta",
+  "buyConfirmPayoutWallet": "Maksun lompakko",
+  "buyPayoutMethodLiquid": "L-BTC Liquid-verkossa",
+  "buyPayoutMethodBitcoin": "BTC Bitcoin-lohkoketjussa",
+  "buyConfirmPayoutMethod": "Maksutapa",
+  "buyConfirmExternalWallet": "Ulkoinen Bitcoin-lompakko",
+  "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
+  "buyUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
+  "buyBelowMinAmountError": "Yrität ostaa alle vähimmäismäärän.",
+  "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
+  "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaAccountUnavailableError": "Tiliäsi ei voitu ladata. Tarkista yhteytesi, varmista että olet kirjautunut sisään ja yritä uudelleen.",
+  "dcaLightningAddressRequiredError": "Anna Lightning-osoite ostojesi vastaanottamista varten.",
+  "dcaReceiveAddressError": "Lompakkoosi ei voitu valmistella vastaanotto-osoitetta. Yritä uudelleen.",
+  "dcaOrderCreationError": "Toistuvaa ostoa ei voitu luoda. Yritä myöhemmin uudelleen."
 }

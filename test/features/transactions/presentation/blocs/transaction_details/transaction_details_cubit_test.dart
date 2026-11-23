@@ -1,34 +1,14 @@
+import 'package:swaps/order_swaps.dart';
+import 'package:secrets/testing.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart';
+
 import 'dart:async';
 
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:exchange/exchange.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok, Result, Sats, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/delete_transaction_note_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -82,23 +62,17 @@ class _MockWatchTransactionOrderSwapUsecase extends Mock
 
 class _MockRetrySwapUsecase extends Mock implements RetrySwapUsecase {}
 
-Wallet _testWallet({String origin = 'w1'}) => Wallet(
-  origin: origin,
-  network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
-  scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-);
+WalletRegistration _testWallet({String origin = 'w1'}) =>
+    walletRegistrationForTesting(
+      id: origin,
+      network: BitcoinNetwork.mainnet,
+      signer: WalletSigner.local,
+    );
 
 WalletTransaction _walletTx({
   required String txId,
   String walletId = 'w1',
-  Network network = Network.bitcoinMainnet,
+  Network network = BitcoinNetwork.mainnet,
   WalletTransactionDirection direction = WalletTransactionDirection.outgoing,
   int amountSat = 50000,
   List<Label> labels = const [],
@@ -217,9 +191,9 @@ void main() {
       return Ok(payjoin.canManuallyBroadcastOriginal);
     });
 
-    when(
-      () => getWallet.execute(any(), sync: any(named: 'sync')),
-    ).thenAnswer((_) async => Ok<Wallet?, TransactionFailure>(_testWallet()));
+    when(() => getWallet.execute(any(), sync: any(named: 'sync'))).thenAnswer(
+      (_) async => Ok<WalletRegistration?, TransactionFailure>(_testWallet()),
+    );
     // By default the forced sync'd lookup finds nothing — individual tests
     // override it to simulate the broadcast becoming visible on demand. The
     // usecase returns a Result now, so the "nothing" case is Ok(null).
@@ -230,8 +204,7 @@ void main() {
         sync: any(named: 'sync'),
       ),
     ).thenAnswer(
-      (_) async =>
-          const Ok<WalletTransaction?, WalletTransactionLookupFailure>(null),
+      (_) async => const Ok<WalletTransaction?, TransactionFailure>(null),
     );
     when(() => watchPayjoin.execute(ids: any(named: 'ids')))
         .thenAnswer((_) => const Stream.empty());
@@ -265,7 +238,7 @@ void main() {
       final walletTransaction = _walletTx(
         txId: 'liquid-payout-txid',
         walletId: 'liquid-wallet',
-        network: Network.liquidMainnet,
+        network: LiquidNetwork.mainnet,
         direction: WalletTransactionDirection.incoming,
         amountSat: 19800,
         labels: [
@@ -282,12 +255,11 @@ void main() {
           sync: false,
         ),
       ).thenAnswer(
-        (_) async => Ok<WalletTransaction?, WalletTransactionLookupFailure>(
-          walletTransaction,
-        ),
+        (_) async =>
+            Ok<WalletTransaction?, TransactionFailure>(walletTransaction),
       );
       when(() => getWallet.execute('liquid-wallet', sync: false)).thenAnswer(
-        (_) async => Ok<Wallet?, TransactionFailure>(
+        (_) async => Ok<WalletRegistration?, TransactionFailure>(
           _testWallet(origin: 'liquid-wallet'),
         ),
       );
@@ -312,13 +284,12 @@ void main() {
   test(
     'loads both wallets before exposing internal transfer details',
     () async {
-      final sourceWallet = Completer<Result<Wallet?, TransactionFailure>>();
+      final sourceWallet =
+          Completer<Result<WalletRegistration?, TransactionFailure>>();
       final destinationWallet =
-          Completer<Result<Wallet?, TransactionFailure>>();
+          Completer<Result<WalletRegistration?, TransactionFailure>>();
       final walletTransaction =
-          Completer<
-            Result<WalletTransaction?, WalletTransactionLookupFailure>
-          >();
+          Completer<Result<WalletTransaction?, TransactionFailure>>();
       final orderSwap = OrderSwapRecord(
         localId: 'transfer-local',
         purpose: OrderSwapPurpose.transfer,
@@ -418,8 +389,7 @@ void main() {
         sync: false,
       ),
     ).thenAnswer(
-      (_) async =>
-          const Ok<WalletTransaction?, WalletTransactionLookupFailure>(null),
+      (_) async => const Ok<WalletTransaction?, TransactionFailure>(null),
     );
     when(() => watchTransactionOrderSwap.execute(initial.localId))
         .thenAnswer((_) => updates.stream);
@@ -446,7 +416,7 @@ void main() {
     final walletTransaction = _walletTx(
       txId: initial.canonicalWalletTransactionId!,
       walletId: initial.canonicalWalletId!,
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       direction: WalletTransactionDirection.incoming,
       labels: [
         Label.tx(
@@ -468,9 +438,8 @@ void main() {
         sync: false,
       ),
     ).thenAnswer(
-      (_) async => Ok<WalletTransaction?, WalletTransactionLookupFailure>(
-        walletTransaction,
-      ),
+      (_) async =>
+          Ok<WalletTransaction?, TransactionFailure>(walletTransaction),
     );
     when(() => watchTransactionOrderSwap.execute(initial.localId)).thenAnswer(
       (_) => updates.stream.map(Ok<OrderSwapRecord, TransactionFailure>.new),
@@ -514,7 +483,7 @@ void main() {
       final walletTransaction = _walletTx(
         txId: initial.canonicalWalletTransactionId!,
         walletId: initial.canonicalWalletId!,
-        network: Network.liquidMainnet,
+        network: LiquidNetwork.mainnet,
         direction: WalletTransactionDirection.incoming,
       );
       final updates = StreamController<OrderSwapRecord>.broadcast();
@@ -529,9 +498,8 @@ void main() {
           sync: false,
         ),
       ).thenAnswer(
-        (_) async => Ok<WalletTransaction?, WalletTransactionLookupFailure>(
-          walletTransaction,
-        ),
+        (_) async =>
+            Ok<WalletTransaction?, TransactionFailure>(walletTransaction),
       );
       when(() => watchTransactionOrderSwap.execute(initial.localId)).thenAnswer(
         (_) => updates.stream.map(Ok<OrderSwapRecord, TransactionFailure>.new),
@@ -580,7 +548,7 @@ void main() {
     final walletTransaction = _walletTx(
       txId: orderSwap.canonicalWalletTransactionId!,
       walletId: orderSwap.canonicalWalletId!,
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       direction: WalletTransactionDirection.incoming,
     );
     walletTransactions.add(walletTransaction);
@@ -593,7 +561,7 @@ void main() {
   test('keeps a wallet sync result emitted during the initial load', () async {
     final orderSwap = _receiveOrderSwap();
     final walletTransactionLookup =
-        Completer<Result<WalletTransaction?, WalletTransactionLookupFailure>>();
+        Completer<Result<WalletTransaction?, TransactionFailure>>();
     final walletTransactions = StreamController<WalletTransaction>.broadcast();
     addTearDown(walletTransactions.close);
     when(() => getTransactionOrderSwap.execute(orderSwap.localId)).thenAnswer(
@@ -621,7 +589,7 @@ void main() {
     final walletTransaction = _walletTx(
       txId: orderSwap.canonicalWalletTransactionId!,
       walletId: orderSwap.canonicalWalletId!,
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       direction: WalletTransactionDirection.incoming,
     );
     walletTransactions.add(walletTransaction);
@@ -631,7 +599,7 @@ void main() {
         _walletTx(
           txId: orderSwap.canonicalWalletTransactionId!,
           walletId: orderSwap.canonicalWalletId!,
-          network: Network.liquidMainnet,
+          network: LiquidNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           amountSat: 1,
         ),
@@ -681,7 +649,7 @@ void main() {
     final replacement = _walletTx(
       txId: 'replacement-txid',
       walletId: initial.canonicalWalletId!,
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       direction: WalletTransactionDirection.incoming,
     );
     replacementTransactions.add(replacement);
@@ -765,7 +733,7 @@ void main() {
     );
     when(() => getWallet.execute(orderSwap.canonicalWalletId!, sync: false))
         .thenAnswer(
-          (_) async => const Err<Wallet?, TransactionFailure>(
+          (_) async => const Err<WalletRegistration?, TransactionFailure>(
             TransactionUnexpectedFailure('wallet unavailable'),
           ),
         );
@@ -905,8 +873,7 @@ void main() {
             sync: true,
           ),
         ).thenAnswer(
-          (_) async =>
-              Ok<WalletTransaction?, WalletTransactionLookupFailure>(walletTx),
+          (_) async => Ok<WalletTransaction?, TransactionFailure>(walletTx),
         );
         when(
           () => getTransactionsByTxId.execute(completed.originalTxId),
@@ -1007,10 +974,7 @@ void main() {
             sync: true,
           ),
         ).thenAnswer(
-          (_) async =>
-              const Ok<WalletTransaction?, WalletTransactionLookupFailure>(
-                null,
-              ),
+          (_) async => const Ok<WalletTransaction?, TransactionFailure>(null),
         );
         when(() => getTransactionsByTxId.execute(any())).thenAnswer(
           (_) async => Ok<List<Transaction>, TransactionFailure>([
@@ -1281,7 +1245,7 @@ void main() {
         ),
       ).thenAnswer((_) async {
         visible = true;
-        return Ok<WalletTransaction?, WalletTransactionLookupFailure>(
+        return Ok<WalletTransaction?, TransactionFailure>(
           _walletTx(txId: 'receiver-payjoin-txid'),
         );
       });
@@ -1354,7 +1318,7 @@ void main() {
         ),
       ).thenAnswer((_) async {
         visible = true;
-        return Ok<WalletTransaction?, WalletTransactionLookupFailure>(
+        return Ok<WalletTransaction?, TransactionFailure>(
           _walletTx(txId: 'sender-orig-txid'),
         );
       });

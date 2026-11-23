@@ -2113,4 +2113,351 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Въведете сума';
+
+  @override
+  String get buyPaymentMethod => 'Начин на плащане';
+
+  @override
+  String get buyMax => 'Макс.';
+
+  @override
+  String get buySelectWallet => 'Изберете портфейл';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Въведете адрес на биткойн';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Потвърдете покупката';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Купихте $amount за $fiatAmount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Вашето изплащане ще бъде изпратено в ';
+
+  @override
+  String get buyViewDetails => 'Виж подробности';
+
+  @override
+  String get buyAccelerateTransaction => 'Ускорете транзакцията';
+
+  @override
+  String get buyGetConfirmedFaster => 'Постигнете по-бързо потвърждение';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Потвърдете експресното теглене';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Таксата за мрежата на биткойн ще се приспадне от сумата, която получавате, и ще бъде събрана от биткойн миньорите.';
+
+  @override
+  String get buyNetworkFees => 'Такси за мрежата';
+
+  @override
+  String get buyEstimatedFeeValue => 'Очаквана такса';
+
+  @override
+  String get buyNetworkFeeRate => 'Ставка на таксата за мрежата';
+
+  @override
+  String get buyConfirmationTime => 'Време за потвърждаване';
+
+  @override
+  String get buyConfirmationTimeValue => '~10 минути';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Изчакайте безплатното теглене';
+
+  @override
+  String get buyConfirmExpress => 'Потвърдете експресното теглене';
+
+  @override
+  String get buyBitcoinSent => 'биткойн изпратен!';
+
+  @override
+  String get buyThatWasFast => 'Беше бързо, нали?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Безопасен Биткойн';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Моментални плащания';
+
+  @override
+  String get dcaSuccessTitle => 'Повтаряща се покупка е активна!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Ще купите $amount на всеки час';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Ще купите $amount всеки ден';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Ще купите $amount всяка седмица';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Ще купите $amount всеки месец';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Назад към началната страница';
+
+  @override
+  String get dcaChooseWalletTitle => 'Изберете портфейл за Биткойн';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Покупките на Биткойн ще се извършват автоматично според този график.';
+
+  @override
+  String get dcaNetworkValidationError => 'Моля, изберете мрежа';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Въведете Lightning адрес';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Използвайте моя по подразбиране Lightning адрес.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Продължи';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Изберете честота';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Изберете тип портфейл за Bitcoin.';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Биткойн (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Лайтнинг мрежа (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Liquid (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Минимум 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Изисква съвместим портфейл, максимум 0.25 BTC.';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Изисква се съвместим портфейл.';
+
+  @override
+  String get dcaSetupTitle => 'Настрой периодична покупка';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Недостатъчен баланс';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Нямате достатъчен баланс, за да създадете тази поръчка.';
+
+  @override
+  String get dcaSetupFundAccount => 'Захрани сметката си';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Покупките на Bitcoin ще се извършват автоматично според този график.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Моля, изберете честота';
+
+  @override
+  String get dcaSetupContinue => 'Продължи';
+
+  @override
+  String get dcaConfirmTitle => 'Потвърди периодичната покупка';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Поръчките за покупка ще се извършват автоматично според тези настройки. Можете да ги деактивирате по всяко време.';
+
+  @override
+  String get dcaConfirmFrequency => 'Честота';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Всеки час';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Всеки ден';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Всяка седмица';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Всеки месец';
+
+  @override
+  String get dcaConfirmAmount => 'Сума';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Метод на плащане';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return 'Баланс в $currency';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Тип поръчка';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Периодична покупка';
+
+  @override
+  String get dcaConfirmNetwork => 'Мрежа';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Liquid';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Lightning адрес';
+
+  @override
+  String get dcaConfirmContinue => 'Продължи';
+
+  @override
+  String get buyInputTitle => 'Купи Bitcoin';
+
+  @override
+  String get buyInputMinAmountError => 'Трябва да купите поне';
+
+  @override
+  String get buyInputMaxAmountError => 'Не можете да купите повече от';
+
+  @override
+  String get buyInputKycPending => 'Изчаква се проверка на самоличността (KYC)';
+
+  @override
+  String get buyInputKycMessage =>
+      'Първо трябва да завършите проверка на самоличността';
+
+  @override
+  String get buyInputCompleteKyc => 'Завърши KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Недостатъчен баланс';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Нямате достатъчен баланс, за да създадете тази поръчка.';
+
+  @override
+  String get buyInputFundAccount => 'Захрани сметката си';
+
+  @override
+  String get buyInputContinue => 'Продължи';
+
+  @override
+  String get buyConfirmTitle => 'Купи Bitcoin';
+
+  @override
+  String get buyConfirmYouPay => 'Вие плащате';
+
+  @override
+  String get buyConfirmYouReceive => 'Вие получавате';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Цена на Bitcoin';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Портфейл за изплащане';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Метод на изплащане';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC в Liquid';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC в блокчейна на Bitcoin';
+
+  @override
+  String get buyConfirmExternalWallet => 'Външен биткойн портфейл';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Изчаква потвърждение ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Не сте удостоверени. Моля, влезте, за да продължите.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Опитвате се да купите под минималната сума.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Опитвате се да купите над максималната сума.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Профилът ви не можа да бъде зареден. Проверете връзката си, уверете се, че сте влезли, и опитайте отново.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Въведете Lightning адрес, за да получавате покупките си.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

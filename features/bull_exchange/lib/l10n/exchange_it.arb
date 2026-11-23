@@ -578,5 +578,155 @@
   "deleteAccountConfirmationDelete": "Elimina account",
   "deleteAccountSuccessTitle": "Eliminazione dell'account richiesta",
   "deleteAccountSuccessDescription": "La richiesta di eliminazione del tuo account è stata inviata. Verrà elaborata entro 5 giorni lavorativi.",
-  "deleteAccountSuccessClose": "Chiudi"
+  "deleteAccountSuccessClose": "Chiudi",
+  "buyPayoutWillBeSentIn": "Il pagamento verrà inviato tra ",
+  "dcaChooseWalletTitle": "Scegli il portafoglio Bitcoin",
+  "buyConfirmExternalWallet": "Portafoglio Bitcoin esterno",
+  "buyConfirmExpressWithdrawal": "Conferma l'invio rapido",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sicuri",
+  "dcaWalletLiquidSubtitle": "Richiede portafoglio compatibile",
+  "buyConfirmYouReceive": "Riceverai",
+  "buyAboveMaxAmountError": "Stai cercando di acquistare sopra la quantità massima.",
+  "buyBelowMinAmountError": "Stai cercando di acquistare sotto la quantità minima.",
+  "buyConfirmPayoutWallet": "Portafoglio di destinazione",
+  "buyPayoutMethodLiquid": "L-BTC su Liquid",
+  "buyPayoutMethodBitcoin": "Bitcoin on-chain",
+  "buyConfirmPayoutMethod": "Metodo di accredito",
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "dcaWalletBitcoinSubtitle": "Minimo 0,00",
+  "dcaWalletSelectionContinueButton": "Continua",
+  "dcaSetupInsufficientBalance": "Saldo insufficiente",
+  "dcaSuccessMessageHourly": "Comprerai {amount} ogni ora",
+  "@dcaSuccessMessageHourly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Non è stato possibile creare il tuo ordine in questo momento. Riprova o contatta l'assistenza.",
+  "dcaConfirmPaymentMethod": "Metodo di pagamento",
+  "buyConfirmBitcoinPrice": "Prezzo di Bitcoin",
+  "buyEstimatedFeeValue": "Stima delle commissioni",
+  "buyEnterAmount": "Inserisci l'importo",
+  "dcaNetworkValidationError": "Seleziona una rete",
+  "buyInputContinue": "Continua",
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "buyConfirmationTime": "Tempi di conferma",
+  "buyYouBought": "Hai comprato {amount} con {fiatAmount}",
+  "@buyYouBought": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Accelera la transazione",
+  "buyMax": "Max",
+  "buyInputTitle": "Acquista Bitcoin",
+  "buySelectWallet": "Seleziona il portafoglio",
+  "buyInputKycPending": "Verifica KYC in attesa",
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "buyInputKycMessage": "È necessario completare l'ID verifica prima",
+  "buyNetworkFees": "Commissioni di rete",
+  "dcaSuccessMessageMonthly": "Comprerai {amount} ogni mese",
+  "@dcaSuccessMessageMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "dcaSelectFrequencyLabel": "Seleziona frequenza",
+  "dcaEnterLightningAddressLabel": "Inserisci l'indirizzo Lightning",
+  "dcaConfirmPaymentBalance": "saldo {currency}",
+  "@dcaConfirmPaymentBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Gli acquisti di Bitcoin verranno effettuati automaticamente secondo questa pianificazione.",
+  "buyInputCompleteKyc": "Completa la verifica KYC",
+  "dcaConfirmFrequency": "Frequenza",
+  "dcaConfirmOrderType": "Tipo d'ordine",
+  "dcaSuccessMessageDaily": "Comprerai {amount} ogni giorno",
+  "@dcaSuccessMessageDaily": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Attendi l'invio gratuito",
+  "dcaWalletLightningSubtitle": "Richiede portafoglio compatibile, massimo 0.25 BTC",
+  "buyInputFundAccount": "Deposita fondi",
+  "buyConfirmationTimeValue": "10 minuti",
+  "buyConfirmAwaitingConfirmation": "In attesa di conferma ",
+  "dcaSuccessTitle": "L'acquisto ricorrente è attivo!",
+  "dcaSetupFrequencyError": "Seleziona una frequenza",
+  "buyConfirmTitle": "Acquista Bitcoin",
+  "buyThatWasFast": "È stato veloce, vero?",
+  "dcaConfirmFrequencyDaily": "Ogni giorno",
+  "buyConfirmPurchase": "Conferma l'acquisto",
+  "buyInputMaxAmountError": "Non puoi comprare più di",
+  "buyNetworkFeeRate": "Tasso di commissione di rete",
+  "dcaBackToHomeButton": "Torna alla home",
+  "globalDefaultLiquidWalletLabel": "Pagamenti istantanei",
+  "dcaConfirmNetwork": "Rete",
+  "dcaConfirmTitle": "Conferma l'acquisto ricorrente",
+  "dcaSetupContinue": "Continua",
+  "buyConfirmYouPay": "Paghi",
+  "dcaSelectWalletTypeLabel": "Seleziona il tipo di portafoglio Bitcoin",
+  "buyInputInsufficientBalance": "Saldo insufficiente",
+  "dcaSuccessMessageWeekly": "Comprerai {amount} ogni settimana",
+  "@dcaSuccessMessageWeekly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "Non hai abbastanza fondi per creare questo ordine.",
+  "dcaConfirmAmount": "Importo",
+  "dcaConfirmFrequencyWeekly": "Ogni settimana",
+  "dcaSetupFundAccount": "Deposita fondi",
+  "buyEnterBitcoinAddress": "Inserisci l'indirizzo bitcoin",
+  "dcaSetupInsufficientBalanceMessage": "Non hai abbastanza fondi per creare questo ordine.",
+  "dcaConfirmAutoMessage": "Gli ordini di acquisto verranno effettuati automaticamente secondo queste impostazioni. Puoi disattivarli quando vuoi.",
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "buyNetworkFeeExplanation": "Le commissioni di rete Bitcoin saranno detratte dall'importo che ricevi e raccolti dai minatori Bitcoin",
+  "dcaSetupScheduleMessage": "Gli acquisti di Bitcoin verranno effettuati automaticamente secondo questa pianificazione.",
+  "dcaConfirmContinue": "Continua",
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "buyViewDetails": "Visualizza dettagli",
+  "dcaConfirmFrequencyHourly": "Ogni ora",
+  "dcaConfirmLightningAddress": "Indirizzo Lightning",
+  "buyPaymentMethod": "Metodo di pagamento",
+  "dcaConfirmFrequencyMonthly": "Ogni mese",
+  "buyBitcoinSent": "Bitcoin inviati!",
+  "buyUnauthenticatedError": "Non sei autenticato. Accedi per continuare.",
+  "buyInputMinAmountError": "Dovresti comprare almeno",
+  "dcaUseDefaultLightningAddress": "Usa il mio indirizzo Lightning predefinito.",
+  "buyGetConfirmedFaster": "Ottieni una conferma più rapida",
+  "buyConfirmExpress": "Conferma invio rapido",
+  "dcaConfirmOrderTypeValue": "Acquisto ricorrente",
+  "dcaWalletTypeLiquid": "Liquid (L-BTC)",
+  "dcaSetupTitle": "Imposta acquisto ricorrente",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaAccountUnavailableError": "Impossibile caricare il tuo account. Controlla la connessione, assicurati di aver effettuato l'accesso e riprova.",
+  "dcaLightningAddressRequiredError": "Inserisci un indirizzo Lightning per ricevere i tuoi acquisti.",
+  "dcaReceiveAddressError": "Non è stato possibile preparare un indirizzo di ricezione nel tuo portafoglio. Riprova.",
+  "dcaOrderCreationError": "Non è stato possibile creare l'acquisto ricorrente. Riprova più tardi.",
+  "limitOrdersLightningAddressHint": "tu@dominio.com",
+  "payjoinBuyRegularSend": "Bitcoin inviati al tuo portafoglio con un invio normale",
+  "payjoinInProgress": "Payjoin in corso",
+  "payjoinSucceeded": "Payjoin riuscito",
+  "payjoinUseToggle": "Usa Payjoin",
+  "buyQuoteExpiredError": "Questo prezzo è scaduto. Ne stiamo caricando uno nuovo: controllalo prima di confermare.",
+  "exchangeQuoteUnavailableError": "Non siamo riusciti a ottenere un prezzo aggiornato. Riprova, oppure torna indietro e crea un nuovo ordine."
 }

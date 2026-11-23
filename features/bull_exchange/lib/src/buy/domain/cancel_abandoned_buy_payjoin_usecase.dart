@@ -1,0 +1,73 @@
+import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/buy/domain/buy_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+
+class CancelAbandonedBuyPayjoinUsecase {
+  final PayjoinSessions _sessions;
+  final PayjoinReceiver _receiver;
+
+  const CancelAbandonedBuyPayjoinUsecase(this._sessions, this._receiver);
+
+  @useResult
+  Future<Result<void, BuyFailure>> execute(BuyOrder? order) async {
+    final uri = order?.bip21URI;
+    if (order == null || uri == null) return const Ok(null);
+
+    // Only an order whose pay-in never started is abandoned. Cancelling a live
+    // one would drop the receiver session while the exchange is paying it.
+    // `unknown` and `rejected` stay cancellable on purpose: the session freezes
+    // the receiver's UTXOs for as long as it runs, and the exchange settles the
+    // order through the original transaction either way.
+    final isPayinLive = switch (order.payinStatus) {
+      OrderPayinStatus.inProgress ||
+      OrderPayinStatus.underReview ||
+      OrderPayinStatus.awaitingConfirmation ||
+      OrderPayinStatus.completed => true,
+      OrderPayinStatus.notStarted ||
+      OrderPayinStatus.awaitingPayment ||
+      OrderPayinStatus.rejected ||
+      OrderPayinStatus.unknown => false,
+    };
+    if (isPayinLive) return const Ok(null);
+
+    final result = await _sessions.list(
+      PayjoinSessionFilter(ongoingOnly: true),
+    );
+    final List<PayjoinSession> payjoins;
+    switch (result) {
+      case Ok(:final value):
+        payjoins = value;
+      case Err(:final failure):
+        log.warning(
+          'Could not list Payjoin sessions; skipping the abandoned-session '
+          'cleanup',
+          error: failure.runtimeType,
+        );
+        return Err(BuyUnexpectedFailure(failure.runtimeType.toString()));
+    }
+    for (final payjoin in payjoins) {
+      if (payjoin case PayjoinReceiverSession(:final id, :final pjUri)
+          when _samePayjoinEndpoint(pjUri, uri)) {
+        final cancelResult = await _receiver.cancel(id);
+        if (cancelResult case Err(:final failure)) {
+          log.warning(
+            'Failed to cancel the abandoned Payjoin receiver',
+            error: failure.runtimeType,
+          );
+          return Err(BuyUnexpectedFailure(failure.runtimeType.toString()));
+        }
+        break;
+      }
+    }
+    return const Ok(null);
+  }
+
+  bool _samePayjoinEndpoint(String sessionUri, String orderUri) {
+    final sessionEndpoint = Uri.tryParse(sessionUri)?.queryParameters['pj'];
+    final orderEndpoint = Uri.tryParse(orderUri)?.queryParameters['pj'];
+    return sessionEndpoint != null && sessionEndpoint == orderEndpoint;
+  }
+}

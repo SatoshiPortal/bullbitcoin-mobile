@@ -1,0 +1,178 @@
+import 'package:receive/receive.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test(
+    'live candidates reject stale amount, wallet, network and invalid state',
+    () {
+      const original = ReceiveLiveAmount(
+        network: ReceiveNetworkType.bitcoin,
+        walletId: 'savings',
+        canonicalAmount: '25000',
+        admitted: true,
+      );
+      expect(original.canUpdate, isTrue);
+      expect(original.stillMatches(original), isTrue);
+      for (final next in [
+        const ReceiveLiveAmount(
+          network: ReceiveNetworkType.bitcoin,
+          walletId: 'savings',
+          canonicalAmount: '50000',
+          admitted: true,
+        ),
+        const ReceiveLiveAmount(
+          network: ReceiveNetworkType.bitcoin,
+          walletId: 'spending',
+          canonicalAmount: '25000',
+          admitted: true,
+        ),
+        const ReceiveLiveAmount(
+          network: ReceiveNetworkType.lightning,
+          walletId: 'savings',
+          canonicalAmount: '25000',
+          admitted: true,
+        ),
+        const ReceiveLiveAmount(
+          network: ReceiveNetworkType.bitcoin,
+          walletId: 'savings',
+          canonicalAmount: '25000',
+          admitted: false,
+        ),
+      ]) {
+        expect(original.stillMatches(next), isFalse);
+      }
+      const cleared = ReceiveLiveAmount(
+        network: ReceiveNetworkType.liquid,
+        walletId: 'liquid',
+        canonicalAmount: '',
+        admitted: true,
+      );
+      expect(cleared.canUpdate, isTrue);
+    },
+  );
+
+  test(
+    'the summary exposes only applicable active settings, in display order',
+    () {
+      const options = ReceiveAdvancedOptions(
+        network: ReceiveNetworkType.bitcoin,
+        walletCount: 2,
+        payjoinEnabled: true,
+        hasMessage: true,
+        hasLocalSigner: true,
+      );
+      expect(options.showWalletPicker, isTrue);
+      expect(options.summary, ReceiveAdvancedSummaryPart.values);
+      for (final network in [
+        ReceiveNetworkType.liquid,
+        ReceiveNetworkType.lightning,
+      ]) {
+        final options = ReceiveAdvancedOptions(
+          network: network,
+          walletCount: 2,
+          payjoinEnabled: true,
+          hasMessage: true,
+        );
+        expect(options.showWalletPicker, isFalse);
+        expect(options.summary, [ReceiveAdvancedSummaryPart.message]);
+      }
+      expect(
+        const ReceiveAdvancedOptions(
+          network: ReceiveNetworkType.bitcoin,
+          walletCount: 1,
+          payjoinEnabled: false,
+          hasMessage: false,
+        ).summary,
+        isEmpty,
+      );
+    },
+  );
+
+  test('advanced actions follow the rail and signing capabilities', () {
+    for (final network in ReceiveNetworkType.values) {
+      final options = ReceiveAdvancedOptions(
+        network: network,
+        walletCount: 2,
+        payjoinEnabled: true,
+        hasMessage: false,
+        hasLocalSigner: true,
+        supportsDeviceVerification: true,
+      );
+      expect(options.showPayjoin, network == ReceiveNetworkType.bitcoin);
+      expect(
+        options.showHardwareVerification,
+        network == ReceiveNetworkType.bitcoin,
+      );
+      expect(options.showNewAddress, network != ReceiveNetworkType.lightning);
+    }
+    const hardware = ReceiveAdvancedOptions(
+      network: ReceiveNetworkType.bitcoin,
+      walletCount: 1,
+      payjoinEnabled: true,
+      hasMessage: false,
+      supportsDeviceVerification: true,
+    );
+    expect(hardware.showPayjoin, isFalse);
+    expect(hardware.showHardwareVerification, isTrue);
+    expect(hardware.summary, isEmpty);
+  });
+
+  test(
+    'Payjoin explains empty funds, then suppressed amounts, then global scope',
+    () {
+      ReceiveAdvancedOptions options({
+        required bool funds,
+        bool suppressed = false,
+      }) => ReceiveAdvancedOptions(
+        network: ReceiveNetworkType.bitcoin,
+        walletCount: 1,
+        payjoinEnabled: true,
+        hasMessage: false,
+        hasLocalSigner: true,
+        hasFunds: funds,
+        payjoinSuppressedForAmount: suppressed,
+      );
+      expect(
+        options(funds: false, suppressed: true).payjoinExplanation,
+        ReceivePayjoinExplanation.awaitingFunds,
+      );
+      expect(
+        options(funds: true, suppressed: true).payjoinExplanation,
+        ReceivePayjoinExplanation.belowMinimum,
+      );
+      expect(
+        options(funds: true).payjoinExplanation,
+        ReceivePayjoinExplanation.global,
+      );
+    },
+  );
+
+  test('bounded routes wait for limits and enforce inclusive bounds', () {
+    const loading = ReceiveLightningLimits(requiresBounds: true);
+    expect(loading.ready, isFalse);
+    expect(loading.permits(1000), isFalse);
+    const limits = ReceiveLightningLimits(
+      requiresBounds: true,
+      minimumSat: 1000,
+      maximumSat: 10000,
+    );
+    expect(limits.permits(999), isFalse);
+    expect(limits.permits(1000), isTrue);
+    expect(limits.permits(10000), isTrue);
+    expect(limits.permits(10001), isFalse);
+  });
+
+  test(
+    'routes with Exchange preserve quote validation outside Boltz bounds',
+    () {
+      const limits = ReceiveLightningLimits(
+        requiresBounds: false,
+        minimumSat: 1000,
+        maximumSat: 10000,
+      );
+      expect(limits.permits(1), isTrue);
+      expect(limits.permits(10001), isTrue);
+      expect(limits.permits(0), isFalse);
+    },
+  );
+}

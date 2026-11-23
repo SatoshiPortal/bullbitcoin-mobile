@@ -8,10 +8,8 @@ import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_dataso
 import 'package:bb_mobile/features/swap/data/models/order_swap_model.dart';
 import 'package:bb_mobile/features/swap/data/models/order_swap_quote_model.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_repository_impl.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

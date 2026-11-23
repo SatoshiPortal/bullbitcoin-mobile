@@ -1,22 +1,19 @@
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:electrum/setup.dart';
+import 'package:wallet_import/wallet_import.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_scan_facade.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
 
 class ImportMnemonicLocator {
   static void setup(GetIt locator) {
     locator.registerFactory<CheckDuplicateMnemonicUsecase>(
       () => CheckDuplicateMnemonicUsecase(
         secrets: locator<Secrets>(),
-        metadata: locator<WalletRegistrations>(),
+        inventory: locator<SecretsInventory>(),
         settings: locator<Preferences>(),
       ),
     );
@@ -29,21 +26,6 @@ class ImportMnemonicLocator {
         admission: locator<ParentCustodyAdmissionPort>(),
       ),
     );
-    locator.registerFactory<CheckWalletStatusUsecase>(
-      () => CheckWalletStatusUsecase(
-        locator<Preferences>(),
-        locator<ElectrumServersPort>(),
-        locator<Secrets>(),
-      ),
-    );
-    locator.registerFactory<ScanMnemonicUsecase>(
-      () => ScanMnemonicUsecase(
-        checkWalletStatus: locator<CheckWalletStatusUsecase>(),
-      ),
-    );
-    locator.registerFactory<ImportMnemonicScanFacade>(
-      () => ImportMnemonicScanFacade(locator<ScanMnemonicUsecase>()),
-    );
     registerCubit(locator);
   }
 
@@ -51,7 +33,7 @@ class ImportMnemonicLocator {
     locator.registerFactory<ImportMnemonicCubit>(
       () => ImportMnemonicCubit(
         importWalletUsecase: locator<ImportWalletUsecase>(),
-        scanMnemonicUsecase: locator<ScanMnemonicUsecase>(),
+        scanMnemonic: locator<ImportFeature>().scanMnemonic,
         checkDuplicateMnemonicUsecase: locator<CheckDuplicateMnemonicUsecase>(),
       ),
     );

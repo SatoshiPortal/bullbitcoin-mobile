@@ -1,12 +1,10 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bull_exchange/testing.dart';
+import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-class _MockWallet extends Mock implements Wallet {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
@@ -26,16 +24,19 @@ UserSummary _userSummary({required bool payjoinReceiveEnabled}) => UserSummary(
 
 void main() {
   late UserSummary userSummary;
-  late Wallet bitcoinWallet;
-  late Wallet liquidWallet;
+  late WalletRegistration bitcoinWallet;
+  late WalletRegistration liquidWallet;
 
   setUp(() {
     userSummary = _userSummary(payjoinReceiveEnabled: true);
-    bitcoinWallet = _MockWallet();
-    liquidWallet = _MockWallet();
-
-    when(() => bitcoinWallet.network).thenReturn(Network.bitcoinMainnet);
-    when(() => liquidWallet.network).thenReturn(Network.liquidMainnet);
+    bitcoinWallet = walletRegistrationForTesting(
+      id: 'bitcoin',
+      network: BitcoinNetwork.mainnet,
+    );
+    liquidWallet = walletRegistrationForTesting(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+    );
   });
 
   group('BuyState Payjoin choice', () {

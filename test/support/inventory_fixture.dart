@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -18,6 +20,33 @@ final class InventoryFixture {
   final backup = const VerifiedBackups();
 
   InventoryFixture._(this.admission, this.inventory);
+
+  Future<void> addPublicWallet({
+    required String id,
+    required String network,
+  }) async {
+    final liquid = network.startsWith('liquid');
+    expect(
+      await inventory.registerWallet(
+        RegisteredWallet(
+          id: id,
+          network: network,
+          masterFingerprint: '',
+          secretFingerprint: null,
+          signer: 'none',
+          xpub: 'public-key-marker',
+          externalDescriptor: liquid
+              ? "ct(slip77(public),elwpkh([01234567/84'/1776'/7']public-key-marker/0/*))"
+              : "wpkh([01234567/84'/1'/7']public-key-marker/0/*)",
+          internalDescriptor: liquid ? '' : 'wpkh(public-key-marker/1/*)',
+          label: '',
+          birthday: null,
+          isDefault: false,
+        ),
+      ),
+      isA<Ok<void, SecretFailure>>(),
+    );
+  }
 
   static Future<InventoryFixture> open(Directory directory) async {
     final file = File('${directory.path}/test-secrets.sqlite');
@@ -54,6 +83,37 @@ final class InventoryFixture {
     final inventory =
         (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
     return InventoryFixture._(admission, inventory);
+  }
+
+  Future<void> registerMnemonic(
+    Secret secret, {
+    Network network = Network.bitcoinMainnet,
+    String? unresolvedNetwork,
+    String? internalDescriptor,
+  }) async {
+    final metadata = await WalletMetadataService.deriveFromSecret(
+      secret: secret,
+      network: network,
+      scriptType: ScriptType.bip84,
+      isDefault: false,
+    );
+    final registered = await inventory.registerWallet(
+      RegisteredWallet(
+        id: unresolvedNetwork == null ? metadata.id : 'invalid origin',
+        secretFingerprint: secret.id.hex,
+        masterFingerprint: metadata.masterFingerprint,
+        signer: 'local',
+        network: unresolvedNetwork ?? metadata.networkCode,
+        xpub: metadata.xpub,
+        externalDescriptor: metadata.externalPublicDescriptor,
+        internalDescriptor:
+            internalDescriptor ?? metadata.internalPublicDescriptor,
+        label: metadata.label,
+        birthday: null,
+        isDefault: false,
+      ),
+    );
+    expect(registered, isA<Ok<void, SecretFailure>>());
   }
 
   void register(GetIt services) {

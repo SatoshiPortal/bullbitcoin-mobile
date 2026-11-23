@@ -57,8 +57,6 @@ enum Network {
   };
 }
 
-final class InvalidWalletAddressException implements Exception {
-  const InvalidWalletAddressException();
 }
 
 @freezed

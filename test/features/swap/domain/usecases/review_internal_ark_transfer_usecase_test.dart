@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_internal_ark_transfer_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/review_internal_ark_transfer_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';

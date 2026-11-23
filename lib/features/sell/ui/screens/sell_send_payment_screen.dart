@@ -1,9 +1,8 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
 import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_ui/app_theme.dart';
@@ -397,7 +396,11 @@ class _BottomButtons extends StatelessWidget {
       },
     );
     final isReady = context.select(
-      (SellBloc bloc) => bloc.state is SellPaymentState,
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final error) =>
+          error is! SellPayinOutcomeUnknownFailure,
+        _ => false,
+      },
     );
     final paused = context.select(
       (SellBloc bloc) => switch (bloc.state) {

@@ -1,11 +1,7 @@
+import 'package:bull_exchange/testing.dart';
 import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
-import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -16,13 +12,7 @@ class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
-class _MockLabels extends Mock implements Labels {}
-
 class _MockBuyOrder extends Mock implements BuyOrder {}
-
-class _FakeNewLabel extends Fake implements NewLabel {}
-
-class _FakeLabel extends Fake implements Label {}
 
 /// A reason of the shape the exchange API produces, quoting a key.
 
@@ -30,8 +20,6 @@ void main() {
   late _MockExchangeOrders mainnet;
   late _MockExchangeOrders testnet;
   late _MockSettingsRepository settingsRepository;
-
-  setUpAll(() => registerFallbackValue(_FakeNewLabel()));
 
   setUp(() {
     mainnet = _MockExchangeOrders();
@@ -48,7 +36,6 @@ void main() {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.regtest);
       when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
-      final labels = _MockLabels();
       final refresh = RefreshBuyOrderUsecase(
         exchange: exchangeForTesting(
           orders: (environment) =>
@@ -65,7 +52,6 @@ void main() {
                 environment == ExchangeEnvironment.testnet ? testnet : mainnet,
           ),
           settingsRepository: settingsRepository,
-          labelsFacade: labels,
         ).execute(orderId: 'order-1'),
         await AccelerateBuyOrderUsecase(
           exchange: exchangeForTesting(
@@ -87,7 +73,6 @@ void main() {
       }
       verifyZeroInteractions(mainnet);
       verifyZeroInteractions(testnet);
-      verifyZeroInteractions(labels);
     },
   );
 
@@ -169,24 +154,15 @@ void main() {
   });
 
   group('ConfirmBuyOrderUsecase', () {
-    late _MockLabels labels;
-
     ConfirmBuyOrderUsecase build() => ConfirmBuyOrderUsecase(
       exchange: exchangeForTesting(
         orders: (environment) =>
             environment == ExchangeEnvironment.testnet ? testnet : mainnet,
       ),
       settingsRepository: settingsRepository,
-      labelsFacade: labels,
     );
 
-    setUp(() {
-      labels = _MockLabels();
-      when(() => labels.store(any()))
-          .thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
-    });
-
-    test('confirms and labels the payout address', () async {
+    test('confirms without reading an unverified payout address', () async {
       final order = _MockBuyOrder();
       when(() => order.toAddress).thenReturn('bc1qpayoutaddress');
       when(() => mainnet.confirmBuyOrder('order-1'))
@@ -195,20 +171,7 @@ void main() {
       final result = await build().execute(orderId: 'order-1');
 
       expect(result, isA<Ok<BuyOrder, BuyFailure>>());
-      verify(() => labels.store(any())).called(1);
-    });
-
-    test('labels nothing when the order has no payout address', () async {
-      final order = _MockBuyOrder();
-      when(() => order.toAddress).thenReturn(null);
-      when(() => mainnet.confirmBuyOrder('order-1'))
-          .thenAnswer((_) async => Ok(order));
-
-      expect(
-        await build().execute(orderId: 'order-1'),
-        isA<Ok<BuyOrder, BuyFailure>>(),
-      );
-      verifyNever(() => labels.store(any()));
+      verifyNever(() => order.toAddress);
     });
 
     test('sanitizes a failure', () async {

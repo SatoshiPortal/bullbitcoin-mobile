@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/features/send/public/coin_selection.dart';
+import 'package:bb_mobile/features/coins/public/wallet_coin_selection.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart' show Uint8List;
@@ -22,9 +22,11 @@ void main() {
   testWidgets('only sends selectable outpoints once the amount is met', (
     tester,
   ) async {
+    final semantics = tester.ensureSemantics();
     final first = _coin('a', 3000);
     final second = _coin('b', 2000);
     final unavailable = _coin('c', 9000);
+    final frozen = _coin('d', 9000).copyWith(isFrozen: true);
     List<WalletUtxo>? submitted;
     final router = GoRouter(
       routes: [
@@ -34,14 +36,16 @@ void main() {
             body: TextButton(
               onPressed: () => BullBottomSheet.show<void>(
                 context: context,
-                child: WalletCoinSelectionBottomSheet(
+                child: walletCoinSelection(
+                  context: context,
                   bitcoinUnit: BitcoinUnit.sats,
                   exchangeRate: null,
                   fiatCurrency: 'CAD',
-                  utxos: [first, second],
+                  utxos: [first, second, frozen],
                   initialSelectedUtxos: [
                     first.copyWith(confirmations: 1),
                     unavailable,
+                    frozen,
                   ],
                   amountToSendSat: 5000,
                   onDone: (selection) => submitted = selection,
@@ -68,9 +72,15 @@ void main() {
 
     final done = find.byType(BullButton);
     expect(tester.widget<BullButton>(done).disabled, isTrue);
-    expect(find.byType(Radio<bool>), findsNWidgets(2));
+    expect(find.byType(BullCheckbox), findsNWidgets(2));
 
-    await tester.tap(find.byType(Radio<bool>).last);
+    final secondCoin = find.byKey(
+      ValueKey(second.outpoint),
+      skipOffstage: false,
+    );
+    await tester.ensureVisible(secondCoin);
+    await tester.pumpAndSettle();
+    await tester.tap(secondCoin);
     await tester.pumpAndSettle();
     expect(tester.widget<BullButton>(done).disabled, isFalse);
 
@@ -79,5 +89,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(submitted, [first, second]);
     expect(done, findsNothing);
+    semantics.dispose();
   });
 }

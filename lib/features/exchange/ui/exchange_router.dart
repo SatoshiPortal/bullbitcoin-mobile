@@ -1,12 +1,10 @@
-import 'package:bb_mobile/features/dca/public/dca_facade.dart' show DcaRoute;
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart'
-    show TransactionsRoute;
+import 'package:transactions/routes.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:address_view/address_view.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
@@ -64,6 +62,7 @@ class ExchangeRouter {
     Exchange Function()? exchange,
     Preferences Function()? preferences,
     ExchangeSettingsHost? settings,
+    ExchangePurchaseHost? purchases,
   }) => BullExchangeFeature.mount(
     networkUnavailable: config.networkUnavailable,
     showWebsiteOnly: (context) =>
@@ -91,6 +90,7 @@ class ExchangeRouter {
     onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
     settings: settings,
+    purchases: purchases,
     auth: ExchangeScope.authHost,
     limitOrders: exchange,
     withdrawal: exchange == null || preferences == null
@@ -99,10 +99,10 @@ class ExchangeRouter {
             exchange: exchange,
             preferences: preferences,
             isLoggedIn: ExchangeSessionScope.hasAccount,
-            openOrder: (context, orderId) => context.pushNamed(
-              TransactionsRoute.orderTransactionDetails.name,
-              pathParameters: {'orderId': orderId},
-              queryParameters: {'returnToExchange': 'true'},
+            openOrder: (context, orderId) => TransactionsNavigation.openDetails(
+              context,
+              TransactionDetailsTarget.order(orderId),
+              returnToExchange: true,
             ),
           ),
     dashboard: (
@@ -116,8 +116,7 @@ class ExchangeRouter {
       onOpenSettings: config.onOpenSettings,
       onOpenDca: (context) => context.pushNamed(DcaRoute.dca.name),
       onWithdraw: (context) => context.pushNamed(WithdrawRoute.withdraw.name),
-      onHistory: (context) =>
-          context.pushNamed(TransactionsRoute.transactions.name),
+      onHistory: TransactionsNavigation.openHistory,
       onAction: config.onAction,
       failureMessage: (context, failure) => failure.toTranslated(context),
       settingsAsset: Assets.icons.settingsLine.path,

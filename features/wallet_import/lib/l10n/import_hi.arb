@@ -1,0 +1,361 @@
+{
+  "@@locale": "hi",
+  "importQrDeviceSpecterStep2": "अपना पिन दर्ज करें",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "XPUB - QR कोड",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "क्रूक्स",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "यदि आवश्यक हो, तो पता प्रकार बदलने के लिए \"विकल्प\" का चयन करें",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "दर्शक",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "Disable \"Use SLIP-132\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "विकल्प सूची से \"Wallet\" चुनें",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceSeedsignerName": "बीजगणक",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "emptyMnemonicWordsError": "अपने Mnemonic के सभी शब्दों में प्रवेश करें",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "\"ओपन कैमरा\" बटन पर क्लिक करें",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKeystoneStep3": "शीर्ष दाहिने कोने में *** (तीन बिंदु) टैप करें",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceJadeStep6": "वॉलेट मेनू से \"Export Xpub\" चुनें",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "ब्लॉकस्ट्रीम जेड",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceSeedsignerStep5": "\"सिंगल सिग\" चुनें, फिर अपने पसंदीदा स्क्रिप्ट प्रकार का चयन करें (अनिवार्य होने पर मूल Segwit चुनें)।।",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "सुनिश्चित करें कि आपका डिवाइस नवीनतम फर्मवेयर पर अपडेट किया गया है",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "जेड को अनलॉक करने के लिए डिवाइस निर्देश का पालन करें",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "अपने स्पेक्ट्रर वॉलेट और टैप आयात के लिए एक लेबल दर्ज करें",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep1": "अपने स्पेक्ट्रर डिवाइस पर पावर",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceKeystoneStep10": "आपका कीस्टोन अब जुड़ा हुआ है और BULL वॉलेट के साथ उपयोग करने के लिए तैयार है।।",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep9": "अपने बीज साइनर वॉलेट और टैप आयात के लिए एक लेबल दर्ज करें",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceKeystoneStep5": "बटुओं की सूची से \"बुल\" का चयन करें",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceJadeStep9": "अपने डिवाइस पर दिखाई देने वाले QR कोड को स्कैन करें।।",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceKeystoneStep6": "अपने मोबाइल पर क्लिक करें \"ओपन कैमरा\"",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceSpecterStep3": "अपने बीज / कुंजी दर्ज करें (जो कभी भी विकल्प आपको सूट करता है)",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDevicePassportStep2": "अपना PIN दर्ज करें",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceSpecterStep8": "अपने मोबाइल डिवाइस पर, ओपन कैमरा टैप करें",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "मुख्य मेनू से \"QR मोड\" चुनें",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "अपने {deviceName} से QR कोड स्कैन करें",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "अपने स्पेक्ट्रर पर प्रदर्शित QR कोड को स्कैन करें",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "विचलन का चयन करें",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "importQrDevicePassportStep4": "\"Connect App\" चुनें",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "requiredHint": "आवश्यक",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDevicePassportStep7": "BULL वॉलेट ऐप में, डेरिवेशन विकल्प के रूप में \"Segwit (BIP84)\" चुनें",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "BULL वॉलेट में, अपने पसंदीदा डेरिवेशन प्रकार का चयन करें। यदि आप निश्चित नहीं हैं, तो \"Segwit (BIP84)\" का चयन करें।",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep6": "निर्यात विकल्प के रूप में \"Animated\" चुनें। पुराने SeedSigner फ़र्मवेयर पर \"Sparrow\" चुनें।",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep3": "एक बीजQR स्कैन करें या अपने 12-या 24-शब्द बीज वाक्यांश में प्रवेश करें",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceKruxStep1": "अपने Krux डिवाइस पर बारी",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceSpecterStep4": "अपनी चुनी हुई विधि के अनुसार प्रॉम्प्ट का पालन करें",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDevicePassportStep1": "अपने Passport डिवाइस को चालू करें",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "अपने कीस्टोन पर प्रदर्शित QR कोड को स्कैन करें",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceButtonOpenCamera": "कैमरा खोलें",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "importQrDevicePassportName": "फाउंडेशन पासपोर्ट",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "passphraseLabel": "पैसफल",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "दर्शक निर्देश",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDevicePassportStep9": "सेटअप पूर्ण।",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "सेटअप पूरा",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceKeystoneStep9": "अपने कीस्टोन वॉलेट के लिए एक लेबल दर्ज करें और \"आयात\" टैप करें।",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDevicePassportStep6": "अपने Passport पर प्रदर्शित QR कोड को स्कैन करें",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" चुनें",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "\"मास्टर सार्वजनिक कुंजी\" चुनें",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "Krux निर्देश",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "कीस्टोन निर्देश",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDevicePassportInstructionsTitle": "फाउंडेशन पासपोर्ट निर्देश",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "submitButton": "जमा करना",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "कीस्टोन",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep1": "अपने बीजसिग्नर डिवाइस पर पावर",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "अपने जेड डिवाइस को चालू करें",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "\"बीज\" मेनू खोलें",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceJadeStep8": "\"ओपन कैमरा\" बटन पर क्लिक करें",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "सेटअप पूरा हो गया है",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDevicePassportStep5": "\"Bull\" चुनें",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "\"Wallet\" चुनें",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceSeedsignerStep8": "अपने बीजगणक पर प्रदर्शित QR कोड को स्कैन करें",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSpecterStep6": "\"एकल कुंजी\" चुनें",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "यही है!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDevicePassportStep8": "अपने Passport वॉलेट के लिए एक लेबल दर्ज करें और \"आयात\" टैप करें",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep4": "\"कनेक्ट सॉफ्टवेयर वॉलेट\" टैप करें",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDeviceKeystoneStep2": "इसे अपने पिन दर्ज करके अनलॉक करें",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "अपने मोबाइल डिवाइस पर, ओपन कैमरा टैप करें",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep5": "अपने डिवाइस पर दिखाई देने वाले QR कोड को स्कैन करें।।",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "विस्तारित सार्वजनिक कुंजी पर क्लिक करें",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "बीजगणित निर्देश",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceKruxStep6": "यही है!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "वैकल्पिक Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "कनेक्ट {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "निर्देश",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "मुख्य मेनू से \"विकल्प\" चुनें",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "ब्लॉकस्ट्रीम जेड निर्देश",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "अपने कीस्टोन पर पावर",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importColdcardQInstructionsTitle": "कोल्डकार्ड Q निर्देश",
+  "importColdcardQStep1": "अपने कोल्डकार्ड Q डिवाइस पर लॉगिन करें",
+  "importColdcardQStep2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "importColdcardQStep3": "उन्नत/सेटिंग्स मेनू चुनें",
+  "importColdcardQStep4": "\"export wallet\" पर क्लिक करें",
+  "importColdcardQStep5": "एक्सपोर्ट प्रकार के रूप में \"descriptor\" चुनें",
+  "importColdcardQStep6": "पहली स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardQStep7": "दूसरी स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardQStep8": "अपना एड्रेस प्रकार चुनें (अनिश्चित होने पर Segwit उपयोग करें)",
+  "importColdcardQStep9": "QR के लिए, डिवाइस पर QR कोड बटन पर क्लिक करें। यह आपको डिवाइस पर एक QR कोड दिखाएगा",
+  "importColdcardQStep10": "NFC के लिए, डिवाइस पर NFC बटन पर क्लिक करें",
+  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" बटन पर क्लिक करें",
+  "importColdcardQStep12": "अपने डिवाइस पर दिखने वाला QR कोड स्कैन करें या फ़ोन के NFC को कोल्डकार्ड के NFC के ऊपर रखें",
+  "importColdcardQStep13": "यही है!",
+  "importColdcardMk4InstructionsTitle": "कोल्डकार्ड Mk4 निर्देश",
+  "importColdcardMk4Step1": "अपने कोल्डकार्ड Mk4 डिवाइस पर लॉगिन करें",
+  "importColdcardMk4Step2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "importColdcardMk4Step3": "उन्नत/सेटिंग्स मेनू चुनें",
+  "importColdcardMk4Step4": "\"export wallet\" पर क्लिक करें",
+  "importColdcardMk4Step5": "एक्सपोर्ट प्रकार के रूप में \"descriptor\" चुनें",
+  "importColdcardMk4Step6": "पहली स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardMk4Step7": "दूसरी स्क्रीन पर \"Enter\" दबाएँ",
+  "importColdcardMk4Step8": "अपना एड्रेस प्रकार चुनें (अनिश्चित होने पर Segwit उपयोग करें)",
+  "importColdcardMk4Step9": "कोल्डकार्ड NFC शुरू करने के लिए नंबर 3 पर क्लिक करें",
+  "importColdcardMk4Step10": "\"Scan NFC\" बटन पर क्लिक करें",
+  "importColdcardMk4Step11": "फ़ोन के NFC को कोल्डकार्ड के NFC के ऊपर रखें",
+  "importColdcardMk4Step12": "यही है!",
+  "recipientsInfoLabel": "लेबल"
+}

@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
+import 'package:swaps/order_swaps.dart';
 import 'package:signers/signers.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
@@ -6,7 +7,6 @@ import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, FormatAmount, Sats, ScriptType;

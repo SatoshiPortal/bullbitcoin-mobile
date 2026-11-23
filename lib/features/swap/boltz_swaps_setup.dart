@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:address_view/address_view.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:electrum/setup.dart';
 import 'package:fees/fees.dart';
@@ -58,18 +57,35 @@ class BoltzSwapsSetup {
             : Fingerprint(fingerprint);
       },
       newAddressFor: (id) async =>
-          (await locator<WalletAddressRepository>().generateNewReceiveAddress(
+          switch (await locator<AddressView>().receiveAddress(
             walletId: id,
-          )).address,
+            advance: true,
+          )) {
+            Ok(:final value) => value.address,
+            Err(:final failure) => throw SwapsException(
+              'receive address unavailable: ${failure.runtimeType}',
+            ),
+          },
       walletTx: (txid, {required walletId}) async {
-        final tx = await locator<WalletTransactionRepository>()
+        final result = await locator<Transactions>()
             .getWalletTransaction(txid, walletId: walletId);
-        return tx == null ? null : _swapTransaction(tx);
+        return switch (result) {
+          Ok(value: final tx?) => _swapTransaction(tx),
+          Ok(value: null) => null,
+          Err(:final failure) => throw SwapsException(
+            'wallet transaction read failed: ${failure.runtimeType}',
+          ),
+        };
       },
       walletTxs: (walletId, {bool sync = false}) async {
-        final txs = await locator<WalletTransactionRepository>()
+        final result = await locator<Transactions>()
             .getWalletTransactions(walletId: walletId, sync: sync);
-        return txs.map(_swapTransaction).toList();
+        return switch (result) {
+          Ok(:final value) => value.map(_swapTransaction).toList(),
+          Err(:final failure) => throw SwapsException(
+            'wallet transactions read failed: ${failure.runtimeType}',
+          ),
+        };
       },
     );
     switch (opened) {

@@ -3,6 +3,7 @@ import 'package:electrum/testing.dart';
 import 'package:preferences/testing.dart';
 import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
+import 'package:ark/funding.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -11,6 +12,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
+import 'package:spend/spend.dart';
 import 'package:sync/sync.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -391,7 +393,8 @@ void main() {
         await compose();
         expect(
           await locator<ArkFundingSigningGuard>().admit(
-            key: fundingKey,
+            walletId: fundingKey.id,
+            network: fundingKey.network,
             unsignedPsbt: publicFundingPsbt,
           ),
           isA<Ok>(),
@@ -487,6 +490,7 @@ void main() {
       const id = 'wpkh([01234567/84h/0h/0h])';
       final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
       final catalog = locator<WalletCatalogPort>();
+      final spend = locator<Spend>();
       expect(await catalog.find(key), isA<Err>());
       expect(
         await inventoryFixture.inventory.registerWallet(
@@ -516,6 +520,14 @@ void main() {
       );
       inventoryFixture.inventory.lock();
       expect(await catalog.list(), isA<Err>());
+      expect(
+        await spend.validateBitcoinSelection(walletId: id),
+        isA<Err<void, SpendFailure>>().having(
+          (result) => result.failure,
+          'locked inventory failure',
+          isA<SpendUnavailableFailure>(),
+        ),
+      );
       expect(await inventoryFixture.inventory.unlock('1234'), isA<Ok>());
       expect(await catalog.find(key), isA<Ok>());
     },

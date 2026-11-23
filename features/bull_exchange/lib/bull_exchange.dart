@@ -5,6 +5,12 @@ export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthHost;
 export 'src/autobuy/autobuy_mount.dart'
     show AutoBuyHost, AutoBuyNavigation, ExchangeAutoBuyCard;
 export 'src/bull_exchange_feature.dart' show BullExchangeFeature;
+export 'src/buy/ui/buy_router.dart' show BuyRoute;
+export 'src/buy/ui/widgets/accelerate_transaction_list_tile.dart'
+    show AccelerateTransactionListTile;
+export 'src/dca/ui/dca_router.dart' show DcaRoute;
+export 'src/exchange_payout_field.dart' show ExchangePayoutField;
+export 'src/exchange_purchase_routes.dart' show ExchangePurchaseHost;
 export 'src/dashboard/exchange_dashboard_route.dart' show ExchangeDashboardHost;
 export 'src/dashboard/exchange_home_actions.dart' show ExchangeHomeAction;
 export 'src/dashboard/exchange_home_screen.dart' show ExchangeDashboardState;

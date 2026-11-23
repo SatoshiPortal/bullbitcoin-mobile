@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' as sync_read show validateAddress;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
@@ -27,7 +26,6 @@ class LiquidWalletRepository implements LiquidSendPort {
   final Secrets _secrets;
   final Future<Result<sync.Wallet, SyncFailure>> Function(sync.WalletKey)
   _wallet;
-  final SyncWalletValuesDatasource _values;
   final SyncFreezesDatasource _freezes;
 
   final Future<Result<void, SyncFailure>> Function(
@@ -40,12 +38,10 @@ class LiquidWalletRepository implements LiquidSendPort {
     required this._walletRegistrations,
     required this._secrets,
     required this._wallet,
-    required SyncWalletValuesDatasource walletValuesDatasource,
     required SyncFreezesDatasource freezesDatasource,
     Future<Result<void, SyncFailure>> Function(String address, Network network)?
     validateAddress,
-  }) : _values = walletValuesDatasource,
-       _freezes = freezesDatasource,
+  }) : _freezes = freezesDatasource,
        _validateAddress = validateAddress ?? sync_read.validateAddress;
 
   /// Sync's writer builds once, excluding the freezes it reads itself and
@@ -118,60 +114,6 @@ class LiquidWalletRepository implements LiquidSendPort {
   Future<(int, int)> getPsetSizeAndAbsoluteFees({required String pset}) async {
     return switch (await sync.liquidPsetFees(pset)) {
       Ok(:final value) => (value.discountedVsize, value.feeSat),
-      Err(:final failure) => throw WalletSnapshotException(failure),
-    };
-  }
-
-  Future<int> getLbtcUtxoCount({required String walletId}) async {
-    final metadata = await _walletRegistrations.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isLiquid) {
-      throw Exception('Wallet $walletId is not a Liquid wallet');
-    }
-    return _values.getLbtcUtxoCount(
-      key: sync.WalletKey(id: metadata.id, network: metadata.network.shared),
-    );
-  }
-
-  /// The unsigned consolidation PSETs, built and checked by sync's writer.
-  /// Throws when it refuses them.
-  Future<List<String>> consolidate({
-    required String walletId,
-    required RelativeFee feeRate,
-    required int highUtxoThreshold,
-    required int maximumInputs,
-  }) async {
-    final metadata = await _walletRegistrations.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isLiquid) {
-      throw Exception('Wallet $walletId is not a Liquid wallet');
-    }
-    final sync.ConsolidationRequest request;
-    try {
-      request = sync.ConsolidationRequest(
-        fee: sync.SpendFeeRate(feeRate.satPerKwu),
-        highUtxoThreshold: highUtxoThreshold,
-        maximumInputs: maximumInputs,
-      );
-    } on ArgumentError {
-      throw const WalletSnapshotException(sync.SyncSpendRefusedFailure());
-    }
-    final key = sync.WalletKey(
-      id: metadata.id,
-      network: metadata.network.shared,
-    );
-    final result = switch (await _wallet(key)) {
-      Ok(:final value) => await value.tx.consolidate(request),
-      Err(:final failure) => Err<List<sync.UnsignedSpend>, SyncFailure>(
-        failure,
-      ),
-    };
-    return switch (result) {
-      Ok(:final value) => [for (final spend in value) spend.encoded],
       Err(:final failure) => throw WalletSnapshotException(failure),
     };
   }

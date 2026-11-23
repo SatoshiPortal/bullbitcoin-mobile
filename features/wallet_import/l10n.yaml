@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+output-dir: lib/generated/l10n
+template-arb-file: import_en.arb
+output-localization-file: import_localizations.dart
+output-class: ImportLocalizations
+nullable-getter: false

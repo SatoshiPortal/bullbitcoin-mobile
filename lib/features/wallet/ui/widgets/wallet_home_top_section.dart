@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -9,7 +9,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullAmount, BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
-import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
@@ -271,7 +270,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
     final color = context.appColors.onPrimary;
     return GestureDetector(
       onTap: () {
-        context.pushNamed(TransactionsRoute.transactions.name);
+        TransactionsNavigation.openHistory(context);
       },
       child: Center(
         child: Column(

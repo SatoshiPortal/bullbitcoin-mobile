@@ -39,6 +39,7 @@ dependencies:
   sqlite3: ^3.9.1
   sync:
   synchronized: ^3.4.0
+  sync:
 
 dev_dependencies:
   flutter_test:

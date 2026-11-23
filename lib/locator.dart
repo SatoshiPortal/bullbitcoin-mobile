@@ -1,7 +1,12 @@
+import 'package:ark/funding.dart';
+import 'package:bull_exchange/bull_exchange.dart' show AccelerateTransactionListTile, BuyRoute;
 import 'dart:async';
 
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
+import 'package:material_ui/material_ui.dart' show AssetImage;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:secrets/bip85.dart';
@@ -24,7 +29,7 @@ import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Err, Failure;
 import 'package:electrum/setup.dart'
-    show RegtestElectrumProfile, ReadElectrumPreferences;
+    show ElectrumServersPort, ReadElectrumPreferences, RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
@@ -36,8 +41,17 @@ import 'package:bull_tor/tor.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
-import 'package:bb_mobile/features/address_view/address_view_locator.dart';
+import 'package:transactions/routes.dart';
+import 'package:transactions/setup.dart';
+import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/replace_by_fee/router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:address_view/address_view.dart';
+import 'package:bb_mobile/address_view_setup.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:access/setup.dart' show AccessFeature;
 import 'package:go_router/go_router.dart';
@@ -49,10 +63,8 @@ import 'package:signers/routes.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
-import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
@@ -60,7 +72,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_lo
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
-import 'package:bb_mobile/features/receive/public/receive_setup.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -73,7 +85,6 @@ import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/swap/boltz_swaps_setup.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
-import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -82,8 +93,16 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
+import 'package:spend/setup.dart' show SpendCatalog;
+import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
-    show Sync, Wallet, SyncFailure, SyncStorageFailure, WalletConnectionPort;
+    show
+        Sync,
+        Wallet,
+        SyncFailure,
+        SyncStorageFailure,
+        WalletConnectionPort,
+        WalletCatalogPort;
 
 final GetIt locator = GetIt.instance;
 
@@ -195,8 +214,11 @@ class AppLocator {
           );
     locator.registerSingleton<ArkFundingSigningGuard>(
       ArkFundingSigningGuard(
-        arkFunding,
-        arkFundingDatabasePath == null ? null : installation,
+        authority: switch (arkFunding) {
+          Ok(:final value) => value,
+          Err() => null,
+        },
+        installation: arkFundingDatabasePath == null ? null : installation,
       ),
     );
     if (arkFunding case Ok(:final value)) {
@@ -268,6 +290,14 @@ class AppLocator {
 
     // Register feature-specific dependencies
     final inventory = locator<SecretsInventory>();
+    locator.registerLazySingleton<Spend>(
+      () => Spend.open(
+        sync: locator<WalletNativeRuntime>(),
+        secrets: locator<Secrets>(),
+        arkFunding: locator<ArkFundingSigningGuard>(),
+        catalog: SpendCatalog.fromInventory(inventory),
+      ),
+    );
     final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(
@@ -303,17 +333,8 @@ class AppLocator {
       ),
     );
     // Wallet's SP use cases resolve the facade lazily, after registration.
-    WalletLocator.setup(
-      locator,
-      receiveAddress: (id) =>
-          locator<GetTransferReceiveAddressUsecase>().execute(id),
-      nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
-          locator<NextUnusedReceiveAddressUsecase>().execute(
-            id,
-            excludedAddresses: excludedAddresses,
-          ),
-    );
-    AddressViewLocator.setup(locator);
+    WalletLocator.setup(locator, receive: () => locator<Receive>());
+    mountAddressView(locator);
     // Inventory survives disabled routing and missing endpoint build defines.
     final _ = await prepareArkCustodyReferences(
       locator,
@@ -347,9 +368,56 @@ class AppLocator {
         display: locator<RuntimeDisplayPreferencesReader>(),
       ),
     );
-    TransactionsLocator.registerAdapters(locator);
-    TransactionsLocator.registerUsecases(locator);
-    TransactionsLocator.registerBlocs(locator);
+    WalletFacade wallet() => locator<WalletFacade>();
+    locator.registerSingleton(
+      TransactionsFeature.mount(
+        locator,
+        inventory: inventory,
+        loadWallet: (key) => locator<WalletNativeRuntime>().loadWallet(key),
+        findDescriptor: (key) => locator<WalletCatalogPort>().find(key),
+        synchronize: (descriptor) =>
+            locator<ForegroundWalletSync>().synchronizeDescriptor(descriptor),
+        events: WalletHistoryEvents(
+          watchRevisions: ({walletId}) =>
+              wallet().watchRevisions(walletId: walletId),
+          watchSyncPassActivity: () => wallet().watchSyncPassActivity(),
+          watchSyncFinished: () => wallet().watchSyncFinished(),
+          isSyncPassActive: () => wallet().isSyncPassActive,
+        ),
+        syncStarted: () => locator<ForegroundWalletSync>().started,
+        syncFinished: () => locator<ForegroundWalletSync>().finished,
+        orderSwaps: () => locator<SwapFacade>(),
+        actions: TransactionUiActions(
+          openExchange: (context) =>
+              context.goNamed(ExchangeRoute.exchangeHome.name),
+          openWalletHome: (context) =>
+              context.goNamed(WalletRoute.walletHome.name),
+          refreshWallets: (context) => context.read<WalletBloc>().refresh(),
+          accelerateOrder: (context, orderId) => AccelerateTransactionListTile(
+            orderId: orderId,
+            onTap: () => context.pushNamed(
+              BuyRoute.buyAccelerate.name,
+              pathParameters: {'orderId': orderId},
+            ),
+          ),
+          showReceipt: showSinpeReceiptBottomSheet,
+          accelerateWalletTransaction: (context, transaction) =>
+              ReplaceByFeeRouter.openForTransaction(
+                context,
+                walletId: transaction.walletId,
+                txId: transaction.txId,
+                network: transaction.network,
+                feeSat: transaction.feeSat,
+                vsize: transaction.vsize,
+              ),
+          addressViewer: (address, style) =>
+              AddressViewer(address, style: style),
+          orderSwapUnderReview: (orderSwap) =>
+              OrderSwapUnderReviewCard(orderSwap: orderSwap),
+        ),
+        scope: (child) => ActiveNetworkScope(child: child),
+      ),
+    );
     ReceiveLocator.setup(locator);
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
@@ -379,7 +447,6 @@ class AppLocator {
 
     ExchangeLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
-    BuyLocator.setup(locator);
     SellLocator.setup(locator);
     PayLocator.setup(locator);
     locator.registerSingleton(
@@ -394,8 +461,15 @@ class AppLocator {
       ),
     );
 
+    locator.registerLazySingleton(
+      () => ImportFeature.mount(
+        preferences: locator<Preferences>(),
+        servers: locator<ElectrumServersPort>(),
+        secrets: locator<Secrets>(),
+        qrIllustration: AssetImage(Assets.misc.qRPlaceholder.path),
+      ),
+    );
     ImportMnemonicLocator.setup(locator);
-    DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
 
     locator.registerSingleton(

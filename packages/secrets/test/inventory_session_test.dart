@@ -200,6 +200,7 @@ void main() {
         await inventory.walletsForNetwork(BitcoinNetwork.testnet),
       );
       expect(testnet.wallets.map((wallet) => wallet.id), [first, second]);
+      expect(testnet.isComplete, isFalse);
       expect(testnet.wallets.first.secretFingerprint, isNull);
       expect(testnet.wallets.first.label, '');
       expect(testnet.wallets.first.birthday, DateTime.utc(2026, 11, 21));
@@ -212,10 +213,12 @@ void main() {
         await inventory.walletsForNetwork(BitcoinNetwork.regtest),
       );
       expect(regtest.defaultWallet?.id, other);
+      expect(regtest.isComplete, isTrue);
       final liquid = _value(
         await inventory.walletsForNetwork(LiquidNetwork.testnet),
       );
       expect(liquid.wallets, isEmpty);
+      expect(liquid.isComplete, isTrue);
       expect(liquid.defaultWallet, isNull);
       expect(
         await inventory.walletsForNetwork(BitcoinNetwork.signet),

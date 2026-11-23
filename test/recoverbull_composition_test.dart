@@ -3,7 +3,7 @@ import 'package:electrum/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/testing.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
-import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
+import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
 
 import 'dart:io';
 
@@ -30,6 +30,8 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
+import 'support/inventory_fixture.dart';
+
 class _NativeTor implements TorNativeInitializer {
   int calls = 0;
 
@@ -55,11 +57,15 @@ void main() {
         final directory = await Directory.systemTemp.createTemp(
           'recoverbull-composition-',
         );
+        InventoryFixture? inventory;
         addTearDown(() async {
           await services.reset();
+          await inventory?.close();
           await directory.delete(recursive: true);
         });
         FakeSecureStoragePlatform().install();
+        inventory = await InventoryFixture.open(directory);
+        inventory.register(services);
         final sourceFile = File('${directory.path}/bullbitcoin_sqlite.sqlite');
         final standalone = File('${directory.path}/recoverbull.sqlite');
         final ownerFile = File('${directory.path}/recoverbull-owner.sqlite');
@@ -137,6 +143,7 @@ void main() {
             );
         CoreLocator.register(services, database);
         services.registerSingleton<Secrets>(secrets);
+        inventory.register(services);
         await SettingsLocator.registerRepositories(services, preferences);
         // Replace native initialization through the published host seam; keep
         // the real backend, repository and owner registrations.
@@ -156,7 +163,6 @@ void main() {
           ),
         );
         await WalletLocator.registerDatasources(services);
-        WalletLocator.registerRepositories(services);
         WalletLocator.registerUsecases(services);
         final walletSync = WalletLocator.syncAccess(services);
         setupLabels(

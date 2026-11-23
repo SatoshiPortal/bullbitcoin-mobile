@@ -6,7 +6,7 @@ import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:mempool/mempool.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';

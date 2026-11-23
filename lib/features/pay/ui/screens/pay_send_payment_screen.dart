@@ -1,6 +1,5 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
 import 'package:fees/fees.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
@@ -444,7 +443,11 @@ class _BottomButtons extends StatelessWidget {
       },
     );
     final isReady = context.select(
-      (PayBloc bloc) => bloc.state is PayPaymentState,
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final error) =>
+          error is! PayPayinOutcomeUnknownFailure,
+        _ => false,
+      },
     );
     final paused = context.select(
       (PayBloc bloc) => switch (bloc.state) {

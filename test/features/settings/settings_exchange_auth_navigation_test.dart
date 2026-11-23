@@ -126,6 +126,7 @@ void main() {
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoutes = SettingsRouter.childRoutes(
       accessRoutes: const [],
+      addressRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
         settings: SettingsRouter.exchangeSettingsHost,
         networkUnavailable: () async => false,

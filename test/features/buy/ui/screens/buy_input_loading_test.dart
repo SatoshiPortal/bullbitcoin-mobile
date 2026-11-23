@@ -1,3 +1,6 @@
+import '../../purchase_test_support.dart';
+
+import 'package:bull_exchange/testing.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
@@ -5,9 +8,6 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
-import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullFadingLinearProgress;
 import 'package:material_ui/material_ui.dart';
@@ -63,7 +63,7 @@ void main() {
             path: '/',
             builder: (_, _) => BlocProvider<BuyBloc>.value(
               value: bloc,
-              child: const BuyInputScreen(),
+              child: const BuyInputScreen(payoutField: emptyPurchaseField),
             ),
           ),
         ],

@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:ark/funding.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 /// Positive evidence captured before either Ark store can be initialized.
 /// Missing files after a failed inventory never turn that failure into absence.
-final class ArkInstallationState {
+final class ArkInstallationState implements ArkInstallationEvidence {
   final Directory _documents;
   final String _fundingPath;
   final SharedPreferencesAsync? _preferences;
@@ -32,6 +33,7 @@ final class ArkInstallationState {
     return ArkInstallationState._(documents, fundingPath, preferences, absent);
   }
 
+  @override
   Future<bool> remainsUnprovisioned() async {
     final preferences = _preferences;
     if (!wasNeverProvisioned || _absenceLost || preferences == null) {

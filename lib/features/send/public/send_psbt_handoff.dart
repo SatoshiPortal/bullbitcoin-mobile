@@ -1,13 +1,14 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/widgets.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:spend/spend.dart';
 
-typedef OpenSignedTransactionReader = Future<void> Function(
+typedef OpenSignedTransactionReader = Future<String?> Function(
   BuildContext context,
-  String unsignedPsbt,
-  Wallet? wallet,
+  PreparedBitcoinSpend prepared,
+  BitcoinNetwork network,
 );
 
-/// The shell supplies the destination; Send retains the original transaction.
+/// The reader returns verified bytes without broadcasting them.
 class SendPsbtHandoff extends InheritedWidget {
   final OpenSignedTransactionReader openReader;
 

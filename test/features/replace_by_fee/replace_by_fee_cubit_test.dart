@@ -39,9 +39,11 @@ void main() {
       () => bumpFee.verifyOriginalTransaction(
         walletId: any(named: 'walletId'),
         txid: any(named: 'txid'),
+        network: _tx().network,
       ),
     ).thenAnswer((_) async => const Ok(null));
-    when(() => bumpFee.getNetworkFees()).thenAnswer((_) async => Ok(_fees()));
+    when(() => bumpFee.getNetworkFees(_tx().network))
+        .thenAnswer((_) async => Ok(_fees()));
     final cubit = ReplaceByFeeCubit(
       originalTransaction: _tx(),
       bumpFeeUsecase: bumpFee,
@@ -63,6 +65,7 @@ void main() {
           () => bumpFee.verifyOriginalTransaction(
             walletId: any(named: 'walletId'),
             txid: any(named: 'txid'),
+            network: _tx().network,
           ),
         ).thenAnswer(
           (_) async => const Err(ReplaceByFeeManipulatedTransactionFailure()),
@@ -78,7 +81,7 @@ void main() {
           isA<ReplaceByFeeManipulatedTransactionFailure>(),
         );
         expect(cubit.state.newFeeRate, isNull);
-        verifyNever(() => bumpFee.getNetworkFees());
+        verifyNever(() => bumpFee.getNetworkFees(_tx().network));
       },
     );
   });

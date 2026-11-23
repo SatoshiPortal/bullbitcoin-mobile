@@ -168,15 +168,11 @@
     "description": "Error message when user tries to import a mnemonic without a label"
   },
   "coreSwapsStatusPending": "অপেক্ষাৰত",
-  "coreSwapsStatusInProgress": "চলি আছে",
   "coreSwapsStatusCompleted": "সম্পন্ন হৈছে",
-  "coreSwapsStatusExpired": "মেয়াদ উত্তীৰ্ণ",
-  "coreSwapsStatusFailed": "বিফল হৈছে",
   "coreSwapsActionClaim": "দাবী কৰক",
   "coreSwapsActionClose": "বন্ধ কৰক",
   "coreSwapsActionRefund": "ঘূৰাই দিয়ক",
   "coreSwapsLnReceivePending": "Swap এতিয়াও আৰম্ভ হোৱা নাই।",
-  "coreSwapsLnReceivePaid": "প্ৰেৰকে invoice পৰিশোধ কৰিছে।",
   "coreSwapsLnReceiveClaimable": "Swap দাবী কৰিবলৈ সাজু।",
   "coreSwapsLnReceiveRefundable": "Swap ঘূৰাই দিবলৈ সাজু।",
   "coreSwapsLnReceiveCanCoop": "Swap অতি সোনকালে সম্পন্ন হ'ব।",
@@ -184,7 +180,6 @@
   "coreSwapsLnReceiveExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে।",
   "coreSwapsLnReceiveFailed": "Swap বিফল হৈছে।",
   "coreSwapsLnSendPending": "Swap এতিয়াও আৰম্ভ হোৱা নাই।",
-  "coreSwapsLnSendPaid": "আপোনাৰ পৰিশোধ নিশ্চিত হোৱাৰ পিছত invoice পৰিশোধ কৰা হ'ব।",
   "coreSwapsLnSendClaimable": "Swap দাবী কৰিবলৈ সাজু।",
   "coreSwapsLnSendRefundable": "Swap ঘূৰাই দিবলৈ সাজু।",
   "coreSwapsLnSendCanCoop": "Swap অতি সোনকালে সম্পন্ন হ'ব।",
@@ -203,7 +198,6 @@
   "coreSwapsChainExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
   "coreSwapsChainFailedRefunding": "Swap অতি সোনকালে ঘূৰাই দিয়া হ'ব।",
   "coreSwapsChainFailed": "Swap বিফল হৈছে।",
-  "coreWalletTransactionStatusPending": "অপেক্ষাৰত",
   "coreWalletTransactionStatusConfirmed": "নিশ্চিত হৈছে",
   "onboardingScreenTitle": "স্বাগতম",
   "onboardingCreateWalletButtonLabel": "Wallet তৈয়াৰ কৰক",
@@ -490,7 +484,6 @@
   "receiveLiquidConfirmationMessage": "এয়া কেইছেকেণ্ডমানৰ ভিতৰত নিশ্চিত হ'ব",
   "receiveWaitForPayjoin": "প্ৰেৰকে payjoin লেনদেন সম্পন্ন কৰালৈ অপেক্ষা কৰক",
   "receivePayjoinFailQuestion": "অপেক্ষা কৰিবলৈ সময় নাই বা প্ৰেৰকৰ ফালৰ পৰা payjoin বিফল হৈছে নেকি?",
-  "buyTitle": "Bitcoin কিনক",
   "buyEnterAmount": "পৰিমাণ দিয়ক",
   "buyPaymentMethod": "পৰিশোধৰ পদ্ধতি",
   "buyMax": "সৰ্বোচ্চ",
@@ -514,30 +507,6 @@
   "buyBitcoinPrice": "Bitcoin মূল্য",
   "buyPayoutMethod": "পেআউট পদ্ধতি",
   "buyAwaitingConfirmation": "নিশ্চিতকৰণৰ বাবে অপেক্ষা কৰা হৈছে ",
-  "buyConfirmPurchase": "কেনাকাটা নিশ্চিত কৰক",
-  "buyYouBought": "আপুনি {fiatAmount}ৰ বিনিময়ত {amount} কিনিলে",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "আপোনাৰ পেআউট পঠোৱা হ'ব ",
-  "buyViewDetails": "বিৱৰণ চাওক",
-  "buyAccelerateTransaction": "লেনদেন ত্বৰান্বিত কৰক",
-  "buyGetConfirmedFaster": "দ্ৰুতভাৱে নিশ্চিত কৰাওক",
-  "buyConfirmExpressWithdrawal": "এক্সপ্ৰেছ উত্তোলন নিশ্চিত কৰক",
-  "buyNetworkFeeExplanation": "Bitcoin নেটৱৰ্ক মাচুল আপুনি পাব পৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব আৰু Bitcoin miners-ৰ দ্বাৰা সংগ্ৰহ কৰা হ'ব",
-  "buyNetworkFees": "নেটৱৰ্ক মাচুল",
-  "buyEstimatedFeeValue": "আনুমানিক মাচুলৰ মূল্য",
-  "buyNetworkFeeRate": "নেটৱৰ্ক মাচুলৰ হাৰ",
-  "buyConfirmationTime": "নিশ্চিতকৰণৰ সময়",
-  "buyConfirmationTimeValue": "~10 মিনিট",
-  "buyWaitForFreeWithdrawal": "বিনামূলীয়া উত্তোলনৰ বাবে অপেক্ষা কৰক",
-  "buyConfirmExpress": "এক্সপ্ৰেছ নিশ্চিত কৰক",
-  "buyBitcoinSent": "Bitcoin পঠোৱা হৈছে!",
-  "buyThatWasFast": "সেয়া দ্ৰুত আছিল, নহয়নে?",
   "sellTitle": "Bitcoin বিক্ৰী কৰক",
   "sellSelectWallet": "Wallet বাছক",
   "sellWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা বিক্ৰী কৰিব বিচাৰে?",
@@ -736,76 +705,41 @@
   "payWhichWallet": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
   "payExternalWalletDescription": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
   "payRbfActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
-  "transactionTitle": "লেনদেনসমূহ",
-  "transactionDetailTitle": "লেনদেনৰ বিৱৰণ",
   "transactionDetailTransferProgress": "Swap অগ্ৰগতি",
   "transactionDetailSwapProgress": "Swap অগ্ৰগতি",
-  "transactionDetailAddNote": "টোকা যোগ কৰক",
-  "transactionFilterAll": "সকলো",
-  "transactionFilterSend": "প্ৰেৰণ",
-  "transactionFilterReceive": "গ্ৰহণ",
   "transactionFilterTransfer": "Swap",
-  "transactionFilterPayjoin": "Payjoin",
-  "transactionFilterSell": "বিক্ৰী",
-  "transactionFilterBuy": "কেনাকাটা",
-  "transactionFilterWithdraw": "উত্তোলন",
-  "transactionFilterPay": "পৰিশোধ",
-  "transactionFilterFunding": "ফান্ডিং",
-  "transactionFilterReward": "পুৰস্কাৰ",
-  "transactionFilterRefund": "ঘূৰাই দিয়া",
   "transactionNetworkLightning": "Lightning",
   "transactionNetworkBitcoin": "Bitcoin",
   "transactionNetworkLiquid": "Liquid",
-  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
-  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
-  "transactionStatusInProgress": "চলি আছে",
   "transactionStatusPending": "অপেক্ষাৰত",
   "transactionStatusTransferCompleted": "Swap সম্পন্ন",
   "transactionStatusTransferInProgress": "Swap চলি আছে",
-  "transactionStatusPaymentInProgress": "পৰিশোধ চলি আছে",
-  "transactionStatusPaymentRefunded": "পৰিশোধ ঘূৰাই দিয়া হৈছে",
   "transactionStatusTransferFailed": "Swap বিফল",
   "transactionStatusSwapFailed": "Swap বিফল হৈছে",
   "transactionStatusTransferExpired": "Swap মেয়াদ উত্তীৰ্ণ",
   "transactionStatusSwapExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
-  "transactionStatusPayjoinRequested": "Payjoin অনুৰোধ কৰা হৈছে",
-  "transactionNotesLabel": "লেনদেনৰ টোকা",
   "transactionNoteAddTitle": "টোকা যোগ কৰক",
   "transactionNoteHint": "টোকা",
-  "transactionPayjoinSendWithout": "Payjoin অবিহনে প্ৰেৰণ কৰক",
-  "transactionSwapProgressInitiated": "আৰম্ভ হৈছে",
-  "transactionSwapProgressPaymentMade": "পৰিশোধ\nকৰা হৈছে",
-  "transactionSwapProgressFundsClaimed": "ধন\nদাবী কৰা হৈছে",
-  "transactionSwapProgressBroadcasted": "প্ৰচাৰ কৰা হৈছে",
-  "transactionSwapProgressInvoicePaid": "Invoice\nপৰিশোধ হৈছে",
-  "transactionSwapProgressConfirmed": "নিশ্চিত হৈছে",
-  "transactionSwapProgressClaim": "দাবী কৰক",
-  "transactionSwapProgressCompleted": "সম্পন্ন হৈছে",
-  "transactionSwapProgressInProgress": "চলি আছে",
   "transactionSwapStatusTransferStatus": "Swap স্থিতি",
   "transactionSwapStatusSwapStatus": "Swap স্থিতি",
   "transactionSwapDescLnReceivePending": "আপোনাৰ swap আৰম্ভ হৈছে। আমি Lightning Network-ত পৰিশোধ গ্ৰহণৰ বাবে অপেক্ষা কৰিছো।",
-  "transactionSwapDescLnReceivePaid": "পৰিশোধ গ্ৰহণ হৈছে! আমি এতিয়া আপোনাৰ wallet-লৈ অন-চেইন লেনদেন প্ৰচাৰ কৰিছো।",
   "transactionSwapDescLnReceiveClaimable": "অন-চেইন লেনদেন নিশ্চিত হৈছে। আমি এতিয়া আপোনাৰ swap সম্পন্ন কৰিবলৈ ধন দাবী কৰিছো।",
   "transactionSwapDescLnReceiveCompleted": "আপোনাৰ swap সফলভাৱে সম্পন্ন হৈছে! ধন এতিয়া আপোনাৰ wallet-ত উপলব্ধ হ'ব লাগে।",
   "transactionSwapDescLnReceiveFailed": "আপোনাৰ swap-ত সমস্যা হৈছে। যদি 24 ঘণ্টাৰ ভিতৰত ধন ঘূৰাই দিয়া নহয়, তেন্তে সহায়ৰ সৈতে যোগাযোগ কৰক।",
   "transactionSwapDescLnReceiveExpired": "এই swap মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰেৰণ কৰা যিকোনো ধন স্বয়ংক্ৰিয়ভাৱে প্ৰেৰকলৈ ঘূৰাই দিয়া হ'ব।",
   "transactionSwapDescLnReceiveDefault": "আপোনাৰ swap চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
   "transactionSwapDescLnSendPending": "আপোনাৰ swap আৰম্ভ হৈছে। আমি আপোনাৰ ধন লক কৰিবলৈ অন-চেইন লেনদেন প্ৰচাৰ কৰিছো।",
-  "transactionSwapDescLnSendPaid": "আপোনাৰ অন-চেইন লেনদেন প্ৰচাৰ কৰা হৈছে। 1 নিশ্চিতকৰণৰ পিছত Lightning পৰিশোধ পঠোৱা হ'ব।",
   "transactionSwapDescLnSendCompleted": "Lightning পৰিশোধ সফলভাৱে পঠোৱা হৈছে! আপোনাৰ swap এতিয়া সম্পন্ন হৈছে।",
   "transactionSwapDescLnSendFailed": "আপোনাৰ swap-ত সমস্যা হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ wallet-লৈ ঘূৰাই দিয়া হ'ব।",
   "transactionSwapDescLnSendExpired": "এই swap মেয়াদ উত্তীৰ্ণ হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ wallet-লৈ ঘূৰাই দিয়া হ'ব।",
   "transactionSwapDescLnSendDefault": "আপোনাৰ swap চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পন্ন হ'বলৈ কিছু সময় লাগিব পাৰে।",
   "transactionSwapDescChainPending": "আপোনাৰ Swap সৃষ্টি কৰা হৈছে কিন্তু এতিয়াও আৰম্ভ কৰা হোৱা নাই।",
-  "transactionSwapDescChainPaid": "আপোনাৰ লেনদেন প্ৰচাৰ কৰা হৈছে। আমি এতিয়া lockup লেনদেন নিশ্চিত হোৱাৰ বাবে অপেক্ষা কৰিছো।",
   "transactionSwapDescChainClaimable": "লকআপ ট্ৰেঞ্জেকচন নিশ্চিত কৰা হৈছে। আপোনাৰ Swap সম্পূৰ্ণ কৰিবলৈ আপুনি এতিয়া ধন দাবী কৰি আছে।",
   "transactionSwapDescChainRefundable": "Swap ঘূৰাই দিয়া হ'ব। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ ৱালেটলৈ ঘূৰাই দিয়া হ'ব।",
   "transactionSwapDescChainCompleted": "আপোনাৰ Swap সফলভাৱে সম্পন্ন হৈছে! ধনবোৰ এতিয়া আপোনাৰ ৱালেটত উপলব্ধ হ'ব লাগে।",
   "transactionSwapDescChainFailed": "আপোনাৰ Swap ত এটা সমস্যা হৈছে। 24 ঘণ্টাৰ ভিতৰত ধন ঘূৰাই নিদিলে অনুগ্ৰহ কৰি সহায়তাৰ সৈতে যোগাযোগ কৰক।",
   "transactionSwapDescChainExpired": "এই Swap মেয়াদ উত্তীৰ্ণ হৈছে। আপোনাৰ ধন স্বয়ংক্ৰিয়ভাৱে আপোনাৰ ৱালেটলৈ ঘূৰাই দিয়া হ'ব।",
   "transactionSwapDescChainDefault": "আপোনাৰ Swap চলি আছে। এই প্ৰক্ৰিয়া স্বয়ংক্ৰিয় আৰু সম্পূৰ্ণ হ'বলৈ কিছু সময় লাগিব পাৰে।",
-  "transactionSwapInfoFailedExpired": "যদি আপোনাৰ কোনো প্ৰশ্ন বা উদ্বেগ আছে, অনুগ্ৰহ কৰি সহায়ৰ বাবে সহায়ৰ সৈতে যোগাযোগ কৰক।",
   "transactionSwapInfoChainDelay": "ব্লকচেইন নিশ্চিতকৰণৰ সময়ৰ কাৰণে অন-চেইন Swap সম্পূৰ্ণ হ'বলৈ কিছু সময় লাগিব পাৰে।",
   "transactionSwapInfoClaimableTransfer": "কেইছেকেণ্ডমানৰ ভিতৰত Swap স্বয়ংক্ৰিয়ভাৱে সম্পন্ন হ'ব। নহ'লে, আপুনি \"Swap দাবী পুনৰ চেষ্টা কৰক\" বুটামত ক্লিক কৰি হাতে-কলমে দাবী কৰাৰ চেষ্টা কৰিব পাৰে।",
   "transactionSwapInfoClaimableSwap": "Swap কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে সম্পন্ন হ'ব। নহ'লে, \"Swap Claim পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে দাবী কৰাৰ চেষ্টা কৰিব পাৰে।",
@@ -814,61 +748,17 @@
   "transactionListOngoingTransfersTitle": "চলি থকা Swap",
   "transactionListOngoingTransfersDescription": "এই Swap বৰ্তমান চলি আছে। আপোনাৰ ধন সুৰক্ষিত আৰু Swap সম্পূৰ্ণ হ'লে উপলব্ধ হ'ব।",
   "transactionListLoadingTransactions": "লেনদেন লোড হৈ আছে...",
-  "transactionListNoTransactions": "এতিয়ালৈ কোনো লেনদেন নাই।",
   "transactionListToday": "আজি",
   "transactionListYesterday": "কালি",
   "transactionSwapDoNotUninstall": "Swap সম্পন্ন নোহোৱালৈ এপ্প আনইনষ্টল নকৰিব।",
-  "transactionFeesDeductedFrom": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
-  "transactionFeesTotalDeducted": "এয়া প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা মুঠ মাচুল",
-  "transactionLabelSendAmount": "প্ৰেৰণ পৰিমাণ",
-  "transactionLabelReceiveAmount": "গ্ৰহণ পৰিমাণ",
-  "transactionLabelSendNetworkFees": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
-  "transactionLabelReceiveNetworkFee": "গ্ৰহণ নেটৱৰ্ক মাচুল",
-  "transactionLabelServerNetworkFees": "চাৰ্ভাৰ নেটৱৰ্ক মাচুল",
-  "transactionLabelPreimage": "Preimage",
-  "transactionOrderLabelReferenceNumber": "ৰেফাৰেন্স নম্বৰ",
-  "transactionOrderLabelOriginName": "উৎসৰ নাম",
-  "transactionOrderLabelOriginCedula": "উৎসৰ Cedula",
-  "transactionDetailAccelerate": "ত্বৰান্বিত কৰক",
-  "transactionDetailLabelTransactionId": "লেনদেন ID",
-  "transactionDetailLabelToWallet": "Wallet লৈ",
-  "transactionDetailLabelFromWallet": "Wallet-ৰ পৰা",
-  "transactionDetailLabelRecipientAddress": "প্ৰাপকৰ ঠিকনা",
-  "transactionDetailLabelAddress": "ঠিকনা",
-  "transactionDetailLabelAddressNotes": "ঠিকনাৰ টোকা",
-  "transactionDetailLabelAmountReceived": "গ্ৰহণ কৰা পৰিমাণ",
-  "transactionDetailLabelAmountSent": "প্ৰেৰণ কৰা পৰিমাণ",
-  "transactionDetailLabelTransactionFee": "লেনদেন মাচুল",
-  "transactionDetailLabelStatus": "স্থিতি",
-  "transactionDetailLabelConfirmationTime": "নিশ্চিতকৰণৰ সময়",
-  "transactionDetailLabelOrderType": "অৰ্ডাৰৰ ধৰণ",
-  "transactionDetailLabelOrderNumber": "অৰ্ডাৰ নম্বৰ",
-  "transactionDetailLabelPaymentDescription": "পেমেণ্টৰ বিৱৰণ",
-  "transactionDetailLabelPayinAmount": "পেইন পৰিমাণ",
-  "transactionDetailLabelPayoutAmount": "পেআউট পৰিমাণ",
   "transactionDetailLabelExchangeRate": "বিনিময় হাৰ",
-  "transactionDetailLabelPayinMethod": "পেইন পদ্ধতি",
-  "transactionDetailLabelPayoutMethod": "পেআউট পদ্ধতি",
-  "transactionDetailLabelPayinStatus": "পেইন স্থিতি",
-  "transactionDetailLabelOrderStatus": "অৰ্ডাৰৰ স্থিতি",
-  "transactionDetailLabelPayoutStatus": "পেআউট স্থিতি",
-  "transactionDetailLabelCreatedAt": "তৈয়াৰ হৈছে",
-  "transactionDetailLabelCompletedAt": "সম্পন্ন হৈছে",
   "transactionDetailLabelTransferId": "Swap আইডি",
   "transactionDetailLabelSwapId": "Swap ID",
   "transactionDetailLabelTransferStatus": "Swap স্থিতি",
   "transactionDetailLabelSwapStatus": "Swap স্থিতি",
-  "transactionDetailLabelRefunded": "ঘূৰাই দিয়া হৈছে",
-  "transactionDetailLabelLiquidTxId": "Liquid লেনদেন ID",
-  "transactionDetailLabelBitcoinTxId": "Bitcoin লেনদেন ID",
   "transactionDetailLabelTransferFees": "Swap ফী",
   "transactionDetailLabelSwapFees": "Swap মাচুল",
-  "transactionDetailLabelSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
   "transactionDetailLabelTransferFee": "Swap ফী",
-  "transactionDetailLabelPayjoinStatus": "Payjoin স্থিতি",
-  "transactionDetailLabelPayjoinCompleted": "সম্পন্ন হৈছে",
-  "transactionDetailLabelPayjoinExpired": "মেয়াদ উত্তীৰ্ণ হৈছে",
-  "transactionDetailLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
   "globalDefaultBitcoinWalletLabel": "সুৰক্ষিত Bitcoin",
   "globalDefaultLiquidWalletLabel": "তাৎক্ষণিক পৰিশোধ",
   "walletBalanceUnconfirmedIncoming": "চলি আছে",
@@ -1304,66 +1194,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSuccessTitle": "পুনৰাবৃত্তি ক্ৰয় সক্ৰিয় হৈছে!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
-  },
-  "dcaSuccessMessageHourly": "আপুনি প্ৰতি ঘণ্টাত {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "আপুনি প্ৰতিদিনে {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "আপুনি প্ৰতি সপ্তাহত {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "আপুনি প্ৰতি মাহত {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "ঘৰলৈ ওভতক",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
-  },
-  "dcaChooseWalletTitle": "Bitcoin ৱালেট বাছনি কৰক",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
-  },
-  "dcaWalletSelectionDescription": "এই সময়সূচী অনুযায়ী Bitcoin ক্ৰয় স্বয়ংক্ৰিয়ভাৱে কৰা হ'ব।",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
-  },
-  "dcaNetworkValidationError": "অনুগ্ৰহ কৰি এটা নেটৱৰ্ক বাছনি কৰক",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
-  },
-  "dcaEnterLightningAddressLabel": "Lightning ঠিকনা দিয়ক",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
-  },
   "dcaLightningAddressEmptyError": "অনুগ্ৰহ কৰি এটা Lightning ঠিকনা দিয়ক",
   "@dcaLightningAddressEmptyError": {
     "description": "Validation error when Lightning address field is empty"
@@ -1371,46 +1201,6 @@
   "dcaLightningAddressInvalidError": "অনুগ্ৰহ কৰি এটা বৈধ Lightning ঠিকনা দিয়ক",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "dcaUseDefaultLightningAddress": "মোৰ ডিফল্ট Lightning ঠিকনা ব্যৱহাৰ কৰক।",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
-  "dcaWalletSelectionContinueButton": "অব্যাহত ৰাখক",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
-  },
-  "dcaSelectFrequencyLabel": "কম্পাঙ্ক বাছনি কৰক",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
-  },
-  "dcaSelectWalletTypeLabel": "Bitcoin ৱালেটৰ ধৰণ বাছনি কৰক",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
-  },
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
-  },
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
-  },
-  "dcaWalletBitcoinSubtitle": "ন্যূনতম 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
-  "dcaWalletLightningSubtitle": "সামঞ্জস্যপূৰ্ণ ৱালেট প্ৰয়োজন, সৰ্বোচ্চ 0.25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
-  },
-  "dcaWalletLiquidSubtitle": "সামঞ্জস্যপূৰ্ণ ৱালেট প্ৰয়োজন",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "swapInternalTransferTitle": "অভ্যন্তৰীণ Swap",
   "@swapInternalTransferTitle": {
@@ -4325,10 +4115,6 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlySelectDerivation": "Derivation বাছনি কৰক",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
-  },
   "importWatchOnlyType": "ধৰণ",
   "@importWatchOnlyType": {
     "description": "Label for wallet script type field"
@@ -4400,20 +4186,6 @@
   },
   "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
   "exportTransactionsDescription": "আপোনাৰ সকলো ৱালেট লেনদেন (বিটকইন, লিকুইড, লাইটনিং আৰু চোৱাপ) CSV ফাইল হিচাপে এক্সপৰ্ট কৰক। ইচ্ছাকৃতভাৱে তাৰিখৰ পৰিসৰৰ দ্বাৰা ফিল্টাৰ কৰক।",
-  "exportTransactionsStartDate": "আৰম্ভৰ তাৰিখ",
-  "exportTransactionsEndDate": "শেষৰ তাৰিখ",
-  "exportTransactionsAnyDate": "যিকোনো",
-  "exportTransactionsButton": "CSV এক্সপৰ্ট কৰক",
-  "exportTransactionsSuccess": "লেনদেন সফলতাৰে এক্সপৰ্ট কৰা হ'ল",
-  "exportTransactionsEmpty": "নিৰ্বাচিত সময়ছোৱাৰ বাবে এক্সপৰ্ট কৰিবলৈ কোনো লেনদেন নাই",
-  "exportTransactionsError": "লেনদেন এক্সপৰ্ট কৰিবলৈ ব্যৰ্থ হ'ল",
-  "@exportTransactionsError": {
-    "description": "Message shown when an unexpected error occurs during CSV export"
-  },
-  "exportTransactionsInvalidDateRange": "আৰম্ভণিৰ তাৰিখ শেষৰ তাৰিখৰ আগত হ'ব লাগিব",
-  "@exportTransactionsInvalidDateRange": {
-    "description": "Message shown when start date is after end date"
-  },
   "broadcastSignedTxTitle": "লেনদেন প্ৰচাৰ কৰক",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
@@ -4501,24 +4273,6 @@
   "@addressViewShowQR": {
     "description": "Button to display address as QR code"
   },
-  "importQrDeviceTitle": "{deviceName} সংযোগ কৰক",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importQrDeviceScanPrompt": "আপোনাৰ {deviceName} ৰ QR code স্কেন কৰক",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceScanning": "স্কেন হৈ আছে...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
@@ -4550,290 +4304,6 @@
   "importQrDeviceImport": "আমদানি কৰক",
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
-  },
-  "importQrDeviceButtonOpenCamera": "কেমেৰা খোলক",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
-  },
-  "importQrDeviceButtonInstructions": "নিৰ্দেশনা",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
-  },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
-  },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade নিৰ্দেশনা",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
-  "importQrDeviceJadeStep1": "আপোনাৰ Jade ডিভাইচ চালু কৰক",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
-  },
-  "importQrDeviceJadeStep2": "মূল মেনুৰ পৰা \"QR Mode\" বাছনি কৰক",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
-  "importQrDeviceJadeStep3": "Jade আনলক কৰিবলৈ ডিভাইচৰ নিৰ্দেশনা অনুসৰণ কৰক",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
-  },
-  "importQrDeviceJadeStep4": "মূল মেনুৰ পৰা \"Options\" বাছনি কৰক",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
-  "importQrDeviceJadeStep5": "options তালিকাৰ পৰা \"Wallet\" বাছনি কৰক",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
-  },
-  "importQrDeviceJadeStep6": "wallet মেনুৰ পৰা \"Export Xpub\" বাছনি কৰক",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
-  "importQrDeviceJadeStep7": "প্ৰয়োজন হ'লে, ঠিকনাৰ ধৰণ সলনি কৰিবলৈ \"Options\" বাছনি কৰক",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
-  "importQrDeviceJadeStep8": "\"open camera\" বুটামটো ক্লিক কৰক",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
-  "importQrDeviceJadeStep9": "আপোনাৰ ডিভাইচত দেখা QR code টো স্কেন কৰক।",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
-  },
-  "importQrDeviceJadeStep10": "এয়াই সম্পন্ন!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
-  "importQrDeviceJadeFirmwareWarning": "নিশ্চিত কৰক যে আপোনাৰ ডিভাইচ শেহতীয়া firmware লৈ আপডেট কৰা হৈছে",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
-  },
-  "importQrDeviceKruxInstructionsTitle": "Krux নিৰ্দেশনা",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
-  "importQrDeviceKruxStep1": "আপোনাৰ Krux ডিভাইচটো চালু কৰক",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
-  "importQrDeviceKruxStep2": "Extended Public Key ক্লিক কৰক",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
-  },
-  "importQrDeviceKruxStep3": "XPUB - QR Code ক্লিক কৰক",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
-  },
-  "importQrDeviceKruxStep4": "\"open camera\" বুটামটো ক্লিক কৰক",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
-  "importQrDeviceKruxStep5": "আপোনাৰ ডিভাইচত দেখা QR code স্কেন কৰক।",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
-  "importQrDeviceKruxStep6": "এয়াই সম্পন্ন!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
-  "importQrDeviceKeystoneName": "Keystone",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone নিৰ্দেশনা",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
-  },
-  "importQrDeviceKeystoneStep1": "আপোনাৰ Keystone চালু কৰক",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "importQrDeviceKeystoneStep2": "আপোনাৰ PIN দিয়া ক্ষেত্ৰখন আনলক কৰক",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
-  "importQrDeviceKeystoneStep3": "ওপৰৰ-সোঁ চুকত *** (তিনিটা ডট) টেপ কৰক",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
-  "importQrDeviceKeystoneStep4": "\"Connect Software Wallet\" টেপ কৰক",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
-  },
-  "importQrDeviceKeystoneStep5": "wallet ৰ তালিকাৰ পৰা \"BULL\" বাছনি কৰক",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
-  "importQrDeviceKeystoneStep6": "আপোনাৰ মোবাইলত, \"open camera\" ক্লিক কৰক",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
-  "importQrDeviceKeystoneStep7": "আপোনাৰ Keystone ত প্ৰদৰ্শিত QR code স্কেন কৰক",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
-  },
-  "importQrDeviceKeystoneStep8": "BULL wallet ত, আপোনাৰ পছন্দৰ derivation ধৰণ বাছনি কৰক। নিশ্চিত নহ'লে, \"Segwit (BIP84)\" বাছনি কৰক",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
-  "importQrDeviceKeystoneStep9": "আপোনাৰ Keystone wallet ৰ বাবে এটা label দিয়ক আৰু \"Import\" টেপ কৰক",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
-  "importQrDeviceKeystoneStep10": "আপোনাৰ Keystone এতিয়া BULL Wallet ৰ সৈতে সংযুক্ত আৰু ব্যৱহাৰৰ বাবে সাজু।",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
-  "importQrDevicePassportName": "Foundation Passport",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
-  "importQrDevicePassportInstructionsTitle": "Foundation Passport নিৰ্দেশনা",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
-  "importQrDevicePassportStep1": "আপোনাৰ Passport ডিভাইচটো চালু কৰক",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "importQrDevicePassportStep2": "আপোনাৰ PIN দিয়ক",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
-  },
-  "importQrDevicePassportStep3": "\"Wallet\" বাছনি কৰক",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "importQrDevicePassportStep4": "\"Connect App\" বাছনি কৰক",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
-  "importQrDevicePassportStep5": "\"Bull\" বাছনি কৰক",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
-  "importQrDevicePassportStep6": "আপোনাৰ Passport ত প্ৰদৰ্শিত QR code স্কেন কৰক",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
-  },
-  "importQrDevicePassportStep7": "BULL wallet এপত, derivation বিকল্প হিচাপে \"Segwit (BIP84)\" বাছনি কৰক",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
-  },
-  "importQrDevicePassportStep8": "আপোনাৰ Passport wallet ৰ বাবে এটা label দিয়ক আৰু \"আমদানি কৰক\" টেপ কৰক",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
-  },
-  "importQrDevicePassportStep9": "ছেটআপ সম্পন্ন।",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
-  },
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner নিৰ্দেশনা",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
-  },
-  "importQrDeviceSeedsignerStep1": "আপোনাৰ SeedSigner ডিভাইচটো চালু কৰক",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
-  "importQrDeviceSeedsignerStep2": "\"Seeds\" মেনু খোলক",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
-  "importQrDeviceSeedsignerStep3": "এটা SeedQR স্কেন কৰক বা আপোনাৰ ১২- বা ২৪-শব্দৰ seed phrase দিয়ক",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
-  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" বাছনি কৰক",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
-  "importQrDeviceSeedsignerStep5": "\"Single Sig\" বাছনি কৰক, তাৰপিছত আপোনাৰ পছন্দৰ script ধৰণ বাছনি কৰক (নিশ্চিত নহ'লে Native Segwit বাছনি কৰক)।",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
-  },
-  "importQrDeviceSeedsignerStep6": "export বিকল্প হিচাপে \"Animated\" বাছনি কৰক। পুৰণি SeedSigner firmware-ত \"Sparrow\" বাছনি কৰক।",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
-  },
-  "importQrDeviceSeedsignerStep7": "আপোনাৰ মোবাইল ডিভাইচত, Open Camera টেপ কৰক",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
-  "importQrDeviceSeedsignerStep8": "আপোনাৰ SeedSigner ত প্ৰদৰ্শিত QR code স্কেন কৰক",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
-  },
-  "importQrDeviceSeedsignerStep9": "আপোনাৰ SeedSigner wallet ৰ বাবে এটা label দিয়ক আৰু Import টেপ কৰক",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
-  },
-  "importQrDeviceSeedsignerStep10": "ছেটআপ সম্পন্ন",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
-  "importQrDeviceSpecterName": "Specter",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Specter নিৰ্দেশনা",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
-  },
-  "importQrDeviceSpecterStep1": "আপোনাৰ Specter ডিভাইচটো চালু কৰক",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
-  },
-  "importQrDeviceSpecterStep2": "আপোনাৰ PIN দিয়ক",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
-  "importQrDeviceSpecterStep3": "আপোনাৰ seed/key দিয়ক (আপোনাৰ পছন্দ অনুযায়ী যিকোনো বিকল্প বাছনি কৰক)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
-  "importQrDeviceSpecterStep4": "আপোনাৰ বাছনি কৰা পদ্ধতি অনুযায়ী নিৰ্দেশনা অনুসৰণ কৰক",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
-  },
-  "importQrDeviceSpecterStep5": "\"Master public keys\" বাছনি কৰক",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
-  },
-  "importQrDeviceSpecterStep6": "\"Single key\" বাছনি কৰক",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceSpecterStep7": "\"Use SLIP-132\" নিষ্ক্ৰিয় কৰক",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
-  "importQrDeviceSpecterStep8": "আপোনাৰ মোবাইল ডিভাইচত, Open Camera টেপ কৰক",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
-  "importQrDeviceSpecterStep9": "আপোনাৰ Specter ত প্ৰদৰ্শিত QR code স্কেন কৰক",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
-  "importQrDeviceSpecterStep10": "আপোনাৰ Specter wallet ৰ বাবে এটা label দিয়ক আৰু Import টেপ কৰক",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
-  },
-  "importQrDeviceSpecterStep11": "ছেটআপ সম্পন্ন",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "importColdcardTitle": "Coldcard Q সংযোগ কৰক",
   "@importColdcardTitle": {
@@ -5075,123 +4545,6 @@
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
   },
-  "dcaSetupTitle": "Recurring Buy স্থাপন কৰক",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
-  },
-  "dcaSetupInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
-  },
-  "dcaSetupInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
-  "dcaSetupFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
-  },
-  "dcaSetupScheduleMessage": "এই সময়সূচী অনুযায়ী Bitcoin ক্ৰয় স্বয়ংক্ৰিয়ভাৱে ৰখা হ'ব।",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
-  "dcaSetupFrequencyError": "অনুগ্ৰহ কৰি এটা পৌনঃপুনিকতা বাছনি কৰক",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
-  "dcaSetupContinue": "অব্যাহত ৰাখক",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
-  "dcaConfirmTitle": "Recurring Buy নিশ্চিত কৰক",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
-  },
-  "dcaConfirmAutoMessage": "এই ছেটিংছ অনুযায়ী buy অৰ্ডাৰসমূহ স্বয়ংক্ৰিয়ভাৱে ৰখা হ'ব। আপুনি যিকোনো সময়ত ইয়াক নিষ্ক্ৰিয় কৰিব পাৰিব।",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
-  "dcaConfirmFrequency": "পৌনঃপুনিকতা",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
-  "dcaConfirmFrequencyHourly": "প্ৰতি ঘণ্টাত",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
-  "dcaConfirmFrequencyDaily": "প্ৰতিদিনে",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "dcaConfirmFrequencyWeekly": "প্ৰতি সপ্তাহত",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
-  "dcaConfirmFrequencyMonthly": "প্ৰতি মাহত",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
-  },
-  "dcaConfirmAmount": "পৰিমাণ",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
-  },
-  "dcaConfirmPaymentMethod": "পৰিশোধ পদ্ধতি",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
-  },
-  "dcaConfirmPaymentBalance": "{currency} ব্যালেন্স",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "অৰ্ডাৰৰ ধৰণ",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
-  },
-  "dcaConfirmOrderTypeValue": "Recurring buy",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
-  "dcaConfirmNetwork": "নেটৱৰ্ক",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
-  },
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
-  "dcaConfirmNetworkLightning": "Lightning",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
-  "dcaConfirmLightningAddress": "Lightning ঠিকনা",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
-  },
-  "dcaConfirmContinue": "অব্যাহত ৰাখক",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
-  },
-  "buyInputTitle": "Bitcoin ক্ৰয় কৰক",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
-  },
-  "buyInputMinAmountError": "আপুনি কমেও ক্ৰয় কৰিব লাগে",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "আপুনি ইতকৈ বেছি ক্ৰয় কৰিব নোৱাৰে",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC পৰিচয় যাচাইকৰণ বাকী আছে",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -5203,53 +4556,6 @@
   "buyInputCompleteKyc": "KYC সম্পন্ন কৰক",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
-  },
-  "buyInputInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
-  "buyInputInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
-  "buyInputFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
-  "buyInputContinue": "অব্যাহত ৰাখক",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
-  "buyConfirmTitle": "Bitcoin ক্ৰয় কৰক",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
-  "buyConfirmYouPay": "আপুনি পৰিশোধ কৰিব",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
-  },
-  "buyConfirmYouReceive": "আপুনি পাব",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
-  "buyConfirmBitcoinPrice": "Bitcoin ৰ মূল্য",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
-  "buyConfirmPayoutWallet": "পৰিশোধ ৱালেট",
-  "buyPayoutMethodLiquid": "Liquid-ত L-BTC",
-  "buyPayoutMethodBitcoin": "Bitcoin শৃংখলত BTC",
-  "buyConfirmPayoutMethod": "Payout পদ্ধতি",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "buyConfirmExternalWallet": "বাহ্যিক Bitcoin wallet",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
-  "buyConfirmAwaitingConfirmation": "নিশ্চিতকৰণৰ অপেক্ষাত ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "sellSendPaymentTitle": "পৰিশোধ নিশ্চিত কৰক",
   "@sellSendPaymentTitle": {
@@ -5934,19 +5240,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "buyUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম কিনিবলৈ চেষ্টা কৰিছে।",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি কিনিবলৈ চেষ্টা কৰিছে।",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
   "withdrawUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
@@ -6095,10 +5388,6 @@
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
   },
-  "transactionListLoadingFailed": "লেনদেনসমূহ লোড কৰিব পৰা নগ'ল।",
-  "@transactionListLoadingFailed": {
-    "description": "Error message when transaction loading fails"
-  },
   "errorReportingProgramDescriptionP2": "কিবা ভুল হ'লে Bull Bitcoin-এ বেনামী ত্ৰুটি প্ৰতিবেদন পঠিয়ায়।",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
@@ -6139,10 +5428,6 @@
   "@fundExchangeCopRedirectMessage": {
     "description": "Message about redirect to external payment page"
   },
-  "payViewReceipt": "View receipt",
-  "@payViewReceipt": {
-    "description": "Button to view SINPE payment receipt"
-  },
   "errorReportingProgramDescriptionP3": "ইয়াৰ ফলত আমি চাব পাৰোঁ যে প্ৰতিটো bug-এ কিমান ব্যৱহাৰকাৰীক প্ৰভাৱিত কৰে আৰু তদনুসৰি সমাধানৰ অগ্ৰাধিকাৰ দিব পাৰোঁ; ইয়াৰ অবিহনে প্ৰভাৱ জোখাৰ আমাৰ কোনো উপায় নাই।",
   "@errorReportingProgramDescriptionP3": {
     "description": "Impact paragraph of error reporting program description"
@@ -6166,10 +5451,6 @@
   "fundExchangeCopEnterAmountError": "Please enter an amount",
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
-  },
-  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হৈছে",
-  "@transactionStatusPayjoinCompleted": {
-    "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
   },
   "coreScreensResolvingInputs": "লেনদেনৰ ইনপুট সমাধান কৰা হৈছে...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -6483,7 +5764,6 @@
   "logsShareOptionExport": "ৰপ্তানি কৰক",
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
   "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
-  "coreSwapsStatusRefunded": "ঘূৰাই দিয়া হৈছে",
   "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ",
   "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি 1টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
   "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
@@ -6505,7 +5785,6 @@
   "swapRescueButton": "পুনৰুদ্ধাৰ কৰক",
   "swapRescueSuccess": "Swap পুনৰুদ্ধাৰ কৰা হ'ল — ই এতিয়া পুনৰ আৰম্ভ হ'ব",
   "receivePayjoinNoUtxos": "ইয়াক সক্ষম কৰিবলৈ প্ৰথমে পুঁজি গ্ৰহণ কৰক।\npayjoin ব্যৱহাৰ কৰিবলৈ UTXO প্ৰয়োজন।",
-  "transactionLabelNetworkFees": "নেটৱৰ্ক ফি",
   "receiveLiquidRiskDisclosureLabel": "পৰিশোধবোৰ Liquid L-BTC (BTC নহয়) লৈ ৰূপান্তৰিত কৰা হ'ব। অধিক জানক।",
   "walletLiquidRiskDisclosureLabel": "এই পুঁজিবোৰ Liquid L-BTC (BTC নহয়)। অধিক জানক।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ খোলক",
@@ -6520,33 +5799,6 @@
   "importColdcardConnectTitle": "{deviceName} সংযোগ কৰক",
   "importColdcardConnectDescription": "আপোনাৰ {deviceName} ৰ পৰা wallet descriptor আমদানি কৰক",
   "importColdcardScanNfcSheetTitle": "wallet descriptor NFC ৰ জৰিয়তে আমদানি কৰিবলৈ আপোনাৰ {deviceName} টেপ কৰক",
-  "importColdcardQInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
-  "importColdcardQStep1": "আপোনাৰ Coldcard Q ডিভাইচত লগইন কৰক",
-  "importColdcardQStep2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "importColdcardQStep3": "advanced/settings মেনু বাছনি কৰক",
-  "importColdcardQStep4": "\"export wallet\" ক্লিক কৰক",
-  "importColdcardQStep5": "export ধৰণ হিচাপে \"descriptor\" বাছনি কৰক",
-  "importColdcardQStep6": "প্ৰথম স্ক্ৰীনত \"Enter\" টিপক",
-  "importColdcardQStep7": "দ্বিতীয় স্ক্ৰীনত \"Enter\" টিপক",
-  "importColdcardQStep8": "আপোনাৰ ঠিকনাৰ ধৰণ বাছনি কৰক (নিশ্চিত নহ'লে Segwit ব্যৱহাৰ কৰক)",
-  "importColdcardQStep9": "QR ৰ বাবে, ডিভাইচত QR code বুটাম ক্লিক কৰক। ই ডিভাইচত এটা QR code দেখুৱাব",
-  "importColdcardQStep10": "NFC ৰ বাবে, ডিভাইচত NFC বুটাম ক্লিক কৰক",
-  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" বুটাম ক্লিক কৰক",
-  "importColdcardQStep12": "আপোনাৰ ডিভাইচত দেখা QR code স্কেন কৰক বা ফোনৰ NFC Coldcard ৰ NFC ৰ ওপৰত থওক",
-  "importColdcardQStep13": "এয়াই সম্পন্ন!",
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 নিৰ্দেশনা",
-  "importColdcardMk4Step1": "আপোনাৰ Coldcard Mk4 ডিভাইচত লগইন কৰক",
-  "importColdcardMk4Step2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "importColdcardMk4Step3": "advanced/settings মেনু বাছনি কৰক",
-  "importColdcardMk4Step4": "\"export wallet\" ক্লিক কৰক",
-  "importColdcardMk4Step5": "export ধৰণ হিচাপে \"descriptor\" বাছনি কৰক",
-  "importColdcardMk4Step6": "প্ৰথম স্ক্ৰীনত \"Enter\" টিপক",
-  "importColdcardMk4Step7": "দ্বিতীয় স্ক্ৰীনত \"Enter\" টিপক",
-  "importColdcardMk4Step8": "আপোনাৰ ঠিকনাৰ ধৰণ বাছনি কৰক (নিশ্চিত নহ'লে Segwit ব্যৱহাৰ কৰক)",
-  "importColdcardMk4Step9": "Coldcard NFC আৰম্ভ কৰিবলৈ নম্বৰ 3 ক্লিক কৰক",
-  "importColdcardMk4Step10": "\"Scan NFC\" বুটাম ক্লিক কৰক",
-  "importColdcardMk4Step11": "ফোনৰ NFC Coldcard ৰ NFC ৰ ওপৰত থওক",
-  "importColdcardMk4Step12": "এয়াই সম্পন্ন!",
   "viewerAddressTab": "ঠিকনা",
   "viewerPaymentUriTab": "পৰিশোধ URI",
   "transactionSwapOpenWithin24h": "আপোনাৰ swap সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপটো খোলক।",
@@ -6671,10 +5923,6 @@
   "consolidationScreenTitle": "একত্ৰিত কৰক",
   "consolidationSuccessBody": "আপোনাৰ কইনসমূহ একত্ৰিত কৰা হৈছে। নেটৱৰ্কে নিশ্চিত কৰিলে সম্পূৰ্ণ হ'ব।",
   "consolidationSuccessTitle": "একত্ৰীকৰণ আৰম্ভ হৈছে",
-  "transactionStatusPayjoinAborted": "Payjoin বাতিল কৰা হৈছে",
-  "transactionDetailLabelPayjoinAborted": "বাতিল কৰা হৈছে",
-  "transactionDetailLabelPayjoinFeeContribution": "Payjoin মাচুল অৱদান",
-  "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা বৃদ্ধি কৰিবলৈ Payjoin এ পৰিশোধত আপোনাৰ এটা মুদ্ৰা অতিৰিক্ত ইনপুট হিচাপে যোগ কৰে। সেই অতিৰিক্ত ইনপুটৰ বাবে মাইনিং মাচুল আপুনি পোৱা পৰিমাণৰ পৰা কৰ্তন কৰা হয় (BIP78)।",
   "dcaAccountUnavailableError": "আপোনাৰ একাউণ্ট ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰক, আপুনি লগ ইন কৰা আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "dcaLightningAddressRequiredError": "আপোনাৰ ক্ৰয়সমূহ লাভ কৰিবলৈ এটা Lightning ঠিকনা দিয়ক।",
   "dcaReceiveAddressError": "আপোনাৰ ৱালেটত এটা গ্ৰহণ কৰা ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
@@ -6685,16 +5933,6 @@
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
   "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "coreSwapsStatusNotStarted": "আৰম্ভ হোৱা নাই",
-  "coreSwapsStatusAwaitingPayment": "পৰিশোধৰ অপেক্ষাত",
-  "coreSwapsStatusAwaitingConfirmation": "নিশ্চিতকৰণৰ অপেক্ষাত",
-  "coreSwapsStatusUnderReview": "পৰ্যালোচনাধীন",
-  "coreSwapsStatusRejected": "প্ৰত্যাখ্যাত",
-  "coreSwapsStatusCanceled": "বাতিল",
-  "coreSwapsStatusPaymentDeadlineExpired": "পৰিশোধৰ সময়সীমা শেষ",
-  "coreSwapsStatusScheduled": "নিৰ্ধাৰিত",
-  "coreSwapsStatusAwaitingClaim": "দাবীৰ অপেক্ষাত",
-  "coreSwapsStatusUnknown": "অজ্ঞাত",
   "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
   "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
   "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
@@ -6741,10 +5979,6 @@
   "walletWarningElectrumBothDown": "Bitcoin আৰু Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
   "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক",
   "walletLoadFailedRetryHint": "ৰিফ্ৰেছ কৰিবলৈ তললৈ টানক আৰু পুনৰ চেষ্টা কৰক",
-  "transactionDetailLoadError": "লেনদেনৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল।",
-  "transactionPayjoinBroadcastFailed": "মূল লেনদেনটো সম্প্ৰচাৰ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "transactionPayjoinOriginalUnavailable": "মূল লেনদেনটো আৰু সম্প্ৰচাৰৰ বাবে উপলব্ধ নহয়।",
-  "transactionLabelLimitReached": "আপুনি সৰ্বাধিক ১০টা লেবেল ৰাখিব পাৰে।",
   "settingsErrorSavingSetting": "সেই ছেটিংটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "settingsErrorConsentNotGiven": "এই ছেটিং সলনি কৰাৰ আগতে আপোনাৰ নিশ্চিতকৰণৰ প্ৰয়োজন।",
   "settingsErrorLoadingLogs": "নিদান লগসমূহ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",

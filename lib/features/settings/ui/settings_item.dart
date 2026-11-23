@@ -23,7 +23,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_au
 import 'package:silent/silent.dart';
 import 'package:silent/localizations.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapNavigation;
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:material_ui/material_ui.dart';
@@ -328,8 +328,7 @@ List<SettingsItem> buildSettingsItems({
         localization.transactionHistoryTitle,
       ),
       icon: Icons.file_download,
-      open: (context) =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
+      open: (context) => TransactionsNavigation.openExport(context),
       keywords: _keywords(
         localization.settingsSearchTransactionHistoryKeywords,
         english.settingsSearchTransactionHistoryKeywords,

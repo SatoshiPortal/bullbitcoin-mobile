@@ -1928,4 +1928,334 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => '营业额';
+
+  @override
+  String get buyPaymentMethod => '支付方法';
+
+  @override
+  String get buyMax => 'Max';
+
+  @override
+  String get buySelectWallet => '选择钱包';
+
+  @override
+  String get buyEnterBitcoinAddress => '轨道硬币地址';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H..6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => '共同采购';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return '您用 $fiatAmount 购买了 $amount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => '您的付款将在 ';
+
+  @override
+  String get buyViewDetails => '观点细节';
+
+  @override
+  String get buyAccelerateTransaction => '加速交易';
+
+  @override
+  String get buyGetConfirmedFaster => '更快';
+
+  @override
+  String get buyConfirmExpressWithdrawal => '2. 确认明示退出';
+
+  @override
+  String get buyNetworkFeeExplanation => '采矿公司收取和收取的电离层网费将从矿工收取和收取的数额中扣除';
+
+  @override
+  String get buyNetworkFees => '网络费';
+
+  @override
+  String get buyEstimatedFeeValue => '估计收费价值';
+
+  @override
+  String get buyNetworkFeeRate => '网络费';
+
+  @override
+  String get buyConfirmationTime => '认可时间';
+
+  @override
+  String get buyConfirmationTimeValue => '大约10分钟';
+
+  @override
+  String get buyWaitForFreeWithdrawal => '退出';
+
+  @override
+  String get buyConfirmExpress => '1. 确认';
+
+  @override
+  String get buyBitcoinSent => '页: 1!';
+
+  @override
+  String get buyThatWasFast => '这是迅速的,是没有的?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => '安保';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => '经常付款';
+
+  @override
+  String get dcaSuccessTitle => '重复买!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return '您将每小时购买$amount';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return '您将每天购买$amount';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return '您将每周购买$amount';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return '您将每月购买$amount';
+  }
+
+  @override
+  String get dcaBackToHomeButton => '返家';
+
+  @override
+  String get dcaChooseWalletTitle => '选择比特币钱包';
+
+  @override
+  String get dcaWalletSelectionDescription => '将根据这一时间表自动进行采购.';
+
+  @override
+  String get dcaNetworkValidationError => '请选择网络';
+
+  @override
+  String get dcaEnterLightningAddressLabel => '入光地址';
+
+  @override
+  String get dcaUseDefaultLightningAddress => '利用我的缺省电灯.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => '继续';
+
+  @override
+  String get dcaSelectFrequencyLabel => '选择性频率';
+
+  @override
+  String get dcaSelectWalletTypeLabel => '选修';
+
+  @override
+  String get dcaWalletTypeBitcoin => '图瓦卢';
+
+  @override
+  String get dcaWalletTypeLightning => '照明网络';
+
+  @override
+  String get dcaWalletTypeLiquid => '液体(LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => '最低0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle => '要求兼容的钱包，最大限额 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => '要求兼容的钱包';
+
+  @override
+  String get dcaSetupTitle => '2. 约定的变更';
+
+  @override
+  String get dcaSetupInsufficientBalance => '平衡不足';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage => '你们没有足够的平衡来建立这一秩序.';
+
+  @override
+  String get dcaSetupFundAccount => '基金';
+
+  @override
+  String get dcaSetupScheduleMessage => '将根据这一时间表自动进行采购.';
+
+  @override
+  String get dcaSetupFrequencyError => '请选择频率';
+
+  @override
+  String get dcaSetupContinue => '继续';
+
+  @override
+  String get dcaConfirmTitle => '同意 1. 采购';
+
+  @override
+  String get dcaConfirmAutoMessage => '定购单将自动置于这些环境中。 无论何时,你都可以消除这些障碍.';
+
+  @override
+  String get dcaConfirmFrequency => '频率';
+
+  @override
+  String get dcaConfirmFrequencyHourly => '每小时';
+
+  @override
+  String get dcaConfirmFrequencyDaily => '每天';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => '每个星期';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => '每个月';
+
+  @override
+  String get dcaConfirmAmount => '数额';
+
+  @override
+  String get dcaConfirmPaymentMethod => '支付方法';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency 结余';
+  }
+
+  @override
+  String get dcaConfirmOrderType => '命令类型';
+
+  @override
+  String get dcaConfirmOrderTypeValue => '重复购买';
+
+  @override
+  String get dcaConfirmNetwork => '网络';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => '页: 1';
+
+  @override
+  String get dcaConfirmNetworkLightning => '照明';
+
+  @override
+  String get dcaConfirmNetworkLiquid => '流动资金';
+
+  @override
+  String get dcaConfirmLightningAddress => '照明地址';
+
+  @override
+  String get dcaConfirmContinue => '继续';
+
+  @override
+  String get buyInputTitle => '采购';
+
+  @override
+  String get buyInputMinAmountError => '你们至少应当购买';
+
+  @override
+  String get buyInputMaxAmountError => '买不起';
+
+  @override
+  String get buyInputKycPending => 'KYC ID 有待核查';
+
+  @override
+  String get buyInputKycMessage => '您必须首先完成身份证明核查';
+
+  @override
+  String get buyInputCompleteKyc => '页: 1';
+
+  @override
+  String get buyInputInsufficientBalance => '结余不足';
+
+  @override
+  String get buyInputInsufficientBalanceMessage => '你们没有足够的平衡来建立这一秩序.';
+
+  @override
+  String get buyInputFundAccount => '基金';
+
+  @override
+  String get buyInputContinue => '继续';
+
+  @override
+  String get buyConfirmTitle => '采购';
+
+  @override
+  String get buyConfirmYouPay => '页: 1';
+
+  @override
+  String get buyConfirmYouReceive => '您';
+
+  @override
+  String get buyConfirmBitcoinPrice => '价格';
+
+  @override
+  String get buyConfirmPayoutWallet => '支付钱包';
+
+  @override
+  String get buyConfirmPayoutMethod => '支付方式';
+
+  @override
+  String get buyPayoutMethodLiquid => 'Liquid 上的 L-BTC';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'Bitcoin 链上的 BTC';
+
+  @override
+  String get buyConfirmExternalWallet => '外部比特币钱包';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => '等待确认 ';
+
+  @override
+  String get buyUnauthenticatedError => '你没有认证。 请继续发言.';
+
+  @override
+  String get buyBelowMinAmountError => '你们正在努力购买低于最低数额.';
+
+  @override
+  String get buyAboveMaxAmountError => '你试图购买最高数额.';
+
+  @override
+  String get buyUnexpectedError => '当前无法创建您的订单。请重试或联系客服。';
+
+  @override
+  String get dcaAccountUnavailableError => '无法加载您的账户。请检查网络连接，确认您已登录，然后重试。';
+
+  @override
+  String get dcaLightningAddressRequiredError => '输入 Lightning 地址以接收您购买的比特币。';
+
+  @override
+  String get dcaReceiveAddressError => '无法在您的钱包中准备接收地址。请重试。';
+
+  @override
+  String get dcaOrderCreationError => '无法创建定期买入。请稍后重试。';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

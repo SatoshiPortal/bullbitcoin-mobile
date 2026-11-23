@@ -92,6 +92,11 @@ final class PayUnexpectedFailure extends PayFailure {
   const PayUnexpectedFailure([super.logMessage]);
 }
 
+final class PayPayinOutcomeUnknownFailure extends PayFailure {
+  final String? originalTxId;
+  const PayPayinOutcomeUnknownFailure({this.originalTxId});
+}
+
 /// The selected network has no exchange order service.
 final class PayUnsupportedNetworkFailure extends PayFailure {
   const PayUnsupportedNetworkFailure();

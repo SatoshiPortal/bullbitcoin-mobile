@@ -6,6 +6,7 @@ void main() {
   test('publishes the legacy swap recovery routes', () {
     final routeNames = SettingsRouter.childRoutes(
       accessRoutes: const [],
+      addressRoutes: const [],
       exchangeSettingsRoutes: const [],
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},

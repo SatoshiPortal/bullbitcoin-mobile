@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bull_payjoin/src/domain/payjoin_failure.dart';
 import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
+import 'package:bull_payjoin/src/domain/payjoin_requests.dart';
 import 'package:bull_payjoin/src/domain/payjoin_session.dart'
     show PayjoinInputReservation;
 import 'package:bull_payjoin/src/engine/payjoin.dart';
@@ -42,6 +43,7 @@ abstract class PayjoinRepository {
     required int amountSat,
     required double networkFeesSatPerVb,
     required int expireAfterSec,
+    PayjoinOriginalAdmission? admitOriginal,
   });
   Future<bool> canManuallyBroadcastOriginal(String payjoinId);
   Future<Result<Payjoin, PayjoinFailure>> tryBroadcastOriginalTransaction(

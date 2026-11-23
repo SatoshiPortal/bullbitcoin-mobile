@@ -1,23 +1,16 @@
 import 'package:primitives/primitives.dart' show ScriptType;
 
-import '../../../../fake_index_price_reader.dart';
-
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
@@ -26,13 +19,9 @@ class _Reporter extends Mock implements LoggerReporter {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements Preferences {}
+class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
-class _MockGetReceiveAddressUsecase extends Mock
-    implements GetReceiveAddressUsecase {}
-
-class _MockGetAddressAtIndexUsecase extends Mock
-    implements GetAddressAtIndexUsecase {}
+class _MockGetAddressAtIndexUsecase extends Mock implements AddressView {}
 
 /// Deliberately shaped like a real leak: a driver string with a filesystem
 /// path in it. It must reach `logMessage` and nothing else.
@@ -107,130 +96,15 @@ void main() {
     );
   });
 
-  group('GetReceiveSettingsUsecase', () {
-    test('converts a throw into a sanitized failure', () async {
-      final inner = _MockGetSettingsUsecase();
-      when(() => inner.fetch()).thenThrow(Exception(_rawReason));
-
-      final result = await GetReceiveSettingsUsecase(inner).execute();
-
-      switch (result) {
-        case Ok():
-          fail('a throw must not be reported as settings');
-        case Err(:final failure):
-          expect(failure, isA<ReceiveUnexpectedFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
-      }
-    });
-
-    test('forwards the settings on success', () async {
-      final inner = _MockGetSettingsUsecase();
-      when(() => inner.fetch()).thenAnswer(
-        (_) async => Ok(
-          const SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
-          ),
-        ),
-      );
-
-      final result = await GetReceiveSettingsUsecase(inner).execute();
-
-      expect(result, isA<Ok<SettingsEntity, ReceiveFailure>>());
-    });
-  });
-
-  group('ConvertReceiveAmountUsecase', () {
-    late _MockGetSettingsUsecase getSettings;
-    late FakeIndexPriceReader getIndexPrice;
-    late ConvertReceiveAmountUsecase usecase;
-
-    setUp(() {
-      getSettings = _MockGetSettingsUsecase();
-      when(getSettings.fetch).thenAnswer(
-        (_) async => Ok(
-          SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-          ),
-        ),
-      );
-      getIndexPrice = FakeIndexPriceReader(fiatAmount: 100000);
-      usecase = ConvertReceiveAmountUsecase(
-        getSettingsUsecase: getSettings,
-        getIndexPrice: getIndexPrice.call,
-      );
-    });
-
-    test('without an amount, gives the mainnet price of one bitcoin', () async {
-      final result = await usecase.execute();
-
-      expect((result as Ok<double, ReceiveFailure>).value, 100000);
-      expect(getIndexPrice.requests.single, (
-        network: BitcoinNetwork.mainnet,
-        currency: SupportedCurrency.cad,
-      ));
-    });
-
-    test('values an amount in the requested currency', () async {
-      final result = await usecase.execute(
-        amountSat: BigInt.from(50000),
-        currencyCode: 'EUR',
-      );
-
-      expect((result as Ok<double, ReceiveFailure>).value, 50);
-      expect(getIndexPrice.requests.single.currency, SupportedCurrency.eur);
-    });
-
-    // Its own failure, so the bloc can tell it from one that stops receiving.
-    test('no price is a price unavailable failure', () async {
-      getIndexPrice.failure = const PricerNetworkFailure('offline');
-
-      final result = await usecase.execute();
-
-      expect(
-        (result as Err<double, ReceiveFailure>).failure,
-        isA<ReceivePriceUnavailableFailure>(),
-      );
-    });
-
-    test('a currency without a price is a price unavailable failure, never '
-        'asked', () async {
-      final result = await usecase.execute(currencyCode: 'JPY');
-
-      expect(
-        (result as Err<double, ReceiveFailure>).failure,
-        isA<ReceivePriceUnavailableFailure>(),
-      );
-      expect(getIndexPrice.requests, isEmpty);
-    });
-
-    test('converts a settings throw into a sanitized failure', () async {
-      when(getSettings.fetch).thenThrow(Exception(_rawReason));
-
-      final result = await usecase.execute();
-
-      switch (result) {
-        case Ok():
-          fail('a throw must not be reported as a rate');
-        case Err(:final failure):
-          expect(failure, isA<ReceiveUnexpectedFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
-      }
-    });
-  });
-
   group('PrepareReceiveAddressUsecase', () {
     test('forwards the address on success', () async {
       final inner = _MockGetReceiveAddressUsecase();
       when(
-        () => inner.execute(
+        () => inner.receiveAddress(
           walletId: any(named: 'walletId'),
-          generateNew: any(named: 'generateNew'),
+          advance: any(named: 'advance'),
         ),
-      ).thenAnswer((_) async => _address());
+      ).thenAnswer((_) async => Ok(_address()));
 
       final result = await PrepareReceiveAddressUsecase(inner)
           .execute(walletId: 'w1');
@@ -239,7 +113,7 @@ void main() {
     });
 
     test(
-      'maps a throw to the dedicated address failure, not the catch-all',
+      'maps a typed address failure without leaking its diagnostics',
       () async {
         final directory = await Directory.systemTemp.createTemp(
           'receive-boundary-',
@@ -252,11 +126,14 @@ void main() {
         });
         final inner = _MockGetReceiveAddressUsecase();
         when(
-          () => inner.execute(
+          () => inner.receiveAddress(
             walletId: any(named: 'walletId'),
-            generateNew: any(named: 'generateNew'),
+            advance: any(named: 'advance'),
           ),
-        ).thenThrow(Exception(_rawReason));
+        ).thenAnswer(
+          (_) async =>
+              const Err(AddressViewAddressesUnavailableFailure(_rawReason)),
+        );
 
         final result = await PrepareReceiveAddressUsecase(inner)
             .execute(walletId: 'w1');
@@ -272,7 +149,7 @@ void main() {
 
         switch (result) {
           case Ok():
-            fail('a throw must not be reported as an address');
+            fail('an unavailable address must not be reported as an address');
           case Err(:final failure):
             // Dedicated variant: the user gets an actionable "could not prepare
             // an address" message rather than the generic one.
@@ -284,24 +161,27 @@ void main() {
   });
 
   group('GetReceiveAddressAtIndexUsecase', () {
-    test('maps a throw to the dedicated address failure', () async {
+    test('maps an unavailable address and discards foreign details', () async {
       final inner = _MockGetAddressAtIndexUsecase();
       when(
-        () => inner.execute(
+        () => inner.at(
           walletId: any(named: 'walletId'),
           index: any(named: 'index'),
         ),
-      ).thenThrow(Exception(_rawReason));
+      ).thenAnswer(
+        (_) async =>
+            const Err(AddressViewAddressesUnavailableFailure(_rawReason)),
+      );
 
       final result = await GetReceiveAddressAtIndexUsecase(inner)
           .execute(walletId: 'w1', index: 1);
 
       switch (result) {
         case Ok():
-          fail('a throw must not be reported as an address');
+          fail('a failed lookup must not be reported as an address');
         case Err(:final failure):
           expect(failure, isA<ReceiveAddressUnavailableFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
+          expect(failure.logMessage, isNot(contains('app.sqlite')));
       }
     });
   });

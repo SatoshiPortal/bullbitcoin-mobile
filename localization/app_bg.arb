@@ -1,8 +1,4 @@
 {
-  "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
-  "buyConfirmPayoutWallet": "Портфейл за изплащане",
-  "buyPayoutMethodLiquid": "L-BTC в Liquid",
-  "buyPayoutMethodBitcoin": "BTC в блокчейна на Bitcoin",
   "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
   "backupWarningLoseReasonLostPhone": "Загубите телефона си",
   "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
@@ -48,21 +44,9 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "coreSwapsStatusInProgress": "В процес",
-  "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
-  },
   "coreSwapsStatusCompleted": "Завършено",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
-  },
-  "coreSwapsStatusExpired": "Изтекъл",
-  "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
-  },
-  "coreSwapsStatusFailed": "Неуспешно",
-  "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
   },
   "coreSwapsActionClaim": "Вземи",
   "@coreSwapsActionClaim": {
@@ -79,10 +63,6 @@
   "coreSwapsLnReceivePending": "Обмена все още не е инициализиран.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
-  },
-  "coreSwapsLnReceivePaid": "Изпращачът е платил фактурата.",
-  "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
   },
   "coreSwapsLnReceiveClaimable": "Обменът е готов за получаване.",
   "@coreSwapsLnReceiveClaimable": {
@@ -103,10 +83,6 @@
   "coreSwapsLnSendPending": "Обмена все още не е инициализиран.",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
-  },
-  "coreSwapsLnSendPaid": "Фактурата ще бъде платена, след като вашето плащане получи потвърждение.",
-  "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
   },
   "coreSwapsLnSendClaimable": "Обменът е готов за получаване.",
   "@coreSwapsLnSendClaimable": {
@@ -152,17 +128,9 @@
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
   },
-  "coreWalletTransactionStatusPending": "В очакване",
-  "@coreWalletTransactionStatusPending": {
-    "description": "Display name for pending wallet transaction status"
-  },
   "exchangeSettingsSecuritySettingsTitle": "Настройки за сигурност",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
-  },
-  "transactionStatusInProgress": "В процес",
-  "@transactionStatusInProgress": {
-    "description": "Status label for transactions in progress"
   },
   "transactionStatusPending": "В очакване",
   "@transactionStatusPending": {
@@ -171,30 +139,6 @@
   "transactionStatusSwapFailed": "Обмена се провали.",
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
-  },
-  "transactionSwapProgressClaim": "Вземи",
-  "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
-  },
-  "transactionSwapProgressCompleted": "Завършено",
-  "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
-  },
-  "transactionSwapProgressInProgress": "В процес",
-  "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
-  },
-  "transactionDetailLabelCompletedAt": "Завършено",
-  "@transactionDetailLabelCompletedAt": {
-    "description": "Label for completion time"
-  },
-  "transactionDetailLabelPayjoinCompleted": "Завършено",
-  "@transactionDetailLabelPayjoinCompleted": {
-    "description": "Payjoin completed status"
-  },
-  "transactionDetailLabelPayjoinExpired": "Изтекъл",
-  "@transactionDetailLabelPayjoinExpired": {
-    "description": "Payjoin expired status"
   },
   "walletBalanceUnconfirmedIncoming": "В процес",
   "@walletBalanceUnconfirmedIncoming": {
@@ -232,17 +176,9 @@
   "@payPleasePayInvoice": {
     "description": "Title for receive payment screen"
   },
-  "buyPayoutWillBeSentIn": "Вашето изплащане ще бъде изпратено в ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
   "fundExchangeInstantSepaInfo": "Използвайте само за транзакции под €20 000. За по-големи транзакции използвайте опцията Стандартен SEPA.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
-  },
-  "dcaChooseWalletTitle": "Изберете портфейл за Биткойн",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
   },
   "fundExchangeETransferLabelSecretAnswer": "Секретен отговор",
   "@fundExchangeETransferLabelSecretAnswer": {
@@ -251,10 +187,6 @@
   "payPayinAmount": "Входяща сума",
   "@payPayinAmount": {
     "description": "Label for amount user pays in"
-  },
-  "transactionDetailLabelTransactionFee": "Такса за транзакцията",
-  "@transactionDetailLabelTransactionFee": {
-    "description": "Label for transaction fee"
   },
   "payInstitutionNumber": "Код на банката",
   "@payInstitutionNumber": {
@@ -324,10 +256,6 @@
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
   },
-  "transactionLabelPreimage": "Предобраз",
-  "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
-  },
   "satsSuffix": " сатове",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
@@ -344,10 +272,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionDetailLabelConfirmationTime": "Време за потвърждаване",
-  "@transactionDetailLabelConfirmationTime": {
-    "description": "Label for confirmation time"
   },
   "exchangeFileUploadStatusInReview": "В преглед",
   "@exchangeFileUploadStatusInReview": {
@@ -400,10 +324,6 @@
   "rbfFastest": "Най-бързият",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "buyConfirmExpressWithdrawal": "Потвърдете експресното теглене",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
   },
   "importWatchOnlyCopiedToClipboard": "Копирано в клипборда",
   "@importWatchOnlyCopiedToClipboard": {
@@ -495,10 +415,6 @@
   "@fundExchangeLabelRecipientAddress": {
     "description": "Label for recipient address field"
   },
-  "dcaWalletLiquidSubtitle": "Изисква се съвместим портфейл.",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
-  },
   "fundExchangeCrIbanCrcTitle": "Банков превод (CRC)",
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
@@ -542,10 +458,6 @@
   "payNotLoggedIn": "Не сте влезли",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
-  },
-  "transactionFilterBuy": "Купи",
-  "@transactionFilterBuy": {
-    "description": "Filter option to show only buy orders"
   },
   "approximateFiatPrefix": "~",
   "@approximateFiatPrefix": {
@@ -705,14 +617,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "transactionStatusPaymentRefunded": "Плащането е възстановено",
-  "@transactionStatusPaymentRefunded": {
-    "description": "Status label for refunded payments"
-  },
-  "transactionStatusPaymentInProgress": "Плащането е в процес",
-  "@transactionStatusPaymentInProgress": {
-    "description": "Status label for Lightning payments in progress"
-  },
   "connectHardwareWalletKrux": "Krux",
   "@connectHardwareWalletKrux": {
     "description": "Krux hardware wallet option"
@@ -808,10 +712,6 @@
   "bitcoinSettingsTestnetModeTitle": "Режим тестнета",
   "@bitcoinSettingsTestnetModeTitle": {
     "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
-  "buyTitle": "Купи Биткойн",
-  "@buyTitle": {
-    "description": "Screen title for buying Bitcoin"
   },
   "fromLabel": "От",
   "@fromLabel": {
@@ -963,10 +863,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "dcaWalletBitcoinSubtitle": "Минимум 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
   "sendOpenTheCamera": "Отвори камерата",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1006,10 +902,6 @@
   "exchangeAccountInfoLoadErrorMessage": "Не може да се зареди информация за акаунта",
   "@exchangeAccountInfoLoadErrorMessage": {
     "description": "Error message when account information fails to load"
-  },
-  "dcaWalletSelectionContinueButton": "Продължи",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
   },
   "pinButtonChange": "Променете PIN",
   "@pinButtonChange": {
@@ -1107,10 +999,6 @@
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
-  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
-  "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
-  },
   "testBackupDecryptVault": "Дешифрирайте сейфа",
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
@@ -1166,15 +1054,6 @@
   "sendTransactionBuilt": "Транзакцията е готова",
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
-  },
-  "dcaSuccessMessageHourly": "Ще купите {amount} на всеки час",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "loginButton": "ВХОД",
   "@loginButton": {
@@ -1257,14 +1136,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "transactionFilterAll": "Всички",
-  "@transactionFilterAll": {
-    "description": "Filter option to show all transactions"
-  },
-  "transactionDetailLabelAmountReceived": "Получена сума",
-  "@transactionDetailLabelAmountReceived": {
-    "description": "Label for amount received"
-  },
   "receivePaymentReceived": "Платежът е получен!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
@@ -1301,10 +1172,6 @@
   "fundExchangeArsBankTransferTitle": "Банков превод",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
-  },
-  "transactionLabelReceiveAmount": "Сума за получаване",
-  "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
   },
   "sendServerNetworkFees": "Сървърни такси за мрежата",
   "@sendServerNetworkFees": {
@@ -1383,10 +1250,6 @@
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "transactionDetailAccelerate": "Ускоряване",
-  "@transactionDetailAccelerate": {
-    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
-  },
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -1457,10 +1320,6 @@
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
   },
-  "transactionListNoTransactions": "Все още няма транзакции.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "backupInstruction1": "Ако изгубите резервното копие от 12 думи, няма да можете да възстановите достъпа до портфейла за Биткойн.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1477,10 +1336,6 @@
   "exchangeStatisticsAveragePrice": "Средна цена",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
-  },
-  "buyEstimatedFeeValue": "Очаквана такса",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
   },
   "payName": "Име",
   "@payName": {
@@ -1523,10 +1378,6 @@
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
   },
-  "buyEnterAmount": "Въведете сума",
-  "@buyEnterAmount": {
-    "description": "Label for amount input field in buy flow"
-  },
   "sellShowQrCode": "Покажете QR кода",
   "@sellShowQrCode": {
     "description": "Button to show QR code"
@@ -1554,10 +1405,6 @@
   "importWatchOnlyType": "Тип",
   "@importWatchOnlyType": {
     "description": "Label for wallet script type field"
-  },
-  "transactionDetailLabelPayinAmount": "Входяща сума",
-  "@transactionDetailLabelPayinAmount": {
-    "description": "Label for payin amount"
   },
   "importWalletSectionHardware": "- Хардуерни портфейли",
   "@importWalletSectionHardware": {
@@ -1630,10 +1477,6 @@
   "fundExchangeTitle": "Финансиране",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
-  },
-  "dcaNetworkValidationError": "Моля, изберете мрежа",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
   },
   "coldcardStep12": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
   "@coldcardStep12": {
@@ -1800,10 +1643,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "transactionDetailLabelRefunded": "Възстановено",
-  "@transactionDetailLabelRefunded": {
-    "description": "Label for refunded status"
-  },
   "swapValidationSelectFromWallet": "Моля, изберете портфейл, от който да обменяте",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
@@ -1828,10 +1667,6 @@
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
   },
-  "dcaWalletTypeBitcoin": "Биткойн (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
   "payNoPayments": "Все още няма плащания",
   "@payNoPayments": {
     "description": "Empty state message"
@@ -1843,10 +1678,6 @@
   "exchangeAccountInfoTitle": "Информация за акаунт",
   "@exchangeAccountInfoTitle": {
     "description": "Title for the account information section"
-  },
-  "buyConfirmationTime": "Време за потвърждаване",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
   },
   "encryptedVaultRecommendation": "Шифрован сейф: ",
   "@encryptedVaultRecommendation": {
@@ -2012,15 +1843,6 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Купихте {amount} за {fiatAmount}",
-  "@buyYouBought": {
-    "description": "Success message with amount bought",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "Страница не е намерена",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
@@ -2057,10 +1879,6 @@
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
   },
-  "buyAccelerateTransaction": "Ускорете транзакцията",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
-  },
   "backupSettingsTested": "Проверено",
   "@backupSettingsTested": {
     "description": "Status text shown when backup has been tested"
@@ -2093,10 +1911,6 @@
   "@testBackupVerify": {
     "description": "Button text to verify the selected word order"
   },
-  "transactionDetailLabelCreatedAt": "Създадено на",
-  "@transactionDetailLabelCreatedAt": {
-    "description": "Label for creation time"
-  },
   "fundExchangeJurisdictionArgentina": "🇦🇷 Аржентина",
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
@@ -2104,10 +1918,6 @@
   "autoswapWarningCardSubtitle": "Ще се задейства размяна, ако балансът ви в Instant Payments надвиши 0.02 BTC.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
-  },
-  "transactionLabelSendAmount": "Сума за изпращане",
-  "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
   },
   "testedStatus": "Проверено",
   "@testedStatus": {
@@ -2132,10 +1942,6 @@
   "payCopied": "Копирано!",
   "@payCopied": {
     "description": "Success message after copying"
-  },
-  "transactionLabelReceiveNetworkFee": "Такса за мрежата при получаване.",
-  "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
   },
   "fundExchangeCrIbanUsdDescriptionBold": "точно",
   "@fundExchangeCrIbanUsdDescriptionBold": {
@@ -2249,10 +2055,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "transactionDetailLabelPayjoinStatus": "Статус Payjoin",
-  "@transactionDetailLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
   "sellProcessingOrder": "Обработване на поръчката...",
   "@sellProcessingOrder": {
     "description": "Loading message during order submission"
@@ -2300,10 +2102,6 @@
   "sellBitcoinAmount": "Сума в биткойни",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "transactionFilterReceive": "Получаване",
-  "@transactionFilterReceive": {
-    "description": "Filter option to show only received transactions"
   },
   "payBumpFee": "Увеличи таксата",
   "@payBumpFee": {
@@ -2396,10 +2194,6 @@
   "payCorporate": "Корпоративен",
   "@payCorporate": {
     "description": "Label for corporate checkbox"
-  },
-  "buyMax": "Макс.",
-  "@buyMax": {
-    "description": "Button to fill maximum amount"
   },
   "onboardingCreateNewWallet": "Създайте нов портфейл",
   "@onboardingCreateNewWallet": {
@@ -2550,10 +2344,6 @@
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
   },
-  "buySelectWallet": "Изберете портфейл",
-  "@buySelectWallet": {
-    "description": "Label for wallet selection dropdown"
-  },
   "testBackupErrorIncorrectOrder": "Неправилна подредба на думите. Моля, опитайте отново.",
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
@@ -2581,10 +2371,6 @@
   "payFromWallet": "От портфейла",
   "@payFromWallet": {
     "description": "Label showing source wallet"
-  },
-  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
-  "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
   },
   "sellBankDetails": "Банкови данни",
   "@sellBankDetails": {
@@ -2621,10 +2407,6 @@
   "payLastNameHint": "Въведете фамилия",
   "@payLastNameHint": {
     "description": "Hint for last name input"
-  },
-  "transactionDetailLabelToWallet": "Към портфейла",
-  "@transactionDetailLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "fundExchangeLabelRecipientName": "Име на получателя",
   "@fundExchangeLabelRecipientName": {
@@ -2691,10 +2473,6 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importWatchOnlySelectDerivation": "Изберете деривация",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
-  },
   "hwPassport": "Foundation Passport",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -2755,10 +2533,6 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
-  "@buyBitcoinAddressHint": {
-    "description": "Placeholder hint for bitcoin address input"
-  },
   "transactionListOngoingTransfersTitle": "Текущи обмени",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
@@ -2813,10 +2587,6 @@
   "sendSats": "сатоши",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "buyNetworkFees": "Такси за мрежата",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
   },
   "coldcardStep7": "   - Преместете червения лазер нагоре и надолу върху QR кода",
   "@coldcardStep7": {
@@ -2918,10 +2688,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "transactionTitle": "Транзакции",
-  "@transactionTitle": {
-    "description": "Title for the transactions screen"
-  },
   "sellQrCode": "QR код",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
@@ -3014,10 +2780,6 @@
   "@payEnableRBF": {
     "description": "Checkbox to enable Replace-By-Fee"
   },
-  "transactionDetailLabelFromWallet": "От портфейла",
-  "@transactionDetailLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "settingsLanguageTitle": "Език",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -3063,15 +2825,6 @@
   "@payContinue": {
     "description": "Button to continue to next step"
   },
-  "dcaSuccessMessageMonthly": "Ще купите {amount} всеки месец",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} монети избрани",
   "@sendSelectedCoins": {
     "description": "Label showing number of UTXOs selected",
@@ -3110,10 +2863,6 @@
   "@customLocationProvider": {
     "description": "Name of custom location provider"
   },
-  "dcaSelectFrequencyLabel": "Изберете честота",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
-  },
   "transactionSwapDescChainCompleted": "Вашият обмен е успешно завършен! Средствата вече трябва да са налични във вашия портфейл.",
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
@@ -3137,10 +2886,6 @@
   "recoverVia12WordsDescription": "Възстановете портфейла си чрез 12 думи.",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
-  },
-  "dcaEnterLightningAddressLabel": "Въведете Lightning адрес",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
   },
   "buyPayoutMethod": "Метод за изплащане",
   "@buyPayoutMethod": {
@@ -3219,10 +2964,6 @@
   "sendErrorInsufficientBalanceForSwap": "Нямате достатъчно средства за плащане на този обмен чрез Liquid и той не попада в лимитите за обмен за плащане чрез Bitcoin",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "transactionFilterPayjoin": "Payjoin",
-  "@transactionFilterPayjoin": {
-    "description": "Filter option to show only payjoin transactions"
   },
   "fundExchangeCrIbanUsdTitle": "Банков превод (USD)",
   "@fundExchangeCrIbanUsdTitle": {
@@ -3320,10 +3061,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "ID на транзакцията",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "payDebitCardNumberHint": "Въведете номер на дебитна карта",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -3375,10 +3112,6 @@
   "autoswapMaxBalanceInfoText": "Когато балансът на портфейла надвиши двойния размер на тази сума, автоматичният обмен ще се задейства, за да намали баланса до това ниво",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
-  },
-  "dcaWalletSelectionDescription": "Покупките на Биткойн ще се извършват автоматично според този график.",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
   },
   "sendTypeSend": "Изпрати",
   "@sendTypeSend": {
@@ -3500,10 +3233,6 @@
   "@connectHardwareWalletJade": {
     "description": "Blockstream Jade hardware wallet option"
   },
-  "transactionFeesTotalDeducted": "Това е общата такса, удържана от изпратената сума.",
-  "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
-  },
   "sellReviewOrder": "Преглед на поръчката за продажба",
   "@sellReviewOrder": {
     "description": "Title for order confirmation screen"
@@ -3597,10 +3326,6 @@
   "@payCorporateName": {
     "description": "Label for corporate name field"
   },
-  "transactionStatusPayjoinRequested": "Заявено е Payjoin",
-  "@transactionStatusPayjoinRequested": {
-    "description": "Status label for payjoin transaction requests"
-  },
   "payOwnerNameHint": "Въведете име на притежателя",
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
@@ -3624,15 +3349,6 @@
   "receivePaymentInProgress": "Плащането се обработва",
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
-  },
-  "dcaSuccessMessageDaily": "Ще купите {amount} всеки ден",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "receiveBoltzSwapFee": "Такса за размяна Boltz",
   "@receiveBoltzSwapFee": {
@@ -3686,10 +3402,6 @@
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
-  "buyWaitForFreeWithdrawal": "Изчакайте безплатното теглене",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
   "backupSettingsKeyWarningBold": "Внимание: Бъдете внимателни къде съхранявате резервния ключ.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
@@ -3705,10 +3417,6 @@
   "settingsAppSettingsTitle": "Настройки на приложението",
   "@settingsAppSettingsTitle": {
     "description": "Title for the app settings section in the settings menu"
-  },
-  "dcaWalletLightningSubtitle": "Изисква съвместим портфейл, максимум 0.25 BTC.",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
   },
   "swapTransferRefundInProgressMessage": "Възникна грешка при обмена. Вашето възстановяване е в процес.",
   "@swapTransferRefundInProgressMessage": {
@@ -3733,10 +3441,6 @@
   "fundExchangeSinpeDescriptionBold": "Ще бъде отхвърлено.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Bold text warning that payment from wrong number will be rejected"
-  },
-  "transactionDetailLabelPayoutStatus": "Статус на изплащането",
-  "@transactionDetailLabelPayoutStatus": {
-    "description": "Label for payout status"
   },
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
@@ -3767,10 +3471,6 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "~10 минути",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
   "exchangeFileUploadUploading": "Качване...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
@@ -3794,10 +3494,6 @@
   "transactionListLoadingTransactions": "Зареждане на транзакции...",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
-  },
-  "dcaSuccessTitle": "Повтаряща се покупка е активна!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
   },
   "fundExchangeOnlineBillPaymentDescription": "Каквато и сума да изпратите чрез онлайн плащане на сметки във вашата банка, използвайки долупосочената информация, ще бъде кредитирана към баланса на вашия Bull Bitcoin акаунт в рамките на 3–4 работни дни.",
   "@fundExchangeOnlineBillPaymentDescription": {
@@ -3849,10 +3545,6 @@
   "@coldcardStep1": {
     "description": "Coldcard instruction step 1"
   },
-  "transactionDetailLabelBitcoinTxId": "ID на биткойн транзакцията",
-  "@transactionDetailLabelBitcoinTxId": {
-    "description": "Label for Bitcoin transaction ID"
-  },
   "testBackupGoogleDriveSignIn": "Ще трябва да влезете в Google Drive",
   "@testBackupGoogleDriveSignIn": {
     "description": "Progress screen title when fetching from Google Drive"
@@ -3889,17 +3581,9 @@
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
-  "transactionDetailAddNote": "Добави бележка",
-  "@transactionDetailAddNote": {
-    "description": "Button label to add a note to a transaction"
-  },
   "addressCardUsedLabel": "Използван",
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
-  },
-  "buyThatWasFast": "Беше бързо, нали?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "importWalletPassport": "Foundation Passport",
   "@importWalletPassport": {
@@ -3922,10 +3606,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionDetailLabelPayinMethod": "Метод на плащане",
-  "@transactionDetailLabelPayinMethod": {
-    "description": "Label for payin method"
   },
   "sellCurrentRate": "Текущ курс",
   "@sellCurrentRate": {
@@ -3971,10 +3651,6 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "transactionDetailLabelLiquidTxId": "ID на Liquid транзакцията",
-  "@transactionDetailLabelLiquidTxId": {
-    "description": "Label for Liquid transaction ID"
-  },
   "testBackupBackupId": "Идентификатор за резервно копие:",
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
@@ -3991,10 +3667,6 @@
   "walletDeletionErrorOngoingSwaps": "==WEBLATE_PART==\nНе можете да изтриете портфейл с активни размени.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
-  },
-  "transactionLabelServerNetworkFees": "Сървърни такси за мрежата",
-  "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
   },
   "sendReceive": "Получаване",
   "@sendReceive": {
@@ -4019,10 +3691,6 @@
   "sellPayoutAmount": "Сума за изплащане",
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
-  },
-  "buyConfirmPurchase": "Потвърдете покупката",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
   },
   "tapWordsInOrderTitle": "Докоснете думите за възстановяване в правилния ред",
   "@tapWordsInOrderTitle": {
@@ -4060,10 +3728,6 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "buyNetworkFeeRate": "Ставка на таксата за мрежата",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
-  },
   "autoswapAlwaysBlockLabel": "Винаги блокирай високи такси",
   "@autoswapAlwaysBlockLabel": {
     "description": "Label for toggle to always block high fee transfers"
@@ -4071,10 +3735,6 @@
   "receiveFixedAmount": "Сума",
   "@receiveFixedAmount": {
     "description": "Required amount field"
-  },
-  "transactionSwapDescLnSendPaid": "Вашата транзакция в блокчейна е излъчена. След едно потвърждение плащането по Lightning ще бъде изпратено.",
-  "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
   },
   "exchangeFileUploadAddMoreFiles": "Добавете още файлове",
   "@exchangeFileUploadAddMoreFiles": {
@@ -4127,10 +3787,6 @@
   "payHowToPayInvoice": "Как искате да платите тази фактура?",
   "@payHowToPayInvoice": {
     "description": "Question for payment method selection"
-  },
-  "transactionDetailLabelSendNetworkFee": "Такса за мрежата при изпращане",
-  "@transactionDetailLabelSendNetworkFee": {
-    "description": "Label for send network fee"
   },
   "sendSlowPaymentWarningDescription": "Обменът на биткойни ще отнеме време за потвърждение.",
   "@sendSlowPaymentWarningDescription": {
@@ -4196,10 +3852,6 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "transactionOrderLabelOriginName": "Име на произход",
-  "@transactionOrderLabelOriginName": {
-    "description": "Label for origin name in fiat payment order"
-  },
   "globalDefaultLiquidWalletLabel": "Моментални плащания",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
@@ -4244,20 +3896,6 @@
   },
   "transactionHistoryTitle": "История на транзакциите",
   "exportTransactionsDescription": "Експортирайте всички транзакции на вашия портфейл (Bitcoin, Liquid, Lightning и суапове) като CSV файл. По избор филтрирайте по период.",
-  "exportTransactionsStartDate": "Начална дата",
-  "exportTransactionsEndDate": "Крайна дата",
-  "exportTransactionsAnyDate": "Всяка",
-  "exportTransactionsButton": "Експортирай CSV",
-  "exportTransactionsSuccess": "Транзакциите са експортирани успешно",
-  "exportTransactionsEmpty": "Няма транзакции за експорт в избрания период",
-  "exportTransactionsError": "Неуспешно експортиране на транзакциите",
-  "@exportTransactionsError": {
-    "description": "Message shown when an unexpected error occurs during CSV export"
-  },
-  "exportTransactionsInvalidDateRange": "Началната дата трябва да е преди крайната дата",
-  "@exportTransactionsInvalidDateRange": {
-    "description": "Message shown when start date is after end date"
-  },
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4432,10 +4070,6 @@
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
   },
-  "transactionDetailLabelStatus": "Статус",
-  "@transactionDetailLabelStatus": {
-    "description": "Label for status"
-  },
   "backupSettingsKeyServer": "Сървър за ключове ",
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
@@ -4447,10 +4081,6 @@
   "addressCardIndexLabel": "Индекс: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
-  },
-  "transactionFeesDeductedFrom": "Тези такси ще бъдат удържани от изпратената сума.",
-  "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
   },
   "importWatchOnlyTitle": "- Импортирай само за наблюдение",
   "@importWatchOnlyTitle": {
@@ -4479,10 +4109,6 @@
   "payNewRecipients": "Нови получатели",
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
-  },
-  "transactionLabelSendNetworkFees": "Такси за мрежата при изпращане.",
-  "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
   },
   "testBackupConfirm": "Потвърди",
   "@testBackupConfirm": {
@@ -4566,10 +4192,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "transactionDetailLabelPayoutMethod": "Метод за изплащане",
-  "@transactionDetailLabelPayoutMethod": {
-    "description": "Label for payout method"
-  },
   "payPriceRefreshIn": "Цената ще се обнови след ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
@@ -4593,10 +4215,6 @@
   "paySecurityQuestion": "Защитен въпрос",
   "@paySecurityQuestion": {
     "description": "Label for security question field"
-  },
-  "dcaSelectWalletTypeLabel": "Изберете тип портфейл за Bitcoin.",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
   },
   "backupWalletHowToDecideVaultModalTitle": "Как да решите",
   "@backupWalletHowToDecideVaultModalTitle": {
@@ -4637,10 +4255,6 @@
   "payBitcoinAmount": "Сума в биткойни",
   "@payBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "transactionFilterSell": "Продай",
-  "@transactionFilterSell": {
-    "description": "Filter option to show only sell orders"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " думата \"Bitcoin\" или \"Crypto\" в описанието на плащането. Това ще блокира вашето плащане.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -4754,10 +4368,6 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "transactionDetailLabelAmountSent": "Изпратена сума",
-  "@transactionDetailLabelAmountSent": {
-    "description": "Label for amount sent"
-  },
   "typeLabel": "Тип: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
@@ -4793,15 +4403,6 @@
   "exchangeTransactionsComingSoon": "Транзакции - Очакват се скоро",
   "@exchangeTransactionsComingSoon": {
     "description": "Message indicating that the transactions feature is coming soon"
-  },
-  "dcaSuccessMessageWeekly": "Ще купите {amount} всяка седмица",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "autoswapRecipientWalletPlaceholder": "Изберете Bitcoin портфейл",
   "@autoswapRecipientWalletPlaceholder": {
@@ -5143,10 +4744,6 @@
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
   },
-  "transactionDetailLabelOrderType": "Тип на поръчката",
-  "@transactionDetailLabelOrderType": {
-    "description": "Label for order type"
-  },
   "autoswapWarningSettingsLink": "Отиди на настройките за автообмен",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
@@ -5222,10 +4819,6 @@
   "buyEnterBitcoinAddress": "Въведете адрес на биткойн",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "transactionDetailLabelPayoutAmount": "Сума за изплащане",
-  "@transactionDetailLabelPayoutAmount": {
-    "description": "Label for payout amount"
   },
   "payPayeeAccountNumberHint": "Въведете номер на сметка",
   "@payPayeeAccountNumberHint": {
@@ -5342,10 +4935,6 @@
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
   },
-  "dcaWalletTypeLightning": "Лайтнинг мрежа (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
-  },
   "exchangeBitcoinWalletsSaveSuccess": "Адресът на портфейла е успешно запазен",
   "@exchangeBitcoinWalletsSaveSuccess": {
     "description": "Success message when wallet address is saved"
@@ -5394,10 +4983,6 @@
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
   },
-  "transactionDetailLabelAddress": "Адрес",
-  "@transactionDetailLabelAddress": {
-    "description": "Label for address"
-  },
   "fundExchangeCrIbanUsdLabelPaymentDescription": "Описание на плащането",
   "@fundExchangeCrIbanUsdLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN USD transfer"
@@ -5422,17 +5007,9 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "transactionDetailLabelPayjoinCreationTime": "Време на създаване на Payjoin",
-  "@transactionDetailLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation time"
-  },
   "backupWalletBestPracticesTitle": "Най-добри практики за резервно копиране",
   "@backupWalletBestPracticesTitle": {
     "description": "AppBar title for physical backup checklist screen"
-  },
-  "transactionSwapInfoFailedExpired": "Ако имате въпроси или притеснения, моля свържете се с поддръжката за помощ.\n==WEBLATE_PART==",
-  "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
   },
   "googleAppleCloudRecommendation": "Google или Apple облак: ",
   "@googleAppleCloudRecommendation": {
@@ -5614,11 +5191,6 @@
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
   },
-  "transactionDetailLabelOrderNumber": "Номер на поръчката",
-  "transactionDetailLabelPaymentDescription": "Описание на плащането",
-  "@transactionDetailLabelOrderNumber": {
-    "description": "Label for order number"
-  },
   "pickPasswordInsteadButton": "Изберете парола вместо това >>",
   "@pickPasswordInsteadButton": {
     "description": "Button label to switch to password input"
@@ -5699,10 +5271,6 @@
   "transactionListOngoingTransfersDescription": "Тези обмени в момента са в ход. Вашите средства са защитени и ще бъдат налични, когато обменът завърши.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
-  },
-  "transactionOrderLabelOriginCedula": "Произходна лична карта",
-  "@transactionOrderLabelOriginCedula": {
-    "description": "Label for origin cedula in fiat payment order"
   },
   "buyViewDetails": "Виж подробности",
   "@buyViewDetails": {
@@ -5855,10 +5423,6 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
-  "transactionSwapDescChainPaid": "Вашата транзакция е излъчена. Сега очакваме потвърждението на транзакцията за заключване.",
-  "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
-  },
   "buyPaymentMethod": "Начин на плащане",
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
@@ -5998,10 +5562,6 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "transactionDetailLabelOrderStatus": "Статус на поръчката",
-  "@transactionDetailLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -6017,10 +5577,6 @@
   "exchangeFileUploadClearAll": "Изчисти всичко",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
-  },
-  "buyBitcoinSent": "биткойн изпратен!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
   },
   "payIban": "IBAN",
   "@payIban": {
@@ -6125,10 +5681,6 @@
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
   },
-  "transactionFilterSend": "Изпрати",
-  "@transactionFilterSend": {
-    "description": "Filter option to show only sent transactions"
-  },
   "exchangeFileUploadAcceptedMessage": "Вашите документи са приети. Няма необходимост от допълнително качване.",
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
@@ -6140,10 +5692,6 @@
   "importMnemonicSyncMessage": "Всички три типа портфейли се синхронизират и балансът им и транзакциите ще се появят скоро. Можете да изчакате синхронизирането да завърши или да продължите с импортирането, ако сте сигурни кой тип портфейл искате да импортирате.",
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
-  },
-  "transactionDetailTitle": "Детайли на транзакцията",
-  "@transactionDetailTitle": {
-    "description": "Title for transaction details screen"
   },
   "autoswapRecipientWalletLabel": "Портфейл Bitcoin на получателя",
   "@autoswapRecipientWalletLabel": {
@@ -6356,10 +5904,6 @@
   "@buyVerificationRequired": {
     "description": "Error when KYC needed for purchase size"
   },
-  "dcaUseDefaultLightningAddress": "Използвайте моя по подразбиране Lightning адрес.",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
   "sellEstimatedArrival": "Очаквано пристигане: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -6427,17 +5971,9 @@
   "@sellKYCPending": {
     "description": "Message when verification in progress"
   },
-  "buyGetConfirmedFaster": "Постигнете по-бързо потвърждение",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
   "payCustomFee": "Персонализирана такса",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "buyConfirmExpress": "Потвърдете експресното теглене",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
   },
   "fundExchangeBankTransferWireTimeframe": "Всички изпратени от вас средства ще бъдат добавени към вашия баланс в Bull Bitcoin в рамките на 1-2 работни дни.",
   "@fundExchangeBankTransferWireTimeframe": {
@@ -6479,10 +6015,6 @@
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
   },
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
-  },
   "fundExchangeLabelInstitutionNumber": "Номер на институцията",
   "@fundExchangeLabelInstitutionNumber": {
     "description": "Label for institution number field"
@@ -6506,10 +6038,6 @@
   "buyVerificationComplete": "Потвърждението е завършено",
   "@buyVerificationComplete": {
     "description": "Success message after KYC approval"
-  },
-  "transactionNotesLabel": "Бележки към транзакцията",
-  "@transactionNotesLabel": {
-    "description": "Label for transaction notes section"
   },
   "replaceByFeeFeeRateDisplay": "Скорост на таксата: {feeRate} sat/vbyte",
   "@replaceByFeeFeeRateDisplay": {
@@ -6555,10 +6083,6 @@
   "enterBackupKeyManuallyTitle": "Въведете резервния ключ ръчно",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "transactionDetailLabelRecipientAddress": "Адрес на получателя",
-  "@transactionDetailLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
@@ -6949,7 +6473,6 @@
   "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
   "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
   "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер",
-  "transactionStatusPayjoinCompleted": "Payjoin завършен",
   "homeActionBuy": "Купи",
   "homeActionSell": "Продай",
   "homeActionPay": "Плати",
@@ -7240,7 +6763,6 @@
   "logsShareOptionExport": "Експортиране",
   "logsExportedMessage": "Журналите са експортирани успешно",
   "logsExportFailedMessage": "Неуспешно експортиране на журналите",
-  "coreSwapsStatusRefunded": "Възстановено",
   "swapRestoreTitle": "Възстановяване на обмен",
   "swapRestoreActionable": "{count, plural, =0{Няма обмени за възстановяване} =1{Можете да опитате да възстановите 1 обмен. Възможно е вече да е в краен статус.} other{Можете да опитате да възстановите {count} обмена. Обърнете внимание, че някои от тях може вече да са в краен статус.}}",
   "swapRestoreNoSwaps": "Няма намерени обмени за възстановяване",
@@ -7263,32 +6785,16 @@
   "swapRescueSuccess": "Обменът е възстановен — сега ще продължи",
   "mempoolServerStatusUnknown": "Неизвестен",
   "receivePayjoinNoUtxos": "Първо получете средства, за да го активирате.\nЗа използване на payjoin са необходими UTXO.",
-  "payViewReceipt": "Виж разписката",
   "paySinpeReceipt": "SINPE разписка",
-  "transactionFilterWithdraw": "Тегления",
-  "transactionFilterPay": "Плащане",
-  "transactionFilterFunding": "Захранване",
-  "transactionFilterReward": "Награда",
-  "transactionFilterRefund": "Възстановяване",
-  "transactionPayjoinSendWithout": "Изпрати без payjoin",
-  "transactionSwapProgressInitiated": "Инициирано",
-  "transactionSwapProgressPaymentMade": "Плащането\nизвършено",
-  "transactionSwapProgressFundsClaimed": "Средствата\nполучени",
-  "transactionSwapProgressBroadcasted": "Излъчено",
-  "transactionSwapProgressInvoicePaid": "Фактурата\nплатена",
-  "transactionSwapProgressConfirmed": "Потвърдено",
   "transactionSwapStatusTransferStatus": "Статус на обмена",
   "transactionSwapStatusSwapStatus": "Статус на обмена",
   "transactionSwapDescLnReceivePending": "Обменът ви е инициран. Изчакваме получаване на плащане в мрежата Lightning.",
-  "transactionSwapDescLnReceivePaid": "Плащането е получено! В момента излъчваме верижната транзакция към вашия портфейл.",
   "transactionSwapDescLnReceiveClaimable": "Верижната транзакция е потвърдена. В момента получаваме средствата, за да завършим вашия обмен.",
   "transactionSwapDescLnReceiveCompleted": "Обменът ви беше завършен успешно! Средствата вече трябва да са налични във вашия портфейл.",
   "transactionSwapDescLnReceiveFailed": "Възникна проблем с вашия обмен. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
   "transactionSwapDescLnReceiveExpired": "Този обмен е изтекъл. Всички изпратени средства ще бъдат автоматично върнати на изпращача.",
   "transactionSwapDescLnReceiveDefault": "Обменът ви е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време.",
   "transactionSwapDescLnSendPending": "Обменът ви е инициран. Излъчваме верижната транзакция, за да заключим средствата ви.",
-  "transactionListLoadingFailed": "Транзакциите не можаха да бъдат заредени.",
-  "transactionLabelNetworkFees": "Мрежови такси",
   "receiveLiquidRiskDisclosureLabel": "Плащанията ще бъдат конвертирани в Liquid L-BTC (не BTC). Научете повече.",
   "walletLiquidRiskDisclosureLabel": "Тези средства са Liquid L-BTC (не BTC). Научете повече.",
   "liquidRiskDisclosureSemanticLabel": "Отвори разкриването на риска за Liquid Bitcoin",
@@ -7340,8 +6846,6 @@
   "addressViewTransactions": "Транзакции",
   "addressViewCopyAddress": "Копирай адреса",
   "addressViewShowQR": "Покажи QR код",
-  "importQrDeviceTitle": "Свържи {deviceName}",
-  "importQrDeviceScanPrompt": "Сканирайте QR кода от вашия {deviceName}",
   "importQrDeviceScanning": "Сканиране...",
   "importQrDeviceImporting": "Импортиране на портфейл...",
   "importQrDeviceSuccess": "Портфейлът е импортиран успешно",
@@ -7350,77 +6854,6 @@
   "importQrDeviceWalletName": "Име на портфейла",
   "importQrDeviceFingerprint": "Пръстов отпечатък",
   "importQrDeviceImport": "Импортирай",
-  "importQrDeviceButtonOpenCamera": "Отвори камерата",
-  "importQrDeviceButtonInstructions": "Инструкции",
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "importQrDeviceJadeInstructionsTitle": "Инструкции за Blockstream Jade",
-  "importQrDeviceJadeStep1": "Включете устройството си Jade",
-  "importQrDeviceJadeStep2": "Изберете „QR режим“ от главното меню",
-  "importQrDeviceJadeStep3": "Следвайте инструкциите на устройството, за да отключите Jade",
-  "importQrDeviceJadeStep4": "Изберете „Опции“ от главното меню",
-  "importQrDeviceJadeStep5": "Изберете „Портфейл“ от списъка с опции",
-  "importQrDeviceJadeStep6": "Изберете „Експортирай Xpub“ от менюто на портфейла",
-  "importQrDeviceJadeStep7": "Ако е необходимо, изберете „Опции“, за да промените типа на адреса",
-  "importQrDeviceJadeStep8": "Натиснете бутона „отвори камерата“",
-  "importQrDeviceJadeStep9": "Сканирайте QR кода, който виждате на устройството си.",
-  "importQrDeviceJadeStep10": "Готово!",
-  "importQrDeviceJadeFirmwareWarning": "Уверете се, че устройството ви е актуализирано до най-новия фърмуер",
-  "importQrDeviceKruxName": "Krux",
-  "importQrDeviceKruxInstructionsTitle": "Инструкции за Krux",
-  "importQrDeviceKruxStep1": "Включете устройството си Krux",
-  "importQrDeviceKruxStep2": "Натиснете „Разширен публичен ключ“",
-  "importQrDeviceKruxStep3": "Натиснете „XPUB - QR код“",
-  "importQrDeviceKruxStep4": "Натиснете бутона „отвори камерата“",
-  "importQrDeviceKruxStep5": "Сканирайте QR кода, който виждате на устройството си.",
-  "importQrDeviceKruxStep6": "Готово!",
-  "importQrDeviceKeystoneName": "Keystone",
-  "importQrDeviceKeystoneInstructionsTitle": "Инструкции за Keystone",
-  "importQrDeviceKeystoneStep1": "Включете вашия Keystone",
-  "importQrDeviceKeystoneStep2": "Отключете го, като въведете вашия PIN",
-  "importQrDeviceKeystoneStep3": "Докоснете *** (трите точки) в горния десен ъгъл",
-  "importQrDeviceKeystoneStep4": "Докоснете „Свържи софтуерен портфейл“",
-  "importQrDeviceKeystoneStep5": "Изберете „BULL“ от списъка с портфейли",
-  "importQrDeviceKeystoneStep6": "На мобилното си устройство натиснете „отвори камерата“",
-  "importQrDeviceKeystoneStep7": "Сканирайте QR кода, показан на вашия Keystone",
-  "importQrDeviceKeystoneStep8": "В портфейла BULL изберете предпочитания от вас тип извеждане (derivation). Ако не сте сигурни, изберете „Segwit (BIP84)“",
-  "importQrDeviceKeystoneStep9": "Въведете етикет за вашия Keystone портфейл и натиснете „Импортирай“",
-  "importQrDeviceKeystoneStep10": "Вашият Keystone вече е свързан и готов за използване с BULL Wallet.",
-  "importQrDevicePassportName": "Foundation Passport",
-  "importQrDevicePassportInstructionsTitle": "Инструкции за Foundation Passport",
-  "importQrDevicePassportStep1": "Включете устройството си Passport",
-  "importQrDevicePassportStep2": "Въведете своя PIN",
-  "importQrDevicePassportStep3": "Изберете „Wallet“",
-  "importQrDevicePassportStep4": "Изберете „Connect App“",
-  "importQrDevicePassportStep5": "Изберете „Bull“",
-  "importQrDevicePassportStep6": "Сканирайте QR кода, показан на вашия Passport",
-  "importQrDevicePassportStep7": "В приложението BULL wallet изберете „Segwit (BIP84)“ като опция за извеждане (derivation)",
-  "importQrDevicePassportStep8": "Въведете етикет за вашия Passport портфейл и натиснете „Импортирай“",
-  "importQrDevicePassportStep9": "Настройката е завършена.",
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "importQrDeviceSeedsignerInstructionsTitle": "Инструкции за SeedSigner",
-  "importQrDeviceSeedsignerStep1": "Включете устройството си SeedSigner",
-  "importQrDeviceSeedsignerStep2": "Отворете менюто „Seeds“",
-  "importQrDeviceSeedsignerStep3": "Сканирайте SeedQR или въведете вашата 12- или 24-словна seed фраза",
-  "importQrDeviceSeedsignerStep4": "Изберете „Експортирай Xpub“",
-  "importQrDeviceSeedsignerStep5": "Изберете „Единичен подпис“, след което изберете предпочитания от вас тип скрипт (изберете Native Segwit, ако не сте сигурни).",
-  "importQrDeviceSeedsignerStep6": "Изберете „Animated“ като опция за експортиране. При по-стар фърмуер на SeedSigner изберете „Sparrow“.",
-  "importQrDeviceSeedsignerStep7": "На мобилното си устройство натиснете „Отвори камерата“",
-  "importQrDeviceSeedsignerStep8": "Сканирайте QR кода, показан на вашия SeedSigner",
-  "importQrDeviceSeedsignerStep9": "Въведете етикет за вашия SeedSigner портфейл и натиснете „Импортирай“",
-  "importQrDeviceSeedsignerStep10": "Настройката е завършена",
-  "importQrDeviceSpecterName": "Specter",
-  "importQrDeviceSpecterInstructionsTitle": "Инструкции за Specter",
-  "importQrDeviceSpecterStep1": "Включете устройството си Specter",
-  "importQrDeviceSpecterStep2": "Въведете своя PIN",
-  "importQrDeviceSpecterStep3": "Въведете своя seed/ключ (изберете опцията, която ви подхожда)",
-  "importQrDeviceSpecterStep4": "Следвайте подканите съобразно избрания от вас метод",
-  "importQrDeviceSpecterStep5": "Изберете „Главни публични ключове“",
-  "importQrDeviceSpecterStep6": "Изберете „Единичен ключ“",
-  "importQrDeviceSpecterStep7": "Изключете „Използвай SLIP-132“",
-  "importQrDeviceSpecterStep8": "На мобилното си устройство натиснете „Отвори камерата“",
-  "importQrDeviceSpecterStep9": "Сканирайте QR кода, показан на вашия Specter",
-  "importQrDeviceSpecterStep10": "Въведете етикет за вашия Specter портфейл и натиснете „Импортирай“",
-  "importQrDeviceSpecterStep11": "Настройката е завършена",
   "importColdcardScanPrompt": "Сканирайте QR кода от вашия Coldcard Q",
   "importColdcardMultisigPrompt": "За мултисиг портфейли сканирайте QR кода на описателя на портфейла",
   "importColdcardScanning": "Сканиране...",
@@ -7433,33 +6866,6 @@
   "importColdcardScanNfcSheetTitle": "Докоснете вашия {deviceName}, за да импортирате описателя на портфейла през NFC",
   "importColdcardButtonOpenCamera": "Отвори камерата",
   "importColdcardButtonInstructions": "Инструкции",
-  "importColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
-  "importColdcardQStep1": "Влезте в устройството си Coldcard Q",
-  "importColdcardQStep2": "Добавете защитна парола, ако имате такава (по избор)",
-  "importColdcardQStep3": "Изберете разширеното меню/менюто с настройки",
-  "importColdcardQStep4": "Натиснете „експортирай портфейл“",
-  "importColdcardQStep5": "Изберете „описател“ като тип за експортиране",
-  "importColdcardQStep6": "Натиснете „Enter“ на първия екран",
-  "importColdcardQStep7": "Натиснете „Enter“ на втория екран",
-  "importColdcardQStep8": "Изберете типа на адреса си (използвайте Segwit, ако не сте сигурни)",
-  "importColdcardQStep9": "За QR натиснете бутона за QR код на устройството. То ще ви покаже QR код на устройството",
-  "importColdcardQStep10": "За NFC натиснете бутона за NFC на устройството",
-  "importColdcardQStep11": "Натиснете бутона „Отвори камерата“ / „Сканирай NFC“",
-  "importColdcardQStep12": "Сканирайте QR кода, който виждате на устройството си, или поставете телефона с NFC върху NFC на Coldcard",
-  "importColdcardQStep13": "Готово!",
-  "importColdcardMk4InstructionsTitle": "Инструкции за Coldcard Mk4",
-  "importColdcardMk4Step1": "Влезте в устройството си Coldcard Mk4",
-  "importColdcardMk4Step2": "Добавете защитна парола, ако имате такава (по избор)",
-  "importColdcardMk4Step3": "Изберете разширеното меню/менюто с настройки",
-  "importColdcardMk4Step4": "Натиснете „експортирай портфейл“",
-  "importColdcardMk4Step5": "Изберете „описател“ като тип за експортиране",
-  "importColdcardMk4Step6": "Натиснете „Enter“ на първия екран",
-  "importColdcardMk4Step7": "Натиснете „Enter“ на втория екран",
-  "importColdcardMk4Step8": "Изберете типа на адреса си (използвайте Segwit, ако не сте сигурни)",
-  "importColdcardMk4Step9": "Натиснете номер 3, за да стартирате NFC на Coldcard",
-  "importColdcardMk4Step10": "Натиснете бутона „Сканирай NFC“",
-  "importColdcardMk4Step11": "Поставете телефона с NFC върху NFC на Coldcard",
-  "importColdcardMk4Step12": "Готово!",
   "exchangeLandingTitle": "BULL BITCOIN",
   "exchangeLandingConnect": "Свържете сметката си в борсата Bull Bitcoin",
   "exchangeLandingFeature1": "Купувайте Bitcoin директно в самостоятелно попечителство",
@@ -7508,48 +6914,9 @@
   "fundExchangeCopGeneratePaymentLink": "Генерирай линк за плащане",
   "fundExchangeCopRedirectMessage": "Ще бъдете пренасочени към външна страница, за да извършите плащането.",
   "fundExchangeCopOpenPaymentLink": "Отвори линка за плащане",
-  "dcaSetupTitle": "Настрой периодична покупка",
-  "dcaSetupInsufficientBalance": "Недостатъчен баланс",
-  "dcaSetupInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
-  "dcaSetupFundAccount": "Захрани сметката си",
-  "dcaSetupScheduleMessage": "Покупките на Bitcoin ще се извършват автоматично според този график.",
-  "dcaSetupFrequencyError": "Моля, изберете честота",
-  "dcaSetupContinue": "Продължи",
-  "dcaConfirmTitle": "Потвърди периодичната покупка",
-  "dcaConfirmAutoMessage": "Поръчките за покупка ще се извършват автоматично според тези настройки. Можете да ги деактивирате по всяко време.",
-  "dcaConfirmFrequency": "Честота",
-  "dcaConfirmFrequencyHourly": "Всеки час",
-  "dcaConfirmFrequencyDaily": "Всеки ден",
-  "dcaConfirmFrequencyWeekly": "Всяка седмица",
-  "dcaConfirmFrequencyMonthly": "Всеки месец",
-  "dcaConfirmAmount": "Сума",
-  "dcaConfirmPaymentMethod": "Метод на плащане",
-  "dcaConfirmPaymentBalance": "Баланс в {currency}",
-  "dcaConfirmOrderType": "Тип поръчка",
-  "dcaConfirmOrderTypeValue": "Периодична покупка",
-  "dcaConfirmNetwork": "Мрежа",
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "dcaConfirmNetworkLightning": "Lightning",
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "dcaConfirmLightningAddress": "Lightning адрес",
-  "dcaConfirmContinue": "Продължи",
-  "buyInputTitle": "Купи Bitcoin",
-  "buyInputMinAmountError": "Трябва да купите поне",
-  "buyInputMaxAmountError": "Не можете да купите повече от",
   "buyInputKycPending": "Изчаква се проверка на самоличността (KYC)",
   "buyInputKycMessage": "Първо трябва да завършите проверка на самоличността",
   "buyInputCompleteKyc": "Завърши KYC",
-  "buyInputInsufficientBalance": "Недостатъчен баланс",
-  "buyInputInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
-  "buyInputFundAccount": "Захрани сметката си",
-  "buyInputContinue": "Продължи",
-  "buyConfirmTitle": "Купи Bitcoin",
-  "buyConfirmYouPay": "Вие плащате",
-  "buyConfirmYouReceive": "Вие получавате",
-  "buyConfirmBitcoinPrice": "Цена на Bitcoin",
-  "buyConfirmPayoutMethod": "Метод на изплащане",
-  "buyConfirmExternalWallet": "Външен биткойн портфейл",
-  "buyConfirmAwaitingConfirmation": "Изчаква потвърждение ",
   "sellSendPaymentTitle": "Потвърди плащането",
   "sellSendPaymentPriceRefresh": "Цената ще се обнови след ",
   "sellSendPaymentOrderNumber": "Номер на поръчката",
@@ -7705,9 +7072,6 @@
   "withdrawOwnershipOtherAccount": "Това е сметка на друго лице",
   "navigationTabWallet": "Портфейл",
   "navigationTabExchange": "Борса",
-  "buyUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
-  "buyBelowMinAmountError": "Опитвате се да купите под минималната сума.",
-  "buyAboveMaxAmountError": "Опитвате се да купите над максималната сума.",
   "withdrawUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
   "withdrawBelowMinAmountError": "Минимална сума е {amount} {currency}",
   "withdrawAboveMaxAmountError": "Максимална сума е {amount} {currency}",
@@ -7772,10 +7136,6 @@
   "consolidationScreenTitle": "Консолидиране",
   "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
   "consolidationSuccessTitle": "Консолидацията започна",
-  "transactionStatusPayjoinAborted": "Payjoin отменен",
-  "transactionDetailLabelPayjoinAborted": "Отменен",
-  "transactionDetailLabelPayjoinFeeContribution": "Payjoin такса за принос",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin добавя една от вашите монети като допълнителен вход към плащането, за да подобри поверителността. Таксата за копаене за този допълнителен вход се приспада от сумата, която получавате (BIP78).",
   "dcaAccountUnavailableError": "Профилът ви не можа да бъде зареден. Проверете връзката си, уверете се, че сте влезли, и опитайте отново.",
   "dcaLightningAddressRequiredError": "Въведете Lightning адрес, за да получавате покупките си.",
   "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
@@ -7786,16 +7146,6 @@
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
-  "coreSwapsStatusNotStarted": "Не е започнало",
-  "coreSwapsStatusAwaitingPayment": "Очаква плащане",
-  "coreSwapsStatusAwaitingConfirmation": "Очаква потвърждение",
-  "coreSwapsStatusUnderReview": "В процес на преглед",
-  "coreSwapsStatusRejected": "Отхвърлено",
-  "coreSwapsStatusCanceled": "Отменено",
-  "coreSwapsStatusPaymentDeadlineExpired": "Срокът за плащане изтече",
-  "coreSwapsStatusScheduled": "Планирано",
-  "coreSwapsStatusAwaitingClaim": "Очаква получаване",
-  "coreSwapsStatusUnknown": "Неизвестно",
   "sendSwapExpiredTitle": "Поръчката изтече",
   "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо.",
   "settingsScreenPrivacyTitle": "Поверителност на екрана",
@@ -7842,10 +7192,6 @@
   "walletWarningElectrumBothDown": "Сървърите Bitcoin и Liquid са недостъпни",
   "walletWarningElectrumAction": "Докоснете, за да настроите сървъра",
   "walletLoadFailedRetryHint": "Плъзнете надолу, за да обновите и опитайте отново",
-  "transactionDetailLoadError": "Данните за транзакцията не можаха да бъдат заредени.",
-  "transactionPayjoinBroadcastFailed": "Оригиналната транзакция не можа да бъде излъчена. Моля, опитайте отново.",
-  "transactionPayjoinOriginalUnavailable": "Оригиналната транзакция вече не е достъпна за излъчване.",
-  "transactionLabelLimitReached": "Можете да имате най-много 10 етикета.",
   "settingsErrorSavingSetting": "Тази настройка не можа да бъде запазена. Моля, опитайте отново.",
   "settingsErrorConsentNotGiven": "Тази настройка изисква вашето потвърждение, преди да бъде променена.",
   "settingsErrorLoadingLogs": "Диагностичните дневници не можаха да бъдат подготвени. Моля, опитайте отново.",

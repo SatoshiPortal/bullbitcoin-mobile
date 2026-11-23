@@ -38,15 +38,14 @@ const _allowedTargets = <String, String>{
   'consolidation': 'send wallet',
   'dca': 'address_view bull_exchange exchange wallet',
   'exchange': 'bitcoin_price bull_exchange dca transactions wallet',
-  'import_coldcard': 'import_watch_only_wallet scanning signers',
-  'import_mnemonic': 'mnemonic_entry wallet',
-  'import_qr_device': 'import_watch_only_wallet signers',
-  'import_wallet': 'import_coldcard import_mnemonic import_qr_device import_watch_only_wallet settings signers',
-  'import_watch_only_wallet': 'scanning signers wallet',
+  'import_coldcard': 'scanning signers wallet_import',
+  'import_mnemonic': 'mnemonic_entry wallet wallet_import',
+  'import_wallet': 'import_coldcard import_mnemonic import_watch_only_wallet settings signers wallet_import',
+  'import_watch_only_wallet': 'scanning signers wallet wallet_import',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
   'onboarding':
-      'import_mnemonic mnemonic_entry network recoverbull settings wallet',
+      'import_mnemonic mnemonic_entry network recoverbull settings wallet wallet_import',
   'pay': 'address_view bitcoin_price bull_exchange coins exchange fees send transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',
@@ -59,9 +58,9 @@ const _allowedTargets = <String, String>{
   'swap': 'address_view ark coins consolidation fees send transactions wallet',
   'test_wallet_backup':
       'access onboarding physical_backup_verification recoverbull wallet',
-  'transactions':
-      'ark buy exchange label_editor pay replace_by_fee swap wallet',
+  'transactions': 'bitcoin_price label_editor',
   'wallet': 'ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
+  'wallet_import': 'signers',
   'wizard': 'bull_exchange settings',
 };
 

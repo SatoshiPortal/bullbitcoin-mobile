@@ -28,7 +28,7 @@ The codebase has **two coexisting patterns**, which is expected mid-migration:
 
 **1. The dominant pattern — `ui → bloc → usecase → repository → datasource`** (calls flow down; data flows back up). Most shared *data + domain* lives in `lib/core/<domain>/` (28 top-level domains under `lib/core/`, 32 datasource files, 28 repository interfaces under `domain/repositories/`, ≈279 use-case files app-wide — most in `lib/core`, ≈20 features carry their own under `domain/usecases/`). Most *features* in `lib/features/<feature>/` are **presentation + ui** (bloc/cubit files found across ≈38 of 48 feature folders) that consume `lib/core`. The shape: a datasource per external system, an abstract repository with its implementation, use-cases, a bloc on top, `get_it` for wiring. It is simple, uniform, and well understood — **this is the pattern we consolidate on.**
 
-**2. A minority drifted to a heavier hexagonal split (≈6 modules: `labels`, `electrum_settings`, `fund_exchange`, `recipients`, `transactions`, `broadcast_signed_tx`).** Extra rings — `application/` (use-cases + ports), `adapters/`, `frameworks/`, `interface_adapters/` — plus per-layer error types and several model+mapper hops. More files, more vocabulary, no extra capability. **We converge these back** onto pattern 1 (see "Convergence" below).
+**2. A minority drifted to a heavier hexagonal split (examples: `labels`, `electrum_settings`, `fund_exchange`, `recipients`, `broadcast_signed_tx`).** Extra rings — `application/` (use-cases + ports), `adapters/`, `frameworks/`, `interface_adapters/` — plus per-layer error types and several model+mapper hops. More files, more vocabulary, no extra capability. **We converge these back** onto pattern 1 (see "Convergence" below).
 
 **Legacy feature facades** predate the workspace capability APIs (9 `*_facade.dart` files under `lib/features/` in the 2026-08-25 census). Direct cross-feature imports and separate locator and router entry points also remain in parts of the legacy app.
 
@@ -51,7 +51,9 @@ Open a package through its published capability and mount a feature through its 
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
 
-Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input. The import feature still reaches into Wallets internals; replacing that dependency with a published capability remains a scoped follow-up.
+Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input.
+
+`ImportFeature.mount` composes the QR device instruction routes and the read-only mnemonic prescan. The mnemonic preflight uses the active Secrets wallet inventory. The confirmation routes use the Wallet repository to provision native wallets and register them in that same encrypted inventory.
 
 ## 🎯 The architecture we tend toward
 
@@ -351,9 +353,11 @@ The workspace Settings screen owns the logout and deletion confirmations. `Excha
 
 The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange` and uses the workspace virtual IBAN screen. The Exchange domain owns fiat recipients, the CAD directory, SINPE and SEPA activation. Their operations use the untimed BBX client bound to the current session; the feature owns polling, selection and form state.
 
+Buy and DCA mount at their existing root routes in `bull_exchange`. They use the admitted Secrets wallet inventory on the active network and Sync for durable receive addresses. Buy reuses the current receive address; on-chain DCA advances the index for the sole configured default on the selected chain. Lightning DCA does not query the wallet inventory. The host binds the existing destination field, wallet polling, and order history navigation.
+
 Withdrawal is mounted in the same feature and reuses its recipient selection and activation. A completed withdrawal is not invalidated by failing to update Interac defaults. The host opens the existing transaction detail route and preserves its return to Exchange.
 
-The Exchange amount and currency controls are intentionally reusable widgets. DCA, Limit Orders, Sell, Pay and Withdrawal import them from `bull_exchange`, not from the legacy Exchange UI.
+The Exchange amount and currency controls are intentionally reusable widgets. DCA and Withdrawal use them within `bull_exchange`; Limit Orders, Sell and Pay import them from its public library.
 
 Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
 
@@ -522,6 +526,6 @@ Send and Payjoin consume the chain operations published by `sync` through `Walle
 
 `packages/sync` owns `WalletNativeRuntime`, composed through `sync/write.dart`. Runtime operations accept wallet keys and return typed results; the application resolves metadata and maps failures at its existing consumer boundaries. The catalog owner supplies the callback that removes an inventory entry after native deletion is confirmed. Native storage paths, revisions and recovery order remain unchanged.
 
-Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
+Spend resolves exact wallet IDs in the admitted Secrets inventory and calls the Result-returning `wallet.tx` capability. Its opaque preparation carries the captured wallet, network and generation through review, verification, signing and broadcast. Payjoin writes its durable sender reservation under Sync admission before publishing the signed original. The standalone Bitcoin import has no wallet generation and uses the global freeze queue. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in Sync.
 
 Preferences storage uses `databases/preferences.sqlite` with the stable key identity `preferences/main`. Its schema-1 projection excludes the legacy credential columns, announcement dismissals and the RecoverBull URL. Only testnet credentials borrow the tracked legacy connection; Announcements uses its own encrypted store. Settings and the historical RecoverBull permission projection preserve IDs and AUTOINCREMENT high-water values in the same transaction as the receipt. Initialized standalone v1 consent takes precedence; otherwise the import uses the v16 table. Only consent for the default URL is retained; the source URL is compared, never stored. Regtest starts without consent and remains separate. Fresh defaults have their own receipt; preparation is foreground-only. The historical schema and standalone RecoverBull file are retained.

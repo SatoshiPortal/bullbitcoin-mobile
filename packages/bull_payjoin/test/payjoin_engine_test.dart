@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show Value;
@@ -39,6 +40,18 @@ class _FailingAbortLocal extends LocalPayjoinDatasource {
   @override
   Future<bool> markAborted(PayjoinModel payjoin) =>
       Future.error(StateError('disk full'));
+}
+
+class _RefusingAbortLocal extends LocalPayjoinDatasource {
+  final bool throws;
+
+  _RefusingAbortLocal({required super.db, required this.throws});
+
+  @override
+  Future<bool> markAborted(PayjoinModel payjoin) async {
+    if (throws) throw Exception('Abort write failed');
+    return false;
+  }
 }
 
 /// Records nothing as completed: the write that follows a successful payjoin
@@ -116,6 +129,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(Uint8List(0));
+    registerFallbackValue((PayjoinReceiverModel _) async {});
   });
 
   PayjoinReceiverModel receiver({
@@ -201,6 +215,8 @@ void main() {
         );
     pdk = _MockPdkPayjoinDatasource();
     when(() => pdk.isPolling(any())).thenReturn(false);
+    registerFallbackValue(receiver());
+    when(() => pdk.receiverProposalNeedsFallback(any())).thenReturn(false);
     blockchain = _MockBlockchainPort();
     transactions = _MockTransactionPort();
     when(
@@ -1005,6 +1021,140 @@ void main() {
     expect((await local.fetchSender(posted.id))?.hasNetworkEvidence, isTrue);
   });
 
+  test(
+    'the reviewed original admits its persisted reservation before POST',
+    () async {
+      final model = sender();
+      var admitted = false;
+      stubCreateSender(model, model.copyWith(sender: '["posted"]'));
+
+      await engine.createPayjoinSender(
+        walletId: model.walletId,
+        isTestnet: model.isTestnet,
+        bip21: model.id,
+        originalPsbt: model.originalPsbt,
+        amountSat: model.amountSat,
+        networkFeesSatPerVb: 1,
+        admitOriginal: ({required sessionId, required persist}) async {
+          expect(sessionId, model.id);
+          expect(await local.fetchSender(sessionId), isNull);
+          await persist();
+          expect(
+            (await local.fetchSender(sessionId))?.originalPsbt,
+            model.originalPsbt,
+          );
+          admitted = true;
+          return const Ok(null);
+        },
+      );
+
+      expect(admitted, isTrue);
+      expect((await local.fetchSender(model.id))?.hasNetworkEvidence, isTrue);
+    },
+  );
+
+  test(
+    'refusal after the write does not arm fallback for an unposted original',
+    () async {
+      final model = sender();
+      stubCreateSender(model, model.copyWith(sender: '["posted"]'));
+      await expectLater(
+        engine.createPayjoinSender(
+          walletId: model.walletId,
+          isTestnet: model.isTestnet,
+          bip21: model.id,
+          originalPsbt: model.originalPsbt,
+          amountSat: model.amountSat,
+          networkFeesSatPerVb: 1,
+          admitOriginal: ({required sessionId, required persist}) async {
+            await persist();
+            return const Err(PayjoinSpendBlockedFailure(busy: true));
+          },
+        ),
+        throwsA(isA<PayjoinSpendBlockedException>()),
+      );
+      expect((await local.fetchSender(model.id))?.isAborted, isTrue);
+      verifyNever(() => pdk.startListeningForProposal(model));
+    },
+  );
+
+  for (final throws in [true, false]) {
+    test('a refused unposted sender cannot broadcast after restart '
+        '(abort ${throws ? 'throws' : 'returns false'})', () async {
+      await engine.dispose();
+      final abortLocal = _RefusingAbortLocal(db: database, throws: throws);
+      PayjoinRepositoryImpl open(LocalPayjoinDatasource storage) =>
+          PayjoinRepositoryImpl(
+            codec: const TestPayjoinCodec(),
+            localPayjoinDatasource: storage,
+            pdkPayjoinDatasource: pdk,
+            log: PayjoinLogger(logs),
+            wallet: wallet,
+            blockchain: blockchain,
+            transactions: transactions,
+            policy: policy,
+            labels: labels,
+          );
+      engine = open(abortLocal);
+      final model = expiredSender();
+      stubCreateSender(model, model.copyWith(sender: '["posted"]'));
+      await expectLater(
+        engine.createPayjoinSender(
+          walletId: model.walletId,
+          isTestnet: model.isTestnet,
+          bip21: model.id,
+          originalPsbt: model.originalPsbt,
+          amountSat: model.amountSat,
+          networkFeesSatPerVb: 1,
+          admitOriginal: ({required sessionId, required persist}) async {
+            await persist();
+            expect(
+              (await engine.getInputReservations()).single.sessionId,
+              sessionId,
+            );
+            return const Err(PayjoinSpendBlockedFailure(busy: true));
+          },
+        ),
+        throwsA(isA<PayjoinSpendBlockedException>()),
+      );
+      expect((await local.fetchSender(model.id))?.isAborted, isFalse);
+      await engine.dispose();
+      engine = open(local);
+      when(
+        () => blockchain.broadcastPsbt(
+          walletId: model.walletId,
+          sessionId: model.id,
+          network: BitcoinNetwork.testnet,
+          psbt: model.originalPsbt,
+        ),
+      ).thenThrow(const PayjoinBroadcastNotAttemptedException());
+
+      await engine.resumePayjoinsOnStartup();
+
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+      expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+      expect(
+        await engine.tryBroadcastOriginalTransaction(model.toEntity()),
+        isA<Err<internal.Payjoin, PayjoinFailure>>(),
+      );
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+    });
+  }
+
   test('visibleCompetingTransaction reports the session spend the network '
       'knows and null for an unknown session', () async {
     final model = sender();
@@ -1018,10 +1168,19 @@ void main() {
     ).thenAnswer((_) async => true);
 
     expect(
-      await engine.visibleCompetingTransaction(model.id),
+      (await engine.visibleCompetingTransaction(model.id)).fold(
+        (value) => value,
+        (failure) => fail("Unexpected failure ${failure.runtimeType}"),
+      ),
       model.originalTxId,
     );
-    expect(await engine.visibleCompetingTransaction('unknown-session'), isNull);
+    expect(
+      (await engine.visibleCompetingTransaction('unknown-session')).fold(
+        (value) => value,
+        (failure) => fail("Unexpected failure ${failure.runtimeType}"),
+      ),
+      isNull,
+    );
   });
 
   test(
@@ -1037,7 +1196,13 @@ void main() {
         ),
       ).thenAnswer((_) async => false);
 
-      expect(await engine.visibleCompetingTransaction(model.id), isNull);
+      expect(
+        (await engine.visibleCompetingTransaction(model.id)).fold(
+          (value) => value,
+          (failure) => fail("Unexpected failure ${failure.runtimeType}"),
+        ),
+        isNull,
+      );
     },
   );
 
@@ -1078,7 +1243,13 @@ void main() {
           amountSat: prePost.amountSat,
           networkFeesSatPerVb: 1,
         ),
-        throwsA(isA<PayjoinSenderKeptException>()),
+        throwsA(
+          isA<PayjoinSenderKeptException>().having(
+            (error) => error.publicationUnknown,
+            'publication unknown',
+            mayBeDelivered,
+          ),
+        ),
       );
 
       // Only a request that provably never left the device lets expiry
@@ -1189,7 +1360,13 @@ void main() {
         amountSat: posted.amountSat,
         networkFeesSatPerVb: 1,
       ),
-      throwsStateError,
+      throwsA(
+        isA<PayjoinSenderKeptException>().having(
+          (error) => error.publicationUnknown,
+          'publication unknown',
+          true,
+        ),
+      ),
     );
 
     // The original is already on the directory: the receiver's proposal must
@@ -1345,86 +1522,131 @@ void main() {
     verifyNever(() => pdk.startListeningForRequest(model));
   });
 
-  test(
-    'publishing a proposal gates manual fallback across fresh reads',
-    () async {
-      final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
-        originalTransactionId: 'original-tx',
-      );
-      final proposal = model.copyWith(
-        proposalPsbt: 'proposal',
-        txId: 'payjoin-tx',
-      );
-      await local.storeReceiver(model);
-      registerFallbackValue(model);
-      registerFallbackValue(<PayjoinInputPairModel>[]);
-      registerFallbackValue((Outpoint _) => true);
-      registerFallbackValue((Uint8List _) => true);
-      registerFallbackValue((String psbt) => psbt);
-      when(
-        () => wallet.spendableUtxos(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async => [
-          PayjoinUtxo(
-            outpoint: (txId: 'wallet-utxo', vout: 0),
-            value: Sats.fromInt(100000),
-            scriptPubkey: Uint8List.fromList([0, 20]),
-            confirmed: true,
+  for (final postFails in [false, true]) {
+    test(
+      postFails
+          ? 'a failed receiver proposal POST falls back to the original'
+          : 'publishing a proposal gates manual fallback across fresh reads',
+      () async {
+        final model = receiver(
+          originalTransaction: Uint8List.fromList([1, 2, 3]),
+          originalTransactionId: 'original-tx',
+        );
+        final proposal = model.copyWith(
+          proposalPsbt: oneInputPsbt,
+          txId: 'payjoin-tx',
+        );
+        await local.storeReceiver(model);
+        registerFallbackValue(model);
+        registerFallbackValue(<PayjoinInputPairModel>[]);
+        registerFallbackValue((Outpoint _) => true);
+        registerFallbackValue((Uint8List _) => true);
+        registerFallbackValue((String psbt) => psbt);
+        when(
+          () => wallet.spendableUtxos(
+            walletId: model.walletId,
+            network: BitcoinNetwork.testnet,
           ),
-        ],
-      );
-      when(
-        () => wallet.captureOwnership(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async => PayjoinWalletOwnership(
-          ownsScript: (_) => true,
-          ownsOutpoint: (_) => true,
-        ),
-      );
-      when(
-        () => pdk.proposePayjoin(
-          receiverModel: any(named: 'receiverModel'),
-          ownsOutpoint: any(named: 'ownsOutpoint'),
-          hasReceiverOutput: any(named: 'hasReceiverOutput'),
-          inputPairs: any(named: 'inputPairs'),
-          signPsbt: any(named: 'signPsbt'),
-        ),
-      ).thenAnswer((_) async => proposal);
-      final proposed = engine.payjoinStream.firstWhere(
-        (session) => session.status == internal.PayjoinStatus.proposed,
-      );
-      requests.add(model);
-      await proposed.timeout(const Duration(seconds: 5));
-      final until = engine.receiverFallbackAvailableAt(model.id);
-      if (until == null) fail('no sender wait recorded for the session');
-      expect(
-        until.difference(DateTime.now()).inSeconds,
-        inInclusiveRange(58, 60),
-      );
-      expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
-      final fresh = await engine.getPayjoinById(model.id);
-      if (fresh == null) fail('the proposed session is not persisted');
-      final result = await engine.tryBroadcastOriginalTransaction(fresh);
-      expect(
-        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
-        isA<PayjoinFallbackUnavailableFailure>(),
-      );
-      expect(engine.receiverFallbackAvailableAt(model.id), until);
-      verifyNever(
-        () => blockchain.broadcastTransaction(
-          network: any(named: 'network'),
-          transaction: any(named: 'transaction'),
-        ),
-      );
-    },
-  );
+        ).thenAnswer(
+          (_) async => [
+            PayjoinUtxo(
+              outpoint: (txId: '11' * 32, vout: 0),
+              value: Sats.fromInt(100000),
+              scriptPubkey: Uint8List.fromList([0, 20]),
+              confirmed: true,
+            ),
+          ],
+        );
+        when(
+          () => wallet.captureOwnership(
+            walletId: model.walletId,
+            network: BitcoinNetwork.testnet,
+          ),
+        ).thenAnswer(
+          (_) async => PayjoinWalletOwnership(
+            ownsScript: (_) => true,
+            ownsOutpoint: (_) => true,
+          ),
+        );
+        when(
+          () => pdk.proposePayjoin(
+            receiverModel: any(named: 'receiverModel'),
+            ownsOutpoint: any(named: 'ownsOutpoint'),
+            hasReceiverOutput: any(named: 'hasReceiverOutput'),
+            inputPairs: any(named: 'inputPairs'),
+            signPsbt: any(named: 'signPsbt'),
+            persistBeforePost: any(named: 'persistBeforePost'),
+          ),
+        ).thenAnswer((invocation) async {
+          final persist =
+              invocation.namedArguments[#persistBeforePost]
+                  as Future<void> Function(PayjoinReceiverModel);
+          await persist(proposal);
+          expect(
+            (await local.fetchReceiver(model.id))?.proposalPsbt,
+            oneInputPsbt,
+          );
+          if (postFails) {
+            throw PayjoinNotFoundException('Proposal relay rejected the POST');
+          }
+          return proposal;
+        });
+        if (postFails) {
+          when(
+            () => blockchain.broadcastTransaction(
+              network: BitcoinNetwork.testnet,
+              transaction: any(named: 'transaction'),
+            ),
+          ).thenAnswer((_) async {});
+        }
+        final updates = <internal.Payjoin>[];
+        final subscription = engine.payjoinStream.listen(updates.add);
+        addTearDown(subscription.cancel);
+        final next = !postFails
+            ? engine.payjoinStream.firstWhere(
+                (session) => session.status == internal.PayjoinStatus.proposed,
+              )
+            : null;
+        requests.add(model);
+        await settle();
+        if (postFails) {
+          final sent = verify(
+            () => blockchain.broadcastTransaction(
+              network: BitcoinNetwork.testnet,
+              transaction: captureAny(named: 'transaction'),
+            ),
+          );
+          sent.called(1);
+          expect(sent.captured.single, model.originalTxBytes);
+          expect(updates.last.status, internal.PayjoinStatus.aborted);
+          expect(await engine.getInputReservations(), isEmpty);
+          return;
+        }
+        await next?.timeout(const Duration(seconds: 5));
+        final until = engine.receiverFallbackAvailableAt(model.id);
+        if (until == null) fail('no sender wait recorded for the session');
+        expect(
+          until.difference(DateTime.now()).inSeconds,
+          inInclusiveRange(58, 60),
+        );
+        expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+        final fresh = await engine.getPayjoinById(model.id);
+        if (fresh == null) fail('the proposed session is not persisted');
+        final result = await engine.tryBroadcastOriginalTransaction(fresh);
+        expect(
+          (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+          isA<PayjoinFallbackUnavailableFailure>(),
+        );
+        expect(engine.receiverFallbackAvailableAt(model.id), until);
+        verifyNever(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        );
+      },
+    );
+  }
 
   test('manual fallback can replace a proposal that is not visible', () async {
     final model = receiver(
@@ -1516,38 +1738,45 @@ void main() {
     expect(persisted?.isAborted, isFalse);
   });
 
-  test(
-    'a failed visibility check never attempts a fallback broadcast',
-    () async {
-      const originalTxId = 'original-tx';
-      final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
-        originalTransactionId: originalTxId,
-      );
-      await local.storeReceiver(model);
-      when(
-        () => transactions.isTransactionVisible(
-          walletId: model.walletId,
-          transactionId: originalTxId,
-          refresh: true,
-        ),
-      ).thenThrow(Exception('server unreachable'));
-      final result = await engine.tryBroadcastOriginalTransaction(
-        model.toEntity(),
-      );
-      expect(
-        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
-        isA<PayjoinUnavailableFailure>(),
-      );
-      expect((await local.fetchReceiver(model.id))?.isAborted, isFalse);
-      verifyNever(
-        () => blockchain.broadcastTransaction(
-          network: any(named: 'network'),
-          transaction: any(named: 'transaction'),
-        ),
-      );
-    },
-  );
+  for (final typed in [false, true]) {
+    test(
+      'an unavailable visibility check never attempts a fallback (typed=$typed)',
+      () async {
+        const originalTxId = 'original-tx';
+        final model = receiver(
+          originalTransaction: Uint8List.fromList([1, 2, 3]),
+          originalTransactionId: originalTxId,
+        );
+        await local.storeReceiver(model);
+        final lookup = when(
+          () => transactions.isTransactionVisible(
+            walletId: model.walletId,
+            transactionId: originalTxId,
+            refresh: true,
+          ),
+        );
+        if (typed) {
+          lookup.thenAnswer((_) async => null);
+        } else {
+          lookup.thenThrow(Exception('server unreachable'));
+        }
+        final result = await engine.tryBroadcastOriginalTransaction(
+          model.toEntity(),
+        );
+        expect(
+          (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+          isA<PayjoinUnavailableFailure>(),
+        );
+        expect((await local.fetchReceiver(model.id))?.isAborted, isFalse);
+        verifyNever(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        );
+      },
+    );
+  }
 
   test('manual fallback settles when the original is visible', () async {
     final model = receiver(
@@ -1651,7 +1880,8 @@ void main() {
     'receiver retains its reservation until durable spend handoff succeeds',
     () async {
       final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransaction: base64Decode(oneInputPsbt).sublist(8, 90)
+          ..fillRange(5, 37, 0x22),
         originalTransactionId: 'original-tx',
         proposalPsbt: oneInputPsbt,
         transactionId: 'payjoin-tx',
@@ -2059,7 +2289,7 @@ void main() {
       }
     });
 
-    test('already expired is never sent again, evidence or not', () async {
+    test('an expired sender with evidence is observed and reserved, never sent again', () async {
       final model = expiredSender().copyWith(
         isExpired: true,
         hasNetworkEvidence: true,
@@ -2079,7 +2309,7 @@ void main() {
           psbt: any(named: 'psbt'),
         ),
       );
-      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
     });
 
     test('a later resume never broadcasts an abandoned proposal', () async {
@@ -3283,8 +3513,12 @@ void main() {
       );
 
       // The first attempt expires with its automatic fallback broadcast
-      // having failed (e.g. offline): the session becomes retryable and its
-      // watcher deliberately stays armed.
+      // having definitively failed before any delivery. Only absent network
+      // evidence makes it retryable; the earlier observer stays armed.
+      expect(
+        await local.setSenderNetworkEvidence(first.id, present: false),
+        isTrue,
+      );
       await local.markExpired(first.copyWith(isExpired: true));
 
       // Retry: a NEW original PSBT, hence a NEW original txid.
@@ -3429,6 +3663,55 @@ void main() {
     test('a receiver without a proposal holds nothing yet', () async {
       await local.storeReceiver(receiver());
 
+      expect(await engine.getInputReservations(), isEmpty);
+    });
+
+    test('expiry releases a receiver proposal reservation', () async {
+      // Extract the unsigned transaction from the fixture's PSBT global
+      // map, then make the sender's original spend a different input.
+      final original = base64Decode(oneInputPsbt).sublist(8, 90)
+        ..fillRange(5, 37, 0x22);
+      final model = receiver(
+        originalTransaction: original,
+        originalTransactionId: 'original-tx',
+        proposalPsbt: oneInputPsbt,
+        transactionId: 'payjoin-tx',
+      ).copyWith(createdAt: 0);
+      await local.storeReceiver(model);
+
+      expect(await engine.getInputReservations(), isEmpty);
+      await engine.resumePayjoinsOnStartup();
+
+      expect((await local.fetchReceiver(model.id))?.isExpired, isTrue);
+      expect(await engine.getInputReservations(), isEmpty);
+    });
+
+    test('restart falls back for an expired unacknowledged proposal', () async {
+      final original = Uint8List.fromList([1, 2, 3]);
+      final model = receiver(
+        originalTransaction: original,
+        originalTransactionId: 'original-tx',
+        proposalPsbt: oneInputPsbt,
+        transactionId: 'payjoin-tx',
+      ).copyWith(createdAt: 0);
+      await local.storeReceiver(model);
+      when(() => pdk.receiverProposalNeedsFallback(model)).thenReturn(true);
+      when(
+        () => blockchain.broadcastTransaction(
+          network: BitcoinNetwork.testnet,
+          transaction: original,
+        ),
+      ).thenAnswer((_) async {});
+
+      await engine.resumePayjoinsOnStartup();
+
+      verify(
+        () => blockchain.broadcastTransaction(
+          network: BitcoinNetwork.testnet,
+          transaction: original,
+        ),
+      ).called(1);
+      expect((await local.fetchReceiver(model.id))?.isAborted, isTrue);
       expect(await engine.getInputReservations(), isEmpty);
     });
 

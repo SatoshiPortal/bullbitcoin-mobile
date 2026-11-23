@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+import 'package:primitives/primitives.dart' show Ok;
+import 'package:transactions/testing.dart';
 import 'package:sync/testing.dart';
 
 import 'dart:io';
@@ -15,7 +16,7 @@ abstract final class BdkTestStore {
   static WalletHistoryDatasource history(WalletModel model) =>
       WalletHistoryDatasource(
         load: (key) async =>
-            testWalletFromNative(await createWallet(model), key: key),
+            Ok(await testWalletFromNative(await createWallet(model), key: key)),
       );
 
   static Future<String> _path(String hexId) async =>

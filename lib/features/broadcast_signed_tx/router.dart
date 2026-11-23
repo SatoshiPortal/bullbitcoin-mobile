@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
@@ -7,6 +6,8 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_q
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:spend/spend.dart';
 
 enum BroadcastSignedTxRoute {
   broadcastHome('/broadcast-signed-tx'),
@@ -21,21 +22,18 @@ enum BroadcastSignedTxRoute {
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      final (unsignedPsbt, network) = switch (state.extra) {
-        (String psbt, Wallet? wallet) => (psbt, wallet?.network),
-        (psbt: final String psbt, wallet: final Wallet? wallet) => (
-          psbt,
-          wallet?.network,
-        ),
-        String psbt => (psbt, null),
+      final (prepared, network) = switch (state.extra) {
+        (
+          prepared: final PreparedBitcoinSpend spend,
+          network: final BitcoinNetwork chain,
+        ) =>
+          (spend, chain),
         _ => (null, null),
       };
 
       return BlocProvider(
-        create: (_) => locator<BroadcastSignedTxCubit>(
-          param1: unsignedPsbt,
-          param2: network,
-        ),
+        create: (_) =>
+            locator<BroadcastSignedTxCubit>(param1: prepared, param2: network),
         child: child,
       );
     },
