@@ -543,6 +543,10 @@ void main() {
     SendSpPaymentForSendUsecase? sendSpPaymentForSendUsecase,
     ValidateSpRecipientForSendUsecase? validateSpRecipientForSendUsecase,
   }) {
+    if (wallet != null) {
+      when(() => loadSources.read(wallet.id))
+          .thenAnswer((_) async => Ok(wallet));
+    }
     late final _TestableSendCubit flow;
     flow = _TestableSendCubit(
       prepareInternalRecipientUsecase: prepareInternalRecipientUsecase,
@@ -6511,6 +6515,31 @@ void main() {
         .thenAnswer((_) async => Ok(_sweepFeeOptions));
     return wallet;
   }
+
+  test(
+    'an unavailable routed account never falls back to another wallet',
+    () async {
+      final wallet = stubPaymentRequestContinuation();
+      final cubit = buildCubit(wallet: wallet);
+      addTearDown(cubit.close);
+      when(() => loadSources.read(wallet.id))
+          .thenAnswer((_) async => const Ok(null));
+      when(() => detectBitcoinStringUsecase.execute(data: 'recipient'))
+          .thenAnswer(
+            (_) async => const PaymentRequest.bitcoin(
+              address: 'recipient',
+              isTestnet: false,
+            ),
+          );
+
+      await cubit.onChangedText('recipient');
+      await cubit.continueOnAddressConfirmed();
+
+      expect(cubit.state.selectedWallet, isNull);
+      expect(cubit.state.step, SendStep.address);
+      expect(cubit.state.failure, isA<SendUnexpectedFailure>());
+    },
+  );
 
   test('does not broadcast when a selected coin becomes unavailable during validation', () async {
     final cubit = buildCubit();

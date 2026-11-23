@@ -36,7 +36,10 @@ void main() {
     );
   });
 
-  for (final network in [BitcoinNetwork.regtest, LiquidNetwork.regtest]) {
+  for (final network in const <Network>[
+    BitcoinNetwork.regtest,
+    LiquidNetwork.regtest,
+  ]) {
     test(
       '$network refuses before receive-address or provider side effects',
       () async {

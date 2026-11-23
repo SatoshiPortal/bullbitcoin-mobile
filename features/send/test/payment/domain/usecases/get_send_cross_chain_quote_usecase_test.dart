@@ -20,7 +20,10 @@ void main() {
     usecase = GetSendCrossChainQuoteUsecase(swapFacade);
   });
 
-  for (final network in [BitcoinNetwork.regtest, LiquidNetwork.regtest]) {
+  for (final network in const <Network>[
+    BitcoinNetwork.regtest,
+    LiquidNetwork.regtest,
+  ]) {
     test('$network refuses before requesting a remote quote', () async {
       final result = await usecase.execute(
         wallet: _wallet(network),

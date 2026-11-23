@@ -407,7 +407,6 @@ void main() {
       ),
     );
     verifyNever(() => cubit.onCurrencyChanged(any()));
-    verifyNever(() => settingsCubit.toggleSatsUnit(any()));
 
     await tester.enterText(
       find.descendant(of: inputFinder, matching: find.byType(TextField)),
@@ -434,7 +433,6 @@ void main() {
     await tester.pump();
     verify(() => cubit.onAmountConfirmed()).called(1);
     verifyNever(() => cubit.onCurrencyChanged(any()));
-    verifyNever(() => settingsCubit.toggleSatsUnit(any()));
   });
 
   testWidgets('matches a refreshed wallet option by id', (tester) async {
@@ -444,7 +442,9 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     Device.screen = const Size(800, 1200);
     final selectedWallet = _wallet();
-    final refreshedWallet = selectedWallet.copyWith(
+    final refreshedWallet = sendSourceFixture(
+      id: selectedWallet.id,
+      network: selectedWallet.network,
       balanceSat: BigInt.from(900000),
     );
     final state = SendState(

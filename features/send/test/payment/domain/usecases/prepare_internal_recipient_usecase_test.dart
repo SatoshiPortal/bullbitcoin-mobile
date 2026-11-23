@@ -76,7 +76,7 @@ void main() {
           return const Ok('fresh');
         }),
       );
-      for (final network in [
+      for (final network in const <Network>[
         LiquidNetwork.mainnet,
         BitcoinNetwork.testnet,
         BitcoinNetwork.regtest,

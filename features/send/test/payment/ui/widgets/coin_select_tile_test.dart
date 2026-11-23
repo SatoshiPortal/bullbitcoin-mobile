@@ -106,7 +106,7 @@ void main() {
   testWidgets('shows Liquid confirmation status without a keychain label', (
     tester,
   ) async {
-    final liquid = WalletUtxo.liquid(
+    final liquid = LiquidWalletUtxo(
       walletId: 'liquid',
       txId: 'tx',
       vout: 0,

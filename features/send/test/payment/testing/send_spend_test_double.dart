@@ -6,7 +6,6 @@ import 'package:coins/coins.dart';
 import 'package:send/src/payment/domain/send_failure.dart';
 import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:sync/sync.dart' show BitcoinSpendStatus;
-import 'package:spend/fee_preview.dart';
 import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart';
 import 'package:spend/spend.dart';
@@ -161,8 +160,9 @@ final class SendSpendTestDouble extends FakeSpend {
     Set<Outpoint>? selectedInputs,
   }) async {
     final prepareLiquid = prepareLiquidUsecase;
-    if (prepareLiquid == null)
+    if (prepareLiquid == null) {
       throw StateError('Unexpected Liquid preparation');
+    }
     final preparation = await prepareLiquid.execute(
       walletId: walletId,
       address: address,
@@ -230,8 +230,9 @@ final class SendSpendTestDouble extends FakeSpend {
     final wallet = read().selectedWallet;
     if (wallet == null) return const Err(SpendInvalidRequestFailure());
     final broadcastLiquid = broadcastLiquidUsecase;
-    if (broadcastLiquid == null)
+    if (broadcastLiquid == null) {
       throw StateError('Unexpected Liquid broadcast');
+    }
     final txid = await broadcastLiquid.execute(
       signed.signedPset,
       network: wallet.network,

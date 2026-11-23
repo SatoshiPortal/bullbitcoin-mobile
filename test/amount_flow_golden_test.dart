@@ -11,6 +11,7 @@ import 'package:satoshifier/payment_request.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
 import 'package:send/src/payment/domain/send_amount_conversion.dart';
+import 'package:send/src/payment/domain/send_source.dart';
 import 'package:send/src/payment/presentation/bloc/send_cubit.dart';
 import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:send/src/payment/presentation/send_wallet_view.dart';
@@ -100,6 +101,16 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         Device.screen = const Size(390, 844);
         final wallet = _wallet(false);
+        final sendWallet = SendSource(
+          walletRegistrationForTesting(
+            id: wallet.id,
+            network: wallet.network.shared,
+            scriptType: wallet.scriptType,
+            signer: WalletSigner.local,
+          ),
+          wallet.balanceSat,
+          null,
+        );
         final swapBitcoin = _swapWallet(false);
         final swapLiquid = _swapWallet(true);
         final send = _Send();
@@ -120,8 +131,8 @@ void main() {
         var sendState = SendState(
           step: confirmation ? SendStep.confirm : SendStep.amount,
           sendType: SendType.bitcoin,
-          wallets: [wallet],
-          selectedWallet: SendWalletBitcoin(wallet),
+          wallets: [sendWallet],
+          selectedWallet: SendWalletBitcoin(sendWallet),
           paymentRequest: const PaymentRequest.bitcoin(
             address: 'bc1q7z9q2f4k8m3n5p6r7s8t9u0v2w3x4y5z6a7b8c',
             isTestnet: false,
