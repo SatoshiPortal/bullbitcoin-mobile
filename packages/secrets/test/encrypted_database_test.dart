@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -93,6 +94,27 @@ void main() {
     expect(store.writes, 1);
   });
 
+  test(
+    'worker opener defers a missing database and refuses an orphan',
+    () async {
+      final bind = Secrets.databaseOpener<_WorkerFailure>(
+        module: 'recipe_test',
+        name: 'sample',
+        file: file,
+        schema: 1,
+        deferred: const _WorkerFailure('deferred'),
+        unavailable: const _WorkerFailure('unavailable'),
+      );
+      expect(await _readOpenFailure(bind(true)), 'deferred');
+      expect(await file.exists(), isFalse);
+      final sidecar = await File('${file.path}-wal').writeAsBytes([1, 2, 3]);
+      expect(await _readOpenFailure(bind(false)), 'unavailable');
+      expect(await sidecar.readAsBytes(), [1, 2, 3]);
+      expect(await file.exists(), isFalse);
+      expect(store.entries, isEmpty);
+    },
+  );
+
   test('locked and missing keys preserve the existing ciphertext', () async {
     await writeSample();
     final original = await file.readAsBytes();
@@ -179,6 +201,24 @@ void main() {
     expect(await file.exists(), isFalse);
     expect(store.entries, isEmpty);
   });
+}
+
+Future<String> _readOpenFailure(
+  Future<Result<QueryExecutor, _WorkerFailure>> Function() open,
+) => Isolate.run(() async {
+  switch (await open()) {
+    case Err(:final failure):
+      return failure.code;
+    case Ok(:final value):
+      await value.close();
+      throw StateError('Unexpectedly opened test database');
+  }
+});
+
+final class _WorkerFailure extends Failure {
+  final String code;
+
+  const _WorkerFailure(this.code);
 }
 
 Matcher _hasKeyProblem(DatabaseKeyProblem reason) =>
