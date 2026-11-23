@@ -34,6 +34,12 @@ final class DcaOrderCreationFailure extends DcaFailure {
   const DcaOrderCreationFailure([super.logMessage]);
 }
 
+/// The create request may have reached the exchange without a readable
+/// answer, so the recurring buy may exist. Confirm is not offered again.
+final class DcaCreationOutcomeUnknownFailure extends DcaFailure {
+  const DcaCreationOutcomeUnknownFailure();
+}
+
 /// Catch-all. [logMessage] is a breadcrumb for logs ONLY and MUST never
 /// reach the UI — the presentation extension returns the shared generic
 /// string.

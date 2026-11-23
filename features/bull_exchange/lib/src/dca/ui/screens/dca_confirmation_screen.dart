@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/dca/domain/dca_failure.dart';
 import 'package:bull_exchange/src/dca/presentation/dca_bloc.dart';
 import 'package:bull_exchange/src/dca/presentation/dca_failure_l10n.dart';
 import 'package:bull_exchange/src/dca/ui/widgets/dca_confirmation_detail_row.dart';
@@ -114,7 +115,10 @@ class DcaConfirmationScreen extends StatelessWidget {
             ],
             BullButton.primary(
               label: context.loc.dcaConfirmContinue,
-              onPressed: (confirmationState.isConfirmingDca)
+              onPressed:
+                  confirmationState.isConfirmingDca ||
+                      confirmationState.failure
+                          is DcaCreationOutcomeUnknownFailure
                   ? null
                   : () {
                       context.read<DcaBloc>().add(const DcaEvent.confirmed());

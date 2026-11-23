@@ -79,21 +79,16 @@ class SetDcaUsecase {
           enablePreference: true,
         );
     switch (result) {
-      case Ok(:final value):
+      case WriteDone(:final value):
         return Ok(value);
-      case Err(
-        failure: ExchangeAccountUnavailableFailure() ||
-            ExchangeCredentialReadFailure(),
-      ):
-        return const Err(
-          DcaAccountUnavailableFailure('user summary unavailable'),
-        );
-      case Err(:final failure):
-        log.warning(
-          'Exchange rejected DCA creation',
-          error: failure.runtimeType,
-        );
+      case WriteRefused(:final reason):
+        log.warning('Exchange rejected DCA creation: $reason');
         return const Err(DcaOrderCreationFailure('createDca rejected'));
+      case WriteNotSent() || WriteSessionRejected():
+        return const Err(DcaAccountUnavailableFailure('createDca not sent'));
+      case WriteOutcomeUnknown():
+        // The recurring buy may exist: never offer to create it again here.
+        return const Err(DcaCreationOutcomeUnknownFailure());
     }
   }
 }

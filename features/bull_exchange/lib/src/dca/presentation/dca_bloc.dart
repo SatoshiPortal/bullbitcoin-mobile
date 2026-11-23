@@ -67,6 +67,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     DcaBuyInputContinuePressed event,
     Emitter<DcaState> emit,
   ) async {
+    if (_isCreateOutcomeUnknown) return;
     // We should be on a clean DcaBuyInputState state here
     final buyInputState = state.toCleanBuyInputState;
     if (buyInputState == null) {
@@ -91,6 +92,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     DcaWalletSelected event,
     Emitter<DcaState> emit,
   ) async {
+    if (_isCreateOutcomeUnknown) return;
     // We should be on a clean DcaWalletSelectionState state here
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
@@ -132,8 +134,20 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     }
   }
 
+  /// The last create may have succeeded: the flow never builds or sends a
+  /// second one.
+  bool get _isCreateOutcomeUnknown => switch (state) {
+    DcaConfirmationState(:final failure) =>
+      failure is DcaCreationOutcomeUnknownFailure,
+    DcaInitialState() ||
+    DcaBuyInputState() ||
+    DcaWalletSelectionState() ||
+    DcaSuccessState() => false,
+  };
+
   Future<void> _onConfirmed(DcaConfirmed event, Emitter<DcaState> emit) async {
     if (state case DcaConfirmationState(isConfirmingDca: true)) return;
+    if (_isCreateOutcomeUnknown) return;
     // We should be on a DcaConfirmationState here
     final dcaConfirmationState = state.toCleanConfirmationState;
     if (dcaConfirmationState == null) {

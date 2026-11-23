@@ -96,9 +96,14 @@ abstract interface class ExchangeOrders {
 
   /// When [enablePreference] is set, the existing preference set is read
   /// before creating the DCA. Enabling it after creation is best-effort on
-  /// the same session.
+  /// the same session. A failed read is [WriteNotSent] (or
+  /// [WriteSessionRejected] on a 401): the DCA was not sent.
+  ///
+  /// A create that may have reached the server without a readable answer,
+  /// including a created DCA whose reply can't be mapped, is
+  /// [WriteOutcomeUnknown]: the recurring buy may exist.
   @useResult
-  Future<Result<Dca, ExchangeFailure>> createDca({
+  Future<ExchangeWrite<Dca>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,

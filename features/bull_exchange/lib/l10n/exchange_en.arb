@@ -2932,6 +2932,10 @@
   "@dcaOrderCreationError": {
     "description": "Shown when the exchange rejects creating the recurring buy order."
   },
+  "dcaCreationOutcomeUnknownError": "We could not tell whether your recurring buy was created. Check your recurring buys before you try again.",
+  "@dcaCreationOutcomeUnknownError": {
+    "description": "Shown on the DCA confirmation when the create request failed after it may have reached the server, so the recurring buy may exist. Confirm is not offered again."
+  },
   "dcaUseDefaultBitcoinWallet": "Use my default Bitcoin wallet",
   "@dcaUseDefaultBitcoinWallet": {
     "description": "Checkbox in recurring buy wallet selection: pay out to the Bitcoin address saved in the user's exchange default wallets."

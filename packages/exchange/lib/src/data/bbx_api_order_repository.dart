@@ -219,94 +219,119 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   });
 
   @override
-  Future<Result<Dca, ExchangeFailure>> createDca({
+  Future<ExchangeWrite<Dca>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
     required BtcNetwork network,
     required String address,
     bool enablePreference = false,
-  }) => _write((api) async {
-    bbx.UserSummary? summary;
-    if (enablePreference) {
-      switch (await api.users.getUserSummary()) {
-        case Ok(value: final value?):
-          summary = value;
-        case Ok() || Err():
-          return const Err(ExchangeAccountUnavailableFailure());
+  }) async {
+    final result = await _write<ExchangeWrite<Dca>>((api) async {
+      bbx.UserSummary? summary;
+      if (enablePreference) {
+        switch (await api.users.getUserSummary()) {
+          case Ok(value: final value?):
+            summary = value;
+          case Ok():
+            return const Ok(WriteNotSent(ExchangeNotSentReason.unreachable));
+          case Err(:final failure):
+            return Ok(_dcaNotSent(failure));
+        }
       }
-    }
 
-    switch (await api.orderTriggers.createDca(
-      amount: amount,
-      currencyCode: currency.code,
-      frequency: switch (frequency) {
-        DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
-        DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
-        DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
-        DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
-      },
-      recipientType: BtcNetworkWire.dcaRecipientType(network),
-      address: address,
-    )) {
-      case Err(:final failure):
-        return Err(_mapFailure(failure));
-      case Ok(value: final dca):
-        final amount = double.tryParse(dca.amountStr);
-        final currency = switch (ExchangeCatalog.parse(dca.currencyCode)) {
-          KnownCurrency(:final currency) => currency,
-          UnknownCurrency() => null,
-        };
-        final nextPurchase = DateTime.tryParse(dca.nextRunAt);
-        final frequency = switch (dca.recurringFrequency) {
-          'HOURLY' => DcaBuyFrequency.hourly,
-          'DAILY' => DcaBuyFrequency.daily,
-          'WEEKLY' => DcaBuyFrequency.weekly,
-          'MONTHLY' => DcaBuyFrequency.monthly,
-          _ => null,
-        };
-        final network = switch (BtcNetworkWire.parseRecipientType(
-          dca.recipientType,
-        )) {
-          KnownBtcNetwork(:final network) => network,
-          UnknownBtcNetwork() => null,
-        };
-        if (amount == null ||
-            currency == null ||
-            nextPurchase == null ||
-            frequency == null ||
-            network == null) {
-          return const Err(ExchangeOrderLoadFailure());
-        }
-        if (summary != null) {
-          final preference = await api.users.saveUserPreferences(
-            bbx.UserPreferences(
-              language: summary.language,
-              defaultFiatCurrencyCode: summary.currency,
-              dcaEnabled: 'true',
-              autoBuyEnabled: summary.autoBuy.isActive.toString(),
-              emailNotifications: summary.emailNotificationsEnabled.toString(),
-            ),
-          );
-          if (preference case Err(:final failure)) {
-            log.warning(
-              'DCA created but enabling the preference failed',
-              error: failure.runtimeType,
-            );
-          }
-        }
-        return Ok(
-          Dca(
-            amount: amount,
-            currency: currency,
-            frequency: frequency,
-            network: network,
-            address: dca.address,
-            nextPurchaseDate: nextPurchase,
+      final write = await exchangeWrite<bbx.Dca, Dca>(
+        'createDca',
+        () => api.orderTriggers.createDca(
+          amount: amount,
+          currencyCode: currency.code,
+          frequency: switch (frequency) {
+            DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
+            DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
+            DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
+            DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
+          },
+          recipientType: BtcNetworkWire.dcaRecipientType(network),
+          address: address,
+        ),
+        _toDca,
+      );
+      if (write is WriteDone<Dca> && summary != null) {
+        final preference = await api.users.saveUserPreferences(
+          bbx.UserPreferences(
+            language: summary.language,
+            defaultFiatCurrencyCode: summary.currency,
+            dcaEnabled: 'true',
+            autoBuyEnabled: summary.autoBuy.isActive.toString(),
+            emailNotifications: summary.emailNotificationsEnabled.toString(),
           ),
         );
+        if (preference case Err(:final failure)) {
+          log.warning(
+            'DCA created but enabling the preference failed',
+            error: failure.runtimeType,
+          );
+        }
+      }
+      return Ok(write);
+    });
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => writeNotRun(failure),
+    };
+  }
+
+  /// The created DCA. A field the app can't read throws: the DCA exists, so
+  /// the classification makes it [WriteOutcomeUnknown], never a failure.
+  static Dca _toDca(bbx.Dca dca) {
+    final amount = double.tryParse(dca.amountStr);
+    final currency = switch (ExchangeCatalog.parse(dca.currencyCode)) {
+      KnownCurrency(:final currency) => currency,
+      UnknownCurrency() => null,
+    };
+    final nextPurchase = DateTime.tryParse(dca.nextRunAt);
+    final frequency = switch (dca.recurringFrequency) {
+      'HOURLY' => DcaBuyFrequency.hourly,
+      'DAILY' => DcaBuyFrequency.daily,
+      'WEEKLY' => DcaBuyFrequency.weekly,
+      'MONTHLY' => DcaBuyFrequency.monthly,
+      _ => null,
+    };
+    final network = switch (BtcNetworkWire.parseRecipientType(
+      dca.recipientType,
+    )) {
+      KnownBtcNetwork(:final network) => network,
+      UnknownBtcNetwork() => null,
+    };
+    if (amount == null ||
+        currency == null ||
+        nextPurchase == null ||
+        frequency == null ||
+        network == null) {
+      throw const _UnreadableDca();
     }
-  });
+    return Dca(
+      amount: amount,
+      currency: currency,
+      frequency: frequency,
+      network: network,
+      address: dca.address,
+      nextPurchaseDate: nextPurchase,
+    );
+  }
+
+  /// The DCA was not sent because the preference read before it failed.
+  static ExchangeWrite<Dca> _dcaNotSent(bbx.BbxFailure failure) =>
+      switch (failure) {
+        bbx.BbxHttpFailure(status: 401) => const WriteSessionRejected(),
+        bbx.BbxMissingCredentialFailure() => const WriteNotSent(
+          ExchangeNotSentReason.signedOut,
+        ),
+        bbx.BbxCredentialUnavailableFailure() => const WriteNotSent(
+          ExchangeNotSentReason.credentialUnavailable,
+        ),
+        _ => const WriteNotSent(ExchangeNotSentReason.unreachable),
+      };
 
   Future<Result<T, ExchangeFailure>> _readOrder<T extends Order>(
     Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request, {
@@ -490,4 +515,13 @@ final class _UnexpectedOrderType implements Exception {
 
   @override
   String toString() => 'UnexpectedOrderType($type)';
+}
+
+/// The server created a DCA the app can't read (unknown frequency, network or
+/// currency, or an unreadable amount or date).
+final class _UnreadableDca implements Exception {
+  const _UnreadableDca();
+
+  @override
+  String toString() => 'UnreadableDca';
 }

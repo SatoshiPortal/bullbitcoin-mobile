@@ -30,6 +30,12 @@ void main() {
   late MockGetDcaDefaultWalletsUsecase getDefaultWallets;
   late MockSetDcaUsecase setDca;
 
+  setUpAll(() {
+    registerFallbackValue(FiatCurrency.cad);
+    registerFallbackValue(DcaBuyFrequency.daily);
+    registerFallbackValue(BtcNetwork.bitcoin);
+  });
+
   setUp(() {
     startDca = MockStartDcaUsecase();
     getDefaultWallets = MockGetDcaDefaultWalletsUsecase();
@@ -232,6 +238,66 @@ void main() {
         frequency: DcaBuyFrequency.daily,
         network: BtcNetwork.bitcoin,
         address: _bitcoinDefault.address,
+      ),
+    ).called(1);
+    await bloc.close();
+  });
+
+  test('an unknown create outcome is never sent again, also after going '
+      'back to the wallet step', () async {
+    when(
+      () => setDca.execute(
+        amount: any(named: 'amount'),
+        currency: any(named: 'currency'),
+        frequency: any(named: 'frequency'),
+        network: any(named: 'network'),
+        address: any(named: 'address'),
+      ),
+    ).thenAnswer((_) async => const Err(DcaCreationOutcomeUnknownFailure()));
+    final bloc = build();
+    await toWalletSelection(bloc);
+    bloc.add(
+      const DcaEvent.walletSelected(
+        network: BtcNetwork.lightning,
+        address: 'user@lightning.address',
+        isDefaultAddress: false,
+      ),
+    );
+    final failed = bloc.stream.firstWhere(
+      (s) =>
+          s is DcaConfirmationState &&
+          s.failure is DcaCreationOutcomeUnknownFailure,
+    );
+    bloc.add(const DcaEvent.confirmed());
+    await failed;
+
+    bloc
+      ..add(const DcaEvent.confirmed())
+      ..add(
+        const DcaEvent.walletSelected(
+          network: BtcNetwork.lightning,
+          address: 'user@lightning.address',
+          isDefaultAddress: false,
+        ),
+      )
+      ..add(const DcaEvent.confirmed());
+    await pumpEventQueue();
+
+    expect(
+      bloc.state,
+      isA<DcaConfirmationState>().having(
+        (s) => s.failure,
+        'failure',
+        isA<DcaCreationOutcomeUnknownFailure>(),
+      ),
+    );
+    verify(
+      () => setDca.execute(
+        amount: any(named: 'amount'),
+        currency: any(named: 'currency'),
+        frequency: any(named: 'frequency'),
+        network: any(named: 'network'),
+        address: any(named: 'address'),
       ),
     ).called(1);
     await bloc.close();

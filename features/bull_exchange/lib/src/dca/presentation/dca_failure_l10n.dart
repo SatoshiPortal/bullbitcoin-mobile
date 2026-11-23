@@ -10,6 +10,8 @@ extension DcaFailureL10n on DcaFailure {
     DcaDestinationAddressRequiredFailure() =>
       context.loc.dcaDestinationAddressRequiredError,
     DcaOrderCreationFailure() => context.loc.dcaOrderCreationError,
+    DcaCreationOutcomeUnknownFailure() =>
+      context.loc.dcaCreationOutcomeUnknownError,
     DcaUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

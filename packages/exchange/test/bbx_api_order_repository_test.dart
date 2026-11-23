@@ -1235,7 +1235,7 @@ void main() {
       'address': 'lq1address',
     };
 
-    Future<Result<Dca, ExchangeFailure>> create(
+    Future<ExchangeWrite<Dca>> create(
       FakeBbxHttp http, {
       DcaBuyFrequency frequency = DcaBuyFrequency.weekly,
       BtcNetwork network = BtcNetwork.liquid,
@@ -1306,7 +1306,7 @@ void main() {
     });
 
     test('maps the created DCA', () async {
-      final created = _valueOf(
+      final created = _written(
         await create(
           FakeBbxHttp(
             body: {
@@ -1324,38 +1324,45 @@ void main() {
       expect(created.nextPurchaseDate, DateTime.utc(2026, 11, 27));
     });
 
-    test(
-      'an unknown frequency keeps the server value out of the failure',
-      () async {
-        expect(
-          await create(
-            FakeBbxHttp(
-              body: {
-                'result': {
-                  'element': {...dca, 'recurringFrequency': 'YEARLY'},
-                },
-              },
-            ),
-          ),
-          _fails(isA<ExchangeOrderLoadFailure>()),
-        );
-      },
-    );
-
-    test('a refusal is a typed failure without the message', () async {
+    test('a created DCA with an unknown frequency is an unknown outcome, not a '
+        'failure (DCA-2)', () async {
       expect(
-        await create(FakeBbxHttp(body: _rpcError)),
-        _fails(
-          isA<ExchangeOrderRejectedFailure>().having(
-            (e) => e.toString(),
-            'diagnostics',
-            isNot(contains('sat@example.com')),
+        await create(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'element': {...dca, 'recurringFrequency': 'YEARLY'},
+              },
+            },
           ),
+        ),
+        isA<WriteOutcomeUnknown<Dca>>().having(
+          (w) => w.reason,
+          'reason',
+          isNot(contains('YEARLY')),
         ),
       );
     });
 
-    test('no stored key is ExchangeNotAuthenticatedFailure', () async {
+    test('a timeout after sending is an unknown outcome', () async {
+      expect(
+        await create(FakeBbxHttp(error: DioExceptionType.receiveTimeout)),
+        isA<WriteOutcomeUnknown<Dca>>(),
+      );
+    });
+
+    test('a refusal keeps only its codes', () async {
+      expect(
+        await create(FakeBbxHttp(body: _rpcError)),
+        isA<WriteRefused<Dca>>().having(
+          (w) => w.reason.toString(),
+          'diagnostics',
+          isNot(contains('sat@example.com')),
+        ),
+      );
+    });
+
+    test('no stored key was not sent', () async {
       expect(
         await _signedOut(FakeBbxHttp()).createDca(
           amount: 1,
@@ -1364,11 +1371,15 @@ void main() {
           network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
-        _fails(isA<ExchangeNotAuthenticatedFailure>()),
+        isA<WriteNotSent<Dca>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.signedOut,
+        ),
       );
     });
 
-    test('an unreadable key is a credential failure', () async {
+    test('an unreadable key was not sent', () async {
       expect(
         await _unreadableKey(FakeBbxHttp()).createDca(
           amount: 1,
@@ -1377,8 +1388,17 @@ void main() {
           network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
-        _fails(isA<ExchangeCredentialReadFailure>()),
+        isA<WriteNotSent<Dca>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.credentialUnavailable,
+        ),
       );
     });
   });
 }
+
+T _written<T>(ExchangeWrite<T> write) => switch (write) {
+  WriteDone(:final value) => value,
+  _ => fail('Unexpected write result: $write'),
+};

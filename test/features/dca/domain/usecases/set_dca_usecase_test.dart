@@ -127,7 +127,7 @@ void main() {
             address: any(named: 'address'),
             enablePreference: true,
           ),
-        ).thenAnswer((_) async => Ok(dca));
+        ).thenAnswer((_) async => WriteDone(dca));
 
         final result = await usecase.execute(
           amount: 10,
@@ -163,11 +163,7 @@ void main() {
           enablePreference: true,
         ),
       ).thenAnswer(
-        (_) async => const Err(
-          ExchangeNetworkFailure(
-            'Failed to create DCA: HTTP 500 apiKey=$_sentinelSecret',
-          ),
-        ),
+        (_) async => const WriteRefused(ExchangeRefusal(httpStatus: 500)),
       );
 
       final result = await usecase.execute(
@@ -301,6 +297,59 @@ void main() {
       });
     }
 
+    test('an unknown create outcome is never reported as a failure to retry '
+        '(DCA-2)', () async {
+      when(
+        () => mainnetOrders.createDca(
+          amount: any(named: 'amount'),
+          currency: any(named: 'currency'),
+          frequency: any(named: 'frequency'),
+          network: any(named: 'network'),
+          address: any(named: 'address'),
+          enablePreference: true,
+        ),
+      ).thenAnswer((_) async => const WriteOutcomeUnknown('receive timeout'));
+
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: BtcNetwork.lightning,
+        address: 'user@lightning.address',
+      );
+
+      expect(failureOf(result), isA<DcaCreationOutcomeUnknownFailure>());
+    });
+
+    for (final (name, write) in <(String, ExchangeWrite<Dca>)>[
+      ('signed out', const WriteNotSent(ExchangeNotSentReason.signedOut)),
+      ('unreachable', const WriteNotSent(ExchangeNotSentReason.unreachable)),
+      ('a rejected session', const WriteSessionRejected()),
+    ]) {
+      test('$name is an unavailable account', () async {
+        when(
+          () => mainnetOrders.createDca(
+            amount: any(named: 'amount'),
+            currency: any(named: 'currency'),
+            frequency: any(named: 'frequency'),
+            network: any(named: 'network'),
+            address: any(named: 'address'),
+            enablePreference: true,
+          ),
+        ).thenAnswer((_) async => write);
+
+        final result = await usecase.execute(
+          amount: 10,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: BtcNetwork.lightning,
+          address: 'user@lightning.address',
+        );
+
+        expect(failureOf(result), isA<DcaAccountUnavailableFailure>());
+      });
+    }
+
     test('rethrows an Error instead of turning a bug into a failure', () async {
       when(() => settings.fetch()).thenThrow(StateError('bug'));
 
@@ -326,7 +375,7 @@ void main() {
           address: any(named: 'address'),
           enablePreference: true,
         ),
-      ).thenAnswer((_) async => Ok(dca));
+      ).thenAnswer((_) async => WriteDone(dca));
       final result = await usecase.execute(
         amount: 10,
         currency: FiatCurrency.cad,
