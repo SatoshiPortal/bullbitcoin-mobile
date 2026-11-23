@@ -126,6 +126,7 @@ graph TD
   bull_logs --> bull_logger
   bull_logs --> bull_ui
   bull_logs --> primitives
+  bull_payjoin --> legacy_storage
   bull_payjoin --> primitives
   bull_pricer --> primitives
   bull_quick_actions --> bull_ui
@@ -215,6 +216,7 @@ graph TD
   signers --> sync
   swaps --> rust_bindings
   swaps --> boltz_stream
+  swaps --> legacy_storage
   swaps --> primitives
   swaps --> secrets
   sync --> legacy_storage
