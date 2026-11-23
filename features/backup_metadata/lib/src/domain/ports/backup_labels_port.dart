@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart';
 import '../backup_metadata_failure.dart';
 import '../entities/backup_inventory.dart';
 
-/// Implemented by the labels owner.
+/// Adapts the Labels owner's backup operations to the current inventory.
 abstract interface class BackupLabelsPort {
   /// Debounce hint only; correctness never depends on it.
   Stream<void> get changes;
