@@ -14,7 +14,6 @@ const preferencesFreshReceipt = 'fresh-v1/preferences';
 
 final class PreferencesImport implements LegacyImportParticipant {
   final File file;
-  final File? standaloneRecoverBullFile;
   final Future<Result<bool?, LegacyImportFailure>> Function()?
   readStandalonePermission;
   final DatabaseKeys? testingKeys;
@@ -22,7 +21,6 @@ final class PreferencesImport implements LegacyImportParticipant {
 
   PreferencesImport({
     required this.file,
-    this.standaloneRecoverBullFile,
     this.readStandalonePermission,
     this.testingKeys,
     this.checkpoint,
@@ -45,20 +43,6 @@ final class PreferencesImport implements LegacyImportParticipant {
     ExclusiveAdmission admission,
     OwnerOrigin origin,
   ) async {
-    final standalone = standaloneRecoverBullFile;
-    if (standalone != null && readStandalonePermission == null) {
-      // A fallback receipt would prevent retry with the newer source later.
-      for (final suffix in ['', '-wal', '-shm', '-journal']) {
-        try {
-          await File('${standalone.path}$suffix').length();
-          return const Err(LegacyImportUnavailable());
-        } on PathNotFoundException {
-          continue;
-        } on FileSystemException {
-          return const Err(LegacyImportUnavailable());
-        }
-      }
-    }
     final store = await PreferencesStore.open(
       file,
       admission,

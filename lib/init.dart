@@ -178,9 +178,10 @@ class Bull {
         regtestRecoverBull.participant,
         PreferencesImport(
           file: preferencesFile,
-          standaloneRecoverBullFile: File(
-            p.join(bullDirectory.path, 'recoverbull.sqlite'),
-          ),
+          readStandalonePermission: () async =>
+              (await readLegacyRecoverBullPermission(recoverBull.standalone))
+                  .map((consent) => consent?.permissionGranted)
+                  .mapErr((_) => const LegacyImportUnavailable()),
         ),
         MempoolImport(
           file: mempoolFile,
@@ -289,7 +290,7 @@ class Bull {
       await locator<QuickActionsCubit>().load();
       await AppLocator.setupRecoverBull(
         locator,
-        databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
+        databasePath: recoverBull.standalone.path,
       );
       unawaited(locator<RecoverBullFacade>().checkAtColdStart());
       final settings = locator<Preferences>();

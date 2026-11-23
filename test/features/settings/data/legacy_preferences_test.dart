@@ -10,44 +10,12 @@ import '../../../support/preferences_database.dart';
 
 void main() {
   late SqliteDatabase database;
-  late PreferencesDao dao;
 
   setUp(() {
     database = SqliteDatabase(NativeDatabase.memory());
-    dao = PreferencesDao(database);
   });
 
   tearDown(() => database.close());
-
-  test(
-    'dismissals use the existing table and refresh the same record',
-    () async {
-      final dismissals = PreferencesTesting.fromDao(dao).announcementDismissals;
-      final first = DateTime.utc(2026, 11, 19);
-      final latest = DateTime.utc(2026, 11, 21);
-
-      expect(
-        (await dismissals.read()).fold(
-          (value) => value,
-          (failure) => throw Exception('Preferences read failed'),
-        ),
-        isEmpty,
-      );
-      expect(await dismissals.dismiss('sample', first), isA<Ok>());
-      expect(await dismissals.dismiss('sample', latest), isA<Ok>());
-
-      expect(
-        (await dismissals.read()).fold(
-          (value) => value,
-          (failure) => throw Exception('Preferences read failed'),
-        ),
-        [(id: 'sample', dismissedAt: latest)],
-      );
-      final row = await database.managers.dismissedAnnouncements.getSingle();
-      expect(row.announcementId, 'sample');
-      expect(row.dismissedAt, latest);
-    },
-  );
 
   test('RecoverBull reads the owner permission without a URL', () async {
     final owner = await createPreferencesDatabase();

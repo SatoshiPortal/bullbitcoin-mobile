@@ -152,22 +152,8 @@ void main() {
   );
 
   test(
-    'legacy announcements remain writable; owner watcher sees owner updates',
+    'display watcher sees owner updates without changing legacy settings',
     () async {
-      final time = DateTime.utc(2026, 11, 22);
-      expect(
-        await preferences.announcementDismissals.dismiss('fixture', time),
-        isA<Ok>(),
-      );
-      expect(
-        (await legacy
-                .customSelect(
-                  'SELECT announcement_id FROM dismissed_announcements',
-                )
-                .getSingle())
-            .read<String>('announcement_id'),
-        'fixture',
-      );
       final updates = StreamIterator(preferences.watchDisplayPreferences());
       addTearDown(updates.cancel);
       expect(await updates.moveNext(), isTrue);

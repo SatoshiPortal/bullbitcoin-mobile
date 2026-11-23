@@ -249,22 +249,6 @@ void main() {
     );
   }
 
-  test('an unwired reader refuses an existing standalone family', () async {
-    final standalone = File('${directory.path}/recoverbull.sqlite');
-    final orphan = File('${standalone.path}-wal');
-    await orphan.writeAsString('fixture');
-    final lease = await exclusive();
-    addTearDown(lease.close);
-    final result = await PreferencesImport(
-      file: destination,
-      standaloneRecoverBullFile: standalone,
-      testingKeys: keys,
-    ).prepare(lease, OwnerOrigin.legacy);
-    expect(result, isA<Err<PreparedOwner, LegacyImportFailure>>());
-    expect(destination.existsSync(), isFalse);
-    expect(await orphan.readAsString(), 'fixture');
-  });
-
   test(
     'standalone permission read failure rolls back the entire owner import',
     () async {

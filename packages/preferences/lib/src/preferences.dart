@@ -41,8 +41,6 @@ class Preferences implements domain.SettingsRepository {
   final StreamController<Result<Environment, PreferencesFailure>>
   _environmentChangeController;
 
-  late final AnnouncementDismissals announcementDismissals =
-      AnnouncementDismissals._(_legacy);
   late final RecoverBullPreferences recoverBull = RecoverBullPreferences._(
     _settingsDatasource,
   );
@@ -651,10 +649,6 @@ class Preferences implements domain.SettingsRepository {
 
 /// Test-only injection of the owned persistence boundary.
 extension PreferencesTesting on Preferences {
-  static AnnouncementDismissals announcementsFromDao(
-    LegacyPreferencesDao dao,
-  ) => AnnouncementDismissals._(dao);
-
   static Future<Result<Preferences, PreferencesFailure>> open({
     required File file,
     required RuntimeAdmission admission,

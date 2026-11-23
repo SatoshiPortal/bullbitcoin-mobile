@@ -138,21 +138,9 @@ void main() {
     );
   });
 
-  test('legacy capabilities return their owner failure family', () async {
-    final time = DateTime.utc(2026);
-    when(legacy.readDismissals).thenThrow(Exception('read failed'));
-    when(() => legacy.dismissAnnouncement('id', time))
-        .thenThrow(Exception('write failed'));
+  test('RecoverBull permission reads return a Preferences failure', () async {
     when(() => dao.readRecoverBullPermission(regtest: false))
         .thenThrow(Exception('permission read failed'));
-    expect(
-      await preferences.announcementDismissals.read(),
-      isA<Err<List<DismissedAnnouncement>, PreferencesFailure>>(),
-    );
-    expect(
-      await preferences.announcementDismissals.dismiss('id', time),
-      isA<Err<void, PreferencesFailure>>(),
-    );
     expect(
       await preferences.recoverBull.read(),
       isA<Err<bool?, PreferencesFailure>>().having(

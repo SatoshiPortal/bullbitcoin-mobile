@@ -35,9 +35,6 @@ class SettingsLocator {
     locator.registerLazySingleton<domain.ExchangeTestnetBasicAuthPreferences>(
       () => locator<domain.Preferences>(),
     );
-    locator.registerLazySingleton<domain.AnnouncementDismissals>(
-      () => locator<domain.Preferences>().announcementDismissals,
-    );
     locator.registerLazySingleton<domain.RecoverBullPreferences>(
       () => locator<domain.Preferences>().recoverBull,
     );
