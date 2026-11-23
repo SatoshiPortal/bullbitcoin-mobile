@@ -342,18 +342,36 @@ void main() {
       expect(rate.userPrice, 6);
     });
 
-    test('a rate without currency is a programmer error, as before', () {
-      expect(
-        () => repository(
-          FakeBbxHttp(
-            body: {
-              'result': {'indexPrice': 500, 'userPrice': 600},
-            },
-          ),
-        ).getRate('CAD'),
-        throwsArgumentError,
-      );
-    });
+    test(
+      'an unreadable rate is a load failure, not a thrown error (LIM-8)',
+      () async {
+        for (final element in [
+          {'indexPrice': 500, 'userPrice': 600},
+          {'fromCurrency': 'CAD', 'indexPrice': 0, 'userPrice': 600},
+          {'fromCurrency': 'CAD', 'indexPrice': 500, 'userPrice': -1},
+          {
+            'fromCurrency': 'CAD',
+            'indexPrice': 500,
+            'userPrice': 600,
+            'precision': -1,
+          },
+        ]) {
+          final failure = _failureOf(
+            await repository(FakeBbxHttp(body: {'result': element}))
+                .getRate('CAD'),
+          );
+          expect(
+            failure,
+            isA<ExchangeLimitOrderFailure>().having(
+              (f) => f.problem,
+              'problem',
+              ExchangeLimitOrderProblem.load,
+            ),
+            reason: '$element',
+          );
+        }
+      },
+    );
   });
 
   group('environment', () {

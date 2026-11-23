@@ -129,12 +129,31 @@ final class BbxApiLimitOrderRepository {
     address: order.address ?? '',
   );
 
+  /// The rate, validated before [LimitOrderRate] is built: a rate the
+  /// server sends without a currency, with a negative precision or with a
+  /// price that is not positive is a typed load failure, not an
+  /// [ArgumentError] out of the constructor that left the wizard stuck
+  /// (LIM-8).
   static LimitOrderRate _toRate(bbx.UserRate rate) {
-    final divisor = pow(10, rate.precision ?? 2);
+    final currencyCode = rate.fromCurrency ?? '';
+    final precision = rate.precision ?? 2;
+    if (currencyCode.isEmpty) {
+      throw const _UnreadableRate('no currency');
+    }
+    if (precision < 0) throw const _UnreadableRate('negative precision');
+    final divisor = pow(10, precision);
+    final indexPrice = rate.indexPrice / divisor;
+    final userPrice = rate.userPrice / divisor;
+    if (!indexPrice.isFinite || indexPrice <= 0) {
+      throw const _UnreadableRate('index price not positive');
+    }
+    if (!userPrice.isFinite || userPrice <= 0) {
+      throw const _UnreadableRate('user price not positive');
+    }
     return LimitOrderRate(
-      currencyCode: rate.fromCurrency ?? '',
-      indexPrice: rate.indexPrice / divisor,
-      userPrice: rate.userPrice / divisor,
+      currencyCode: currencyCode,
+      indexPrice: indexPrice,
+      userPrice: userPrice,
     );
   }
 
@@ -151,6 +170,13 @@ final class BbxApiLimitOrderRepository {
       };
     } on Error {
       rethrow;
+    } on _UnreadableRate catch (e, st) {
+      log.severe(
+        message: 'Unreadable reply to $operation',
+        error: e.reason,
+        trace: st,
+      );
+      return Err(ExchangeLimitOrderFailure(fallback, 'unreadable rate'));
     } catch (e, st) {
       final description = e.runtimeType.toString();
       log.severe(
@@ -232,4 +258,11 @@ final class BbxApiLimitOrderRepository {
       'BbxResponseFormatFailure($reason)',
     _ => failure.runtimeType.toString(),
   };
+}
+
+/// A rate reply the app can't use. [reason] names the field, never its value.
+final class _UnreadableRate implements Exception {
+  final String reason;
+
+  const _UnreadableRate(this.reason);
 }
