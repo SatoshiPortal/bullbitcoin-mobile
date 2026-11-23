@@ -24,9 +24,9 @@ import 'package:bip85/bip85.dart';
 import 'package:signers/routes.dart';
 import 'package:send/send.dart';
 import 'package:send/setup.dart';
-import 'package:electrum/electrum.dart';
+import 'package:electrum/electrum.dart' show Electrum;
 import 'package:fees/fees.dart' show Fees;
-import 'package:spend/spend.dart';
+import 'package:spend/spend.dart' show Spend;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
@@ -296,11 +296,11 @@ class AppRouter {
       ...locator<SignersFeature>().routes,
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
-      _sendRoutes.replaceByFee,
       ?_exchangeFeature.dcaRoute,
       ?_exchangeFeature.autoBuy,
       LimitOrdersRouter.create,
       ?_exchangeFeature.limitOrderDetails,
+      _sendRoutes.replaceByFee,
       locator<Bip85Feature>().route,
       ...locator<NetworkFeature>().routes.root,
       ...locator<FeesFeature>().routes,
