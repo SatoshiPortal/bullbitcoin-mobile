@@ -136,10 +136,14 @@ graph TD
   access --> secrets
   access -.-> legacy_storage
   address_view --> bull_logger
+  address_view --> bull_payjoin
   address_view --> bull_ui
+  address_view --> scanning
+  address_view --> silent
   address_view --> label_editor
   address_view --> labels
   address_view --> mempool
+  address_view --> preferences
   address_view --> primitives
   address_view --> satoshifier
   address_view --> secrets
@@ -200,12 +204,16 @@ graph TD
   bull_exchange --> bull_payjoin
   bull_exchange --> bull_pricer
   bull_exchange --> bull_ui
+  bull_exchange --> coins
   bull_exchange --> exchange
   bull_exchange --> fees
+  bull_exchange --> fees_feature
   bull_exchange --> file_system
+  bull_exchange --> labels
   bull_exchange --> preferences
   bull_exchange --> primitives
   bull_exchange --> secrets
+  bull_exchange --> spend
   bull_exchange --> sync
   bull_logs --> bull_logger
   bull_logs --> bull_ui
@@ -339,9 +347,37 @@ graph TD
   send --> spend
   send --> sync
   send -.-> rust_bindings
+  settings --> access
+  settings --> address_view
+  settings --> all_seed_view
+  settings --> background_tasks
+  settings --> backups
+  settings --> bip85
+  settings --> bitcoin_price
+  settings --> bull_ark
+  settings --> bull_exchange
+  settings --> bull_logger
+  settings --> bull_payjoin
+  settings --> bull_pricer
+  settings --> bull_recoverbull
+  settings --> bull_tor
   settings --> bull_ui
+  settings --> electrum
+  settings --> exchange
+  settings --> fees_feature
+  settings --> label_editor
   settings --> network
+  settings --> notifications
+  settings --> preferences
   settings --> primitives
+  settings --> receive
+  settings --> screen_privacy
+  settings --> send
+  settings --> silent
+  settings --> swap_feature
+  settings --> transactions
+  settings --> wallet_import
+  settings -.-> legacy_storage
   signers --> secrets
   signers --> legacy_storage
   signers --> bitbox_transport
@@ -378,6 +414,7 @@ graph TD
   swap_feature --> receive
   swap_feature --> satoshifier
   swap_feature --> secrets
+  swap_feature --> send
   swap_feature --> signers
   swap_feature --> spend
   swap_feature --> sync
@@ -416,12 +453,16 @@ graph TD
   wallet_import --> bull_logger
   wallet_import --> bull_ui
   wallet_import --> electrum
+  wallet_import --> mnemonic_entry
   wallet_import --> preferences
   wallet_import --> primitives
   wallet_import --> satoshifier
+  wallet_import --> scanning
+  wallet_import --> screen_privacy
   wallet_import --> secrets
   wallet_import --> signers
   wallet_import --> sync
+  wallet_import -.-> rust_bindings
   wizard --> background_tasks
   wizard --> bull_exchange
   wizard --> bull_logger
