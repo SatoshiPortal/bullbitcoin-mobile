@@ -135,43 +135,37 @@ class ImportWalletPage extends StatelessWidget {
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletLedger,
-                      onTap: network == null
-                          ? null
-                          : () async {
-                              final account =
-                                  await SignersNavigation.importLedger(
-                                    context,
-                                    network: network,
-                                  );
-                              if (account == null || !context.mounted) return;
-                              await _reviewAccount(
-                                context,
-                                account,
-                                context.loc.ledgerDefaultWalletLabel,
-                              );
-                            },
+                      onTap: () async {
+                        final account = await SignersNavigation.importLedger(
+                          context,
+                          network: network,
+                        );
+                        if (account == null || !context.mounted) return;
+                        await _reviewAccount(
+                          context,
+                          account,
+                          context.loc.ledgerDefaultWalletLabel,
+                        );
+                      },
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: Platform.isAndroid
                           ? context.loc.importWalletBitBox
                           : context.loc.importWalletBitBoxNova,
-                      onTap: network == null
-                          ? null
-                          : () async {
-                              final account =
-                                  await SignersNavigation.importBitBox(
-                                    context,
-                                    network: network,
-                                    requestedDeviceType: SignerDevice.bitbox02,
-                                  );
-                              if (account == null || !context.mounted) return;
-                              await _reviewAccount(
-                                context,
-                                account,
-                                context.loc.bitboxScreenDefaultWalletLabel,
-                              );
-                            },
+                      onTap: () async {
+                        final account = await SignersNavigation.importBitBox(
+                          context,
+                          network: network,
+                          requestedDeviceType: SignerDevice.bitbox02,
+                        );
+                        if (account == null || !context.mounted) return;
+                        await _reviewAccount(
+                          context,
+                          account,
+                          context.loc.bitboxScreenDefaultWalletLabel,
+                        );
+                      },
                     ),
                   ],
                 ),

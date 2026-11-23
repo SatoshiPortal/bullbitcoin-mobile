@@ -24,9 +24,9 @@ class ImportWalletUsecase {
     required this._checkDuplicateMnemonicUsecase,
     required this._secrets,
     required this._settingsRepository,
-    required ProvisionMnemonicWallet provision,
+    required this._provision,
     required this._admission,
-  }) : _provision = provision;
+  });
 
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
