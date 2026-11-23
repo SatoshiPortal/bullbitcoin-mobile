@@ -1,10 +1,9 @@
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:swaps/swaps.dart' show SwapRoute;
+import 'package:swaps/swaps.dart' show SwapRoute, SwapRouting;
 
 class GetSendSwapRouteUsecase {
-  final SwapFacade _swapFacade;
+  final SwapRouting _routing;
 
-  const GetSendSwapRouteUsecase(this._swapFacade);
+  const GetSendSwapRouteUsecase(this._routing);
 
-  Future<SwapRoute> execute() => _swapFacade.getRoute();
+  Future<SwapRoute> execute() => _routing.resolveRoute();
 }

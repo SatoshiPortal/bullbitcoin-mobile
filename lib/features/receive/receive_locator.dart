@@ -34,7 +34,12 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:swaps/swaps.dart'
-    show BoltzSwaps, SwapWatcher, WatchSwapUsecase, GetSwapLimitsAndFeesUsecase;
+    show
+        BoltzSwaps,
+        GetSwapLimitsAndFeesUsecase,
+        SwapRouting,
+        SwapWatcher,
+        WatchSwapUsecase;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -75,7 +80,7 @@ class ReceiveLocator {
       ),
     );
     locator.registerFactory<GetReceiveSwapRouteUsecase>(
-      () => GetReceiveSwapRouteUsecase(locator<SwapFacade>()),
+      () => GetReceiveSwapRouteUsecase(locator<SwapRouting>()),
     );
     locator.registerFactory<CreateBoltzReceiveSwapUsecase>(
       () => CreateBoltzReceiveSwapUsecase(

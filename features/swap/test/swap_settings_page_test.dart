@@ -1,15 +1,14 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile;
+import 'package:bull_ui/testing.dart' show testBullExtensions;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_settings_page.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:swap_feature/src/presentation/swap_settings_cubit.dart';
+import 'package:swap_feature/src/ui/swap_settings_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSwapSettingsCubit extends Mock implements SwapSettingsCubit {}
@@ -28,9 +27,7 @@ void main() {
         .thenAnswer((_) async {});
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(extensions: testBullExtensions),
         home: BlocProvider<SwapSettingsCubit>.value(
           value: cubit,
           child: const SwapSettingsPage(),

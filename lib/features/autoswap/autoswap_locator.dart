@@ -24,6 +24,7 @@ import 'package:swaps/swaps.dart'
         GetSwapLimitsAndFeesUsecase,
         RecordPendingSwapLockupUsecase,
         RecordSwapLockupUsecase,
+        SwapRouting,
         SwapsUnsupportedNetworkFailure;
 import 'package:get_it/get_it.dart';
 
@@ -87,7 +88,7 @@ class AutoSwapLocator {
                 ),
               },
             ),
-        resolveRoute: locator<SwapFacade>().getRoute,
+        resolveRoute: locator<SwapRouting>().resolveRoute,
         runBoltz: locator<BoltzAutoswapProvider>().execute,
         runExchange: locator<ExchangeAutoswapProvider>().execute,
       ),

@@ -1,0 +1,11 @@
+{
+  "@@locale": "ar",
+  "save": "أنقذ",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

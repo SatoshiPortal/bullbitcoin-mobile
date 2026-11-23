@@ -446,6 +446,8 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 `packages/swaps` owns the provider routing decision and the `Autoswap` execution policy. The app still composes finished-sync notifications and the payment operations used by the two providers; these are not exported as new app adapters.
 
+The standalone swap settings route lives in `features/swap`. It consumes `SwapRouting` and `SwapServerSettings` from `packages/swaps` and owns its localized UI. The transfer route remains in the legacy app while it needs Send internals, the wallet catalog and transaction navigation.
+
 ## Legacy SQLite composition
 
 `lib/core/storage/sqlite_database.dart` composes the existing tables with modular Drift generation. The physical `bullbitcoin_sqlite` database, schema 16, migrations, defaults and text date-time representation remain unchanged. `Labels` and `FrozenUtxos` live in `packages/labels`. Other tables stay at their current paths until each owner moves its table, queries, mapper and consumers together. Consumers import generated rows and companions directly from the table’s `.drift.dart` library; the composer does not re-export them. The transaction row mapper lives beside the Electrum adapter.

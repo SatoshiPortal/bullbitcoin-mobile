@@ -6,6 +6,7 @@ library;
 export 'src/swaps.dart';
 export 'src/domain/autoswap.dart' show Autoswap;
 export 'src/domain/entities/swap_route.dart';
+export 'src/domain/swap_routing.dart' show SwapRouting;
 export 'src/domain/swap_server_control.dart' show SwapServerSettings;
 export 'src/domain/verify_swap_lockup.dart';
 export 'src/domain/entities/auto_swap.dart';

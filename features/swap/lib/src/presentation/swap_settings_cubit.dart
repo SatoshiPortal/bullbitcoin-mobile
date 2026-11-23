@@ -1,13 +1,13 @@
-import 'package:swaps/swaps.dart' show SwapRouteOverride, SwapServer;
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_server_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_exchange_fallback_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_route_override_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../domain/usecases/get_swap_route_settings_usecase.dart';
+import '../domain/usecases/get_swap_server_usecase.dart';
+import '../domain/usecases/set_swap_exchange_fallback_usecase.dart';
+import '../domain/usecases/set_swap_route_override_usecase.dart';
+import '../domain/usecases/set_swap_server_usecase.dart';
 
 part 'swap_settings_cubit.freezed.dart';
 part 'swap_settings_state.dart';
@@ -89,7 +89,7 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   /// Stores the server typed by the user. Returns the validation failure so
   /// the editor can show it next to the input; a storage failure is reported
   /// through the state like any other.
-  Future<SwapValidationFailure?> setSwapServer(String input) async {
+  Future<SwapsInvalidServerFailure?> setSwapServer(String input) async {
     if (state.saving) return null;
     emit(state.copyWith(saving: true, failure: null));
     final result = await _setSwapServerUsecase.execute(input);
@@ -98,7 +98,7 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
       case Ok(:final value):
         emit(state.copyWith(saving: false, swapServer: value));
         return null;
-      case Err(failure: final SwapValidationFailure failure):
+      case Err(failure: final SwapsInvalidServerFailure failure):
         emit(state.copyWith(saving: false));
         return failure;
       case Err(:final failure):

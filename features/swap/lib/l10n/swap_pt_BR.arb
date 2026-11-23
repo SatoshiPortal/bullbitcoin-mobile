@@ -1,0 +1,11 @@
+{
+  "@@locale": "pt_BR",
+  "save": "Salvar",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

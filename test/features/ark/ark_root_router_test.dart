@@ -23,6 +23,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 
 class PricePreferences extends Mock
     implements
@@ -46,6 +48,10 @@ class Memory implements QuickActionsStorage {
 class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
+
+class _UnusedSwapRouting extends Mock implements SwapRouting {}
+
+class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 
 void main() {
   testWidgets(
@@ -97,6 +103,12 @@ void main() {
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
+      locator.registerSingleton(
+        SwapFeature.mount(
+          routing: _UnusedSwapRouting(),
+          servers: _UnusedSwapServers(),
+        ),
+      );
       final preferences = PricePreferences();
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
@@ -119,6 +131,7 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<SwapFeature>();
         await locator.unregister<BitcoinPriceFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
@@ -136,6 +149,7 @@ void main() {
         false,
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
+      expect(router.namedLocation('swapSettings'), '/swap-settings');
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

@@ -20,6 +20,7 @@ workspace:
   - features/access
   - features/ark
   - features/fees
+  - features/swap
   - packages/fees
   - packages/ark
   - packages/secrets
@@ -69,6 +70,7 @@ dependencies:
   bull_ark:
   fees:
   fees_feature:
+  swap_feature:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:

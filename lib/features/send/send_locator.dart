@@ -154,7 +154,7 @@ class SendLocator {
       () => GetSendSwapQuoteUsecase(locator<SwapFacade>()),
     );
     locator.registerFactory<GetSendSwapRouteUsecase>(
-      () => GetSendSwapRouteUsecase(locator<SwapFacade>()),
+      () => GetSendSwapRouteUsecase(locator<SwapRouting>()),
     );
     locator.registerFactory<CreateBoltzSendSwapUsecase>(
       () => CreateBoltzSendSwapUsecase(

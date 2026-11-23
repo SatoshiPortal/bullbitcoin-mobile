@@ -1,7 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/data/swap_route_setting_repository_impl.dart';
-import 'package:swaps/swaps.dart' show SwapRouteOverride;
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/src/data/swap_route_setting_repository_impl.dart';
+import 'package:swaps/swaps.dart' show SwapRouteOverride, SwapsFailure;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,19 +16,19 @@ void main() {
 
   test('the exchange fallback is off until the user turns it on', () async {
     final before = await repository.isExchangeFallbackEnabled();
-    expect((before as Ok<bool, SwapFailure>).value, isFalse);
+    expect((before as Ok<bool, SwapsFailure>).value, isFalse);
 
     final saved = await repository.setExchangeFallbackEnabled(true);
     final after = await repository.isExchangeFallbackEnabled();
 
-    expect(saved, isA<Ok<void, SwapFailure>>());
-    expect((after as Ok<bool, SwapFailure>).value, isTrue);
+    expect(saved, isA<Ok<void, SwapsFailure>>());
+    expect((after as Ok<bool, SwapsFailure>).value, isTrue);
   });
 
   test('the route override defaults to auto and persists', () async {
     final before = await repository.getRouteOverride();
     expect(
-      (before as Ok<SwapRouteOverride, SwapFailure>).value,
+      (before as Ok<SwapRouteOverride, SwapsFailure>).value,
       SwapRouteOverride.auto,
     );
 
@@ -37,7 +36,7 @@ void main() {
     final after = await repository.getRouteOverride();
 
     expect(
-      (after as Ok<SwapRouteOverride, SwapFailure>).value,
+      (after as Ok<SwapRouteOverride, SwapsFailure>).value,
       SwapRouteOverride.exchangeOnly,
     );
   });
@@ -48,7 +47,7 @@ void main() {
     final result = await repository.getRouteOverride();
 
     expect(
-      (result as Ok<SwapRouteOverride, SwapFailure>).value,
+      (result as Ok<SwapRouteOverride, SwapsFailure>).value,
       SwapRouteOverride.auto,
     );
   });

@@ -1,16 +1,15 @@
 import 'dart:async';
 
-import 'package:swaps/swaps.dart' show SwapRouteOverride, SwapServer;
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_server_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_exchange_fallback_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_route_override_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:swap_feature/src/domain/usecases/get_swap_route_settings_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/get_swap_server_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/set_swap_exchange_fallback_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/set_swap_route_override_usecase.dart';
+import 'package:swap_feature/src/domain/usecases/set_swap_server_usecase.dart';
+import 'package:swap_feature/src/presentation/swap_settings_cubit.dart';
 
 class _MockGetSwapRouteSettingsUsecase extends Mock
     implements GetSwapRouteSettingsUsecase {}
@@ -68,7 +67,7 @@ void main() {
   );
 
   test('a save finishing after the screen closed emits nothing', () async {
-    final saved = Completer<Result<SwapServer, SwapFailure>>();
+    final saved = Completer<Result<SwapServer, SwapsFailure>>();
     when(() => setServer.execute(any())).thenAnswer((_) => saved.future);
     final cubit = build();
 
@@ -93,7 +92,7 @@ void main() {
 
   test('nothing is written before the stored choices are known', () async {
     when(() => getSettings.execute())
-        .thenAnswer((_) async => const Err(SwapStorageFailure()));
+        .thenAnswer((_) async => const Err(SwapsStorageFailure()));
     final cubit = build();
     addTearDown(cubit.close);
 
@@ -101,7 +100,7 @@ void main() {
     await cubit.setExchangeFallbackEnabled(true);
 
     expect(cubit.state.loaded, isFalse);
-    expect(cubit.state.failure, isA<SwapStorageFailure>());
+    expect(cubit.state.failure, isA<SwapsStorageFailure>());
     verifyNever(() => setFallback.execute(any()));
   });
 
@@ -119,7 +118,7 @@ void main() {
 
   test('a failed write keeps the previous value and reports it', () async {
     when(() => setFallback.execute(any()))
-        .thenAnswer((_) async => const Err(SwapStorageFailure()));
+        .thenAnswer((_) async => const Err(SwapsStorageFailure()));
     final cubit = build();
     addTearDown(cubit.close);
     await cubit.load();
@@ -127,7 +126,7 @@ void main() {
     await cubit.setExchangeFallbackEnabled(true);
 
     expect(cubit.state.exchangeFallbackEnabled, isFalse);
-    expect(cubit.state.failure, isA<SwapStorageFailure>());
+    expect(cubit.state.failure, isA<SwapsStorageFailure>());
   });
 
   test('pins the swap provider', () async {
@@ -173,7 +172,7 @@ void main() {
 
   test('an invalid server is returned to the editor, not reported', () async {
     when(() => setServer.execute(any())).thenAnswer(
-      (_) async => const Err(SwapValidationFailure(field: 'server')),
+      (_) async => const Err(SwapsInvalidServerFailure('Invalid server')),
     );
     final cubit = build();
     addTearDown(cubit.close);
@@ -181,7 +180,7 @@ void main() {
 
     final invalid = await cubit.setSwapServer('not a host');
 
-    expect(invalid, isA<SwapValidationFailure>());
+    expect(invalid, isA<SwapsInvalidServerFailure>());
     expect(cubit.state.failure, isNull);
     expect(cubit.state.swapServer, SwapServer.mainnetDefault);
   });

@@ -1,0 +1,7 @@
+arb-dir: lib/l10n
+template-arb-file: swap_en.arb
+output-localization-file: swap_localizations.dart
+output-class: SwapLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

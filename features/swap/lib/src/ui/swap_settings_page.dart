@@ -1,11 +1,12 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:swaps/swaps.dart' show SwapRouteOverride, SwapServer;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../presentation/swap_settings_cubit.dart';
+import '../presentation/swap_settings_failure_l10n.dart';
+import '../swap_l10n.dart';
 
 class SwapSettingsPage extends StatelessWidget {
   const SwapSettingsPage({super.key});
@@ -26,7 +27,7 @@ class SwapSettingsPage extends StatelessWidget {
             crossAxisAlignment: .stretch,
             children: [
               BullTopBar(
-                title: context.loc.swapSettingsTitle,
+                title: context.swapCopyForLocale.swapSettingsTitle,
                 onBack: () => context.pop(),
               ),
               const Expanded(child: _SwapSettingsBody()),
@@ -46,6 +47,7 @@ class _SwapSettingsBody extends StatelessWidget {
     final state = context.watch<SwapSettingsCubit>().state;
     final cubit = context.read<SwapSettingsCubit>();
     final canEdit = state.loaded && !state.saving;
+    final copy = context.swapCopyForLocale;
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -53,23 +55,38 @@ class _SwapSettingsBody extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: BullText(
-                context.loc.swapSettingsExchangeFallbackLabel,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              child: ExcludeSemantics(
+                child: BullText(
+                  copy.swapSettingsExchangeFallbackLabel,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.bull.text,
                 ),
-                color: context.bull.text,
               ),
             ),
-            BullSwitch(
-              value: state.exchangeFallbackEnabled,
-              onChanged: canEdit ? cubit.setExchangeFallbackEnabled : null,
+            MergeSemantics(
+              child: Semantics(
+                label: copy.swapSettingsExchangeFallbackLabel,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: 48,
+                    minWidth: 48,
+                  ),
+                  child: BullSwitch(
+                    value: state.exchangeFallbackEnabled,
+                    onChanged: canEdit
+                        ? cubit.setExchangeFallbackEnabled
+                        : null,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
         const Gap(8),
         BullText(
-          context.loc.swapSettingsExchangeFallbackDescription,
+          copy.swapSettingsExchangeFallbackDescription,
           style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.bull.textMuted,
         ),
@@ -84,7 +101,7 @@ class _SwapSettingsBody extends StatelessWidget {
                     crossAxisAlignment: .start,
                     children: [
                       BullText(
-                        context.loc.swapServerTitle,
+                        copy.swapServerTitle,
                         style: context.bullType.body.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -93,7 +110,7 @@ class _SwapSettingsBody extends StatelessWidget {
                       const Gap(2),
                       BullText(
                         state.isDefaultSwapServer
-                            ? context.loc.swapServerDefault
+                            ? copy.swapServerDefault
                             : state.swapServer.host,
                         style: context.bullType.label.copyWith(
                           fontWeight: FontWeight.w400,
@@ -114,7 +131,7 @@ class _SwapSettingsBody extends StatelessWidget {
         if (state.loaded && state.devModeEnabled) ...[
           const Gap(32),
           BullText(
-            context.loc.swapSettingsRouteOverrideTitle,
+            copy.swapSettingsRouteOverrideTitle,
             style: context.bullType.label,
             color: context.bull.text,
           ),
@@ -142,11 +159,12 @@ class _RouteOverrideSelector extends StatelessWidget {
 
   String _label(BuildContext context, SwapRouteOverride override) =>
       switch (override) {
-        SwapRouteOverride.auto => context.loc.swapSettingsRouteOverrideAuto,
+        SwapRouteOverride.auto =>
+          context.swapCopyForLocale.swapSettingsRouteOverrideAuto,
         SwapRouteOverride.boltzOnly =>
-          context.loc.swapSettingsRouteOverrideBoltzOnly,
+          context.swapCopyForLocale.swapSettingsRouteOverrideBoltzOnly,
         SwapRouteOverride.exchangeOnly =>
-          context.loc.swapSettingsRouteOverrideExchangeOnly,
+          context.swapCopyForLocale.swapSettingsRouteOverrideExchangeOnly,
       };
 
   @override
@@ -218,7 +236,10 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
     }
     if (cubit.state.swapServer != widget.initial &&
         cubit.state.failure == null) {
-      BullSnackBar.show(context, message: context.loc.swapServerChangedNotice);
+      BullSnackBar.show(
+        context,
+        message: context.swapCopyForLocale.swapServerChangedNotice,
+      );
     }
     Navigator.of(context).pop();
   }
@@ -226,18 +247,19 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
   @override
   Widget build(BuildContext context) {
     final saving = context.select((SwapSettingsCubit c) => c.state.saving);
+    final copy = context.swapCopyForLocale;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: .stretch,
       children: [
         BullText(
-          context.loc.swapServerTitle,
+          copy.swapServerTitle,
           style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.bull.text,
         ),
         const Gap(8),
         BullText(
-          context.loc.swapServerSubtitle,
+          copy.swapServerSubtitle,
           style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.bull.textMuted,
         ),
@@ -255,19 +277,19 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
         if (_invalid) ...[
           const Gap(8),
           BullText(
-            context.loc.swapServerInvalid,
+            copy.swapServerInvalid,
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.bull.error,
           ),
         ],
         const Gap(24),
         BullButton.primary(
-          label: context.loc.save,
+          label: copy.save,
           onPressed: (saving) ? null : () => _save(_input),
         ),
         const Gap(8),
         BullButton.secondary(
-          label: context.loc.swapServerReset,
+          label: copy.swapServerReset,
           onPressed: (saving) ? null : () => _save(''),
         ),
       ],

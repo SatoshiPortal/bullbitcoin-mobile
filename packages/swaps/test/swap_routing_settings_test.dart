@@ -1,10 +1,9 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:swaps/swaps.dart' show SwapRouteOverride;
-import 'package:bb_mobile/features/swap/domain/repositories/swap_route_setting_repository.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:swaps/swaps.dart';
+import 'package:swaps/src/domain/repositories/swap_route_setting_repository.dart';
+import 'package:swaps/src/domain/swap_routing.dart';
+import 'package:test/test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSwapRouteSettingRepository extends Mock
@@ -18,7 +17,7 @@ void main() {
   late _MockSwapRouteSettingRepository routeSettings;
   late _MockSettingsRepository settingsRepository;
   late _MockSettingsEntity settings;
-  late GetSwapRouteSettingsUsecase usecase;
+  late SwapRouting routing;
 
   setUp(() {
     routeSettings = _MockSwapRouteSettingRepository();
@@ -31,14 +30,11 @@ void main() {
     when(() => settingsRepository.fetch())
         .thenAnswer((_) async => Ok(settings));
     when(() => settings.isDevModeEnabled).thenReturn(true);
-    usecase = GetSwapRouteSettingsUsecase(
-      swapRouteSettingRepository: routeSettings,
-      settingsRepository: settingsRepository,
-    );
+    routing = StoredSwapRouting(routeSettings, settingsRepository);
   });
 
   test('returns the stored choices and whether dev mode is on', () async {
-    final result = await usecase.execute();
+    final result = await routing.readRouteSettings();
 
     expect(
       switch (result) {
@@ -55,15 +51,18 @@ void main() {
 
   test('an unreadable setting is a failure, not a default', () async {
     when(() => routeSettings.isExchangeFallbackEnabled())
-        .thenAnswer((_) async => const Err(SwapStorageFailure()));
+        .thenAnswer((_) async => const Err(SwapsStorageFailure()));
 
-    expect(await usecase.execute(), isA<Err<SwapRouteSettings, SwapFailure>>());
+    expect(
+      await routing.readRouteSettings(),
+      isA<Err<SwapRouteSettings, SwapsFailure>>(),
+    );
   });
 
   test('unreadable app settings hide the developer section', () async {
     when(() => settingsRepository.fetch()).thenThrow(Exception('locked'));
 
-    final result = await usecase.execute();
+    final result = await routing.readRouteSettings();
 
     expect(switch (result) {
       Ok(:final value) => value.devModeEnabled,

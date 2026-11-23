@@ -10,7 +10,7 @@ abstract class SwapSettingsState with _$SwapSettingsState {
     @Default(SwapServer.mainnetDefault) SwapServer swapServer,
     NetworkEnv? swapServerEnvironment,
     @Default(false) bool saving,
-    SwapFailure? failure,
+    SwapsFailure? failure,
   }) = _SwapSettingsState;
   const SwapSettingsState._();
 
