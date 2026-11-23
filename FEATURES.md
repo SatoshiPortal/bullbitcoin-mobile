@@ -105,6 +105,8 @@ graph TB
     TX_HISTORY --> EXCHANGE_DOMAIN
     CORE --> EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN --> PRIMITIVES
+    EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
+    EXCHANGE_DOMAIN -->|database key and legacy credential reads| SECRETS
     EXCHANGE_DOMAIN -->|complete order pages| BBX_API
     EXCHANGE_SETTINGS -->|order statistics| BBX_API
 

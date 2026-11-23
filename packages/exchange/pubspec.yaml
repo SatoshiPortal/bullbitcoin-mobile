@@ -10,11 +10,16 @@ resolution: workspace
 
 dependencies:
   bbx_api:
+  drift: ^2.35.4
   freezed_annotation: ^3.1.0
+  legacy_storage:
   primitives:
+  secrets:
+  sqlite3: ^3.9.1
 
 dev_dependencies:
   build_runner: ^2.10.4
   dio: ^5.9.0
+  drift_dev: ^2.35.3
   freezed: ^4.0.0
   test: ^1.26.3

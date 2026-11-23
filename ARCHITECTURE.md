@@ -339,6 +339,8 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 `packages/exchange` owns the account, order and DCA domain values and their invariants. `Exchange.open` provides a strict account-level pending-order scan over an authoritative session snapshot. BBX decoding remains in the transport; the ordinary Exchange library does not expose wire values, codecs or repositories.
 
+The Exchange credential participant owns a separate encrypted schema and uses Secrets for the module database key and read-only access to the two fixed legacy records. It is not yet active in app composition. Activation requires the coordinator's pre-marker provenance check and draining both legacy credential writers.
+
 `BullExchangeFeature.mount` contributes the two presentations of the exchange landing route from `features/bull_exchange`. During extraction the legacy exchange router supplies the host's store-aware localized copy, branding and navigation to existing routes.
 
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.

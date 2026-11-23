@@ -158,7 +158,9 @@ graph TD
   electrum --> secrets
   electrum --> sync
   exchange --> bbx_api
+  exchange --> legacy_storage
   exchange --> primitives
+  exchange --> secrets
   fees --> bull_payjoin
   fees --> mempool
   fees --> primitives
