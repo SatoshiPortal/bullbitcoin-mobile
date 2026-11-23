@@ -142,7 +142,7 @@ void main() {
     test('maps the user summary to the account info', () async {
       final core = _MockGetUserSummary();
       when(core.execute).thenAnswer(
-        (_) async => Ok(_summary(groups: ['KYC_LIGHT_VERIFICATION'])),
+        (_) async => Ok(_summary(groups: ['KYC_CANADA_LIGHT_VERIFICATION'])),
       );
 
       final result = await GetAccountInfoUsecase(exchange: _withSummary(core))

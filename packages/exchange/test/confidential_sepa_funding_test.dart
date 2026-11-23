@@ -72,7 +72,7 @@ void main() {
   for (final (name, groups) in [
     ('corporate', [...eligible, 'KYC_IS_CORPORATE']),
     ('outside the EU', ['KYC_IDENTITY_VERIFIED']),
-    ('without full KYC', ['KYC_LIGHT_VERIFICATION', 'JURI_EU']),
+    ('without full KYC', ['KYC_CANADA_LIGHT_VERIFICATION', 'JURI_EU']),
   ]) {
     test('does not look up IBANs for an account $name', () async {
       account = summary(groups);

@@ -136,8 +136,10 @@ sealed class UserSummary with _$UserSummary {
   const UserSummary._();
 
   bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
-  bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
+  bool get isLightKycLevel => groups.contains('KYC_CANADA_LIGHT_VERIFICATION');
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
+  bool get isSinpeVerified => groups.contains('KYC_SINPE_VERIFIED');
+  bool get isMissionary => groups.contains('MISSIONARY');
   bool get isCorporate => groups.contains('KYC_IS_CORPORATE');
   bool get isEuropeanJurisdiction => groups.contains('JURI_EU');
   bool get isEligibleForConfidentialSepa =>
@@ -151,29 +153,43 @@ sealed class UserSummary with _$UserSummary {
 
   bool get isFundingRestricted => groups.any(_fundingRestrictedGroups.contains);
 
-  static const _lightKycCurrencies = {
+  static const _limitedKycCurrencies = {
     FiatCurrency.cad,
     FiatCurrency.crc,
     FiatCurrency.ars,
   };
 
-  static const _cadLimitedKycMaxAmount = 999.0;
-  static const _cadLightKycMaxAmount = 3000.0;
+  /// Maximum CAD amount per transaction for Limited Identity Verification
+  /// users, from the server's published limits table
+  /// (`getTradingLimitAndVerificationsPerCountry` in API-Orders). The server
+  /// also caps them at 3000 CAD per day; the app has no daily volume, so that
+  /// cap is left to the server.
+  static const _cadLimitedKycMaxAmount = 999.99;
 
-  /// Whether the user's KYC level permits transactions in [currency].
+  /// Whether the user's KYC level permits transactions in [currency], per the
+  /// server's limits table: Canada light verification trades CAD; limited
+  /// verification trades CAD, CRC and ARS (not available elsewhere); SINPE
+  /// verified trades CRC; missionary trades ARS.
   bool isKycOk(FiatCurrency currency) {
     if (isFullyVerifiedKycLevel) return true;
-    return (isLimitedKycLevel || isLightKycLevel) &&
-        _lightKycCurrencies.contains(currency);
+    if (isLightKycLevel && currency == FiatCurrency.cad) return true;
+    if (isLimitedKycLevel && _limitedKycCurrencies.contains(currency)) {
+      return true;
+    }
+    if (isSinpeVerified && currency == FiatCurrency.crc) return true;
+    if (isMissionary && currency == FiatCurrency.ars) return true;
+    return false;
   }
 
-  /// Whether [amount] exceeds the per-transaction limit for the user's
-  /// KYC level in [currency]. Currently only CAD limits are enforced.
+  /// Whether [amount] exceeds the per-transaction limit for the user's KYC
+  /// level in [currency]. Only limited verification in CAD has one (999.99);
+  /// Canada light verification has no cap. The daily caps (CAD, CRC, ARS) need
+  /// the user's daily volume, which the app does not have, so the server
+  /// enforces them.
   bool isAmountExceeded(double amount, FiatCurrency currency) {
-    return !isFullyVerifiedKycLevel &&
-        currency == FiatCurrency.cad &&
-        ((isLimitedKycLevel && amount > _cadLimitedKycMaxAmount) ||
-            (isLightKycLevel && amount > _cadLightKycMaxAmount));
+    if (isFullyVerifiedKycLevel || currency != FiatCurrency.cad) return false;
+    if (isLightKycLevel) return false;
+    return isLimitedKycLevel && amount > _cadLimitedKycMaxAmount;
   }
 
   /// Returns true when the user needs to upgrade KYC to proceed.
