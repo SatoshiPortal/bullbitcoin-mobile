@@ -33,6 +33,8 @@ final class _FailingSpend extends FakeSpend {
 }
 
 final class _VerifyingSpend extends FakeSpend {
+  PreparedBitcoinSpend? reviewed;
+
   @override
   Result<void, SpendFailure> verifyExternalBitcoin({
     required String unsignedPsbt,
@@ -43,6 +45,20 @@ final class _VerifyingSpend extends FakeSpend {
     signedTransaction: signedTransaction,
     isPsbt: isPsbt,
   );
+
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> verifySignedBitcoin({
+    required PreparedBitcoinSpend prepared,
+    required String signedTransaction,
+    required bool isPsbt,
+  }) async {
+    reviewed = prepared;
+    return verifyExternalBitcoin(
+      unsignedPsbt: prepared.unsignedPsbt,
+      signedTransaction: signedTransaction,
+      isPsbt: isPsbt,
+    ).map((_) => SpendFixtures.signedBitcoin(signedTransaction));
+  }
 }
 
 class _MockEnvironment extends Mock implements ActiveEnvironmentReader {}
@@ -68,7 +84,10 @@ void main() {
       network: BitcoinNetwork.testnet,
       broadcastImportedBitcoin: _MockBroadcastImportedBitcoin(),
       verifySignedTxUsecase: verifier,
-      unsignedPsbt: psbt,
+      prepared: SpendFixtures.preparedBitcoin(
+        unsignedPsbt: psbt,
+        fee: Sats.zero,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -98,7 +117,10 @@ void main() {
       network: BitcoinNetwork.testnet,
       broadcastImportedBitcoin: _MockBroadcastImportedBitcoin(),
       verifySignedTxUsecase: verifier,
-      unsignedPsbt: psbt,
+      prepared: SpendFixtures.preparedBitcoin(
+        unsignedPsbt: psbt,
+        fee: Sats.zero,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -130,7 +152,10 @@ void main() {
       network: BitcoinNetwork.testnet,
       broadcastImportedBitcoin: _MockBroadcastImportedBitcoin(),
       verifySignedTxUsecase: verifier,
-      unsignedPsbt: psbt,
+      prepared: SpendFixtures.preparedBitcoin(
+        unsignedPsbt: psbt,
+        fee: Sats.zero,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -269,13 +294,16 @@ void main() {
           .combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt))
           .serialize();
       final broadcast = _MockBroadcastImportedBitcoin();
+      final spend = _VerifyingSpend();
+      final prepared = SpendFixtures.preparedBitcoin(
+        unsignedPsbt: unsignedPsbt,
+        fee: Sats.fromInt(1000),
+      );
       final cubit = BroadcastSignedTxCubit(
         network: BitcoinNetwork.mainnet,
         broadcastImportedBitcoin: broadcast,
-        verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-          _VerifyingSpend(),
-        ),
-        unsignedPsbt: unsignedPsbt,
+        verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(spend),
+        prepared: prepared,
       );
       addTearDown(cubit.close);
 
@@ -298,6 +326,7 @@ void main() {
       );
       expect(cubit.state.isBroadcasted, isFalse);
       expect(await cubit.signedForSend(), finalizedTransaction);
+      expect(spend.reviewed, same(prepared));
     },
   );
 
@@ -306,7 +335,10 @@ void main() {
       network: BitcoinNetwork.mainnet,
       broadcastImportedBitcoin: _MockBroadcastImportedBitcoin(),
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(_VerifyingSpend()),
-      unsignedPsbt: unsignedPsbt,
+      prepared: SpendFixtures.preparedBitcoin(
+        unsignedPsbt: unsignedPsbt,
+        fee: Sats.zero,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -439,7 +471,10 @@ void main() {
         network: BitcoinNetwork.testnet,
         broadcastImportedBitcoin: _MockBroadcastImportedBitcoin(),
         verifySignedTxUsecase: verifier,
-        unsignedPsbt: exportedPsbt,
+        prepared: SpendFixtures.preparedBitcoin(
+          unsignedPsbt: exportedPsbt,
+          fee: Sats.zero,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -462,7 +497,10 @@ void main() {
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
           _VerifyingSpend(),
         ),
-        unsignedPsbt: exportedPsbt,
+        prepared: SpendFixtures.preparedBitcoin(
+          unsignedPsbt: exportedPsbt,
+          fee: Sats.zero,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -480,7 +518,10 @@ void main() {
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
           _VerifyingSpend(),
         ),
-        unsignedPsbt: otherExportedPsbt,
+        prepared: SpendFixtures.preparedBitcoin(
+          unsignedPsbt: otherExportedPsbt,
+          fee: Sats.zero,
+        ),
       );
       addTearDown(cubit.close);
 

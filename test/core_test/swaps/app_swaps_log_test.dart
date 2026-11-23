@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
+import 'package:bb_mobile/features/swap/data/swaps_runtime_bindings.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

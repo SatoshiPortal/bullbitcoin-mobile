@@ -1,78 +1,47 @@
-import 'package:bb_mobile/features/send/public/send_facade.dart';
-
-import 'dart:async';
-
-import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide Network;
+import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
 
-class _Bitcoin extends Mock implements BroadcastBitcoinTransactionUsecase {}
+class _Spend extends FakeSpend {
+  final List<Object> submitted = [];
 
-class _Liquid extends Mock implements BroadcastLiquidTransactionUsecase {}
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> broadcastBitcoin(
+    SignedBitcoinSpend signed,
+  ) async {
+    submitted.add(signed);
+    return const Ok((txid: 'bitcoin', guarded: true, durable: false));
+  }
+
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> broadcastLiquid(
+    SignedLiquidSpend signed,
+  ) async {
+    submitted.add(signed);
+    return const Ok((txid: 'liquid', guarded: false, durable: false));
+  }
+}
 
 void main() {
-  for (final isLiquid in [false, true]) {
-    for (final succeeds in [false, true]) {
-      test(
-        'sync only after successful ${isLiquid ? "Liquid" : "Bitcoin"} broadcast: $succeeds',
-        () async {
-          final bitcoin = _Bitcoin();
-          final liquid = _Liquid();
-          final broadcast = Completer<String>();
-          final sync = Completer<void>();
-          final wallets = <String>[];
-          final facade = WalletFacade(
-            const Stream.empty(),
-            pollWallet: (id, {required isActive}) {
-              expect(isActive(), isTrue);
-              wallets.add(id);
-              return sync.future;
-            },
-          );
-          when(
-            () => bitcoin.execute(
-              walletId: any(named: 'walletId'),
-              'signed',
-              isPsbt: true,
-              network: Network.bitcoinTestnet,
-            ),
-          ).thenAnswer((_) => broadcast.future);
-          when(() => liquid.execute('signed'))
-              .thenAnswer((_) => broadcast.future);
-          final usecase = BroadcastSellPayinUsecase(
-            wallet: facade,
-            send: SendFacade(bitcoin: bitcoin.execute, liquid: liquid.execute),
-          );
-          final result = isLiquid
-              ? usecase.liquid('signed', walletId: 'source-wallet')
-              : usecase.bitcoin(
-                  'signed',
-                  walletId: 'source-wallet',
-                  isPsbt: true,
-                  network: Network.bitcoinTestnet,
-                );
-          expect(wallets, isEmpty);
-          if (succeeds) {
-            broadcast.complete('txid');
-          } else {
-            broadcast.completeError(Exception('rejected'));
-          }
-          final outcome = await result;
-          expect(outcome, succeeds ? isA<Ok>() : isA<Err>());
-          expect(wallets, succeeds ? ['source-wallet'] : isEmpty);
-          // A failed/slow sync cannot delay or turn a broadcast into a failure.
-          sync.completeError(Exception('sync unavailable'));
-          if (!succeeds) {
-            await sync.future.catchError((Object _) {});
-          }
-          await Future<void>.delayed(Duration.zero);
-          expect(wallets.length, succeeds ? 1 : 0);
-        },
+  test(
+    'returns guarded non-durable and unguarded acceptances as success',
+    () async {
+      final spend = _Spend();
+      final usecase = BroadcastSellPayinUsecase(spend);
+      final bitcoin = SpendFixtures.signedBitcoin('reviewed');
+      final liquid = SpendFixtures.signedLiquid('reviewed');
+      expect(
+        (await usecase.bitcoin(bitcoin) as Ok<String, SellFailure>).value,
+        'bitcoin',
       );
-    }
-  }
+      expect(
+        (await usecase.liquid(liquid) as Ok<String, SellFailure>).value,
+        'liquid',
+      );
+      expect(spend.submitted, [same(bitcoin), same(liquid)]);
+    },
+  );
 }

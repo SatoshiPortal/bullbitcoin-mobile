@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Ok, Sats;
 
 import 'dart:io';
 
@@ -244,7 +244,10 @@ void main() {
         network: BitcoinNetwork.mainnet,
         broadcastImportedBitcoin: broadcast,
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(spend),
-        unsignedPsbt: psbt,
+        prepared: SpendFixtures.preparedBitcoin(
+          unsignedPsbt: psbt,
+          fee: Sats.zero,
+        ),
       );
       addTearDown(cubit.close);
 

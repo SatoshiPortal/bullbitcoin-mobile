@@ -1,280 +1,191 @@
-import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletFacade;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
+import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
+import 'package:mocktail/mocktail.dart';
 
-class _MockPrepareBitcoinSend extends Mock
-    implements PrepareBitcoinSendUsecase {}
+class _MockGetWalletUtxosUsecase extends Mock
+    implements GetWalletUtxosUsecase {}
 
-class _MockLiquidWalletRepository extends Mock
-    implements LiquidWalletRepository {}
+final class _Spend extends FakeSpend {
+  final bitcoin = SpendFixtures.preparedBitcoin(
+    unsignedPsbt: 'psbt',
+    fee: Sats.fromInt(200),
+    txSize: 110,
+  );
+  final liquid = SpendFixtures.preparedLiquid(
+    unsignedPset: 'pset',
+    fee: Sats.fromInt(25),
+    amountSent: Sats.fromInt(1000),
+  );
+  SpendFailure? failure;
+  Object? reviewed;
+  bool drainRequested = false;
+  int? amountRequested;
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+  @override
+  Future<Result<PreparedBitcoinSpend, SpendFailure>> prepareBitcoin({
+    required String walletId,
+    required List<BitcoinTransactionRecipient> recipients,
+    required NetworkFee networkFee,
+    Set<Outpoint>? selectedInputs,
+    bool selectedOnly = false,
+    bool replaceByFee = true,
+  }) async => switch (failure) {
+    final failure? => Err(failure),
+    null => Ok(bitcoin),
+  };
 
-class _MockBroadcastBitcoin extends Mock
-    implements BroadcastBitcoinTransactionUsecase {}
+  @override
+  Future<Result<PreparedLiquidSpend, SpendFailure>> prepareLiquid({
+    required String walletId,
+    required String address,
+    required RelativeFee feeRate,
+    int? amountSat,
+    bool drain = false,
+    Set<Outpoint>? selectedInputs,
+  }) async {
+    drainRequested = drain;
+    amountRequested = amountSat;
+    return switch (failure) {
+      final failure? => Err(failure),
+      null => Ok(liquid),
+    };
+  }
 
-class _MockBroadcastLiquid extends Mock
-    implements BroadcastLiquidTransactionUsecase {}
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin({
+    required PreparedBitcoinSpend prepared,
+  }) async {
+    reviewed = prepared;
+    return switch (failure) {
+      final failure? => Err(failure),
+      null => Ok(SpendFixtures.signedBitcoin('signed', txSize: 111)),
+    };
+  }
 
-class _MockGetWalletUtxos extends Mock implements GetWalletUtxosUsecase {}
-
-/// The shape BDK and LWK actually throw: descriptors, xprvs and addresses.
-const _rawReason =
-    'BdkError: cannot sign wpkh([aabbccdd]xprv9s21ZrQH143K3/0/*) '
-    'to bc1qsecretaddress';
+  @override
+  Future<Result<SignedLiquidSpend, SpendFailure>> signLiquid({
+    required PreparedLiquidSpend prepared,
+  }) async {
+    reviewed = prepared;
+    return switch (failure) {
+      final failure? => Err(failure),
+      null => Ok(SpendFixtures.signedLiquid('signed')),
+    };
+  }
+}
 
 void main() {
-  setUpAll(() {
-    registerFallbackValue(const RelativeFee(25));
-    registerFallbackValue(const NetworkFee.absolute(200));
-    registerFallbackValue(<WalletUtxo>[]);
-    registerFallbackValue(<BitcoinTransactionRecipient>[]);
-  });
+  Future<Result<PreparedBitcoinSpend, PayFailure>> prepareBitcoin(
+    _Spend spend,
+  ) => PreparePayBitcoinPayinUsecase(spend).execute(
+    walletId: 'source',
+    address: "recipient",
+    amountSat: 1000,
+    networkFee: const RelativeFee(250),
+  );
 
-  group('PreparePayBitcoinPayinUsecase', () {
-    late _MockPrepareBitcoinSend prepare;
-
-    setUp(() => prepare = _MockPrepareBitcoinSend());
-
-    void stubFailure(WalletFailure failure) {
-      when(
-        () => prepare.execute(
-          walletId: any(named: 'walletId'),
-          recipients: any(
-            named: 'recipients',
-            that: predicate<List<BitcoinTransactionRecipient>>(
-              (recipients) =>
-                  recipients.length == 1 &&
-                  recipients.single.address == 'bc1qpayin' &&
-                  recipients.single.amountSat == Sats.fromInt(100000),
-            ),
-          ),
-          networkFee: any(named: 'networkFee'),
-          selectedInputs: any(named: 'selectedInputs'),
-          replaceByFee: any(named: 'replaceByFee'),
-        ),
-      ).thenAnswer((_) async => Err(failure));
-    }
-
-    Future<Result<PreparedPayBitcoinPayin, PayFailure>> run() =>
-        PreparePayBitcoinPayinUsecase(prepareBitcoinSendUsecase: prepare)
-            .execute(
-              walletId: 'wallet-1',
-              address: 'bc1qpayin',
-              networkFee: const NetworkFee.absolute(200),
-              amountSat: 100000,
-            );
-
-    test('a build failure is sanitized, reason kept for logs only', () async {
-      stubFailure(const WalletTransactionBuildFailure(_rawReason));
-
-      final failure =
-          (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure;
-      expect(failure, isA<PayUnexpectedFailure>());
-      expect(failure.logMessage, contains(_rawReason));
-    });
-
-    test('short funds is named, exactly as on the Liquid path', () async {
-      // Preserve the typed shortfall from the shared preparation.
-      // Folding it into the catch-all told a customer whose balance covers the
-      // amount but not the fees to "contact support".
-      stubFailure(const WalletInsufficientFundsFailure(_rawReason));
-
-      final failure =
-          (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure;
-      expect(failure, isA<PayInsufficientBalanceFailure>());
-      expect(
-        (failure as PayInsufficientBalanceFailure).requiredAmountSat,
-        100000,
+  Future<Result<PreparedLiquidSpend, PayFailure>> prepareLiquid(_Spend spend) =>
+      PreparePayLiquidPayinUsecase(spend).execute(
+        walletId: 'source',
+        address: 'recipient',
+        amountSat: 1000,
+        feeRate: const RelativeFee(25),
       );
-    });
 
-    test('no spendable utxo reads as the same shortfall', () async {
-      stubFailure(const WalletNoSpendableInputsFailure(_rawReason));
+  test(
+    'reviews and signs the same preparation, including its real fee',
+    () async {
+      final spend = _Spend();
+      final bitcoin = (await prepareBitcoin(
+        spend,
+      ) as Ok<PreparedBitcoinSpend, PayFailure>).value;
+      expect(bitcoin, same(spend.bitcoin));
+      expect(bitcoin.fee, Sats.fromInt(200));
+      final signing = SignPayPayinUsecase(spend);
+      final bitcoinSigned = (await signing.bitcoin(
+        bitcoin,
+      ) as Ok<SignedBitcoinSpend, PayFailure>).value;
+      expect(spend.reviewed, same(bitcoin));
+      expect(bitcoinSigned.txSize, 111);
+      final liquid = (await prepareLiquid(
+        spend,
+      ) as Ok<PreparedLiquidSpend, PayFailure>).value;
+      expect(liquid, same(spend.liquid));
+      expect(liquid.fee, Sats.fromInt(25));
+      final liquidSigned = (await signing.liquid(
+        liquid,
+      ) as Ok<SignedLiquidSpend, PayFailure>).value;
+      expect(spend.reviewed, same(liquid));
+      expect(liquidSigned.signedPset, 'signed');
+    },
+  );
 
-      expect(
-        (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure,
-        isA<PayInsufficientBalanceFailure>(),
-      );
-    });
-  });
-
-  group('PreparePayLiquidPayinUsecase', () {
-    late _MockLiquidWalletRepository liquidWallet;
-    late PreparePayLiquidPayinUsecase usecase;
-
-    setUp(() {
-      liquidWallet = _MockLiquidWalletRepository();
-      usecase = PreparePayLiquidPayinUsecase(
-        liquidWalletRepository: liquidWallet,
-      );
-    });
-
-    Future<Result<String, PayFailure>> run() => usecase.execute(
-      walletId: 'wallet-1',
-      address: 'lq1qpayin',
+  test('drain does not pass a fixed amount to Spend', () async {
+    final spend = _Spend();
+    final result = await PreparePayLiquidPayinUsecase(spend).execute(
+      walletId: 'source',
+      address: 'recipient',
+      amountSat: 1000,
       feeRate: const RelativeFee(25),
-      amountSat: 100000,
+      drain: true,
     );
+    expect(result, isA<Ok<PreparedLiquidSpend, PayFailure>>());
+    expect(spend.drainRequested, isTrue);
+    expect(spend.amountRequested, isNull);
+  });
 
-    void stubFailure(WalletFailure failure) {
-      when(
-        () => liquidWallet.buildPset(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          feeRate: any(named: 'feeRate'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
-        ),
-      ).thenAnswer((_) async => Err(failure));
-    }
-
-    test('short funds becomes an actionable balance failure', () async {
-      // These used to reach the catch-all, so the wallet's own words about the
-      // shortfall were printed on the payment screen.
-      stubFailure(const WalletInsufficientFundsFailure(_rawReason));
-
-      final failure = (await run() as Err<String, PayFailure>).failure;
-      expect(failure, isA<PayInsufficientBalanceFailure>());
+  for (final failure in <SpendFailure>[
+    const SpendInsufficientFundsFailure(),
+    const SpendNoSpendableInputsFailure(),
+  ]) {
+    test('$failure is a typed balance failure for either chain', () async {
+      final spend = _Spend()..failure = failure;
       expect(
-        (failure as PayInsufficientBalanceFailure).requiredAmountSat,
-        100000,
+        (await prepareBitcoin(spend) as Err).failure,
+        isA<PayInsufficientBalanceFailure>(),
       );
-      expect(failure.logMessage, isNull);
-    });
-
-    test('no spendable utxo reads as the same shortfall', () async {
-      stubFailure(const WalletNoSpendableInputsFailure(_rawReason));
-
       expect(
-        (await run() as Err<String, PayFailure>).failure,
+        (await prepareLiquid(spend) as Err).failure,
         isA<PayInsufficientBalanceFailure>(),
       );
     });
+  }
 
-    test('does not turn programmer errors into payment failures', () async {
-      when(
-        () => liquidWallet.buildPset(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          feeRate: any(named: 'feeRate'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
-        ),
-      ).thenThrow(StateError('invalid fixture state'));
-
-      await expectLater(run(), throwsA(isA<StateError>()));
-    });
-
-    test('consolidation is sanitized rather than explained raw', () async {
-      stubFailure(const WalletConsolidationRequiredFailure(_rawReason));
-
-      final failure = (await run() as Err<String, PayFailure>).failure;
-      expect(failure, isA<PayUnexpectedFailure>());
-      expect(failure.logMessage, isNull);
-    });
-  });
-
-  group('SignPayPayinUsecase', () {
-    test(
-      'a Bitcoin signing failure never carries the descriptor out',
-      () async {
-        final bitcoinWallet = _MockBitcoinWalletRepository();
-        when(
-          () => bitcoinWallet.signPsbt(any(), walletId: any(named: 'walletId')),
-        ).thenThrow(Exception(_rawReason));
-
-        final result = await SignPayPayinUsecase(
-          bitcoinWalletRepository: bitcoinWallet,
-          liquidWalletRepository: _MockLiquidWalletRepository(),
-        ).bitcoin(psbt: 'psbt', walletId: 'wallet-1');
-
-        final failure =
-            (result as Err<({String signedPsbt, int txSize}), PayFailure>)
-                .failure;
-        expect(failure, isA<PayUnexpectedFailure>());
-        expect(failure.logMessage, contains(_rawReason));
-      },
+  test('native, fee and signature failures remain sanitized', () async {
+    final spend = _Spend()..failure = const SpendInvalidTransactionFailure();
+    final signing = SignPayPayinUsecase(spend);
+    expect(
+      (await prepareBitcoin(spend) as Err).failure,
+      isA<PayUnexpectedFailure>(),
     );
-
-    test('a Liquid signing failure is sanitized too', () async {
-      final liquidWallet = _MockLiquidWalletRepository();
-      when(
-        () => liquidWallet.signPset(
-          pset: any(named: 'pset'),
-          walletId: any(named: 'walletId'),
-        ),
-      ).thenThrow(Exception(_rawReason));
-
-      final result = await SignPayPayinUsecase(
-        bitcoinWalletRepository: _MockBitcoinWalletRepository(),
-        liquidWalletRepository: liquidWallet,
-      ).liquid(pset: 'pset', walletId: 'wallet-1');
-
-      expect(
-        (result as Err<String, PayFailure>).failure,
-        isA<PayUnexpectedFailure>(),
-      );
-    });
+    expect(
+      (await prepareLiquid(spend) as Err).failure,
+      isA<PayUnexpectedFailure>(),
+    );
+    expect(
+      (await signing.bitcoin(spend.bitcoin) as Err).failure,
+      isA<PayUnexpectedFailure>(),
+    );
+    expect(
+      (await signing.liquid(spend.liquid) as Err).failure,
+      isA<PayUnexpectedFailure>(),
+    );
   });
-
-  group('BroadcastPayPayinUsecase', () {
-    test('a rejected broadcast is sanitized, not quoted', () async {
-      final broadcast = _MockBroadcastBitcoin();
-      when(
-        () => broadcast.execute(
-          any(),
-          isPsbt: any(named: 'isPsbt'),
-          walletId: any(named: 'walletId'),
-          network: app.Network.bitcoinMainnet,
-        ),
-      ).thenThrow(Exception(_rawReason));
-
-      final result =
-          await BroadcastPayPayinUsecase(
-            wallet: const WalletFacade(Stream.empty()),
-            send: SendFacade(
-              bitcoin: broadcast.execute,
-              liquid: _MockBroadcastLiquid().execute,
-            ),
-          ).bitcoin(
-            'rawtx',
-            walletId: 'source',
-            isPsbt: true,
-            network: app.Network.bitcoinMainnet,
-          );
-
-      final failure = (result as Err<String, PayFailure>).failure;
-      expect(failure, isA<PayUnexpectedFailure>());
-      expect(failure.logMessage, 'pay_payin_broadcast_failed');
-    });
-  });
-
   group('LoadPayWalletUtxosUsecase', () {
     test('a utxo read failure is a value, not a throw', () async {
-      final utxos = _MockGetWalletUtxos();
+      final utxos = _MockGetWalletUtxosUsecase();
       when(() => utxos.execute(walletId: any(named: 'walletId')))
-          .thenThrow(Exception(_rawReason));
+          .thenThrow(Exception('public test transport failure'));
 
       final result = await LoadPayWalletUtxosUsecase(
         getWalletUtxosUsecase: utxos,

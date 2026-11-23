@@ -1,8 +1,8 @@
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 
 import 'dart:io';
-
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 
 import 'dart:async';
 
@@ -11,7 +11,6 @@ import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
@@ -31,8 +30,6 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,9 +58,6 @@ class _MockBroadcastPayPayin extends Mock implements BroadcastPayPayinUsecase {}
 class _MockLoadPayNetworkFees extends Mock
     implements LoadPayNetworkFeesUsecase {}
 
-class _MockCalculatePayAbsoluteFees extends Mock
-    implements CalculatePayAbsoluteFeesUsecase {}
-
 class _MockEstimatePayPayinFees extends Mock
     implements EstimatePayPayinFeesUsecase {}
 
@@ -87,11 +81,6 @@ class _MockBroadcastPayjoinOriginal extends Mock
 
 class _MockGetVisiblePayjoinTransaction extends Mock
     implements GetVisiblePayjoinTransactionUsecase {}
-
-class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
-
-class _MockPreviewBitcoinFeePresets extends Mock
-    implements PreviewBitcoinFeePresetsUsecase {}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -128,7 +117,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.broadcastPayPayinUsecase,
     required super.loadPayWalletUtxosUsecase,
     required super.loadPayNetworkFeesUsecase,
-    required super.calculatePayAbsoluteFeesUsecase,
+
     required super.getPayPayinAddressUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
@@ -136,8 +125,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.broadcastPayjoinOriginalUsecase,
     required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
-    required super.previewBitcoinFeeUsecase,
-    required super.previewBitcoinFeePresetsUsecase,
+    required super.spend,
   });
 
   void seed(PayState state) => emit(state);
@@ -147,7 +135,10 @@ class _PrivacyReporter extends Mock implements LoggerReporter {}
 
 class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
 
+class _MockSpend extends Mock implements Spend {}
+
 void main() {
+  late _MockSpend spend;
   // Unsigned single-input single-output PSBT with a witness UTXO — enough for
   // the sign/broadcast mocks to have something to pass around.
   const unsignedPsbt =
@@ -185,7 +176,7 @@ void main() {
   late _MockSignPayPayin signPayPayin;
   late _MockEstimatePayPayinFees estimatePayPayinFees;
   late _MockBroadcastPayPayin broadcastPayPayin;
-  late _MockCalculatePayAbsoluteFees calculateBitcoinFees;
+
   late _MockLoadPayNetworkFees getNetworkFees;
   late _MockGetPayOrder getOrder;
   late _MockRefreshPayOrder refreshPayOrder;
@@ -195,7 +186,7 @@ void main() {
   late _MockBroadcastPayjoinOriginal broadcastPayjoinOriginal;
   late _MockGetVisiblePayjoinTransaction getVisiblePayjoinTransaction;
   late _MockRetryPayjoin retryPayjoin;
-  late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
+
   late _MockPayOrder payOrder;
   late _MockWallet wallet;
   late _SeedablePayBloc bloc;
@@ -241,6 +232,19 @@ void main() {
       );
 
   setUpAll(() {
+    registerFallbackValue(
+      SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+    );
+    registerFallbackValue(
+      SpendFixtures.preparedLiquid(
+        unsignedPset: '',
+        fee: Sats.zero,
+        amountSent: Sats.zero,
+      ),
+    );
+    registerFallbackValue(SpendFixtures.signedBitcoin(''));
+    registerFallbackValue(SpendFixtures.signedLiquid(''));
+
     registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
@@ -259,17 +263,18 @@ void main() {
   });
 
   setUp(() {
+    spend = _MockSpend();
     preparePayBitcoinPayin = _MockPreparePayBitcoinPayin();
     signPayPayin = _MockSignPayPayin();
     broadcastPayPayin = _MockBroadcastPayPayin();
-    calculateBitcoinFees = _MockCalculatePayAbsoluteFees();
+
     getNetworkFees = _MockLoadPayNetworkFees();
     getOrder = _MockGetPayOrder();
     refreshPayOrder = _MockRefreshPayOrder();
     sendWithPayjoin = _MockSendWithPayjoin();
     watchPayjoin = _MockWatchPayjoin();
     estimatePayPayinFees = _MockEstimatePayPayinFees();
-    previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
+
     payOrder = _MockPayOrder();
     wallet = _MockWallet();
 
@@ -297,33 +302,22 @@ void main() {
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer(
-      (_) async => Ok<PreparedPayBitcoinPayin, PayFailure>((
-        unsignedPsbt: unsignedPsbt,
-        txSize: 110,
-        isToSelf: false,
-      )),
-    );
-    when(() => calculateBitcoinFees.bitcoin(psbt: any(named: 'psbt')))
-        .thenAnswer((_) async => const Ok<int, PayFailure>(200));
-    when(
-      () => signPayPayin.bitcoin(
-        psbt: any(named: 'psbt'),
-        walletId: any(named: 'walletId'),
+      (_) async => Ok<PreparedBitcoinSpend, PayFailure>(
+        SpendFixtures.preparedBitcoin(
+          unsignedPsbt: unsignedPsbt,
+          txSize: 110,
+          isToSelf: false,
+          fee: Sats.fromInt(200),
+        ),
       ),
-    ).thenAnswer(
-      (_) async => Ok<({String signedPsbt, int txSize}), PayFailure>((
-        signedPsbt: unsignedPsbt,
-        txSize: 110,
-      )),
     );
-    when(
-      () => broadcastPayPayin.bitcoin(
-        any(),
-        walletId: any(named: 'walletId'),
-        isPsbt: any(named: 'isPsbt'),
-        network: app.Network.bitcoinMainnet,
+    when(() => signPayPayin.bitcoin(any())).thenAnswer(
+      (_) async => Ok<SignedBitcoinSpend, PayFailure>(
+        SpendFixtures.signedBitcoin(unsignedPsbt, txSize: 110),
       ),
-    ).thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
+    );
+    when(() => broadcastPayPayin.bitcoin(any()))
+        .thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
     when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
         .thenAnswer((_) async => Ok<FeeOptions, PayFailure>(feeOptions));
     when(() => getOrder.execute(orderId: any(named: 'orderId')))
@@ -358,7 +352,7 @@ void main() {
       broadcastPayPayinUsecase: broadcastPayPayin,
       loadPayWalletUtxosUsecase: _MockLoadPayWalletUtxos(),
       loadPayNetworkFeesUsecase: getNetworkFees,
-      calculatePayAbsoluteFeesUsecase: calculateBitcoinFees,
+
       getPayPayinAddressUsecase: _MockGetPayPayinAddress(),
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
@@ -366,8 +360,7 @@ void main() {
       broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginal,
       getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransaction,
       retryPayjoinProposalUsecase: retryPayjoin,
-      previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
-      previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
+      spend: spend,
     );
 
     bloc.seed(paymentState());
@@ -472,14 +465,7 @@ void main() {
         bloc.seed(
           (bloc.state as PayPaymentState).copyWith(isPayjoinEnabled: false),
         );
-        when(
-          () => broadcastPayPayin.bitcoin(
-            any(),
-            walletId: any(named: 'walletId'),
-            isPsbt: any(named: 'isPsbt'),
-            network: app.Network.bitcoinMainnet,
-          ),
-        ).thenAnswer(
+        when(() => broadcastPayPayin.bitcoin(any())).thenAnswer(
           (_) =>
               Future.error(StateError(foreign), StackTrace.fromString(foreign)),
         );
@@ -531,7 +517,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -573,7 +559,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -641,7 +627,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -687,14 +673,7 @@ void main() {
             'resolves — re-arming it opens the double-payment window',
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
-      verifyNever(
-        () => broadcastPayPayin.bitcoin(
-          any(),
-          walletId: any(named: 'walletId'),
-          isPsbt: any(named: 'isPsbt'),
-          network: app.Network.bitcoinMainnet,
-        ),
-      );
+      verifyNever(() => broadcastPayPayin.bitcoin(any()));
       // Not a kept session: the live negotiation is watched, never
       // downgraded to the original.
       verifyNever(() => broadcastPayjoinOriginal.execute(any()));
@@ -716,7 +695,7 @@ void main() {
               walletId: any(named: 'walletId'),
               network: any(named: 'network'),
               bip21: any(named: 'bip21'),
-              unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+              prepared: any(named: 'prepared'),
               amountSat: any(named: 'amountSat'),
               networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
               expireAfterSec: any(named: 'expireAfterSec'),
@@ -782,7 +761,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -823,7 +802,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -859,7 +838,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -898,14 +877,7 @@ void main() {
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
-      verify(
-        () => broadcastPayPayin.bitcoin(
-          any(),
-          walletId: any(named: 'walletId'),
-          isPsbt: any(named: 'isPsbt'),
-          network: app.Network.bitcoinMainnet,
-        ),
-      ).called(1);
+      verify(() => broadcastPayPayin.bitcoin(any())).called(1);
       verify(
         () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
@@ -919,7 +891,7 @@ void main() {
     }, timeout: const Timeout(Duration(seconds: 20)));
 
     test('simultaneous confirmations start one send only', () async {
-      final build = Completer<Result<PreparedPayBitcoinPayin, PayFailure>>();
+      final build = Completer<Result<PreparedBitcoinSpend, PayFailure>>();
       when(
         () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
@@ -947,11 +919,14 @@ void main() {
       ).called(1);
 
       build.complete(
-        Ok<PreparedPayBitcoinPayin, PayFailure>((
-          unsignedPsbt: unsignedPsbt,
-          txSize: 110,
-          isToSelf: false,
-        )),
+        Ok<PreparedBitcoinSpend, PayFailure>(
+          SpendFixtures.preparedBitcoin(
+            unsignedPsbt: unsignedPsbt,
+            txSize: 110,
+            isToSelf: false,
+            fee: Sats.fromInt(200),
+          ),
+        ),
       );
       await bloc.stream.firstWhere(
         (state) => state is PayPaymentState && state.isPayinBroadcast,
@@ -1085,7 +1060,7 @@ void main() {
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -1160,7 +1135,7 @@ void main() {
               walletId: any(named: 'walletId'),
               network: any(named: 'network'),
               bip21: any(named: 'bip21'),
-              unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+              prepared: any(named: 'prepared'),
               amountSat: any(named: 'amountSat'),
               networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
               expireAfterSec: any(named: 'expireAfterSec'),
@@ -1263,14 +1238,31 @@ void main() {
       when(() => payOrder.bip21URI).thenReturn(bip21);
       when(() => payOrder.confirmationDeadline)
           .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
-      when(() => calculateBitcoinFees.bitcoin(psbt: any(named: 'psbt')))
-          .thenAnswer((_) async => const Ok<int, PayFailure>(1100));
+      when(
+        () => preparePayBitcoinPayin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok(
+          SpendFixtures.preparedBitcoin(
+            unsignedPsbt: unsignedPsbt,
+            fee: Sats.fromInt(1100),
+            txSize: 110,
+          ),
+        ),
+      );
+
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          prepared: any(named: 'prepared'),
           amountSat: any(named: 'amountSat'),
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -1324,7 +1316,14 @@ void main() {
           walletId: 'wallet-1',
           network: BitcoinNetwork.mainnet,
           bip21: bip21,
-          unsignedOriginalPsbt: unsignedPsbt,
+          prepared: any(
+            named: 'prepared',
+            that: isA<PreparedBitcoinSpend>().having(
+              (value) => value.unsignedPsbt,
+              'unsigned PSBT',
+              unsignedPsbt,
+            ),
+          ),
           amountSat: 100000,
           networkFeesSatPerVb: 10,
           expireAfterSec: any(named: 'expireAfterSec'),
@@ -1350,14 +1349,7 @@ void main() {
 
       // The exchange expires the order at its deadline and does not credit a
       // payin sent after it.
-      verifyNever(
-        () => broadcastPayPayin.bitcoin(
-          any(),
-          walletId: any(named: 'walletId'),
-          isPsbt: any(named: 'isPsbt'),
-          network: app.Network.bitcoinMainnet,
-        ),
-      );
+      verifyNever(() => broadcastPayPayin.bitcoin(any()));
       // A fresh quote is asked for instead.
       verify(
         () => refreshPayOrder.execute(
@@ -1400,7 +1392,7 @@ void main() {
           broadcastPayPayinUsecase: broadcastPayPayin,
           loadPayWalletUtxosUsecase: _MockLoadPayWalletUtxos(),
           loadPayNetworkFeesUsecase: getNetworkFees,
-          calculatePayAbsoluteFeesUsecase: calculateBitcoinFees,
+
           getPayPayinAddressUsecase: _MockGetPayPayinAddress(),
           sendWithPayjoinUsecase: sendWithPayjoin,
           watchPayjoinUsecase: watchPayjoin,
@@ -1408,8 +1400,7 @@ void main() {
           broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginal,
           getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransaction,
           retryPayjoinProposalUsecase: retryPayjoin,
-          previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
-          previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
+          spend: spend,
         );
         bloc.seed(initial);
         try {
@@ -1603,14 +1594,7 @@ void main() {
 
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      verifyNever(
-        () => broadcastPayPayin.bitcoin(
-          any(),
-          walletId: any(named: 'walletId'),
-          isPsbt: any(named: 'isPsbt'),
-          network: app.Network.bitcoinMainnet,
-        ),
-      );
+      verifyNever(() => broadcastPayPayin.bitcoin(any()));
     });
 
     test(
@@ -1701,9 +1685,13 @@ void main() {
   group('PayBloc — fee selection (#2521)', () {
     /// Resolves once the fee recalculation triggered by a selection has landed.
     Future<PayPaymentState> awaitRecalculatedFee() async {
-      final state = await bloc.stream.firstWhere(
-        (state) => state is PayPaymentState && state.absoluteFees != null,
-      );
+      final state = await bloc.stream
+          .skipWhile(
+            (state) => state is! PayPaymentState || state.absoluteFees != null,
+          )
+          .firstWhere(
+            (state) => state is PayPaymentState && state.absoluteFees != null,
+          );
       return state as PayPaymentState;
     }
 
@@ -1756,9 +1744,14 @@ void main() {
     });
 
     /// Prices the three preset tiles the way an opened modal does.
-    void stubPresetPreviews() {
+    PreparedBitcoinSpend stubPresetPreviews() {
+      final economic = SpendFixtures.preparedBitcoin(
+        unsignedPsbt: unsignedPsbt,
+        fee: Sats.fromInt(550),
+        txSize: 110,
+      );
       when(
-        () => previewBitcoinFeePresets.execute(
+        () => spend.previewBitcoinFeePresets(
           presets: any(named: 'presets'),
           walletId: any(named: 'walletId'),
           recipients: any(named: 'recipients'),
@@ -1766,24 +1759,27 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
         ),
       ).thenAnswer(
-        (_) async => const {
-          FeeSelection.fastest: BitcoinFeePreviewSlot(
-            feeSat: 1100,
-            unsignedPsbt: unsignedPsbt,
-            txSize: 110,
+        (_) async => Ok({
+          FeeSelection.fastest: (
+            fee: Sats.fromInt(1100),
+            prepared: SpendFixtures.preparedBitcoin(
+              unsignedPsbt: unsignedPsbt,
+              fee: Sats.fromInt(1100),
+              txSize: 110,
+            ),
           ),
-          FeeSelection.economic: BitcoinFeePreviewSlot(
-            feeSat: 550,
-            unsignedPsbt: unsignedPsbt,
-            txSize: 110,
+          FeeSelection.economic: (fee: Sats.fromInt(550), prepared: economic),
+          FeeSelection.slow: (
+            fee: Sats.fromInt(110),
+            prepared: SpendFixtures.preparedBitcoin(
+              unsignedPsbt: unsignedPsbt,
+              fee: Sats.fromInt(110),
+              txSize: 110,
+            ),
           ),
-          FeeSelection.slow: BitcoinFeePreviewSlot(
-            feeSat: 110,
-            unsignedPsbt: unsignedPsbt,
-            txSize: 110,
-          ),
-        },
+        }),
       );
+      return economic;
     }
 
     /// Resolves once the preset previews have filled the cache.
@@ -1796,6 +1792,21 @@ void main() {
       );
       return state as PayPaymentState;
     }
+
+    test('the selected review is signed without rebuilding its PSBT', () async {
+      final reviewed = stubPresetPreviews();
+      bloc.add(const PayEvent.presetFeesPreviewRequested());
+      await awaitPricedPresets();
+      bloc.add(const PayEvent.feeOptionSelected(FeeSelection.economic));
+      expect((await awaitRecalculatedFee()).absoluteFees, 550);
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere((state) => state is PaySuccessState);
+
+      verifyNoBuilds();
+      final signed = verify(() => signPayPayin.bitcoin(captureAny())).captured;
+      expect(signed, [same(reviewed)]);
+    });
 
     test('typing a custom rate leaves the preset prices standing', () async {
       stubPresetPreviews();
@@ -1826,17 +1837,8 @@ void main() {
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await bloc.stream.firstWhere((state) => state is PaySuccessState);
 
-      // Both the estimate rebuild and the broadcast build used Slow; the
-      // hardcoded Fastest rate must appear nowhere.
-      expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
-      verify(
-        () => broadcastPayPayin.bitcoin(
-          any(),
-          walletId: any(named: 'walletId'),
-          isPsbt: any(named: 'isPsbt'),
-          network: app.Network.bitcoinMainnet,
-        ),
-      ).called(1);
+      expect(capturedBuildFees(), [feeOptions.slow]);
+      verify(() => broadcastPayPayin.bitcoin(any())).called(1);
     }, timeout: const Timeout(Duration(seconds: 60)));
 
     test('a typed custom rate is committed on dismissal and paid', () async {
@@ -1905,7 +1907,7 @@ void main() {
         expect(state.customFee, isNull);
         verifyNoBuilds();
         verifyNever(
-          () => previewBitcoinFeePresets.execute(
+          () => spend.previewBitcoinFeePresets(
             presets: any(named: 'presets'),
             walletId: any(named: 'walletId'),
             recipients: any(named: 'recipients'),
@@ -1927,7 +1929,7 @@ void main() {
       expect(state.feePreviewCache.slow.feeSat, 110);
       // The previews price the real payin, not a stand-in address.
       verify(
-        () => previewBitcoinFeePresets.execute(
+        () => spend.previewBitcoinFeePresets(
           presets: feeOptions,
           walletId: 'wallet-1',
           recipients: any(

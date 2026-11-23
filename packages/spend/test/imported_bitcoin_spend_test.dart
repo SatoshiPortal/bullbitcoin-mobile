@@ -195,6 +195,7 @@ void main() {
     );
     final result = await spend.handOffToPayjoin(
       prepared,
+      wallet: WalletKey(id: 'wallet', network: BitcoinNetwork.mainnet),
       sessionId: 'session',
       signedPsbt: publicBitcoinPsbt,
       persist: () async => fail('An unbound preparation must not persist'),

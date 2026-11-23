@@ -1007,6 +1007,63 @@ void main() {
     expect((await local.fetchSender(posted.id))?.hasNetworkEvidence, isTrue);
   });
 
+  test(
+    'the reviewed original admits its persisted reservation before POST',
+    () async {
+      final model = sender();
+      var admitted = false;
+      stubCreateSender(model, model.copyWith(sender: '["posted"]'));
+
+      await engine.createPayjoinSender(
+        walletId: model.walletId,
+        isTestnet: model.isTestnet,
+        bip21: model.id,
+        originalPsbt: model.originalPsbt,
+        amountSat: model.amountSat,
+        networkFeesSatPerVb: 1,
+        admitOriginal: ({required sessionId, required persist}) async {
+          expect(sessionId, model.id);
+          expect(await local.fetchSender(sessionId), isNull);
+          await persist();
+          expect(
+            (await local.fetchSender(sessionId))?.originalPsbt,
+            model.originalPsbt,
+          );
+          admitted = true;
+          return const Ok(null);
+        },
+      );
+
+      expect(admitted, isTrue);
+      expect((await local.fetchSender(model.id))?.hasNetworkEvidence, isTrue);
+    },
+  );
+
+  test(
+    'refusal after the write does not arm fallback for an unposted original',
+    () async {
+      final model = sender();
+      stubCreateSender(model, model.copyWith(sender: '["posted"]'));
+      await expectLater(
+        engine.createPayjoinSender(
+          walletId: model.walletId,
+          isTestnet: model.isTestnet,
+          bip21: model.id,
+          originalPsbt: model.originalPsbt,
+          amountSat: model.amountSat,
+          networkFeesSatPerVb: 1,
+          admitOriginal: ({required sessionId, required persist}) async {
+            await persist();
+            return const Err(PayjoinSpendBlockedFailure(busy: true));
+          },
+        ),
+        throwsA(isA<PayjoinSpendBlockedException>()),
+      );
+      expect((await local.fetchSender(model.id))?.isAborted, isTrue);
+      verifyNever(() => pdk.startListeningForProposal(model));
+    },
+  );
+
   test('visibleCompetingTransaction reports the session spend the network '
       'knows and null for an unknown session', () async {
     final model = sender();

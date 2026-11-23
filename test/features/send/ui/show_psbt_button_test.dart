@@ -1,6 +1,9 @@
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
-import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Sats, ScriptType;
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -30,7 +33,7 @@ void main() {
   // router the send screen's wallet view instead of the wallet, so the route
   // pattern never matched and the screen said "Oops! Something went wrong".
   // A Mk4 stands in for the Q: its screen has no animated QR to wire up.
-  testWidgets('Show PSBT carries the sending wallet through to the broadcast', (
+  testWidgets('Show PSBT carries the reviewed spend and network to the reader', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -49,6 +52,11 @@ void main() {
       balanceSat: BigInt.from(100000),
     );
     final cubit = _MockSendCubit();
+    final prepared = SpendFixtures.preparedBitcoin(
+      unsignedPsbt: psbt,
+      fee: Sats.zero,
+    );
+    when(() => cubit.preparedBitcoin).thenReturn(prepared);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => cubit.state).thenReturn(
       SendState(
@@ -78,10 +86,10 @@ void main() {
             body: BlocProvider<SendCubit>.value(
               value: cubit,
               child: SendPsbtHandoff(
-                openReader: (context, psbt, wallet) =>
+                openReader: (context, prepared, network) =>
                     context.pushNamed<String>(
                       BroadcastSignedTxRoute.broadcastHome.name,
-                      extra: (psbt: psbt, wallet: wallet),
+                      extra: (prepared: prepared, network: network),
                     ),
                 child: const ShowPsbtButton(),
               ),
@@ -137,9 +145,9 @@ void main() {
     );
     expect(
       broadcastExtra,
-      isA<({String psbt, Wallet? wallet})>()
-          .having((extra) => extra.psbt, 'psbt', psbt)
-          .having((extra) => extra.wallet, 'wallet', same(wallet)),
+      isA<({PreparedBitcoinSpend prepared, BitcoinNetwork network})>()
+          .having((extra) => extra.prepared, 'preparation', same(prepared))
+          .having((extra) => extra.network, 'network', BitcoinNetwork.testnet),
     );
   });
 }

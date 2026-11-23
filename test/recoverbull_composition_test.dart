@@ -156,7 +156,6 @@ void main() {
           ),
         );
         await WalletLocator.registerDatasources(services);
-        WalletLocator.registerRepositories(services);
         WalletLocator.registerUsecases(services);
         final walletSync = WalletLocator.syncAccess(services);
         setupLabels(

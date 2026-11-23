@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:preferences/testing.dart';
-import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
+import 'package:bb_mobile/features/swap/data/swaps_runtime_bindings.dart';
 import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

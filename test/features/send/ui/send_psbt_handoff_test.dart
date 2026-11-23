@@ -15,7 +15,10 @@ import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Sats, ScriptType;
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 
 class _Send extends Mock implements SendCubit {}
 
@@ -41,6 +44,11 @@ void main() {
       tester,
     ) async {
       final cubit = _Send();
+      final prepared = SpendFixtures.preparedBitcoin(
+        unsignedPsbt: 'original',
+        fee: Sats.zero,
+      );
+      when(() => cubit.preparedBitcoin).thenReturn(prepared);
       when(() => cubit.state).thenReturn(
         SendState(
           selectedWallet: SendWalletBitcoin(wallet),
@@ -48,9 +56,9 @@ void main() {
         ),
       );
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-      when(() => cubit.updateSignedBitcoinTx('signed'))
+      when(() => cubit.updateSignedBitcoinTx('signed', prepared: prepared))
           .thenAnswer((_) async => true);
-      final requests = <(String, Wallet?)>[];
+      final requests = <(PreparedBitcoinSpend, BitcoinNetwork)>[];
       final services = GetIt.asNewInstance();
       addTearDown(services.reset);
       final feature = SignersFeature.mount(
@@ -92,6 +100,12 @@ void main() {
       await tester.tap(find.text(loc.sendShowPsbt));
       await tester.pumpAndSettle();
       if (stale) {
+        when(() => cubit.preparedBitcoin).thenReturn(
+          SpendFixtures.preparedBitcoin(
+            unsignedPsbt: 'original',
+            fee: Sats.zero,
+          ),
+        );
         when(() => cubit.state).thenReturn(
           SendState(
             selectedWallet: SendWalletBitcoin(
@@ -109,11 +123,17 @@ void main() {
         router.pop();
       }
       await tester.pumpAndSettle();
-      expect(requests, confirm ? [('original', wallet)] : isEmpty);
+      expect(
+        requests,
+        confirm && !stale ? [(prepared, BitcoinNetwork.testnet)] : isEmpty,
+      );
       if (confirm && !stale) {
-        verify(() => cubit.updateSignedBitcoinTx('signed')).called(1);
+        verify(() => cubit.updateSignedBitcoinTx('signed', prepared: prepared))
+            .called(1);
       } else {
-        verifyNever(() => cubit.updateSignedBitcoinTx('signed'));
+        verifyNever(
+          () => cubit.updateSignedBitcoinTx('signed', prepared: prepared),
+        );
       }
       expect(tester.takeException(), isNull);
     });

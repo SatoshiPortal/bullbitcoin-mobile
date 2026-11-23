@@ -6,8 +6,7 @@ import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:rust_bindings/testing.dart';
 import 'package:flutter/services.dart';
@@ -77,18 +76,18 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  test('returns a Pay failure when the native wallet cannot open', () async {
-    final usecase = PreparePayLiquidPayinUsecase(
-      liquidWalletRepository: repository,
-    );
-    await expectLater(
-      usecase.execute(
-        walletId: walletId,
-        address: 'recipient',
-        amountSat: 1000,
-        feeRate: const RelativeFee(25),
-      ),
-      completion(isA<Err<String, PayFailure>>()),
-    );
-  });
+  test(
+    'returns a typed build failure when the native wallet cannot open',
+    () async {
+      await expectLater(
+        repository.buildPset(
+          walletId: walletId,
+          address: 'recipient',
+          amountSat: 1000,
+          feeRate: const RelativeFee(25),
+        ),
+        completion(isA<Err<String, WalletFailure>>()),
+      );
+    },
+  );
 }
