@@ -1001,5 +1001,37 @@
   "receive__swapErrorRouteUnavailableGeneric_apple": "This transfer is not available.",
   "@receive__swapErrorRouteUnavailableGeneric_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapErrorRouteUnavailableGeneric."
+  },
+  "settings__swapRestoreTitle_apple": "Transfer restore",
+  "@settings__swapRestoreTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreTitle."
+  },
+  "settings__settingsExchangeSettingsTitle_apple": "Account Settings",
+  "@settings__settingsExchangeSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeSettingsTitle."
+  },
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet account credentials",
+  "@settings__exchangeTestnetBasicAuthTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthTitle."
+  },
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth for the testnet account web pages (login and KYC).",
+  "@settings__exchangeTestnetBasicAuthDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthDescription."
+  },
+  "settings__autoswapSettingsTitle_apple": "Auto Transfer Settings",
+  "@settings__autoswapSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapSettingsTitle."
+  },
+  "settings__settingsExchangeTitle_apple": "Account",
+  "@settings__settingsExchangeTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeTitle."
+  },
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Auto Transfer",
+  "@settings__bitcoinSettingsAutoTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key bitcoinSettingsAutoTransferTitle."
+  },
+  "settings__settingsPayjoinExchangeSection_apple": "With the Bull Bitcoin account",
+  "@settings__settingsPayjoinExchangeSection_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsPayjoinExchangeSection."
   }
 }

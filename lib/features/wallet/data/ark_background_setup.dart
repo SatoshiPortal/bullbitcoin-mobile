@@ -1,8 +1,7 @@
 import 'package:legacy_storage/coordination.dart';
 import 'package:preferences/preferences.dart'
     show Preferences, PreferencesFailure;
-import 'package:bb_mobile/features/settings/public/language_locale.dart'
-    show LanguageExtension;
+import 'package:settings/settings.dart' show LanguageExtension;
 
 import 'dart:io';
 import 'dart:ui';

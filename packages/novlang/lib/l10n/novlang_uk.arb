@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Сума перевищує максимальну суму переказу: {max} сат",
   "receive__swapTransferTitle_apple": "Переказ",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступний. Будь ласка, спробуйте пізніше.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Цей переказ недоступний."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Цей переказ недоступний.",
+  "settings__swapRestoreTitle_apple": "Відновлення переказів",
+  "settings__settingsExchangeSettingsTitle_apple": "Налаштування облікового запису",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Облікові дані облікового запису testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth для веб-сторінок облікового запису testnet (вхід та KYC).",
+  "settings__autoswapSettingsTitle_apple": "Налаштування автопереказу",
+  "settings__settingsExchangeTitle_apple": "Обліковий запис",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Автопереказ",
+  "settings__settingsPayjoinExchangeSection_apple": "З обліковим записом Bull Bitcoin"
 }

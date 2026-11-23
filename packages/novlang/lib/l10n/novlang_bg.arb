@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Сумата надвишава максималната сума за прехвърляне: {max} сатоши",
   "receive__swapTransferTitle_apple": "Прехвърляне",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курсът не е наличен. Моля, опитайте отново по-късно.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Това прехвърляне не е налично."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Това прехвърляне не е налично.",
+  "settings__swapRestoreTitle_apple": "Възстановяване на прехвърляне",
+  "settings__settingsExchangeSettingsTitle_apple": "Настройки на сметката",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Идентификационни данни за testnet сметката",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth за уеб страниците на testnet сметката (вход и KYC).",
+  "settings__autoswapSettingsTitle_apple": "Настройки за автоматично прехвърляне",
+  "settings__settingsExchangeTitle_apple": "Сметка",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Автоматично прехвърляне",
+  "settings__settingsPayjoinExchangeSection_apple": "Със сметката в Bull Bitcoin"
 }

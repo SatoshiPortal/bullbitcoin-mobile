@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "La cantidad excede la cantidad máxima de transferencia: {max} sats",
   "receive__swapTransferTitle_apple": "Transferencia",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Tasa no disponible. Por favor, inténtelo de nuevo más tarde.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Esta transferencia no está disponible."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Esta transferencia no está disponible.",
+  "settings__swapRestoreTitle_apple": "Restaurar transferencias",
+  "settings__settingsExchangeSettingsTitle_apple": "Configuración de cuenta",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Credenciales de la cuenta de testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Autenticación básica HTTP para las páginas web de la cuenta de testnet (inicio de sesión y KYC).",
+  "settings__autoswapSettingsTitle_apple": "Configuración de transferencia automática",
+  "settings__settingsExchangeTitle_apple": "Cuenta",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Transferencia automática",
+  "settings__settingsPayjoinExchangeSection_apple": "Con la cuenta de Bull Bitcoin"
 }

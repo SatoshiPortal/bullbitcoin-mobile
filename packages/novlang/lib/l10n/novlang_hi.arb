@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "राशि अधिकतम ट्रांसफ़र राशि से अधिक है: {max} sats",
   "receive__swapTransferTitle_apple": "ट्रांसफ़र",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "यह ट्रांसफ़र उपलब्ध नहीं है।"
+  "receive__swapErrorRouteUnavailableGeneric_apple": "यह ट्रांसफ़र उपलब्ध नहीं है।",
+  "settings__swapRestoreTitle_apple": "ट्रांसफ़र रिस्टोर",
+  "settings__settingsExchangeSettingsTitle_apple": "खाता सेटिंग्स",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet खाते के क्रेडेंशियल",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Testnet खाते के वेब पेजों (लॉगिन और KYC) के लिए HTTP बेसिक ऑथ।",
+  "settings__autoswapSettingsTitle_apple": "ऑटो ट्रांसफ़र सेटिंग्स",
+  "settings__settingsExchangeTitle_apple": "खाता",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "ऑटो ट्रांसफ़र",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin खाते के साथ"
 }

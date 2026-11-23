@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Amount maximum transfer amount se zyada hai: {max} sats",
   "receive__swapTransferTitle_apple": "Transfer",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Rate uplabdh nahi hai. Kripya baad mein dobara koshish karein.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Yeh transfer uplabdh nahi hai."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Yeh transfer uplabdh nahi hai.",
+  "settings__swapRestoreTitle_apple": "Transfer Restore",
+  "settings__settingsExchangeSettingsTitle_apple": "Account Settings",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet account credentials",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Testnet account web pages (login aur KYC) ke liye HTTP basic auth.",
+  "settings__autoswapSettingsTitle_apple": "Auto Transfer Settings",
+  "settings__settingsExchangeTitle_apple": "Account",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Auto Transfer",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin account ke saath"
 }

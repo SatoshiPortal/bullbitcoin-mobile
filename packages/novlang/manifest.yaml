@@ -60,6 +60,9 @@ catalogues:
     path: features/wizard
     output-dir: features/wizard/lib/generated/novlang
     description: standalone first-run startup wizard
+  settings:
+    path: features/settings
+    description: settings navigation and preferences
 entries:
   - {catalogue: receive, key: receiveTransferFee, store: apple, word: swap, euphemism: transfer}
   - {catalogue: receive, key: swapErrorAmountBelowMinimum, store: apple, word: swap, euphemism: transfer}
@@ -301,3 +304,11 @@ entries:
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: exchangeAccessSettingsDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: quick_actions, key: transfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: settings, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: settings, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: settings, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: settings, key: exchangeTestnetBasicAuthDescription, store: apple, word: exchange, euphemism: account}
+  - {catalogue: settings, key: autoswapSettingsTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: settings, key: settingsExchangeTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: settings, key: bitcoinSettingsAutoTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: settings, key: settingsPayjoinExchangeSection, store: apple, word: exchange, euphemism: account}

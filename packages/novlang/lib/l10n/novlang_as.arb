@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "পৰিমাণ সৰ্বাধিক ট্ৰান্সফাৰ পৰিমাণতকৈ বেছি: {max} sats",
   "receive__swapTransferTitle_apple": "ট্ৰান্সফাৰ",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "ৰেট উপলব্ধ নহয়। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "এই ট্ৰান্সফাৰ উপলব্ধ নহয়।"
+  "receive__swapErrorRouteUnavailableGeneric_apple": "এই ট্ৰান্সফাৰ উপলব্ধ নহয়।",
+  "settings__swapRestoreTitle_apple": "ট্ৰান্সফাৰ পুনৰুদ্ধাৰ",
+  "settings__settingsExchangeSettingsTitle_apple": "একাউন্ট ছেটিংছ",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet একাউন্টৰ ক্ৰেডেনশ্বিয়েল",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Testnet একাউন্টৰ ৱেব পৃষ্ঠাসমূহৰ (লগইন আৰু KYC) বাবে HTTP basic auth।",
+  "settings__autoswapSettingsTitle_apple": "স্বয়ংক্ৰিয় ট্ৰান্সফাৰ ছেটিংছ",
+  "settings__settingsExchangeTitle_apple": "একাউন্ট",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "স্বয়ংক্ৰিয় ট্ৰান্সফাৰ",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin একাউন্টৰ সৈতে"
 }

@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Částka překračuje maximální částku převodu: {max} sats",
   "receive__swapTransferTitle_apple": "Převod",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Kurz není dostupný. Zkuste to prosím později.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Tento převod není k dispozici."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Tento převod není k dispozici.",
+  "settings__swapRestoreTitle_apple": "Obnovení převodu",
+  "settings__settingsExchangeSettingsTitle_apple": "Nastavení účtu",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Přihlašovací údaje k testnet účtu",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth pro webové stránky testnet účtu (přihlášení a KYC).",
+  "settings__autoswapSettingsTitle_apple": "Nastavení automatického převodu",
+  "settings__settingsExchangeTitle_apple": "Účet",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Automatický převod",
+  "settings__settingsPayjoinExchangeSection_apple": "S účtem Bull Bitcoin"
 }

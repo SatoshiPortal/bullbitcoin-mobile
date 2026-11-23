@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "금액이 최대 이체 금액을 초과합니다: {max} sats",
   "receive__swapTransferTitle_apple": "이체",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "시세를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "이 이체는 사용할 수 없습니다."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "이 이체는 사용할 수 없습니다.",
+  "settings__swapRestoreTitle_apple": "이체 복구",
+  "settings__settingsExchangeSettingsTitle_apple": "계정 설정",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "테스트넷 계정 자격 증명",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "테스트넷 계정 웹 페이지(로그인 및 KYC)용 HTTP 기본 인증입니다.",
+  "settings__autoswapSettingsTitle_apple": "자동 이체 설정",
+  "settings__settingsExchangeTitle_apple": "계정",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "자동 이체",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin 계정 사용 시"
 }

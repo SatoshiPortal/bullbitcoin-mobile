@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Kiasi kinazidi kiwango cha juu cha uhamisho: sats {max}",
   "receive__swapTransferTitle_apple": "Hamisha",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Kiwango hakipatikani. Tafadhali jaribu tena baadaye.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Uhamisho huu haupatikani."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Uhamisho huu haupatikani.",
+  "settings__swapRestoreTitle_apple": "Kurejesha uhamisho",
+  "settings__settingsExchangeSettingsTitle_apple": "Mipangilio ya Akaunti",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Kitambulisho cha akaunti ya testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Uthibitishaji wa msingi wa HTTP kwa kurasa za wavuti za akaunti ya testnet (kuingia na KYC).",
+  "settings__autoswapSettingsTitle_apple": "Mipangilio ya Uhamisho Kiotomatiki",
+  "settings__settingsExchangeTitle_apple": "Akaunti",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Uhamisho Kiotomatiki",
+  "settings__settingsPayjoinExchangeSection_apple": "Na akaunti ya Bull Bitcoin"
 }

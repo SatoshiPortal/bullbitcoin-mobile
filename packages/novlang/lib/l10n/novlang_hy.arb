@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Գումարը գերազանցում է փոխանցման առավելագույն գումարը․ {max} sats",
   "receive__swapTransferTitle_apple": "Փոխանցում",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Այս փոխանցումը հասանելի չէ։"
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Այս փոխանցումը հասանելի չէ։",
+  "settings__swapRestoreTitle_apple": "Փոխանցման վերականգնում",
+  "settings__settingsExchangeSettingsTitle_apple": "Հաշվի կարգավորումներ",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet հաշվի հավատարմագրեր",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth՝ testnet հաշվի վեբ էջերի համար (մուտք և KYC):",
+  "settings__autoswapSettingsTitle_apple": "Ինքնաշխատ փոխանցման կարգավորումներ",
+  "settings__settingsExchangeTitle_apple": "Հաշիվ",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Ինքնաշխատ փոխանցում",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin հաշվի հետ"
 }

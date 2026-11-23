@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "مقدار بیش از حداکثر مقدار انتقال است: {max} ساتوشی",
   "receive__swapTransferTitle_apple": "انتقال",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "نرخ در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "این انتقال در دسترس نیست."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "این انتقال در دسترس نیست.",
+  "settings__swapRestoreTitle_apple": "بازیابی انتقال",
+  "settings__settingsExchangeSettingsTitle_apple": "تنظیمات حساب",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "اعتبارنامه‌های حساب testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "احراز هویت پایه HTTP برای صفحات وب حساب testnet (ورود و KYC).",
+  "settings__autoswapSettingsTitle_apple": "تنظیمات انتقال خودکار",
+  "settings__settingsExchangeTitle_apple": "حساب",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "انتقال خودکار",
+  "settings__settingsPayjoinExchangeSection_apple": "با حساب Bull Bitcoin"
 }

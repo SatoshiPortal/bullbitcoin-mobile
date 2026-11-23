@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "თანხა აღემატება გადარიცხვის მაქსიმალურ ოდენობას: {max} sats",
   "receive__swapTransferTitle_apple": "გადარიცხვა",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "ეს გადარიცხვა ხელმისაწვდომი არ არის."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "ეს გადარიცხვა ხელმისაწვდომი არ არის.",
+  "settings__swapRestoreTitle_apple": "გადარიცხვის აღდგენა",
+  "settings__settingsExchangeSettingsTitle_apple": "ანგარიშის პარამეტრები",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet ანგარიშის სერთიფიკატები",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth testnet ანგარიშის ვებგვერდებისთვის (შესვლა და KYC).",
+  "settings__autoswapSettingsTitle_apple": "ავტომატური გადარიცხვის პარამეტრები",
+  "settings__settingsExchangeTitle_apple": "ანგარიში",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "ავტომატური გადარიცხვა",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin ანგარიშით"
 }

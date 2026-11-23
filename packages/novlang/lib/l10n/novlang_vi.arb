@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Số tiền vượt quá số tiền chuyển tối đa: {max} sats",
   "receive__swapTransferTitle_apple": "Chuyển khoản",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Tỷ giá không khả dụng. Vui lòng thử lại sau.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Khoản chuyển này không khả dụng."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Khoản chuyển này không khả dụng.",
+  "settings__swapRestoreTitle_apple": "Khôi phục chuyển khoản",
+  "settings__settingsExchangeSettingsTitle_apple": "Cài đặt tài khoản",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Thông tin đăng nhập tài khoản testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Xác thực HTTP basic cho các trang web tài khoản testnet (đăng nhập và KYC).",
+  "settings__autoswapSettingsTitle_apple": "Cài đặt chuyển tiền tự động",
+  "settings__settingsExchangeTitle_apple": "Tài khoản",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Chuyển tiền tự động",
+  "settings__settingsPayjoinExchangeSection_apple": "Với tài khoản Bull Bitcoin"
 }

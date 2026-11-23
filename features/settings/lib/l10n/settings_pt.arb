@@ -1,5 +1,136 @@
 {
   "translationWarningTitle": "Traduções geradas por IA",
   "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se notar erros ou quiser ajudar a melhorar as traduções, pode submeter uma correção no nosso repositório GitHub.",
-  "translationWarningContributeButton": "Ajudar a melhorar traduções"
+  "translationWarningContributeButton": "Ajudar a melhorar traduções",
+  "bitcoinSettingsTestnetModeTitle": "Modo de Testnet",
+  "logSettingsLogsTitle": "Logs",
+  "currencySettingsDefaultFiatCurrencyLabel": "Moeda de fiat padrão",
+  "walletSettingsImportWalletTitle": "Carteira de importação",
+  "settingsServiceStatusTitle": "Estado dos serviços",
+  "settingsSecurityPinTitle": "Pin de segurança",
+  "backupSettingsLabelsButton": "Etiquetas",
+  "backupSettingsRecoverBullSettings": "Recuperação",
+  "settingsDevModeUnderstandButton": "Eu compreendo",
+  "settingsCurrencyTitle": "Moeda",
+  "settingsLanguageTitle": "Língua",
+  "electrumTestnet": "Testneta",
+  "settingsExchangeSettingsTitle": "Configurações de troca",
+  "settingsAppSettingsTitle": "Configurações do aplicativo",
+  "appSettingsDevModeTitle": "Modo de desenvolvimento",
+  "exchangeTestnetBasicAuthTitle": "Credenciais da exchange testnet",
+  "exchangeTestnetBasicAuthDescription": "Autenticação básica HTTP para as páginas web da exchange testnet (login e KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Nome de utilizador",
+  "exchangeTestnetBasicAuthPasswordLabel": "Palavra-passe",
+  "exchangeTestnetBasicAuthClearButton": "Limpar",
+  "exchangeTestnetBasicAuthSaveButton": "Guardar",
+  "electrumMainnet": "Principal",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "transactionHistoryTitle": "Histórico de transações",
+  "allSeedViewTitle": "Visualizador de sementes",
+  "settingsSuperuserModeDisabledMessage": "Modo Superuser desativado.",
+  "settingsTermsOfServiceTitle": "Termos de Serviço",
+  "settingsDevModeWarningMessage": "Este modo é arriscado. Ao habilitar, você reconhece que pode perder dinheiro",
+  "bitcoinSettingsBroadcastTransactionTitle": "Transação de transmissão",
+  "settingsThemeTitle": "Tema",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "settingsDevModeWarningTitle": "Modo de desenvolvimento",
+  "settingsAppVersionLabel": "Versão do aplicativo: ",
+  "doneButton": "Feito",
+  "settingsSuperuserModeUnlockedMessage": "Modo Superuser desbloqueado!",
+  "settingsScreenTitle": "Configurações",
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Entropias Deterministas",
+  "autoswapSettingsTitle": "Configurações de swap automático",
+  "torSettingsTitle": "Configurações do Tor",
+  "backupSettingsStartBackup": "Iniciar backup",
+  "settingsErrorReportingTitle": "Relatório de erros",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Programa de Relatório de Erros",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescriptionP1": "Ajude-nos a melhorar o Bull Bitcoin participando do nosso programa de relatório de erros. Isso nos ajuda diretamente a tornar o Bull Bitcoin melhor para todos.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Quando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Esses dados nos ajudam a entender o que está acontecendo com nossos usuários em todo o mundo e a priorizar as correções de acordo.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Não compartilhamos essas informações com terceiros.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Usamos o cliente de código aberto do Sentry com nosso próprio servidor backend auto-hospedado.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "errorReportingAcceptButton": "Aceitar",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Cancelar",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Reinicie o aplicativo para aplicar essa mudança",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "Restauro de swaps",
+  "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
+  "settingsPayjoinAdvancedTitle": "Configurações avançadas de Payjoin",
+  "settingsScreenPrivacyTitle": "Privacidade do ecrã",
+  "settingsScreenPrivacyDisabledMessage": "As capturas de ecrã são agora permitidas em ecrãs sensíveis",
+  "settingsSearchHint": "Pesquisar nas definições",
+  "settingsSearchNoResults": "Nenhuma definição encontrada.",
+  "settingsSearchMempoolKeywords": "explorador de blocos|estimativa de taxas|taxas de transação|API mempool",
+  "settingsSearchExchangeKeywords": "conta|conta da corretora|negociação|comprar e vender",
+  "settingsSearchStartBackupKeywords": "criar cópia de segurança|guardar cópia de segurança|fazer backup da carteira",
+  "settingsSearchRecoverbullKeywords": "cópia de segurança encriptada|cópia na nuvem|cofre encriptado|recuperação do cofre|Recoverbull",
+  "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
+  "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
+  "settingsSearchAppSettingsKeywords": "preferências da aplicação|definições da aplicação|definições gerais",
+  "settingsSearchTermsOfServiceKeywords": "termos e condições|informação legal|acordo do utilizador|TOS",
+  "settingsSearchServicesStatusKeywords": "estado dos serviços|estado do sistema|online|indisponibilidade",
+  "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemónica|carteira só de visualização|carteira de hardware",
+  "settingsSearchBroadcastTransactionKeywords": "difundir transação assinada|publicar transação|transação em bruto|hexadecimal da transação|PSBT",
+  "settingsSearchPayjoinKeywords": "privacidade Payjoin|transação colaborativa|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "troca automática|swap automático|transferência automática|saldo da carteira instantânea|Autoswap",
+  "settingsSearchElectrumKeywords": "nó Bitcoin|nó Electrum|servidor personalizado|nó pessoal|Electrum",
+  "settingsSearchTestnetModeKeywords": "rede de teste|testnet Bitcoin|testnet Liquid|modo de teste|Testnet",
+  "settingsSearchSeedViewerKeywords": "frase seed|frase de recuperação|mnemónica|palavras de backup|mostrar seeds",
+  "settingsSearchBip85Keywords": "entropia determinística|seeds derivadas|entropia derivada|BIP85",
+  "settingsSearchLanguageKeywords": "configuração regional|tradução|idioma de apresentação|idioma preferido",
+  "settingsSearchThemeKeywords": "aspeto|modo escuro|modo claro|tema do sistema",
+  "settingsSearchCurrencyKeywords": "moeda fiduciária|moeda local|moeda predefinida|moeda de câmbio",
+  "settingsSearchSecurityPinKeywords": "código PIN|código de acesso|bloqueio da aplicação|autenticação|alterar PIN",
+  "settingsSearchLogsKeywords": "registos de debug|registos de diagnóstico|registos da aplicação|exportar registos",
+  "settingsSearchDevModeKeywords": "modo de programador|definições de desenvolvimento|modo debug|testes avançados",
+  "settingsSearchTestnetCredentialsKeywords": "credenciais da testnet|início de sessão testnet|utilizador testnet|palavra-passe testnet|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de erros|diagnóstico|telemetria|registos de erros",
+  "settingsSearchScreenPrivacyKeywords": "capturas de ecrã|gravação do ecrã|proteção contra captura|privacidade",
+  "settingsSearchStartTyping": "Comece a escrever para ver os resultados.",
+  "settingsErrorSavingSetting": "Não foi possível guardar essa definição. Por favor, tente novamente.",
+  "settingsErrorConsentNotGiven": "Esta definição precisa da sua confirmação antes de poder ser alterada.",
+  "settingsErrorLoadingLogs": "Não foi possível preparar os registos de diagnóstico. Por favor, tente novamente.",
+  "settingsSearchTorKeywords": "proxy Tor|Orbot|encaminhamento onion|Tor integrado|rede de privacidade",
+  "bitcoinSettingsAutoTransferTitle": "Swap automático",
+  "settingsDarkModeTitle": "Modo escuro",
+  "settingsSourceCodeTitle": "Código-fonte",
+  "backgroundTasksTitle": "Tarefas em segundo plano",
+  "notificationsBlockedMessage": "As notificações estão bloqueadas nas definições do sistema.",
+  "notificationsTitle": "Notificações",
+  "openSystemSettings": "Abrir definições do sistema",
+  "permissionsTitle": "Permissões",
+  "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas"
 }

@@ -2,12 +2,9 @@ import 'package:preferences/preferences.dart' show Language;
 
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:settings/settings.dart'
-    show SettingsLocalizations, TranslationWarningBottomSheet;
+import 'package:settings/settings.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/settings/public/language_locale.dart'
-    show LanguageExtension;
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';

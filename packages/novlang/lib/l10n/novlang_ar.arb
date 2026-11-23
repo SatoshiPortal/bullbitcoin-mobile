@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "المبلغ يتجاوز الحد الأقصى لمبلغ التحويل: {max} sats",
   "receive__swapTransferTitle_apple": "تحويل",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "السعر غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "هذا التحويل غير متاح."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "هذا التحويل غير متاح.",
+  "settings__swapRestoreTitle_apple": "استعادة التحويلات",
+  "settings__settingsExchangeSettingsTitle_apple": "إعدادات الحساب",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "بيانات اعتماد حساب testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "مصادقة HTTP الأساسية لصفحات ويب حساب testnet (تسجيل الدخول و KYC).",
+  "settings__autoswapSettingsTitle_apple": "إعدادات التحويل التلقائي",
+  "settings__settingsExchangeTitle_apple": "الحساب",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "التحويل التلقائي",
+  "settings__settingsPayjoinExchangeSection_apple": "مع حساب Bull Bitcoin"
 }

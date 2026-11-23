@@ -405,6 +405,8 @@ The same mount owns the active limit-order card, details and cancellation. Creat
 
 **Foreground and headless are two explicit compositions.** A headless composition (a background task) registers only what that task needs, selected before the graph is built, rather than building the full app graph and switching side effects off. The shell selects the task in `lib/background_bootstrap.dart`; the existing wallet and Electrum settings wiring constructs the headless graph. WorkManager calls `backgroundTasksHandler` in `lib/background_entrypoint.dart`, which delegates to that bootstrap. The rollout remains disabled by `backgroundSyncAvailable` pending device validation.
 
+Settings owns the app, wallet and Payjoin preference screens, their shared search catalogue, and support navigation. Foreground scheduling and diagnostics for interval changes belong to `background_tasks`; the Permissions screen independently calls `notifications` for permission requests. After startup admits Preferences, it refreshes the in-memory `bull_reporting` gate without rewriting the boot mirror. Selected-wallet settings and swap rescue still depend on the app wallet catalogue; their routes remain in the legacy app feature.
+
 Each extracted package gets `resolution: workspace` and is listed under a `workspace:` key in the root `pubspec.yaml`; the root app keeps `useRootAsPackage: true` and consumes the members. Dependencies point one way and stay acyclic: **shell → features → packages**. `packages/` never import `features/`; a feature touches a package only through its published API.
 
 ### Member API checklist

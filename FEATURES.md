@@ -116,7 +116,7 @@ graph TB
     BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy, DCA, Sell and Pay]
     EXCHANGE --> BULL_EXCHANGE
     BULL_EXCHANGE -->|order details navigation and receipt labels| TX_HISTORY
-    SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
+    SETTINGS -->|open account settings and support chat| BULL_EXCHANGE
     SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     BULL_EXCHANGE -->|dashboard price display| BTC_PRICE
@@ -669,7 +669,7 @@ The architecture test records source dependencies, including internal imports an
 | `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `settings → wallet_import` | Opens the import hub through its typed navigation. The shell supplies the active environment for hardware visibility. | `lib/features/settings/ui/settings_item.dart -> package:wallet_import/wallet_import.dart` |
+| `settings → wallet_import` | Opens the import hub through its typed navigation. The shell supplies the active environment for hardware visibility. | `features/settings/lib/src/ui/settings_item.dart -> package:wallet_import/wallet_import.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
@@ -716,6 +716,8 @@ Wallet publishes destination validation and input through `public/payment_destin
 ## Network settings and service status
 
 The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. Network use cases call Electrum, Mempool, Preferences and Tor, as well as the Payjoin, Pricer and RecoverBull diagnostics capabilities. The network member requests a Bitcoin fee estimate from Fees with the Mempool source. The shell supplies the default wallet environment and Tor requirement through WalletFacade. Background Electrum composition remains independent of the network UI.
+
+The Settings member owns the preference screens and search catalogue, using the published navigation of Access, Ark, Backups, Exchange, Fees, Label Editor, Network, Send, Silent Payments, Swaps, Transactions and Wallet Import. Its support action opens the Exchange chat inside the router and the existing web page outside it. The app retains the routes requiring the legacy selected-wallet projection or Exchange access binding.
 
 ## Wallet-independent transaction values
 

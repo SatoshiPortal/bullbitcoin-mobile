@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:bull_ui/bull_ui.dart' show SizedBox;
-import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
+import 'package:bull_ui/bull_ui.dart' show SizedBox, Widget;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -12,23 +11,16 @@ import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/app_settings/permissions_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/settings_route.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,9 +29,12 @@ import 'package:swaps/swaps.dart' hide Environment;
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
-export 'package:bb_mobile/features/settings/ui/settings_route.dart';
-
 class SettingsRouter {
+  static Widget menuScope(Widget child) => ExchangeAccessBuilder(
+    builder: (_, access) =>
+        RepositoryProvider<ExchangeAccess>.value(value: access, child: child),
+  );
+
   static final exchangeSettingsHost = ExchangeSettingsHost(
     exchange: () => locator<Exchange>(),
     savePreferences: ({language, currency, emailNotificationsEnabled}) =>
@@ -51,17 +46,13 @@ class SettingsRouter {
     refreshSession: ExchangeSessionScope.refresh,
     isLoggedIn: ExchangeScope.isLoggedIn,
     sessionChanges: ExchangeScope.signedInChanges,
-    isSuperuser: (context) =>
-        context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
-        false,
-    securityUrl: (context) => switch (context.select(
-      (SettingsCubit cubit) => cubit.state.environment,
-    )) {
-      null || Environment.regtest => null,
-      Environment.mainnet => Uri.parse(
+    isSuperuser: (context) => Settings.isSuperuserOf(context),
+    securityUrl: (context) => switch (Settings.networkOf(context)) {
+      null || NetworkEnv.regtest || NetworkEnv.signet => null,
+      NetworkEnv.mainnet => Uri.parse(
         ExchangeDefaults.bbAuthUrl,
       ).resolve('/settings'),
-      Environment.testnet => Uri.parse(
+      NetworkEnv.testnet => Uri.parse(
         ExchangeDefaults.bbAuthTestUrl,
       ).resolve('/settings'),
     },
@@ -119,25 +110,12 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.quickActions.name,
         path: SettingsRoute.quickActions.path,
-        builder: (context, state) =>
-            QuickActionsSettingsScreen(cubit: locator<QuickActionsCubit>()),
+        builder: (context, state) => QuickActionsCustomizationScreen(
+          cubit: locator<QuickActionsCubit>(),
+        ),
       ),
       ...exchangeSettingsRoutes,
-      GoRoute(
-        name: SettingsRoute.walletSettings.name,
-        path: SettingsRoute.walletSettings.path,
-        builder: (context, state) => const WalletSettingsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.payjoinSettings.name,
-        path: SettingsRoute.payjoinSettings.path,
-        builder: (context, state) => const PayjoinSettingsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.payjoinAdvancedSettings.name,
-        path: SettingsRoute.payjoinAdvancedSettings.path,
-        builder: (context, state) => const PayjoinAdvancedSettingsScreen(),
-      ),
+      ...Settings.walletRoutes(),
       GoRoute(
         name: SettingsRoute.swapRestore.name,
         path: SettingsRoute.swapRestore.path,
@@ -165,22 +143,7 @@ class SettingsRouter {
         },
       ),
       ?autoswapSettingsRoute,
-      GoRoute(
-        name: SettingsRoute.appSettings.name,
-        path: SettingsRoute.appSettings.path,
-        builder: (context, state) => const AppSettingsScreen(),
-        routes: [
-          ...appSettingsRoutes,
-          GoRoute(
-            name: SettingsRoute.permissions.name,
-            path: SettingsRoute.permissions.path,
-            builder: (context, state) => BlocProvider(
-              create: (_) => locator<BackgroundPreferencesCubit>()..load(),
-              child: const PermissionsScreen(),
-            ),
-          ),
-        ],
-      ),
+      Settings.appSettingsRoute(appSettingsRoutes, settings: locator<Settings>),
 
       ...accessRoutes,
       ...backupRoutes,

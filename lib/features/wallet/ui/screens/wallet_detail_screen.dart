@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:primitives/primitives.dart';
 
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -119,8 +119,7 @@ class WalletDetailScreen extends StatelessWidget {
                         ),
                         eyeToggle: const EyeToggle(),
                         fiatBalance: HomeFiatBalance(
-                          onCurrencyChanged:
-                              SettingsFacade.changeDisplayCurrency,
+                          onCurrencyChanged: Settings.changeDisplayCurrency,
                           balanceSat: balanceSat.toInt(),
                         ),
                         syncingIndicator: const TxsSyncingIndicator(),

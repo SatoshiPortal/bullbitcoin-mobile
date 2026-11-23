@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "金额超过最高转账金额：{max} sats",
   "receive__swapTransferTitle_apple": "转账",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "汇率不可用。请稍后重试。",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "此转账不可用。"
+  "receive__swapErrorRouteUnavailableGeneric_apple": "此转账不可用。",
+  "settings__swapRestoreTitle_apple": "转账恢复",
+  "settings__settingsExchangeSettingsTitle_apple": "账户设置",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "测试网账户凭证",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "测试网账户网页（登录和 KYC）的 HTTP 基本认证。",
+  "settings__autoswapSettingsTitle_apple": "自动转账设置",
+  "settings__settingsExchangeTitle_apple": "账户",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "自动转账",
+  "settings__settingsPayjoinExchangeSection_apple": "使用 Bull Bitcoin 账户"
 }

@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Сумма превышает максимальную сумму перевода: {max} sats",
   "receive__swapTransferTitle_apple": "Перевод",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступен. Пожалуйста, попробуйте позже.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Этот перевод недоступен."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Этот перевод недоступен.",
+  "settings__swapRestoreTitle_apple": "Восстановление переводов",
+  "settings__settingsExchangeSettingsTitle_apple": "Настройки аккаунта",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Учётные данные аккаунта testnet",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth для веб-страниц аккаунта testnet (вход и KYC).",
+  "settings__autoswapSettingsTitle_apple": "Настройки автоперевода",
+  "settings__settingsExchangeTitle_apple": "Аккаунт",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Автоперевод",
+  "settings__settingsPayjoinExchangeSection_apple": "С аккаунтом Bull Bitcoin"
 }

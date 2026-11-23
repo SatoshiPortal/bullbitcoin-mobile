@@ -7,6 +7,7 @@ import 'domain/watch_settings_service_health_usecase.dart';
 import 'settings_menu.dart';
 import 'ui/all_settings_screen.dart';
 import 'ui/settings_search_view.dart';
+import 'ui/settings_hub_bindings.dart';
 
 const _homePath = '/settings';
 const _homeName = 'settings';
@@ -22,8 +23,9 @@ final class SettingsFeature {
   ///
   /// [menuScope] can provide inherited display inputs to both screens.
   static SettingsFeature mount({
-    required SettingsMenu Function(BuildContext) menuOf,
-    required SettingsLabels Function(BuildContext) labelsOf,
+    SettingsMenu Function(BuildContext) menuOf = SettingsHubBindings.menuOf,
+    SettingsLabels Function(BuildContext) labelsOf =
+        SettingsHubBindings.labelsOf,
     required NetworkStatus status,
     required List<RouteBase> childRoutes,
     Widget Function(Widget child)? menuScope,

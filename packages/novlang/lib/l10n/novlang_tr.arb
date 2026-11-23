@@ -239,5 +239,13 @@
   "receive__swapErrorAmountAboveMaximum_apple": "Tutar maksimum transfer miktarını aşıyor: {max} sats",
   "receive__swapTransferTitle_apple": "Transfer",
   "receive__bitcoinPriceExchangeRateUnavailable_apple": "Oran kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
-  "receive__swapErrorRouteUnavailableGeneric_apple": "Bu transfer kullanılamıyor."
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Bu transfer kullanılamıyor.",
+  "settings__swapRestoreTitle_apple": "Transfer Kurtarma",
+  "settings__settingsExchangeSettingsTitle_apple": "Hesap Ayarları",
+  "settings__exchangeTestnetBasicAuthTitle_apple": "Testnet hesap kimlik bilgileri",
+  "settings__exchangeTestnetBasicAuthDescription_apple": "Testnet hesap web sayfaları (giriş ve KYC) için HTTP basic auth.",
+  "settings__autoswapSettingsTitle_apple": "Otomatik Transfer Ayarları",
+  "settings__settingsExchangeTitle_apple": "Hesap",
+  "settings__bitcoinSettingsAutoTransferTitle_apple": "Otomatik Transfer",
+  "settings__settingsPayjoinExchangeSection_apple": "Bull Bitcoin hesabıyla"
 }

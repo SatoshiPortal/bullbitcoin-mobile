@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:bb_mobile/app.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
     show AppInitErrorScreen;
-import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show paymentNotificationChannelId;
@@ -102,7 +102,7 @@ Future<void> _retryStorage(LegacyImportFailure failure) async {
 void _showInitError(Object error, {VoidCallback? onRetry}) {
   runApp(
     BullSupportScope(
-      onContactSupport: SupportFacade.contactSupport,
+      onContactSupport: Support.contactSupport,
       child: AppInitErrorScreen(error: error, onRetry: onRetry),
     ),
   );
