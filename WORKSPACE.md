@@ -108,6 +108,8 @@ graph TD
   style screen_privacy stroke:#7725dd
   secrets["secrets"]
   style secrets stroke:#07e9ae
+  send["send"]
+  style send stroke:#fb0b78
   settings["settings"]
   style settings stroke:#a681c0
   signers["signers"]
@@ -306,6 +308,19 @@ graph TD
   secrets --> bull_logger
   secrets --> rust_bindings
   secrets --> legacy_storage
+  send --> address_view
+  send --> bull_logger
+  send --> bull_ui
+  send --> electrum
+  send --> fees
+  send --> fees_feature
+  send --> preferences
+  send --> primitives
+  send --> satoshifier
+  send --> scanning
+  send --> spend
+  send --> sync
+  send -.-> rust_bindings
   settings --> bull_ui
   settings --> network
   settings --> primitives
@@ -327,6 +342,7 @@ graph TD
   silent --> rust_bindings
   silent --> secrets
   spend --> ark
+  spend --> bull_payjoin
   spend --> fees
   spend --> primitives
   spend --> secrets
@@ -394,6 +410,7 @@ graph TD
     physical_backup_verification
     receive
     scanning
+    send
     settings
     signers
     silent

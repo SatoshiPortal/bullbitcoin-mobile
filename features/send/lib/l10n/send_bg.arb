@@ -1,0 +1,94 @@
+{
+  "broadcastSignedTxBroadcastError": "Не успяхме да излъчим вашата транзакция. Проверете интернет връзката си и опитайте отново.",
+  "broadcastSignedTxErrorInvalidTransaction": "Това не изглежда като валидна подписана транзакция. Уверете се, че сте поставили целия PSBT или цялата транзакция.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не успяхме да прочетем транзакция от този етикет. Моля, опитайте да сканирате отново.",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "replaceByFeeErrorNoFeeRateSelected": "Моля, изберете скорост на таксата.",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "replaceByFeeScreenTitle": "Замени с такса.",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "Разпрати",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "replaceByFeeFastestTitle": "Най-бързият",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Оригинална транзакция.",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "replaceByFeeFastestDescription": "Очаквано време за потвърждение ~ 10 минути.",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "doneButton": "Готово",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Трябва да увеличите таксата с поне 1 сат/байт спрямо оригиналната транзакция.",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "Продължи",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "replaceByFeeFeeRateDisplay": "Скорост на таксата: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
+  "coreScreensFeeRateLabel": "Размер на таксата",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Изходът за ресто е неизвестен — всички изходи са показани еднакво",
+  "coreScreensUnknown": "Неизвестно",
+  "coreScreensFetchFailed": "Неуспешно извличане на транзакция {txid} от Electrum.",
+  "coreScreensInputResolutionFailed": "Входът не е намерен: изход {vout} на {parentTxId} не съществува.",
+  "coreScreensNoServersAvailable": "Няма налични Electrum сървъри.",
+  "mempoolServerStatusUnknown": "Неизвестен",
+  "broadcastSignedTxBroadcast": "Излъчи",
+  "broadcastSignedTxPageTitle": "Излъчи подписана транзакция",
+  "broadcastSignedTxPasteHint": "Постави PSBT или HEX на транзакция",
+  "broadcastSignedTxCameraButton": "Камера",
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Докоснете вашия Coldcard, за да получите подписаната транзакция през NFC",
+  "broadcastSignedTxDoneButton": "Готово",
+  "broadcastSignedTxNfcTitle": "NFC",
+  "coreScreensFromLabel": "От",
+  "coreScreensToLabel": "До",
+  "coreScreensAmountLabel": "Сума",
+  "coreScreensNetworkFeesLabel": "Мрежови такси",
+  "consolidationDone": "Готово",
+  "consolidationFailedBody": "Възникна неочаквана грешка. Средствата ви са в безопасност: не беше излъчена транзакция. Моля, опитайте отново.",
+  "consolidationFailedTitle": "Консолидацията е неуспешна",
+  "consolidationInProgress": "Консолидиране…",
+  "consolidationRequiredTitle": "Консолидиране на портфейла",
+  "consolidationRequiredTitleNamed": "Консолидиране на портфейла {walletName}",
+  "consolidationRowAmount": "Сума",
+  "consolidationRowNetworkFees": "Мрежови такси",
+  "consolidationRowOutputs": "Изходи",
+  "consolidationRowTransactions": "Транзакции",
+  "consolidationScreenDescription": "Твърде многото изходи могат да направят портфейла нестабилен. Консолидирането ги обединява в по-малко, за да работи портфейлът правилно.",
+  "consolidationScreenTitle": "Консолидиране",
+  "consolidationSuccessBody": "Вашите монети се обединяват. Ще завърши след потвърждение от мрежата.",
+  "consolidationSuccessTitle": "Консолидацията започна",
+  "walletLoadFailed": "Портфейлите ви не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "broadcastSignedTxErrorPsbtFinalization": "Подписаната транзакция не можа да бъде финализирана. Уверете се, че съдържа всички необходими подписи, и опитайте отново.",
+  "coreScreensOutputsExceedInputs": "Изходите надвишават входовете: тази транзакция е невалидна и мрежата ще я отхвърли.",
+  "broadcastSignedTxErrorAlreadyInChain": "Тази транзакция вече е в блокчейна. Няма какво повече да се излъчва.",
+  "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки."
+}

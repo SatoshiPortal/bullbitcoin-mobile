@@ -22,9 +22,13 @@ import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
 import 'package:bip85/bip85.dart';
 import 'package:signers/routes.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:send/send.dart';
+import 'package:send/setup.dart';
+import 'package:electrum/electrum.dart' show Electrum;
+import 'package:fees/fees.dart' show Fees;
+import 'package:spend/spend.dart' show Spend;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
-import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
 import 'package:settings/settings.dart';
@@ -41,7 +45,6 @@ import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
-import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
@@ -53,6 +56,7 @@ import 'package:silent/setup.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/wallet/public/silent_bindings.dart'
@@ -156,6 +160,17 @@ class AppRouter {
         context.pushNamed(SettingsRoute.payjoinSettings.name),
   );
 
+  static final _sendRoutes = SendFeature.mount(
+    spend: locator<Spend>(),
+    fees: locator<Fees>(),
+    electrum: locator<Electrum>(),
+    environment: locator<ActiveEnvironmentReader>(),
+    goToWalletHome: (context) => context.goNamed(WalletRoute.walletHome.name),
+    broadcastSuccessImage: AssetImage(Assets.animations.successTick.path),
+    missingWalletRedirect: WalletRoute.walletHome.path,
+    selectBalanceSat: WalletConsolidation.selectBalanceSat,
+  );
+
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
@@ -233,7 +248,7 @@ class AppRouter {
         onOpenCoins: (context, wallet) =>
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
-      ConsolidationRouter.route,
+      _sendRoutes.consolidation,
       SettingsFeature.mount(
         menuOf: SettingsHubBindings.menuOf,
         labelsOf: SettingsHubBindings.labelsOf,
@@ -277,7 +292,7 @@ class AppRouter {
       PayRouter.route,
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,
-      BroadcastSignedTxRouter.route,
+      _sendRoutes.broadcastSignedTx,
       ...locator<SignersFeature>().routes,
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
@@ -285,7 +300,7 @@ class AppRouter {
       ?_exchangeFeature.autoBuy,
       LimitOrdersRouter.create,
       ?_exchangeFeature.limitOrderDetails,
-      ReplaceByFeeRouter.route,
+      _sendRoutes.replaceByFee,
       locator<Bip85Feature>().route,
       ...locator<NetworkFeature>().routes.root,
       ...locator<FeesFeature>().routes,
