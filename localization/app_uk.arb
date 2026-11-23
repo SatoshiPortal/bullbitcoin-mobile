@@ -3874,5 +3874,6 @@
   "permissionsTitle": "Дозволи",
   "settingsSearchPermissionsKeywords": "сповіщення|фонові завдання|батарея|оповіщення",
   "wizardBackgroundTasksDescription": "Перевіряє платежі, коли застосунок закрито.",
-  "wizardNotificationsDescription": "Дізнавайтеся про надходження платежів."
+  "wizardNotificationsDescription": "Дізнавайтеся про надходження платежів.",
+  "sendErrorInvoiceExpiryTooShort": "Термін дії цього рахунка спливає надто скоро. Попросіть отримувача надати новий рахунок."
 }

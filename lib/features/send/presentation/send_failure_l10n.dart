@@ -19,6 +19,8 @@ extension SendFailureL10n on SendFailure {
           ? context.loc.sendErrorUnsupportedQrCodeFormat
           : context.loc.sendErrorInvalidAddressOrInvoice,
     SendInvoiceExpiredFailure() => context.loc.sendErrorInvoiceExpired,
+    SendInvoiceExpiryTooShortFailure() =>
+      context.loc.sendErrorInvoiceExpiryTooShort,
     SendInvoiceAmountRequiredFailure() =>
       context.loc.sendErrorInvoiceMustContainAmount,
     SendHardwareWalletFailure() =>

@@ -9431,5 +9431,6 @@
   "permissionsTitle": "Άδειες",
   "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών",
   "wizardBackgroundTasksDescription": "Ελέγχει πληρωμές με κλειστή την εφαρμογή.",
-  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή."
+  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή.",
+  "sendErrorInvoiceExpiryTooShort": "Αυτό το invoice λήγει πολύ σύντομα. Ζητήστε ένα νέο invoice από τον παραλήπτη."
 }

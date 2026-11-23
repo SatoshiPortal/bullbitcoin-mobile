@@ -1,10 +1,12 @@
 import 'package:primitives/primitives.dart' show PaymentNetwork;
+import 'package:bb_mobile/features/send/domain/boltz_swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:swaps/swaps.dart';
 
 /// A raw reason of the shape a foreign SDK would produce. Every variant below
 /// carries it in `logMessage` so the assertions can prove it never survives
@@ -89,6 +91,23 @@ Future<String> _translate(
 }
 
 void main() {
+  testWidgets('a Boltz expiry rejection asks for a new invoice', (
+    tester,
+  ) async {
+    final failure = const SwapsInvoiceExpiryTooShortFailure().toSendFailure(
+      amountSat: 25000,
+    );
+
+    expect(
+      await _translate(tester, failure, locale: const Locale('en')),
+      'This invoice expires too soon. Ask the recipient for a new invoice.',
+    );
+    expect(
+      await _translate(tester, failure, locale: const Locale('fr')),
+      'Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire.',
+    );
+  });
+
   testWidgets(
     'stale Payjoin runtime uses the existing localized restart message',
     (tester) async {

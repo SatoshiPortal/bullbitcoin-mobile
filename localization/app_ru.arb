@@ -3883,5 +3883,6 @@
   "permissionsTitle": "Разрешения",
   "settingsSearchPermissionsKeywords": "уведомления|фоновые задачи|батарея|оповещения",
   "wizardBackgroundTasksDescription": "Проверяет платежи, когда приложение закрыто.",
-  "wizardNotificationsDescription": "Узнавайте о поступлении платежей."
+  "wizardNotificationsDescription": "Узнавайте о поступлении платежей.",
+  "sendErrorInvoiceExpiryTooShort": "Срок действия этого счета-фактуры истекает слишком скоро. Попросите получателя выставить новый."
 }

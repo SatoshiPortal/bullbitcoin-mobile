@@ -9447,5 +9447,6 @@
   "permissionsTitle": "Permissões",
   "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
   "wizardBackgroundTasksDescription": "Verifica pagamentos com o app fechado.",
-  "wizardNotificationsDescription": "Saiba quando um pagamento chegar."
+  "wizardNotificationsDescription": "Saiba quando um pagamento chegar.",
+  "sendErrorInvoiceExpiryTooShort": "Esta fatura expira cedo demais. Peça ao destinatário uma nova fatura."
 }

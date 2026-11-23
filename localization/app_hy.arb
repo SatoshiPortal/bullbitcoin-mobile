@@ -2990,5 +2990,6 @@
   "permissionsTitle": "Թույլտվություններ",
   "settingsSearchPermissionsKeywords": "ծանուցումներ|ֆոնային առաջադրանքներ|մարտկոց|ազդանշաններ",
   "wizardBackgroundTasksDescription": "Ստուգում է վճարումները, երբ հավելվածը փակ է։",
-  "wizardNotificationsDescription": "Իմացեք, երբ վճարում է ստացվում։"
+  "wizardNotificationsDescription": "Իմացեք, երբ վճարում է ստացվում։",
+  "sendErrorInvoiceExpiryTooShort": "Այս ապրանքագրի ժամկետը շատ շուտ է լրանում։ Խնդրեք ստացողից նոր ապրանքագիր։"
 }

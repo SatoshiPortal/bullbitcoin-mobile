@@ -9675,5 +9675,6 @@
   "permissionsTitle": "Anumatiyan",
   "settingsSearchPermissionsKeywords": "notifications|background kaam|battery|alerts",
   "wizardBackgroundTasksDescription": "App band hone par payment check karta hai.",
-  "wizardNotificationsDescription": "Payment aane par jaanein."
+  "wizardNotificationsDescription": "Payment aane par jaanein.",
+  "sendErrorInvoiceExpiryTooShort": "Ye invoice bahut jaldi expire ho jayegi. Praaptakarta se nayi invoice maango."
 }

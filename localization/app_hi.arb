@@ -9606,5 +9606,6 @@
   "permissionsTitle": "अनुमतियाँ",
   "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
   "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
-  "wizardNotificationsDescription": "भुगतान आने पर जानें।"
+  "wizardNotificationsDescription": "भुगतान आने पर जानें।",
+  "sendErrorInvoiceExpiryTooShort": "इस चालान की वैधता बहुत जल्द समाप्त हो जाएगी। प्राप्तकर्ता से नया चालान मांगें।"
 }

@@ -9431,5 +9431,6 @@
   "permissionsTitle": "مجوزها",
   "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
   "wizardBackgroundTasksDescription": "بررسی پرداخت‌ها وقتی برنامه بسته است.",
-  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید."
+  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید.",
+  "sendErrorInvoiceExpiryTooShort": "این invoice خیلی زود منقضی می‌شود. از گیرنده یک invoice جدید بخواهید."
 }

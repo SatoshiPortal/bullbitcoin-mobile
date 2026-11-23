@@ -3104,5 +3104,6 @@
   "permissionsTitle": "ნებართვები",
   "settingsSearchPermissionsKeywords": "შეტყობინებები|ფონური ამოცანები|ბატარეა|გაფრთხილებები",
   "wizardBackgroundTasksDescription": "ამოწმებს გადახდებს, როცა აპი დახურულია.",
-  "wizardNotificationsDescription": "გაიგეთ, როცა გადახდა შემოვა."
+  "wizardNotificationsDescription": "გაიგეთ, როცა გადახდა შემოვა.",
+  "sendErrorInvoiceExpiryTooShort": "ამ ინვოისს ვადა ძალიან მალე ეწურება. სთხოვეთ მიმღებს ახალი ინვოისი."
 }

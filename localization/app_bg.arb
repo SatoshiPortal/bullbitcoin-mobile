@@ -8047,5 +8047,6 @@
   "permissionsTitle": "Разрешения",
   "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали",
   "wizardBackgroundTasksDescription": "Проверява плащания при затворено приложение.",
-  "wizardNotificationsDescription": "Разберете, когато пристигне плащане."
+  "wizardNotificationsDescription": "Разберете, когато пристигне плащане.",
+  "sendErrorInvoiceExpiryTooShort": "Валидността на тази фактура изтича твърде скоро. Поискайте нова фактура от получателя."
 }
