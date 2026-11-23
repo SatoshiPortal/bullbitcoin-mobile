@@ -48,6 +48,8 @@ graph TD
   style bull_ui stroke:#ca6ae4
   bull_ui_catalogue["bull_ui_catalogue"]
   style bull_ui_catalogue stroke:#7d8de8
+  coins["coins"]
+  style coins stroke:#79c5a6
   electrum["electrum"]
   style electrum stroke:#87e1d5
   exchange["exchange"]
@@ -92,6 +94,8 @@ graph TD
   style secrets stroke:#07e9ae
   signers["signers"]
   style signers stroke:#5be3aa
+  spend["spend"]
+  style spend stroke:#8989d3
   swaps["swaps"]
   style swaps stroke:#3665e3
   sync["sync"]
@@ -157,6 +161,8 @@ graph TD
   bull_ui --> primitives
   bull_ui_catalogue --> primitives
   bull_ui_catalogue --> bull_ui
+  coins --> bull_ui
+  coins --> primitives
   electrum --> bull_logger
   electrum --> bull_tor
   electrum --> primitives
@@ -233,6 +239,11 @@ graph TD
   signers --> satoshifier
   signers --> screen_awake
   signers --> sync
+  spend --> ark
+  spend --> fees
+  spend --> primitives
+  spend --> secrets
+  spend --> sync
   swaps --> rust_bindings
   swaps --> boltz_stream
   swaps --> legacy_storage
@@ -253,6 +264,7 @@ graph TD
     bull_logs
     bull_quick_actions
     bull_recoverbull
+    coins
     fees_feature
     label_editor
     network
@@ -289,6 +301,7 @@ graph TD
     screen_awake
     screen_privacy
     secrets
+    spend
     swaps
     sync
   end
