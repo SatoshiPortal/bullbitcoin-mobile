@@ -133,20 +133,24 @@ final class _PreparedInventory implements PreparedOwner {
           if (rows.isNotEmpty) throw const _VerificationRejected();
         }
 
-        // Even on a fresh SQLite install, an iOS keychain can outlive the app
-        // container. Preserve any existing access protection.
-        final accessResult = await _readLegacyAccess();
-        if (accessResult case Err(:final failure)) return Err(failure);
-        final access =
-            (accessResult
-                    as Ok<
-                      ({String? pin, int failedAttempts, int? lockedUntil}),
-                      LegacyImportFailure
-                    >)
-                .value;
         final secretIds = await _storedSecretIds();
         if (secretIds case Err(:final failure)) return Err(failure);
-        if (source != null) await _copyLegacy(source);
+
+        // The iOS keychain may survive a reinstall. Only import its access
+        // protection when there is a wallet to protect.
+        ({String? pin, int failedAttempts, int? lockedUntil}) access = (
+          pin: null,
+          failedAttempts: 0,
+          lockedUntil: null,
+        );
+        if (source != null && await _copyLegacy(source)) {
+          switch (await _readLegacyAccess()) {
+            case Ok(:final value):
+              access = value;
+            case Err(:final failure):
+              throw _LegacyAccessReadFailed(failure);
+          }
+        }
 
         final pin = access.pin;
         final credentialId = pin == null ? null : initialCredentialId;
@@ -249,6 +253,8 @@ final class _PreparedInventory implements PreparedOwner {
         }
         return const Ok(null);
       });
+    } on _LegacyAccessReadFailed catch (error) {
+      return Err(error.failure);
     } on _VerificationRejected {
       return const Err(LegacyImportVerificationFailed());
     } on _WrongSchema {
@@ -260,7 +266,7 @@ final class _PreparedInventory implements PreparedOwner {
     }
   }
 
-  Future<void> _copyLegacy(LegacySource source) async {
+  Future<bool> _copyLegacy(LegacySource source) async {
     if (source.schemaVersion != splitV1SourceSchemaVersion) {
       throw const _WrongSchema();
     }
@@ -272,7 +278,7 @@ final class _PreparedInventory implements PreparedOwner {
       }
       // Keep original stored values, including unknown enum text and the
       // spelling of descriptors and timestamps. Never reconstruct a wallet.
-      await _copy(
+      final walletCount = await _copy(
         legacy,
         destination: 'wallets',
         columns:
@@ -297,12 +303,13 @@ final class _PreparedInventory implements PreparedOwner {
         ''',
         order: 'parent_fingerprint,path',
       );
+      return walletCount > 0;
     } finally {
       legacy.close();
     }
   }
 
-  Future<void> _copy(
+  Future<int> _copy(
     Database legacy, {
     required String destination,
     required String columns,
@@ -331,6 +338,7 @@ final class _PreparedInventory implements PreparedOwner {
       }
       if (original.moveNext()) throw const _VerificationRejected();
     }
+    return rows.length;
   }
 
   Future<Result<Set<String>, LegacyImportFailure>> _storedSecretIds() async {
@@ -408,4 +416,10 @@ final class _VerificationRejected implements Exception {
 
 final class _WrongSchema implements Exception {
   const _WrongSchema();
+}
+
+final class _LegacyAccessReadFailed implements Exception {
+  final LegacyImportFailure failure;
+
+  const _LegacyAccessReadFailed(this.failure);
 }
