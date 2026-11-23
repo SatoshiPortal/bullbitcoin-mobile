@@ -6,9 +6,6 @@
   "backupWarningLoseReasonKeystore": "O seu dispositivo invalida o keystore ao alterar a autenticação do ecrã de bloqueio ou do dispositivo",
   "backupWarningLoseReasonCloudRestore": "Restaurar o seu dispositivo a partir de uma cópia de segurança na nuvem",
   "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
-  "translationWarningTitle": "Traduções geradas por IA",
-  "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se notar erros ou quiser ajudar a melhorar as traduções, pode submeter uma correção no nosso repositório GitHub.",
-  "translationWarningContributeButton": "Ajudar a melhorar traduções",
   "translationWarningDismissButton": "Entendi",
   "payTransactionBroadcast": "Transmissão da transação",
   "fundExchangeSepaDescriptionExactly": "exactamente.",
@@ -2769,39 +2766,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Saltar",
-  "wizardPageIndicator": "PÁGINA {current} / {total}",
-  "wizardNextButton": "Seguinte",
-  "wizardCustomizeTitle": "Personaliza a tua experiência",
-  "wizardCustomizeBody": "Usa o BULL à tua maneira com estas definições.",
-  "wizardCustomizeDefaultCurrency": "Moeda predefinida",
-  "wizardMissionTitle": "Apoia a missão da Bull",
-  "wizardMissionBody1": "Para nos ajudares a melhorar o nosso software e garantir o mais alto nível de segurança, privacidade e usabilidade, a tua aplicação pode enviar-nos registos de erros que nos permitem detetar e corrigir rapidamente problemas nas próximas atualizações.",
-  "wizardMissionBody2": "Estes registos são anonimizados, não estão associados ao teu endereço IP e nunca partilham informações sobre as tuas transações ou identidade. São puramente técnicos e não te expõem a qualquer risco. É muito útil para nós e não te custa nada.",
-  "wizardMissionQuestion": "Aceitas participar no nosso programa automatizado de reporte de problemas?",
-  "wizardMissionYes": "Sim",
-  "wizardMissionNo": "Não",
-  "wizardMissionRequired": "Por favor, escolhe Sim ou Não antes de continuar.",
-  "wizardJourneyTitle": "Avança no teu percurso",
-  "wizardJourneyBody": "Se és novo na carteira BULL, eis algumas funcionalidades que podes aproveitar para melhorar a tua privacidade, segurança e experiência.",
-  "wizardJourneyTip1": "Adiciona um PIN de segurança para desbloquear a tua carteira",
-  "wizardJourneyTip2": "Experimenta o backup cifrado do cofre",
-  "wizardJourneyTip3": "Liga-te ao teu próprio nó Bitcoin",
-  "wizardJourneyTip4": "Liga-te ao teu próprio explorador Mempool",
-  "wizardJourneyTip5": "Faça swap entre Bitcoin e Liquid sem KYC",
-  "wizardJourneyTip6": "Personaliza as tuas definições de autoswap",
-  "wizardJourneyTip7": "Alterna entre Bitcoin (BTC) e Satoshis (sats)",
-  "wizardJourneyTip8": "Cria transações air-gap para a tua carteira de hardware",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Algo correu mal ao configurar a sua carteira. Por favor, tente novamente.",
   "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
@@ -3556,7 +3520,5 @@
   "openSystemSettings": "Abrir definições do sistema",
   "permissionsTitle": "Permissões",
   "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
-  "wizardBackgroundTasksDescription": "Verifica pagamentos com a app fechada.",
-  "wizardNotificationsDescription": "Saiba quando chega um pagamento.",
   "sendErrorInvoiceExpiryTooShort": "Esta fatura expira demasiado cedo. Peça ao destinatário uma nova fatura."
 }

@@ -15,8 +15,6 @@ export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
 export '../ui/widgets/superuser_tap_unlocker.dart' show SuperuserTapUnlocker;
-export '../ui/widgets/translation_warning_bottom_sheet.dart'
-    show TranslationWarningBottomSheet;
 export '../reporting_setup.dart' show refreshReportingConsent;
 export '../background_setup.dart' show setupBackgroundPreferences;
 

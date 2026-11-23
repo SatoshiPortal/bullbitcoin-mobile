@@ -30,10 +30,6 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "translationWarningContributeButton": "ความช่วยเหลือ",
-  "@translationWarningContributeButton": {
-    "description": "Button to open GitHub repository for translations"
-  },
   "sellSendPaymentAboveMax": "คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -571,10 +567,6 @@
   "payBroadcastFailed": "ออกอากาศ",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้สร้างขึ้นโดยใช้ AI และอาจมีข้อผิดพลาด หากคุณพบข้อผิดพลาดหรือต้องการช่วยปรับปรุงการแปล คุณสามารถส่งการแก้ไขได้ที่คลัง GitHub ของเรา",
-  "@translationWarningDescription": {
-    "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "languageSettingsScreenTitle": "ภาษา",
   "@languageSettingsScreenTitle": {
@@ -3014,10 +3006,6 @@
   "transactionListOngoingTransfersTitle": "Swap ที่กำลังดำเนินการ",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "translationWarningTitle": "AI สร้างการแปล",
-  "@translationWarningTitle": {
-    "description": "Title for the AI translation warning bottom sheet"
   },
   "addressViewAddress": "ที่อยู่",
   "@addressViewAddress": {
@@ -7661,39 +7649,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "ข้าม",
-  "wizardPageIndicator": "หน้า {current} / {total}",
-  "wizardNextButton": "ถัดไป",
-  "wizardCustomizeTitle": "ปรับแต่งประสบการณ์ของคุณ",
-  "wizardCustomizeBody": "ใช้ BULL ตามวิธีของคุณด้วยการตั้งค่าเหล่านี้",
-  "wizardCustomizeDefaultCurrency": "สกุลเงินเริ่มต้น",
-  "wizardMissionTitle": "สนับสนุนภารกิจของ Bull",
-  "wizardMissionBody1": "เพื่อช่วยเราปรับปรุงซอฟต์แวร์และให้แน่ใจว่ามีความปลอดภัย ความเป็นส่วนตัว และความสามารถในการใช้งานสูงสุด แอปของคุณสามารถส่งบันทึกข้อผิดพลาดให้เรา ซึ่งจะช่วยให้เราตรวจพบและแก้ไขปัญหาได้อย่างรวดเร็วในการอัปเดตครั้งถัดไป",
-  "wizardMissionBody2": "บันทึกเหล่านี้ไม่ระบุชื่อ ไม่เชื่อมโยงกับที่อยู่ IP ของคุณ และไม่เคยแบ่งปันข้อมูลเกี่ยวกับธุรกรรมหรือตัวตนของคุณ เป็นข้อมูลทางเทคนิคล้วนๆ และไม่ทำให้คุณเสี่ยงใดๆ มีประโยชน์มากสำหรับเราและไม่มีค่าใช้จ่ายสำหรับคุณ",
-  "wizardMissionQuestion": "คุณยินยอมที่จะเข้าร่วมโปรแกรมรายงานปัญหาอัตโนมัติของเราหรือไม่?",
-  "wizardMissionYes": "ใช่",
-  "wizardMissionNo": "ไม่",
-  "wizardMissionRequired": "กรุณาเลือก ใช่ หรือ ไม่ ก่อนดำเนินการต่อ",
-  "wizardJourneyTitle": "ก้าวหน้าในเส้นทางของคุณ",
-  "wizardJourneyBody": "หากคุณเพิ่งเริ่มใช้กระเป๋าเงิน BULL นี่คือฟีเจอร์บางอย่างที่คุณสามารถใช้ประโยชน์เพื่อปรับปรุงความเป็นส่วนตัว ความปลอดภัย และประสบการณ์การใช้งานของคุณ",
-  "wizardJourneyTip1": "เพิ่ม PIN รักษาความปลอดภัยเพื่อปลดล็อกกระเป๋าเงินของคุณ",
-  "wizardJourneyTip2": "ลองสำรองข้อมูลห้องนิรภัยที่เข้ารหัส",
-  "wizardJourneyTip3": "เชื่อมต่อกับโหนด Bitcoin ของคุณเอง",
-  "wizardJourneyTip4": "เชื่อมต่อกับเอ็กซ์พลอเรอร์ Mempool ของคุณเอง",
-  "wizardJourneyTip5": "Swap ระหว่าง Bitcoin และ Liquid โดยไม่ต้อง KYC",
-  "wizardJourneyTip6": "ปรับแต่งการตั้งค่า autoswap ของคุณ",
-  "wizardJourneyTip7": "สลับระหว่าง Bitcoin (BTC) และ Satoshis (sats)",
-  "wizardJourneyTip8": "สร้างธุรกรรม air-gap สำหรับกระเป๋าเงินฮาร์ดแวร์ของคุณ",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "เกิดข้อผิดพลาดในการตั้งค่ากระเป๋าสตางค์ของคุณ กรุณาลองใหม่อีกครั้ง",
   "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
@@ -8468,7 +8423,5 @@
   "openSystemSettings": "เปิดการตั้งค่าระบบ",
   "permissionsTitle": "สิทธิ์",
   "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
-  "wizardBackgroundTasksDescription": "ตรวจสอบการชำระเงินขณะปิดแอป",
-  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า",
   "sendErrorInvoiceExpiryTooShort": "ใบแจ้งหนี้นี้จะหมดอายุเร็วเกินไป โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ"
 }

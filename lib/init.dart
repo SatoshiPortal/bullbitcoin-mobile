@@ -44,7 +44,8 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
-import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
+import 'package:exchange/exchange.dart' show Exchange;
+import 'package:wizard/wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -56,7 +57,9 @@ import 'package:path_provider/path_provider.dart';
 class Bull {
   static Future<Result<void, Failure>> init({
     Future<void> Function(LegacyImportFailure)? retryStorage,
+    WizardFeature? wizard,
   }) async {
+    final startupWizard = wizard ?? WizardFeature.mount();
     final bullDirectory = await getApplicationDocumentsDirectory();
 
     await initializeLogging(
@@ -68,9 +71,17 @@ class Bull {
     // it so Sentry initializes with the user's freshest answer rather
     // than a stale mirror, and so migration errors that happen on this
     // very boot are captured if the user just opted in.
+    final wizardConsent = await startupWizard.readReportingConsent();
+    final bool? consent;
+    switch (wizardConsent) {
+      case Ok(:final value):
+        consent = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
     await Report.init(
       dsn: 'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1',
-      wizardConsent: await readStartupReportingConsent(),
+      wizardConsent: consent,
     );
 
     await initFlutterRustBridgeDependencies();
@@ -335,7 +346,11 @@ class Bull {
       // Flush wizard pending values (if any) to SQLite now that the
       // settings repository is available, then mark the wizard complete.
       final _ = await locator<ExchangeFacade>().resolveAccess();
-      await completeStartupWizard(locator);
+      final applied = await startupWizard.applyPendingChoices(
+        preferences: locator<Preferences>(),
+        exchange: locator<Exchange>(),
+      );
+      if (applied case Err(:final failure)) return Err(failure);
       await locator<QuickActionsCubit>().load();
       await AppLocator.setupRecoverBull(
         locator,

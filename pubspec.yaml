@@ -34,6 +34,7 @@ workspace:
   - features/fees
   - features/swap
   - features/wallet_import
+  - features/wizard
   - packages/fees
   - packages/ark
   - packages/secrets
@@ -79,6 +80,7 @@ dependencies:
   bip85:
   access:
   wallet_import:
+  wizard:
   address_view:
   announcements:
   backups:

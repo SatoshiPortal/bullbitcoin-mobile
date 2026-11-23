@@ -165,7 +165,7 @@ graph TB
     SETTINGS --> ARK
     APP_STARTUP --> ARK
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature<br/>Catalogue and layout storage]
-    WIZARD[Wizard]
+    WIZARD[Startup Wizard<br/>Workspace Feature]
     IMPORT_MNEMONIC[Mnemonic Import]
     MNEMONIC_ENTRY[Mnemonic Entry]
     PHYSICAL_BACKUP_VERIFICATION[Physical Backup Verification]
@@ -365,9 +365,16 @@ graph TB
     SCREEN_AWAKE --> WAKELOCK_PLUS
 
     %% Optional exchange access and wallet quick actions
-    WIZARD --> EXCHANGE
+    CORE -->|standalone startup and pending choices| WIZARD
+    WIZARD -->|initial access choice| EXCHANGE_DOMAIN
     WIZARD -->|Exchange option| BULL_EXCHANGE
-    APP_STARTUP -->|wizard platform availability| EXCHANGE_DOMAIN
+    CORE -->|wizard platform availability| EXCHANGE_DOMAIN
+    WIZARD --> PREFERENCES
+    WIZARD --> BULL_UI
+    WIZARD --> BULL_PRICER
+    WIZARD --> BULL_LOGGER
+    WIZARD --> PRIMITIVES
+    WIZARD -->|store vocabulary| NOVLANG[Novlang Package]
     SETTINGS --> QUICK_ACTIONS
     WALLETS --> QUICK_ACTIONS
     QUICK_ACTIONS --> BULL_UI
@@ -531,7 +538,6 @@ graph TB
     SP --> MEMPOOL
     TX_HISTORY --> MEMPOOL
     WALLETS --> MEMPOOL
-    WIZARD[Wizard]
     APP_STARTUP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
     EXCHANGE -->|shared destination validation and input| ADDRESS_LABELS
@@ -550,7 +556,9 @@ graph TB
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
-    WIZARD --> SETTINGS
+    WIZARD -->|translation warning| SETTINGS_HUB
+    APP_STARTUP -->|translation warning| SETTINGS_HUB
+    ONBOARDING -->|translation warning| SETTINGS_HUB
 
 
     %% Wallet readers and spend preparation assigned to their app owners
@@ -708,7 +716,7 @@ The architecture test records source dependencies, including internal imports an
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `settings → swaps` | Restore and rescue use the public swap engine capability. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> package:swaps/swaps.dart` |
-| `wizard → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/wizard/ui/screens/wizard_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
+| `wizard → settings` | The standalone wizard uses the Settings member's public translation warning. | `features/wizard/lib/src/ui/widgets/customize_step.dart → package:settings/settings.dart` |
 
 | `app_startup → mnemonic_entry` | Restore UI uses the typed input widget to preserve explicit language selection. | `restore_default_secret_screen.dart → package:mnemonic_entry/mnemonic_entry.dart` |
 | `onboarding → mnemonic_entry` | Recovery UI uses the same typed input widget instead of duplicating language selection. | `onboarding_physical_recovery.dart → package:mnemonic_entry/mnemonic_entry.dart` |

@@ -158,8 +158,12 @@
     "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."
   },
   "app__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
+  "wizard__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
   "@app__onboardingSplashDescription_apple": {
     "description": "Apple (App Store) wording for the root catalogue key onboardingSplashDescription."
+  },
+  "@wizard__onboardingSplashDescription_apple": {
+    "description": "Apple (App Store) wording for the wizard catalogue key onboardingSplashDescription."
   },
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin transfers will take time to confirm.",
   "@app__sendSlowPaymentWarningDescription_apple": {
@@ -862,13 +866,13 @@
   "@app__logoutConfirmationDescription_apple": {
     "description": "Apple (App Store) wording for the root catalogue key logoutConfirmationDescription."
   },
-  "app__wizardJourneyTip5_apple": "Transfer between Bitcoin and Liquid with no KYC",
-  "@app__wizardJourneyTip5_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key wizardJourneyTip5."
+  "wizard__wizardJourneyTip5_apple": "Transfer between Bitcoin and Liquid with no KYC",
+  "@wizard__wizardJourneyTip5_apple": {
+    "description": "Apple (App Store) wording for the wizard catalogue key wizardJourneyTip5."
   },
-  "app__wizardJourneyTip6_apple": "Customize your auto transfer settings",
-  "@app__wizardJourneyTip6_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key wizardJourneyTip6."
+  "wizard__wizardJourneyTip6_apple": "Customize your auto transfer settings",
+  "@wizard__wizardJourneyTip6_apple": {
+    "description": "Apple (App Store) wording for the wizard catalogue key wizardJourneyTip6."
   },
   "app__transactionSwapOpenWithin24h_apple": "Open the app within 24 hours to complete your transfer.",
   "@app__transactionSwapOpenWithin24h_apple": {

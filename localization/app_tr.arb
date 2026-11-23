@@ -30,10 +30,6 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "translationWarningContributeButton": "Çevirileri Geliştirmeye Yardım",
-  "@translationWarningContributeButton": {
-    "description": "Button to open GitHub repository for translations"
-  },
   "sellSendPaymentAboveMax": "Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -567,10 +563,6 @@
   "payBroadcastFailed": "Yayın başarısız oldu",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu yapay zeka kullanılarak oluşturulmuştur ve hatalar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri iyileştirmeye yardımcı olmak isterseniz, GitHub depomuzda bir düzeltme gönderebilirsiniz.",
-  "@translationWarningDescription": {
-    "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "languageSettingsScreenTitle": "Dil Dili",
   "@languageSettingsScreenTitle": {
@@ -2994,10 +2986,6 @@
   "transactionListOngoingTransfersTitle": "Devam Eden Takaslar",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "translationWarningTitle": "AI-Generated Translations",
-  "@translationWarningTitle": {
-    "description": "Title for the AI translation warning bottom sheet"
   },
   "addressViewAddress": "Adres",
   "@addressViewAddress": {
@@ -7657,39 +7645,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Atla",
-  "wizardPageIndicator": "SAYFA {current} / {total}",
-  "wizardNextButton": "İleri",
-  "wizardCustomizeTitle": "Deneyimini özelleştir",
-  "wizardCustomizeBody": "Bu ayarlarla BULL'u kendi şartlarınla kullan.",
-  "wizardCustomizeDefaultCurrency": "Varsayılan para birimi",
-  "wizardMissionTitle": "Bull misyonunu destekle",
-  "wizardMissionBody1": "Yazılımımızı geliştirmemize ve en yüksek düzeyde güvenlik, gizlilik ve kullanılabilirlik sunmamıza yardımcı olmak için uygulamanız bize hata günlükleri gönderebilir. Bu, sorunları tespit etmemizi ve sonraki güncellemelerimizde hızlıca düzeltmemizi sağlar.",
-  "wizardMissionBody2": "Bu günlükler anonimleştirilmiştir, IP adresinize bağlı değildir ve işlemleriniz veya kimliğiniz hakkında asla bilgi paylaşmaz. Tamamen tekniktir ve sizi hiçbir riske maruz bırakmaz. Bizim için çok yararlıdır ve size hiçbir maliyeti yoktur.",
-  "wizardMissionQuestion": "Otomatik sorun bildirim programımıza katılmayı kabul ediyor musunuz?",
-  "wizardMissionYes": "Evet",
-  "wizardMissionNo": "Hayır",
-  "wizardMissionRequired": "Devam etmeden önce lütfen Evet veya Hayır seçin.",
-  "wizardJourneyTitle": "Yolculuğunda ilerle",
-  "wizardJourneyBody": "BULL cüzdanında yeniyseniz, gizliliğinizi, güvenliğinizi ve kullanıcı deneyiminizi geliştirmek için yararlanabileceğiniz bazı özellikler şunlardır.",
-  "wizardJourneyTip1": "Cüzdanınızın kilidini açmak için güvenlik PIN'i ekleyin",
-  "wizardJourneyTip2": "Şifreli kasa yedeklemesini deneyin",
-  "wizardJourneyTip3": "Kendi Bitcoin düğümünüze bağlanın",
-  "wizardJourneyTip4": "Kendi Mempool gezgininize bağlanın",
-  "wizardJourneyTip5": "KYC olmadan Bitcoin ve Liquid arasında takas yapın",
-  "wizardJourneyTip6": "Autoswap ayarlarınızı özelleştirin",
-  "wizardJourneyTip7": "Bitcoin (BTC) ve Satoshi (sats) arasında geçiş yapın",
-  "wizardJourneyTip8": "Donanım cüzdanınız için air-gap işlemleri oluşturun",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
@@ -8464,7 +8419,5 @@
   "openSystemSettings": "Sistem ayarlarını aç",
   "permissionsTitle": "İzinler",
   "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
-  "wizardBackgroundTasksDescription": "Uygulama kapalıyken ödemeleri kontrol eder.",
-  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun.",
   "sendErrorInvoiceExpiryTooShort": "Bu faturanın süresi çok erken doluyor. Alıcıdan yeni bir fatura isteyin."
 }

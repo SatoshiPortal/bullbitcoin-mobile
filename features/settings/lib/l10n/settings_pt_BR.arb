@@ -1,0 +1,14 @@
+{
+  "translationWarningContributeButton": "Melhorar as traduções",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se você notar erros ou quiser ajudar a melhorar as traduções, você pode enviar uma correção no nosso repositório do GitHub.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "IA-Gerado Traduções",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  }
+}

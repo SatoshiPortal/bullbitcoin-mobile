@@ -1,0 +1,126 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:exchange/exchange.dart' show ExchangeFailure;
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:wizard/src/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/domain/repository/wizard_repository.dart';
+
+/// Flushes the pre-init wizard's pending choices (collected in
+/// [SharedPreferences] before the locator was up) to the SQLite
+/// settings repository, then marks the wizard complete and clears the
+/// pending blob. Only commits fields the user actively touched. Safe
+/// to call when nothing is staged — short-circuits.
+class ApplyPendingWizardChoicesUsecase {
+  ApplyPendingWizardChoicesUsecase({
+    required this._wizardRepository,
+    required this._settingsRepository,
+    required this._intervals,
+    required this._applyExchangeAccess,
+  });
+
+  final WizardRepository _wizardRepository;
+  final Preferences _settingsRepository;
+  final BackgroundSyncIntervalRepository _intervals;
+
+  final Future<Result<void, ExchangeFailure>> Function(bool enabled)
+  _applyExchangeAccess;
+
+  Future<void> execute() async {
+    final choices = await _wizardRepository.readPending();
+    if (choices == null) return;
+    // The repository logged the raw reason at its boundary; what matters here
+    // is which choices did not land.
+    final failed = <WizardField>{};
+    void note(Result<void, PreferencesFailure> result, WizardField field) {
+      if (result case Err(:final failure)) {
+        failed.add(field);
+        log.warning(
+          'Wizard choice "${field.name}" could not be applied: '
+          '${failure.runtimeType}',
+        );
+      }
+    }
+
+    if (choices.touched.contains(WizardField.language)) {
+      note(
+        await _settingsRepository.setLanguage(choices.language),
+        WizardField.language,
+      );
+    }
+    if (choices.touched.contains(WizardField.themeMode)) {
+      note(
+        await _settingsRepository.setThemeMode(choices.themeMode),
+        WizardField.themeMode,
+      );
+    }
+    if (choices.touched.contains(WizardField.defaultCurrency)) {
+      note(
+        await _settingsRepository.setCurrency(choices.defaultCurrency),
+        WizardField.defaultCurrency,
+      );
+    }
+    final consent = choices.reportingConsent;
+    if (choices.touched.contains(WizardField.reportingConsent) &&
+        consent != null) {
+      note(
+        await _settingsRepository.setErrorReportingEnabled(consent),
+        WizardField.reportingConsent,
+      );
+    }
+
+    if (choices.touched.contains(WizardField.exchangeAccess)) {
+      if (await _applyExchangeAccess(choices.exchangeAccess) case Err()) {
+        failed.add(WizardField.exchangeAccess);
+      }
+    }
+
+    if (choices.touched.contains(WizardField.backgroundTasks)) {
+      // Runs before the app first schedules background tasks, which then
+      // follows the stored interval.
+      try {
+        final current = await _intervals.read();
+        final next = current.withEnabled(choices.backgroundTasks);
+        if (next != current) {
+          final written = await _intervals.write(next);
+          if (written is Err) failed.add(WizardField.backgroundTasks);
+        }
+      } on Exception {
+        failed.add(WizardField.backgroundTasks);
+      }
+      if (failed.contains(WizardField.backgroundTasks)) {
+        log.warning('Wizard choice "backgroundTasks" could not be applied');
+      }
+    }
+
+    // Keep only the choices that failed pending, so the next launch retries
+    // just those. Clearing everything would drop what the user picked during
+    // onboarding on a transient storage error; keeping everything would
+    // re-apply choices that already landed, and so silently reset any of them
+    // the user has since changed in Settings. savePending rewrites the staged
+    // set from scratch, writing only the fields in `touched`.
+    //
+    // Known edge: if the user changes a field whose write failed before the
+    // next launch, the retry still overwrites it with the onboarding value.
+    //
+    // The wizard is still marked complete: making someone redo onboarding is
+    // worse than retrying the writes quietly, and this runs before there is
+    // any UI to report to.
+    if (failed.isEmpty) {
+      await _wizardRepository.clearPending();
+    } else {
+      await _wizardRepository.savePending(
+        WizardChoices(
+          exchangeAccess: choices.exchangeAccess,
+          backgroundTasks: choices.backgroundTasks,
+          language: choices.language,
+          themeMode: choices.themeMode,
+          defaultCurrency: choices.defaultCurrency,
+          reportingConsent: choices.reportingConsent,
+          touched: failed,
+        ),
+      );
+    }
+    await _wizardRepository.markComplete();
+  }
+}

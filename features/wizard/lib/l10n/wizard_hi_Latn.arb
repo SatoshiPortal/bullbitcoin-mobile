@@ -1,0 +1,129 @@
+{
+  "@@locale": "hi_Latn",
+  "settingsLanguageTitle": "Bhaasha",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "Apna Paisa Apna",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingSplashDescription": "Sovereign self-custody Bitcoin wallet aur Bitcoin-only exchange service.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "getStartedButton": "Shuru karein",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "wizardSkipButton": "Skip",
+  "@wizardSkipButton": {
+    "description": "Top-right action in the install/upgrade wizard that finishes it immediately with current selections"
+  },
+  "wizardPageIndicator": "PAGE {current} / {total}",
+  "@wizardPageIndicator": {
+    "description": "Eyebrow label above each wizard page title indicating progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wizardNextButton": "Agla",
+  "@wizardNextButton": {
+    "description": "Primary action that advances the wizard to the next page"
+  },
+  "wizardCustomizeTitle": "Apna experience customize karein",
+  "@wizardCustomizeTitle": {
+    "description": "Title of the wizard's settings/customize page"
+  },
+  "wizardCustomizeBody": "In settings ke saath BULL ko apni shartein par use karein.",
+  "@wizardCustomizeBody": {
+    "description": "Subtitle on the wizard's settings/customize page"
+  },
+  "wizardCustomizeDefaultCurrency": "Default currency",
+  "@wizardCustomizeDefaultCurrency": {
+    "description": "Label for the default fiat currency row on the wizard customize page"
+  },
+  "wizardMissionTitle": "Bull mission mein madad karein",
+  "@wizardMissionTitle": {
+    "description": "Title of the wizard's error-reporting consent page"
+  },
+  "wizardMissionBody1": "Hamare software ko behtar banane aur security, privacy aur usability ka uchchatam level dene mein madad karne ke liye, aapka app humein error logs bhej sakta hai jo hamein issues detect karne aur agle updates mein jaldi fix karne ki anumati dete hain.",
+  "@wizardMissionBody1": {
+    "description": "First explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionBody2": "Ye logs anonymized hain, aapke IP address se linked nahi hain, aur kabhi bhi aapke transactions ya identity ke baare mein koi information share nahi karte. Ye poori tarah technical hain aur aapko kisi bhi risk mein nahi daalte. Yeh hamare liye bahut helpful hai, aur aapko kuch bhi cost nahi padta.",
+  "@wizardMissionBody2": {
+    "description": "Second explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionQuestion": "Kya aap hamare automated issue reporting program ka hissa banne ke liye sehmat hain?",
+  "@wizardMissionQuestion": {
+    "description": "Yes/No question on the wizard error-reporting page"
+  },
+  "wizardMissionYes": "Haan",
+  "@wizardMissionYes": {
+    "description": "Affirmative response button on the wizard error-reporting page"
+  },
+  "wizardMissionNo": "Nahi",
+  "@wizardMissionNo": {
+    "description": "Negative response button on the wizard error-reporting page"
+  },
+  "wizardMissionRequired": "Kripya jaari rakhne se pehle Haan ya Nahi chunein.",
+  "@wizardMissionRequired": {
+    "description": "Snackbar shown when the user tries to leave the wizard without answering the error-reporting question"
+  },
+  "wizardJourneyTitle": "Apni journey mein aage badhein",
+  "@wizardJourneyTitle": {
+    "description": "Title of the wizard's final tips page"
+  },
+  "wizardJourneyBody": "Agar aap BULL wallet mein naye hain, toh yahan kuch features hain jinka faayda aap apni privacy, security aur user experience ko behtar banane ke liye utha sakte hain.",
+  "@wizardJourneyBody": {
+    "description": "Intro paragraph on the wizard journey/tips page"
+  },
+  "wizardJourneyTip1": "Apne wallet ko unlock karne ke liye security PIN jodein",
+  "@wizardJourneyTip1": {
+    "description": "Tip 1 on the wizard journey page"
+  },
+  "wizardJourneyTip2": "Encrypted vault backup try karein",
+  "@wizardJourneyTip2": {
+    "description": "Tip 2 on the wizard journey page"
+  },
+  "wizardJourneyTip3": "Apne khud ke Bitcoin node se connect karein",
+  "@wizardJourneyTip3": {
+    "description": "Tip 3 on the wizard journey page"
+  },
+  "wizardJourneyTip4": "Apne khud ke Mempool explorer se connect karein",
+  "@wizardJourneyTip4": {
+    "description": "Tip 4 on the wizard journey page"
+  },
+  "wizardJourneyTip5": "Bina KYC ke Bitcoin aur Liquid ke beech swap karein",
+  "@wizardJourneyTip5": {
+    "description": "Tip 5 on the wizard journey page"
+  },
+  "wizardJourneyTip6": "Apni autoswap settings customize karein",
+  "@wizardJourneyTip6": {
+    "description": "Tip 6 on the wizard journey page"
+  },
+  "wizardJourneyTip7": "Bitcoin (BTC) aur Satoshis (sats) ke beech switch karein",
+  "@wizardJourneyTip7": {
+    "description": "Tip 7 on the wizard journey page"
+  },
+  "wizardJourneyTip8": "Apne hardware wallet ke liye air-gapped transactions banayein",
+  "@wizardJourneyTip8": {
+    "description": "Tip 8 on the wizard journey page"
+  },
+  "settingsDarkModeTitle": "Dark mode",
+  "backgroundTasksTitle": "Background kaam",
+  "blockedInSystemSettings": "System settings mein blocked",
+  "notificationsTitle": "Notifications",
+  "wizardBackgroundTasksDescription": "App band hone par payment check karta hai.",
+  "wizardNotificationsDescription": "Payment aane par jaanein."
+}

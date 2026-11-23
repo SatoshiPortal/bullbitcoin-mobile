@@ -1,0 +1,58 @@
+import 'package:bull_ui/app_theme.dart';
+import 'package:wizard/src/wizard_localizations_context.dart';
+import 'package:wizard/src/ui/wizard_page.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
+
+/// Common scaffold for the body of one wizard PageView page. Renders the
+/// red "PAGE x / total" eyebrow + bold uppercase title, then the page's
+/// content in a scrollable area so longer copy never clips.
+class WizardStepLayout extends StatelessWidget {
+  const WizardStepLayout({
+    super.key,
+    required this.page,
+    required this.title,
+    required this.child,
+  });
+
+  final WizardPage page;
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final hPad = Device.screen.width * 0.06;
+    final vGapSm = Device.screen.height * 0.01;
+    final vGapMd = Device.screen.height * 0.025;
+    // Bottom padding clears the floating chrome (dots + Next button OR
+    // Yes/No row) overlaid by `WizardScreen` so the last item is fully
+    // visible at max-scroll instead of being hidden behind the chrome.
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, kWizardChromeHeight),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BullText(
+            context.loc.wizardPageIndicator(page.number, WizardPage.total),
+            style: context.bullType.caption.copyWith(
+              color: context.appColors.primary,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
+          SizedBox(height: vGapSm),
+          BullText(
+            title.toUpperCase(),
+            style: context.bullType.headline.copyWith(
+              fontWeight: FontWeight.w900,
+              color: context.appColors.onSurface,
+              height: 1.05,
+            ),
+          ),
+          SizedBox(height: vGapMd),
+          child,
+        ],
+      ),
+    );
+  }
+}

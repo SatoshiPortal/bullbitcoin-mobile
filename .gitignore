@@ -140,3 +140,5 @@ bull_logs.tsv
 /features/fees/untranslated-messages.txt
 /features/silent/lib/generated/l10n/
 /features/send/lib/generated/l10n/
+/features/wizard/lib/generated/
+/features/settings/lib/generated/l10n/

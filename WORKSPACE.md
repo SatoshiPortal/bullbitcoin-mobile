@@ -128,6 +128,8 @@ graph TD
   style transactions stroke:#8d1cdf
   wallet_import["wallet_import"]
   style wallet_import stroke:#eeb6de
+  wizard["wizard"]
+  style wizard stroke:#04cafd
   access --> bull_logger
   access --> bull_ui
   access --> primitives
@@ -420,6 +422,17 @@ graph TD
   wallet_import --> secrets
   wallet_import --> signers
   wallet_import --> sync
+  wizard --> background_tasks
+  wizard --> bull_exchange
+  wizard --> bull_logger
+  wizard --> bull_pricer
+  wizard --> bull_ui
+  wizard --> exchange
+  wizard --> notifications
+  wizard --> novlang
+  wizard --> preferences
+  wizard --> primitives
+  wizard --> settings
   subgraph features0 ["features"]
     access
     address_view
@@ -449,6 +462,7 @@ graph TD
     swap_feature
     transactions
     wallet_import
+    wizard
   end
   subgraph packages1 ["packages"]
     ark

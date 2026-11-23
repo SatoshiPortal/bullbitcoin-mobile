@@ -55,7 +55,7 @@ format-check:
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 # The only typed-in font sizes outside BullTypography.standard: the Bebas Neue brand wordmarks, sized by their splash layout and marked "Brand wordmark" at the call site.
-FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|lib/features/wizard/ui/widgets/welcome_step|features/bull_exchange/lib/src/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
+FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|features/wizard/lib/src/ui/widgets/welcome_step|features/bull_exchange/lib/src/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
 BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
 
 bull-ui-check: typography-check
@@ -137,6 +137,7 @@ onion-codegen:
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
 BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view features/receive
 BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps features/address_view
+BUILD_RUNNER_MEMBERS += features/wizard
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -187,6 +188,8 @@ translations:
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
 	@(cd features/network && fvm flutter gen-l10n)
+	@(cd features/settings && fvm flutter gen-l10n)
+	@(cd features/wizard && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations
@@ -204,8 +207,8 @@ bull-ui-translations:
 novlang-translations:
 	@(cd packages/novlang && fvm flutter gen-l10n)
 
-# Generates lib/generated/novlang from the novlang manifest and the gen-l10n
-# output of the root catalogue. `dart <file>` on purpose: `dart run` would run
+# Generates store-aware delegates from the novlang manifest and gen-l10n
+# output for each catalogue. `dart <file>` on purpose: `dart run` would run
 # the app's native build hooks.
 .PHONY: novlang-bridge
 novlang-bridge:
