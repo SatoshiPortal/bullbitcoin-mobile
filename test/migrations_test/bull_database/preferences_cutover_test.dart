@@ -1,0 +1,170 @@
+import 'dart:io';
+
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart';
+import 'package:preferences/migration.dart';
+import 'package:preferences/preferences.dart';
+import 'package:preferences/testing.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+
+import 'generated/schema_v15.dart' as v15;
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  for (final delayed in [false, true]) {
+    test(delayed ? 'late activation imports accumulated legacy preferences' : 'published v15 upgrades then admits encrypted preferences foreground and background', () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'preferences-upgrade-',
+      );
+      final source = File('${directory.path}/legacy.sqlite');
+      final file = File('${directory.path}/preferences.sqlite');
+      FakeSecureStoragePlatform().install();
+      final keys = Secrets(scratchDirectory: () async => directory.path)
+          .databaseKeys(module: 'preferences');
+      final sourceStore = LegacySourceStore(
+        source: LegacySource(source, 16),
+        create: SqliteDatabase.new,
+      );
+      final participant = PreferencesImport(file: file, testingKeys: keys);
+      StorageCutover coordinator(List<LegacyImportParticipant> participants) =>
+          StorageCutover(
+            directory: Directory('${directory.path}/coordination'),
+            legacy: sourceStore,
+            expectedOwners: splitV1Owners,
+            participants: participants,
+          );
+      if (delayed) {
+        final initial =
+            (await coordinator([]).prepare()
+                    as Ok<RuntimeAdmission, LegacyImportFailure>)
+                .value;
+        final db = await sourceStore.open(initial);
+        await db.customStatement(
+          "UPDATE settings SET currency='CAD',environment='testnet',is_superuser=1,is_dev_mode_enabled=1",
+        );
+        await db.customStatement(
+          "UPDATE recoverbull SET url='https://historical.invalid',is_permission_granted=1",
+        );
+        await db.customStatement(
+          "UPDATE sqlite_sequence SET seq=70 WHERE name='settings'",
+        );
+        await db.customStatement(
+          "UPDATE sqlite_sequence SET seq=80 WHERE name='recoverbull'",
+        );
+        await initial.close();
+      } else {
+        final old = v15.DatabaseAtV15(NativeDatabase(source));
+        await old.customStatement(
+          "INSERT INTO settings (id,environment,bitcoin_unit,language,currency,hide_amounts,is_superuser,is_dev_mode_enabled,use_tor_proxy,tor_proxy_port,tor_transport_mode,last_successful_tor_transport,theme_mode,is_error_reporting_enabled,screen_capture_protection_enabled) VALUES (1,'testnet','sats','unitedStatesEnglish','CAD',1,1,1,0,9050,'automatic',NULL,'system',0,1)",
+        );
+        await old.customStatement(
+          "INSERT INTO recoverbull VALUES (1,'https://historical.invalid',1)",
+        );
+        await old.customStatement(
+          "UPDATE sqlite_sequence SET seq=70 WHERE name='settings'",
+        );
+        await old.customStatement(
+          "UPDATE sqlite_sequence SET seq=80 WHERE name='recoverbull'",
+        );
+        await old.close();
+      }
+      final cutover = coordinator([participant]);
+      for (var attempt = 0; attempt < 2; attempt++) {
+        // First launch prepares; a worker only admits existing state.
+        final result = attempt == 0
+            ? await cutover.prepare()
+            : await cutover.admit();
+        expect(result, isA<Ok>());
+        final runtime =
+            (result as Ok<RuntimeAdmission, LegacyImportFailure>).value;
+        final db = await sourceStore.open(runtime);
+        final opened = await PreferencesTesting.open(
+          file: file,
+          admission: runtime,
+          legacyDatabase: db,
+          keys: keys,
+        );
+        expect(opened, isA<Ok>());
+        final preferences =
+            (opened as Ok<Preferences, PreferencesFailure>).value;
+        expect(
+          (await preferences.readCurrency() as Ok<String, PreferencesFailure>)
+              .value,
+          attempt == 0 ? 'CAD' : 'EUR',
+        );
+        expect(
+          (await preferences.readActiveEnvironment()
+                  as Ok<Environment, PreferencesFailure>)
+              .value,
+          attempt == 0 ? Environment.testnet : Environment.mainnet,
+        );
+        if (attempt == 0) {
+          expect(await preferences.setCurrency('EUR'), isA<Ok>());
+          expect(
+            await preferences.setEnvironment(Environment.mainnet),
+            isA<Ok>(),
+          );
+        }
+        expect(
+          (await db
+                  .customSelect('SELECT environment FROM settings')
+                  .getSingle())
+              .read<String>('environment'),
+          'testnet',
+        );
+        final executor = await keys.open(
+          name: 'main',
+          file: file,
+          existingSchemaVersion: 1,
+        );
+        final probe = _Probe(
+          (executor as Ok<QueryExecutor, DatabaseOpenFailure>).value,
+        );
+        runtime.track(probe.close);
+        expect(
+          (await probe
+                  .customSelect(
+                    'SELECT name,seq FROM sqlite_sequence ORDER BY name',
+                  )
+                  .get())
+              .map((r) => r.data.values.toList())
+              .toList(),
+          [
+            ['recoverbull', 80],
+            ['settings', 70],
+          ],
+        );
+        expect(
+          (await probe
+                  .customSelect('SELECT id FROM legacy_import_receipts')
+                  .getSingle())
+              .read<String>('id'),
+          'split-v1/preferences',
+        );
+        expect(
+          (await probe.customSelect('PRAGMA table_info(settings)').get())
+              .length,
+          16,
+        );
+        await preferences.close();
+        await runtime.close();
+      }
+      expect(source.existsSync(), isTrue);
+      await directory.delete(recursive: true);
+    });
+  }
+}
+
+class _Probe extends GeneratedDatabase {
+  _Probe(super.executor);
+  @override
+  int get schemaVersion => 1;
+  @override
+  Iterable<TableInfo> get allTables => const [];
+}
