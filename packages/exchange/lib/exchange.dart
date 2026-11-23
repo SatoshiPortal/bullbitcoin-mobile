@@ -40,6 +40,8 @@ export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
 export 'src/domain/exchange_orders.dart' show ExchangeOrders;
 export 'src/domain/order_deadline_scheduler.dart';
 export 'src/domain/unknown_write_journal.dart';
+export 'src/session/reconcile_unknown_writes_usecase.dart'
+    show UnknownWriteReconciliation;
 
 export 'src/recipients/domain/entities/recipient.dart';
 export 'src/recipients/domain/entities/recipient_type.dart';

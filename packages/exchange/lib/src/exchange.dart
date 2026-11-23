@@ -53,8 +53,7 @@ import 'session/expire_exchange_session_usecase.dart';
 import 'session/get_exchange_account_usecase.dart';
 import 'session/get_exchange_announcements_usecase.dart';
 import 'session/get_exchange_web_settings_usecase.dart';
-import 'session/get_unread_support_message_count_usecase.dart';
-import 'session/mark_support_messages_read_usecase.dart';
+import 'session/reconcile_unknown_writes_usecase.dart';
 import 'session/save_exchange_preferences_usecase.dart';
 import 'session/watch_exchange_notifications_usecase.dart';
 
@@ -951,6 +950,43 @@ final class Exchange {
   @useResult
   Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
       _defaultWallets.get();
+
+  /// The open journal entries of the current session's environment: writes
+  /// that may have reached the exchange and are not settled yet. Empty
+  /// without a journal.
+  @useResult
+  Future<Result<List<UnknownWrite>, Failure>> openUnknownWrites() async {
+    final journal = _unknownWrites;
+    if (journal == null) return const Ok([]);
+    return switch (await _readSessionPoint()) {
+      Ok(:final value) => await journal.open(value.environment),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  /// Re-reads what each open journal entry of the current environment would
+  /// have changed and settles the entries the re-read decides. Never sends a
+  /// write again. Nothing to do without a journal.
+  @useResult
+  Future<Result<UnknownWriteReconciliation, Failure>>
+  reconcileUnknownWrites() async {
+    final journal = _unknownWrites;
+    if (journal == null) {
+      return const Ok(UnknownWriteReconciliation(settled: 0, open: 0));
+    }
+    switch (await _readSessionPoint()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        return ReconcileUnknownWritesUsecase(
+          journal: journal,
+          orders: _orders,
+          getUserSummary: (environment) => _getUserSummary(environment),
+          listOpenLimitOrders: limitOrders.listActive,
+          getDefaultWallets: _defaultWallets.get,
+        ).execute(value.environment);
+    }
+  }
 
   /// [WriteOutcomeUnknown] means the default wallet may be saved: re-read the
   /// default wallets before saving again.
