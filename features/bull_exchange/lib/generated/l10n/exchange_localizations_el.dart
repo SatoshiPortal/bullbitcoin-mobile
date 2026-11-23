@@ -1129,4 +1129,74 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Όροι Υπηρεσίας';
+
+  @override
+  String get continueButton => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get autoBuyTitle => 'Αυτόματη αγορά';
+
+  @override
+  String get autoBuyDescription =>
+      'Αγοράζετε αυτόματα Bitcoin κάθε φορά που καταθέτετε χρήματα στον λογαριασμό σας';
+
+  @override
+  String get autoBuyActivate => 'Ενεργοποίηση αυτόματης αγοράς';
+
+  @override
+  String get autoBuyDeactivate => 'Απενεργοποίηση αυτόματης αγοράς';
+
+  @override
+  String get autoBuyCancelTitle => 'Ακύρωση αυτόματης αγοράς;';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Την επόμενη φορά που θα χρηματοδοτήσετε τον λογαριασμό σας δεν θα αγοράσετε αυτόματα Bitcoin.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Ναι, απενεργοποίηση';
+
+  @override
+  String get autoBuyHowItWorks => 'Πώς λειτουργεί';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Συνδέστε το Bitcoin, Lightning ή Liquid πορτοφόλι σας';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Κάθε φορά που χρηματοδοτείτε τον λογαριασμό σας Bull Bitcoin δημιουργείται αυτόματα μια αγορά Bitcoin.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Το Bitcoin αποστέλλεται απευθείας στο δικό σας πορτοφόλι.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Η εκτέλεση της εντολής δεν είναι εγγυημένη. Καθυστερήσεις ή μεταβολές της τιμής μεταξύ της κατάθεσης και της αγοράς μπορούν να αλλάξουν την πραγματική ισοτιμία.';
+
+  @override
+  String get autoBuyGetStarted => 'Ξεκινήστε με την αυτόματη αγορά';
+
+  @override
+  String get autoBuyConfirmTitle => 'Επιβεβαίωση αυτόματης αγοράς';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Κάθε ποσό που προστίθεται στον λογαριασμό σας θα μετατρέπεται σε Bitcoin με την τρέχουσα συναλλαγματική ισοτιμία και θα αποστέλλεται στο πορτοφόλι σας.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Ο λογαριασμός σας Bull Bitcoin δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.';
 }

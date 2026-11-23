@@ -2032,6 +2032,126 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Buy, sell and pay with Bull Bitcoin directly from your wallet.'**
   String get wizardExchangeDescription;
+
+  /// Title for the terms of service section in the settings menu
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get settingsTermsOfServiceTitle;
+
+  /// Default button text for success state
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// Title for the AutoBuy dashboard card and screen
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Buy'**
+  String get autoBuyTitle;
+
+  /// Short description of AutoBuy
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically buy bitcoin each time you deposit funds into your account'**
+  String get autoBuyDescription;
+
+  /// Button label to open the AutoBuy activation flow
+  ///
+  /// In en, this message translates to:
+  /// **'Activate Auto-Buy'**
+  String get autoBuyActivate;
+
+  /// Button label to deactivate AutoBuy
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Auto-Buy'**
+  String get autoBuyDeactivate;
+
+  /// Title of the AutoBuy deactivation confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Auto-Buy?'**
+  String get autoBuyCancelTitle;
+
+  /// Message in the AutoBuy deactivation confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'You will not automatically buy bitcoin next time you fund your account.'**
+  String get autoBuyCancelMessage;
+
+  /// Confirmation button for deactivating AutoBuy
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, deactivate'**
+  String get autoBuyDeactivateConfirm;
+
+  /// Heading above the AutoBuy explanation
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get autoBuyHowItWorks;
+
+  /// First AutoBuy explanation step
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your Bitcoin, Lightning, or Liquid wallet'**
+  String get autoBuyConnectWallet;
+
+  /// Second AutoBuy explanation step
+  ///
+  /// In en, this message translates to:
+  /// **'A Bitcoin purchase is automatically created each time you fund your Bull Bitcoin account.'**
+  String get autoBuyPurchaseCreated;
+
+  /// Third AutoBuy explanation step
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin is sent directly to your own wallet.'**
+  String get autoBuyBitcoinSent;
+
+  /// Risk notice shown before an AutoBuy is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Order execution cannot be guaranteed. Delays or price changes between the deposit and purchase can change the effective rate.'**
+  String get autoBuyRiskDisclaimer;
+
+  /// Button label to start AutoBuy setup
+  ///
+  /// In en, this message translates to:
+  /// **'Get started with Auto-Buy'**
+  String get autoBuyGetStarted;
+
+  /// Title of the AutoBuy confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Auto-Buy'**
+  String get autoBuyConfirmTitle;
+
+  /// Explanation on the AutoBuy confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Any amount added to your account will be converted to Bitcoin at the current exchange rate and sent to your wallet.'**
+  String get autoBuyInfoMessage;
+
+  /// Error shown when AutoBuy cannot load the exchange account
+  ///
+  /// In en, this message translates to:
+  /// **'Your Bull Bitcoin account is not available. Try again later.'**
+  String get autoBuyAccountUnavailableError;
+
+  /// Error shown when AutoBuy is enabled without a default wallet
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one default Bitcoin, Lightning, or Liquid address.'**
+  String get autoBuyWalletRequiredError;
+
+  /// Error shown when enabling or disabling AutoBuy fails
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-buy could not be updated. Try again later.'**
+  String get autoBuyUpdateError;
 }
 
 class _ExchangeLocalizationsDelegate

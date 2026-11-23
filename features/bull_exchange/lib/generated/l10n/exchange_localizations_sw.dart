@@ -1114,4 +1114,74 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Masharti ya Huduma';
+
+  @override
+  String get continueButton => 'Endelea';
+
+  @override
+  String get autoBuyTitle => 'Ununuzi wa Kiotomatiki';
+
+  @override
+  String get autoBuyDescription =>
+      'Nunua Bitcoin kiotomatiki kila unapoweka fedha kwenye akaunti yako';
+
+  @override
+  String get autoBuyActivate => 'Washa ununuzi wa kiotomatiki';
+
+  @override
+  String get autoBuyDeactivate => 'Zima ununuzi wa kiotomatiki';
+
+  @override
+  String get autoBuyCancelTitle => 'Ghairi Ununuzi wa Kiotomatiki?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Hutanunua Bitcoin kiotomatiki wakati ujao utakapoweka fedha kwenye akaunti yako.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Ndiyo, zima';
+
+  @override
+  String get autoBuyHowItWorks => 'Jinsi inavyofanya kazi';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Unganisha pochi yako ya Bitcoin, Lightning au Liquid';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Ununuzi wa Bitcoin huundwa kiotomatiki kila unapoweka fedha kwenye akaunti yako ya Bull Bitcoin.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin hutumwa moja kwa moja kwenye pochi yako mwenyewe.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Utekelezaji wa agizo hauwezi kuhakikishwa. Ucheleweshaji au mabadiliko ya bei kati ya uwekaji fedha na ununuzi yanaweza kubadilisha kiwango halisi.';
+
+  @override
+  String get autoBuyGetStarted => 'Anza na ununuzi wa kiotomatiki';
+
+  @override
+  String get autoBuyConfirmTitle => 'Thibitisha Ununuzi wa Kiotomatiki';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Kiasi chochote kinachoongezwa kwenye akaunti yako kitabadilishwa kuwa Bitcoin kwa kiwango cha ubadilishaji cha sasa na kutumwa kwenye pochi yako.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Akaunti yako ya Bull Bitcoin haipatikani. Jaribu tena baadaye.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Ongeza angalau anwani moja chaguo-msingi ya Bitcoin, Lightning au Liquid.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Ununuzi wa kiotomatiki haukuweza kusasishwa. Jaribu tena baadaye.';
 }

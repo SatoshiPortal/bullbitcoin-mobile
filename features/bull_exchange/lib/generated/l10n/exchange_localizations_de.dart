@@ -1125,4 +1125,74 @@ class ExchangeLocalizationsDe extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Geschäftsbedingungen';
+
+  @override
+  String get continueButton => 'Fortfahren';
+
+  @override
+  String get autoBuyTitle => 'Automatischer Kauf';
+
+  @override
+  String get autoBuyDescription =>
+      'Kaufen Sie bei jeder Einzahlung auf Ihr Konto automatisch Bitcoin.';
+
+  @override
+  String get autoBuyActivate => 'Automatischen Kauf aktivieren';
+
+  @override
+  String get autoBuyDeactivate => 'Automatischen Kauf deaktivieren';
+
+  @override
+  String get autoBuyCancelTitle => 'Automatischen Kauf deaktivieren?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Bei Ihrer nächsten Kontoeinzahlung wird nicht mehr automatisch Bitcoin gekauft.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Ja, deaktivieren';
+
+  @override
+  String get autoBuyHowItWorks => 'So funktioniert es';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Verbinden Sie Ihre Bitcoin-, Lightning- oder Liquid-Wallet.';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Bei jeder Einzahlung auf Ihr Bull Bitcoin-Konto wird automatisch ein Bitcoin-Kauf ausgelöst.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin wird direkt an Ihre eigene Wallet gesendet.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Die Ausführung des Kaufauftrags kann nicht garantiert werden. Verzögerungen oder Kursänderungen zwischen Einzahlung und Kauf können den tatsächlich angewandten Kurs verändern.';
+
+  @override
+  String get autoBuyGetStarted => 'Automatischen Kauf einrichten';
+
+  @override
+  String get autoBuyConfirmTitle => 'Automatischen Kauf bestätigen';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Jeder Betrag, den Sie Ihrem Konto hinzufügen, wird zum aktuellen Wechselkurs in Bitcoin umgewandelt und an Ihre Wallet gesendet.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Ihr Bull Bitcoin-Konto ist nicht verfügbar. Versuchen Sie es später erneut.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Fügen Sie mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Der automatische Kauf konnte nicht aktualisiert werden. Versuchen Sie es später erneut.';
 }

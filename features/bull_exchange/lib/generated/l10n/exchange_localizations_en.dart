@@ -1109,4 +1109,74 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Terms of Service';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get autoBuyTitle => 'Auto-Buy';
+
+  @override
+  String get autoBuyDescription =>
+      'Automatically buy bitcoin each time you deposit funds into your account';
+
+  @override
+  String get autoBuyActivate => 'Activate Auto-Buy';
+
+  @override
+  String get autoBuyDeactivate => 'Deactivate Auto-Buy';
+
+  @override
+  String get autoBuyCancelTitle => 'Cancel Auto-Buy?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'You will not automatically buy bitcoin next time you fund your account.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Yes, deactivate';
+
+  @override
+  String get autoBuyHowItWorks => 'How it works';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Connect your Bitcoin, Lightning, or Liquid wallet';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'A Bitcoin purchase is automatically created each time you fund your Bull Bitcoin account.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin is sent directly to your own wallet.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Order execution cannot be guaranteed. Delays or price changes between the deposit and purchase can change the effective rate.';
+
+  @override
+  String get autoBuyGetStarted => 'Get started with Auto-Buy';
+
+  @override
+  String get autoBuyConfirmTitle => 'Confirm Auto-Buy';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Any amount added to your account will be converted to Bitcoin at the current exchange rate and sent to your wallet.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Your Bull Bitcoin account is not available. Try again later.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Add at least one default Bitcoin, Lightning, or Liquid address.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Auto-buy could not be updated. Try again later.';
 }

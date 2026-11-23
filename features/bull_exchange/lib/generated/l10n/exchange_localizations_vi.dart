@@ -1119,4 +1119,74 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Điều khoản dịch vụ';
+
+  @override
+  String get continueButton => 'Tiếp tục';
+
+  @override
+  String get autoBuyTitle => 'Mua tự động';
+
+  @override
+  String get autoBuyDescription =>
+      'Tự động mua bitcoin mỗi khi bạn nạp tiền vào tài khoản';
+
+  @override
+  String get autoBuyActivate => 'Kích hoạt mua tự động';
+
+  @override
+  String get autoBuyDeactivate => 'Tắt mua tự động';
+
+  @override
+  String get autoBuyCancelTitle => 'Hủy mua tự động?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Lần tới khi bạn nạp tiền vào tài khoản, bitcoin sẽ không được mua tự động.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Có, tắt';
+
+  @override
+  String get autoBuyHowItWorks => 'Cách hoạt động';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Kết nối ví Bitcoin, Lightning hoặc Liquid của bạn';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Một lệnh mua Bitcoin được tạo tự động mỗi khi bạn nạp tiền vào tài khoản Bull Bitcoin của mình.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin được gửi thẳng đến ví của chính bạn.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Không thể đảm bảo lệnh sẽ được khớp. Độ trễ hoặc biến động giá giữa lúc nạp tiền và lúc mua có thể làm thay đổi tỷ giá thực tế.';
+
+  @override
+  String get autoBuyGetStarted => 'Bắt đầu với mua tự động';
+
+  @override
+  String get autoBuyConfirmTitle => 'Xác nhận mua tự động';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Mọi khoản tiền được thêm vào tài khoản của bạn sẽ được chuyển đổi sang Bitcoin theo tỷ giá hiện tại và gửi đến ví của bạn.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Tài khoản Bull Bitcoin của bạn hiện không khả dụng. Vui lòng thử lại sau.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Hãy thêm ít nhất một địa chỉ Bitcoin, Lightning hoặc Liquid mặc định.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Không thể cập nhật mua tự động. Vui lòng thử lại sau.';
 }

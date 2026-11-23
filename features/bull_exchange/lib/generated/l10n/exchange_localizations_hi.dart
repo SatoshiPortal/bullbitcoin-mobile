@@ -1110,6 +1110,76 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'सेवा की शर्तें';
+
+  @override
+  String get continueButton => 'जारी';
+
+  @override
+  String get autoBuyTitle => 'स्वचालित खरीद';
+
+  @override
+  String get autoBuyDescription =>
+      'हर बार जब आप अपने खाते में धनराशि जमा करें, स्वचालित रूप से Bitcoin खरीदें';
+
+  @override
+  String get autoBuyActivate => 'स्वचालित खरीद सक्रिय करें';
+
+  @override
+  String get autoBuyDeactivate => 'स्वचालित खरीद निष्क्रिय करें';
+
+  @override
+  String get autoBuyCancelTitle => 'स्वचालित खरीद रद्द करें?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'अगली बार जब आप अपने खाते में धनराशि जोड़ेंगे, तो Bitcoin स्वचालित रूप से नहीं खरीदा जाएगा।';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'हाँ, निष्क्रिय करें';
+
+  @override
+  String get autoBuyHowItWorks => 'यह कैसे काम करता है';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'अपना Bitcoin, Lightning या Liquid वॉलेट कनेक्ट करें';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'हर बार जब आप अपने Bull Bitcoin खाते में धनराशि जोड़ते हैं, एक Bitcoin खरीद स्वचालित रूप से बन जाती है।';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin सीधे आपके अपने वॉलेट में भेजा जाता है।';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'ऑर्डर के निष्पादन की गारंटी नहीं दी जा सकती। जमा और खरीद के बीच देरी या कीमत में बदलाव प्रभावी दर को बदल सकता है।';
+
+  @override
+  String get autoBuyGetStarted => 'स्वचालित खरीद शुरू करें';
+
+  @override
+  String get autoBuyConfirmTitle => 'स्वचालित खरीद की पुष्टि करें';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'आपके खाते में जोड़ी गई कोई भी राशि मौजूदा विनिमय दर पर Bitcoin में बदल दी जाएगी और आपके वॉलेट में भेज दी जाएगी।';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'आपका Bull Bitcoin खाता उपलब्ध नहीं है। बाद में फिर कोशिश करें।';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'कम से कम एक डिफ़ॉल्ट Bitcoin, Lightning या Liquid पता जोड़ें।';
+
+  @override
+  String get autoBuyUpdateError =>
+      'स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2140,4 +2210,74 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
 
   @override
   String get save => 'Save';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Terms of Service';
+
+  @override
+  String get continueButton => 'Aage Badho';
+
+  @override
+  String get autoBuyTitle => 'Auto Buy';
+
+  @override
+  String get autoBuyDescription =>
+      'Jab bhi aap apne account mein funds deposit karein, automatically Bitcoin khareedein';
+
+  @override
+  String get autoBuyActivate => 'Auto-buy activate karein';
+
+  @override
+  String get autoBuyDeactivate => 'Auto-buy deactivate karein';
+
+  @override
+  String get autoBuyCancelTitle => 'Auto Buy Cancel Karein?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Agli baar jab aap apne account mein funds daalenge, Bitcoin automatically nahi khareeda jayega.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Haan, deactivate karein';
+
+  @override
+  String get autoBuyHowItWorks => 'Yah kaise kaam karta hai';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Apna Bitcoin, Lightning ya Liquid wallet connect karein';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Jab bhi aap apne Bull Bitcoin account mein funds daalte hain, ek Bitcoin purchase automatically ban jaati hai.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin seedha aapke apne wallet mein bheja jata hai.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Order execution ki guarantee nahi di ja sakti. Deposit aur purchase ke beech delay ya price change effective rate ko badal sakta hai.';
+
+  @override
+  String get autoBuyGetStarted => 'Auto-buy ke saath shuru karein';
+
+  @override
+  String get autoBuyConfirmTitle => 'Auto-Buy Confirm Karein';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Auto-buy update nahi ho saki. Baad mein phir koshish karein.';
 }

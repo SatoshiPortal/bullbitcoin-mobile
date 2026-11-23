@@ -1110,4 +1110,74 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Käyttöehdot';
+
+  @override
+  String get continueButton => 'Jatka';
+
+  @override
+  String get autoBuyTitle => 'Automaattinen osto';
+
+  @override
+  String get autoBuyDescription =>
+      'Osta bitcoinia automaattisesti aina, kun talletat varoja tilillesi';
+
+  @override
+  String get autoBuyActivate => 'Ota automaattinen osto käyttöön';
+
+  @override
+  String get autoBuyDeactivate => 'Poista automaattinen osto käytöstä';
+
+  @override
+  String get autoBuyCancelTitle => 'Peruutetaanko automaattinen osto?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Et osta bitcoinia automaattisesti seuraavan kerran, kun rahoitat tiliäsi.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Kyllä, poista käytöstä';
+
+  @override
+  String get autoBuyHowItWorks => 'Kuinka se toimii';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Yhdistä Bitcoin-, Lightning- tai Liquid-lompakkosi';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Bitcoin-osto luodaan automaattisesti aina, kun rahoitat Bull Bitcoin -tiliäsi.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin lähetetään suoraan omaan lompakkoosi.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Tilauksen toteutumista ei voida taata. Talletuksen ja oston väliset viiveet tai hintamuutokset voivat muuttaa toteutunutta kurssia.';
+
+  @override
+  String get autoBuyGetStarted => 'Aloita automaattinen osto';
+
+  @override
+  String get autoBuyConfirmTitle => 'Vahvista automaattinen osto';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Kaikki tilillesi lisätyt summat muunnetaan Bitcoiniksi nykyisellä vaihtokurssilla ja lähetetään lompakkoosi.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Bull Bitcoin -tilisi ei ole käytettävissä. Yritä myöhemmin uudelleen.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Lisää vähintään yksi Bitcoin-, Lightning- tai Liquid-oletusosoite.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.';
 }

@@ -1006,4 +1006,66 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => '任期';
+
+  @override
+  String get continueButton => '继续';
+
+  @override
+  String get autoBuyTitle => '自动买入';
+
+  @override
+  String get autoBuyDescription => '每次向账户存入资金时自动买入 Bitcoin';
+
+  @override
+  String get autoBuyActivate => '启用自动买入';
+
+  @override
+  String get autoBuyDeactivate => '停用自动买入';
+
+  @override
+  String get autoBuyCancelTitle => '取消自动买入？';
+
+  @override
+  String get autoBuyCancelMessage => '下次向账户充值时，将不会自动买入 Bitcoin。';
+
+  @override
+  String get autoBuyDeactivateConfirm => '是的，停用';
+
+  @override
+  String get autoBuyHowItWorks => '运作方式';
+
+  @override
+  String get autoBuyConnectWallet => '连接您的 Bitcoin、Lightning 或 Liquid 钱包';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      '每次向您的 Bull Bitcoin 账户充值时，系统都会自动创建一笔 Bitcoin 买入。';
+
+  @override
+  String get autoBuyBitcoinSent => 'Bitcoin 会直接发送到您自己的钱包。';
+
+  @override
+  String get autoBuyRiskDisclaimer => '订单执行无法保证。存入与买入之间的延迟或价格变动可能会改变实际成交汇率。';
+
+  @override
+  String get autoBuyGetStarted => '开始使用自动买入';
+
+  @override
+  String get autoBuyConfirmTitle => '确认自动买入';
+
+  @override
+  String get autoBuyInfoMessage => '存入您账户的任何金额都将按当前汇率兑换为 Bitcoin，并发送到您的钱包。';
+
+  @override
+  String get autoBuyAccountUnavailableError => '您的 Bull Bitcoin 账户不可用。请稍后重试。';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      '请至少添加一个默认的 Bitcoin、Lightning 或 Liquid 地址。';
+
+  @override
+  String get autoBuyUpdateError => '无法更新自动买入。请稍后重试。';
 }

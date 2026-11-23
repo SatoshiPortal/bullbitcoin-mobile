@@ -1042,4 +1042,70 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => '이용 약관';
+
+  @override
+  String get continueButton => '계속하기';
+
+  @override
+  String get autoBuyTitle => '자동 매수';
+
+  @override
+  String get autoBuyDescription => '계정에 자금을 입금할 때마다 자동으로 Bitcoin을 매수하세요';
+
+  @override
+  String get autoBuyActivate => '자동 매수 활성화';
+
+  @override
+  String get autoBuyDeactivate => '자동 매수 비활성화';
+
+  @override
+  String get autoBuyCancelTitle => '자동 매수를 취소할까요?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      '다음에 계정에 자금을 입금할 때 Bitcoin이 자동으로 매수되지 않습니다.';
+
+  @override
+  String get autoBuyDeactivateConfirm => '예, 비활성화';
+
+  @override
+  String get autoBuyHowItWorks => '작동 방식';
+
+  @override
+  String get autoBuyConnectWallet => 'Bitcoin, Lightning 또는 Liquid 지갑을 연결하세요';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Bull Bitcoin 계정에 자금을 입금할 때마다 Bitcoin 매수가 자동으로 생성됩니다.';
+
+  @override
+  String get autoBuyBitcoinSent => 'Bitcoin은 본인의 지갑으로 직접 전송됩니다.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      '주문 체결은 보장되지 않습니다. 입금과 매수 사이의 지연이나 가격 변동으로 실제 적용 환율이 달라질 수 있습니다.';
+
+  @override
+  String get autoBuyGetStarted => '자동 매수 시작하기';
+
+  @override
+  String get autoBuyConfirmTitle => '자동 매수 확인';
+
+  @override
+  String get autoBuyInfoMessage =>
+      '계정에 추가된 금액은 현재 환율로 Bitcoin으로 전환되어 지갑으로 전송됩니다.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Bull Bitcoin 계정을 사용할 수 없습니다. 나중에 다시 시도해 주세요.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      '기본 Bitcoin, Lightning 또는 Liquid 주소를 하나 이상 추가하세요.';
+
+  @override
+  String get autoBuyUpdateError => '자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.';
 }

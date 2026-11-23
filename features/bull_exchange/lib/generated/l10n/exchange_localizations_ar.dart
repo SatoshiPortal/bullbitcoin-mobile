@@ -1091,4 +1091,73 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'مدة الخدمة';
+
+  @override
+  String get continueButton => 'استمر';
+
+  @override
+  String get autoBuyTitle => 'الشراء التلقائي';
+
+  @override
+  String get autoBuyDescription =>
+      'اشترِ Bitcoin تلقائيًا في كل مرة تودع فيها أموالًا في حسابك';
+
+  @override
+  String get autoBuyActivate => 'تفعيل الشراء التلقائي';
+
+  @override
+  String get autoBuyDeactivate => 'إيقاف الشراء التلقائي';
+
+  @override
+  String get autoBuyCancelTitle => 'إلغاء الشراء التلقائي؟';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'لن تشتري Bitcoin تلقائيًا في المرة القادمة التي تموّل فيها حسابك.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'نعم، أوقِف التفعيل';
+
+  @override
+  String get autoBuyHowItWorks => 'كيف يعمل';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'اربط محفظة Bitcoin أو Lightning أو Liquid الخاصة بك';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'يتم إنشاء عملية شراء Bitcoin تلقائيًا في كل مرة تموّل فيها حسابك في Bull Bitcoin.';
+
+  @override
+  String get autoBuyBitcoinSent => 'يُرسَل Bitcoin مباشرة إلى محفظتك الخاصة.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'لا يمكن ضمان تنفيذ الأمر. قد تؤدي التأخيرات أو تغيّرات السعر بين الإيداع والشراء إلى تغيير السعر الفعلي.';
+
+  @override
+  String get autoBuyGetStarted => 'ابدأ مع الشراء التلقائي';
+
+  @override
+  String get autoBuyConfirmTitle => 'تأكيد الشراء التلقائي';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'سيتم تحويل أي مبلغ يُضاف إلى حسابك إلى Bitcoin بسعر الصرف الحالي وإرساله إلى محفظتك.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'حسابك في Bull Bitcoin غير متاح. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'أضف عنوانًا افتراضيًا واحدًا على الأقل لـ Bitcoin أو Lightning أو Liquid.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.';
 }

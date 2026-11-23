@@ -1125,4 +1125,74 @@ class ExchangeLocalizationsHy extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Ծառայության պայմաններ';
+
+  @override
+  String get continueButton => 'Շարունակել';
+
+  @override
+  String get autoBuyTitle => 'Ավտոմատ գնում';
+
+  @override
+  String get autoBuyDescription =>
+      'Ավտոմատ գնեք Bitcoin ամեն անգամ, երբ միջոցներ եք մուտքագրում ձեր հաշվին';
+
+  @override
+  String get autoBuyActivate => 'Ակտիվացնել ավտոմատ գնումը';
+
+  @override
+  String get autoBuyDeactivate => 'Ապաակտիվացնել ավտոմատ գնումը';
+
+  @override
+  String get autoBuyCancelTitle => 'Չեղարկե՞լ ավտոմատ գնումը';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Հաջորդ անգամ, երբ համալրեք ձեր հաշիվը, Bitcoin ավտոմատ չի գնվի։';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Այո, ապաակտիվացնել';
+
+  @override
+  String get autoBuyHowItWorks => 'Ինչպես է այն աշխատում';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Միացրեք ձեր Bitcoin, Lightning կամ Liquid դրամապանակը';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Ամեն անգամ, երբ համալրում եք ձեր Bull Bitcoin հաշիվը, ավտոմատ կերպով ստեղծվում է Bitcoin-ի գնում։';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin-ն ուղարկվում է անմիջապես ձեր սեփական դրամապանակ։';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Պատվերի կատարումը չի կարող երաշխավորվել։ Մուտքագրման և գնման միջև ուշացումները կամ գնի փոփոխությունները կարող են փոխել փաստացի փոխարժեքը։';
+
+  @override
+  String get autoBuyGetStarted => 'Սկսել ավտոմատ գնումով';
+
+  @override
+  String get autoBuyConfirmTitle => 'Հաստատել ավտոմատ գնումը';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Ձեր հաշվին ավելացված ցանկացած գումար կփոխարկվի Bitcoin-ի՝ ընթացիկ փոխարժեքով, և կուղարկվի ձեր դրամապանակ։';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Ձեր Bull Bitcoin հաշիվը հասանելի չէ։ Փորձեք ավելի ուշ։';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'Ավելացրեք առնվազն մեկ լռելյայն Bitcoin, Lightning կամ Liquid հասցե։';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Չհաջողվեց թարմացնել ավտոմատ գնումը։ Փորձեք ավելի ուշ։';
 }

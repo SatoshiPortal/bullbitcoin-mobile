@@ -1119,4 +1119,74 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'მომსახურების პირობები';
+
+  @override
+  String get continueButton => 'გაგრძელება';
+
+  @override
+  String get autoBuyTitle => 'ავტომატური ყიდვა';
+
+  @override
+  String get autoBuyDescription =>
+      'ავტომატურად იყიდეთ Bitcoin ყოველ ჯერზე, როცა ანგარიშზე თანხას შეიტანთ';
+
+  @override
+  String get autoBuyActivate => 'ავტომატური ყიდვის ჩართვა';
+
+  @override
+  String get autoBuyDeactivate => 'ავტომატური ყიდვის გამორთვა';
+
+  @override
+  String get autoBuyCancelTitle => 'გააუქმოთ ავტომატური ყიდვა?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'შემდეგ ჯერზე, როცა ანგარიშს შეავსებთ, Bitcoin ავტომატურად აღარ შეიძენება.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'დიახ, გამორთვა';
+
+  @override
+  String get autoBuyHowItWorks => 'როგორ მუშაობს';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'დააკავშირეთ თქვენი Bitcoin, Lightning ან Liquid საფულე';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'ყოველ ჯერზე, როცა თქვენს Bull Bitcoin ანგარიშს შეავსებთ, ავტომატურად იქმნება Bitcoin-ის შესყიდვა.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin იგზავნება პირდაპირ თქვენს საკუთარ საფულეში.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'შეკვეთის შესრულება გარანტირებული არ არის. შეტანასა და ყიდვას შორის დაყოვნებამ ან ფასის ცვლილებამ შეიძლება შეცვალოს ფაქტობრივი კურსი.';
+
+  @override
+  String get autoBuyGetStarted => 'დაიწყეთ ავტომატური ყიდვით';
+
+  @override
+  String get autoBuyConfirmTitle => 'ავტომატური ყიდვის დადასტურება';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'თქვენს ანგარიშზე დამატებული ნებისმიერი თანხა მიმდინარე გაცვლითი კურსით გადაიქცევა Bitcoin-ად და გაიგზავნება თქვენს საფულეში.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'თქვენი Bull Bitcoin ანგარიში მიუწვდომელია. სცადეთ მოგვიანებით.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'დაამატეთ სულ მცირე ერთი ნაგულისხმევი Bitcoin, Lightning ან Liquid მისამართი.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით.';
 }

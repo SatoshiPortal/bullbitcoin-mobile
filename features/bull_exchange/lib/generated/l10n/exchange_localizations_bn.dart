@@ -1117,4 +1117,74 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'সেবার শর্তাবলী';
+
+  @override
+  String get continueButton => 'চালিয়ে যান';
+
+  @override
+  String get autoBuyTitle => 'স্বয়ংক্রিয় ক্রয়';
+
+  @override
+  String get autoBuyDescription =>
+      'আপনার অ্যাকাউন্টে তহবিল জমা করার প্রতিবার স্বয়ংক্রিয়ভাবে Bitcoin কিনুন';
+
+  @override
+  String get autoBuyActivate => 'স্বয়ংক্রিয় ক্রয় সক্রিয় করুন';
+
+  @override
+  String get autoBuyDeactivate => 'স্বয়ংক্রিয় ক্রয় নিষ্ক্রিয় করুন';
+
+  @override
+  String get autoBuyCancelTitle => 'স্বয়ংক্রিয় ক্রয় বাতিল করবেন?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'পরের বার আপনার অ্যাকাউন্টে তহবিল যোগ করলে স্বয়ংক্রিয়ভাবে Bitcoin কেনা হবে না।';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'হ্যাঁ, নিষ্ক্রিয় করুন';
+
+  @override
+  String get autoBuyHowItWorks => 'এটি কীভাবে কাজ করে';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'আপনার Bitcoin, Lightning বা Liquid ওয়ালেট সংযুক্ত করুন';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'আপনি আপনার Bull Bitcoin অ্যাকাউন্টে তহবিল যোগ করার প্রতিবার স্বয়ংক্রিয়ভাবে একটি Bitcoin ক্রয় তৈরি হয়।';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin সরাসরি আপনার নিজের ওয়ালেটে পাঠানো হয়।';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'অর্ডার সম্পাদনের নিশ্চয়তা দেওয়া যায় না। জমা এবং ক্রয়ের মধ্যে বিলম্ব বা দামের পরিবর্তন কার্যকর হার বদলে দিতে পারে।';
+
+  @override
+  String get autoBuyGetStarted => 'স্বয়ংক্রিয় ক্রয় শুরু করুন';
+
+  @override
+  String get autoBuyConfirmTitle => 'স্বয়ংক্রিয় ক্রয় নিশ্চিত করুন';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'আপনার অ্যাকাউন্টে যোগ করা যেকোনো পরিমাণ বর্তমান বিনিময় হারে Bitcoin-এ রূপান্তরিত হয়ে আপনার ওয়ালেটে পাঠানো হবে।';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'আপনার Bull Bitcoin অ্যাকাউন্ট উপলব্ধ নয়। পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'অন্তত একটি ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকানা যোগ করুন।';
+
+  @override
+  String get autoBuyUpdateError =>
+      'স্বয়ংক্রিয় ক্রয় আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।';
 }

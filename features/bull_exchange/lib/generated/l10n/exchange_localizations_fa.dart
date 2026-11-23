@@ -1099,4 +1099,74 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'شرایط خدمات';
+
+  @override
+  String get continueButton => 'ادامه';
+
+  @override
+  String get autoBuyTitle => 'خرید خودکار';
+
+  @override
+  String get autoBuyDescription =>
+      'هر بار که به حساب خود وجه واریز می‌کنید، به‌طور خودکار Bitcoin بخرید';
+
+  @override
+  String get autoBuyActivate => 'فعال‌سازی خرید خودکار';
+
+  @override
+  String get autoBuyDeactivate => 'غیرفعال‌سازی خرید خودکار';
+
+  @override
+  String get autoBuyCancelTitle => 'خرید خودکار لغو شود؟';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'دفعه بعد که حساب خود را شارژ کنید، Bitcoin به‌طور خودکار خریداری نمی‌شود.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'بله، غیرفعال کردن';
+
+  @override
+  String get autoBuyHowItWorks => 'چگونه کار می‌کند';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'کیف پول Bitcoin، Lightning یا Liquid خود را متصل کنید';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'هر بار که حساب Bull Bitcoin خود را شارژ کنید، یک خرید Bitcoin به‌طور خودکار ایجاد می‌شود.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin مستقیماً به کیف پول خودتان ارسال می‌شود.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'اجرای سفارش تضمین نمی‌شود. تأخیر یا تغییر قیمت بین واریز و خرید می‌تواند نرخ مؤثر را تغییر دهد.';
+
+  @override
+  String get autoBuyGetStarted => 'خرید خودکار را شروع کنید';
+
+  @override
+  String get autoBuyConfirmTitle => 'تأیید خرید خودکار';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'هر مبلغی که به حساب شما اضافه شود با نرخ ارز فعلی به Bitcoin تبدیل و به کیف پول شما ارسال می‌شود.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'حساب Bull Bitcoin شما در دسترس نیست. بعداً دوباره تلاش کنید.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'حداقل یک آدرس پیش‌فرض Bitcoin، Lightning یا Liquid اضافه کنید.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.';
 }

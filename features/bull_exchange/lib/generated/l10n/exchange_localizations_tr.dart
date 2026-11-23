@@ -1111,4 +1111,74 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get wizardExchangeDescription =>
       'Buy, sell and pay with Bull Bitcoin directly from your wallet.';
+
+  @override
+  String get settingsTermsOfServiceTitle => 'Hizmet Şartları';
+
+  @override
+  String get continueButton => 'Devam etmeye devam et';
+
+  @override
+  String get autoBuyTitle => 'Otomatik Alım';
+
+  @override
+  String get autoBuyDescription =>
+      'Hesabınıza her para yatırdığınızda otomatik olarak Bitcoin satın alın';
+
+  @override
+  String get autoBuyActivate => 'Otomatik alımı etkinleştir';
+
+  @override
+  String get autoBuyDeactivate => 'Otomatik alımı devre dışı bırak';
+
+  @override
+  String get autoBuyCancelTitle => 'Otomatik alım iptal edilsin mi?';
+
+  @override
+  String get autoBuyCancelMessage =>
+      'Hesabınıza bir sonraki para yüklemenizde otomatik olarak Bitcoin satın alınmayacak.';
+
+  @override
+  String get autoBuyDeactivateConfirm => 'Evet, devre dışı bırak';
+
+  @override
+  String get autoBuyHowItWorks => 'Nasıl çalışır';
+
+  @override
+  String get autoBuyConnectWallet =>
+      'Bitcoin, Lightning veya Liquid cüzdanınızı bağlayın';
+
+  @override
+  String get autoBuyPurchaseCreated =>
+      'Bull Bitcoin hesabınıza her para yüklediğinizde otomatik olarak bir Bitcoin alımı oluşturulur.';
+
+  @override
+  String get autoBuyBitcoinSent =>
+      'Bitcoin doğrudan kendi cüzdanınıza gönderilir.';
+
+  @override
+  String get autoBuyRiskDisclaimer =>
+      'Emrin gerçekleşeceği garanti edilemez. Para yatırma ile alım arasındaki gecikmeler veya fiyat değişimleri geçerli kuru değiştirebilir.';
+
+  @override
+  String get autoBuyGetStarted => 'Otomatik alıma başlayın';
+
+  @override
+  String get autoBuyConfirmTitle => 'Otomatik Alımı Onayla';
+
+  @override
+  String get autoBuyInfoMessage =>
+      'Hesabınıza eklenen her tutar güncel döviz kuruyla Bitcoin\'e dönüştürülür ve cüzdanınıza gönderilir.';
+
+  @override
+  String get autoBuyAccountUnavailableError =>
+      'Bull Bitcoin hesabınız kullanılamıyor. Daha sonra tekrar deneyin.';
+
+  @override
+  String get autoBuyWalletRequiredError =>
+      'En az bir varsayılan Bitcoin, Lightning veya Liquid adresi ekleyin.';
+
+  @override
+  String get autoBuyUpdateError =>
+      'Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.';
 }
