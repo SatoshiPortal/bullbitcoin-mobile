@@ -68,7 +68,7 @@ class WalletHomeScreen extends StatelessWidget {
       },
       waitForRefresh: () => context.read<WalletBloc>().waitForRefresh(),
       refreshWallets: () => context.read<WalletBloc>().refresh(),
-      headerBackgroundHeight: WalletHomeTopSection.minBackgroundHeight(context),
+      headerBackgroundHeight: WalletHomeTopSection.minBackgroundHeight,
       header: WalletHomeTopSection(
         actions: WalletQuickActions(
           quickActions: quickActions,

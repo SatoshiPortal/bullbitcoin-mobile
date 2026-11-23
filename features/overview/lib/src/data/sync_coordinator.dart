@@ -42,20 +42,10 @@ import '../domain/wallet_discovery_failure.dart';
 /// They call the writer-backed Electrum path through BackgroundWalletSyncPort.
 class SyncCoordinator<W extends Object, F extends Failure> {
   SyncCoordinator({
-    required Future<Result<List<W>, F>> Function({
-      bool? onlyBitcoin,
-      bool? onlyLiquid,
-    })
-    getWallets,
-    required WalletKey Function(W wallet) walletKey,
-    required ({bool empty, String code}) Function(F failure) classifyFailure,
-    required Future<void> Function(
-      W wallet, {
-      bool discover,
-      bool allowInitialScan,
-      SyncReason reason,
-    })
-    syncWallet,
+    required this._getWallets,
+    required this._walletKey,
+    required this._classifyFailure,
+    required this._syncWallet,
     this._syncSwaps,
     this._syncSwapsOutcome,
     this._syncSp,
@@ -64,11 +54,7 @@ class SyncCoordinator<W extends Object, F extends Failure> {
     this._readNetwork,
     this._readWallet,
     DateTime Function()? now,
-  }) : _getWallets = getWallets,
-       _walletKey = walletKey,
-       _classifyFailure = classifyFailure,
-       _syncWallet = syncWallet,
-       _now = now ?? DateTime.now {
+  }) : _now = now ?? DateTime.now {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
     // Gate syncs to the foreground-resumed state only. Default to allowed for
     // the brief startup window before the first lifecycle event arrives
@@ -206,8 +192,7 @@ class SyncCoordinator<W extends Object, F extends Failure> {
       waits.entries.map((e) async => MapEntry(e.key, await e.value)),
     );
     final failures = <SyncKind, Object>{
-      for (final entry in settled)
-        if (entry.value case final failure?) entry.key: failure,
+      for (final entry in settled) entry.key: ?entry.value,
     };
     if (failures.isEmpty) return;
     throw SyncCoordinatorException(failures);
@@ -609,8 +594,9 @@ class SyncCoordinator<W extends Object, F extends Failure> {
           if (outcome.failure case final failure?) throw failure;
         } else {
           final syncSwaps = _syncSwaps;
-          if (syncSwaps == null)
+          if (syncSwaps == null) {
             throw StateError('Swap refresh is unavailable');
+          }
           await syncSwaps();
         }
       case SyncKind.sp:

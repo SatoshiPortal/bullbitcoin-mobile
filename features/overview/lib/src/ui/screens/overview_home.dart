@@ -14,7 +14,7 @@ class OverviewHome extends StatefulWidget {
   final VoidCallback refreshVisibleWallets;
   final Future<void> Function() waitForRefresh;
   final Future<void> Function() refreshWallets;
-  final double headerBackgroundHeight;
+  final double Function(BuildContext) headerBackgroundHeight;
   final Widget header;
   final Widget announcements;
   final Widget warnings;
@@ -127,7 +127,7 @@ class _OverviewHomeState extends State<OverviewHome> {
             right: 0,
             child: ColoredBox(
               color: context.appColors.homeHeaderBackground,
-              child: SizedBox(height: widget.headerBackgroundHeight),
+              child: SizedBox(height: widget.headerBackgroundHeight(context)),
             ),
           ),
           WalletRefreshBody(
