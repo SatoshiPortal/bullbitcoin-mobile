@@ -1998,6 +1998,7 @@ mod tests {
             None,
         )
         .expect("create 1");
+        let sp_address = acc1.sp_address().expect("silent payment address");
 
         // Every reveal must hand out a fresh, never-before-issued address:
         // successive calls advance the receive tip and must all differ. This
@@ -2014,6 +2015,32 @@ mod tests {
                 "reveal {i} reused address {addr}"
             );
         }
+
+        futures_lite_block_on(acc1.dispose()).expect("dispose before server change");
+        acc1.release();
+        let reopened = SpAccount::create_from_mnemonic(
+            "sub-persist".to_string(),
+            SpNetwork::Regtest,
+            TEST_MNEMONIC.to_string(),
+            "http://127.0.0.1:3001".to_string(),
+            String::new(),
+            data_dir,
+            None,
+            None,
+            None,
+        )
+        .expect("reopen after server change");
+        assert_eq!(
+            reopened.sp_address().expect("reopened SP address"),
+            sp_address
+        );
+        let next = reopened
+            .new_taproot_address()
+            .expect("next receive address");
+        assert!(
+            seen.insert(next),
+            "reopen reused a previously revealed address"
+        );
     }
 
     #[test]
