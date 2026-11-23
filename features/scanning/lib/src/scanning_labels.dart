@@ -12,6 +12,6 @@ typedef NfcScanningLabels = ({
   String nfcWriteFailed,
   String nfcDisabled,
   String nfcNotAvailable,
-  String nfcError,
+  String nfcFailed,
   String nfcInvalidData,
 });

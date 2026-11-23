@@ -4880,15 +4880,6 @@
   "@nfcWriteFailed": {
     "description": "Error message shown when an NFC write to a hardware wallet fails"
   },
-  "nfcError": "NFC error: {error}",
-  "@nfcError": {
-    "description": "Error message shown when an NFC operation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "deleteLogsTitle": "Delete logs",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"

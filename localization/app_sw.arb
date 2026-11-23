@@ -1656,7 +1656,6 @@
   "nfcInvalidData": "Hakuna data ya NFC inayoungwa mkono iliyopatikana",
   "nfcConnectionLost": "Muunganisho wa NFC umepotea. Weka kifaa chako karibu na tag ya NFC na ujaribu tena.",
   "nfcWriteFailed": "Uhamisho wa NFC umeshindwa. Tafadhali jaribu tena.",
-  "nfcError": "Hitilafu ya NFC: {error}",
   "deleteLogsTitle": "Futa kumbukumbu",
   "logsDeletedMessage": "Kumbukumbu zimefutwa",
   "viewLogsLabel": "Tazama kumbukumbu",

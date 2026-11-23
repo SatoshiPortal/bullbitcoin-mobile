@@ -29,7 +29,7 @@ extension ScanningLocalization on AppLocalizations {
     nfcWriteFailed: nfcWriteFailed,
     nfcDisabled: nfcDisabled,
     nfcNotAvailable: nfcNotAvailable,
-    nfcError: oopsSomethingWentWrong,
+    nfcFailed: oopsSomethingWentWrong,
     nfcInvalidData: nfcInvalidData,
   );
 }

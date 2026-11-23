@@ -29,7 +29,7 @@ void main() {
                 nfcWriteFailed: 'Write failed',
                 nfcDisabled: 'NFC disabled',
                 nfcNotAvailable: 'NFC unavailable',
-                nfcError: 'Could not scan NFC',
+                nfcFailed: 'Could not scan NFC',
                 nfcInvalidData: 'Unsupported tag',
               ),
               onDataReceived: payloads.add,

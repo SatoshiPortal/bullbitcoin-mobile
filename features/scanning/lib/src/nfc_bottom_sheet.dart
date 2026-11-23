@@ -308,7 +308,7 @@ class NfcBottomSheet {
         ? labels.nfcWriteFailed
         : _isNfcReadInterrupted(error)
         ? labels.nfcConnectionLost
-        : labels.nfcError;
+        : labels.nfcFailed;
     BullSnackBar.show(context, message: message);
   }
 

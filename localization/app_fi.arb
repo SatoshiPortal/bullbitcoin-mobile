@@ -3567,7 +3567,6 @@
   "nfcInvalidData": "Tuettua NFC-dataa ei löytynyt",
   "nfcConnectionLost": "NFC-yhteys katkesi. Pidä laitettasi NFC-tunnisteen lähellä ja yritä uudelleen.",
   "nfcWriteFailed": "NFC-siirto epäonnistui. Yritä uudelleen.",
-  "nfcError": "NFC-virhe: {error}",
   "sendCoordinatingPayjoinTransaction": "Koordinoidaan Payjoin-transaktiota.",
   "sendErrorInvoiceExpired": "Tämä lasku on vanhentunut. Pyydä vastaanottajalta uusi lasku.",
   "importWalletColdcardMk4": "Coldcard Mk4",

@@ -3507,7 +3507,6 @@
   "nfcInvalidData": "Es wurden keine unterstützten NFC-Daten gefunden",
   "nfcConnectionLost": "NFC-Verbindung unterbrochen. Halten Sie Ihr Gerät in die Nähe des NFC-Tags und versuchen Sie es erneut.",
   "nfcWriteFailed": "NFC-Übertragung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-  "nfcError": "NFC-Fehler: {error}",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Halten Sie Ihr Telefon an die Coldcard, um die signierte Transaktion per NFC zu empfangen.",
