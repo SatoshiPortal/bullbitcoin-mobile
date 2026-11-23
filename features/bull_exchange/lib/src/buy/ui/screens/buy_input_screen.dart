@@ -5,6 +5,7 @@ import 'package:bull_exchange/src/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bull_exchange/src/buy/ui/widgets/buy_destination_input_fields.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/src/exchange_payout_field.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
