@@ -3196,4 +3196,16 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Aller sur le site web de l\'échange Bull Bitcoin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'La déconnexion n\'a pas pu être menée à bien. Veuillez réessayer.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Les annonces n\'ont pas pu être chargées.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Votre demande de suppression de compte n\'a pas pu être envoyée. Veuillez réessayer.';
 }

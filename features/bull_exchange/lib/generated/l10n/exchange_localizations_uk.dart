@@ -3167,4 +3167,16 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Перейти на сайт Bull Біткойн';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Не вдалося повністю вийти з облікового запису. Будь ласка, спробуйте ще раз.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Не вдалося завантажити оголошення.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Не вдалося надіслати запит на видалення облікового запису. Будь ласка, спробуйте ще раз.';
 }

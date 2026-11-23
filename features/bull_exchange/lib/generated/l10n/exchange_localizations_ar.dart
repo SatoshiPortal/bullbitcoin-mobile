@@ -3100,4 +3100,15 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'الذهاب إلى موقع تبادل بول بيتكين';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'تعذر تحميل الإعلانات.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'تعذر إرسال طلب حذف حسابك. يرجى المحاولة مرة أخرى.';
 }

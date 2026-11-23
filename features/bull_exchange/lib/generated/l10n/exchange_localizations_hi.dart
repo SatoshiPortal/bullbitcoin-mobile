@@ -3141,6 +3141,17 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Go to Bull Bitcoin विनिमय वेबसाइट';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'आपको पूरी तरह साइन आउट नहीं किया जा सका। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'घोषणाएँ लोड नहीं हो सकीं।';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'आपका खाता हटाने का अनुरोध नहीं भेजा जा सका। कृपया पुनः प्रयास करें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -6057,4 +6068,16 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get exchangeGoToWebsiteButton =>
       'Bull Bitcoin exchange website par jao';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Aap poori tarah sign out nahin ho sake. Kripya dobara koshish karein.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Announcements load nahin ho sake.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Aapka account delete karne ka request nahin bheja ja saka. Kripya dobara koshish karein.';
 }

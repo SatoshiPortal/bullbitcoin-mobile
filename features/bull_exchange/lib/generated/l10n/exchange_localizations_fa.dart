@@ -3124,4 +3124,15 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'به سایت تبادل Bitcoin Bull بروید';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'خروج کامل از حساب انجام نشد. لطفاً دوباره تلاش کنید.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'اطلاعیه‌ها بارگذاری نشد.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'درخواست حذف حساب شما ارسال نشد. لطفاً دوباره تلاش کنید.';
 }

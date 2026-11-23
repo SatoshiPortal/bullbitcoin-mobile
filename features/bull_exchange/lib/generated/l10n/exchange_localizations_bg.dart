@@ -3178,4 +3178,16 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Отиди на уебсайта на борсата Bull Bitcoin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Не можахте да излезете напълно от профила си. Моля, опитайте отново.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Съобщенията не можаха да бъдат заредени.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Заявката ви за изтриване на акаунта не можа да бъде изпратена. Моля, опитайте отново.';
 }

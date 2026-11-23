@@ -3163,4 +3163,16 @@ class ExchangeLocalizationsRu extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Перейти на сайт биржи Bull Bitcoin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Не удалось полностью выйти из аккаунта. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Не удалось загрузить объявления.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Не удалось отправить запрос на удаление аккаунта. Пожалуйста, попробуйте снова.';
 }

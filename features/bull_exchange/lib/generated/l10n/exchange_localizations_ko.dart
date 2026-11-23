@@ -3011,4 +3011,14 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Bull Bitcoin 교환 웹 사이트로 이동';
+
+  @override
+  String get exchangeErrorSigningOut => '완전히 로그아웃되지 않았습니다. 다시 시도해 주세요.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => '공지사항을 불러올 수 없습니다.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      '계정 삭제 요청을 보낼 수 없습니다. 다시 시도해 주세요.';
 }

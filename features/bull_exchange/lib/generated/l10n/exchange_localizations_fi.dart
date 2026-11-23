@@ -3143,4 +3143,16 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Siirry Bull Bitcoin -pörssin verkkosivulle';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Uloskirjautumista ei voitu viimeistellä. Yritä uudelleen.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Tiedotteita ei voitu ladata.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Tilin poistopyyntöäsi ei voitu lähettää. Yritä uudelleen.';
 }
