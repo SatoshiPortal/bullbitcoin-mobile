@@ -1,6 +1,7 @@
 import 'package:ark/funding.dart';
 import 'package:bull_exchange/bull_exchange.dart'
     show AccelerateTransactionListTile, BuyRoute, showSinpeReceiptBottomSheet;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';

@@ -19,7 +19,9 @@ import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:transactions/routes.dart';
 import 'package:transactions/transactions.dart';
 
-/// Binds the remaining wallet presentation and app navigation.
+/// Binds the app-owned wallet cards, wallet-home route and assets. Remove this
+/// binding once those are available from workspace features; `bull_exchange`
+/// cannot import the app that mounts it.
 ExchangePayinHost exchangePayinHost(GetIt locator) => (
   exchange: () => locator<Exchange>(),
   preferences: () => locator<Preferences>(),
@@ -57,15 +59,16 @@ ExchangePayinHost exchangePayinHost(GetIt locator) => (
     openWalletHome: (context) => context.goNamed(WalletRoute.walletHome.name),
     openOrder: (context, id, {required returnToExchange}) =>
         TransactionsNavigation.openDetails(
-      context,
-      TransactionDetailsTarget.order(id),
-      returnToExchange: returnToExchange,
-    ),
-    openPayjoinTransaction: (context, txId) => TransactionsNavigation.openDetails(
-      context,
-      TransactionDetailsTarget.payjoinByTxId(txId),
-      returnToExchange: true,
-    ),
+          context,
+          TransactionDetailsTarget.order(id),
+          returnToExchange: returnToExchange,
+        ),
+    openPayjoinTransaction: (context, txId) =>
+        TransactionsNavigation.openDetails(
+          context,
+          TransactionDetailsTarget.payjoinByTxId(txId),
+          returnToExchange: true,
+        ),
     brandAsset: Assets.logos.bbLogoSmall.path,
     successAsset: Assets.animations.successTick.path,
   ),
