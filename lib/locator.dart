@@ -535,7 +535,8 @@ class AppLocator {
 
     locator.registerSingleton(
       ForegroundWalletStartup(
-        initialize: () => initializeWalletRuntime(locator),
+        initialize: () =>
+            initializeWalletRuntime(locator<WalletNativeRuntime>()),
         startWatchers: () {
           locator<SilentFeature>().startForegroundWatchers();
           locator<SwapFeature>().start(

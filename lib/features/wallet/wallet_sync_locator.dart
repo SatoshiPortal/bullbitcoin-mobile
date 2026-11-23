@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -10,7 +14,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:silent/silent.dart';
 import 'package:swap_feature/swap_feature.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:get_it/get_it.dart';
 import 'package:primitives/primitives.dart';
@@ -29,7 +33,9 @@ class SyncLocator {
       syncSpOutcome: () => locator<SyncSpForWalletUsecase>().execute(),
     );
     locator.registerLazySingleton<SwapSyncPort>(
-      () => CoordinatedSwapSync(locator<SyncCoordinator>()),
+      () => CoordinatedSwapSync(
+        locator<SyncCoordinator<Wallet, WalletFailure>>(),
+      ),
     );
   }
 
@@ -46,15 +52,19 @@ class SyncLocator {
     Future<void> Function()? syncSp,
     Future<Result<void, WalletFailure>> Function()? syncSpOutcome,
   }) {
-    locator.registerLazySingleton<SyncCoordinator>(
-      () => SyncCoordinator(
+    locator.registerLazySingleton<SyncCoordinator<Wallet, WalletFailure>>(
+      () => SyncCoordinator<Wallet, WalletFailure>(
+        walletKey: (wallet) =>
+            WalletKey(id: wallet.id, network: wallet.network.shared),
+        classifyFailure: (failure) =>
+            (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
         readNetwork: () async => ((await locator<Preferences>().fetch()).fold(
           (value) => value,
           (failure) => throw Exception('Preferences read failed'),
         )).environment.networkEnv,
-        readWalletUsecase: ReadWalletUsecase(locator<WalletRepository>()),
-        getWalletsUsecase: locator<GetWalletsUsecase>(),
-        syncWalletUsecase: locator<SyncWalletUsecase>(),
+        readWallet: ReadWalletUsecase(locator<WalletRepository>()).execute,
+        getWallets: locator<GetWalletsUsecase>().execute,
+        syncWallet: locator<SyncWalletUsecase>().execute,
         syncSwaps: syncSwaps,
         syncSwapsOutcome: syncSwapsOutcome,
         syncSp: syncSp,
@@ -67,7 +77,7 @@ class SyncLocator {
   }
 }
 
-Future<void> initializeWalletRuntime(GetIt locator) async {
+Future<void> initializeWalletRuntime(WalletNativeRuntime runtime) async {
   // Startup continues when native stores are unavailable, as before.
-  await locator<WalletNativeRuntime>().initialize();
+  await runtime.initialize();
 }

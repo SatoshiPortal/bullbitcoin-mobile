@@ -14,11 +14,9 @@ import 'package:sync/write.dart' show BroadcastSpend;
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show NetworkEnv, Result, Err;
 
-import '../domain/wallet_discovery_failure.dart';
+import 'package:overview/overview.dart';
 
 export 'package:primitives/primitives.dart' show NetworkEnv, Result;
-
-export '../domain/wallet_discovery_failure.dart';
 
 export 'package:sync/sync.dart'
     show

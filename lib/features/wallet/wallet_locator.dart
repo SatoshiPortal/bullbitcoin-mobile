@@ -1,3 +1,6 @@
+import 'package:overview/overview.dart' show WalletDiscoveryUnavailableFailure;
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:notifications/payment_store.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/custody.dart';
@@ -36,7 +39,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:sync/inventory.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:silent/silent.dart';
@@ -46,7 +49,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
@@ -131,7 +134,10 @@ class WalletLocator {
       () => BroadcastObservationFollowUp(
         spendStatus: spendStatus,
         pollWallet: (id, {required isActive}) =>
-            locator<SyncCoordinator>().pollWallet(id, isActive: isActive),
+            locator<SyncCoordinator<Wallet, WalletFailure>>().pollWallet(
+              id,
+              isActive: isActive,
+            ),
       ),
       dispose: (followUp) => followUp.dispose(),
     );
@@ -190,11 +196,19 @@ class WalletLocator {
           }
         },
         pollWallet: (id, {required isActive}) =>
-            locator<SyncCoordinator>().pollWallet(id, isActive: isActive),
-        discoverWallet: (id) => locator<SyncCoordinator>().discoverWallet(id),
+            locator<SyncCoordinator<Wallet, WalletFailure>>().pollWallet(
+              id,
+              isActive: isActive,
+            ),
+        discoverWallet: (id) =>
+            locator<SyncCoordinator<Wallet, WalletFailure>>().discoverWallet(
+              id,
+            ),
         syncFinished: locator<ForegroundWalletSync>().finished.map((_) {}),
-        syncPassActivity: locator<SyncCoordinator>().syncPassActivity,
-        isSyncPassActive: () => locator<SyncCoordinator>().isSyncPassActive,
+        syncPassActivity:
+            locator<SyncCoordinator<Wallet, WalletFailure>>().syncPassActivity,
+        isSyncPassActive: () =>
+            locator<SyncCoordinator<Wallet, WalletFailure>>().isSyncPassActive,
       ),
     );
     locator.registerLazySingleton<DefaultWalletRepair>(
@@ -384,7 +398,8 @@ class WalletLocator {
     );
 
     locator.registerFactory<SyncWalletsUsecase>(
-      () => SyncWalletsUsecase(locator<SyncCoordinator>()),
+      () =>
+          SyncWalletsUsecase(locator<SyncCoordinator<Wallet, WalletFailure>>()),
     );
     locator.registerFactory<WatchWalletSyncEventsUsecase>(
       () => WatchWalletSyncEventsUsecase(

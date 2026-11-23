@@ -7,8 +7,11 @@ environment:
   flutter: '3.50.0'
 dependencies:
   bitcoin_price:
+  bull_logger:
   bull_quick_actions:
   bull_ui:
   flutter:
     sdk: flutter
   material_ui: ^1.11.0
+  primitives:
+  sync:

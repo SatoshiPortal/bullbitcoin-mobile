@@ -1,30 +1,21 @@
-import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:sync/sync.dart' show WalletSnapshotException;
-import 'package:sync/sync.dart' show SyncReason, SyncBusyFailure;
-import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+import 'package:sync/sync.dart'
+    show WalletKey, WalletSnapshotException, SyncReason, SyncBusyFailure;
 
 import 'dart:async';
-
-import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 
 import 'dart:collection';
 
 import 'package:primitives/primitives.dart' as network;
 
-import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
-
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:primitives/primitives.dart' show Err, Failure, Ok, Result;
 import 'package:flutter/widgets.dart'
     show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
 
-export 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
+import '../domain/sync_kind.dart';
+import '../domain/sync_outcome.dart';
+import '../domain/sync_trigger.dart';
+import '../domain/wallet_discovery_failure.dart';
 
 /// Foreground sync orchestrator.
 ///
@@ -49,20 +40,34 @@ export 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
 /// do **not** use this coordinator — they run in a separate Dart isolate with
 /// a task-specific graph, so the lifecycle gate would actively block them.
 /// They call the writer-backed Electrum path through BackgroundWalletSyncPort.
-class SyncCoordinator {
+class SyncCoordinator<W extends Object, F extends Failure> {
   SyncCoordinator({
-    required GetWalletsUsecase getWalletsUsecase,
-    required SyncWalletUsecase syncWalletUsecase,
+    required Future<Result<List<W>, F>> Function({
+      bool? onlyBitcoin,
+      bool? onlyLiquid,
+    })
+    getWallets,
+    required WalletKey Function(W wallet) walletKey,
+    required ({bool empty, String code}) Function(F failure) classifyFailure,
+    required Future<void> Function(
+      W wallet, {
+      bool discover,
+      bool allowInitialScan,
+      SyncReason reason,
+    })
+    syncWallet,
     this._syncSwaps,
     this._syncSwapsOutcome,
     this._syncSp,
     this._syncSpOutcome,
     this._refreshRevisions,
     this._readNetwork,
-    this._readWalletUsecase,
+    this._readWallet,
     DateTime Function()? now,
-  }) : _getWallets = getWalletsUsecase,
-       _syncWallet = syncWalletUsecase,
+  }) : _getWallets = getWallets,
+       _walletKey = walletKey,
+       _classifyFailure = classifyFailure,
+       _syncWallet = syncWallet,
        _now = now ?? DateTime.now {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
     // Gate syncs to the foreground-resumed state only. Default to allowed for
@@ -95,15 +100,27 @@ class SyncCoordinator {
 
   final Set<(network.NetworkEnv, SyncKind)> _unsupportedLogged = {};
   final Future<network.NetworkEnv> Function()? _readNetwork;
-  final ReadWalletUsecase? _readWalletUsecase;
-  final GetWalletsUsecase _getWallets;
-  final SyncWalletUsecase _syncWallet;
+  final Future<Result<W, F>> Function(String)? _readWallet;
+  final Future<Result<List<W>, F>> Function({
+    bool? onlyBitcoin,
+    bool? onlyLiquid,
+  })
+  _getWallets;
+  final WalletKey Function(W wallet) _walletKey;
+  final ({bool empty, String code}) Function(F failure) _classifyFailure;
+  final Future<void> Function(
+    W wallet, {
+    bool discover,
+    bool allowInitialScan,
+    SyncReason reason,
+  })
+  _syncWallet;
   final Future<void> Function()? _syncSwaps;
   // The SP side of a sync tick: resume the chain scan when the SP feature's
   // policy allows it. The foreground setup resolves the wallet usecase lazily
   // at tick time, after SP and swap have registered their public facades.
   final Future<void> Function()? _syncSp;
-  final Future<Result<void, WalletFailure>> Function()? _syncSpOutcome;
+  final Future<Result<void, F>> Function()? _syncSpOutcome;
   final Future<void> Function()? _refreshRevisions;
   final Future<SyncOutcome> Function()? _syncSwapsOutcome;
 
@@ -190,7 +207,7 @@ class SyncCoordinator {
     );
     final failures = <SyncKind, Object>{
       for (final entry in settled)
-        if (entry.value != null) entry.key: entry.value!,
+        if (entry.value case final failure?) entry.key: failure,
     };
     if (failures.isEmpty) return;
     throw SyncCoordinatorException(failures);
@@ -212,22 +229,24 @@ class SyncCoordinator {
     try {
       var pass = _manualPasses[walletId];
       if (pass == null) {
-        final result = await _getWallets.execute();
+        final result = await _getWallets();
         if (result case Err()) {
           return const Err(WalletDiscoveryUnavailableFailure());
         }
         final wallets = switch (result) {
           Ok(:final value) => value,
-          Err() => <Wallet>[],
+          Err() => <W>[],
         };
         final wallet = wallets
-            .where((wallet) => wallet.id == walletId)
+            .where((wallet) => _walletKey(wallet).id == walletId)
             .firstOrNull;
         if (wallet == null || !_isAppResumed) {
           return const Err(WalletDiscoveryUnavailableFailure());
         }
-        final kind = wallet.isLiquid ? SyncKind.liquid : SyncKind.bitcoin;
-        if (!_supports(kind, wallet.network.environment)) {
+        final kind = _walletKey(wallet).network is network.LiquidNetwork
+            ? SyncKind.liquid
+            : SyncKind.bitcoin;
+        if (!_supports(kind, _walletKey(wallet).network.env)) {
           return const Err(WalletDiscoveryUnavailableFailure());
         }
         // Admission can yield; another caller may have queued the same wallet.
@@ -235,10 +254,10 @@ class SyncCoordinator {
         if (pass == null) {
           pass = _SyncPass(
             kind,
-            wallet.isBitcoin,
+            _walletKey(wallet).network is network.BitcoinNetwork,
             SyncTrigger.user,
             walletId: walletId,
-            walletNetwork: wallet.network,
+            walletNetwork: _walletKey(wallet).network,
           );
           _manualPasses[walletId] = pass;
           _queue.add(pass);
@@ -268,8 +287,10 @@ class SyncCoordinator {
     final wallet = await _readPollingWallet(walletId);
     if (!_isAppResumed || !isActive()) return;
     if (wallet != null) {
-      final kind = wallet.isLiquid ? SyncKind.liquid : SyncKind.bitcoin;
-      if (!_supports(kind, wallet.network.environment)) return;
+      final kind = _walletKey(wallet).network is network.LiquidNetwork
+          ? SyncKind.liquid
+          : SyncKind.bitcoin;
+      if (!_supports(kind, _walletKey(wallet).network.env)) return;
       bool covers(_SyncPass pass) =>
           pass.walletId == walletId ||
           (pass.walletId == null && pass.kind == kind);
@@ -300,7 +321,7 @@ class SyncCoordinator {
         false,
         SyncTrigger.automatic,
         walletId: walletId,
-        walletNetwork: wallet.network,
+        walletNetwork: _walletKey(wallet).network,
         isActive: isActive,
       );
       final waiter = Completer<Object?>();
@@ -312,15 +333,15 @@ class SyncCoordinator {
     }
   }
 
-  Future<Wallet?> _readPollingWallet(String walletId) async {
+  Future<W?> _readPollingWallet(String walletId) async {
     // Polling must not hydrate unrelated wallets just to select its target.
-    final result = await _readWalletUsecase?.execute(walletId);
+    final result = await _readWallet?.call(walletId);
     if (result case Ok(:final value)) {
       final readNetwork = _readNetwork;
       final environment = readNetwork == null
           ? network.NetworkEnv.mainnet
           : await readNetwork();
-      if (value.network.environment == environment) return value;
+      if (_walletKey(value).network.env == environment) return value;
     }
     return null;
   }
@@ -467,8 +488,9 @@ class SyncCoordinator {
       pass.waiters.clear();
       return;
     }
-    if (error is NoWalletsFoundFailure) pass.wallets = 0;
-    final outcome = error is NoWalletsFoundFailure || pass.wallets == 0
+    final readFailure = error is F ? _classifyFailure(error) : null;
+    if (readFailure?.empty == true) pass.wallets = 0;
+    final outcome = pass.wallets == 0
         ? 'no_wallets'
         : busy
         ? 'busy'
@@ -479,8 +501,8 @@ class SyncCoordinator {
         ? 'busy'
         : error is WalletSnapshotException
         ? error.failure.logCode
-        : error is WalletFailure
-        ? error.logCode
+        : readFailure != null
+        ? readFailure.code
         : error == null
         ? 'none'
         : 'operation';
@@ -506,15 +528,15 @@ class SyncCoordinator {
   /// read failure would both report a successful sync to pull-to-refresh and
   /// count toward the throttle — suppressing the retries that would recover
   /// from a transient failure.
-  Future<WalletFailure?> _syncAll(
-    Future<Result<List<Wallet>, WalletFailure>> read, {
+  Future<F?> _syncAll(
+    Future<Result<List<W>, F>> read, {
     required _SyncPass pass,
   }) async {
     switch (await read) {
       case Ok(:final value):
         pass.wallets = value.length;
         for (final wallet in value) {
-          await _syncWallet.execute(
+          await _syncWallet(
             wallet,
             discover: pass.discover,
             reason: pass.reason,
@@ -539,12 +561,12 @@ class SyncCoordinator {
         if (!_isAppResumed ||
             !isActive() ||
             wallet == null ||
-            wallet.network != pass.walletNetwork) {
+            _walletKey(wallet).network != pass.walletNetwork) {
           return null;
         }
         pass.wallets = 1;
         // Receive must not bootstrap an unscanned Bitcoin wallet.
-        await _syncWallet.execute(
+        await _syncWallet(
           wallet,
           discover: false,
           allowInitialScan: false,
@@ -555,19 +577,20 @@ class SyncCoordinator {
       log.fine('Wallet discovery started reason=manual');
       if (!_isAppResumed) return const WalletDiscoveryUnavailableFailure();
       // Re-resolve from the active environment after waiting in the queue.
-      switch (await _getWallets.execute()) {
+      switch (await _getWallets()) {
         case Err():
           return const WalletDiscoveryUnavailableFailure();
         case Ok(:final value):
           final wallet = value
-              .where((wallet) => wallet.id == walletId)
+              .where((wallet) => _walletKey(wallet).id == walletId)
               .firstOrNull;
-          if (wallet == null || wallet.network != pass.walletNetwork) {
+          if (wallet == null ||
+              _walletKey(wallet).network != pass.walletNetwork) {
             return const WalletDiscoveryUnavailableFailure();
           }
-          await _syncWallet.execute(
+          await _syncWallet(
             wallet,
-            discover: wallet.isBitcoin,
+            discover: _walletKey(wallet).network is network.BitcoinNetwork,
             reason: pass.reason,
           );
           return null;
@@ -575,17 +598,20 @@ class SyncCoordinator {
     }
     switch (pass.kind) {
       case SyncKind.bitcoin:
-        return _syncAll(_getWallets.execute(onlyBitcoin: true), pass: pass);
+        return _syncAll(_getWallets(onlyBitcoin: true), pass: pass);
       case SyncKind.liquid:
-        return _syncAll(_getWallets.execute(onlyLiquid: true), pass: pass);
+        return _syncAll(_getWallets(onlyLiquid: true), pass: pass);
       case SyncKind.swaps:
         final outcomeCallback = _syncSwapsOutcome;
         if (outcomeCallback != null) {
           final outcome = await outcomeCallback();
           lastSwapSyncOutcome = outcome;
-          if (outcome.failure != null) throw outcome.failure!;
+          if (outcome.failure case final failure?) throw failure;
         } else {
-          await _syncSwaps!();
+          final syncSwaps = _syncSwaps;
+          if (syncSwaps == null)
+            throw StateError('Swap refresh is unavailable');
+          await syncSwaps();
         }
       case SyncKind.sp:
         final callback = _syncSpOutcome;
@@ -645,7 +671,7 @@ class SyncCoordinatorException implements Exception {
 final class _SyncPass {
   final SyncKind kind;
   final String? walletId;
-  final Network? walletNetwork;
+  final network.Network? walletNetwork;
   final bool Function()? isActive;
   bool discover;
   SyncTrigger trigger;

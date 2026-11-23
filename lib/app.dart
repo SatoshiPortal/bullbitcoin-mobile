@@ -97,8 +97,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Wallet/swap sync on resume is handled by SyncCoordinator's own
-  // AppLifecycleListener — see lib/features/wallet/data/sync_coordinator.dart.
+  // Overview schedules its own resume sync through its lifecycle listener.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
     if (locator.isRegistered<ForegroundWalletStartup>()) {
