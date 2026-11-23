@@ -416,6 +416,7 @@ graph TB
     SETTINGS --> BTC_PRICE
     COINS --> UTXO_MGMT
     COINS --> LABELS
+    COINS -->|address viewer| ADDRESS_LABELS
     SEND --> LABELS
     RECEIVE --> LABELS
     SETTINGS --> LABELS

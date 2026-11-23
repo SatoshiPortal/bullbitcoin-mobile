@@ -243,6 +243,7 @@ class AppRouter {
         childRoutes: SettingsRouter.childRoutes(
           addressRoutes: [locator<AddressViewFeature>().route],
           accessRoutes: locator<AccessFeature>().routes.settings,
+          seedViewRoute: locator<AllSeedViewFeature>().route,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
           appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
           onBackupTestSucceeded: _onBackupTestSucceeded,
