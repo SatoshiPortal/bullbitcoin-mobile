@@ -65,6 +65,19 @@ void main() {
   }
 
   group('LoadAutoswapSettingsUsecase', () {
+    test('does not query wallets when settings reject the network', () async {
+      when(getAutoSwap.readAutoSwap)
+          .thenAnswer((_) async => const Err(SwapsUnsupportedNetworkFailure()));
+
+      expect(
+        failureOf(await usecase.execute()),
+        isA<AutoswapUnsupportedNetworkFailure>(),
+      );
+      verifyNever(
+        () => wallets.getWallets(environment: any(named: 'environment')),
+      );
+    });
+
     test('returns only bitcoin wallets and the stored recipient', () async {
       when(() => getAutoSwap.readAutoSwap()).thenAnswer(
         (_) async => const Ok(AutoSwap(recipientWalletId: 'stored')),

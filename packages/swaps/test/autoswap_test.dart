@@ -129,4 +129,63 @@ void main() {
     expect((result as Err).failure, isA<AutoswapInvalidSettingsFailure>());
     verifyNever(() => boltz.execute(any()));
   });
+
+  test('refuses an unsupported network before resolving the route', () async {
+    const failure = AutoswapUnsupportedNetworkFailure();
+    when(host.readSettings).thenAnswer((_) async => const Err(failure));
+
+    expect(
+      await usecase.execute(),
+      isA<Err<String, AutoswapFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        same(failure),
+      ),
+    );
+    verifyNever(host.getRoute);
+    verifyNever(() => boltz.execute(any()));
+    verifyNever(() => exchange.execute(any()));
+  });
+
+  test(
+    'does not contact either provider if resolving the route throws',
+    () async {
+      when(host.getRoute)
+          .thenAnswer((_) async => throw const FormatException());
+
+      expect(
+        await usecase.execute(),
+        isA<Err<String, AutoswapFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<AutoswapExecutionFailure>(),
+        ),
+      );
+      verifyNever(() => boltz.execute(any()));
+      verifyNever(() => exchange.execute(any()));
+    },
+  );
+
+  test('does not fall back if Boltz throws instead of refusing', () async {
+    when(host.getRoute)
+        .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+    when(() => boltz.execute(any())).thenAnswer(
+      (_) async => throw const FormatException('private provider response'),
+    );
+
+    expect(
+      await usecase.execute(),
+      isA<Err<String, AutoswapFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<AutoswapExecutionFailure>().having(
+          (failure) => failure.logMessage,
+          'safe log message',
+          'FormatException',
+        ),
+      ),
+    );
+    verify(() => boltz.execute(valid)).called(1);
+    verifyNever(() => exchange.execute(any()));
+  });
 }
