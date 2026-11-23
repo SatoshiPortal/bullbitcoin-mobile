@@ -19,6 +19,10 @@ enum SecureUploadStatus {
 
   /// Files were rejected - can re-upload
   rejected,
+
+  /// The exchange reported a status this build doesn't know: no upload is
+  /// offered until it reports a known one.
+  unknown,
 }
 
 @freezed
@@ -68,6 +72,9 @@ abstract class SecureFileUploadState with _$SecureFileUploadState {
       case KycDocumentStatus.rejected:
         // File was rejected - show rejected status with re-upload option
         return SecureUploadStatus.rejected;
+
+      case KycDocumentStatus.unknown:
+        return SecureUploadStatus.unknown;
 
       case null:
         // Status is null - show upload button (loading state handled separately in UI)

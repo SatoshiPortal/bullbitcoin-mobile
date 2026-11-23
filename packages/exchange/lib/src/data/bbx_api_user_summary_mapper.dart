@@ -4,6 +4,7 @@ import '../domain/catalog/exchange_catalog.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/user_summary.dart';
 import 'btc_network_wire.dart';
+import 'unknown_server_value.dart';
 
 /// Maps the `bbx_api` user summary to the app entity.
 UserSummary userSummaryFromBbxApi(bbx.UserSummary s) => UserSummary(
@@ -74,9 +75,17 @@ UserDca _dca(bbx.UserDca dca) => UserDca(
   address: dca.address,
 );
 
-KycDocumentStatus _kycStatus(String status) => switch (status.toUpperCase()) {
-  'ACCEPTED' => KycDocumentStatus.accepted,
-  'UNDER_REVIEW' => KycDocumentStatus.underReview,
-  'REJECTED' => KycDocumentStatus.rejected,
-  _ => KycDocumentStatus.notUploaded,
-};
+KycDocumentStatus _kycStatus(String status) =>
+    kycDocumentStatusFromWire(status);
+
+/// The one mapper from the server's KYC document status (API-Users
+/// `KycStatusEndUser`), case-insensitive as before. An unknown value is
+/// [KycDocumentStatus.unknown] (it used to read as not uploaded) and is
+/// logged once.
+KycDocumentStatus kycDocumentStatusFromWire(String? raw) => serverValue(
+  'KYC document status',
+  raw?.toUpperCase(),
+  values: KycDocumentStatus.values,
+  wire: (status) => status.value,
+  unknown: KycDocumentStatus.unknown,
+);

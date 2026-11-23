@@ -295,6 +295,28 @@ class _UploadStatusButton extends StatelessWidget {
 
       case SecureUploadStatus.rejected:
         return const SizedBox.shrink();
+
+      case SecureUploadStatus.unknown:
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: BullSpacing.sm,
+            vertical: BullSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(context.bullShapes.badge),
+            border: Border.all(
+              color: context.bull.outline.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+          ),
+          child: BullText(
+            context.loc.exchangeFileUploadStatusUnknown,
+            style: context.bullType.caption.copyWith(
+              fontWeight: FontWeight.w600,
+              color: context.bull.onSurface,
+            ),
+          ),
+        );
     }
   }
 }

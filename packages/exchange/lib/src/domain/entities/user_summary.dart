@@ -9,15 +9,34 @@ part 'user_summary.freezed.dart';
 
 /// Status of KYC document uploads
 enum KycDocumentStatus {
-  notUploaded,
-  underReview,
-  accepted,
-  rejected;
+  notUploaded('NOT_UPLOADED'),
+  underReview('UNDER_REVIEW'),
+  accepted('ACCEPTED'),
+  rejected('REJECTED'),
+
+  /// A status this build doesn't know. Not read as "not uploaded", so the app
+  /// never offers an upload the exchange may not expect.
+  unknown('UNKNOWN');
+
+  final String value;
+
+  const KycDocumentStatus(this.value);
 
   bool get isNotUploaded => this == KycDocumentStatus.notUploaded;
   bool get isUnderReview => this == KycDocumentStatus.underReview;
   bool get isAccepted => this == KycDocumentStatus.accepted;
   bool get isRejected => this == KycDocumentStatus.rejected;
+
+  /// Whether the review is over (accepted or rejected).
+  bool get isTerminal => switch (this) {
+    KycDocumentStatus.accepted || KycDocumentStatus.rejected => true,
+    KycDocumentStatus.notUploaded ||
+    KycDocumentStatus.underReview ||
+    KycDocumentStatus.unknown => false,
+  };
+
+  /// A document review has no failed status; a refused one is [rejected].
+  bool get isFailed => false;
 }
 
 /// KYC documents status for ID, proof of residence, and selfie

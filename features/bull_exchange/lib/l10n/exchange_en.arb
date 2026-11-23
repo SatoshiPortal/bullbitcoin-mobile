@@ -112,6 +112,10 @@
   "@exchangeFileUploadStatusInReview": {
     "description": "Status badge when files are under review"
   },
+  "exchangeFileUploadStatusUnknown": "Status unknown",
+  "@exchangeFileUploadStatusUnknown": {
+    "description": "Status badge when the exchange reports a file review status this app version does not know; no upload is offered"
+  },
   "exchangeFileUploadStatusRejectedBadge": "Rejected",
   "@exchangeFileUploadStatusRejectedBadge": {
     "description": "Short rejected-status badge shown next to a re-upload action in the secure file upload screen."
