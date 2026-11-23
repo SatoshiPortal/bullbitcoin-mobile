@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:ark/funding.dart';
 import 'package:path/path.dart' as p;
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show SeedReferencePort, SeedReferencesUnavailable;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -73,4 +75,18 @@ final class ArkInstallationState implements ArkInstallationEvidence {
       return false;
     }
   }
+}
+
+/// Ark funding seed references while the funding authority is unavailable.
+/// An opening failure remains an owner; only proven absence has none.
+final class UnavailableArkFundingReferences implements SeedReferencePort {
+  final ArkInstallationState _installation;
+
+  const UnavailableArkFundingReferences(this._installation);
+
+  @override
+  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
+      await _installation.remainsUnprovisioned()
+      ? const Ok({})
+      : const Err(SeedReferencesUnavailable());
 }

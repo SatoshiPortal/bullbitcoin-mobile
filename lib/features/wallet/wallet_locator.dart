@@ -259,7 +259,7 @@ class WalletLocator {
         references.register(locator<SqliteArkFundingReservations>());
       } else {
         references.register(
-          _UnavailableArkFundingReferences(locator<ArkInstallationState>()),
+          UnavailableArkFundingReferences(locator<ArkInstallationState>()),
         );
       }
       return references;
@@ -346,16 +346,4 @@ class WalletLocator {
       ),
     );
   }
-}
-
-/// An opening failure remains an owner; only proven absence has no references.
-final class _UnavailableArkFundingReferences implements SeedReferencePort {
-  final ArkInstallationState _installation;
-  const _UnavailableArkFundingReferences(this._installation);
-
-  @override
-  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
-      await _installation.remainsUnprovisioned()
-      ? const Ok({})
-      : const Err(SeedReferencesUnavailable());
 }
