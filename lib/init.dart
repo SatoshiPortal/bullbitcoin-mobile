@@ -14,6 +14,7 @@ import 'package:bull_payjoin/migration.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:swaps/migration.dart';
 import 'package:legacy_storage/coordination.dart';
+import 'package:secrets/migration.dart' show SecretsImport;
 import 'package:secrets/secrets.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
@@ -176,6 +177,7 @@ class Bull {
         regtestPayjoin.participant,
         recoverBull.participant,
         regtestRecoverBull.participant,
+        SecretsImport(file: destination('secrets')),
         PreferencesImport(
           file: preferencesFile,
           defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
