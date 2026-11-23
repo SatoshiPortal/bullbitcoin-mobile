@@ -70,22 +70,24 @@ void main() {
     );
   });
 
-  test('an incomplete inventory fails instead of offering fewer accounts',
-      () async {
-    final readable = walletRegistrationForTesting(
-      id: 'readable',
-      network: BitcoinNetwork.testnet,
-    );
-    when(() => wallets.walletsForNetwork(BitcoinNetwork.testnet)).thenAnswer(
-      (_) async =>
-          Ok(walletSelectionForTesting([readable], isComplete: false)),
-    );
+  test(
+    'an incomplete inventory fails instead of offering fewer accounts',
+    () async {
+      final readable = walletRegistrationForTesting(
+        id: 'readable',
+        network: BitcoinNetwork.testnet,
+      );
+      when(() => wallets.walletsForNetwork(BitcoinNetwork.testnet)).thenAnswer(
+        (_) async =>
+            Ok(walletSelectionForTesting([readable], isComplete: false)),
+      );
 
-    expect(
-      await usecase.execute(actsOnLiquid: false),
-      isA<Err<List<WalletRegistration>, SwapsFailure>>(),
-    );
-  });
+      expect(
+        await usecase.execute(actsOnLiquid: false),
+        isA<Err<List<WalletRegistration>, SwapsFailure>>(),
+      );
+    },
+  );
 
   test('unavailable inventory fails before offering a destination', () async {
     when(() => wallets.walletsForNetwork(LiquidNetwork.testnet))
