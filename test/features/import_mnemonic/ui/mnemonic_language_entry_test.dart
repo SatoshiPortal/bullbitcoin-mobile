@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
+import 'package:mnemonic_entry/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
@@ -23,6 +24,7 @@ Future<void> host(
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: MnemonicWidget(
+        labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
         initialLength: bip39.MnemonicLength.words12,
         language: language,
         allowAutoFillWords: false,
@@ -439,6 +441,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: MnemonicWidget(
+              labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
               language: language,
               initialLength: bip39.MnemonicLength.words12,
               allowAutoFillWords: false,

@@ -51,7 +51,7 @@ Open a package through its published capability and mount a feature through its 
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
 
-Legacy mnemonic entry is shared through `lib/features/import_mnemonic/public/import_mnemonic_facade.dart`, which exports the entry widget used by onboarding and app-startup recovery. The import feature currently reaches into Wallets internals; replacing that import with a published capability is a scoped follow-up recorded in FEATURES.md.
+Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input. The import feature still reaches into Wallets internals; replacing that dependency with a published capability remains a scoped follow-up.
 
 ## 🎯 The architecture we tend toward
 

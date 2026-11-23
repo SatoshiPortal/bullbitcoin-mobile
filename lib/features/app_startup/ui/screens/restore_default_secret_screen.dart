@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -95,6 +96,7 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
           child: Opacity(
             opacity: _busy ? 0.5 : 1.0,
             child: MnemonicWidget(
+              labels: context.loc.mnemonicEntry,
               initialLength: bip39.MnemonicLength.words12,
               allowMultipleMnemonicLength: true,
               allowLabel: false,

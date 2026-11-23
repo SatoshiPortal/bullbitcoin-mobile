@@ -6,7 +6,8 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/app_bar.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -185,6 +186,7 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                                 ? 0.5
                                 : 1.0,
                             child: MnemonicWidget(
+                              labels: context.loc.mnemonicEntry,
                               initialLength: bip39.MnemonicLength.words12,
                               allowMultipleMnemonicLength: true,
                               allowLabel: false,

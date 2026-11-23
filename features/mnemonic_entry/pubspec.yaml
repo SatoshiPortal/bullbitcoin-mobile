@@ -1,0 +1,24 @@
+name: mnemonic_entry
+description: Localized BIP39 mnemonic entry.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  bip39_mnemonic: ^4.1.0
+  bull_logger:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  material_ui: ^1.11.0
+  primitives:
+  unorm_dart: ^0.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

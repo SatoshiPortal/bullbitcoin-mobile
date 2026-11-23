@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
+import 'package:mnemonic_entry/testing.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';

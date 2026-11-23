@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
@@ -61,6 +62,7 @@ class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16),
                   child: MnemonicWidget(
+                    labels: context.loc.mnemonicEntry,
                     initialLength: bip39.MnemonicLength.words12,
                     onSubmit: context
                         .read<ImportMnemonicCubit>()

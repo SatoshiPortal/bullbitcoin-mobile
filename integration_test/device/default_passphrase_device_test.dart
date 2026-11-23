@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_suc
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_backup_passphrase_usecase.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/init.dart';
@@ -402,6 +402,7 @@ void main({bool isInitialized = false}) {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: MnemonicWidget(
+            labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
             initialLength: bip39.MnemonicLength.words12,
             allowPassphrase: true,
             allowLabel: false,

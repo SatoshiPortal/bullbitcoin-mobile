@@ -16,6 +16,7 @@ workspace:
   - packages/exchange
   - features/label_editor
   - features/network
+  - features/mnemonic_entry
   - features/scanning
   - features/signers
   - features/access
@@ -65,6 +66,7 @@ dependencies:
   labels:
   label_editor:
   network:
+  mnemonic_entry:
   scanning:
   signers:
   ark:

@@ -1,6 +1,7 @@
-import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:unorm_dart/unorm_dart.dart';
+
+import 'bip39_word_list.dart';
 
 /// The keys the mnemonic keyboard shows for one wordlist, every value in the
 /// NFKD form the matcher compares.

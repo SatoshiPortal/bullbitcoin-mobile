@@ -137,6 +137,7 @@ graph TB
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature<br/>Catalogue and layout storage]
     WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]
+    MNEMONIC_ENTRY[Mnemonic Entry]
     ONBOARDING[Onboarding]
     SETTINGS[Settings]
     PREFERENCES[Preferences Package]
@@ -290,10 +291,13 @@ graph TB
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES
     IMPORT_MNEMONIC --> WALLETS
+    IMPORT_MNEMONIC --> MNEMONIC_ENTRY
+    ONBOARDING --> MNEMONIC_ENTRY
+    APP_STARTUP --> MNEMONIC_ENTRY
+    MNEMONIC_ENTRY --> BULL_UI
     ONBOARDING --> IMPORT_MNEMONIC
     ONBOARDING --> SETTINGS
     ONBOARDING --> WALLETS
-    APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Legacy Core-to-feature dependencies, pending extraction
 
@@ -675,8 +679,8 @@ The architecture test records source dependencies, including internal imports an
 | `swap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/swap/ui/pages/swap_page.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `wizard → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/wizard/ui/screens/wizard_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 
-| `app_startup → import_mnemonic` | Language prerequisite: Restore UI uses the published mnemonic capability to preserve explicit language selection. | `lib/features/app_startup/ui/screens/restore_default_secret_screen.dart -> lib/features/import_mnemonic/public/import_mnemonic_facade.dart` |
-| `onboarding → import_mnemonic` | Language prerequisite: Recovery UI uses the same published mnemonic capability instead of duplicating language selection. | `lib/features/onboarding/ui/screens/onboarding_physical_recovery.dart -> lib/features/import_mnemonic/public/import_mnemonic_facade.dart` |
+| `app_startup → mnemonic_entry` | Restore UI uses the typed input widget to preserve explicit language selection. | `restore_default_secret_screen.dart → package:mnemonic_entry/mnemonic_entry.dart` |
+| `onboarding → mnemonic_entry` | Recovery UI uses the same typed input widget instead of duplicating language selection. | `onboarding_physical_recovery.dart → package:mnemonic_entry/mnemonic_entry.dart` |
 
 The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
 
@@ -684,7 +688,7 @@ Develop also removes the price chart’s shell locator import; its obsolete entr
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
-RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. App startup and onboarding consume the published mnemonic-language facade through their import_mnemonic dependencies.
+RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly.
 
 
 ## Regtest Electrum storage and watch-only import

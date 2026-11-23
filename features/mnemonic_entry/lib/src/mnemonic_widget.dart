@@ -1,18 +1,11 @@
-import 'package:bull_ui/bull_ui.dart' show BullButtonSize;
-import 'package:bull_logger/bull_logger.dart';
-
 import 'dart:math';
 
-import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/mnemonic_entry_failure_l10n.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard_layout.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullButtonSize,
         BullKeyScramble,
         BullKeyboardLanguage,
         BullLabeledTextInput,
@@ -22,11 +15,19 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullSwitch,
         BullText,
+        BullThemeX,
         BullTypographyX,
         Gap;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'bip39_word_list.dart';
+import 'mnemonic_entry_failure.dart';
+import 'mnemonic_entry_failure_l10n.dart';
+import 'mnemonic_entry_labels.dart';
+import 'mnemonic_keyboard_layout.dart';
+
+/// User-supplied recovery input. Consume immediately; never log or persist it.
 typedef Mnemonic = ({
   String label,
   String passphrase,
@@ -81,7 +82,8 @@ class MnemonicWidget extends StatefulWidget {
   /// them, since they are valid in the chosen wordlist.
   final bip39.Language language;
   final bip39.MnemonicLength initialLength;
-  final Function(Mnemonic) onSubmit;
+  final void Function(Mnemonic) onSubmit;
+  final MnemonicEntryLabels labels;
   final String? submitLabel;
   final bool allowPassphrase;
   final bool allowLabel;
@@ -95,6 +97,7 @@ class MnemonicWidget extends StatefulWidget {
     this.language = bip39.Language.english,
     required this.initialLength,
     required this.onSubmit,
+    required this.labels,
     this.submitLabel,
     this.allowPassphrase = true,
     this.allowLabel = true,
@@ -226,19 +229,14 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
       }
     }
 
+    final bip39.Mnemonic mnemonic;
     try {
-      final mnemonic = bip39.Mnemonic.fromWords(
+      mnemonic = bip39.Mnemonic.fromWords(
         words: words,
         language: _language,
         passphrase: passphrase,
       );
-      widget.onSubmit((
-        words: mnemonic.words,
-        passphrase: passphrase,
-        label: label,
-        language: _language,
-      ));
-    } catch (e) {
+    } on Exception catch (e) {
       // The boundary where a library exception becomes a failure. Only the
       // *kind* of exception crosses: every `bip39.MnemonicException` message
       // embeds the offending word, so `e.toString()` would put a piece of the
@@ -263,7 +261,14 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
         },
       );
       _showError();
+      return;
     }
+    widget.onSubmit((
+      words: List.unmodifiable(mnemonic.words),
+      passphrase: passphrase,
+      label: label,
+      language: _language,
+    ));
   }
 
   // No setState: the inputs keep their own text, and nothing else displays it.
@@ -394,9 +399,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BullText(
-          context.loc.mnemonicWordCountLabel,
+          widget.labels.mnemonicWordCountLabel,
           role: .caption,
-          color: context.appColors.textMuted,
+          color: context.bull.textMuted,
         ),
         const Gap(6),
         SizedBox(
@@ -442,13 +447,13 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
           children: [
             if (ambiguous)
               Text(
-                context.loc.mnemonicLanguageAmbiguous,
+                widget.labels.mnemonicLanguageAmbiguous,
                 style: context.bullType.body,
               ),
             if (matches.length == 1 && matches.single != _language)
               BullButton.secondary(
-                label: context.loc.mnemonicLanguageSuggestion(
-                  context.loc.mnemonicLanguageName(matches.single.name),
+                label: widget.labels.mnemonicLanguageSuggestion(
+                  widget.labels.mnemonicLanguageName(matches.single.name),
                 ),
                 onPressed: () => _selectLanguage(matches.single),
                 size: BullButtonSize.small,
@@ -461,7 +466,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                     _entryLanguages.contains,
                   ))
                     BullButton.secondary(
-                      label: context.loc.mnemonicLanguageName(language.name),
+                      label: widget.labels.mnemonicLanguageName(language.name),
                       onPressed: () => _selectLanguage(language),
                       size: BullButtonSize.small,
                       compact: true,
@@ -509,7 +514,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
   @override
   Widget build(BuildContext context) {
     final errorMessage =
-        _failure?.toTranslated(context) ?? widget.externalError;
+        _failure?.toTranslated(widget.labels) ?? widget.externalError;
 
     return Column(
       children: [
@@ -535,6 +540,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                   const Gap(14),
 
                   MnemonicSentenceWidget(
+                    labels: widget.labels,
                     controllers: _controllers,
                     language: _language,
                     allowAutoFillWords: widget.allowAutoFillWords,
@@ -558,23 +564,23 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     BullText(
-                                      context.loc.passphraseOption,
+                                      widget.labels.passphraseOption,
                                       style: context.bullType.body.copyWith(
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     BullText(
                                       _showPassphrase
-                                          ? context
-                                                .loc
+                                          ? widget
+                                                .labels
                                                 .passphraseOptionOnSubtitle
-                                          : context
-                                                .loc
+                                          : widget
+                                                .labels
                                                 .passphraseOptionOffSubtitle,
                                       style: context.bullType.label.copyWith(
                                         fontWeight: FontWeight.w400,
                                       ),
-                                      color: context.appColors.textMuted,
+                                      color: context.bull.textMuted,
                                     ),
                                   ],
                                 ),
@@ -593,26 +599,26 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                       const Gap(8),
                       BullSecretTextInput(
                         key: ValueKey(_passphraseGeneration),
-                        label: context.loc.passphraseLabel,
-                        hint: context.loc.optionalPassphraseHint,
+                        label: widget.labels.passphraseLabel,
+                        hint: widget.labels.optionalPassphraseHint,
                         onChanged: updatePassphrase,
-                        showLabel: context.loc.passphraseShow,
-                        hideLabel: context.loc.passphraseHide,
+                        showLabel: widget.labels.passphraseShow,
+                        hideLabel: widget.labels.passphraseHide,
                       ),
                       if (_passphraseCleared && passphrase.isEmpty) ...[
                         BullText(
-                          context.loc.passphraseClearedNotice,
+                          widget.labels.passphraseClearedNotice,
                           style: context.bullType.body,
                         ),
                         TextButton(
                           onPressed: () =>
                               setState(() => _passphraseCleared = false),
-                          child: Text(context.loc.continueWithoutPassphrase),
+                          child: Text(widget.labels.continueWithoutPassphrase),
                         ),
                       ],
                       if (passphrase != passphrase.trim())
                         BullText(
-                          context.loc.passphraseWhitespaceWarning,
+                          widget.labels.passphraseWhitespaceWarning,
                           style: context.bullType.body,
                         ),
                     ],
@@ -621,8 +627,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                   if (widget.allowLabel) ...[
                     const Gap(16),
                     BullLabeledTextInput(
-                      label: context.loc.recipientsInfoLabel,
-                      hint: context.loc.requiredHint,
+                      label: widget.labels.recipientsInfoLabel,
+                      hint: widget.labels.requiredHint,
                       value: label,
                       onChanged: updateLabel,
                       maxLines: 1,
@@ -635,7 +641,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                       key: _errorKey,
                       errorMessage,
                       style: context.bullType.body,
-                      color: context.appColors.error,
+                      color: context.bull.error,
                     ),
                   ],
 
@@ -657,7 +663,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: BullButton.primary(
-                  label: widget.submitLabel ?? context.loc.submitButton,
+                  label: widget.submitLabel ?? widget.labels.submitButton,
                   onPressed: onSubmit,
                 ),
               ),
@@ -717,8 +723,8 @@ class MnemonicWord extends StatelessWidget {
       padding: const EdgeInsets.only(left: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(context.bullShapes.input),
-        border: Border.all(color: context.appColors.border),
-        color: context.appColors.surface,
+        border: Border.all(color: context.bull.border),
+        color: context.bull.surface,
       ),
       // A floor, not a height: the field grows with the system text size.
       constraints: const BoxConstraints(minHeight: 40),
@@ -742,17 +748,17 @@ class MnemonicWord extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: word.isEmpty
-                      ? context.appColors.onSurface
+                      ? context.bull.onSurface
                       : isValid
-                      ? context.appColors.success
-                      : context.appColors.error,
+                      ? context.bull.success
+                      : context.bull.error,
                   borderRadius: BorderRadius.circular(context.bullShapes.badge),
                 ),
                 child: BullText(
                   displayIndex,
                   role: .body,
                   fontWeight: .w700,
-                  color: context.appColors.surface,
+                  color: context.bull.surface,
                 ),
               );
             },
@@ -771,22 +777,20 @@ class MnemonicWord extends StatelessWidget {
               enableSuggestions: false,
               autocorrect: false,
               controller: controller,
-              style: context.bullType.body.copyWith(
-                color: context.appColors.text,
-              ),
+              style: context.bullType.body.copyWith(color: context.bull.text),
               focusNode: focusNode,
               clipBehavior: .antiAliasWithSaveLayer,
               decoration: InputDecoration(
                 isDense: true,
                 contentPadding: const EdgeInsets.only(right: 8),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
+                  borderSide: BorderSide(color: context.bull.transparent),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
+                  borderSide: BorderSide(color: context.bull.transparent),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
+                  borderSide: BorderSide(color: context.bull.transparent),
                 ),
               ),
             ),
@@ -797,11 +801,7 @@ class MnemonicWord extends StatelessWidget {
               if (value.text.isEmpty) return const SizedBox.shrink();
               return IconButton(
                 onPressed: controller.clear,
-                icon: Icon(
-                  Icons.close,
-                  size: 18,
-                  color: context.appColors.text,
-                ),
+                icon: Icon(Icons.close, size: 18, color: context.bull.text),
                 padding: EdgeInsets.zero,
                 // Within the field's floor, border included: Material's 48 dp
                 // tap target would push a field with a word taller than its
@@ -827,6 +827,7 @@ class MnemonicSentenceWidget extends StatefulWidget {
   final List<TextEditingController> controllers;
   final bip39.Language language;
   final bool allowAutoFillWords;
+  final MnemonicEntryLabels labels;
 
   /// A slot, owned by the parent, into which this widget publishes its docked
   /// keyboard bar builder. The parent renders it below the scroll area so the
@@ -845,6 +846,7 @@ class MnemonicSentenceWidget extends StatefulWidget {
     super.key,
     required this.controllers,
     required this.language,
+    required this.labels,
     this.allowAutoFillWords = true,
     this.keyboardBarSlot,
     this.onLanguageSelected,
@@ -1315,7 +1317,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
           },
           shuffleActive: paranoid,
           onToggleShuffle: _toggleParanoid,
-          shuffleHint: context.loc.mnemonicShuffleKeyboardHint,
+          shuffleHint: widget.labels.mnemonicShuffleKeyboardHint,
           suggestions: suggestions,
           suggestionNotice: notice,
           onSuggestion: (word) => _onHintTap(query, language, controller, word),
@@ -1323,7 +1325,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             for (final entry in _entryLanguages)
               BullKeyboardLanguage(
                 code: _languageCode(entry),
-                name: context.loc.mnemonicLanguageName(entry.name),
+                name: widget.labels.mnemonicLanguageName(entry.name),
               ),
           ],
           selectedLanguage: _entryLanguages.indexOf(language),
@@ -1333,7 +1335,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
                   _entryLanguages[index],
                   _activeField.value,
                 ),
-          languageHint: context.loc.mnemonicLanguageLabel,
+          languageHint: widget.labels.mnemonicLanguageLabel,
         );
       },
     );
@@ -1360,7 +1362,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       return (
         suggestions: const <String>[],
         notice: candidates != null && query.prefix.isEmpty
-            ? context.loc.mnemonicPossibleLastWords(pool.length)
+            ? widget.labels.mnemonicPossibleLastWords(pool.length)
             : null,
       );
     }
