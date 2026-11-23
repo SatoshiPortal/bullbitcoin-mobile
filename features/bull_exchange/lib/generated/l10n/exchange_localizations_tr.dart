@@ -2087,4 +2087,352 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Sayı girin';
+
+  @override
+  String get buyPaymentMethod => 'Ödeme yöntemi';
+
+  @override
+  String get buyMax => 'Max';
+
+  @override
+  String get buySelectWallet => 'Cüzdan seçin Cüzdan';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Bitcoin adresi girin';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Satın almayı onaylayın';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return '$fiatAmount karşılığında $amount satın aldınız';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Ödemeniz gönderilir ';
+
+  @override
+  String get buyViewDetails => 'View details';
+
+  @override
+  String get buyAccelerateTransaction => 'Hız İşlemleri';
+
+  @override
+  String get buyGetConfirmedFaster => 'Daha hızlı teyit et';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Açıklamayı teyit et';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Bitcoin ağ ücreti, Bitcoin madencileri tarafından aldığınız ve topladığınız miktarın üzerinden silinecektir';
+
+  @override
+  String get buyNetworkFees => 'Network ücretleri';
+
+  @override
+  String get buyEstimatedFeeValue => 'Tahmin edilen ücret değeri';
+
+  @override
+  String get buyNetworkFeeRate => 'Ağ ücreti oranı oranı';
+
+  @override
+  String get buyConfirmationTime => 'Onay zamanı';
+
+  @override
+  String get buyConfirmationTimeValue => '~ 10 dakika';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Ücretsiz çekilmek için bekleyin';
+
+  @override
+  String get buyConfirmExpress => 'Doğru ifade';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin gönderdi!';
+
+  @override
+  String get buyThatWasFast => 'Bu hızlıydı, değil miydi?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Güvenli Bitcoin Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Anında ödeme';
+
+  @override
+  String get dcaSuccessTitle => 'Satın almak Aktif!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Her saat $amount satın alacaksınız';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Her gün $amount satın alacaksınız';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Her hafta $amount satın alacaksınız';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Her ay $amount satın alacaksınız';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Eve dön';
+
+  @override
+  String get dcaChooseWalletTitle => 'Bitcoin Cüzdanı seçin';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.';
+
+  @override
+  String get dcaNetworkValidationError => 'Lütfen bir ağ seçin';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Lightning Address';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Varsayılan Lightning adresimi kullanın.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Devam etmeye devam et';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Frekans seçin';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Bitcoin Wallet Type seçin';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Lightning Network (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Sıvı (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Minimum 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Uyumlu cüzdan gerektirir, maksimum 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Uyumlu cüzdanlar';
+
+  @override
+  String get dcaSetupTitle => 'Set Recurring Buy';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Yetersiz Denge';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Bu düzeni oluşturmak için yeterli bakiyeniz yok.';
+
+  @override
+  String get dcaSetupFundAccount => 'Hesabınızı finanse edin';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Lütfen bir frekansı seçin';
+
+  @override
+  String get dcaSetupContinue => 'Devam etmeye devam et';
+
+  @override
+  String get dcaConfirmTitle => 'Onay Satın Al Satın Al';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Satın alma emirleri bu ayarlarda otomatik olarak yerleştirilir. Onları her zaman devre dışı bırakabilirsin.';
+
+  @override
+  String get dcaConfirmFrequency => 'Frekans';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Her saat';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Her gün her gün';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Her hafta her hafta';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Her ay';
+
+  @override
+  String get dcaConfirmAmount => '\$';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Ödeme yöntemi';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency dengesi';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Sipariş türü';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Yeniden satın almak';
+
+  @override
+  String get dcaConfirmNetwork => 'Ağ Ağı Ağı';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Sıvı';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Lightning address';
+
+  @override
+  String get dcaConfirmContinue => 'Devam etmeye devam et';
+
+  @override
+  String get buyInputTitle => 'Bitcoin satın alın';
+
+  @override
+  String get buyInputMinAmountError => 'En azından satın almalısınız';
+
+  @override
+  String get buyInputMaxAmountError => 'Daha fazla satın alamazsınız';
+
+  @override
+  String get buyInputKycPending => 'KİTAP ID Verification Pending';
+
+  @override
+  String get buyInputKycMessage =>
+      'İlk önce kimlik Doğrulamasını tamamlamanız gerekir';
+
+  @override
+  String get buyInputCompleteKyc => 'Tamamlanan KC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Yeterli bakiye';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Bu düzeni oluşturmak için yeterli bakiyeniz yok.';
+
+  @override
+  String get buyInputFundAccount => 'Hesabınızı finanse edin';
+
+  @override
+  String get buyInputContinue => 'Devam etmeye devam et';
+
+  @override
+  String get buyConfirmTitle => 'Bitcoin satın alın';
+
+  @override
+  String get buyConfirmYouPay => 'Ödersiniz';
+
+  @override
+  String get buyConfirmYouReceive =>
+      'You receive you receive you receive you receive you receive you receive';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoin Fiyatı';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Ödeme cüzdanı';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Payout yöntemi';
+
+  @override
+  String get buyPayoutMethodLiquid => 'Liquid üzerinde L-BTC';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'Bitcoin zincirinde BTC';
+
+  @override
+  String get buyConfirmExternalWallet => 'Dış Bitcoin cüzdanı';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Bekleyen bir onay ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Minimum miktarın altında satın almaya çalışıyorsunuz.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Siparişiniz şu anda oluşturulamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Hesabınız yüklenemedi. Bağlantınızı kontrol edin, giriş yaptığınızdan emin olun ve tekrar deneyin.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Satın alımlarınızı almak için bir Lightning adresi girin.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Cüzdanınızda alım adresi hazırlanamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

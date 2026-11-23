@@ -2096,4 +2096,351 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Nhập số tiền';
+
+  @override
+  String get buyPaymentMethod => 'Phương thức thanh toán';
+
+  @override
+  String get buyMax => 'Tối đa';
+
+  @override
+  String get buySelectWallet => 'Chọn ví';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Nhập địa chỉ bitcoin';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Xác nhận mua';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Bạn đã mua $amount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn =>
+      'Khoản chi trả của bạn sẽ được gửi trong ';
+
+  @override
+  String get buyViewDetails => 'Xem chi tiết';
+
+  @override
+  String get buyAccelerateTransaction => 'Tăng tốc giao dịch';
+
+  @override
+  String get buyGetConfirmedFaster => 'Xác nhận nhanh hơn';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Xác nhận rút tiền nhanh';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Phí mạng Bitcoin sẽ được trừ từ số tiền bạn nhận và được thu bởi các thợ đào Bitcoin';
+
+  @override
+  String get buyNetworkFees => 'Phí mạng';
+
+  @override
+  String get buyEstimatedFeeValue => 'Giá trị phí ước tính';
+
+  @override
+  String get buyNetworkFeeRate => 'Mức phí mạng';
+
+  @override
+  String get buyConfirmationTime => 'Thời gian xác nhận';
+
+  @override
+  String get buyConfirmationTimeValue => '~10 phút';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Chờ rút tiền miễn phí';
+
+  @override
+  String get buyConfirmExpress => 'Xác nhận rút nhanh';
+
+  @override
+  String get buyBitcoinSent => 'Đã gửi Bitcoin!';
+
+  @override
+  String get buyThatWasFast => 'Nhanh thật đấy, phải không?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Bitcoin an toàn';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Thanh toán tức thời';
+
+  @override
+  String get dcaSuccessTitle => 'Mua định kỳ đang hoạt động!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Bạn sẽ mua $amount mỗi giờ';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Bạn sẽ mua $amount mỗi ngày';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Bạn sẽ mua $amount mỗi tuần';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Bạn sẽ mua $amount mỗi tháng';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Về trang chủ';
+
+  @override
+  String get dcaChooseWalletTitle => 'Chọn ví Bitcoin';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Các lệnh mua Bitcoin sẽ được đặt tự động theo lịch trình này.';
+
+  @override
+  String get dcaNetworkValidationError => 'Vui lòng chọn một mạng';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Nhập địa chỉ Lightning';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Dùng địa chỉ Lightning mặc định của tôi.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Tiếp tục';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Chọn tần suất';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Chọn loại ví Bitcoin';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Mạng Lightning (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Liquid (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Tối thiểu 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Yêu cầu ví tương thích, tối đa 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Yêu cầu ví tương thích';
+
+  @override
+  String get dcaSetupTitle => 'Thiết lập mua định kỳ';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Số dư không đủ';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Bạn không có đủ số dư để tạo đơn hàng này.';
+
+  @override
+  String get dcaSetupFundAccount => 'Nạp tiền vào tài khoản của bạn';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Các lệnh mua Bitcoin sẽ được đặt tự động theo lịch trình này.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Vui lòng chọn tần suất';
+
+  @override
+  String get dcaSetupContinue => 'Tiếp tục';
+
+  @override
+  String get dcaConfirmTitle => 'Xác nhận mua định kỳ';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Các lệnh mua sẽ được đặt tự động theo các cài đặt này. Bạn có thể tắt chúng bất cứ lúc nào.';
+
+  @override
+  String get dcaConfirmFrequency => 'Tần suất';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Mỗi giờ';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Mỗi ngày';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Mỗi tuần';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Mỗi tháng';
+
+  @override
+  String get dcaConfirmAmount => 'Số tiền';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Phương thức thanh toán';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return 'Số dư $currency';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Loại đơn hàng';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Mua định kỳ';
+
+  @override
+  String get dcaConfirmNetwork => 'Mạng';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Liquid';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Địa chỉ Lightning';
+
+  @override
+  String get dcaConfirmContinue => 'Tiếp tục';
+
+  @override
+  String get buyInputTitle => 'Mua Bitcoin';
+
+  @override
+  String get buyInputMinAmountError => 'Bạn nên mua tối thiểu';
+
+  @override
+  String get buyInputMaxAmountError => 'Bạn không thể mua nhiều hơn';
+
+  @override
+  String get buyInputKycPending => 'Đang chờ xác minh danh tính KYC';
+
+  @override
+  String get buyInputKycMessage => 'Bạn phải hoàn tất xác minh danh tính trước';
+
+  @override
+  String get buyInputCompleteKyc => 'Hoàn tất KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Số dư không đủ';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Bạn không có đủ số dư để tạo đơn hàng này.';
+
+  @override
+  String get buyInputFundAccount => 'Nạp tiền vào tài khoản của bạn';
+
+  @override
+  String get buyInputContinue => 'Tiếp tục';
+
+  @override
+  String get buyConfirmTitle => 'Mua Bitcoin';
+
+  @override
+  String get buyConfirmYouPay => 'Bạn trả';
+
+  @override
+  String get buyConfirmYouReceive => 'Bạn nhận';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Giá Bitcoin';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Ví nhận tiền';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Phương thức chi trả';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC trên Liquid';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC trên chuỗi Bitcoin';
+
+  @override
+  String get buyConfirmExternalWallet => 'Ví Bitcoin bên ngoài';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Đang chờ xác nhận ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Bạn chưa được xác thực. Vui lòng đăng nhập để tiếp tục.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Bạn đang cố mua dưới số tiền tối thiểu.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Bạn đang cố mua vượt quá số tiền tối đa.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Không thể tạo đơn hàng của bạn ngay lúc này. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Không thể tải tài khoản của bạn. Hãy kiểm tra kết nối, đảm bảo bạn đã đăng nhập và thử lại.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Nhập địa chỉ Lightning để nhận các giao dịch mua của bạn.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Không thể chuẩn bị địa chỉ nhận trong ví của bạn. Vui lòng thử lại.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Không thể tạo giao dịch mua định kỳ. Vui lòng thử lại sau.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

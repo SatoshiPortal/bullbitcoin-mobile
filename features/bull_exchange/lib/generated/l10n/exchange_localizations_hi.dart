@@ -2082,6 +2082,352 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'राशि दर्ज करें';
+
+  @override
+  String get buyPaymentMethod => 'भुगतान विधि';
+
+  @override
+  String get buyMax => 'अधिकतम';
+
+  @override
+  String get buySelectWallet => 'वॉलेट चुनें';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Bitcoin पता दर्ज करें';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'खरीद की पुष्टि करें';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'आपने $fiatAmount में $amount खरीदा';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'आपका भुगतान भेजा जाएगा ';
+
+  @override
+  String get buyViewDetails => 'विवरण देखें';
+
+  @override
+  String get buyAccelerateTransaction => 'लेनदेन तेज़ करें';
+
+  @override
+  String get buyGetConfirmedFaster => 'इसे जल्दी पुष्टि कराएं';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'एक्सप्रेस निकासी की पुष्टि करें';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Bitcoin नेटवर्क शुल्क आपको प्राप्त होने वाली राशि से काटा जाएगा और Bitcoin miners द्वारा एकत्र किया जाएगा';
+
+  @override
+  String get buyNetworkFees => 'नेटवर्क शुल्क';
+
+  @override
+  String get buyEstimatedFeeValue => 'अनुमानित शुल्क मूल्य';
+
+  @override
+  String get buyNetworkFeeRate => 'नेटवर्क शुल्क दर';
+
+  @override
+  String get buyConfirmationTime => 'पुष्टि समय';
+
+  @override
+  String get buyConfirmationTimeValue => '~10 मिनट';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'मुफ़्त निकासी की प्रतीक्षा करें';
+
+  @override
+  String get buyConfirmExpress => 'एक्सप्रेस पुष्टि करें';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin भेज दिया गया!';
+
+  @override
+  String get buyThatWasFast => 'यह तेज़ था, है ना?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'सुरक्षित Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'तत्काल भुगतान';
+
+  @override
+  String get dcaSuccessTitle => 'Recurring Buy सक्रिय है!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'आप हर घंटे $amount खरीद सकते हैं';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'आप हर दिन $amount खरीद सकते हैं';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'आप हर सप्ताह $amount खरीद सकते हैं';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'आप हर महीने $amount खरीद सकते हैं';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'घर वापस';
+
+  @override
+  String get dcaChooseWalletTitle => 'बिटकॉइन वॉलेट चुनें';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'इस कार्यक्रम के अनुसार बिटकॉइन की खरीद स्वचालित रूप से रखी जाएगी।।';
+
+  @override
+  String get dcaNetworkValidationError => 'कृपया एक नेटवर्क चुनें';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'लाइटनिंग एड्रेस';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'मेरे डिफ़ॉल्ट लाइटनिंग पते का उपयोग करें।।';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'जारी';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'आवृत्ति चुनें';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'बिटकॉइन वॉलेट प्रकार चुनें';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'बिटकॉइन (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'बिजली नेटवर्क (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'तरल (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'न्यूनतम 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'संगत वॉलेट, अधिकतम 0.25 BTC की आवश्यकता है';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'संगत वॉलेट की आवश्यकता है';
+
+  @override
+  String get dcaSetupTitle => 'खरीदें';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'अपर्याप्त शेष';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।';
+
+  @override
+  String get dcaSetupFundAccount => 'अपने खाते को फंड करें';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'इस कार्यक्रम के अनुसार बिटकॉइन की खरीद स्वचालित रूप से रखी जाएगी।।';
+
+  @override
+  String get dcaSetupFrequencyError => 'एक आवृत्ति का चयन करें';
+
+  @override
+  String get dcaSetupContinue => 'जारी';
+
+  @override
+  String get dcaConfirmTitle => 'आवर्ती की पुष्टि करें खरीदें';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'इन सेटिंग्स के अनुसार ऑर्डर स्वचालित रूप से रखा जाएगा। आप उन्हें कभी भी अक्षम कर सकते हैं।।';
+
+  @override
+  String get dcaConfirmFrequency => 'आवृत्ति';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'हर घंटे';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'हर दिन';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'हर सप्ताह';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'हर माह';
+
+  @override
+  String get dcaConfirmAmount => 'राशि';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'भुगतान विधि';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency संतुलन';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'आदेश प्रकार';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'खरीददारी';
+
+  @override
+  String get dcaConfirmNetwork => 'नेटवर्क';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'बिटकॉइन';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'बिजली';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'तरल';
+
+  @override
+  String get dcaConfirmLightningAddress => 'बिजली का पता';
+
+  @override
+  String get dcaConfirmContinue => 'जारी';
+
+  @override
+  String get buyInputTitle => 'बिटकॉइन खरीदें';
+
+  @override
+  String get buyInputMinAmountError => 'आपको कम से कम खरीदना चाहिए';
+
+  @override
+  String get buyInputMaxAmountError => 'आप अधिक से अधिक नहीं खरीद सकते';
+
+  @override
+  String get buyInputKycPending => 'KYC ID सत्यापन लंबित';
+
+  @override
+  String get buyInputKycMessage => 'आपको पहले आईडी सत्यापन पूरा करना होगा';
+
+  @override
+  String get buyInputCompleteKyc => 'पूरा KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'अपर्याप्त संतुलन';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।';
+
+  @override
+  String get buyInputFundAccount => 'अपने खाते को फंड करें';
+
+  @override
+  String get buyInputContinue => 'जारी';
+
+  @override
+  String get buyConfirmTitle => 'बिटकॉइन खरीदें';
+
+  @override
+  String get buyConfirmYouPay => 'भुगतान';
+
+  @override
+  String get buyConfirmYouReceive => 'प्राप्त करना';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'बिटकॉइन मूल्य';
+
+  @override
+  String get buyConfirmPayoutWallet => 'भुगतान वॉलेट';
+
+  @override
+  String get buyConfirmPayoutMethod => 'भुगतान विधि';
+
+  @override
+  String get buyPayoutMethodLiquid => 'Liquid पर L-BTC';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'Bitcoin चेन पर BTC';
+
+  @override
+  String get buyConfirmExternalWallet => 'बाहरी बिटकॉइन वॉलेट';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'पुष्टिकरण ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।।';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'आप न्यूनतम राशि के नीचे खरीदने की कोशिश कर रहे हैं।।';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'आप अधिकतम राशि से अधिक खरीदने की कोशिश कर रहे हैं।।';
+
+  @override
+  String get buyUnexpectedError =>
+      'आपका ऑर्डर अभी नहीं बनाया जा सका। कृपया दोबारा कोशिश करें या सहायता से संपर्क करें।';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'आपका खाता लोड नहीं हो सका। अपना कनेक्शन जाँचें, सुनिश्चित करें कि आप लॉग इन हैं और फिर से प्रयास करें।';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'अपनी खरीदारी प्राप्त करने के लिए एक Lightning पता दर्ज करें।';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'आपके वॉलेट में प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।';
+
+  @override
+  String get dcaOrderCreationError =>
+      'आवर्ती खरीद नहीं बनाई जा सकी। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -4084,4 +4430,327 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
 
   @override
   String get deleteAccountSuccessClose => 'Band Karo';
+
+  @override
+  String get buyEnterAmount => 'Raashi daalo';
+
+  @override
+  String get buyPaymentMethod => 'Payment ka tarika';
+
+  @override
+  String get buyMax => 'Max';
+
+  @override
+  String get buySelectWallet => 'Wallet chuniye';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Bitcoin pata daalo';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Khareedari confirm karo';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Aapne $fiatAmount mein $amount kharida';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Aapka payout bheja jayega ';
+
+  @override
+  String get buyViewDetails => 'Jaankari dekho';
+
+  @override
+  String get buyAccelerateTransaction => 'Transaction Tez Karo';
+
+  @override
+  String get buyGetConfirmedFaster => 'Jaldi confirm karwao';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Express withdrawal confirm karo';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Bitcoin network fee aapko milne wali raashi se kati jayegi aur Bitcoin miners ko milegi';
+
+  @override
+  String get buyNetworkFees => 'Network fees';
+
+  @override
+  String get buyEstimatedFeeValue => 'Anumaan fee kimat';
+
+  @override
+  String get buyNetworkFeeRate => 'Network fee rate';
+
+  @override
+  String get buyConfirmationTime => 'Confirmation samay';
+
+  @override
+  String get buyConfirmationTimeValue => '~10 minute';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Muft withdrawal ka intezaar karo';
+
+  @override
+  String get buyConfirmExpress => 'Express confirm karo';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin bheja gaya!';
+
+  @override
+  String get buyThatWasFast => 'Kitni jaldi, hai na?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Surakshit Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Instant payments';
+
+  @override
+  String get dcaSuccessTitle => 'Recurring Buy Chalu Ho Gaya!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Aap har ghante $amount kharidoge';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Aap har din $amount kharidoge';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Aap har hafte $amount kharidoge';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Aap har mahine $amount kharidoge';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Home wapas jao';
+
+  @override
+  String get dcaChooseWalletTitle => 'Bitcoin Wallet Chuniye';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Bitcoin khareedari is schedule ke anusar apne aap hogi.';
+
+  @override
+  String get dcaNetworkValidationError => 'Kripya ek network chuniye';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Lightning Address Daalo';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Mera default Lightning address use karo.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Aage Badho';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Frequency Chuniye';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Bitcoin Wallet Prakar Chuniye';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Lightning Network (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Liquid (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Minimum 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Compatible wallet chahiye, maximum 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Compatible wallet chahiye';
+
+  @override
+  String get dcaSetupTitle => 'Recurring Buy Set Karo';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Insufficient Balance';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Ye order banane ke liye aapke paas itna balance nahi hai.';
+
+  @override
+  String get dcaSetupFundAccount => 'Apna account fund karo';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Bitcoin purchases is schedule ke hisaab se automatically place hongi.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Kripya ek frequency select karo';
+
+  @override
+  String get dcaSetupContinue => 'Continue';
+
+  @override
+  String get dcaConfirmTitle => 'Recurring Buy Confirm Karo';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Buy orders in settings ke hisaab se automatically place honge. Aap inhe kisi bhi waqt disable kar sakte hain.';
+
+  @override
+  String get dcaConfirmFrequency => 'Frequency';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Har ghante';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Har din';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Har hafte';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Har mahine';
+
+  @override
+  String get dcaConfirmAmount => 'Amount';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Payment method';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Order type';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Recurring buy';
+
+  @override
+  String get dcaConfirmNetwork => 'Network';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Liquid';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Lightning address';
+
+  @override
+  String get dcaConfirmContinue => 'Continue';
+
+  @override
+  String get buyInputTitle => 'Bitcoin Kharido';
+
+  @override
+  String get buyInputMinAmountError => 'Aapko kam se kam itna kharidna chahiye';
+
+  @override
+  String get buyInputMaxAmountError => 'Aap itne se zyada nahi kharid sakte';
+
+  @override
+  String get buyInputKycPending => 'KYC ID Verification Baaki Hai';
+
+  @override
+  String get buyInputKycMessage =>
+      'Aapko pehle ID Verification complete karna hoga';
+
+  @override
+  String get buyInputCompleteKyc => 'KYC Complete Karo';
+
+  @override
+  String get buyInputInsufficientBalance => 'Insufficient balance';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Ye order banane ke liye aapke paas itna balance nahi hai.';
+
+  @override
+  String get buyInputFundAccount => 'Apna account fund karo';
+
+  @override
+  String get buyInputContinue => 'Continue';
+
+  @override
+  String get buyConfirmTitle => 'Bitcoin Kharido';
+
+  @override
+  String get buyConfirmYouPay => 'Aap dete hain';
+
+  @override
+  String get buyConfirmYouReceive => 'Aap paate hain';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoin Price';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Bhugtaan wallet';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Payout method';
+
+  @override
+  String get buyPayoutMethodLiquid => 'Liquid par L-BTC';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'Bitcoin chain par BTC';
+
+  @override
+  String get buyConfirmExternalWallet => 'External Bitcoin wallet';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Confirmation ka intezaar hai';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Aap authenticated nahi hain. Continue karne ke liye login karo.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Aap minimum amount se kam kharidne ki koshish kar rahe hain.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Aap maximum amount se zyada kharidne ki koshish kar rahe hain.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Apni khareedari paane ke liye ek Lightning address daalein.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein.';
 }

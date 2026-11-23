@@ -2127,4 +2127,352 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'Εισαγάγετε ποσό';
+
+  @override
+  String get buyPaymentMethod => 'Μέθοδος πληρωμής';
+
+  @override
+  String get buyMax => 'Max';
+
+  @override
+  String get buySelectWallet => 'Επιλέξτε πορτοφόλι';
+
+  @override
+  String get buyEnterBitcoinAddress => 'Εισάγετε διεύθυνση bitcoin';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H ...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => 'Επιβεβαίωση αγοράς';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'Αγοράσατε $amount με $fiatAmount';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'Η πληρωμή σας θα σταλεί ';
+
+  @override
+  String get buyViewDetails => 'Δείτε λεπτομέρειες';
+
+  @override
+  String get buyAccelerateTransaction => 'Επιτυχημένη συναλλαγή';
+
+  @override
+  String get buyGetConfirmedFaster => 'Αποκτήστε το επιβεβαίωσε πιο γρήγορα';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'Επιβεβαίωση ρητή απόσυρση';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Το τέλος του δικτύου Bitcoin θα αφαιρεθεί από το ποσό που λαμβάνετε και συλλέγονται από τους ανθρακωρύχους Bitcoin';
+
+  @override
+  String get buyNetworkFees => 'Network χρεώσεις';
+
+  @override
+  String get buyEstimatedFeeValue => 'Εκτιμώμενη τιμή χρέωσης';
+
+  @override
+  String get buyNetworkFeeRate => 'Φόρος χρέωσης δικτύου';
+
+  @override
+  String get buyConfirmationTime => 'Επιβεβαίωση χρόνου επιβεβαίωσης';
+
+  @override
+  String get buyConfirmationTimeValue => '10 λεπτά';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'Περιμένετε δωρεάν απόσυρση';
+
+  @override
+  String get buyConfirmExpress => 'Επιβεβαίωση';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin αποστέλλεται!';
+
+  @override
+  String get buyThatWasFast => 'Αυτό ήταν γρήγορο, δεν ήταν αυτό?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Secure Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'Instant πληρωμές';
+
+  @override
+  String get dcaSuccessTitle => 'Το Recuring Buy είναι Active!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'Θα αγοράζετε $amount κάθε ώρα';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'Θα αγοράσετε $amount κάθε μέρα';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'Θα αγοράζετε $amount κάθε εβδομάδα';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'Θα αγοράζετε $amount κάθε μήνα';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'Επιστροφή στο σπίτι';
+
+  @override
+  String get dcaChooseWalletTitle => 'Επιλέξτε Bitcoin Wallet';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.';
+
+  @override
+  String get dcaNetworkValidationError => 'Επιλέξτε ένα δίκτυο';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'Εισάγετε διεύθυνση Lightning';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'Χρησιμοποιήστε την προεπιλεγμένη διεύθυνση Lightning μου.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'Επιλέξτε συχνότητα';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Επιλέξτε Bitcoin Wallet Type';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'Lightning Network (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'Liquid (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'Ελάχιστη 0,001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'Απαιτεί συμβατό πορτοφόλι, μέγιστο 0,25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'Απαιτείται συμβατό πορτοφόλι';
+
+  @override
+  String get dcaSetupTitle => 'Set Recuring Buy';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'Ανεπαρκή ισορροπία';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.';
+
+  @override
+  String get dcaSetupFundAccount => 'Χρηματοδότηση του λογαριασμού σας';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.';
+
+  @override
+  String get dcaSetupFrequencyError => 'Επιλέξτε μια συχνότητα';
+
+  @override
+  String get dcaSetupContinue => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get dcaConfirmTitle => 'Επιβεβαίωση Αγοράστε αγορά αγορά';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'Οι παραγγελίες αγοράς θα τοποθετηθούν αυτόματα ανά αυτές τις ρυθμίσεις. Μπορείτε να τα απενεργοποιήσετε οποιαδήποτε στιγμή.';
+
+  @override
+  String get dcaConfirmFrequency => 'Συχνότητα συχνότητας';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'Κάθε ώρα';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'Κάθε μέρα';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'Κάθε εβδομάδα';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'Κάθε μήνα';
+
+  @override
+  String get dcaConfirmAmount => 'Ποσο Ποσό Ποσο';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'Μέθοδος πληρωμής';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency ισορροπία';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'Τύπος τύπου παραγγελίας';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Recuring buy';
+
+  @override
+  String get dcaConfirmNetwork => 'Network';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'Lightning';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'Υγρό';
+
+  @override
+  String get dcaConfirmLightningAddress => 'Lightning διεύθυνση Lightning';
+
+  @override
+  String get dcaConfirmContinue => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get buyInputTitle => 'Αγοράστε Bitcoin Bitcoin';
+
+  @override
+  String get buyInputMinAmountError => 'Θα πρέπει να αγοράσετε τουλάχιστον';
+
+  @override
+  String get buyInputMaxAmountError =>
+      'Δεν μπορείς να αγοράσεις περισσότερα από';
+
+  @override
+  String get buyInputKycPending => 'Εκκρεμής Επαλήθευση Ταυτότητας KYC';
+
+  @override
+  String get buyInputKycMessage =>
+      'Πρέπει να ολοκληρώσετε την επαλήθευση ταυτότητας πρώτα';
+
+  @override
+  String get buyInputCompleteKyc => 'Πλήρης KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'Ανεπαρκή ισορροπία';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.';
+
+  @override
+  String get buyInputFundAccount => 'Χρηματοδότηση του λογαριασμού σας';
+
+  @override
+  String get buyInputContinue => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get buyConfirmTitle => 'Αγοράστε Bitcoin Bitcoin';
+
+  @override
+  String get buyConfirmYouPay => 'Πληρώνετε';
+
+  @override
+  String get buyConfirmYouReceive => 'Παίρνεις';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoin Price';
+
+  @override
+  String get buyConfirmPayoutWallet => 'Πορτοφόλι πληρωμής';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Μέθοδος πληρωμής';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC στο Liquid';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC στην αλυσίδα Bitcoin';
+
+  @override
+  String get buyConfirmExternalWallet => 'Εξωτερικό Bitcoin πορτοφόλι';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Περιμένοντας επιβεβαίωση ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'Προσπαθείτε να αγοράσετε κάτω από το ελάχιστο ποσό.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'Προσπαθείτε να αγοράσετε πάνω από το μέγιστο ποσό.';
+
+  @override
+  String get buyUnexpectedError =>
+      'Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'Δεν ήταν δυνατή η φόρτωση του λογαριασμού σας. Ελέγξτε τη σύνδεσή σας, βεβαιωθείτε ότι έχετε συνδεθεί και δοκιμάστε ξανά.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'Εισαγάγετε μια διεύθυνση Lightning για να λαμβάνετε τις αγορές σας.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης στο πορτοφόλι σας. Δοκιμάστε ξανά.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }
