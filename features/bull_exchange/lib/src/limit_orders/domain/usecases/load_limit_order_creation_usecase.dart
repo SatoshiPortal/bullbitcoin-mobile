@@ -135,9 +135,25 @@ class LoadLimitOrderCreationUsecase {
 
   Future<Result<UserSummary, LimitOrdersFailure>> _loadSummary(
     ExchangeEnvironment environment,
-  ) async => (await _exchange.getUserSummary(environment)).mapErr(
-    (failure) => LimitOrdersAccountUnavailableFailure(failure.logMessage),
-  );
+  ) async {
+    final result = await _exchange.getUserSummary(environment);
+    return result.mapErr((failure) {
+      switch (failure) {
+        case ExchangeNotAuthenticatedFailure() ||
+            ExchangeSessionRejectedFailure() ||
+            ExchangeCredentialReadFailure() ||
+            ExchangeApiKeyStorageFailure():
+          break;
+        default:
+          log.severe(
+            message: 'Failed to load the account before creating a limit order',
+            error: failure.runtimeType,
+            trace: StackTrace.current,
+          );
+      }
+      return const LimitOrdersAccountUnavailableFailure();
+    });
+  }
 
   Future<Result<DefaultWallets, LimitOrdersFailure>>
   _loadDefaultWallets() async => (await _exchange.getDefaultWallets()).mapErr(

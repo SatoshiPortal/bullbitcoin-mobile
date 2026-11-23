@@ -158,6 +158,16 @@ void main() {
         } else if (refusal is _MissingKey || refusal is _UnreadableKey) {
           expect(await pending, isA<Err>());
           noReport();
+        } else if (name == 'limit orders') {
+          expect(await pending, isA<Err>());
+          verify(
+            () => logger.severe(
+              message:
+                  'Failed to load the account before creating a limit order',
+              error: ExchangeAccountUnavailableFailure,
+              trace: any(named: 'trace'),
+            ),
+          ).called(1);
         } else {
           expect(await pending, isA<Err>());
           verify(
