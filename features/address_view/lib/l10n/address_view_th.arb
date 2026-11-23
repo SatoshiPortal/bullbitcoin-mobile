@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "Payment URI",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
   "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
-  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+  "sendErrorInvalidAddressOrInvoice": "บัญชี Bitcoin ชําระเงินหรือใบแจ้งหนี้",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "โทรศัพท์",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "กล่องไม้",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "ที่อยู่",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

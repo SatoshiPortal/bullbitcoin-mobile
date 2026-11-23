@@ -1,3 +1,5 @@
+import 'package:exchange/exchange.dart';
+
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';

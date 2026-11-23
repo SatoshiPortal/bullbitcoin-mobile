@@ -25,5 +25,9 @@
   "viewerPaymentUriTab": "Платёжный URI",
   "addressViewErrorWalletNotFound": "Не удалось найти этот кошелёк.",
   "addressViewErrorLoadFailed": "Не удалось загрузить ваши адреса. Пожалуйста, попробуйте снова.",
-  "copiedToClipboard": "Скопировано в буфер обмена"
+  "copiedToClipboard": "Скопировано в буфер обмена",
+  "sendErrorInvalidAddressOrInvoice": "Неверный адрес оплаты Bitcoin или счет",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "exchangeDcaAddressLabelLiquid": "Жидкий адрес",
+  "exchangeDcaAddressLabelLightning": "Адрес освещения"
 }

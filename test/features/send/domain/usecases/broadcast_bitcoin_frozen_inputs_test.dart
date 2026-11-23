@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Result;
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
+import 'package:spend/legacy_exceptions.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';

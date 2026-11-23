@@ -517,7 +517,7 @@ List<SettingsItem> buildSettingsItems({
         localization.bitcoinSettingsAutoTransferTitle,
       ),
       icon: Icons.swap_vertical_circle,
-      open: (context) => context.pushNamed(SettingsRoute.autoswapSettings.name),
+      open: SwapNavigation.openAutoswapSettings,
       keywords: _keywords(
         localization.settingsSearchAutoswapKeywords,
         english.settingsSearchAutoswapKeywords,

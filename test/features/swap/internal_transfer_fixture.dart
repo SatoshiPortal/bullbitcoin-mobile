@@ -1,5 +1,5 @@
 import 'package:bull_ark/bull_ark.dart';
-import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:primitives/primitives.dart';
 
 ArkTransferContext transferContext({

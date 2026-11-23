@@ -58,7 +58,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -326,7 +327,7 @@ class WalletLocator {
     locator.registerFactory<DeleteWalletUsecase>(
       () => DeleteWalletUsecase(
         locator<core.DeleteWalletUsecase>(),
-        locator<SwapFacade>(),
+        locator<OrderSwaps>(),
       ),
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
@@ -371,7 +372,7 @@ class WalletLocator {
           locator<WalletFacade>(),
         ),
         retrySwapsOnRefreshUsecase: RetrySwapsOnRefreshUsecase(
-          locator<SwapFacade>(),
+          locator<SwapActivity>(),
         ),
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),

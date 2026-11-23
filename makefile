@@ -225,7 +225,7 @@ hooks:
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	@(cd packages/legacy_storage && fvm dart run drift_dev make-migrations)
-	fvm dart run drift_dev schema dump lib/features/swap/data/order_swaps_database.dart lib/features/swap/data/schemas/order_swaps_database/
+	fvm dart run drift_dev schema dump packages/swaps/lib/src/orders/data/order_swaps_database.dart packages/swaps/lib/src/orders/data/schemas/order_swaps_database/
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
 	@(cd features/announcements && fvm dart run drift_dev make-migrations)

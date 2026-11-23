@@ -64,5 +64,21 @@
   "viewerPaymentUriTab": "পৰিশোধ URI",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
   "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "sendErrorInvalidAddressOrInvoice": "অবৈধ Bitcoin পেমেণ্ট ঠিকনা বা Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin ঠিকনা",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid ঠিকনা",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning ঠিকনা",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

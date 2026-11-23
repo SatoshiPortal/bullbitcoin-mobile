@@ -11,7 +11,6 @@ import 'package:path/path.dart' as p;
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// Swap still imports the wallet repository and uses wallet navigation.
 // Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
@@ -28,7 +27,6 @@ const _allowedTargets = <String, String>{
   'all_seed_view': 'access',
   'app_startup':
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
-  'autoswap': 'address_view swap wallet',
   'backup_settings': 'backups recoverbull settings test_wallet_backup wallet',
   'backups': 'recoverbull',
   'bull_exchange': 'bitcoin_price',
@@ -48,9 +46,9 @@ const _allowedTargets = <String, String>{
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull send silent swap test_wallet_backup transactions wallet',
+  'settings': 'access address_view all_seed_view ark backup_settings backups bip85 bitcoin_price bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull send silent swap test_wallet_backup transactions wallet',
   'support': 'bull_exchange',
-  'swap': 'address_view ark coins fees send transactions wallet',
+  'swap': 'address_view ark coins fees receive send signers transactions',
   'test_wallet_backup':
       'access onboarding physical_backup_verification recoverbull wallet',
   'transactions': 'bitcoin_price label_editor',
@@ -149,7 +147,7 @@ void main() {
       for (final path in [
         'lib/features/send/presentation/bloc/send_cubit.dart',
         'lib/features/settings/presentation/bloc/settings_cubit.dart',
-        'lib/features/swap/presentation/transfer_bloc.dart',
+        'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {
         expect(
           File(path).readAsStringSync(),

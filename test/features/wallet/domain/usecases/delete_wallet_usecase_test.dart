@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
     as core;
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,16 +9,16 @@ import 'package:mocktail/mocktail.dart';
 class _MockCoreDeleteWalletUsecase extends Mock
     implements core.DeleteWalletUsecase {}
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 void main() {
   late _MockCoreDeleteWalletUsecase coreDelete;
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late DeleteWalletUsecase usecase;
 
   setUp(() {
     coreDelete = _MockCoreDeleteWalletUsecase();
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     usecase = DeleteWalletUsecase(coreDelete, swapFacade);
   });
 

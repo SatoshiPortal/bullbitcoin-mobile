@@ -19,7 +19,7 @@ void main() {
   test('checks the wallet above, at and below the threshold', () async {
     final check = Consolidation.open(spend);
     for (final offset in [-1, 0, 1]) {
-      final count = kLiquidConsolidationThreshold + offset;
+      final count = liquidConsolidationThreshold + offset;
       spend.count = Ok(count);
       expect(
         await check.isRequired(walletId),

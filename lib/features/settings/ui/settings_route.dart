@@ -7,7 +7,6 @@ enum SettingsRoute {
   walletSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),
-  autoswapSettings('autoswap-settings'),
   appSettings('app-settings'),
   permissions('permissions'),
   swapRestore('swap-restore'),

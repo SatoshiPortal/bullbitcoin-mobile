@@ -1,18 +1,17 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 void main() {
-  late _MockSwapFacade facade;
+  late _MockOrderSwaps facade;
   late WatchSendSwapUsecase usecase;
 
   setUp(() {
-    facade = _MockSwapFacade();
+    facade = _MockOrderSwaps();
     usecase = WatchSendSwapUsecase(facade);
   });
 

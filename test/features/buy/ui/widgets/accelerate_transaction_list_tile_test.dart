@@ -1,3 +1,5 @@
+import 'package:bull_exchange/bull_exchange.dart'
+    show AccelerateTransactionListTile;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_exchange/bull_exchange.dart'

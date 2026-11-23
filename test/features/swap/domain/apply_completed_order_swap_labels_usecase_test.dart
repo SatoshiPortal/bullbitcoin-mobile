@@ -3,25 +3,18 @@ import 'package:transactions/testing.dart';
 import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
 import 'package:swaps/order_swaps.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_labels_applied_usecase.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetOrders extends Mock
-    implements GetOrderSwapsAwaitingLabelsUsecase {}
-
-class _MockMarkApplied extends Mock
-    implements MarkOrderSwapLabelsAppliedUsecase {}
+class _MockOrders extends Mock implements OrderSwaps {}
 
 class _MockWalletTransactions extends Mock implements Transactions {}
 
 class _MockLabels extends Mock implements Labels {}
 
 void main() {
-  late _MockGetOrders getOrders;
-  late _MockMarkApplied markApplied;
+  late _MockOrders orders;
   late _MockWalletTransactions walletTransactions;
   late _MockLabels labelsFacade;
   late ApplyCompletedOrderSwapLabelsUsecase usecase;
@@ -34,25 +27,29 @@ void main() {
   });
 
   setUp(() {
-    getOrders = _MockGetOrders();
-    markApplied = _MockMarkApplied();
+    orders = _MockOrders();
     walletTransactions = _MockWalletTransactions();
     labelsFacade = _MockLabels();
     usecase = ApplyCompletedOrderSwapLabelsUsecase(
-      getOrders,
-      markApplied,
+      orders,
       walletTransactions,
       labelsFacade,
       now: () => now,
     );
-    when(() => getOrders.execute(purpose: OrderSwapPurpose.receiveLightning))
-        .thenAnswer((_) async => const Ok([]));
+    when(
+      () => orders.getOrdersAwaitingLabels(
+        purpose: OrderSwapPurpose.receiveLightning,
+      ),
+    ).thenAnswer((_) async => const Ok([]));
   });
 
   test('does not label a completed swap before wallet confirmation', () async {
     final order = _record();
-    when(() => getOrders.execute(purpose: OrderSwapPurpose.sendLightning))
-        .thenAnswer((_) async => Ok([order]));
+    when(
+      () => orders.getOrdersAwaitingLabels(
+        purpose: OrderSwapPurpose.sendLightning,
+      ),
+    ).thenAnswer((_) async => Ok([order]));
     when(
       () => walletTransactions.getWalletTransaction(
         'payin-tx',
@@ -67,7 +64,7 @@ void main() {
     expect((result as Ok<int, SwapFailure>).value, 0);
     verifyNever(() => labelsFacade.store(any()));
     verifyNever(
-      () => markApplied.execute(
+      () => orders.markLabelsApplied(
         localId: any(named: 'localId'),
         appliedAt: any(named: 'appliedAt'),
       ),
@@ -76,8 +73,11 @@ void main() {
 
   test('stores system and user labels after completion and one conf', () async {
     final order = _record();
-    when(() => getOrders.execute(purpose: OrderSwapPurpose.sendLightning))
-        .thenAnswer((_) async => Ok([order]));
+    when(
+      () => orders.getOrdersAwaitingLabels(
+        purpose: OrderSwapPurpose.sendLightning,
+      ),
+    ).thenAnswer((_) async => Ok([order]));
     when(
       () => walletTransactions.getWalletTransaction(
         'payin-tx',
@@ -98,7 +98,7 @@ void main() {
         ),
       );
     });
-    when(() => markApplied.execute(localId: 'local-1', appliedAt: now))
+    when(() => orders.markLabelsApplied(localId: 'local-1', appliedAt: now))
         .thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
 
     final result = await usecase.execute();
@@ -111,16 +111,22 @@ void main() {
       'coffee',
     ]);
     expect(labels.every((label) => label.reference == 'payin-tx'), isTrue);
-    verify(() => markApplied.execute(localId: 'local-1', appliedAt: now))
+    verify(() => orders.markLabelsApplied(localId: 'local-1', appliedAt: now))
         .called(1);
   });
 
   test('labels a confirmed Lightning receive payout', () async {
     final order = _receiveRecord();
-    when(() => getOrders.execute(purpose: OrderSwapPurpose.sendLightning))
-        .thenAnswer((_) async => const Ok([]));
-    when(() => getOrders.execute(purpose: OrderSwapPurpose.receiveLightning))
-        .thenAnswer((_) async => Ok([order]));
+    when(
+      () => orders.getOrdersAwaitingLabels(
+        purpose: OrderSwapPurpose.sendLightning,
+      ),
+    ).thenAnswer((_) async => const Ok([]));
+    when(
+      () => orders.getOrdersAwaitingLabels(
+        purpose: OrderSwapPurpose.receiveLightning,
+      ),
+    ).thenAnswer((_) async => Ok([order]));
     when(
       () => walletTransactions.getWalletTransaction(
         'payout-tx',
@@ -139,8 +145,9 @@ void main() {
         ),
       ),
     );
-    when(() => markApplied.execute(localId: 'receive-local', appliedAt: now))
-        .thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
+    when(
+      () => orders.markLabelsApplied(localId: 'receive-local', appliedAt: now),
+    ).thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
 
     final result = await usecase.execute();
 

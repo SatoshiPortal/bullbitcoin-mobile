@@ -1,15 +1,16 @@
+import 'package:mocktail/mocktail.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/load_internal_ark_transfer_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/review_internal_ark_transfer_usecase.dart';
-import 'package:bb_mobile/features/swap/presentation/internal_ark_transfer_cubit.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:swap_feature/testing.dart';
+import 'package:receive/receive.dart';
 import 'package:bull_ark/bull_ark.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import '../internal_transfer_fixture.dart';
+
+class _Receive extends Mock implements Receive {}
 
 void main() {
   test(
@@ -26,10 +27,7 @@ void main() {
       );
       final cubit = InternalArkTransferCubit(
         loader,
-        ReviewInternalArkTransferUsecase(
-          loader,
-          const WalletFacade(Stream.empty()),
-        ),
+        ReviewInternalArkTransferUsecase(loader, _Receive()),
       );
       addTearDown(cubit.close);
       await cubit.load();
@@ -58,10 +56,7 @@ void main() {
     );
     final cubit = InternalArkTransferCubit(
       loader,
-      ReviewInternalArkTransferUsecase(
-        loader,
-        const WalletFacade(Stream.empty()),
-      ),
+      ReviewInternalArkTransferUsecase(loader, _Receive()),
     );
     final loading = cubit.load();
     await cubit.close();

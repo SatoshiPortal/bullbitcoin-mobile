@@ -1,5 +1,162 @@
 {
   "@@locale": "pt",
   "save": "Salvar",
-  "oopsSomethingWentWrong": "Oops! Algo correu mal"
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "addressLabel": "Endereço: ",
+  "amountRequestedLabel": "Montante solicitado: {amount}",
+  "@amountRequestedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapAlwaysBlockInfoDisabled": "Quando desativado, você poderá permitir um swap automático bloqueado por taxas altas",
+  "autoswapAlwaysBlockInfoEnabled": "Quando ativado, swaps automáticos com taxas acima do limite definido serão sempre bloqueados",
+  "autoswapAlwaysBlockLabel": "Sempre bloquear altas taxas",
+  "autoswapBaseBalanceInfoText": "Seu saldo imediato da carteira de pagamento retornará a este equilíbrio após um autoswap.",
+  "autoswapEnableToggleLabel": "Ativar swap automático",
+  "autoswapLoadSettingsError": "Falhado para carregar configurações de troca automática",
+  "autoswapMaxBalanceLabel": "Max equilíbrio de carteira instantânea",
+  "autoswapMaxFeeInfoText": "Se a taxa total do swap estiver acima da porcentagem definida, o swap automático será bloqueado",
+  "autoswapMaxFeeLabel": "Taxa máxima de swap",
+  "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
+  "autoswapMaximumFeeError": "Limite máximo de taxa é {threshold}%",
+  "@autoswapMaximumFeeError": {
+    "placeholders": {
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorBtc": "Limite mínimo de equilíbrio é {amount} BTC",
+  "@autoswapMinimumThresholdErrorBtc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapMinimumThresholdErrorSats": "O limiar mínimo de equilíbrio é {amount} sats",
+  "@autoswapMinimumThresholdErrorSats": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapRecipientWalletInfoText": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
+  "autoswapRecipientWalletLabel": "Carteira de Bitcoin",
+  "autoswapRecipientWalletPlaceholder": "Selecione uma carteira Bitcoin",
+  "autoswapRecipientWalletPlaceholderRequired": "Selecione uma carteira Bitcoin *",
+  "autoswapRecipientWalletRequired": "*",
+  "autoswapSaveButton": "Salvar",
+  "autoswapSelectWalletError": "Por favor, selecione uma carteira Bitcoin destinatário",
+  "autoswapSettingsTitle": "Configurações de swap automático",
+  "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
+  "autoswapTriggerAtBalanceInfoText": "A troca automática será acionada quando o seu saldo ultrapassar este saldo máximo.",
+  "autoswapTriggerBalanceError": "O equilíbrio do gatilho deve ser pelo menos 2x o equilíbrio base",
+  "autoswapUpdateSettingsError": "Falhado para atualizar as configurações de troca automática",
+  "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que a sua transação foi transmitida. Verifique num explorador de blocos antes de tentar novamente.",
+  "closeDialogButton": "Fechar",
+  "coinsKeychainChange": "Troco",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsKeychainReceive": "Receber",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "consolidationRequiredTitle": "Consolidar a carteira",
+  "coreScreensAmountLabel": "Montante",
+  "coreScreensConfirmButton": "Confirmação",
+  "coreScreensExternalTransfer": "Swap externo",
+  "coreScreensFeeDeductionExplanation": "Esta é a taxa total deduzida do montante enviado",
+  "coreScreensFeePriorityLabel": "Prioridade de Taxas",
+  "coreScreensFromLabel": "A partir de",
+  "coreScreensInternalTransfer": "Swap interno",
+  "coreScreensNetworkFeesLabel": "Taxas de rede",
+  "coreScreensReceiveAmountLabel": "Receber valor",
+  "coreScreensReceiveNetworkFeeLabel": "Receber Taxas de Rede",
+  "coreScreensSendAmountLabel": "Enviar valor",
+  "coreScreensSendNetworkFeeLabel": "Enviar Taxa de rede",
+  "coreScreensServerNetworkFeesLabel": "Taxas de rede do servidor",
+  "coreScreensToLabel": "Para",
+  "coreScreensTransferFeeLabel": "Taxa de swap",
+  "coreScreensTransferIdLabel": "ID do swap",
+  "doneButton": "Feito",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "globalDefaultLiquidWalletLabel": "Pagamentos imediatos",
+  "payNetworkError": "Erro de rede. Por favor, tente novamente",
+  "receiveNote": "Nota",
+  "selectAmountTitle": "Selecione o valor",
+  "sendAdvancedOptions": "Opções avançadas",
+  "sendDone": "Feito",
+  "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
+  "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendFastFee": "Rápido",
+  "sendPayjoinLabel": "Payjoin",
+  "sendReplaceByFeeActivated": "Substitui-a-taxa activada",
+  "sendSelectCoinsManually": "Selecione moedas manualmente",
+  "sendSelectedUtxosInsufficient": "Utxos selecionados não cobre a quantidade necessária",
+  "sendSelfTransfer": "Autotransferência",
+  "swapAmountLabel": "Montante",
+  "swapAmountPlaceholder": "0",
+  "swapAvailableBalance": "Balanço disponível",
+  "swapConfirmTransferTitle": "Confirmar swap",
+  "swapContinueButton": "Continue",
+  "swapDoNotUninstallWarning": "Não desinstale o app até que o swap seja concluído!",
+  "swapErrorAmountAboveMaximum": "Montante excede o valor máximo de swap: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountBelowMinimum": "O valor está abaixo do valor mínimo de swap: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapExternalAddressHint": "Digite o endereço da carteira externa",
+  "swapExternalTransferLabel": "Swap externo",
+  "swapFromLabel": "A partir de",
+  "swapGoHomeButton": "Vai para casa",
+  "swapInfoDescription": "Faça swap de Bitcoin entre suas carteiras com facilidade. Mantenha na Carteira de Pagamento Instantâneo apenas os fundos para gastos do dia a dia.",
+  "swapInsufficientFunds": "Fundos insuficientes",
+  "swapInternalTransferTitle": "Swap interno",
+  "swapMaxButton": "MAX",
+  "swapReceiveExactAmountLabel": "Receber quantidade exata",
+  "swapSubtractFeesLabel": "Subtrair taxas de montante",
+  "swapToLabel": "Para",
+  "swapTotalFees": "Taxas totais ",
+  "swapTransferCompletedMessage": "Uau, você esperou! O swap foi concluído com sucesso.",
+  "swapTransferCompletedTitle": "Swap concluído",
+  "swapTransferPendingMessage": "O swap está em andamento. As transações de Bitcoin podem levar algum tempo para serem confirmadas. Você pode voltar à tela inicial e aguardar.",
+  "swapTransferPendingTitle": "Swap pendente",
+  "swapTransferRefundInProgressMessage": "Ocorreu um erro com o swap. Seu reembolso está em andamento.",
+  "swapTransferRefundInProgressTitle": "Reembolso do swap em andamento",
+  "swapTransferRefundedMessage": "O swap foi reembolsado com sucesso.",
+  "swapTransferRefundedTitle": "Swap reembolsado",
+  "swapTransferTitle": "Swap",
+  "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",
+  "swapUnderReviewSupportMessage": "Swap em análise\nID do pedido: {orderId}\nID da solicitação: {requestId}\nNúmero do pedido: {orderNumber}",
+  "swapUnderReviewTitle": "Swap em análise",
+  "swapValidationSelectFromWallet": "Selecione uma carteira de origem para o swap",
+  "swapValidationSelectToWallet": "Selecione uma carteira de destino para o swap",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLightning": "Luz",
+  "transactionNetworkLiquid": "Líquido",
+  "transactionStatusSwapExpired": "Swap Expirou",
+  "transactionStatusSwapFailed": "Swap Failed",
+  "transactionSwapDescChainExpired": "Este swap expirou. Seus fundos serão devolvidos automaticamente à sua carteira.",
+  "transactionSwapDescChainFailed": "Houve um problema com seu swap. Entre em contato com o suporte se os fundos não forem devolvidos em até 24 horas.",
+  "transactionSwapOpenWithin24h": "Abre a aplicação dentro de 24 horas para concluir a tua troca.",
+  "typeLabel": "Tipo: ",
+  "walletLoadFailed": "Não foi possível carregar as suas carteiras. Verifique a sua ligação e tente novamente."
 }

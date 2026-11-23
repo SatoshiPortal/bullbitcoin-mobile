@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "URI πληρωμής",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
   "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
-  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο"
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
+  "sendErrorInvalidAddressOrInvoice": "Ακυρωμένη διεύθυνση πληρωμής Bitcoin ή Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin διεύθυνση",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid διεύθυνση",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning διεύθυνση Lightning",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

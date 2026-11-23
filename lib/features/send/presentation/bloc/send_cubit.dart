@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
-import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:spend/fee_preview.dart';
 import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
@@ -31,11 +32,9 @@ import 'package:primitives/primitives.dart'
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart'
-    show BroadcastTransactionException;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/consolidation_required_exception.dart';
+import 'package:spend/legacy_exceptions.dart' show ConsolidationRequiredException;
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 import 'package:send/send.dart';
@@ -57,7 +56,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
@@ -105,7 +104,6 @@ import 'package:swaps/swaps.dart'
         SwapType,
         SwapsFailure,
         WatchSwapUsecase;
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

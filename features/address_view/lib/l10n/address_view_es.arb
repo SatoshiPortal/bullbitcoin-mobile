@@ -26,5 +26,11 @@
   "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
   "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
   "copiedToClipboard": "Copiado al portapapeles",
-  "comingSoonTitle": "Función disponible próximamente"
+  "comingSoonTitle": "Función disponible próximamente",
+  "destinationExpectedType": "Introduce o escanea un valor válido ({type}).",
+  "sendErrorInvalidAddressOrInvoice": "Dirección de pago Bitcoin o factura inválida",
+  "exchangeDcaAddressLabelBitcoin": "Dirección Bitcoin",
+  "exchangeDcaAddressLabelLiquid": "Dirección Liquid",
+  "exchangeDcaAddressLabelLightning": "Dirección Lightning",
+  "destinationAmountFromQr": "{type} · {amount} sats del QR"
 }

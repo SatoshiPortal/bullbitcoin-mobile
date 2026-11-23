@@ -84,6 +84,9 @@ abstract final class PayjoinSpendHandoff {
   Set<Outpoint> get inputs;
 }
 
+/// Recommend consolidation before Liquid's confidential input limit.
+const liquidConsolidationThreshold = 250;
+
 abstract interface class Spend {
   static Spend open({
     required WalletNativeRuntime sync,

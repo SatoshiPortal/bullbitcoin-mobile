@@ -6,21 +6,20 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:address_view/address_view.dart';
 import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
 void main() {
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late _MockGetReceiveAddressUsecase getReceiveAddress;
   late CreateReceiveOrderSwapUsecase usecase;
 
   setUp(() {
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     getReceiveAddress = _MockGetReceiveAddressUsecase();
     usecase = CreateReceiveOrderSwapUsecase(
       swapFacade,
@@ -330,7 +329,7 @@ void main() {
 }
 
 void _stubSuccessfulCreation(
-  _MockSwapFacade swapFacade,
+  _MockOrderSwaps swapFacade,
   _MockGetReceiveAddressUsecase getReceiveAddress, {
   OrderSwapRecord? record,
 }) {

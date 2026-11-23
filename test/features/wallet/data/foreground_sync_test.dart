@@ -1,3 +1,5 @@
+import 'package:swap_feature/swap_feature.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 
 import 'dart:async';
@@ -9,12 +11,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:silent/silent.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_pending_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
-import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/features/wallet/data/coordinated_swap_sync.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_usecase.dart';
@@ -35,7 +32,7 @@ class _RefreshPending extends Mock implements RefreshPendingOrderSwapsUsecase {}
 class _ApplyLabels extends Mock
     implements ApplyCompletedOrderSwapLabelsUsecase {}
 
-class _Swaps extends Mock implements SwapFacade {}
+class _Swaps extends Mock implements SwapActivity {}
 
 class _Sp extends Mock implements Silent {}
 
@@ -72,7 +69,7 @@ void main() {
     coordinator = locator<SyncCoordinator>();
     swaps = _Swaps();
     sp = _Sp();
-    locator.registerSingleton<SwapFacade>(swaps);
+    locator.registerSingleton<SwapActivity>(swaps);
     locator.registerSingleton<Silent>(sp);
   });
 
@@ -174,7 +171,7 @@ void main() {
         ),
       );
       final watcher = OrderSwapWatcher(
-        ScheduleOrderSwapRefreshUsecase(locator<SwapSyncPort>()),
+        ScheduleOrderSwapRefreshUsecase(() => locator<SwapSyncPort>()),
       );
       addTearDown(watcher.dispose);
       await watcher.refresh();

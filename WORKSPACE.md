@@ -347,7 +347,23 @@ graph TD
   spend --> primitives
   spend --> secrets
   spend --> sync
+  swap_feature --> address_view
+  swap_feature --> bull_ark
+  swap_feature --> bull_logger
+  swap_feature --> bull_pricer
   swap_feature --> bull_ui
+  swap_feature --> coins
+  swap_feature --> fees
+  swap_feature --> fees_feature
+  swap_feature --> labels
+  swap_feature --> preferences
+  swap_feature --> receive
+  swap_feature --> satoshifier
+  swap_feature --> secrets
+  swap_feature --> signers
+  swap_feature --> spend
+  swap_feature --> sync
+  swap_feature --> transactions
   swap_feature --> primitives
   swap_feature --> swaps
   swaps --> rust_bindings

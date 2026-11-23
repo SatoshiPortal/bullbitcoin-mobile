@@ -1,3 +1,6 @@
+import 'package:address_view/routes.dart' show AddressViewFeature;
+import 'package:labels/labels.dart' show Labels;
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:access/access.dart' show Access;
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
@@ -36,6 +39,7 @@ import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
 
@@ -72,16 +76,34 @@ class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
 
+class _UnusedLabels extends Mock implements Labels {}
+
+class _UnusedNative extends Mock implements WalletNativeLifecycle {}
+
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 
-class _UnusedSwaps extends Mock implements BoltzSwaps {}
+class _SwapRoutes extends Fake implements SwapFeature {
+  @override
+  final List<GoRoute> routes = [
+    swapSettingsRoute(_UnusedSwapRouting(), _UnusedSwapServers()),
+  ];
+
+  @override
+  GoRoute get autoswapSettingsRoute => GoRoute(
+    name: 'autoswapSettings',
+    path: 'autoswap-settings',
+    builder: (_, _) => const SizedBox.shrink(),
+  );
+}
 
 class _UnusedReferences extends Mock implements SeedReferencePort {}
 
 class _UnusedCustodyAdmission extends Mock
     implements ParentCustodyAdmissionPort {}
+
+class _UnusedSwaps extends Mock implements BoltzSwaps {}
 
 void main() {
   testWidgets(
@@ -140,10 +162,14 @@ void main() {
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
+      locator.registerSingleton<SwapFeature>(_SwapRoutes());
       locator.registerSingleton(
-        SwapFeature.mount(
-          routing: _UnusedSwapRouting(),
-          servers: _UnusedSwapServers(),
+        AddressViewFeature.mount(
+          labels: _UnusedLabels(),
+          inventory: inventoryFixture.inventory,
+          native: _UnusedNative(),
+          loadWallet: (_) => throw StateError('Unexpected address wallet read'),
+          revisions: const Stream.empty(),
         ),
       );
       locator.registerSingleton(
@@ -237,6 +263,7 @@ void main() {
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
         await locator.unregister<SwapFeature>();
+        await locator.unregister<AddressViewFeature>();
         await locator.unregister<ImportFeature>();
         await locator.unregister<BitcoinPriceFeature>();
         await locator.unregister<SilentFeature>();
@@ -269,6 +296,10 @@ void main() {
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
       expect(router.namedLocation('swapSettings'), '/swap-settings');
+      expect(
+        router.namedLocation('autoswapSettings'),
+        '/settings/autoswap-settings',
+      );
       expect(router.namedLocation('spSetup'), '/sp-setup');
       expect(router.namedLocation('spWalletDetail'), '/sp-wallet-detail');
       expect(
