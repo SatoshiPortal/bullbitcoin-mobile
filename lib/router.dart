@@ -32,7 +32,6 @@ import 'package:send/setup.dart';
 import 'package:electrum/electrum.dart' show Electrum;
 import 'package:fees/fees.dart' show Fees;
 import 'package:spend/spend.dart' show Spend;
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
