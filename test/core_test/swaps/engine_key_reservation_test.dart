@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:rust_bindings/rust_bindings.dart';
 import 'package:rust_bindings/boltz.dart' as native;
 import 'package:drift/native.dart';

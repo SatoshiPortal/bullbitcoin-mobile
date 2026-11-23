@@ -1,3 +1,6 @@
+import 'package:all_seed_view/testing.dart';
+
+import 'dart:async';
 import 'dart:io';
 
 import '../../support/inventory_fixture.dart';
@@ -5,12 +8,6 @@ import '../../support/inventory_fixture.dart';
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -26,9 +23,6 @@ class _MockGetAllSecretsUsecase extends Mock implements GetAllSecretsUsecase {}
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 class _MockDeleteSecretUsecase extends Mock implements DeleteSecretUsecase {}
-
-class _MockGetSwapMnemonicUsecase extends Mock
-    implements GetSwapMnemonicUsecase {}
 
 class _MockGetSwapMasterKeyUsecase extends Mock
     implements GetSwapMasterKeyUsecase {}
@@ -58,7 +52,6 @@ void main() {
   late _MockGetAllSecretsUsecase getAllSecretsUsecase;
   late _MockGetWalletsUsecase getWalletsUsecase;
   late _MockGetSwapMasterKeyUsecase getSwapMasterKeyUsecase;
-  late _MockGetSwapMnemonicUsecase getSwapMnemonicUsecase;
   late AllSeedViewCubit cubit;
   late Secret aSecret;
   late GetIt accessServices;
@@ -106,10 +99,10 @@ void main() {
     getAllSecretsUsecase = _MockGetAllSecretsUsecase();
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
-    getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
     when(() => getAllSecretsUsecase.execute())
         .thenAnswer((_) async => Ok([aSecret]));
-    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
+    when(() => getWalletsUsecase.execute())
+        .thenAnswer((_) async => const Ok(<String>{}));
     when(() => getSwapMasterKeyUsecase.execute())
         .thenAnswer((_) async => const Ok(null));
 
@@ -120,7 +113,6 @@ void main() {
       // Pure and total: the real one, so the split this screen shows is the one the code computes.
       separateSecretsUsecase: const SeparateSecretsUsecase(),
       getSwapMasterKeyUsecase: getSwapMasterKeyUsecase,
-      getSwapMnemonicUsecase: getSwapMnemonicUsecase,
       deleteSwapMasterKeyUsecase: deleteSwapMasterKeyUsecase =
           _MockDeleteSwapMasterKeyUsecase(),
     );
@@ -201,6 +193,18 @@ void main() {
       verify(() => getAllSecretsUsecase.execute()).called(1);
     });
 
+    testWidgets('a matching wallet keeps the secret in the existing section', (
+      tester,
+    ) async {
+      when(() => getWalletsUsecase.execute())
+          .thenAnswer((_) async => Ok({aSecret.id.hex}));
+
+      await cubit.unlock(await authenticate(tester));
+
+      expect(cubit.state.existingWallets, [aSecret]);
+      expect(cubit.state.oldWallets, isEmpty);
+    });
+
     testWidgets('a secret no wallet uses is listed as old, not hidden', (
       tester,
     ) async {
@@ -212,12 +216,35 @@ void main() {
     });
   });
 
-  test('a swap key the keychain failed to delete is reported', () async {
-    when(() => deleteSwapMasterKeyUsecase.execute()).thenAnswer(
-      (_) async => const Err(SwapsUnexpectedFailure('keychain write failed')),
-    );
+  test(
+    'a completed swap deletion does not emit after the viewer closes',
+    () async {
+      const key = SwapMasterKeyInfo(
+        fingerprint: 'key',
+        walletFingerprint: 'wallet',
+        network: 'mainnet',
+      );
+      final completion = Completer<Result<void, AllSeedViewFailure>>();
+      when(() => deleteSwapMasterKeyUsecase.execute(key))
+          .thenAnswer((_) => completion.future);
+      final deletion = cubit.deleteSwapMnemonic(key);
+      await cubit.close();
+      completion.complete(const Ok(null));
+      await deletion;
+      expect(cubit.isClosed, isTrue);
+    },
+  );
 
-    await cubit.deleteSwapMnemonic();
+  test('a swap key the keychain failed to delete is reported', () async {
+    const key = SwapMasterKeyInfo(
+      fingerprint: 'key',
+      walletFingerprint: 'wallet',
+      network: 'mainnet',
+    );
+    when(() => deleteSwapMasterKeyUsecase.execute(key))
+        .thenAnswer((_) async => const Err(AllSeedViewDeleteFailure()));
+
+    await cubit.deleteSwapMnemonic(key);
 
     expect(cubit.state.failure, isA<AllSeedViewDeleteFailure>());
   });

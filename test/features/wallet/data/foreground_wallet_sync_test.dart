@@ -1,16 +1,14 @@
+import 'package:secrets/custody.dart';
 import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
-import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
+import 'package:background_tasks/native_sync.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SeedReferences;
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
+import 'package:all_seed_view/testing.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';

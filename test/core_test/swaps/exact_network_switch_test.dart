@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
+
 import 'package:preferences/preferences.dart' as settings;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

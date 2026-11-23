@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart' show NetworkEnv, Ok;
 import 'dart:async';
 
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
+
 import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

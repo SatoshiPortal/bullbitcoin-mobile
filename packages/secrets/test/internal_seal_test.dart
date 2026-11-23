@@ -34,6 +34,7 @@ void main() {
         'migration',
         'storage',
         'bip85',
+        'custody',
       ])
         await library('package:secrets/$name.dart'),
     ];

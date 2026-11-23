@@ -1,5 +1,5 @@
+import 'package:all_seed_view/src/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';

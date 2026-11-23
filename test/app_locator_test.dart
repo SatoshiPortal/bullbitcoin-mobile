@@ -4,11 +4,11 @@ import 'package:preferences/testing.dart';
 import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade, WalletFailure;
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
+import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:sync/sync.dart';

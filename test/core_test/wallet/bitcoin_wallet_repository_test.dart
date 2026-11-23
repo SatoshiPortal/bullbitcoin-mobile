@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart'
     show

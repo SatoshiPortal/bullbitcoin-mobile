@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:preferences/preferences.dart' hide Environment;
 import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
+
 import 'package:primitives/primitives.dart';
 import 'package:swaps/swaps.dart';
 import 'package:flutter_test/flutter_test.dart';

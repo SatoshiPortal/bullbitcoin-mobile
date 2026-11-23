@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
