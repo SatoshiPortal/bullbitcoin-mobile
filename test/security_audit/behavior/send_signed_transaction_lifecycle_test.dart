@@ -42,7 +42,7 @@ import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecas
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -182,7 +182,7 @@ class _MockCalculateLiquidPsetSizeUsecase extends Mock
     implements CalculateLiquidPsetSizeUsecase {}
 
 class _MockWatchWalletTransactionByTxIdUsecase extends Mock
-    implements WatchWalletTransactionByTxIdUsecase {}
+    implements Transactions {}
 
 class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
@@ -279,7 +279,7 @@ class _TestSendCubit extends SendCubit {
     required super.watchFinishedWalletSyncsUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateLiquidPsetSizeUsecase,
-    required super.watchWalletTransactionByTxIdUsecase,
+    required super.transactions,
     required super.calculateBitcoinAbsoluteFeesUsecase,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
@@ -399,8 +399,7 @@ void main() {
       watchFinishedWalletSyncsUsecase: _MockWatchFinishedWalletSyncsUsecase(),
       calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
       calculateLiquidPsetSizeUsecase: _MockCalculateLiquidPsetSizeUsecase(),
-      watchWalletTransactionByTxIdUsecase:
-          _MockWatchWalletTransactionByTxIdUsecase(),
+      transactions: _MockWatchWalletTransactionByTxIdUsecase(),
       calculateBitcoinAbsoluteFeesUsecase:
           _MockCalculateBitcoinAbsoluteFeesUsecase(),
       verifyChainSwapAmountSendUsecase: _MockVerifyChainSwapAmountSendUsecase(),

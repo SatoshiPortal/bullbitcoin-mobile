@@ -1,3 +1,8 @@
+import 'package:transactions/routes.dart';
+import 'package:transactions/setup.dart';
+
+import '../transactions/support/transaction_ui_actions.dart';
+
 import 'package:fees/fees.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
@@ -115,6 +120,28 @@ void main() {
           display: preferences,
         ),
       );
+      final transactionServices = GetIt.asNewInstance();
+      locator.registerSingleton(
+        TransactionsFeature.mount(
+          transactionServices,
+          inventory: inventoryFixture.inventory,
+          loadWallet: (_) =>
+              throw StateError('Unexpected transaction history read'),
+          findDescriptor: (_) => throw StateError('Unexpected descriptor read'),
+          synchronize: (_) => throw StateError('Unexpected wallet sync'),
+          events: WalletHistoryEvents(
+            watchRevisions: ({walletId}) => const Stream.empty(),
+            watchSyncPassActivity: () => const Stream.empty(),
+            watchSyncFinished: () => const Stream.empty(),
+            isSyncPassActive: () => false,
+          ),
+          syncStarted: () => const Stream.empty(),
+          syncFinished: () => const Stream.empty(),
+          orderSwaps: () => throw StateError('Unexpected swap history read'),
+          actions: transactionUiActions,
+          scope: (child) => child,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -131,6 +158,8 @@ void main() {
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<TransactionsFeature>();
+        await transactionServices.reset();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });

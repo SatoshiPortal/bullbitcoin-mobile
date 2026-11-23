@@ -1,21 +1,21 @@
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/transactions/transactions_facade.dart';
+import 'package:transactions/transactions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockTransactionsFacade extends Mock implements TransactionsFacade {}
+class _MockTransactions extends Mock implements Transactions {}
 
 class _MockOrder extends Mock implements SellOrder {}
 
 void main() {
-  late _MockTransactionsFacade facade;
+  late _MockTransactions facade;
   late LabelCompletedSellOrderUsecase usecase;
 
   setUp(() {
-    facade = _MockTransactionsFacade();
+    facade = _MockTransactions();
     usecase = LabelCompletedSellOrderUsecase(transactionsFacade: facade);
   });
 

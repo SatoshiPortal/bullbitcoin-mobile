@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 
 import 'dart:async';

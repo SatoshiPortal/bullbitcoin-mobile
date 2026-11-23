@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_server_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/set_swap_exchange_fallback_usecase.dart';

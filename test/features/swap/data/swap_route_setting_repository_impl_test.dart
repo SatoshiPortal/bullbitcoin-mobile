@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/data/swap_route_setting_repository_impl.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

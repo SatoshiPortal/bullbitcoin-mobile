@@ -47,10 +47,8 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
@@ -67,7 +65,6 @@ import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart'

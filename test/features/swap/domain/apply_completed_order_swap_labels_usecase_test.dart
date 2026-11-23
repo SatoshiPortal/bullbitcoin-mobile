@@ -1,12 +1,8 @@
-import 'package:primitives/primitives.dart' show Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:primitives/primitives.dart' show LiquidNetwork, Ok;
+import 'package:transactions/testing.dart';
+import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_labels_applied_usecase.dart';
@@ -19,8 +15,7 @@ class _MockGetOrders extends Mock
 class _MockMarkApplied extends Mock
     implements MarkOrderSwapLabelsAppliedUsecase {}
 
-class _MockWalletTransactions extends Mock
-    implements WalletTransactionRepository {}
+class _MockWalletTransactions extends Mock implements Transactions {}
 
 class _MockLabels extends Mock implements Labels {}
 
@@ -63,7 +58,9 @@ void main() {
         'payin-tx',
         walletId: 'wallet-1',
       ),
-    ).thenAnswer((_) async => _transaction(WalletTransactionStatus.pending));
+    ).thenAnswer(
+      (_) async => Ok(_transaction(WalletTransactionStatus.pending)),
+    );
 
     final result = await usecase.execute();
 
@@ -86,7 +83,9 @@ void main() {
         'payin-tx',
         walletId: 'wallet-1',
       ),
-    ).thenAnswer((_) async => _transaction(WalletTransactionStatus.confirmed));
+    ).thenAnswer(
+      (_) async => Ok(_transaction(WalletTransactionStatus.confirmed)),
+    );
     var labelId = 0;
     when(() => labelsFacade.store(any())).thenAnswer((invocation) async {
       final label = invocation.positionalArguments.single as NewLabel;
@@ -127,7 +126,9 @@ void main() {
         'payout-tx',
         walletId: 'wallet-1',
       ),
-    ).thenAnswer((_) async => _transaction(WalletTransactionStatus.confirmed));
+    ).thenAnswer(
+      (_) async => Ok(_transaction(WalletTransactionStatus.confirmed)),
+    );
     when(() => labelsFacade.store(any())).thenAnswer(
       (_) async => Ok(
         Label.tx(
@@ -228,7 +229,7 @@ OrderSwapRecord _receiveRecord() => OrderSwapRecord(
 WalletTransaction _transaction(WalletTransactionStatus status) =>
     WalletTransaction(
       walletId: 'wallet-1',
-      network: Network.liquidTestnet,
+      network: LiquidNetwork.testnet,
       direction: WalletTransactionDirection.outgoing,
       status: status,
       txId: 'payin-tx',

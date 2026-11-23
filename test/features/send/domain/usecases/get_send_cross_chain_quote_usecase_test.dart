@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

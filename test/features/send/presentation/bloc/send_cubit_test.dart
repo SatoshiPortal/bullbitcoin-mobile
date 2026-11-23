@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
@@ -43,7 +44,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
@@ -204,7 +205,7 @@ class _MockCalculateLiquidPsetSizeUsecase extends Mock
     implements CalculateLiquidPsetSizeUsecase {}
 
 class _MockWatchWalletTransactionByTxIdUsecase extends Mock
-    implements WatchWalletTransactionByTxIdUsecase {}
+    implements Transactions {}
 
 class _MockCalculateBitcoinAbsoluteFeesUsecase extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
@@ -329,7 +330,7 @@ class _TestableSendCubit extends SendCubit {
     required super.broadcastLiquidTxUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateLiquidPsetSizeUsecase,
-    required super.watchWalletTransactionByTxIdUsecase,
+    required super.transactions,
     required super.calculateBitcoinAbsoluteFeesUsecase,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
@@ -613,7 +614,7 @@ void main() {
     broadcastLiquidTxUsecase: broadcastLiquidTxUsecase,
     calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
     calculateLiquidPsetSizeUsecase: calculateLiquidPsetSizeUsecase,
-    watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxIdUsecase,
+    transactions: watchWalletTransactionByTxIdUsecase,
     calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinAbsoluteFeesUsecase,
     verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
     verifyExchangePayinUsecase: verifyExchangePayinUsecase,
@@ -1489,7 +1490,7 @@ void main() {
       return 'broadcast-txid';
     });
     when(
-      () => watchWalletTransactionByTxIdUsecase.execute(
+      () => watchWalletTransactionByTxIdUsecase.watchWalletTransactionByTxId(
         walletId: wallet.id,
         txId: any(named: 'txId'),
       ),
@@ -6346,10 +6347,11 @@ void main() {
         );
         stubBroadcast();
         when(
-          () => watchWalletTransactionByTxIdUsecase.execute(
-            walletId: 'w1',
-            txId: 'broadcast-txid',
-          ),
+          () =>
+              watchWalletTransactionByTxIdUsecase.watchWalletTransactionByTxId(
+                walletId: 'w1',
+                txId: 'broadcast-txid',
+              ),
         ).thenAnswer((_) => const Stream.empty());
 
         await cubit.onConfirmTransactionClicked();

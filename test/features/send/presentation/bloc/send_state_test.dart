@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:fees/fees.dart';
@@ -5,7 +6,6 @@ import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, FormatAmount, Sats, ScriptType;

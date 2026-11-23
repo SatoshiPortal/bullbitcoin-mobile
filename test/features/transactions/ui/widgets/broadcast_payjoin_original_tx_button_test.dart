@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/broadcast_payjoin_original_tx_button.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:clock/clock.dart';

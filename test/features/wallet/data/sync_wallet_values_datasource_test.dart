@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+import 'package:transactions/testing.dart';
 
 import 'dart:typed_data';
 
@@ -117,9 +117,10 @@ void main() {
       ),
     ];
     final values = WalletHistoryDatasource(
-      load: (key) => load(key, transactions: transactions),
+      load: (key) async => Ok(await load(key, transactions: transactions)),
     );
-    final history = await values.getTransactions(key: key);
+    final history = (await values.getTransactions(key: key))
+        .fold((value) => value, (failure) => fail(failure.logCode));
     final payment = history.firstWhere((tx) => tx.txId == 'payment');
     expect(payment.isIncoming, isFalse);
     expect(payment.isToSelf, isFalse);
@@ -130,10 +131,9 @@ void main() {
     expect(funding.isIncoming, isTrue);
     expect(funding.amountSat, 1000);
     expect(
-      (await values.getTransactions(
-        key: key,
-        toAddress: address,
-      )).map((tx) => tx.txId),
+      (await values.getTransactions(key: key, toAddress: address))
+          .fold((value) => value, (failure) => fail(failure.logCode))
+          .map((tx) => tx.txId),
       ['payment'],
     );
   });
@@ -144,11 +144,14 @@ void main() {
     ];
     Future<sync.Wallet> withUnknownFee(sync.WalletKey key) =>
         load(key, transactions: transactions);
-    final history = WalletHistoryDatasource(load: withUnknownFee);
+    final history = WalletHistoryDatasource(
+      load: (key) async => Ok(await withUnknownFee(key)),
+    );
     final values = SyncWalletValuesDatasource(load: withUnknownFee);
-    await expectLater(
-      history.getTransactions(key: key),
-      throwsA(isA<WalletSnapshotException>()),
+    final result = await history.getTransactions(key: key);
+    expect(
+      result.fold((_) => null, (failure) => failure),
+      isA<sync.SyncNeedsRepairFailure>(),
     );
     expect((await values.getBalance(key: key)).totalSat, BigInt.from(7));
   });

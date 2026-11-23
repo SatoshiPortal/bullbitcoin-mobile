@@ -3,19 +3,21 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test(
-    'Payjoin setup accepts the database path chosen by the composition root',
-    () {
-      final source = File('lib/features/transactions/payjoin_setup.dart')
-          .readAsStringSync();
+  test('Payjoin setup opens only the databases admitted by composition', () {
+    final source = File('lib/features/wallet/public/payjoin_setup.dart')
+        .readAsStringSync();
 
-      expect(
-        source,
-        contains('String databasePath'),
-        reason: 'the composition root must choose the database path explicitly',
-      );
-    },
-  );
+    expect(
+      source,
+      allOf(
+        contains('admission: locator<RuntimeAdmission>()'),
+        contains('productionCutover: locator<PayjoinCutover>()'),
+        contains(
+          "regtestCutover: locator<PayjoinCutover>(instanceName: 'regtest')",
+        ),
+      ),
+    );
+  });
 
   test('the canonical Drift target includes the Payjoin package schema', () {
     final makefile = File('makefile').readAsStringSync();
@@ -38,9 +40,9 @@ void main() {
   test('touched domain usecases do not import concrete data repositories', () {
     final paths = [
       'lib/features/buy/domain/create_buy_order_usecase.dart',
-      'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
-      'lib/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart',
-      'lib/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_by_tx_id_usecase.dart',
+      'lib/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart',
     ];
     final violations = <String>[];
 

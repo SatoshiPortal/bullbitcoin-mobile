@@ -1,6 +1,4 @@
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

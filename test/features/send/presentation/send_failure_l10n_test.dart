@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:primitives/payment_network.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/localizations.dart';

@@ -10,7 +10,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
@@ -82,7 +82,7 @@ class _MockBroadcastOriginalTransactionUsecase extends Mock
 class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 
 class _MockWatchWalletTransactionByAddressUsecase extends Mock
-    implements WatchWalletTransactionByAddressUsecase {}
+    implements Transactions {}
 
 class _MockWatchReceiveOrderSwapUsecase extends Mock
     implements WatchReceiveOrderSwapUsecase {}
@@ -166,8 +166,7 @@ void main() {
               broadcastOriginalTransactionUsecase:
                   _MockBroadcastOriginalTransactionUsecase(),
               watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
-              watchWalletTransactionByAddressUsecase:
-                  _MockWatchWalletTransactionByAddressUsecase(),
+              transactions: _MockWatchWalletTransactionByAddressUsecase(),
               watchReceiveOrderSwapUsecase: _MockWatchReceiveOrderSwapUsecase(),
               loadReceiveAddressLabelUsecase:
                   _MockLoadReceiveAddressLabelUsecase(),
