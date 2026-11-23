@@ -1,14 +1,14 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bull_exchange/src/exchange_landing_navigation.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullSuccessScreen;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 class WithdrawSuccessScreen extends StatelessWidget {
-  const WithdrawSuccessScreen({super.key});
+  const WithdrawSuccessScreen({required this.openOrder, super.key});
+
+  final void Function(BuildContext, String) openOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -20,18 +20,12 @@ class WithdrawSuccessScreen extends StatelessWidget {
     return BullSuccessScreen(
       title: context.loc.withdrawAmountTitle,
       headline: context.loc.withdrawSuccessTitle,
-      onClose: () => context.goNamed(ExchangeRoute.exchangeHome.name),
+      onClose: () => BullExchangeNavigation.goToDashboard(context),
       actions: [
         if (order != null)
           BullButton.secondary(
             label: context.loc.withdrawSuccessOrderDetails,
-            onPressed: () {
-              context.pushNamed(
-                TransactionsRoute.orderTransactionDetails.name,
-                pathParameters: {'orderId': order.orderId},
-                queryParameters: {'returnToExchange': 'true'},
-              );
-            },
+            onPressed: () => openOrder(context, order.orderId),
           ),
       ],
     );

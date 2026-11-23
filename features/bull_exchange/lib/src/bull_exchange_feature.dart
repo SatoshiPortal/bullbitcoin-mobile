@@ -17,6 +17,7 @@ import 'support_chat/exchange_support_chat_navigation.dart';
 import 'support_chat/ui/exchange_support_chat_router.dart';
 import 'ui/screens/exchange_landing_screen.dart';
 import 'ui/screens/exchange_landing_screen_v2.dart';
+import 'withdraw/ui/withdraw_router.dart';
 
 typedef ExchangeSupportChatHost = ({
   Exchange Function() exchange,
@@ -38,6 +39,7 @@ final class BullExchangeFeature {
   final GoRoute? autoBuy;
   final GoRoute? authRoute;
   final GoRoute? dashboardRoute;
+  final GoRoute? withdrawalRoute;
 
   const BullExchangeFeature._(
     this.routes,
@@ -48,6 +50,7 @@ final class BullExchangeFeature {
     this.autoBuy,
     this.authRoute,
     this.dashboardRoute,
+    this.withdrawalRoute,
   );
 
   static BullExchangeFeature mount({
@@ -65,6 +68,7 @@ final class BullExchangeFeature {
     AutoBuyHost? autoBuy,
     ExchangeAuthHost? auth,
     ExchangeDashboardHost? dashboard,
+    ExchangeWithdrawalHost? withdrawal,
   }) {
     final kycRoute = kyc == null
         ? null
@@ -140,6 +144,7 @@ final class BullExchangeFeature {
               brandAsset: brandAssetPath,
               onExit: onExit,
             ),
+      withdrawal == null ? null : withdrawRoute(withdrawal, brandAssetPath),
     );
   }
 }

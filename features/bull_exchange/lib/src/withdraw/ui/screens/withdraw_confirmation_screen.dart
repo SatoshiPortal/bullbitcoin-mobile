@@ -1,11 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bull_exchange/src/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bull_exchange/src/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -18,7 +16,9 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX;
 
 class WithdrawConfirmationScreen extends StatelessWidget {
-  const WithdrawConfirmationScreen({super.key});
+  const WithdrawConfirmationScreen({required this.brandAsset, super.key});
+
+  final String brandAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +35,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          Assets.logos.bbLogoSmall.path,
-          height: 32,
-          width: 32,
-        ),
-      ),
+      appBar: AppBar(title: Image.asset(brandAsset, height: 32, width: 32)),
       body: SafeArea(
         child: Column(
           children: [

@@ -45,3 +45,5 @@ export 'src/ui/widgets/exchange_amount_currency_dropdown.dart'
 export 'src/ui/widgets/exchange_amount_input_field.dart'
     show ExchangeAmountInputField;
 export 'src/ui/widgets/wizard_exchange_option.dart' show WizardExchangeOption;
+export 'src/withdraw/ui/withdraw_router.dart'
+    show ExchangeWithdrawalHost, WithdrawRoute;

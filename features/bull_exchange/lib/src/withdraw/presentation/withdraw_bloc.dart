@@ -1,10 +1,10 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/load_withdraw_context_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_exchange/src/withdraw/domain/confirm_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/load_withdraw_context_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:flutter_bloc/flutter_bloc.dart';

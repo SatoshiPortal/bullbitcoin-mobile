@@ -50,7 +50,6 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
-import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
@@ -261,7 +260,7 @@ class AppRouter {
       ...BuyRouter.routes,
       ..._exchangeFeature.fundingRoutes,
       SellRouter.route,
-      WithdrawRouter.route,
+      ?_exchangeFeature.withdrawalRoute,
       PayRouter.route,
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,

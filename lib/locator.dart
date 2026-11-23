@@ -62,7 +62,6 @@ import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
-import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -328,7 +327,6 @@ class AppLocator {
     LimitOrdersLocator.setup(locator);
     BuyLocator.setup(locator);
     SellLocator.setup(locator);
-    WithdrawLocator.setup(locator);
     PayLocator.setup(locator);
     locator.registerSingleton(
       NetworkFeature.mount(

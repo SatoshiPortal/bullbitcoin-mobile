@@ -1,6 +1,4 @@
 import 'package:bb_mobile/features/dca/public/dca_facade.dart' show DcaRoute;
-import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart'
-    show WithdrawRoute;
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart'
     show TransactionsRoute;
 import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
@@ -100,6 +98,18 @@ class ExchangeRouter {
     onExit: config.onExit,
     settings: settings,
     auth: ExchangeScope.authHost,
+    withdrawal: exchange == null || preferences == null
+        ? null
+        : (
+            exchange: exchange,
+            preferences: preferences,
+            isLoggedIn: ExchangeScope.hasAccountSummary,
+            openOrder: (context, orderId) => context.pushNamed(
+              TransactionsRoute.orderTransactionDetails.name,
+              pathParameters: {'orderId': orderId},
+              queryParameters: {'returnToExchange': 'true'},
+            ),
+          ),
     dashboard: (
       exchange: exchange ?? ExchangeScope.exchange,
       preferences: preferences ?? ExchangeScope.preferences,

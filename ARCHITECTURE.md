@@ -349,6 +349,8 @@ The startup wizard receives the platform visibility decision from bootstrap befo
 
 The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange` and uses the workspace virtual IBAN screen. The Exchange domain owns fiat recipients, the CAD directory, SINPE and SEPA activation. Their operations use the untimed BBX client bound to the current session; the feature owns polling, selection and form state.
 
+Withdrawal is mounted in the same feature and reuses its recipient selection and activation. A completed withdrawal is not invalidated by failing to update Interac defaults. The host opens the existing transaction detail route and preserves its return to Exchange.
+
 The Exchange amount and currency controls are intentionally reusable widgets. DCA, Limit Orders, Sell, Pay and Withdrawal import them from `bull_exchange`, not from the legacy Exchange UI.
 
 Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
