@@ -35,7 +35,7 @@ class _ReceiveBloc extends MockBloc<ReceiveEvent, ReceiveState>
     implements ReceiveBloc {}
 
 void main() {
-  for (final network in [
+  for (final network in <Network>[
     ...BitcoinNetwork.values.where((n) => n != BitcoinNetwork.signet),
     ...LiquidNetwork.values,
   ]) {

@@ -31,7 +31,10 @@ void main() {
     );
   });
 
-  for (final network in [BitcoinNetwork.regtest, LiquidNetwork.regtest]) {
+  for (final network in <Network>[
+    BitcoinNetwork.regtest,
+    LiquidNetwork.regtest,
+  ]) {
     test('$network refuses before address or provider side effects', () async {
       final result = await usecase.execute(
         wallet: _wallet(network),

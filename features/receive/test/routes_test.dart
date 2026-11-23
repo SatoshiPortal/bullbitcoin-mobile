@@ -33,6 +33,7 @@ void main() {
       setPayjoinEnabled: (_, {required requestConsent}) =>
           throw StateError('consent not needed'),
       openHome: (_) {},
+      openPayjoinSettings: (_) {},
       successAnimation: const AssetImage('unused.gif'),
       orderSwapUnderReview: (_) => const SizedBox(),
     );

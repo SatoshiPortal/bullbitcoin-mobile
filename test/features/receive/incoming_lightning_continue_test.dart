@@ -11,7 +11,6 @@ import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:primitives/primitives.dart' show Network, BitcoinNetwork;
 import 'package:transactions/transactions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -169,6 +168,7 @@ void main() {
               createBloc: (_) => bloc,
               poll: PollReceiveWalletUsecase((_, {required isActive}) async {}),
               openHome: (context) => context.go('/review-home'),
+              openPayjoinSettings: (_) {},
               successAnimation: const AssetImage(
                 'assets/animations/success_tick.gif',
               ),

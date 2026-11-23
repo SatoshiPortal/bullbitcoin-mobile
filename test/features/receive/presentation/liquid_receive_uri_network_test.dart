@@ -65,7 +65,7 @@ void main() {
       }
     });
   }
-  for (final network in [
+  for (final network in <Network>[
     BitcoinNetwork.testnet,
     LiquidNetwork.testnet,
     LiquidNetwork.mainnet,

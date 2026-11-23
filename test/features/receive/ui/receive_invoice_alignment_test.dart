@@ -102,7 +102,10 @@ void main() {
       'MaterialIcons',
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
-  for (final destination in [LiquidNetwork.mainnet, BitcoinNetwork.mainnet]) {
+  for (final destination in <Network>[
+    LiquidNetwork.mainnet,
+    BitcoinNetwork.mainnet,
+  ]) {
     testWidgets('Lightning invoice Liquid disclosure for $destination', (
       tester,
     ) async {

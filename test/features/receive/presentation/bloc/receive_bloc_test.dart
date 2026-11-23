@@ -13,7 +13,7 @@ import 'package:transactions/testing.dart'
         WatchWalletTransactionByAddressUsecase,
         walletHistoryEvents;
 import 'package:sync/sync.dart'
-    show WalletRevisionState, WalletRevision, WalletKey;
+    show WalletRevisionState, WalletRevision, WalletKey, WalletLifecycle;
 
 import 'dart:typed_data';
 
@@ -2314,7 +2314,10 @@ void main() {
     },
   );
 
-  for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
+  for (final network in <Network>[
+    BitcoinNetwork.mainnet,
+    LiquidNetwork.mainnet,
+  ]) {
     test(
       '$network retry retains new-address intent and drops duplicates',
       () async {
@@ -2477,7 +2480,10 @@ void main() {
     },
   );
 
-  for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
+  for (final network in <Network>[
+    BitcoinNetwork.mainnet,
+    LiquidNetwork.mainnet,
+  ]) {
     test(
       'Retry keeps an edited message and rejects late labels on $network',
       () async {
@@ -2891,7 +2897,10 @@ void main() {
     });
   }
 
-  for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
+  for (final network in <Network>[
+    BitcoinNetwork.mainnet,
+    LiquidNetwork.mainnet,
+  ]) {
     for (final succeeds in [true, false]) {
       test(
         '$network navigation while advance pending success=$succeeds',
