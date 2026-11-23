@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
-import 'package:swaps/swaps.dart';
+import 'package:swaps/swaps.dart' show SwapsFailure, SwapsUnexpectedFailure;
 
 /// The admitted accounts a rescued swap can pay into on its destination chain.
 class GetSwapRescueWalletsUsecase {
@@ -23,7 +23,7 @@ class GetSwapRescueWalletsUsecase {
       return Err(SwapsUnexpectedFailure('Environment: ${failure.runtimeType}'));
     }
     final environment = (settings as Ok<Environment, PreferencesFailure>).value;
-    final network = actsOnLiquid
+    final Network network = actsOnLiquid
         ? LiquidNetwork.fromName(environment.name)
         : BitcoinNetwork.fromName(environment.name);
     return (await _inventory.walletsForNetwork(network))
