@@ -5,6 +5,7 @@ import 'package:send/src/payment/ui/widgets/recipient_fields.dart';
 import 'package:address_view/address_view.dart';
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:send/setup.dart' show SendLocalizations;
+import 'package:silent/localizations.dart' show SilentLocalizations;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -31,6 +32,7 @@ void main() {
           bullUiLocalizationsDelegate,
           AddressViewLocalizations.delegate,
           SendLocalizations.delegate,
+          SilentLocalizations.delegate,
           ...GlobalMaterialLocalizations.delegates,
         ],
         supportedLocales: SendLocalizations.supportedLocales,

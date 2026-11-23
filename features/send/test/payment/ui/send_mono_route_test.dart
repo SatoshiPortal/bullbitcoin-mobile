@@ -14,6 +14,8 @@ import 'dart:async';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_screen.dart';
+import 'package:send/src/payment/ui/send_payment_ui.dart';
+import 'package:sync/sync.dart' show WalletKey;
 
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
@@ -136,6 +138,16 @@ void main() {
         value: cubit,
         child: MaterialApp.router(
           locale: locale,
+          builder: (context, child) => SendPaymentUi(
+            openHome: (context) => GoRouter.of(context).go('/'),
+            openCoins: (context, wallet) =>
+                GoRouter.of(context)
+                    .pushReplacementNamed('coins', extra: wallet),
+            orderUnderReview: (_) => const SizedBox.shrink(),
+            arrowImage: const AssetImage('unused-arrow'),
+            successImage: const AssetImage('unused-success'),
+            child: child ?? const SizedBox.shrink(),
+          ),
           routerConfig:
               router ??
               GoRouter(
@@ -290,7 +302,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Open Coins'));
       await tester.pumpAndSettle();
-      expect(source, same(wallet));
+      expect(source, WalletKey(id: wallet.id, network: wallet.network));
       expect(find.byType(SendScreen), findsNothing);
       router.pop();
       await tester.pumpAndSettle();

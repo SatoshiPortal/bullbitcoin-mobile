@@ -13,6 +13,7 @@ import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:send/src/payment/ui/screens/send_screen.dart';
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:send/setup.dart' show SendLocalizations;
+import 'package:silent/localizations.dart' show SilentLocalizations;
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,6 +91,7 @@ void registerSendQrNetworkRegression({
           localizationsDelegates: const [
             bullUiLocalizationsDelegate,
             ScanningLocalizations.delegate,
+            SilentLocalizations.delegate,
             AddressViewLocalizations.delegate,
             SendLocalizations.delegate,
             ...GlobalMaterialLocalizations.delegates,
