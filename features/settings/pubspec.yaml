@@ -14,16 +14,24 @@ flutter:
   uses-material-design: true
 
 dependencies:
+  address_view:
+  bull_logger:
   bull_ui:
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
   go_router: ^18.1.4
   intl: any
+  meta: ^1.17.0
   material_ui: ^1.11.0
   network:
   primitives:
+  secrets:
+  signers:
+  swaps:
+  sync:
   unorm_dart: ^0.3.2
   url_launcher: ^6.3.2
 

@@ -9,14 +9,16 @@ import 'package:bull_ark/bull_ark.dart' show ArkFacade;
 import 'package:bull_payjoin/bull_payjoin.dart' show Payjoin;
 import 'package:coins/coins.dart' show Coins;
 import 'package:receive/receive.dart' show Receive;
+import 'package:secrets/custody.dart' show SeedReferences;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:silent/silent.dart' show Silent;
-import 'package:swaps/swaps.dart' show Swaps;
+import 'package:swaps/swaps.dart' show SwapStore, Swaps;
 import 'package:sync/sync.dart' show WalletKey, WalletCatalogPort;
 import 'package:sync/write.dart'
     show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:overview/setup.dart' show OverviewSynchronization;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
 import 'package:backups/backups.dart';
@@ -353,6 +355,24 @@ class AppRouter {
             ).route,
           ],
           priceRoutes: locator<BitcoinPriceFeature>().routes,
+          walletRoutes: [
+            SettingsFeature.walletDetails(
+              inventory: locator<SecretsInventory>(),
+              devices: locator<SignerDevices>(),
+              native: locator<WalletNativeRuntime>(),
+              swaps: locator<SwapStore>(),
+              orders: locator<OrderSwaps>(),
+              references: locator<SeedReferences>(),
+              secrets: locator<Secrets>(),
+              discover: (walletId) => locator<OverviewSynchronization>()
+                  .coordinator
+                  .discoverWallet(walletId),
+              onDeleted: (context) {
+                context.read<WalletBloc>().add(const WalletStarted());
+                context.goNamed(WalletRoute.walletHome.name);
+              },
+            ),
+          ],
         ),
       ).route,
       ...locator<TransactionsFeature>().routes,

@@ -45,8 +45,6 @@ import 'package:swaps/swaps.dart';
 import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart'
-    as core;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -55,7 +53,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incomi
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
@@ -264,20 +261,6 @@ class WalletLocator {
       }
       return references;
     });
-    locator.registerFactory<core.DeleteWalletUsecase>(
-      () => core.DeleteWalletUsecase(
-        walletRepository: locator<WalletRepository>(),
-        swapStore: locator<SwapStore>(),
-        seedReferences: locator<SeedReferences>(),
-        secrets: locator<Secrets>(),
-      ),
-    );
-    locator.registerFactory<DeleteWalletUsecase>(
-      () => DeleteWalletUsecase(
-        locator<core.DeleteWalletUsecase>(),
-        locator<OrderSwaps>(),
-      ),
-    );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
       () => GetExternalTorProxyStatusUsecase(
         locator<TorProxyPreferencesReader>(),
@@ -337,7 +320,6 @@ class WalletLocator {
         syncWalletsUsecase: locator<SyncWalletsUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
-        deleteWalletUsecase: locator<DeleteWalletUsecase>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),

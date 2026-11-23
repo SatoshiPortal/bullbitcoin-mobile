@@ -1,6 +1,6 @@
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/settings/presentation/wallet_deletion_failure_l10n.dart';
+import '../../../generated/l10n/settings_localizations.dart';
+import '../domain/wallet_details_failure.dart';
+import '../presentation/wallet_details_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Wallet-deletion failure sheet, built on [BullBottomSheet] to match
@@ -8,12 +8,12 @@ import 'package:bull_ui/bull_ui.dart';
 class WalletDeletionFailedSheet extends StatelessWidget {
   const WalletDeletionFailedSheet({super.key, required this.failure});
 
-  final WalletFailure failure;
+  final WalletDetailsFailure failure;
 
   /// Present the sheet via [BullBottomSheet].
   static Future<void> show(
     BuildContext context, {
-    required WalletFailure failure,
+    required WalletDetailsFailure failure,
   }) {
     return BullBottomSheet.show<void>(
       context: context,
@@ -24,9 +24,9 @@ class WalletDeletionFailedSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final loc = context.loc;
+    final loc = SettingsLocalizations.of(context);
     final text = context.bullType;
-    final message = failure.toDeletionTranslated(context);
+    final message = failure.toTranslated(context);
 
     return SafeArea(
       child: Padding(

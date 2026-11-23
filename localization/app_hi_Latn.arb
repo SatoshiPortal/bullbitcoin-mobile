@@ -244,53 +244,13 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "walletDetailsUnnamedWalletFallback": "Bina Naam Ka Wallet",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
-  },
   "addressViewAddressesTitle": "Addresses",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "walletDetailsDeletingMessage": "Wallet delete ho raha hai...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "walletDetailsWalletFingerprintLabel": "Wallet fingerprint",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
-  },
-  "walletDetailsDescriptorLabel": "Descriptor",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "walletDetailsAddressTypeLabel": "Address type",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
-  },
-  "walletDetailsNetworkLabel": "Network",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
-  },
-  "walletDetailsDerivationPathLabel": "Derivation Path",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
-  "walletDetailsSignerLabel": "Signer",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
-  "walletDetailsSignerDeviceLabel": "Signer Device",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
-  "walletDetailsSignerDeviceNotSupported": "Support nahi hai",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
   },
   "mempoolSettingsDescription": "Alag-alag networks ke liye custom mempool servers set karo. Har network apna server block explorer aur fee estimation ke liye use kar sakta hai.",
   "@mempoolSettingsDescription": {
@@ -718,26 +678,6 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "walletDeletionConfirmationTitle": "Wallet Delete Karo",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
-  },
-  "walletDeletionConfirmationMessage": "Kya aap sach mein yeh wallet delete karna chahte hain?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
-  "walletDeletionConfirmationCancelButton": "Cancel",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "walletDeletionConfirmationDeleteButton": "Delete Karo",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
-  },
-  "walletDeletionFailedTitle": "Delete Fail Ho Gaya",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
-  },
   "walletDeletionErrorDefaultWallet": "Aap default wallet delete nahi kar sakte.",
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
@@ -749,14 +689,6 @@
   "walletDeletionErrorWalletNotFound": "Jis wallet ko delete karna hai woh exist nahi karta.",
   "@walletDeletionErrorWalletNotFound": {
     "description": "Error message when the wallet to delete cannot be found"
-  },
-  "walletDeletionErrorGeneric": "Wallet delete karna fail ho gaya, kripaya dobara try karo.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
-  },
-  "walletDeletionFailedOkButton": "OK",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
   },
   "addressCardUsedLabel": "Istemal Ho Chuka",
   "@addressCardUsedLabel": {

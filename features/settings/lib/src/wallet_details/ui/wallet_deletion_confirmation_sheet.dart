@@ -1,4 +1,4 @@
-import 'package:bb_mobile/localization/app_localizations_context.dart';
+import '../../../generated/l10n/settings_localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Delete-wallet confirmation sheet, built on [BullBottomSheet] so it matches
@@ -21,7 +21,7 @@ class WalletDeletionConfirmationSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final loc = context.loc;
+    final loc = SettingsLocalizations.of(context);
     final text = context.bullType;
 
     return SafeArea(

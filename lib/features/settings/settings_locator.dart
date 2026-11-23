@@ -41,10 +41,8 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:overview/setup.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:secrets/storage.dart' show SecretsInventory;
-import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
@@ -84,14 +82,6 @@ class SettingsLocator {
         offered: _exchangeActivationOffer(locator, onlyWhileOff: true),
       ),
       dispose: (cubit) => cubit.close(),
-    );
-    locator.registerFactory<DiscoverWalletUsecase>(
-      () => DiscoverWalletUsecase(
-        locator<OverviewSynchronization>().coordinator.discoverWallet,
-      ),
-    );
-    locator.registerFactory<WalletDiscoveryCubit>(
-      () => WalletDiscoveryCubit(locator<DiscoverWalletUsecase>()),
     );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(

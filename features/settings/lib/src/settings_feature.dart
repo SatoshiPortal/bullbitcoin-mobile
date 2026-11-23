@@ -2,9 +2,18 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart'
     show BuildContext, Builder, Widget;
 import 'package:network/network.dart';
+import 'package:primitives/primitives.dart' show Failure, Result;
+import 'package:secrets/custody.dart' show SeedReferences;
+import 'package:secrets/secrets.dart' show Secrets;
+import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:signers/storage.dart' show SignerDevices;
+import 'package:swaps/order_swaps.dart' show OrderSwaps;
+import 'package:swaps/swaps.dart' show SwapStore;
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import 'domain/watch_settings_service_health_usecase.dart';
 import 'settings_menu.dart';
+import 'wallet_details/wallet_details_route.dart';
 import 'ui/all_settings_screen.dart';
 import 'ui/settings_search_view.dart';
 
@@ -17,6 +26,31 @@ final class SettingsFeature {
   final GoRoute route;
 
   const SettingsFeature._(this.route);
+
+  /// The settings of one wallet, under the settings home: its public
+  /// description, discovery and fail-closed deletion. [onDeleted] leaves the
+  /// deleted wallet's screens.
+  static GoRoute walletDetails({
+    required SecretsInventory inventory,
+    required SignerDevices devices,
+    required WalletNativeLifecycle native,
+    required SwapStore swaps,
+    required OrderSwaps orders,
+    required SeedReferences references,
+    required Secrets secrets,
+    required Future<Result<void, Failure>> Function(String walletId) discover,
+    required void Function(BuildContext context) onDeleted,
+  }) => walletDetailsRoute(
+    inventory: inventory,
+    devices: devices,
+    native: native,
+    swaps: swaps,
+    orders: orders,
+    references: references,
+    secrets: secrets,
+    discover: discover,
+    onDeleted: onDeleted,
+  );
 
   /// Resolves menu data and labels from the screen's current context.
   ///
@@ -69,4 +103,12 @@ abstract final class SettingsNavigation {
 
   static Future<void> openSearch(BuildContext context) =>
       context.pushNamed<void>(_searchName);
+
+  static Future<void> openWalletDetails(
+    BuildContext context, {
+    required String walletId,
+  }) => context.pushNamed<void>(
+    walletDetailsRouteName,
+    pathParameters: {'walletId': walletId},
+  );
 }

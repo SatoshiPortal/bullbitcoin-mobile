@@ -612,10 +612,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "walletDeletionFailedOkButton": "ESTÁ BEM",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "autoswapWarningTitle": "O Autoswap está habilitado com as seguintes configurações:",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
@@ -683,10 +679,6 @@
   "payTotalFees": "Taxas totais",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
-  },
-  "walletDeletionFailedTitle": "Excluir Falhado",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "fundExchangeOnlineBillPaymentHelpBillerName": "Adicionar esta empresa como um payee - é processador de pagamento Bull Bitcoin",
   "@fundExchangeOnlineBillPaymentHelpBillerName": {
@@ -1241,10 +1233,6 @@
   "@fundExchangeCrIbanUsdRecipientNameHelp": {
     "description": "Help text for recipient name field explaining to use corporate name"
   },
-  "walletDeletionConfirmationCancelButton": "Cancelar",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoInvoiceData": "Não existem dados de fatura disponíveis",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
@@ -1717,10 +1705,6 @@
   "sendNetworkFees": "Taxas de rede",
   "@sendNetworkFees": {
     "description": "Label for network transaction fees"
-  },
-  "walletDeletionConfirmationTitle": "Excluir carteira",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "payNameHint": "Digite o nome do destinatário",
   "@payNameHint": {
@@ -2631,10 +2615,6 @@
   "@payFailedPayments": {
     "description": "Filter for failed payments"
   },
-  "walletDeletionErrorGeneric": "Falhado para excluir a carteira, tente novamente.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
-  },
   "sendFeeRateTooLow": "Taxas demasiado baixas",
   "@sendFeeRateTooLow": {
     "description": "Error for insufficient fee"
@@ -3025,10 +3005,6 @@
   "payToAddress": "Para endereço",
   "@payToAddress": {
     "description": "Label showing destination address"
-  },
-  "walletDetailsUnnamedWalletFallback": "Carteira sem nome",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "sendFeeRateTooHigh": "Taxa de taxa parece muito alta",
   "@sendFeeRateTooHigh": {
@@ -5345,10 +5321,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "walletDeletionConfirmationMessage": "Tens a certeza que queres apagar esta carteira?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "transactionNetworkLiquid": "Líquido",
   "@transactionNetworkLiquid": {
     "description": "Label for Liquid network transactions"
@@ -5765,10 +5737,6 @@
   "payNetworkType": "Rede",
   "@payNetworkType": {
     "description": "Label for network type (Lightning/Bitcoin/Liquid)"
-  },
-  "walletDeletionConfirmationDeleteButton": "Excluir",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "transactionSwapDescLnReceiveFailed": "Houve um problema com a tua troca. Por favor, contacte o suporte se os fundos não tiverem sido devolvidos dentro de 24 horas.",
   "@transactionSwapDescLnReceiveFailed": {
@@ -6904,10 +6872,6 @@
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
   },
-  "walletDetailsAddressTypeLabel": "Tipo de endereço",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
-  },
   "mempoolSettingsDescription": "Configurar servidores de mempool personalizados para diferentes redes. Cada rede pode usar seu próprio servidor para o explorador de blocos e estimativa de taxas.",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
@@ -7038,10 +7002,6 @@
       }
     }
   },
-  "walletDetailsDerivationPathLabel": "Caminho de Derivação",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "importColdcardInstructionsStep6": "Escolha \"Bull Bitcoin\" como a opção de exportação",
   "@importColdcardInstructionsStep6": {
     "description": "ImportColdcardQ: Sixth instruction step"
@@ -7061,10 +7021,6 @@
   "bip85ExperimentalWarning": "Experimental\nFaça backup de seus caminhos de derivação manualmente",
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"
-  },
-  "walletDetailsSignerDeviceNotSupported": "Não suportado",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
   },
   "automaticallyFetchKeyButton": "Verificar automaticamente a chave >>",
   "@automaticallyFetchKeyButton": {
@@ -7142,10 +7098,6 @@
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
   },
-  "walletDetailsDeletingMessage": "Excluindo a carteira...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "backupKeyExampleWarning": "Por exemplo, se você usou o Google Drive para seu arquivo de backup, não use o Google Drive para sua chave de backup.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -7207,10 +7159,6 @@
   "errorGenericTitle": "Oops! Algo correu mal",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "walletDetailsSignerLabel": "Sinalização",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
   },
   "backupKeyWarningMessage": "Atenção: Tenha cuidado onde você salvar a chave de backup.",
   "@backupKeyWarningMessage": {
@@ -7307,10 +7255,6 @@
   "@recoverButton": {
     "description": "Button label to recover wallet"
   },
-  "walletDetailsDescriptorLabel": "Descritores",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
-  },
   "importWatchOnlyScriptType": "Tipo de script",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
@@ -7335,21 +7279,9 @@
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
   },
-  "walletDetailsSignerDeviceLabel": "Dispositivo de sinalização",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "toLabel": "Para",
   "@toLabel": {
     "description": "Label for destination address in transaction details"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
-  },
-  "walletDetailsNetworkLabel": "Rede",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "enterBackupKeyManuallyTitle": "Digite a tecla de backup manualmente",
   "@enterBackupKeyManuallyTitle": {

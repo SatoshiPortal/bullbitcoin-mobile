@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart' show SettingsNavigation;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -60,12 +61,8 @@ class WalletDetailScreen extends StatelessWidget {
       walletName: walletName,
       settings: IconButton(
         tooltip: context.loc.settingsWalletSettingsTitle,
-        onPressed: () {
-          context.pushNamed(
-            SettingsRoute.walletDetailsSelectedWallet.name,
-            pathParameters: {'walletId': walletId},
-          );
-        },
+        onPressed: () =>
+            SettingsNavigation.openWalletDetails(context, walletId: walletId),
         icon: Image.asset(
           Assets.icons.settingsLine.path,
           width: 24,

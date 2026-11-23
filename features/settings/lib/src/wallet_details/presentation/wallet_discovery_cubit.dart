@@ -1,7 +1,8 @@
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
+
+import '../domain/discover_wallet_usecase.dart';
+import '../domain/wallet_details_failure.dart';
 
 sealed class WalletDiscoveryState {
   const WalletDiscoveryState();
@@ -20,7 +21,7 @@ final class WalletDiscoverySucceeded extends WalletDiscoveryState {
 }
 
 final class WalletDiscoveryFailed extends WalletDiscoveryState {
-  final SettingsFailure failure;
+  final WalletDetailsFailure failure;
   const WalletDiscoveryFailed(this.failure);
 }
 

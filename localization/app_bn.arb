@@ -753,10 +753,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "ঠিক আছে",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "মোট ফি",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -784,10 +780,6 @@
   "sendErrorInsufficientFundsForFees": "পরিমাণ ও ফি মেটাতে পর্যাপ্ত তহবিল নেই",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "ঠিকানার ধরন",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "উদ্ধার শব্দগুলো সঠিক ক্রমে স্পর্শ করুন",
   "@testBackupTapWordsInOrder": {
@@ -853,10 +845,6 @@
   "languageSettingsLabel": "ভাষা",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "মোছা ব্যর্থ হয়েছে",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "ওয়ালেট থেকে পরিশোধ করুন",
   "@payPayFromWallet": {
@@ -1305,10 +1293,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "বাতিল করুন",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "পরিশোধ করার জন্য কোনো প্রাপক পাওয়া যায়নি।",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1712,10 +1696,6 @@
   "autoswapAlwaysBlock": "উচ্চ ফি সবসময় ব্লক করুন",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "ওয়ালেট মুছুন",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "নেটওয়ার্ক ফি",
   "@sendNetworkFees": {
@@ -2624,10 +2604,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "ডেরিভেশন পাথ",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin ঠিকানা",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2851,10 +2827,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "সমর্থিত নয়",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "exchangeLandingDisclaimerLegal": "Bull Bitcoin বৈধভাবে কার্যকর করতে পারে এমন দেশগুলিতে এক্সচেঞ্জ সেবা প্রবেশ সীমিত হবে এবং এতে KYC-র প্রয়োজন হতে পারে।",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -2890,10 +2862,6 @@
   "exchangeDcaFrequencyWeek": "সপ্তাহ",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
-  },
-  "walletDeletionErrorGeneric": "ওয়ালেট মুছে ফেলতে ব্যর্থ হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "ট্রান্সফার কোড (পেমেন্ট বর্ণনা হিসেবে এটি যোগ করুন)",
   "@fundExchangeLabelTransferCode": {
@@ -3115,10 +3083,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "নামহীন ওয়ালেট",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "€20,000-এর বেশি লেনদেনের জন্য কেবল ব্যবহার করুন। ছোট লেনদেনের জন্য Instant SEPA বিকল্প ব্যবহার করুন।",
   "@fundExchangeRegularSepaInfo": {
@@ -4341,10 +4305,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "ওয়ালেট মুছে ফেলা হচ্ছে...",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "ঠিকানা যাচাই করা সম্ভব হয়নি: ওয়ালেট বা ঠিকানার তথ্য নেই",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -5495,10 +5455,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "স্বাক্ষরকারী",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "exchangeDcaSummaryMessage": "আপনি {network} মাধ্যমে প্রতি {frequency} {amount} কিনছেন যতক্ষণ আপনার অ্যাকাউন্টে তহবিল আছে",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
@@ -5647,10 +5603,6 @@
   "addressViewChangeType": "বাকি",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "মুছুন",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "লগআউট নিশ্চিত করুন",
   "@confirmLogoutTitle": {
@@ -6213,10 +6165,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "আপনি কি নিশ্চিতভাবে এই ওয়ালেট মুছতে চান?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "ফি দ্বারা প্রতিস্থাপন করুন",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -6459,10 +6407,6 @@
   "fundExchangeWarningTitle": "স্ক্যামারদের থেকে সতর্ক থাকুন",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "ডেসক্রিপ্টর",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "ধরন অনুযায়ী ফিল্টার করুন",
   "@payFilterByType": {
@@ -6821,10 +6765,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "স্বাক্ষরকারী ডিভাইস",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "ব্যাকআপ কী ম্যানুয়ালি লিখুন >>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -6930,10 +6870,6 @@
   "payAdvancedSettings": "উন্নত সেটিংস",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "এটি কয়েক সেকেন্ডের মধ্যে নিশ্চিত হয়ে যাবে",
   "@receiveConfirmedInFewSeconds": {
@@ -7081,10 +7017,6 @@
   "swapProgressPendingMessage": "সোয়াপ প্রক্রিয়াধীন। Bitcoin ট্রানজেকশন নিশ্চিত হতে কিছু সময় লাগতে পারে। আপনি হোমে ফিরে অপেক্ষা করতে পারেন।",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "নেটওয়ার্ক",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ব্রডকাস্টিং..।",
   "broadcastSignedTxBroadcastError": "আমরা আপনার লেনদেন ব্রডকাস্ট করতে পারিনি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",

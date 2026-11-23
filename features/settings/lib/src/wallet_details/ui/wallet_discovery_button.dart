@@ -1,6 +1,6 @@
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
-import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
+import '../../../generated/l10n/settings_localizations.dart';
+import '../presentation/wallet_details_failure_l10n.dart';
+import '../presentation/wallet_discovery_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +17,7 @@ class WalletDiscoveryButton extends StatelessWidget {
           return Column(
             children: [
               BullButton.primary(
-                label: context.loc.walletDiscoveryButton,
+                label: SettingsLocalizations.of(context).walletDiscoveryButton,
                 onPressed: (running)
                     ? null
                     : () => context.read<WalletDiscoveryCubit>().discover(
@@ -27,7 +27,7 @@ class WalletDiscoveryButton extends StatelessWidget {
               BullFadingLinearProgress(trigger: running),
               if (state is WalletDiscoverySucceeded)
                 BullText(
-                  context.loc.walletDiscoverySucceeded,
+                  SettingsLocalizations.of(context).walletDiscoverySucceeded,
                   style: context.bullType.body,
                 ),
               if (state case WalletDiscoveryFailed(:final failure))

@@ -20,7 +20,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
@@ -47,7 +46,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchWalletSyncEventsUsecase,
     required this._syncWalletsUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
-    required this._deleteWalletUsecase,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
@@ -75,7 +73,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
-    on<WalletDeleted>(_onDeleted);
     on<RefreshSpWallet>(_onRefreshSpWallet, transformer: restartable());
     on<SetSpWalletBalance>(_onSetSpWalletBalance);
     on<DismissBackupWarning>(_onDismissBackupWarning);
@@ -92,7 +89,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
-  final DeleteWalletUsecase _deleteWalletUsecase;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
   final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
@@ -518,40 +514,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(warnings: [warning]));
     } else {
       emit(state.copyWith(warnings: []));
-    }
-  }
-
-  Future<void> _onDeleted(
-    WalletDeleted event,
-    Emitter<WalletState> emit,
-  ) async {
-    final walletId = event.walletId;
-    emit(state.copyWith(isDeletingWallet: true, walletDeletionFailure: null));
-
-    switch (await _deleteWalletUsecase.execute(walletId: walletId)) {
-      case Ok():
-        log.info('[WalletBloc] Wallet with id $walletId deleted successfully');
-        _catalogGeneration++;
-        // Remove the wallet from the state to directly update the UI
-        // without needing to refresh the wallets again
-        emit(
-          state.copyWith(
-            wallets: state.wallets.where((w) => w.id != walletId).toList(),
-            isDeletingWallet: false,
-          ),
-        );
-        // Refresh the wallets to ensure everything is up to date
-        // and also trigger other things.
-        add(const WalletRefreshed());
-      case Err(:final failure):
-        // Every refusal reaches the sheet as a type, so each one keeps its own
-        // wording instead of collapsing into a generic message.
-        emit(
-          state.copyWith(
-            walletDeletionFailure: failure,
-            isDeletingWallet: false,
-          ),
-        );
     }
   }
 

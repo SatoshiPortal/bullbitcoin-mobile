@@ -272,42 +272,6 @@ class WalletRepository implements WalletReaderRepository {
     return _getBalance(metadata);
   }
 
-  @useResult
-  Future<Result<void, WalletFailure>> deleteWallet({
-    required String walletId,
-  }) async {
-    try {
-      final metadata = await _walletRegistrations.fetch(walletId);
-      if (metadata == null) {
-        return const Err(WalletNotFoundFailure('no metadata to delete'));
-      }
-
-      final native = _native;
-      if (native == null) throw StateError('Native writer is not configured');
-      WalletSyncBinding.value(
-        await native.delete(WalletSyncBinding.keyFromMetadata(metadata)),
-      );
-
-      await _walletRegistrations.delete(walletId);
-      WalletSyncBinding.value(
-        await native.catalogDeleted(
-          WalletSyncBinding.keyFromMetadata(metadata),
-        ),
-      );
-      log.fine('Wallet deleted outcome=ok');
-      return const Ok(null);
-    } catch (e, st) {
-      if (e is! WalletSnapshotException) {
-        log.severe(
-          message: 'Wallet delete failed reason=storage',
-          error: 'storage',
-          trace: st,
-        );
-      }
-      return Err(_classify(e, 'deleteWallet'));
-    }
-  }
-
   /// Synchronizes the native wallet [metadata] describes.
   Future<void> _syncWallet(
     WalletMetadataModel metadata, {

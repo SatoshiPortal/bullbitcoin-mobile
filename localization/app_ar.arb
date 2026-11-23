@@ -691,10 +691,6 @@
       }
     }
   },
-  "walletDeletionFailedOkButton": "حسنا",
-  "@walletDeletionFailedOkButton": {
-    "description": "OK button label in wallet deletion failed dialog"
-  },
   "payTotalFees": "مجموع الرسوم",
   "@payTotalFees": {
     "description": "Label for sum of all fees"
@@ -718,10 +714,6 @@
   "sendErrorInsufficientFundsForFees": "أموال غير كافية لتغطية المبلغ والرسوم",
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
-  },
-  "walletDetailsAddressTypeLabel": "نوع العنوان",
-  "@walletDetailsAddressTypeLabel": {
-    "description": "Label for the address type field in wallet details"
   },
   "testBackupTapWordsInOrder": "تخطي كلمات الاسترداد في\nالأمر الصحيح",
   "@testBackupTapWordsInOrder": {
@@ -779,10 +771,6 @@
   "languageSettingsLabel": "اللغة",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "walletDeletionFailedTitle": "يُحذف الفشل",
-  "@walletDeletionFailedTitle": {
-    "description": "Title for the wallet deletion failed dialog"
   },
   "payPayFromWallet": "الدفع من المحفظة",
   "@payPayFromWallet": {
@@ -1199,10 +1187,6 @@
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
   },
-  "walletDeletionConfirmationCancelButton": "إلغاء",
-  "@walletDeletionConfirmationCancelButton": {
-    "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
   "payNoRecipientsFound": "لم يعثر على متلقين يدفعون لهم.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1587,10 +1571,6 @@
   "autoswapAlwaysBlock": "\"دائماً \"بلوك هاي فيز",
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
-  },
-  "walletDeletionConfirmationTitle": "يحذف الجدار",
-  "@walletDeletionConfirmationTitle": {
-    "description": "Title for the wallet deletion confirmation dialog"
   },
   "sendNetworkFees": "رسوم الشبكة",
   "@sendNetworkFees": {
@@ -2437,10 +2417,6 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "Derivation Path",
-  "@walletDetailsDerivationPathLabel": {
-    "description": "Label for the derivation path field in wallet details"
-  },
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
@@ -2659,10 +2635,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "غير مدعوم",
-  "@walletDetailsSignerDeviceNotSupported": {
-    "description": "Message displayed when a signer device is not supported"
-  },
   "exchangeLandingDisclaimerLegal": "وسيقتصر الوصول إلى خدمات الصرف على البلدان التي يمكن أن يعمل فيها بول بيتكوين بصورة قانونية وقد يتطلب ذلك من الشركة.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -2698,10 +2670,6 @@
   "exchangeDcaFrequencyWeek": "الأسبوع",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
-  },
-  "walletDeletionErrorGeneric": "فشل في حذف المحفظة، من فضلك حاول مرة أخرى.",
-  "@walletDeletionErrorGeneric": {
-    "description": "Generic error message when wallet deletion fails"
   },
   "fundExchangeLabelTransferCode": "رمز التحويل (إضافة هذا كوصف للدفع)",
   "@fundExchangeLabelTransferCode": {
@@ -2901,10 +2869,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "walletDetailsUnnamedWalletFallback": "غير مسماة",
-  "@walletDetailsUnnamedWalletFallback": {
-    "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "الاستخدام الوحيد للمعاملات التي تتجاوز 000 20 يورو. وفيما يتعلق بالمعاملات الأصغر، استخدم خيار نظام المحاسبة البيئية - الاقتصادية الثابت.",
   "@fundExchangeRegularSepaInfo": {
@@ -4035,10 +3999,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "walletDetailsDeletingMessage": "إزالة المحفظة.",
-  "@walletDetailsDeletingMessage": {
-    "description": "Message displayed while a wallet is being deleted"
-  },
   "receiveUnableToVerifyAddress": "غير قادر على التحقق من العنوان: محفظة مفقودة أو عنوان معلومات",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
@@ -5108,10 +5068,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "walletDetailsSignerLabel": "سينير",
-  "@walletDetailsSignerLabel": {
-    "description": "Label for the signer field in wallet details"
-  },
   "exchangeDcaSummaryMessage": "أنت تشتري {amount} كل {frequency} عبر {network} طالما هناك أموال في حسابك.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
@@ -5246,10 +5202,6 @@
   "addressViewChangeType": "التغيير",
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
-  },
-  "walletDeletionConfirmationDeleteButton": "تحذف",
-  "@walletDeletionConfirmationDeleteButton": {
-    "description": "Delete button label in wallet deletion confirmation dialog"
   },
   "confirmLogoutTitle": "الموافقة",
   "@confirmLogoutTitle": {
@@ -5778,10 +5730,6 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "هل أنت متأكد أنك تريد حذف هذه المحفظة؟?",
-  "@walletDeletionConfirmationMessage": {
-    "description": "Message in the wallet deletion confirmation dialog"
-  },
   "rbfTitle": "يستعاض عنه بالرسوم",
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
@@ -6000,10 +5948,6 @@
   "fundExchangeWarningTitle": "احترس من المسامير",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "walletDetailsDescriptorLabel": "الوصف",
-  "@walletDetailsDescriptorLabel": {
-    "description": "Label for the wallet descriptor field in wallet details"
   },
   "payFilterByType": "الأفلام حسب النوع",
   "@payFilterByType": {
@@ -6330,10 +6274,6 @@
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
   },
-  "walletDetailsSignerDeviceLabel": "جهاز تسجيل",
-  "@walletDetailsSignerDeviceLabel": {
-    "description": "Label for the signer device field in wallet details"
-  },
   "testBackupEnterKeyManually": "أدخل مفتاح الدعم يدوياً",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
@@ -6430,10 +6370,6 @@
   "payAdvancedSettings": "المراحل المتقدمة",
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "walletDetailsPubkeyLabel": "Pubkey",
-  "@walletDetailsPubkeyLabel": {
-    "description": "Label for the public key field in wallet details"
   },
   "receiveConfirmedInFewSeconds": "سيتأكد خلال ثواني",
   "@receiveConfirmedInFewSeconds": {
@@ -6577,10 +6513,6 @@
   "swapProgressPendingMessage": "المبادلة قيد التنفيذ. قد تستغرق معاملات Bitcoin بعض الوقت للتأكيد. يمكنك العودة إلى الصفحة الرئيسية والانتظار.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "walletDetailsNetworkLabel": "الشبكة",
-  "@walletDetailsNetworkLabel": {
-    "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "البث...",
   "broadcastSignedTxBroadcastError": "تعذّر علينا بث معاملتك. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
