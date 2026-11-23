@@ -82,7 +82,6 @@ import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app_wallet;
 import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
