@@ -5,6 +5,8 @@ import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.
 import 'package:bip85/bip85.dart';
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:backups/backups.dart';
+import 'package:backup_metadata/backup_metadata_ui.dart'
+    show backupMetadataLocalizationsDelegate;
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
@@ -234,6 +236,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         Bip85Localizations.delegate,
                         NovlangAllSeedViewLocalizationsDelegate(novlangPolicy),
                         bullUiLocalizationsDelegate,
+                        backupMetadataLocalizationsDelegate,
                         ...RecoverBullFeature.localizationsDelegates,
                       ],
                       supportedLocales: AppLocalizations.supportedLocales,
