@@ -963,5 +963,17 @@
   },
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemonic",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Delete transfer mnemonic?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "This removes the transfer master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing transfers are unaffected."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "This removes the transfer master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing transfers are unaffected.",
+  "receive__receiveTransferFee_apple": "Transfer Fee",
+  "@receive__receiveTransferFee_apple": {,
+  "receive__swapErrorAmountBelowMinimum_apple": "Amount is below minimum transfer amount: {min} sats",
+  "@receive__swapErrorAmountBelowMinimum_apple": {,
+  "receive__swapErrorAmountAboveMaximum_apple": "Amount exceeds maximum transfer amount: {max} sats",
+  "@receive__swapErrorAmountAboveMaximum_apple": {,
+  "receive__swapTransferTitle_apple": "Transfer",
+  "@receive__swapTransferTitle_apple": {,
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Rate unavailable. Please try again later.",
+  "@receive__bitcoinPriceExchangeRateUnavailable_apple": {,
+  "receive__swapErrorRouteUnavailableGeneric_apple": "This transfer is not available.",
+  "@receive__swapErrorRouteUnavailableGeneric_apple": {
 }

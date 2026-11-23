@@ -1,8 +1,8 @@
+import 'package:receive/receive.dart' show PayjoinDisclaimerDialog;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:material_ui/material_ui.dart';

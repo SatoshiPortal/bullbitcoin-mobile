@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Փոխանցման mnemonic",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Ջնջե՞լ փոխանցման mnemonic-ը",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։",
+  "receive__receiveTransferFee_apple": "Փոխանցման վճար",
+  "receive__swapErrorAmountBelowMinimum_apple": "Գումարը փոխանցման նվազագույն գումարից պակաս է․ {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Գումարը գերազանցում է փոխանցման առավելագույն գումարը․ {max} sats",
+  "receive__swapTransferTitle_apple": "Փոխանցում",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Այս փոխանցումը հասանելի չէ։"
 }

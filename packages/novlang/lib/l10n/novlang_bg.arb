@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоника за прехвърляне",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Да се изтрие ли мнемониката за прехвърляне?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Това премахва главния ключ за прехвърляне от защитеното хранилище. Той ще бъде извлечен отново от seed-а на портфейла ви следващия път, когато приложението го поиска, със същия отпечатък. Текущите прехвърляния не се засягат."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Това премахва главния ключ за прехвърляне от защитеното хранилище. Той ще бъде извлечен отново от seed-а на портфейла ви следващия път, когато приложението го поиска, със същия отпечатък. Текущите прехвърляния не се засягат.",
+  "receive__receiveTransferFee_apple": "Такса за прехвърляне",
+  "receive__swapErrorAmountBelowMinimum_apple": "Сумата е под минималната сума за прехвърляне: {min} сатоши",
+  "receive__swapErrorAmountAboveMaximum_apple": "Сумата надвишава максималната сума за прехвърляне: {max} сатоши",
+  "receive__swapTransferTitle_apple": "Прехвърляне",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курсът не е наличен. Моля, опитайте отново по-късно.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Това прехвърляне не е налично."
 }

@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ট্ৰান্সফাৰ ম্নেম'নিক",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্ৰান্সফাৰ ম্নেম'নিক মচিব নেকি?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ই সুৰক্ষিত ষ্ট'ৰেজৰ পৰা ট্ৰান্সফাৰ মাষ্টাৰ কী আঁতৰাই পেলায়। পৰৱৰ্তী সময়ত এপ্টোৰ প্ৰয়োজন হ'লে একে ফিংগাৰপ্ৰিণ্টৰে ই আপোনাৰ ৱালেট seed ৰ পৰা পুনৰ উৎপন্ন কৰা হ'ব। চলি থকা ট্ৰান্সফাৰ প্ৰভাৱিত নহয়।"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ই সুৰক্ষিত ষ্ট'ৰেজৰ পৰা ট্ৰান্সফাৰ মাষ্টাৰ কী আঁতৰাই পেলায়। পৰৱৰ্তী সময়ত এপ্টোৰ প্ৰয়োজন হ'লে একে ফিংগাৰপ্ৰিণ্টৰে ই আপোনাৰ ৱালেট seed ৰ পৰা পুনৰ উৎপন্ন কৰা হ'ব। চলি থকা ট্ৰান্সফাৰ প্ৰভাৱিত নহয়।",
+  "receive__receiveTransferFee_apple": "ট্ৰান্সফাৰ ফী",
+  "receive__swapErrorAmountBelowMinimum_apple": "পৰিমাণ ন্যূনতম ট্ৰান্সফাৰ পৰিমাণতকৈ কম: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "পৰিমাণ সৰ্বাধিক ট্ৰান্সফাৰ পৰিমাণতকৈ বেছি: {max} sats",
+  "receive__swapTransferTitle_apple": "ট্ৰান্সফাৰ",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "ৰেট উপলব্ধ নহয়। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "এই ট্ৰান্সফাৰ উপলব্ধ নহয়।"
 }

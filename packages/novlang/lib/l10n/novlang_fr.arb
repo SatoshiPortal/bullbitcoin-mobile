@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transférer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnémonique de transfert",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Supprimer le mnémonique de transfert ?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Cela supprime la clé maître de transfert du stockage sécurisé. Elle sera dérivée à nouveau à partir de la phrase de récupération de votre portefeuille la prochaine fois que l’application en aura besoin, avec la même empreinte. Les transferts en cours ne sont pas affectés."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Cela supprime la clé maître de transfert du stockage sécurisé. Elle sera dérivée à nouveau à partir de la phrase de récupération de votre portefeuille la prochaine fois que l’application en aura besoin, avec la même empreinte. Les transferts en cours ne sont pas affectés.",
+  "receive__receiveTransferFee_apple": "Frais de transfert",
+  "receive__swapErrorAmountBelowMinimum_apple": "Le montant est inférieur au montant minimum de transfert : {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Le montant dépasse le montant maximum de transfert : {max} sats",
+  "receive__swapTransferTitle_apple": "Transfert",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Taux indisponible. Veuillez réessayer plus tard.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Ce transfert n'est pas disponible."
 }

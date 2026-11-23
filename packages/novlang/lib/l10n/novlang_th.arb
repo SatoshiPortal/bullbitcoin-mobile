@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "มนีโมนิกสำหรับการโอน",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ลบมนีโมนิกสำหรับการโอนหรือไม่?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "การดำเนินการนี้จะลบมาสเตอร์คีย์ของการโอนออกจากที่เก็บข้อมูลที่ปลอดภัย ระบบจะสร้างคีย์ขึ้นใหม่จาก seed ของกระเป๋าเงินเมื่อแอปต้องการใช้ครั้งถัดไป โดยมีลายนิ้วมือ (fingerprint) เหมือนเดิม การโอนที่กำลังดำเนินการอยู่จะไม่ได้รับผลกระทบ"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "การดำเนินการนี้จะลบมาสเตอร์คีย์ของการโอนออกจากที่เก็บข้อมูลที่ปลอดภัย ระบบจะสร้างคีย์ขึ้นใหม่จาก seed ของกระเป๋าเงินเมื่อแอปต้องการใช้ครั้งถัดไป โดยมีลายนิ้วมือ (fingerprint) เหมือนเดิม การโอนที่กำลังดำเนินการอยู่จะไม่ได้รับผลกระทบ",
+  "receive__receiveTransferFee_apple": "ค่าธรรมเนียมการโอน",
+  "receive__swapErrorAmountBelowMinimum_apple": "จำนวนเงินต่ำกว่าจำนวนการโอนขั้นต่ำ: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "จำนวนเงินเกินจำนวนการโอนสูงสุด: {max} sats",
+  "receive__swapTransferTitle_apple": "โอน",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "ไม่มีอัตราให้ใช้งาน โปรดลองอีกครั้งในภายหลัง",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "การโอนนี้ไม่พร้อมใช้งาน"
 }

@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক মুছবেন?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "এটি সুরক্ষিত স্টোরেজ থেকে ট্রান্সফার মাস্টার কী সরিয়ে দেয়। অ্যাপের পরবর্তী প্রয়োজনে এটি আপনার ওয়ালেট সিড থেকে একই ফিঙ্গারপ্রিন্টসহ পুনরায় তৈরি হবে। চলমান ট্রান্সফারগুলো প্রভাবিত হবে না।"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "এটি সুরক্ষিত স্টোরেজ থেকে ট্রান্সফার মাস্টার কী সরিয়ে দেয়। অ্যাপের পরবর্তী প্রয়োজনে এটি আপনার ওয়ালেট সিড থেকে একই ফিঙ্গারপ্রিন্টসহ পুনরায় তৈরি হবে। চলমান ট্রান্সফারগুলো প্রভাবিত হবে না।",
+  "receive__receiveTransferFee_apple": "ট্রান্সফার ফি",
+  "receive__swapErrorAmountBelowMinimum_apple": "পরিমাণ ন্যূনতম ট্রান্সফার পরিমাণের নিচে: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "পরিমাণ সর্বোচ্চ ট্রান্সফার পরিমাণ ছাড়িয়ে গেছে: {max} sats",
+  "receive__swapTransferTitle_apple": "ট্রান্সফার",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "এই ট্রান্সফারটি উপলব্ধ নেই।"
 }

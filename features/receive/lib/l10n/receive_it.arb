@@ -1,0 +1,88 @@
+{
+  "receiveInvoice": "Fattura Lightning",
+  "receiveServerNetworkFees": "Commissioni di rete del server",
+  "transactionNetworkLightning": "Lightning",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sicuri",
+  "receiveAddress": "Indirizzo di ricezione",
+  "appStartupErrorMessage": "L'app non è riuscita ad avviarsi. Prova a chiuderla completamente e a riavviarla. Se l'errore persiste, contatta il supporto e condividi i tuoi log.",
+  "receiveSendNetworkFee": "Commissione di rete per l'invio",
+  "okButton": "OK",
+  "receiveWaitForPayjoin": "Attendere che il mittente finisca la transazione payjoin",
+  "swapTransferTitle": "Swap",
+  "receivePaymentReceived": "Pagamento ricevuto!",
+  "swapErrorAmountBelowMinimum": "L'importo di swap è inferiore: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveNewAddress": "Nuovo indirizzo",
+  "receiveNetworkFee": "Commissioni di rete",
+  "receiveLiquidConfirmationMessage": "Sarà confermato in pochi secondi",
+  "receiveLightningInvoice": "Fattura Lightning",
+  "receiveVerifyAddressError": "In grado di verificare l'indirizzo: Informazioni sul portafoglio mancante o sull'indirizzo",
+  "copyDialogButton": "Copia",
+  "receivePaymentNormally": "Ricevi il pagamento normalmente",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "receiveBitcoinConfirmationMessage": "La transazione Bitcoin richiederà un po' di tempo per essere confermata.",
+  "receiveTotalFee": "Commissione totale",
+  "closeDialogButton": "Chiudi",
+  "receivePaymentInProgress": "Pagamento in corso",
+  "receiveLiquid": "Liquid",
+  "receiveTransferFee": "Commissione di swap",
+  "globalDefaultLiquidWalletLabel": "Pagamenti istantanei",
+  "payNetworkError": "Errore di rete. Riprova",
+  "receiveTitle": "Ricevi",
+  "receivePayjoinInProgress": "Payjoin in corso",
+  "receiveLightning": "Lightning",
+  "receivePayjoinFailQuestion": "Non hai tempo di aspettare o il Payjoin non è riuscito da parte del mittente?",
+  "receiveBitcoin": "Bitcoin",
+  "receiveVerifyAddressLedger": "Verifica l'indirizzo su Ledger",
+  "amountLabel": "Importo",
+  "receiveDetails": "Dettagli",
+  "receiveFeeExplanation": "Questa commissione sarà detratta dall'importo inviato",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "transactionNetworkLiquid": "Liquid",
+  "swapErrorAmountAboveMaximum": "Importo superiore al massimo importo swap: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveContinue": "Continua",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Tocca per copiare",
+  "invoiceViewerTitle": "Fattura",
+  "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
+  "receiveLiquidRiskDisclosureLabel": "I pagamenti saranno convertiti in Liquid L-BTC (non BTC). Scopri di più.",
+  "liquidRiskDisclosureSemanticLabel": "Apri l'informativa sui rischi di Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Informativa sui rischi di Liquid Bitcoin del Portafoglio Pagamenti Istantanei",
+  "liquidRiskDisclosureBody": "I fondi nel portafoglio Pagamenti istantanei non sono Bitcoin \"veri\". Sono Bitcoin della rete Liquid (L-BTC), un token garantito da Bitcoin che esiste su un registro separato chiamato \"sidechain\".\n\nOgni Liquid Bitcoin è garantito 1:1 da Bitcoin veri tramite un meccanismo di ancoraggio (peg) trasparente, gestito da una federazione di 15 aziende. Le riserve di Bitcoin detenute dalla Federazione Liquid sono completamente verificabili, e chiunque può controllare che ogni Liquid Bitcoin sia garantito da un Bitcoin vero.\n\nTenere denaro sulla rete Liquid è molto più sicuro che usare un portafoglio custodial tradizionale o un exchange. Tuttavia, tenere i tuoi soldi in Liquid Bitcoin nel portafoglio Pagamenti istantanei è molto meno sicuro che tenerli in Bitcoin veri nel portafoglio Bitcoin sicuri.\n\nI pagamenti sulla rete Liquid sono più veloci, più economici e più riservati dei normali pagamenti Bitcoin. Hai la piena autocustodia dei Liquid Bitcoin nel portafoglio Pagamenti istantanei e non ti serve il permesso di nessuno per inviare e ricevere pagamenti.\n\nSei pienamente ed esclusivamente responsabile di proteggere l'accesso al backup del tuo portafoglio: senza di esso nessuno potrà ripristinare l'accesso ai tuoi Liquid Bitcoin.\n\nIl valore reale degli L-BTC dipende dalla possibilità di riscattarli in cambio di Bitcoin veri, che a sua volta dipende dai fornitori di swap che fanno parte della rete Liquid, che a loro volta dipendono dal fatto che la federazione della rete Liquid non venga mai compromessa o chiusa.\n\nIn altre parole, se i membri della federazione della rete Liquid non potessero o non volessero più riscattare i tuoi Liquid Bitcoin in cambio di Bitcoin veri, i token L-BTC perderebbero tutto il loro valore.\n\n> Raccomandazione\n> Tieni solo piccole somme nel portafoglio Pagamenti istantanei. Tieni i tuoi risparmi nel portafoglio Bitcoin sicuri o in un hardware wallet importato.\n\n## Che cos'è il portafoglio Pagamenti istantanei?\n\nOgni volta che ricevi un pagamento sulla rete Lightning con il portafoglio Pagamenti istantanei, i fondi del mittente vengono in realtà ricevuti da un fornitore di swap terzo, convertiti in Liquid Bitcoin e inviati al tuo portafoglio.\n\nOgni volta che invii un pagamento sulla rete Lightning con questo portafoglio, in realtà invii un pagamento in Liquid Bitcoin a un fornitore di swap terzo, che lo converte in Bitcoin veri sulla rete Lightning e invia un pagamento Lightning al destinatario.\n\nQuesti swap sono completamente non custodial e trustless: il fornitore di swap non ha alcun modo di rubare i tuoi fondi. Bull Bitcoin non partecipa a queste transazioni di swap e non richiede né conserva alcun dato personale.\n\n## Cosa devo fare con questo portafoglio?\n\nIl portafoglio Pagamenti istantanei serve a ricevere pagamenti in Bitcoin (o acquistare Bitcoin) e inviare pagamenti in Bitcoin (o vendere Bitcoin) nella vita di tutti i giorni, senza pagare le commissioni della rete Bitcoin.\n\nSe sei un esercente o stai accumulando Bitcoin, usa questo portafoglio per ricevere pagamenti sotto 0,01 BTC e, quando hai accumulato più di 0,01 BTC, trasferisci quei Bitcoin nel portafoglio Bitcoin sicuri o in un altro portafoglio Bitcoin in autocustodia.\n\nSe vuoi spendere i tuoi Bitcoin, trasferisci una piccola somma nel portafoglio Pagamenti istantanei e usala per le tue spese. Quando i fondi nel portafoglio Pagamenti istantanei finiscono, basta ricaricarlo.\n\n## Che cos'è il trasferimento automatico (auto-swap) e come funziona?\n\nIl trasferimento automatico, chiamato anche auto-swap, è una funzione ideata da Bull Bitcoin che converte automaticamente i Bitcoin della rete Liquid (L-BTC) in Bitcoin (BTC) quando l'importo di L-BTC nel tuo portafoglio raggiunge una soglia stabilita.\n\nIl trasferimento automatico è attivo per impostazione predefinita:\n\n- **Saldo massimo del portafoglio istantaneo:** 0,01 BTC\n- **Saldo obiettivo dopo il trasferimento automatico:** 0,005 BTC\n- **Importo minimo di trasferimento:** 0,005 BTC\n\nQuando il saldo raggiunge 0,01 BTC, appena apri l'app viene avviato un trasferimento e tutti i fondi oltre 0,005 BTC vengono convertiti da L-BTC a BTC.\n\n### Esempio\n\nSe hai 0,012 L-BTC e il trasferimento automatico è attivo, viene avviato un trasferimento di 0,007 L-BTC: ti restano 0,005 L-BTC e il tuo saldo in BTC aumenta di 0,007 BTC.\n\n## Come faccio a ricaricare o prelevare L-BTC dal portafoglio Pagamenti istantanei?\n\nPer ricaricare il portafoglio con Bitcoin \"veri\", tocca \"Ricevi\" e scegli \"Lightning\". Per prelevare L-BTC, tocca \"Invia\" e incolla una fattura Lightning.\n\n## Come funziona il backup?\n\nIl portafoglio Pagamenti istantanei usa le stesse parole della frase di recupero del portafoglio Bitcoin sicuri. Ti basta un solo backup per entrambi i portafogli.\n\n## Devo usare il portafoglio Pagamenti istantanei invece di un portafoglio Lightning non custodial?\n\nUn portafoglio Lightning non custodial come Phoenix Wallet ti offre un livello di sicurezza più alto. Poiché dovrai occuparti della gestione dei canali Lightning, potrebbe essere meno comodo e più difficile da usare.\n\nPoiché aprire e chiudere i canali Lightning richiede transazioni on-chain, e probabilmente dovrai pagare una commissione ai fornitori di servizi Lightning, in alcuni casi usare un portafoglio Lightning completamente non custodial può costare di più.\n\nSe puoi e vuoi usare un portafoglio Lightning puro e completamente non custodial, ti consigliamo vivamente di provare Phoenix Wallet.\n\n## Quali sono le commissioni di transazione?\n\nOgni pagamento in entrata o in uscita dal portafoglio Pagamenti istantanei comporta due transazioni sulla rete Liquid. Di solito sono molto piccole, intorno a 0,00000050 BTC (50 sats).\n\nSe ricevi o invii pagamenti Lightning con il portafoglio Bitcoin sicuri, a ogni pagamento dovrai pagare due transazioni Bitcoin on-chain, che possono costare parecchio.\n\nInoltre, il fornitore di swap può applicare commissioni di swap. Attualmente il fornitore di swap (Boltz) applica queste commissioni:\n\n- **Ricezione di pagamenti Lightning nel portafoglio Pagamenti istantanei:** 0,25%\n- **Invio di pagamenti Lightning dal portafoglio Pagamenti istantanei:** 0,1%\n- **Ricezione di pagamenti Lightning nel portafoglio Bitcoin sicuri:** 0,5%\n- **Invio di pagamenti Lightning dal portafoglio Bitcoin sicuri:** 0,1%\n",
+  "settingsPayjoinDisclaimerTitle": "Avviso su Payjoin",
+  "receiveErrorAmountAboveProtocolLimit": "L'importo supera l'importo massimo possibile in Bitcoin di {max}",
+  "receiveErrorNoteNotSaved": "Non è stato possibile salvare la tua nota. Riprova.",
+  "receiveErrorAddressUnavailable": "Non è stato possibile preparare un indirizzo di ricezione. Riprova.",
+  "receiveErrorBroadcastOriginal": "Non è stato possibile trasmettere la transazione. Controlla la connessione a Internet e riprova.",
+  "copiedToClipboard": "Copiato negli appunti",
+  "receivePayjoinBelowMinimum": "Importo sotto il minimo per il Payjoin",
+  "receivePayjoinBelowMinimumSubtext": "Questo pagamento era sotto il minimo impostato per il Payjoin, quindi è stato ricevuto come transazione normale. Puoi cambiare la soglia nelle impostazioni Bitcoin.",
+  "receivePayjoinExpired": "Tempo scaduto per il Payjoin",
+  "receivePayjoinExpiredSubtext": "Il tempo per il Payjoin è scaduto. Il pagamento verrà ricevuto come transazione normale.",
+  "receivePayjoinFallbackCompleted": "Ricevuto senza Payjoin",
+  "receivePayjoinFallbackCompletedSubtext": "Questa volta non è stato possibile completare un Payjoin, quindi il pagamento è stato ricevuto come transazione normale.",
+  "receivePayjoinFallbackCountdown": "Passaggio a un pagamento normale tra",
+  "receivePayjoinQrBadge": "Payjoin",
+  "receiveViewDetails": "Vedi dettagli",
+  "swapErrorRateLimited": "Troppe richieste. Attendi {seconds} secondi e riprova.",
+  "swapErrorRouteUnavailable": "Lo swap da {fromNetwork} a {toNetwork} non è disponibile.",
+  "swapErrorRouteUnavailableGeneric": "Questo swap non è disponibile.",
+  "settingsPayjoinPrivacyGainExplanation": "Il Payjoin aumenta molto la privacy contro l'analisi della blockchain: smentisce il presupposto che tutti gli input di una transazione appartengano alla stessa persona. In cambio c'è un rischio: accettando un Payjoin, riveli uno dei tuoi UTXO alla controparte.",
+  "settingsPayjoinV1DirectoryLeakExplanation": "Se la controparte usa una versione meno recente del Payjoin (v1) invece di quella attuale (v2), lo stesso UTXO può essere rivelato anche alla directory Payjoin, un servizio terzo usato per coordinare il Payjoin."
+}

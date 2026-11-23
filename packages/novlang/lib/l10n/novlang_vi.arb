@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemonic chuyển khoản",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Xóa mnemonic chuyển khoản?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng.",
+  "receive__receiveTransferFee_apple": "Phí chuyển khoản",
+  "receive__swapErrorAmountBelowMinimum_apple": "Số tiền thấp hơn số tiền chuyển tối thiểu: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Số tiền vượt quá số tiền chuyển tối đa: {max} sats",
+  "receive__swapTransferTitle_apple": "Chuyển khoản",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Tỷ giá không khả dụng. Vui lòng thử lại sau.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Khoản chuyển này không khả dụng."
 }

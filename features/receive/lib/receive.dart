@@ -24,6 +24,10 @@ export 'src/domain/receive_failure.dart';
 export 'src/domain/receive_lightning_limits.dart';
 export 'src/domain/receive_live_amount.dart';
 
+export 'src/domain/receive_wallet.dart';
+export 'src/ui/widgets/payjoin_disclaimer_dialog.dart'
+    show PayjoinDisclaimerDialog;
+
 /// Receive request operations and address selection.
 abstract interface class Receive {
   factory Receive.open({

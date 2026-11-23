@@ -53,7 +53,16 @@ catalogues:
   all_seed_view:
     path: features/all_seed_view
     description: authenticated recovery phrase viewer
+  receive:
+    path: features/receive
+    description: Bitcoin, Liquid, Lightning and Payjoin receive screens
 entries:
+  - {catalogue: receive, key: receiveTransferFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: swapErrorAmountBelowMinimum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: swapErrorAmountAboveMaximum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: swapTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: receive, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}

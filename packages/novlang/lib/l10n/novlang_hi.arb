@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक हटाएं?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "यह ट्रांसफ़र मास्टर की को सुरक्षित स्टोरेज से हटा देता है। ऐप को अगली बार इसकी आवश्यकता होने पर यह आपके वॉलेट सीड से, उसी फ़िंगरप्रिंट के साथ, फिर से निकाली जाएगी। जारी ट्रांसफ़रों पर कोई असर नहीं पड़ेगा।"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "यह ट्रांसफ़र मास्टर की को सुरक्षित स्टोरेज से हटा देता है। ऐप को अगली बार इसकी आवश्यकता होने पर यह आपके वॉलेट सीड से, उसी फ़िंगरप्रिंट के साथ, फिर से निकाली जाएगी। जारी ट्रांसफ़रों पर कोई असर नहीं पड़ेगा।",
+  "receive__receiveTransferFee_apple": "ट्रांसफ़र शुल्क",
+  "receive__swapErrorAmountBelowMinimum_apple": "राशि न्यूनतम ट्रांसफ़र राशि से कम है: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "राशि अधिकतम ट्रांसफ़र राशि से अधिक है: {max} sats",
+  "receive__swapTransferTitle_apple": "ट्रांसफ़र",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "यह ट्रांसफ़र उपलब्ध नहीं है।"
 }

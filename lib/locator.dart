@@ -73,8 +73,13 @@ import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
-import 'package:bb_mobile/features/receive/receive_locator.dart';
-import 'package:receive/receive.dart';
+import 'package:receive/receive.dart' show Receive;
+import 'package:receive/setup.dart' show ReceiveFeature;
+import 'package:signers/storage.dart' show SignerDevices;
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/create_receive_order_swap_usecase.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show SettingsFacade;
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -424,7 +429,30 @@ class AppLocator {
         scope: (child) => ActiveNetworkScope(child: child),
       ),
     );
-    ReceiveLocator.setup(locator);
+    locator.registerSingleton(
+      ReceiveFeature.mount(
+        locator,
+        rootNavigatorKey: AppRouter.rootNavigatorKey,
+        inventory: inventory,
+        loadWallet: (key) => locator<WalletNativeRuntime>().loadWallet(key),
+        signerDevices: locator<SignerDevices>(),
+        poll: wallet().pollWallet,
+        refreshAfterLightningPayment: () async {
+          final _ = await locator<GetWalletsUsecase>().execute(sync: true);
+        },
+        orderSwaps: () => locator<SwapFacade>(),
+        createOrder: ({required wallet, required amountSat, note}) =>
+            CreateReceiveOrderSwapUsecase(
+              locator<SwapFacade>(),
+              locator<AddressView>(),
+            ).execute(wallet: wallet, amountSat: amountSat, note: note),
+        setPayjoinEnabled: locator<SettingsFacade>().setPayjoinReceiveEnabled,
+        openHome: (context) => context.goNamed(WalletRoute.walletHome.name),
+        successAnimation: AssetImage(Assets.animations.successTick.path),
+        orderSwapUnderReview: (order) =>
+            OrderSwapUnderReviewCard(orderSwap: order),
+      ),
+    );
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
     ConsolidationLocator.setup(locator);
