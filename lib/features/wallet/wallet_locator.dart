@@ -1,38 +1,24 @@
-import 'package:notifications/payment_store.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:secrets/custody.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
-import 'package:primitives/primitives.dart' hide Network;
 
-import 'package:bull_ark/ark_wallet_setup.dart';
 
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
 
-import 'package:background_tasks/background_tasks.dart';
 import 'package:electrum/electrum.dart' show ElectrumSyncResult;
-import 'package:flutter/widgets.dart';
 
-import 'package:bb_mobile/features/settings/public/language_locale.dart';
 
-import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
 
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bull_recoverbull/storage.dart' show RecoverBullWalletProperties;
-import 'package:signers/storage.dart' show SignerDevices;
-import 'package:sync/storage.dart' show SyncFreshness;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
-import 'package:sync/inventory.dart';
-import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:silent/silent.dart';
@@ -54,7 +40,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:swap_feature/swap_feature.dart';
-import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -97,7 +82,6 @@ class WalletLocator {
     locator.registerLazySingleton<WalletRepository>(() {
       final electrum = locator<ElectrumSync>();
       return WalletRepository(
-        native: locator<WalletNativeRuntime>(),
         walletRegistrations: locator<WalletRegistrations>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronization: locator<ForegroundWalletSynchronization>(),

@@ -8,7 +8,6 @@ import 'package:notifications/payment_store.dart';
 import 'package:overview/setup.dart' show OverviewSynchronization;
 import 'package:path_provider/path_provider.dart';
 import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';

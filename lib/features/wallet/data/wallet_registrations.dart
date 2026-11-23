@@ -1,13 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:satoshifier/bip32_derivation.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
-import 'package:bull_recoverbull/bull_recoverbull.dart'
-    show BackupStatus, RecoverBullFacade, RecoverBullFailure, VaultContext;
 import 'package:bull_recoverbull/storage.dart';
-import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:signers/storage.dart';
 import 'package:sync/storage.dart';

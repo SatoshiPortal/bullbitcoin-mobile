@@ -19,17 +19,11 @@ final class RecoverBullWalletProperties
   _vaultStatus;
 
   const RecoverBullWalletProperties({
-    required RecoverBullWalletBackups backups,
-    required RecoverBullWalletBackups regtestBackups,
-    required ActiveEnvironmentReader environment,
-    required Future<Result<BackupStatus, RecoverBullFailure>> Function(
-      VaultContext,
-    )
-    vaultStatus,
-  }) : _backups = backups,
-       _regtestBackups = regtestBackups,
-       _environment = environment,
-       _vaultStatus = vaultStatus;
+    required this._backups,
+    required this._regtestBackups,
+    required this._environment,
+    required this._vaultStatus,
+  });
 
   /// A new wallet starts without any tested backup, even if a deleted wallet
   /// with the same identifier had one.

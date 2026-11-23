@@ -118,14 +118,11 @@ final class _WalletProvisioning implements WalletProvisioning {
   final List<WalletPropertyStore> _properties;
 
   _WalletProvisioning({
-    required SecretsInventory inventory,
-    required WalletNativeLifecycle native,
-    required Future<Result<void, SyncFailure>> Function() resume,
+    required this._inventory,
+    required this._native,
+    required this._resume,
     required List<WalletPropertyStore> properties,
-  }) : _inventory = inventory,
-       _native = native,
-       _resume = resume,
-       _properties = List.unmodifiable(properties);
+  }) : _properties = List.unmodifiable(properties);
 
   @override
   Future<Result<void, WalletProvisioningFailure>> resume() async =>

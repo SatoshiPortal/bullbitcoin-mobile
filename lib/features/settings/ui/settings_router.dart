@@ -24,7 +24,6 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_detai
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
 import 'package:bb_mobile/locator.dart';

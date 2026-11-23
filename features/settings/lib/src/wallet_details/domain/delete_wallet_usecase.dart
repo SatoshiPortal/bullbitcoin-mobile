@@ -23,18 +23,13 @@ class DeleteWalletUsecase {
   final Secrets _secrets;
 
   const DeleteWalletUsecase({
-    required SecretsInventory inventory,
-    required WalletNativeLifecycle native,
-    required SwapStore swaps,
-    required OrderSwaps orders,
-    required SeedReferences references,
-    required Secrets secrets,
-  }) : _inventory = inventory,
-       _native = native,
-       _swaps = swaps,
-       _orders = orders,
-       _references = references,
-       _secrets = secrets;
+    required this._inventory,
+    required this._native,
+    required this._swaps,
+    required this._orders,
+    required this._references,
+    required this._secrets,
+  });
 
   @useResult
   Future<Result<void, WalletDetailsFailure>> execute(String walletId) async {

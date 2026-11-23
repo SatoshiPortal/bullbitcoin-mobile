@@ -3,13 +3,12 @@ import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repo
 import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Fingerprint, Ok, Result, ScriptType, SignerEntity;
+    show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 
 import 'dart:async';
 
-import 'package:sync/write.dart'
-    show ForegroundWalletSynchronization, WalletNativeLifecycle;
+import 'package:sync/write.dart' show ForegroundWalletSynchronization;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show
@@ -19,9 +18,7 @@ import 'package:sync/sync.dart'
         isLiquidStatusConflict;
 
 import 'package:electrum/setup.dart';
-import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' as native_sync;
@@ -31,12 +28,9 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:wallet_import/wallet_import.dart';
 import 'package:meta/meta.dart';
 
 class WalletRepository implements WalletReaderRepository {
-  final WalletNativeLifecycle? _native;
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
   final WalletRegistrations _walletRegistrations;
@@ -46,17 +40,14 @@ class WalletRepository implements WalletReaderRepository {
   final Stream<String> _walletSyncFinishedStream;
 
   WalletRepository({
-    this._native,
     required this._walletRegistrations,
     required SyncWalletValuesDatasource walletValuesDatasource,
-    required ForegroundWalletSynchronization synchronization,
+    required this._synchronization,
     required Stream<String> syncStarted,
     required Stream<String> syncFinished,
   }) : _values = walletValuesDatasource,
-       _synchronization = synchronization,
        _walletSyncStartedStream = syncStarted,
-       _walletSyncFinishedStream = syncFinished {
-  }
+       _walletSyncFinishedStream = syncFinished;
 
   Stream<String> get walletSyncStartedStream => _walletSyncStartedStream;
 
