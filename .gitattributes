@@ -3,3 +3,4 @@ packages/legacy_storage/lib/src/app_database/*.steps.dart linguist-generated
 packages/legacy_storage/test/migrations_test/**/generated/*.dart linguist-generated
 test/migrations_test/**/generated/*.dart linguist-generated
 WORKSPACE.md linguist-generated
+DEPENDENCIES.md linguist-generated
