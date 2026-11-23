@@ -131,7 +131,7 @@ void main() {
       testnetEndpoint: Uri.parse(testBbxEndpoint),
       readSession: () => readLegacyExchangeSession(
         preferences: _Settings(),
-        readEpoch: () => 0,
+        readSession: () => null,
         readKey: repository.readActiveApiKey,
       ),
     );
@@ -149,7 +149,7 @@ void main() {
       testnetEndpoint: Uri.parse(testBbxEndpoint),
       readSession: () => readLegacyExchangeSession(
         preferences: _Settings(),
-        readEpoch: () => 0,
+        readSession: () => null,
         readKey: repository.readActiveApiKey,
       ),
     );

@@ -138,7 +138,7 @@ void main() {
       disconnectNotifications: () async {},
       clearCookies: () async {},
     );
-    final oldEpoch = repository.epoch;
+    final oldEpoch = repository.session?.epoch ?? 0;
     final _ = await repository.signOut();
     clearInteractions(keys);
     final _ = await repository.expireSession(epoch: oldEpoch, isTestnet: false);
@@ -284,11 +284,7 @@ void main() {
     final exchange = _exchange(repository);
     addTearDown(exchange.close);
     expect(await exchange.applyInitialChoice(true), isA<Ok>());
-    expect(repository.current, isA<ExchangeAccessEnabled>());
-    expect(
-      (repository.current as ExchangeAccessEnabled).session,
-      ExchangeAccessSession.signedOut,
-    );
+    expect(repository.current, isA<ExchangeAccessSignedOut>());
   });
 
   test(
@@ -314,7 +310,7 @@ void main() {
         },
       );
       final _ = await repository.resolve();
-      final requestEpoch = repository.epoch;
+      final requestEpoch = repository.session?.epoch ?? 0;
       environment = true;
       final _ = await repository.expireSession(
         epoch: requestEpoch,
@@ -355,7 +351,7 @@ void main() {
       releaseWrite.complete();
       expect(await explicit, isA<Ok>());
       expect(await initial, isA<Ok>());
-      expect(repository.current, isA<ExchangeAccessEnabled>());
+      expect(repository.current, isA<ExchangeAccessSignedOut>());
       final preferences = await SharedPreferences.getInstance();
       expect(
         (jsonDecode(
@@ -387,14 +383,7 @@ void main() {
       expect(await repository(false).resolve(), isA<Ok>());
       final restarted = repository(true);
       final _ = await restarted.resolve();
-      expect(
-        restarted.current,
-        isA<ExchangeAccessEnabled>().having(
-          (state) => state.session,
-          'session',
-          ExchangeAccessSession.signedOut,
-        ),
-      );
+      expect(restarted.current, isA<ExchangeAccessSignedOut>());
     },
   );
 
@@ -419,21 +408,17 @@ void main() {
       );
       final first = repository();
       final _ = await first.resolve();
-      expect(first.current, isA<ExchangeAccessEnabled>());
+      expect(first.current, isA<ExchangeAccessSignedIn>());
       expect(
-        await first.expireSession(epoch: first.epoch, isTestnet: false),
+        await first.expireSession(
+          epoch: first.session?.epoch ?? 0,
+          isTestnet: false,
+        ),
         isA<Ok>(),
       );
       final restarted = repository();
       final _ = await restarted.resolve();
-      expect(
-        restarted.current,
-        isA<ExchangeAccessEnabled>().having(
-          (state) => state.session,
-          'session',
-          ExchangeAccessSession.signedOut,
-        ),
-      );
+      expect(restarted.current, isA<ExchangeAccessSignedOut>());
     },
   );
 
@@ -502,7 +487,7 @@ void main() {
       disconnected = false;
       expect(
         await repository.expireSession(
-          epoch: repository.epoch,
+          epoch: repository.session?.epoch ?? 0,
           isTestnet: false,
         ),
         isA<Err>(),
@@ -543,7 +528,7 @@ void main() {
       );
       final _ = await repository.resolve();
       final expiry = repository.expireSession(
-        epoch: repository.epoch,
+        epoch: repository.session?.epoch ?? 0,
         isTestnet: false,
       );
       await started.future;
@@ -599,4 +584,197 @@ void main() {
       expect((await entry as Ok).value, ExchangeAvailability.signInRequired);
     },
   );
+
+  group('sessions (B7, B8)', () {
+    ExchangeApiKey key() => (ExchangeApiKey.create(
+      id: 'id',
+      key: 'test',
+      name: 'name',
+      userId: 'user',
+      isActive: true,
+      createdAt: 0,
+      updatedAt: 0,
+    ) as Ok<ExchangeApiKey, ExchangeFailure>).value;
+
+    test('a failed sign-in ends no session and touches no socket', () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      final socket = <String>[];
+      final repository = legacyAccessForTesting(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async => socket.add('disconnect'),
+        clearCookies: () async {},
+        connectNotifications: (environment, {required reconnect}) async =>
+            socket.add('connect ${environment.name}'),
+      );
+      final _ = await repository.resolve();
+      final session = repository.session;
+      expect(session, isNotNull);
+      socket.clear();
+
+      final result = await repository.completeAuthentication(
+        generateApiKey: () async => const Err(ExchangeAuthenticationFailure()),
+        isTestnet: false,
+        isCurrent: () => true,
+      );
+
+      expect(result, isA<Err>());
+      expect(repository.session, session);
+      expect(socket, isEmpty);
+    });
+
+    test('resolving again keeps the session and the socket', () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      final socket = <String>[];
+      final repository = legacyAccessForTesting(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async => socket.add('disconnect'),
+        clearCookies: () async {},
+        connectNotifications: (environment, {required reconnect}) async =>
+            socket.add('connect ${environment.name}'),
+      );
+      final _ = await repository.resolve();
+      final session = repository.session;
+      final _ = await repository.resolve();
+
+      expect(repository.session, session);
+      expect(socket, ['connect mainnet']);
+    });
+
+    test('a stored key starts a new session with a new epoch', () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok(null));
+      when(() => keys.saveApiKey(any(), isTestnet: false))
+          .thenAnswer((_) async => const Ok(null));
+      final socket = <String>[];
+      final repository = legacyAccessForTesting(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async => socket.add('disconnect'),
+        clearCookies: () async {},
+        connectNotifications: (environment, {required reconnect}) async =>
+            socket.add('connect ${environment.name}'),
+      );
+      final _ = await repository.resolve();
+      expect(repository.current, isA<ExchangeAccessSignedOut>());
+
+      final result = await repository.completeAuthentication(
+        generateApiKey: () async => Ok(key()),
+        isTestnet: false,
+        isCurrent: () => true,
+      );
+
+      expect(result, isA<Ok>());
+      expect(
+        repository.current,
+        isA<ExchangeAccessSignedIn>().having(
+          (state) => (state.session.environment, state.session.epoch),
+          'session',
+          (ExchangeEnvironment.mainnet, 1),
+        ),
+      );
+      expect(socket, ['connect mainnet']);
+    });
+
+    test('leaving the session closes its socket', () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+          .thenAnswer((_) async => const Ok(null));
+      final socket = <String>[];
+      final repository = legacyAccessForTesting(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async => socket.add('disconnect'),
+        clearCookies: () async {},
+        connectNotifications: (environment, {required reconnect}) async =>
+            socket.add('connect ${environment.name}'),
+      );
+      final _ = await repository.resolve();
+      final signOut = repository.signOut();
+
+      expect(repository.session, isNull);
+      expect(socket.take(2), ['connect mainnet', 'disconnect']);
+      expect(await signOut, isA<Ok>());
+    });
+
+    test('a 401 moves the session to expiring, then signed out', () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      when(() => keys.deleteApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok(null));
+      final repository = legacyAccessForTesting(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      final _ = await repository.resolve();
+      final session = repository.session!;
+      final seen = <ExchangeAccess>[];
+      final subscription = repository.watch().listen(seen.add);
+
+      final _ = await repository.expireSession(
+        epoch: session.epoch,
+        isTestnet: false,
+      );
+      await subscription.cancel();
+
+      expect(seen, [
+        ExchangeAccessSignedIn(session),
+        ExchangeAccessExpiring(session),
+        const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet),
+      ]);
+    });
+
+    test('a key that cannot be read keeps the exchange enabled', () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(() => keys.readActiveApiKey(isTestnet: true))
+          .thenAnswer((_) async => const Err(ExchangeApiKeyStorageFailure()));
+      final repository = legacyAccessForTesting(
+        apiKeyRepository: keys,
+        readEnvironment: () async => true,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+
+      expect(await repository.resolve(), isA<Err>());
+      expect(
+        repository.current,
+        const ExchangeAccessCredentialUnreadable(ExchangeEnvironment.testnet),
+      );
+    });
+  });
 }

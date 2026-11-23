@@ -56,13 +56,13 @@ class WatchExchangeNotificationsUsecase {
   /// may start after that disconnect (the service first reads settings), so a
   /// stale attempt closes the socket unless a new session is signed in.
   Future<Result<void, ExchangeFailure>> _open({required bool reconnect}) async {
-    final token = _access.epoch;
+    final token = _access.session;
     if (!_signedIn) return const Err(ExchangeNotAuthenticatedFailure());
     final allowed = await readExchangeEnvironment(
       _settingsRepository,
       ExchangeNotificationsUnavailableFailure.new,
     );
-    if (token != _access.epoch || !_signedIn) {
+    if (token != _access.session || !_signedIn) {
       return const Err(ExchangeOperationStaleFailure());
     }
     if (allowed case Err(:final failure)) {
@@ -72,17 +72,14 @@ class WatchExchangeNotificationsUsecase {
     final result = reconnect
         ? await _exchange.reconnectNotifications()
         : await _exchange.connectNotifications();
-    if (token != _access.epoch) {
+    if (token != _access.session) {
       if (!_signedIn) _exchange.disconnectNotifications();
       return const Err(ExchangeOperationStaleFailure());
     }
     return result;
   }
 
-  bool get _signedIn => switch (_access.current) {
-    ExchangeAccessEnabled(session: ExchangeAccessSession.signedIn) => true,
-    _ => false,
-  };
+  bool get _signedIn => _access.session != null;
 
   @useResult
   Future<Result<void, ExchangeFailure>> connect() => _open(reconnect: false);

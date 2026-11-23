@@ -1,16 +1,20 @@
 import 'package:exchange/exchange.dart';
 import 'package:test/test.dart';
 
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 's-1',
+);
+
 void main() {
   for (final isIOS in [false, true]) {
     for (final superuser in [false, true]) {
       for (final connected in [false, true]) {
         test('iOS=$isIOS superuser=$superuser connected=$connected', () {
-          final access = ExchangeAccessEnabled(
-            connected
-                ? ExchangeAccessSession.signedIn
-                : ExchangeAccessSession.signedOut,
-          );
+          final ExchangeAccess access = connected
+              ? const ExchangeAccessSignedIn(_session)
+              : const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
           final allowed = ExchangeAvailability.platformAllowed(
             isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
             isSuperuser: superuser,
@@ -33,16 +37,51 @@ void main() {
       }
     }
   }
-  test('unreadable and pending cleanup never allow account authentication', () {
-    for (final access in <ExchangeAccess>[
-      const ExchangeAccessResolving(),
-      const ExchangeAccessDisabled(),
-      const ExchangeAccessUnreadable(),
-      const ExchangeAccessSignOutIncomplete(),
-      const ExchangeAccessEnabled(ExchangeAccessSession.unreadable),
-    ]) {
-      expect(ExchangeAvailability.canManageAccount(access), isFalse);
-      expect(ExchangeAvailability.canAuthenticate(access), isFalse);
+
+  test('every access state has an availability', () {
+    const table = <(ExchangeAccess, (ExchangeAvailability, bool, bool))>[
+      (
+        ExchangeAccessResolving(),
+        (ExchangeAvailability.unavailable, false, false),
+      ),
+      (
+        ExchangeAccessUnreadable(),
+        (ExchangeAvailability.unavailable, false, false),
+      ),
+      (ExchangeAccessDisabled(), (ExchangeAvailability.hidden, false, false)),
+      (
+        ExchangeAccessSignOutIncomplete(),
+        (ExchangeAvailability.hidden, false, false),
+      ),
+      (
+        ExchangeAccessSignedOut(ExchangeEnvironment.testnet),
+        (ExchangeAvailability.signInRequired, false, true),
+      ),
+      (
+        ExchangeAccessSignedIn(_session),
+        (ExchangeAvailability.ready, true, true),
+      ),
+      (
+        ExchangeAccessExpiring(_session),
+        (ExchangeAvailability.unavailable, false, true),
+      ),
+      (
+        ExchangeAccessCredentialUnreadable(ExchangeEnvironment.mainnet),
+        (ExchangeAvailability.unavailable, false, false),
+      ),
+    ];
+    for (final (access, (availability, manage, authenticate)) in table) {
+      expect(
+        ExchangeAvailability.resolve(platformAllowed: true, access: access),
+        availability,
+        reason: '$access',
+      );
+      expect(
+        ExchangeAvailability.resolve(platformAllowed: false, access: access),
+        ExchangeAvailability.hidden,
+      );
+      expect(ExchangeAvailability.canManageAccount(access), manage);
+      expect(ExchangeAvailability.canAuthenticate(access), authenticate);
     }
   });
 }

@@ -50,6 +50,11 @@ final class ExchangeSessionClearFailure extends ExchangeFailure {
   const ExchangeSessionClearFailure([super.logMessage]);
 }
 
+/// The platform policy does not let the exchange be turned on here.
+final class ExchangePlatformNotAllowedFailure extends ExchangeFailure {
+  const ExchangePlatformNotAllowedFailure([super.logMessage]);
+}
+
 /// Language, currency, notification or DCA preferences could not be saved.
 final class ExchangePreferencesSaveFailure extends ExchangeFailure {
   const ExchangePreferencesSaveFailure([super.logMessage]);

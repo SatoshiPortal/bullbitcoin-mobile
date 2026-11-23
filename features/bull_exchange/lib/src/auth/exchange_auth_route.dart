@@ -117,9 +117,7 @@ class _SettingsAuthenticationReturnState
   void initState() {
     super.initState();
     _subscription = widget.watchAccess().listen((status) {
-      if (mounted &&
-          status is ExchangeAccessEnabled &&
-          status.session == ExchangeAccessSession.signedIn) {
+      if (mounted && status.isSignedIn) {
         widget.onExit();
       }
     });

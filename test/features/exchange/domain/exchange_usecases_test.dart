@@ -11,6 +11,12 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../../core/exchange/fake_exchange_users.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Ok() => fail('expected an Err, got Ok'),
@@ -40,10 +46,10 @@ void main() {
     testnetUsers = _MockUserRepository();
     settings = _MockSettingsRepository();
     access = _MockAccess();
-    when(
-      () => access.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(() => access.epoch).thenReturn(1);
+    when(() => access.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
+    when(() => access.session)
+        .thenAnswer((_) => access.current.signedInSession);
     when(settings.fetch)
         .thenAnswer((_) async => Ok(_settings(Environment.mainnet)));
   });
@@ -240,7 +246,15 @@ void main() {
 
   test('a late announcement failure is stale after an access change', () async {
     var epoch = 1;
-    when(() => access.epoch).thenAnswer((_) => epoch);
+    when(() => access.session).thenAnswer(
+      (_) => access.current.isSignedIn
+          ? ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: epoch,
+              sessionId: 'test',
+            )
+          : null,
+    );
     final pending = Completer<Result<List<Announcement>, ExchangeFailure>>();
     when(mainnetUsers.listAnnouncements).thenAnswer((_) => pending.future);
     final operation = GetExchangeAnnouncementsUsecase(
@@ -256,7 +270,15 @@ void main() {
 
   test('a late summary failure cannot affect a newer session', () async {
     var epoch = 1;
-    when(() => access.epoch).thenAnswer((_) => epoch);
+    when(() => access.session).thenAnswer(
+      (_) => access.current.isSignedIn
+          ? ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: epoch,
+              sessionId: 'test',
+            )
+          : null,
+    );
     final pending = Completer<Result<UserSummary, ExchangeFailure>>();
     when(mainnetUsers.getUserSummary).thenAnswer((_) => pending.future);
     final operation = SaveExchangePreferencesUsecase(

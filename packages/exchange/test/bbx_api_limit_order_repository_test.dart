@@ -80,7 +80,7 @@ void main() {
       exchangeWithTransportForTesting(
         readSession: () => readLegacyExchangeSession(
           preferences: settings,
-          readEpoch: () => 0,
+          readSession: () => null,
           readKey: ({required isTestnet}) async => const Ok('synthetic-key'),
         ),
         openClient: (endpoint, _) => openClient(endpoint),

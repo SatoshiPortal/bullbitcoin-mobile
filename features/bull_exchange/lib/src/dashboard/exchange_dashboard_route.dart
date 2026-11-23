@@ -63,9 +63,7 @@ GoRoute exchangeDashboardRoute({
   routes: [?kycRoute],
 );
 
-bool _signedIn(ExchangeAccess access) =>
-    access is ExchangeAccessEnabled &&
-    access.session == ExchangeAccessSession.signedIn;
+bool _signedIn(ExchangeAccess access) => access.isSignedIn;
 
 class _DashboardContent extends StatefulWidget {
   final ExchangeDashboardHost host;
@@ -150,7 +148,7 @@ class _SessionReturnState extends State<_SessionReturn> {
       final ended = signedIn && !current;
       signedIn = current;
       if (!mounted || !ended) return;
-      if (widget.host.currentAccess() is ExchangeAccessEnabled) {
+      if (widget.host.currentAccess().isEnabled) {
         BullExchangeNavigation.goToLanding(context);
       } else {
         widget.onExit(context);

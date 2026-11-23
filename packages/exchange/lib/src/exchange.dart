@@ -367,7 +367,7 @@ final class Exchange {
         return BbxApiNotificationDatasource(
           baseUrl: endpoint.toString(),
           readApiKey: () {
-            keyEpoch = access?.epoch;
+            keyEpoch = access?.session?.epoch;
             return readKey(isTestnet);
           },
           onSessionRejected: () {
@@ -847,16 +847,14 @@ final class Exchange {
     if (access == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
-    final current = access.current;
-    if (current is! ExchangeAccessEnabled ||
-        current.session != ExchangeAccessSession.signedIn) {
+    final session = access.session;
+    if (session == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
-    final epoch = access.epoch;
     final result = await sendSupportMessage(
       text: 'I want to delete my account',
     );
-    if (access.epoch != epoch) {
+    if (access.session != session) {
       return const Ok(ExchangeAccountDeletionOutcome.stale);
     }
     if (result case Err(:final failure)) {

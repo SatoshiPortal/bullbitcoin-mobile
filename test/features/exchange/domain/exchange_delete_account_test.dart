@@ -8,6 +8,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 abstract interface class _DeletionChat {
@@ -28,10 +34,17 @@ void main() {
     epoch = 1;
     access = _Access();
     request = _Request();
-    when(
-      () => access.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(() => access.epoch).thenAnswer((_) => epoch);
+    when(() => access.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
+    when(() => access.session).thenAnswer(
+      (_) => access.current.isSignedIn
+          ? ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: epoch,
+              sessionId: 'test',
+            )
+          : null,
+    );
     exchange = exchangeForTesting(
       access: access,
       chat: (
@@ -55,9 +68,8 @@ void main() {
   });
 
   test('a signed-out account never requests deletion', () async {
-    when(
-      () => access.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    when(() => access.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     expect(
       (await exchange.deleteAccount() as Err).failure,
       isA<ExchangeNotAuthenticatedFailure>(),

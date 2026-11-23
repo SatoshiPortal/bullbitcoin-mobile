@@ -7,6 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Account extends Mock implements GetExchangeAccountUsecase {}
 
 class _Preferences extends Mock implements SaveExchangePreferencesUsecase {}
@@ -101,14 +107,14 @@ void main() {
   test('each signed-in reconciliation reopens notifications for an unchanged account', () async {
     final cubit = build();
     addTearDown(cubit.close);
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     await Future<void>.delayed(Duration.zero);
     expect(cubit.state.userSummary, account);
     verify(notifications.connect).called(1);
 
     // Reconciliation disconnects and emits signed in again; the account
     // summary is unchanged, so no summary transition can reopen the socket.
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     await Future<void>.delayed(Duration.zero);
     expect(cubit.state.userSummary, account);
     verify(notifications.connect).called(1);
@@ -124,10 +130,10 @@ void main() {
       addTearDown(cubit.close);
 
       publish(const ExchangeAccessDisabled());
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+      publish(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
       expect(reconciliations, 0);
 
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      publish(const ExchangeAccessSignedIn(_testSession));
       await Future<void>.delayed(Duration.zero);
       expect(reconciliations, 1);
     },
@@ -138,7 +144,7 @@ void main() {
     () async {
       final cubit = build();
       addTearDown(cubit.close);
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      publish(const ExchangeAccessSignedIn(_testSession));
       await Future<void>.delayed(Duration.zero);
       expect(cubit.state.userSummary, account);
       publish(const ExchangeAccessDisabled());
@@ -253,9 +259,8 @@ void main() {
         .thenAnswer((_) async => outcome);
     final cubit = build();
     addTearDown(cubit.close);
-    when(
-      () => watchAccess.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    when(() => watchAccess.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
 
     final failed = await cubit.completeAuthentication(
       authentication.execute,
@@ -278,7 +283,7 @@ void main() {
     when(getAccount.execute).thenAnswer((_) => pending.future);
     final cubit = build();
     addTearDown(cubit.close);
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     publish(const ExchangeAccessDisabled());
     pending.complete(const Err(ExchangeOperationStaleFailure()));
     await Future<void>.delayed(Duration.zero);
@@ -291,7 +296,7 @@ void main() {
     when(getAccount.execute).thenAnswer((_) => pending.future);
     final cubit = build();
     addTearDown(cubit.close);
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     publish(const ExchangeAccessDisabled());
     pending.complete(const Ok(account));
     await Future<void>.delayed(Duration.zero);
@@ -306,7 +311,7 @@ void main() {
         .thenAnswer((_) => ++calls == 1 ? first.future : second.future);
     final cubit = build();
     addTearDown(cubit.close);
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     final newest = cubit.fetchUserSummary();
     second.complete(const Ok(account));
     await newest;
@@ -324,7 +329,7 @@ void main() {
         .thenAnswer((_) => ++calls == 1 ? first.future : second.future);
     final cubit = build();
     addTearDown(cubit.close);
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     final newest = cubit.fetchUserSummary();
     second.complete(const Ok(account));
     await newest;
@@ -342,7 +347,7 @@ void main() {
         .thenAnswer((_) => ++calls == 1 ? first.future : second.future);
     final cubit = build();
     addTearDown(cubit.close);
-    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    publish(const ExchangeAccessSignedIn(_testSession));
     final newest = cubit.fetchUserSummary();
     second.complete(const Err(ExchangeNetworkFailure()));
     await newest;
@@ -364,7 +369,7 @@ void main() {
       );
       final cubit = build();
       addTearDown(cubit.close);
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      publish(const ExchangeAccessSignedIn(_testSession));
       await Future<void>.delayed(Duration.zero);
       expect(cubit.state.getUserSummaryFailure, isA<ExchangeNetworkFailure>());
       expect(cubit.state.isFetchingUserSummary, isFalse);
@@ -395,7 +400,7 @@ void main() {
       });
       final cubit = build();
       addTearDown(cubit.close);
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      publish(const ExchangeAccessSignedIn(_testSession));
       await Future<void>.delayed(Duration.zero);
       await cubit.fetchUserSummary();
       expect(cubit.state.getUserSummaryFailure, isA<ExchangeNetworkFailure>());

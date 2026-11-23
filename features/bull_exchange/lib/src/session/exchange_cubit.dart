@@ -30,9 +30,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     );
     _access = accessChanges.listen((access) {
       if (isClosed) return;
-      if (access case ExchangeAccessEnabled(
-        session: ExchangeAccessSession.signedIn,
-      )) {
+      if (access.isSignedIn) {
         // Reconciliation disconnects before it emits signed in, and an
         // unchanged account emits no summary transition to reopen the socket.
         unawaited(fetchUserSummary());
@@ -72,10 +70,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
     final result = await _getAccount();
     final current = _currentAccess();
-    if (isClosed ||
-        attempt != _accountAttempt ||
-        current is! ExchangeAccessEnabled ||
-        current.session != ExchangeAccessSession.signedIn) {
+    if (isClosed || attempt != _accountAttempt || !current.isSignedIn) {
       return;
     }
     switch (result) {

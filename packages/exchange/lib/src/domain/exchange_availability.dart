@@ -15,29 +15,35 @@ enum ExchangeAvailability {
 
   /// Account management and support authentication remain available when
   /// platform policy hides activation and trading.
-  static bool canManageAccount(ExchangeAccess access) =>
-      access is ExchangeAccessEnabled &&
-      access.session == ExchangeAccessSession.signedIn;
+  static bool canManageAccount(ExchangeAccess access) => access.isSignedIn;
 
-  static bool canAuthenticate(ExchangeAccess access) =>
-      access is ExchangeAccessEnabled &&
-      access.session != ExchangeAccessSession.unreadable;
+  /// Whether a web sign-in can be offered: the exchange is on and its
+  /// credential store is readable.
+  static bool canAuthenticate(ExchangeAccess access) => switch (access) {
+    ExchangeAccessSignedOut() ||
+    ExchangeAccessSignedIn() ||
+    ExchangeAccessExpiring() => true,
+    ExchangeAccessResolving() ||
+    ExchangeAccessUnreadable() ||
+    ExchangeAccessDisabled() ||
+    ExchangeAccessSignOutIncomplete() ||
+    ExchangeAccessCredentialUnreadable() => false,
+  };
 
   static ExchangeAvailability resolve({
     required bool platformAllowed,
     required ExchangeAccess access,
   }) {
-    if (!platformAllowed ||
-        access is ExchangeAccessDisabled ||
-        access is ExchangeAccessSignOutIncomplete) {
-      return ExchangeAvailability.hidden;
-    }
+    if (!platformAllowed) return ExchangeAvailability.hidden;
     return switch (access) {
-      ExchangeAccessEnabled(session: ExchangeAccessSession.signedIn) =>
-        ExchangeAvailability.ready,
-      ExchangeAccessEnabled(session: ExchangeAccessSession.signedOut) =>
-        ExchangeAvailability.signInRequired,
-      _ => ExchangeAvailability.unavailable,
+      ExchangeAccessDisabled() ||
+      ExchangeAccessSignOutIncomplete() => ExchangeAvailability.hidden,
+      ExchangeAccessSignedIn() => ExchangeAvailability.ready,
+      ExchangeAccessSignedOut() => ExchangeAvailability.signInRequired,
+      ExchangeAccessResolving() ||
+      ExchangeAccessUnreadable() ||
+      ExchangeAccessExpiring() ||
+      ExchangeAccessCredentialUnreadable() => ExchangeAvailability.unavailable,
     };
   }
 }

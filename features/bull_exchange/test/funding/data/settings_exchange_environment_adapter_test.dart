@@ -23,7 +23,7 @@ void main() {
     final exchange = exchangeWithTransportForTesting(
       readSession: () => readLegacyExchangeSession(
         preferences: settings,
-        readEpoch: () => 0,
+        readSession: () => null,
         readKey: ({required isTestnet}) async => fail('unexpected key read'),
       ),
       openClient: (_, _) => fail('unexpected HTTP request'),

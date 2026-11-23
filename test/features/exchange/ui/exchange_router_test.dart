@@ -20,6 +20,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:novlang/novlang.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Preferences extends Mock implements Preferences {}
@@ -76,7 +82,7 @@ void main() {
     final lifecycle = _Access();
     when(
       () => lifecycle.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    ).thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(() => lifecycle.enable(forSupport: true))
         .thenAnswer((_) async => const Ok(null));
     final capability = exchangeForTesting(access: lifecycle);
@@ -161,9 +167,7 @@ void main() {
   pumpTrade(WidgetTester tester, {void Function(BuildContext)? onExit}) async {
     final exchange = _Access();
     final changes = StreamController<ExchangeAccess>.broadcast();
-    ExchangeAccess current = const ExchangeAccessEnabled(
-      ExchangeAccessSession.signedIn,
-    );
+    ExchangeAccess current = const ExchangeAccessSignedIn(_testSession);
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
     final capability = exchangeForTesting(access: exchange);
@@ -236,8 +240,8 @@ void main() {
   testWidgets('an open Trade screen leaves for sign-in when the session ends', (
     tester,
   ) async {
-    const signedIn = ExchangeAccessEnabled(ExchangeAccessSession.signedIn);
-    const signedOut = ExchangeAccessEnabled(ExchangeAccessSession.signedOut);
+    const signedIn = ExchangeAccessSignedIn(_testSession);
+    const signedOut = ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
     final exchange = _Access();
     final changes = StreamController<ExchangeAccess>.broadcast();
     ExchangeAccess current = signedIn;

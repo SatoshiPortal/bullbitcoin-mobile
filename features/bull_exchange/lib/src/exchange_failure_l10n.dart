@@ -19,6 +19,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeAuthenticationFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeApiKeyStorageFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeSessionClearFailure() => context.loc.exchangeErrorSigningOut,
+    ExchangePlatformNotAllowedFailure() =>
+      context.loc.exchangePlatformNotAllowedError,
     ExchangePreferencesSaveFailure() ||
     ExchangePreferencesSaveOutcomeUnknownFailure() =>
       context.loc.exchangeErrorSavingPreferences,

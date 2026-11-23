@@ -9,6 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 abstract interface class _AccountReader {
@@ -36,10 +42,17 @@ void main() {
     testnet = _Account();
     settings = _Settings();
     expire = _Expire();
-    when(
-      () => access.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(() => access.epoch).thenAnswer((_) => epoch);
+    when(() => access.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
+    when(() => access.session).thenAnswer(
+      (_) => access.current.isSignedIn
+          ? ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: epoch,
+              sessionId: 'test',
+            )
+          : null,
+    );
     when(settings.fetch).thenAnswer(
       (_) async => Ok(
         const SettingsEntity(
@@ -108,9 +121,8 @@ void main() {
   }
 
   test('signed out access does not read the account or expire', () async {
-    when(
-      () => access.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    when(() => access.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     expect(
       (await usecase.execute() as Err).failure,
       isA<ExchangeNotAuthenticatedFailure>(),

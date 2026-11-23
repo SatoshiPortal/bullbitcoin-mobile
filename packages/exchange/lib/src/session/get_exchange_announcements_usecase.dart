@@ -23,18 +23,16 @@ class GetExchangeAnnouncementsUsecase {
 
   @useResult
   Future<Result<List<Announcement>, ExchangeFailure>> execute() async {
-    if (_access.current is! ExchangeAccessEnabled ||
-        (_access.current as ExchangeAccessEnabled).session !=
-            ExchangeAccessSession.signedIn) {
+    final session = _access.session;
+    if (session == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
-    final epoch = _access.epoch;
     final Environment environment;
     final readEnvironment = await readExchangeEnvironment(
       _settingsRepository,
       ExchangeAnnouncementsUnavailableFailure.new,
     );
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     switch (readEnvironment) {
@@ -43,7 +41,7 @@ class GetExchangeAnnouncementsUsecase {
       case Err(:final failure):
         return Err(failure);
     }
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     final result = await _exchange.listAnnouncements(
@@ -52,7 +50,7 @@ class GetExchangeAnnouncementsUsecase {
           : ExchangeEnvironment.mainnet,
     );
 
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     return result.mapErr(

@@ -59,7 +59,7 @@ void main() {
           exchange: exchangeWithTransportForTesting(
             readSession: () => readLegacyExchangeSession(
               preferences: settingsRepository,
-              readEpoch: () => 0,
+              readSession: () => null,
               readKey: ({required isTestnet}) async =>
                   fail('unexpected credential read'),
             ),

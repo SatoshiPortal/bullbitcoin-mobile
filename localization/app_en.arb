@@ -9755,6 +9755,10 @@
   "@exchangeTradingRetry": {
     "description": "Exchange access recovery and navigation"
   },
+  "exchangePlatformNotAllowedError": "The exchange can't be turned on on this device.",
+  "@exchangePlatformNotAllowedError": {
+    "description": "Shown when platform policy does not allow turning the exchange on"
+  },
   "exchangeAccessUnreadable": "Exchange access could not be read. Retry or reset it.",
   "@exchangeAccessUnreadable": {
     "description": "Exchange access recovery and navigation"

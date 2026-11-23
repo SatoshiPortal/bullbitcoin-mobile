@@ -24,9 +24,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
 
   Future<void> _enable(ExchangeAccessSettingsCubit cubit) async {
     if (!await cubit.setEnabled(true) || cubit.isClosed) return;
-    if (cubit.state.access case ExchangeAccessEnabled(
-      session: ExchangeAccessSession.signedOut,
-    )) {
+    if (cubit.state.access case ExchangeAccessSignedOut()) {
       await onAuthenticate();
     }
   }
@@ -84,17 +82,14 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                     >(
                       builder: (context, state) {
                         final access = state.access;
-                        final enabled = access is ExchangeAccessEnabled;
-                        final signedIn =
-                            access is ExchangeAccessEnabled &&
-                            access.session == ExchangeAccessSession.signedIn;
+                        final enabled = access.isEnabled;
+                        final signedIn = access.isSignedIn;
                         final incomplete =
                             access is ExchangeAccessSignOutIncomplete;
                         final unreadable =
                             access is ExchangeAccessUnreadable ||
-                            (access is ExchangeAccessEnabled &&
-                                access.session ==
-                                    ExchangeAccessSession.unreadable);
+                            access is ExchangeAccessCredentialUnreadable ||
+                            access is ExchangeAccessExpiring;
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [

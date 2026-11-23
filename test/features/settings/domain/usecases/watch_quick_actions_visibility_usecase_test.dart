@@ -9,6 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Settings extends Mock implements Preferences {}
@@ -62,10 +68,10 @@ void main() {
       isIOS: false,
     ).execute().listen(values.add);
     await Future<void>.delayed(Duration.zero);
-    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    access.add(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     await Future<void>.delayed(Duration.zero);
     expect(values, [false]);
-    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    access.add(const ExchangeAccessSignedIn(_testSession));
     access.add(const ExchangeAccessSignOutIncomplete());
     await Future<void>.delayed(Duration.zero);
     expect(values, [false, true, false]);
@@ -83,9 +89,8 @@ void main() {
       final pending = Completer<SettingsEntity>();
       final access = StreamController<ExchangeAccess>();
       final platform = StreamController<bool>();
-      when(
-        () => lifecycle.current,
-      ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      when(() => lifecycle.current)
+          .thenReturn(const ExchangeAccessSignedIn(_testSession));
       when(lifecycle.watch).thenAnswer((_) => access.stream);
       when(settings.fetch)
           .thenAnswer((_) => (pending.future).then((value) => Ok(value)));
@@ -113,9 +118,8 @@ void main() {
   test('iOS settings read failure leaves exchange actions hidden', () async {
     final lifecycle = _Access();
     final settings = _Settings();
-    when(
-      () => lifecycle.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    when(() => lifecycle.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
     when(lifecycle.watch).thenAnswer((_) => const Stream.empty());
     when(settings.fetch).thenThrow(const FormatException('unavailable'));
     final values = <bool>[];
@@ -136,9 +140,8 @@ void main() {
     var unavailable = true;
     final settings = _Settings();
     final access = StreamController<ExchangeAccess>();
-    when(
-      () => lifecycle.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    when(() => lifecycle.current)
+        .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(lifecycle.watch).thenAnswer((_) => access.stream);
     final values = <bool>[];
     final sub = WatchQuickActionsVisibilityUsecase(
@@ -156,7 +159,7 @@ void main() {
 
     // Switching back to a supported network reconciles access again.
     unavailable = false;
-    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    access.add(const ExchangeAccessSignedIn(_testSession));
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
     expect(values, [false, true]);

@@ -20,6 +20,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Exchange extends Mock implements ExchangeAccessLifecycle {}
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
@@ -37,7 +43,7 @@ void main() {
     final settings = _Settings();
     when(
       () => exchange.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    ).thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     when(exchange.watch).thenAnswer((_) => const Stream.empty());
     when(() => settings.state).thenReturn(const SettingsState());
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
@@ -123,7 +129,7 @@ void main() {
     );
     when(
       () => exchange.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    ).thenReturn(const ExchangeAccessSignedIn(_testSession));
     when(exchange.watch).thenAnswer((_) => const Stream.empty());
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
     addTearDown(() => locator.unregister<Exchange>());

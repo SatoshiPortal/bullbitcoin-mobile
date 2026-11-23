@@ -14,6 +14,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 class _Watch extends Mock implements WatchExchangeAccessUsecase {}
 
 class _Set extends Mock implements ManageExchangeAccessUsecase {}
@@ -150,7 +156,7 @@ void main() {
         final set = _Set();
         when(() => watch.current).thenReturn(
           signedIn
-              ? const ExchangeAccessEnabled(ExchangeAccessSession.signedIn)
+              ? const ExchangeAccessSignedIn(_testSession)
               : const ExchangeAccessDisabled(),
         );
         when(watch.execute).thenAnswer((_) => const Stream.empty());

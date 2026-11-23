@@ -1,6 +1,12 @@
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 void main() {
   const cases = <(ExchangeAccess, ExchangeAvailability)>[
     (ExchangeAccessResolving(), ExchangeAvailability.unavailable),
@@ -8,17 +14,15 @@ void main() {
     (ExchangeAccessSignOutIncomplete(), ExchangeAvailability.hidden),
     (ExchangeAccessDisabled(), ExchangeAvailability.hidden),
     (
-      ExchangeAccessEnabled(ExchangeAccessSession.unreadable),
+      ExchangeAccessCredentialUnreadable(ExchangeEnvironment.mainnet),
       ExchangeAvailability.unavailable,
     ),
     (
-      ExchangeAccessEnabled(ExchangeAccessSession.signedOut),
+      ExchangeAccessSignedOut(ExchangeEnvironment.mainnet),
       ExchangeAvailability.signInRequired,
     ),
-    (
-      ExchangeAccessEnabled(ExchangeAccessSession.signedIn),
-      ExchangeAvailability.ready,
-    ),
+    (ExchangeAccessSignedIn(_testSession), ExchangeAvailability.ready),
+    (ExchangeAccessExpiring(_testSession), ExchangeAvailability.unavailable),
   ];
   for (final (access, expected) in cases) {
     test('$access maps to $expected when platform allows access', () {

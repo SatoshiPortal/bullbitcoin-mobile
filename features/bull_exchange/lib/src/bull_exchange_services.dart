@@ -58,7 +58,7 @@ abstract final class BullExchangeServices {
       ),
       readSession: () => readLegacyExchangeSession(
         preferences: preferences,
-        readEpoch: () => access.epoch,
+        readSession: () => access.session,
         readKey: credentials.readActiveApiKey,
       ),
       notifications: (

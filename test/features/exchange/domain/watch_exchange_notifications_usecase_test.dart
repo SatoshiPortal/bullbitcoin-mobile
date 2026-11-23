@@ -12,6 +12,12 @@ import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+const _testSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
+
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Ok() => fail('expected an Err, got Ok'),
@@ -66,12 +72,12 @@ void main() {
   setUp(() {
     repository = _MockNotificationRepository();
     access = _Access();
-    when(
-      () => access.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(() => access.epoch).thenReturn(1);
+    when(() => access.current)
+        .thenReturn(const ExchangeAccessSignedIn(_testSession));
+    when(() => access.session)
+        .thenAnswer((_) => access.current.signedInSession);
     when(() => access.runAuthenticated(any())).thenAnswer((invocation) async {
-      if (access.current is! ExchangeAccessEnabled) {
+      if (!access.current.isEnabled) {
         return const Err(ExchangeNotAuthenticatedFailure());
       }
       final operation =
@@ -218,7 +224,15 @@ void main() {
       when(settings.fetch)
           .thenAnswer((_) => (environment.future).then((value) => Ok(value)));
       var epoch = 1;
-      when(() => access.epoch).thenAnswer((_) => epoch);
+      when(() => access.session).thenAnswer(
+        (_) => access.current.isSignedIn
+            ? ExchangeSession(
+                environment: ExchangeEnvironment.mainnet,
+                epoch: epoch,
+                sessionId: 'test',
+              )
+            : null,
+      );
       final connection = build().connect();
       await Future<void>.delayed(Duration.zero);
       epoch = 2;
@@ -243,7 +257,15 @@ void main() {
     'a connection finishing after sign-out is closed rather than left open',
     () async {
       var epoch = 1;
-      when(() => access.epoch).thenAnswer((_) => epoch);
+      when(() => access.session).thenAnswer(
+        (_) => access.current.isSignedIn
+            ? ExchangeSession(
+                environment: ExchangeEnvironment.mainnet,
+                epoch: epoch,
+                sessionId: 'test',
+              )
+            : null,
+      );
       final pending = Completer<Result<void, ExchangeFailure>>();
       when(repository.connect).thenAnswer((_) => pending.future);
       when(repository.disconnect).thenReturn(null);

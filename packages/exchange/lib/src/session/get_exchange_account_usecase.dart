@@ -22,15 +22,13 @@ class GetExchangeAccountUsecase {
   final ExpireExchangeSessionUsecase _expire;
 
   Future<Result<UserSummary, ExchangeFailure>> execute() async {
-    if (_access.current case ExchangeAccessEnabled(
-      session: ExchangeAccessSession.signedIn,
-    )) {
-      final epoch = _access.epoch;
+    if (_access.session case final session?) {
+      final epoch = session.epoch;
       final environment = await readExchangeEnvironment(
         _settings,
         ExchangeAccountUnavailableFailure.new,
       );
-      if (_access.epoch != epoch) {
+      if (_access.session != session) {
         return const Err(ExchangeOperationStaleFailure());
       }
       final bool isTestnet;
@@ -43,7 +41,7 @@ class GetExchangeAccountUsecase {
       final result = await _exchange.getAccount(
         isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
-      if (_access.epoch != epoch) {
+      if (_access.session != session) {
         return const Err(ExchangeOperationStaleFailure());
       }
       if (result case Err(failure: ExchangeSessionRejectedFailure())) {

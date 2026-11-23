@@ -33,18 +33,16 @@ class SaveExchangePreferencesUsecase {
     bool? dcaEnabled,
     String? autoBuyEnabled,
   }) async {
-    if (_access.current is! ExchangeAccessEnabled ||
-        (_access.current as ExchangeAccessEnabled).session !=
-            ExchangeAccessSession.signedIn) {
+    final session = _access.session;
+    if (session == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
-    final epoch = _access.epoch;
     final Environment environment;
     final readEnvironment = await readExchangeEnvironment(
       _settingsRepository,
       ExchangePreferencesSaveFailure.new,
     );
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     switch (readEnvironment) {
@@ -53,7 +51,7 @@ class SaveExchangePreferencesUsecase {
       case Err(:final failure):
         return Err(failure);
     }
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     final exchangeEnvironment = environment == Environment.testnet
@@ -62,7 +60,7 @@ class SaveExchangePreferencesUsecase {
 
     final UserSummary summary;
     final readSummary = await _exchange.getUserSummary(exchangeEnvironment);
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     switch (readSummary) {
@@ -76,7 +74,7 @@ class SaveExchangePreferencesUsecase {
         });
     }
 
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     final result = await _exchange.saveUserPreference(
@@ -89,7 +87,7 @@ class SaveExchangePreferencesUsecase {
           emailNotificationsEnabled ?? summary.emailNotificationsEnabled,
     );
 
-    if (_access.epoch != epoch) {
+    if (_access.session != session) {
       return const Err(ExchangeOperationStaleFailure());
     }
     return result.mapErr(
