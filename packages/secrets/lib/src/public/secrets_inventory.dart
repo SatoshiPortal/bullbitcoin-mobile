@@ -101,6 +101,11 @@ final class SecretsInventory implements WalletInventory {
         }
       });
 
+  @useResult
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    InventoryBackupVerification verification,
+  ) => _inSession((_) => _access.hasVerifiedBackups(verification));
+
   /// Protect the active view from an authenticated foreground session.
   @useResult
   Future<Result<void, SecretFailure>> setCredential(
@@ -147,9 +152,20 @@ final class SecretsInventory implements WalletInventory {
     Network network,
   ) => _inSession((_) => _wallets.listForNetwork(defaultViewId, network));
 
+  /// Reserve the ID before preparing properties owned by other stores. The
+  /// callback must not call back into this inventory. If it fails, the wallet
+  /// and its membership are not published; a retry prepares its properties.
   @useResult
-  Future<Result<void, SecretFailure>> registerWallet(RegisteredWallet wallet) =>
-      _inSession((_) => _wallets.register(wallet, view: defaultViewId));
+  Future<Result<void, SecretFailure>> registerWallet(
+    RegisteredWallet wallet, {
+    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+  }) => _inSession(
+    (_) => _wallets.register(
+      wallet,
+      view: defaultViewId,
+      prepareProperties: prepareProperties,
+    ),
+  );
 
   @useResult
   Future<Result<void, SecretFailure>> setWalletProperties({

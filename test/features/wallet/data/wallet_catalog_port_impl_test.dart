@@ -1,12 +1,14 @@
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import '../../../support/wallet_registrations.dart';
+
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
-final class _Catalog implements WalletMetadataDatasource {
+final class _Catalog implements WalletRegistrations {
   List<WalletMetadataModel> rows = [];
   Object? failure;
 
@@ -49,7 +51,7 @@ void main() {
     'catalog preserves identity, descriptor strings and all legacy networks',
     () async {
       final catalog = _Catalog();
-      final port = WalletCatalogPortImpl(catalog);
+      final port = TestWalletCatalog(catalog);
       const networks = <String, Network>{
         'wpkh([aabbccdd/84h/0h/0h])': BitcoinNetwork.mainnet,
         'sh(wpkh([aabbccdd/49h/1h/0h]))': BitcoinNetwork.testnet,
@@ -123,7 +125,7 @@ void main() {
     () async {
       final catalog = _Catalog()..failure = const FormatException('storage');
       await expectLater(
-        WalletCatalogPortImpl.keyForId(catalog, 'wallet'),
+        WalletSyncBinding.keyForId(catalog, 'wallet'),
         throwsA(
           isA<WalletSnapshotException>().having(
             (error) => error.failure,
@@ -134,7 +136,7 @@ void main() {
       );
       catalog.failure = StateError('bug');
       await expectLater(
-        WalletCatalogPortImpl.keyForId(catalog, 'wallet'),
+        WalletSyncBinding.keyForId(catalog, 'wallet'),
         throwsStateError,
       );
     },
@@ -143,7 +145,7 @@ void main() {
   test('invalid descriptor is refused before issuing a native key', () {
     final invalid = _row('wpkh([aabbccdd/84h/0h/0h])', external: '');
     expect(
-      () => WalletCatalogPortImpl.keyFromMetadata(invalid),
+      () => WalletSyncBinding.keyFromMetadata(invalid),
       throwsA(
         isA<WalletSnapshotException>().having(
           (error) => error.failure,
@@ -156,7 +158,7 @@ void main() {
 
   test('invalid rows do not hide valid catalog entries', () async {
     final catalog = _Catalog();
-    final port = WalletCatalogPortImpl(catalog);
+    final port = TestWalletCatalog(catalog);
     const bitcoin = 'wpkh([aabbccdd/84h/0h/0h])';
     const liquid = 'elwpkh([aabbccdd/84h/1776h/0h])';
     for (final invalid in [

@@ -10,12 +10,14 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade, WalletFailure;
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
 import 'package:sync/sync.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
 import 'features/wallet/data/ark_funding_test_fixture.dart';
 import 'support/owner_databases.dart';
+import 'support/inventory_fixture.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
@@ -29,9 +31,12 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/app_database_testing.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
+import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:drift/native.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,6 +101,7 @@ void main() {
     late Directory directory;
     late GetIt locator;
     late SqliteDatabase database;
+    late InventoryFixture inventoryFixture;
     late PathProviderPlatform previousPaths;
     SharedPreferencesAsyncPlatform? previousPreferences;
     var composed = false;
@@ -113,21 +119,33 @@ void main() {
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
+      inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture.register(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
       if (composed) {
-        await locator<SpTipWatcher>().dispose();
-        await locator<SpElectrumReconnectWatcher>().dispose();
+        if (locator.checkLazySingletonInstanceExists<SpTipWatcher>()) {
+          await locator<SpTipWatcher>().dispose();
+          await locator<SpElectrumReconnectWatcher>().dispose();
+        }
+        if (locator.checkLazySingletonInstanceExists<OrderSwapWatcher>()) {
+          locator<OrderSwapWatcher>().dispose();
+          await locator<AutoswapWatcher>().dispose();
+        }
         locator<SyncCoordinator>().dispose();
       }
       await locator.reset();
+      await inventoryFixture.close();
       await database.close();
       PathProviderPlatform.instance = previousPaths;
       SharedPreferencesAsyncPlatform.instance = previousPreferences;
       await directory.delete(recursive: true);
     });
-    Future<void> compose({bool initialize = false}) async {
+    Future<void> compose({
+      bool initialize = false,
+      bool startWatchers = false,
+    }) async {
       expect(
         await AppLocator.setup(
           locator,
@@ -157,8 +175,8 @@ void main() {
           arkFundingDatabasePath: '${directory.path}/ark-funding.sqlite',
           initializeArkFunding: initialize,
           startPayjoinRecovery: false,
-          startOrderSwapWatcher: false,
-          startAutoswapWatcher: false,
+          startOrderSwapWatcher: startWatchers,
+          startAutoswapWatcher: startWatchers,
         ),
         isA<Ok>(),
       );
@@ -191,6 +209,53 @@ void main() {
         registry.close();
       }
     }
+
+    test('PIN protection defers Silent Payments and swap watchers', () async {
+      final pin = DateTime.now().microsecondsSinceEpoch.toString();
+      expect(
+        await inventoryFixture.inventory.setCredential(
+          pin,
+          backupVerification: inventoryFixture.backup,
+        ),
+        isA<Ok>(),
+      );
+      inventoryFixture.inventory.lock();
+      await compose(startWatchers: true);
+
+      expect(locator.checkLazySingletonInstanceExists<SpTipWatcher>(), isFalse);
+      expect(
+        locator.checkLazySingletonInstanceExists<SpElectrumReconnectWatcher>(),
+        isFalse,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
+        isFalse,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
+        isFalse,
+      );
+
+      expect(
+        (await inventoryFixture.inventory.unlock(pin))
+            .fold((value) => value.accepted, (_) => false),
+        isTrue,
+      );
+      await locator<ForegroundWalletStartup>().start();
+      expect(locator.checkLazySingletonInstanceExists<SpTipWatcher>(), isTrue);
+      expect(
+        locator.checkLazySingletonInstanceExists<SpElectrumReconnectWatcher>(),
+        isTrue,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
+        isTrue,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
+        isTrue,
+      );
+    });
 
     test('profile initialization cannot recreate a lost registry over surviving custody', () async {
       final funding = sourceOk(
@@ -367,6 +432,8 @@ void main() {
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
+      final inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
       var composed = false;
@@ -377,6 +444,7 @@ void main() {
           locator<SyncCoordinator>().dispose();
         }
         await locator.reset();
+        await inventoryFixture.close();
         await database.close();
         PathProviderPlatform.instance = previousPaths;
         SharedPreferencesAsyncPlatform.instance = previousPreferences;
@@ -410,6 +478,7 @@ void main() {
       );
       expect(result, isA<Ok>());
       composed = true;
+      await locator<ForegroundWalletStartup>().start();
       expect(nativeTor.calls, 1);
       expect(locator<WalletRepository>(), isA<WalletRepository>());
       final wallets = locator<WalletFacade>();
@@ -429,6 +498,41 @@ void main() {
           isFalse,
         ),
       );
+
+      const id = 'wpkh([01234567/84h/0h/0h])';
+      final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
+      final catalog = locator<WalletCatalogPort>();
+      expect(await catalog.find(key), isA<Err>());
+      expect(
+        await inventoryFixture.inventory.registerWallet(
+          const RegisteredWallet(
+            id: id,
+            secretFingerprint: null,
+            masterFingerprint: '01234567',
+            signer: 'none',
+            network: 'bitcoinMainnet',
+            xpub: 'xpub',
+            externalDescriptor: 'wpkh([01234567/84h/0h/0h]xpub/0/*)',
+            internalDescriptor: 'wpkh([01234567/84h/0h/0h]xpub/1/*)',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+        isA<Ok>(),
+      );
+      expect(await catalog.find(key), isA<Ok>());
+      expect(
+        await inventoryFixture.inventory.setCredential(
+          '1234',
+          backupVerification: inventoryFixture.backup,
+        ),
+        isA<Ok>(),
+      );
+      inventoryFixture.inventory.lock();
+      expect(await catalog.list(), isA<Err>());
+      expect(await inventoryFixture.inventory.unlock('1234'), isA<Ok>());
+      expect(await catalog.find(key), isA<Ok>());
     },
   );
   test('regtest provisioning failure returns a typed Err before wallet runtime registration', () async {
@@ -443,9 +547,12 @@ void main() {
     final electrumDatabase = ElectrumTestDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
+    final inventoryFixture = await InventoryFixture.open(directory);
+    inventoryFixture.register(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
       await locator.reset();
+      await inventoryFixture.close();
       await electrumDatabase.close();
       await database.close();
       PathProviderPlatform.instance = previousPaths;

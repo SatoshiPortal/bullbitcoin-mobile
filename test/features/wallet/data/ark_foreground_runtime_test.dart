@@ -12,7 +12,7 @@ import 'package:preferences/preferences.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
@@ -34,7 +34,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Wallets extends Mock implements WalletMetadataDatasource {}
+class _Wallets extends Mock implements WalletRegistrations {}
 
 class _Wallet extends Mock implements WalletMetadataModel {}
 
@@ -390,7 +390,7 @@ void main() {
       when(() => wallet.id).thenReturn('owned-regtest-wallet');
       locator.registerSingleton<ActiveEnvironmentReader>(settings);
       locator.registerSingleton<RuntimeDisplayPreferencesReader>(settings);
-      locator.registerSingleton<WalletMetadataDatasource>(wallets);
+      locator.registerSingleton<WalletRegistrations>(wallets);
       locator.registerSingleton<Bip85Registry>(
         Bip85Registry(_Bip85().fetchAll),
       );

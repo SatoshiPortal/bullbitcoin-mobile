@@ -74,12 +74,11 @@ import 'package:get_it/get_it.dart';
 /// Wallet infrastructure must be registered before foreground watchers start.
 /// Wallet/settings usecases resolve this feature's facade lazily.
 class SpLocator {
-  static void setup(GetIt locator, {bool startForegroundWatchers = false}) {
+  static void setup(GetIt locator) {
     _registerAdapters(locator);
     _registerUseCases(locator);
     _registerFacade(locator);
     _registerPresentation(locator);
-    if (startForegroundWatchers) _startWatchers(locator);
     _loadAutoScanSetting(locator);
   }
 
@@ -102,7 +101,7 @@ class SpLocator {
   // scan policy has to be re-judged once it lands, and a dropped electrum
   // connection has to be restarted. Composition explicitly enables these
   // watchers only in the foreground graph.
-  static void _startWatchers(GetIt locator) {
+  static void startForegroundWatchers(GetIt locator) {
     locator<SpTipWatcher>().start();
     locator<SpElectrumReconnectWatcher>().start();
   }

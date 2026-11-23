@@ -1,6 +1,6 @@
 import '../domain/repositories/wallet_address_repository.dart';
 
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:primitives/primitives.dart' show Err, Result;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
@@ -14,7 +14,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/address_view/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/features/address_view/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
@@ -22,13 +22,13 @@ import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 
 class WalletAddressRepositoryImpl implements WalletAddressRepository {
   final WalletNativeLifecycle _native;
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final WalletRegistrations _walletRegistrations;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
   final Labels _labelsFacade;
 
   WalletAddressRepositoryImpl({
     required this._native,
-    required this._walletMetadataDatasource,
+    required this._walletRegistrations,
     required this._loadWallet,
     required this._labelsFacade,
   });
@@ -46,7 +46,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     String walletId, {
     required bool advance,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) throw WalletNotFoundException(walletId);
     // Retry only native admission, never label lookup after an issued address.
     // Busy may follow a reconciled write: an advance can skip an index, but
@@ -54,9 +54,9 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     late ({String address, int index}) issued;
     for (var attempt = 0; ; attempt++) {
       try {
-        issued = WalletCatalogPortImpl.value(
+        issued = WalletSyncBinding.value(
           await _native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(metadata),
+            WalletSyncBinding.keyFromMetadata(metadata),
             advance: advance,
           ),
         );
@@ -100,7 +100,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     int? limit,
     int? fromIndex,
   }) async {
-    final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
+    final walletMetadata = await _walletRegistrations.fetch(walletId);
 
     if (walletMetadata == null) throw WalletNotFoundException(walletId);
 
@@ -108,18 +108,18 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
       id: walletMetadata.id,
       network: walletMetadata.network.shared,
     );
-    final issued = WalletCatalogPortImpl.value(
+    final issued = WalletSyncBinding.value(
       await _native.issuedReceiveIndex(
-        WalletCatalogPortImpl.keyFromMetadata(walletMetadata),
+        WalletSyncBinding.keyFromMetadata(walletMetadata),
       ),
     );
     if (fromIndex != null && fromIndex < 0) return const [];
-    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+    final wallet = WalletSyncBinding.value(await _loadWallet(key));
     final from =
         fromIndex ??
         max(
           issued ?? -1,
-          WalletCatalogPortImpl.value(wallet.addresses.book.now.latest)
+          WalletSyncBinding.value(wallet.addresses.book.now.latest)
               .receiveIndex,
         );
     if (from < 0) return const [];
@@ -155,7 +155,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
         .at(index, keychain: isChange ? Keychain.internal : Keychain.external)
         .watch()
         .firstWhere((value) => value.status != ValueStatus.notLoaded);
-    return WalletCatalogPortImpl.value(value.latest).address;
+    return WalletSyncBinding.value(value.latest).address;
   }
 
   Future<WalletAddressModel> _generateAddressModel({
@@ -179,7 +179,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     required List<WalletAddressModel> addresses,
     required Wallet wallet,
   }) async {
-    final usage = WalletCatalogPortImpl.value(wallet.addresses.usage());
+    final usage = WalletSyncBinding.value(wallet.addresses.usage());
     final result = <WalletAddress>[];
     for (final address in addresses) {
       final stats = usage[address.address];
@@ -204,7 +204,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     int? fromIndex,
     required bool descending,
   }) async {
-    final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
+    final walletMetadata = await _walletRegistrations.fetch(walletId);
 
     if (walletMetadata == null) throw WalletNotFoundException(walletId);
 
@@ -219,12 +219,11 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
       id: walletMetadata.id,
       network: walletMetadata.network.shared,
     );
-    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+    final wallet = WalletSyncBinding.value(await _loadWallet(key));
 
     final from =
         fromIndex ??
-        WalletCatalogPortImpl.value(wallet.addresses.book.now.latest)
-            .changeIndex;
+        WalletSyncBinding.value(wallet.addresses.book.now.latest).changeIndex;
     if (from == null) {
       throw const WalletSnapshotException(SyncUnsupportedNetworkFailure());
     }
@@ -261,14 +260,14 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     required int index,
     required bool isChange,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
 
     if (metadata == null) {
       throw WalletNotFoundException(walletId);
     }
 
     final key = WalletKey(id: metadata.id, network: metadata.network.shared);
-    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+    final wallet = WalletSyncBinding.value(await _loadWallet(key));
     final address = await _addressAt(
       wallet,
       index,

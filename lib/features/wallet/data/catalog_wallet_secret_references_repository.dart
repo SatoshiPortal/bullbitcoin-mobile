@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 /// unresolved legacy rows. No native wallet or secret enumeration is needed.
 final class CatalogWalletSecretReferencesRepository
     implements WalletSecretReferencesRepository {
-  final WalletMetadataDatasource _metadata;
+  final WalletRegistrations _metadata;
 
   CatalogWalletSecretReferencesRepository(this._metadata);
 

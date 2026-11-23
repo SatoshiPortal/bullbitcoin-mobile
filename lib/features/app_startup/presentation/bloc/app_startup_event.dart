@@ -7,3 +7,7 @@ sealed class AppStartupEvent {
 final class AppStartupStarted extends AppStartupEvent {
   const AppStartupStarted();
 }
+
+final class AppStartupUnlocked extends AppStartupEvent {
+  const AppStartupUnlocked();
+}

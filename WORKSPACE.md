@@ -102,6 +102,7 @@ graph TD
   access --> bull_ui
   access --> primitives
   access --> secrets
+  access -.-> legacy_storage
   announcements --> bull_ui
   announcements --> legacy_storage
   announcements --> primitives

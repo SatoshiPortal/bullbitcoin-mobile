@@ -1,3 +1,5 @@
+import 'package:secrets/migration.dart' show SecretsImport;
+
 import 'dart:io';
 
 import 'package:electrum/migration.dart';
@@ -53,6 +55,8 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
     ),
     expectedOwners: storageOwnerManifest,
     participants: [
+      if (task == BackgroundTask.walletsSync)
+        SecretsImport(file: File('${support.path}/databases/secrets.sqlite')),
       if (task == BackgroundTask.walletsSync)
         ElectrumImport(file: File('${support.path}/databases/electrum.sqlite')),
       if (task == BackgroundTask.arkRenewal ||

@@ -27,9 +27,10 @@ import 'package:bull_ui/bull_ui.dart'
         Gap;
 
 class AppInitErrorScreen extends StatefulWidget {
-  const AppInitErrorScreen({super.key, required this.error});
+  const AppInitErrorScreen({super.key, required this.error, this.onRetry});
 
   final Object error;
+  final VoidCallback? onRetry;
 
   @override
   State<AppInitErrorScreen> createState() => _AppInitErrorScreenState();
@@ -37,6 +38,19 @@ class AppInitErrorScreen extends StatefulWidget {
 
 class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
   Language _language = _platformLanguage();
+  bool _retrying = false;
+
+  @override
+  void didUpdateWidget(covariant AppInitErrorScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.onRetry != widget.onRetry) _retrying = false;
+  }
+
+  void _retry(VoidCallback retry) {
+    if (_retrying) return;
+    setState(() => _retrying = true);
+    retry();
+  }
 
   static Language _platformLanguage() {
     final locale = PlatformDispatcher.instance.locale;
@@ -147,6 +161,13 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                         ),
                       ],
                     ),
+                    if (widget.onRetry case final retry?) ...[
+                      const Gap(16),
+                      BullButton.primary(
+                        label: loc.retry,
+                        onPressed: _retrying ? null : () => _retry(retry),
+                      ),
+                    ],
                     const Gap(24),
                     _BackupSection(
                       asset: 'assets/misc/undraw_secure-usb-drive.svg',

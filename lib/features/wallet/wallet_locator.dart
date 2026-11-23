@@ -34,6 +34,7 @@ import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_tra
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -43,8 +44,9 @@ import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dar
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
+import 'package:sync/inventory.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
 import 'package:bull_tor/tor.dart';
@@ -87,13 +89,13 @@ class WalletLocator {
     nextReceiveAddress,
   }) {
     Future<WalletKey> keyFor(String id) =>
-        WalletCatalogPortImpl.keyForId(locator<WalletMetadataDatasource>(), id);
+        WalletSyncBinding.keyForId(locator<WalletRegistrations>(), id);
     Future<BitcoinSpendStatus> spendStatus(
       String id, {
       String? replacing,
     }) async {
       try {
-        return WalletCatalogPortImpl.value<BitcoinSpendStatus>(
+        return WalletSyncBinding.value<BitcoinSpendStatus>(
           await locator<WalletNativeRuntime>().spendStatus(
             await keyFor(id),
             replacing: replacing,
@@ -106,7 +108,7 @@ class WalletLocator {
 
     locator.registerFactory<WalletSecretReferencesRepository>(
       () => CatalogWalletSecretReferencesRepository(
-        locator<WalletMetadataDatasource>(),
+        locator<WalletRegistrations>(),
       ),
     );
     locator.registerFactory<LoadNetworkWalletSetupUsecase>(
@@ -182,7 +184,7 @@ class WalletLocator {
         }),
         protectObservedSpend: (id, txid) async {
           try {
-            return WalletCatalogPortImpl.value<bool>(
+            return WalletSyncBinding.value<bool>(
               await locator<WalletNativeRuntime>().protectObservedSpend(
                 await keyFor(id),
                 txid,
@@ -205,7 +207,7 @@ class WalletLocator {
         secrets: locator<Secrets>(),
         settingsRepository: locator<ActiveEnvironmentReader>(),
         walletRepository: locator<WalletRepository>(),
-        resumeProvisioning: () async => WalletCatalogPortImpl.value(
+        resumeProvisioning: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().resumeProvisioning(),
         ),
       ),
@@ -218,7 +220,7 @@ class WalletLocator {
         inputReservations: locator<InputReservationPort>(),
         deleteCatalogEntry: (key) async {
           try {
-            await locator<WalletMetadataDatasource>().delete(key.id);
+            await locator<WalletRegistrations>().delete(key.id);
             return const Ok(null);
           } on Exception {
             return const Err(SyncStorageFailure());
@@ -238,14 +240,14 @@ class WalletLocator {
 
     locator.registerLazySingleton<SyncWalletValuesDatasource>(
       () => SyncWalletValuesDatasource(
-        load: (key) async => WalletCatalogPortImpl.value(
+        load: (key) async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().loadWallet(key),
         ),
       ),
     );
 
     locator.registerLazySingleton<WalletCatalogPort>(
-      () => WalletCatalogPortImpl(locator<WalletMetadataDatasource>()),
+      () => SecretsWalletCatalog.foreground(locator<SecretsInventory>()),
     );
     locator.registerLazySingleton<ElectrumSync>(
       () => ElectrumSync(
@@ -289,7 +291,7 @@ class WalletLocator {
       final sync = locator<ForegroundWalletSync>();
       return WalletRepository(
         native: locator<WalletNativeRuntime>(),
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        walletRegistrations: locator<WalletRegistrations>(),
         wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
@@ -299,10 +301,10 @@ class WalletLocator {
     });
     locator.registerLazySingleton<WalletTransactionRepository>(
       () => WalletTransactionRepositoryImpl(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        walletRegistrations: locator<WalletRegistrations>(),
         labelsFacade: locator<Labels>(),
         history: WalletHistoryDatasource(
-          load: (key) async => WalletCatalogPortImpl.value(
+          load: (key) async => WalletSyncBinding.value(
             await locator<WalletNativeRuntime>().loadWallet(key),
           ),
         ),

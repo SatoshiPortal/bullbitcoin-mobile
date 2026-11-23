@@ -11,7 +11,7 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure;
 import 'package:fees/fees.dart';
 import 'package:sync/sync.dart' as sync;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart';
@@ -23,7 +23,7 @@ import 'package:bb_mobile/features/send/domain/liquid_send_port.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 
 class LiquidWalletRepository implements LiquidSendPort {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final WalletRegistrations _walletRegistrations;
   final Secrets _secrets;
   final Future<Result<sync.Wallet, SyncFailure>> Function(sync.WalletKey)
   _wallet;
@@ -37,7 +37,7 @@ class LiquidWalletRepository implements LiquidSendPort {
   _validateAddress;
 
   LiquidWalletRepository({
-    required this._walletMetadataDatasource,
+    required this._walletRegistrations,
     required this._secrets,
     required this._wallet,
     required SyncWalletValuesDatasource walletValuesDatasource,
@@ -64,7 +64,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       return const Err(WalletTransactionBuildFailure('Amount required'));
     }
     try {
-      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      final metadata = await _walletRegistrations.fetch(walletId);
       if (metadata == null) return const Err(WalletNotFoundFailure());
       if (!metadata.isLiquid) {
         return const Err(WalletTransactionBuildFailure('Not a Liquid wallet'));
@@ -123,7 +123,7 @@ class LiquidWalletRepository implements LiquidSendPort {
   }
 
   Future<int> getLbtcUtxoCount({required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -143,7 +143,7 @@ class LiquidWalletRepository implements LiquidSendPort {
     required int highUtxoThreshold,
     required int maximumInputs,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -195,7 +195,7 @@ class LiquidWalletRepository implements LiquidSendPort {
         'The transaction spends a frozen Liquid coin',
       );
     }
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -234,7 +234,7 @@ class LiquidWalletRepository implements LiquidSendPort {
     required String address,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }

@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
 import 'package:preferences/preferences.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart';
@@ -198,7 +198,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   try {
     final selection = _WalletArkSelection(
       locator<ActiveEnvironmentReader>(),
-      locator<WalletMetadataDatasource>(),
+      locator<WalletRegistrations>(),
       arkUrl,
       primaryEsploraUrl,
     );
@@ -414,7 +414,7 @@ final class _SelectionFailure implements Exception {
 
 final class _WalletArkSelection implements ArkAccountSelectionPort {
   final ActiveEnvironmentReader _settings;
-  final WalletMetadataDatasource _wallets;
+  final WalletRegistrations _wallets;
   final Uri _arkUrl;
   final Uri _esploraUrl;
 

@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/bip85_entropy/domain/fetch_all_bip85_derivati
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, ScriptType;
+    show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
@@ -18,6 +18,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:secrets/storage.dart';
 
 class _MockBip85Repository extends Mock implements Bip85Repository {}
 
@@ -98,7 +99,7 @@ void main() {
   }
 
   setUpAll(() {
-    registerFallbackValue(Bip85Application.hex);
+    registerFallbackValue(Fingerprint('00000000'));
     registerFallbackValue(bip39.MnemonicLength.words12);
   });
 
@@ -193,22 +194,36 @@ void main() {
       );
 
       expect((result as Err).failure, isA<Bip85UnexpectedFailure>());
-      verifyNever(() => bip85Repository.fetchNextIndexForApplication(any()));
+      verifyNever(
+        () => bip85Repository.reserveMnemonic(
+          parent: any(named: 'parent'),
+          length: any(named: 'length'),
+          language: bip39.Language.english,
+          alias: any(named: 'alias'),
+        ),
+      );
     });
 
     test('derives and records at the allocated index', () async {
       stubWallets([defaultWallet]);
-      when(() => bip85Repository.fetchNextIndexForApplication(any()))
-          .thenAnswer((_) async => const Ok(3));
       when(
-        () => bip85Repository.recordMnemonic(
-          xprvFingerprint: any(named: 'xprvFingerprint'),
+        () => bip85Repository.reserveMnemonic(
+          parent: any(named: 'parent'),
           length: any(named: 'length'),
-          index: any(named: 'index'),
           alias: any(named: 'alias'),
           language: bip39.Language.english,
         ),
-      ).thenAnswer((_) async => const Ok("83696968'/39'/0'/12'/3'"));
+      ).thenAnswer(
+        (_) async => Ok(
+          RecordedDerivation(
+            path: "39'/0'/12'/3'",
+            parentFingerprint: defaultWallet.masterFingerprint,
+            application: 'bip39',
+            status: 'active',
+            alias: null,
+          ),
+        ),
+      );
 
       final result = await withDefault.execute(
         (fingerprint) => usecase.execute(fingerprint: fingerprint),
@@ -217,11 +232,10 @@ void main() {
       expect(result, isA<Ok>());
       // Recorded against the secret that derived it, at the index the repository allocated.
       verify(
-        () => bip85Repository.recordMnemonic(
-          xprvFingerprint: defaultWallet.masterFingerprint,
-          length: any(named: 'length'),
-          index: 3,
-          alias: any(named: 'alias'),
+        () => bip85Repository.reserveMnemonic(
+          parent: Fingerprint(defaultWallet.masterFingerprint),
+          length: bip39.MnemonicLength.words12,
+          alias: null,
           language: bip39.Language.english,
         ),
       ).called(1);
@@ -285,8 +299,13 @@ void main() {
 
     test('an index allocation failure is forwarded as-is', () async {
       stubWallets([defaultWallet]);
-      when(() => bip85Repository.fetchNextIndexForApplication(any()))
-          .thenAnswer((_) async => const Err(Bip85StorageFailure('no index')));
+      when(
+        () => bip85Repository.reserveHex(
+          parent: any(named: 'parent'),
+          length: any(named: 'length'),
+          alias: any(named: 'alias'),
+        ),
+      ).thenAnswer((_) async => const Err(Bip85StorageFailure('no index')));
 
       expect(
         ((await withDefault.execute(

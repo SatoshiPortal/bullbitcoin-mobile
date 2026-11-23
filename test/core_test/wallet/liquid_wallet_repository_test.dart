@@ -25,7 +25,7 @@ import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 
 import 'support/wallet_model.dart';
@@ -35,8 +35,7 @@ import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockMetadataDatasource extends Mock
-    implements WalletMetadataDatasource {}
+class _MockMetadataDatasource extends Mock implements WalletRegistrations {}
 
 class _Spender extends Mock implements WalletSpender {}
 
@@ -104,7 +103,7 @@ void main() {
       spender: spender,
     );
     repository = LiquidWalletRepository(
-      walletMetadataDatasource: metadata,
+      walletRegistrations: metadata,
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       wallet: (_) async {
         walletOpens++;

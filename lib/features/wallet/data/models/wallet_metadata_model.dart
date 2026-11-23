@@ -1,10 +1,8 @@
 import 'package:signers/signers.dart' as signers;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:legacy_storage/app_database.dart'
-    show Signer, SignerDevice, WalletMetadataRow, WalletMetadatasCompanion;
+import 'package:legacy_storage/app_database.dart' show Signer, SignerDevice;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart' show Fingerprint, ScriptType, SignerEntity;
@@ -57,49 +55,6 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
   bool get isBitcoin => network.isBitcoin;
   bool get isLiquid => network.isLiquid;
   bool get isMainnet => network.isMainnet;
-}
-
-extension WalletMetadataModelMapper on WalletMetadataModel {
-  WalletMetadatasCompanion toSqlite() => WalletMetadatasCompanion(
-    id: Value(id),
-    network: Value(networkCode),
-    masterFingerprint: Value(masterFingerprint),
-    xpubFingerprint: Value(xpubFingerprint),
-    isEncryptedVaultTested: Value(isEncryptedVaultTested),
-    isPhysicalBackupTested: Value(isPhysicalBackupTested),
-    latestEncryptedBackup: Value(latestEncryptedBackup),
-    latestPhysicalBackup: Value(latestPhysicalBackup),
-    xpub: Value(xpub),
-    externalPublicDescriptor: Value(externalPublicDescriptor),
-    internalPublicDescriptor: Value(internalPublicDescriptor),
-    signer: Value(signer.name),
-    isDefault: Value(isDefault),
-    label: Value(label),
-    syncedAt: Value(syncedAt),
-    signerDevice: Value(signerDevice),
-    birthday: Value(birthday),
-  );
-
-  static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
-      WalletMetadataModel(
-        id: row.id,
-        networkCode: row.network,
-        masterFingerprint: row.masterFingerprint,
-        xpubFingerprint: row.xpubFingerprint,
-        isEncryptedVaultTested: row.isEncryptedVaultTested,
-        isPhysicalBackupTested: row.isPhysicalBackupTested,
-        latestEncryptedBackup: row.latestEncryptedBackup,
-        latestPhysicalBackup: row.latestPhysicalBackup,
-        xpub: row.xpub,
-        externalPublicDescriptor: row.externalPublicDescriptor,
-        internalPublicDescriptor: row.internalPublicDescriptor,
-        signer: Signer.fromName(row.signer),
-        isDefault: row.isDefault,
-        label: row.label,
-        syncedAt: row.syncedAt,
-        signerDevice: row.signerDevice,
-        birthday: row.birthday,
-      );
 }
 
 extension WalletMetadataSignerMapping on Signer {

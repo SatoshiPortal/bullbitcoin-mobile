@@ -91,13 +91,14 @@ void main() {
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
     };
-    const inventoryRepository = 'lib/src/data/inventory_repository.dart';
-    // These failures describe unsupported requests or the results of an
-    // inventory read. They do not translate an exception from storage.
-    const inventoryReadFailures = {
+
+    // Absence, unreadable records and duplicate identities are Results from
+    // successful inventory queries or claims, not translated exceptions.
+    const inventoryResults = {
       'UnsupportedNetworkFailure',
       'UnreadableWalletFailure',
       'WalletRegistrationNotFoundFailure',
+      'WalletAlreadyRegisteredFailure',
     };
     final offenders = <String>[];
     for (final file in sources) {
@@ -105,8 +106,8 @@ void main() {
       final constructions = _FailureConstructions(failures);
       parseString(content: file.readAsStringSync()).unit.accept(constructions);
       for (final failure in constructions.names) {
-        if (file.path == inventoryRepository &&
-            inventoryReadFailures.contains(failure)) {
+        if (file.path == 'lib/src/data/inventory_repository.dart' &&
+            inventoryResults.contains(failure)) {
           continue;
         }
         offenders.add('${file.path}: $failure(');
@@ -384,6 +385,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
       'UseSecretFailure',
       'UnreadableWalletFailure', 'WalletRegistrationNotFoundFailure',
+      'WalletAlreadyRegisteredFailure',
     };
 
     expect(surfaceOf('lib/secrets.dart'), declared);

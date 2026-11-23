@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
@@ -27,30 +26,27 @@ class DeriveNextBip85HexFromDefaultWalletUsecase {
         Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };
 
-      const application = Bip85Application.hex;
-      final indexResult = await _bip85Repository.fetchNextIndexForApplication(
-        application,
+      final reservation = await _bip85Repository.reserveHex(
+        parent: secret.id,
+        length: length,
+        alias: alias,
       );
-      switch (indexResult) {
+      switch (reservation) {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
-          // Derived inside the package — the xprv never comes out — then recorded by the repository under the same path it has always written.
+          final index = value.index;
+          if (index == null) return const Err(Bip85StorageFailure());
           final hex = switch (await secret.derive.bip85.hex(
             numBytes: length,
-            index: value,
+            index: index,
           )) {
             Ok(:final value) => value,
             Err(:final failure) => throw StateError(
               failure.runtimeType.toString(),
             ),
           };
-          return (await _bip85Repository.recordHex(
-            xprvFingerprint: secret.id.hex,
-            length: length,
-            index: value,
-            alias: alias,
-          )).map((derivation) => (derivation: derivation, hex: hex));
+          return Ok((derivation: value.path, hex: hex));
       }
     } catch (e, st) {
       log.severe(

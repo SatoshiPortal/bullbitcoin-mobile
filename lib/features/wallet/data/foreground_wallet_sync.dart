@@ -1,7 +1,7 @@
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
@@ -26,7 +26,7 @@ final class ForegroundWalletSync {
     bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
   }) async {
-    final descriptor = WalletCatalogPortImpl.descriptorFromMetadata(metadata);
+    final descriptor = WalletSyncBinding.descriptorFromMetadata(metadata);
     switch (descriptor) {
       case Err():
         throw const WalletStorageFailure('Invalid sync descriptor');
@@ -41,7 +41,7 @@ final class ForegroundWalletSync {
         final native = _native;
         if (result case Err(failure: SyncNeedsRepairFailure())
             when native != null) {
-          WalletCatalogPortImpl.value(await native.repair(value.key));
+          WalletSyncBinding.value(await native.repair(value.key));
           result = await _sync.execute(
             value,
             discover: discover,
@@ -50,7 +50,7 @@ final class ForegroundWalletSync {
           );
         }
         if (native != null) {
-          WalletCatalogPortImpl.value(await native.refresh(value.key));
+          WalletSyncBinding.value(await native.refresh(value.key));
         }
         if (result case Err(:final failure)) {
           // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.

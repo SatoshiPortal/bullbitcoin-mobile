@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -12,7 +12,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 /// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Settings extends Mock implements Preferences {}
 

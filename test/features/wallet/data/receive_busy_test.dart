@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
@@ -10,7 +10,7 @@ import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
@@ -20,7 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sync/sync.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -85,7 +85,7 @@ void main() {
             .thenAnswer((_) async => Ok([]));
         repository = WalletAddressRepositoryImpl(
           native: native,
-          walletMetadataDatasource: metadata,
+          walletRegistrations: metadata,
           loadWallet: (_) async => throw StateError('Unexpected address read'),
           labelsFacade: labels,
         );
@@ -97,7 +97,7 @@ void main() {
           var attempts = 0;
           when(
             () => native.receive(
-              WalletCatalogPortImpl.keyFromMetadata(row),
+              WalletSyncBinding.keyFromMetadata(row),
               advance: false,
             ),
           ).thenAnswer((_) async {
@@ -136,7 +136,7 @@ void main() {
       test('persistent busy is bounded', () async {
         when(
           () => native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(row),
+            WalletSyncBinding.keyFromMetadata(row),
             advance: false,
           ),
         ).thenAnswer((_) async => const Err(SyncBusyFailure()));
@@ -146,7 +146,7 @@ void main() {
         expect(await prepare.execute(walletId: origin), isA<Err>());
         verify(
           () => native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(row),
+            WalletSyncBinding.keyFromMetadata(row),
             advance: false,
           ),
         ).called(5);
@@ -167,7 +167,7 @@ void main() {
         const error = WalletSnapshotException(SyncNeedsRepairFailure());
         when(
           () => native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(row),
+            WalletSyncBinding.keyFromMetadata(row),
             advance: false,
           ),
         ).thenAnswer((_) async => Err(error.failure));
@@ -183,7 +183,7 @@ void main() {
         );
         verify(
           () => native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(row),
+            WalletSyncBinding.keyFromMetadata(row),
             advance: false,
           ),
         ).called(1);
@@ -193,7 +193,7 @@ void main() {
       test('label failure after issuance never replays an advance', () async {
         when(
           () => native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(row),
+            WalletSyncBinding.keyFromMetadata(row),
             advance: true,
           ),
         ).thenAnswer((_) async => Ok((address: issuedAddress, index: 8)));
@@ -206,7 +206,7 @@ void main() {
         );
         verify(
           () => native.receive(
-            WalletCatalogPortImpl.keyFromMetadata(row),
+            WalletSyncBinding.keyFromMetadata(row),
             advance: true,
           ),
         ).called(1);

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 import 'package:fees/fees.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
@@ -72,10 +72,10 @@ abstract final class PayjoinSetup {
           locator<WalletNativeRuntime>().wallet,
           (id) async {
             try {
-              return WalletCatalogPortImpl.value<BitcoinSpendStatus>(
+              return WalletSyncBinding.value<BitcoinSpendStatus>(
                 await locator<WalletNativeRuntime>().spendStatus(
-                  await WalletCatalogPortImpl.keyForId(
-                    locator<WalletMetadataDatasource>(),
+                  await WalletSyncBinding.keyForId(
+                    locator<WalletRegistrations>(),
                     id,
                   ),
                 ),
@@ -85,7 +85,7 @@ abstract final class PayjoinSetup {
             }
           },
           locator<SyncWalletValuesDatasource>(),
-          locator<WalletMetadataDatasource>(),
+          locator<WalletRegistrations>(),
           locator<ArkFundingSigningGuard>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
