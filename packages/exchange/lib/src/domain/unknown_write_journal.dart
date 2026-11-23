@@ -4,14 +4,17 @@ import 'package:primitives/primitives.dart';
 import 'exchange_environment.dart';
 
 /// The exchange writes whose [WriteOutcomeUnknown] is journaled: each can
-/// move money or create something on the account if sent twice.
+/// move money or create something on the account if sent twice, or leaves
+/// the account in a state the app can't tell without a re-read.
 enum UnknownWriteKind {
   buyConfirm('buy_confirm'),
   withdrawConfirm('withdraw_confirm'),
   accelerate('accelerate'),
   dcaCreate('dca_create'),
   limitOrderCreate('limit_order_create'),
-  defaultWalletSave('default_wallet_save');
+  defaultWalletSave('default_wallet_save'),
+  recipientCreate('recipient_create'),
+  preferencesSave('preferences_save');
 
   /// The stored value; never renamed.
   final String wire;

@@ -2,6 +2,7 @@ import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/src/data/journaling_exchange_orders.dart';
+import 'package:exchange/src/data/journaling_exchange_recipients.dart';
 import 'package:exchange/testing.dart';
 import 'package:mocktail/mocktail.dart' show Fake;
 import 'package:primitives/primitives.dart';
@@ -51,6 +52,23 @@ final class _Orders extends Fake implements ExchangeOrders {
     required String address,
     bool enablePreference = false,
   }) async => _write();
+}
+
+final class _Recipients extends Fake implements ExchangeRecipients {
+  final Result<Recipient, RecipientsFailure> answer;
+  final saved = <RecipientDetails>[];
+
+  _Recipients(this.answer);
+
+  @override
+  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+    RecipientDetails details, {
+    bool isFiatRecipient = true,
+    required bool isTestnet,
+  }) async {
+    saved.add(details);
+    return answer;
+  }
 }
 
 typedef _Call = Future<ExchangeWrite<Object?>> Function(ExchangeOrders);
@@ -158,6 +176,181 @@ void main() {
       expect(values, isNot(contains('orange')));
       expect(values, isNot(contains('colour')));
       expect(values, isNot(contains('sat@example.com')));
+    });
+  });
+
+  group('recipient create', () {
+    final details = InteracEmailCadDetails.create(
+      email: 'sat@example.com',
+      name: 'Satoshi',
+      securityQuestion: 'colour?',
+      securityAnswer: 'orange',
+    );
+
+    JournalingExchangeRecipients journaling(
+      _Recipients recipients,
+      UnknownWriteJournal journal,
+    ) => JournalingExchangeRecipients(
+      recipients,
+      UnknownWriteRecorder(journal),
+      readEpoch: (environment) async =>
+          environment == ExchangeEnvironment.mainnet ? 5 : null,
+    );
+
+    test('an unknown outcome is journaled with the identity sent', () async {
+      final journal = InMemoryUnknownWriteJournal();
+      final inner = _Recipients(
+        const Err(RecipientsSaveOutcomeUnknownFailure('504')),
+      );
+
+      final result = await journaling(
+        inner,
+        journal,
+      ).saveRecipient(details, isTestnet: false);
+
+      expect(
+        result,
+        isA<Err<Recipient, RecipientsFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<RecipientsSaveOutcomeUnknownFailure>(),
+        ),
+      );
+      expect(inner.saved, [details]);
+      final (entry, settlement) = journal.entries.single;
+      expect(settlement, isNull);
+      expect(entry.kind, UnknownWriteKind.recipientCreate);
+      expect(entry.environment, ExchangeEnvironment.mainnet);
+      expect(entry.sessionEpoch, 5);
+      expect(entry.request, {
+        'type': 'interacEmailCad',
+        'email': 'sat@example.com',
+      });
+      final values = entry.request.values.join(' ');
+      expect(values, isNot(contains('orange')));
+      expect(values, isNot(contains('colour')));
+    });
+
+    for (final answer in <Result<Recipient, RecipientsFailure>>[
+      const Err(RecipientsSaveFailure()),
+      const Err(RecipientsNetworkFailure()),
+      const Err(RecipientsNotAuthenticatedFailure()),
+    ]) {
+      test('${answer.runtimeType} is not journaled', () async {
+        final journal = InMemoryUnknownWriteJournal();
+
+        final _ = await journaling(
+          _Recipients(answer),
+          journal,
+        ).saveRecipient(details, isTestnet: true);
+
+        expect(journal.entries, isEmpty);
+      });
+    }
+
+    test(
+      'Exchange journals a recipient create when it has a journal',
+      () async {
+        final journal = InMemoryUnknownWriteJournal();
+        final exchange = exchangeForTesting(
+          recipients: _Recipients(
+            const Err(RecipientsSaveOutcomeUnknownFailure('timeout')),
+          ),
+          unknownWrites: journal,
+          readSessionPoint: () async =>
+              const Ok((environment: ExchangeEnvironment.testnet, epoch: 3)),
+        );
+
+        final _ = await exchange.recipients.saveRecipient(
+          details,
+          isTestnet: true,
+        );
+
+        expect(
+          journal.entries.single.$1.kind,
+          UnknownWriteKind.recipientCreate,
+        );
+        expect(journal.entries.single.$1.sessionEpoch, 3);
+      },
+    );
+  });
+
+  group('preference save', () {
+    Exchange exchangeAnswering(
+      Result<void, ExchangeFailure> answer,
+      UnknownWriteJournal? journal,
+    ) => exchangeForTesting(
+      saveUserPreference: (
+        _, {
+        language,
+        currency,
+        dcaEnabled,
+        autoBuyEnabled,
+        emailNotificationsEnabled,
+      }) async => answer,
+      unknownWrites: journal,
+      readSessionPoint: () async =>
+          const Ok((environment: ExchangeEnvironment.mainnet, epoch: 8)),
+    );
+
+    test('an unknown outcome is journaled with the fields sent', () async {
+      final journal = InMemoryUnknownWriteJournal();
+
+      final result =
+          await exchangeAnswering(
+            const Err(ExchangePreferencesSaveOutcomeUnknownFailure('504')),
+            journal,
+          ).saveUserPreference(
+            ExchangeEnvironment.mainnet,
+            currency: 'EUR',
+            dcaEnabled: false,
+          );
+
+      expect(result, isA<Err<void, ExchangeFailure>>());
+      final entry = journal.entries.single.$1;
+      expect(entry.kind, UnknownWriteKind.preferencesSave);
+      expect(entry.environment, ExchangeEnvironment.mainnet);
+      expect(entry.sessionEpoch, 8);
+      expect(entry.request, {'currency': 'EUR', 'dcaEnabled': 'false'});
+    });
+
+    for (final answer in <Result<void, ExchangeFailure>>[
+      const Ok(null),
+      const Err(ExchangePreferencesSaveFailure()),
+      const Err(ExchangeNetworkFailure()),
+      const Err(ExchangeNotAuthenticatedFailure()),
+    ]) {
+      test('$answer is not journaled', () async {
+        final journal = InMemoryUnknownWriteJournal();
+
+        final _ = await exchangeAnswering(
+          answer,
+          journal,
+        ).saveUserPreference(ExchangeEnvironment.mainnet, language: 'fr');
+
+        expect(journal.entries, isEmpty);
+      });
+    }
+
+    test('another environment journals no epoch', () async {
+      final journal = InMemoryUnknownWriteJournal();
+
+      final _ = await exchangeAnswering(
+        const Err(ExchangePreferencesSaveOutcomeUnknownFailure()),
+        journal,
+      ).saveUserPreference(ExchangeEnvironment.testnet, language: 'fr');
+
+      expect(journal.entries.single.$1.sessionEpoch, isNull);
+    });
+
+    test('without a journal the answer passes through', () async {
+      expect(
+        await exchangeAnswering(
+          const Err(ExchangePreferencesSaveOutcomeUnknownFailure()),
+          null,
+        ).saveUserPreference(ExchangeEnvironment.mainnet, language: 'fr'),
+        isA<Err<void, ExchangeFailure>>(),
+      );
     });
   });
 

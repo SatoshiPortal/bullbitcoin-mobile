@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/src/recipients/domain/recipient_identity.dart';
 import 'package:exchange/src/session/reconcile_unknown_writes_usecase.dart';
 import 'package:exchange/testing.dart';
 import 'package:mocktail/mocktail.dart' show Fake;
@@ -60,6 +61,63 @@ final class _Orders extends Fake implements ExchangeOrders {
     return answers[orderId] ?? const Err(ExchangeNetworkFailure());
   }
 }
+
+Recipient _recipient(RecipientDetails details, {String id = 'r-1'}) =>
+    Recipient.create(
+      recipientId: id,
+      userId: 'u-1',
+      userNbr: 1,
+      isArchived: false,
+      createdAt: DateTime.utc(2026, 11, 23),
+      updatedAt: DateTime.utc(2026, 11, 23),
+      details: details,
+    );
+
+final class _Recipients extends Fake implements ExchangeRecipients {
+  final List<Result<RecipientPage, RecipientsFailure>> pages;
+  final reads = <int>[];
+
+  _Recipients(this.pages);
+
+  @override
+  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+    required bool isTestnet,
+    bool fiatOnly = true,
+    int page = 1,
+    int pageSize = 50,
+    List<RecipientType>? recipientTypes,
+    bool? isOwner,
+    String? search,
+  }) async {
+    reads.add(page);
+    return page <= pages.length
+        ? pages[page - 1]
+        : const Ok((recipients: <Recipient>[], totalRecipients: 0));
+  }
+}
+
+UserSummary _summary({
+  String? language = 'en',
+  String? currency = 'CAD',
+  bool dcaActive = false,
+  bool autoBuyActive = false,
+  bool emailNotifications = true,
+  String? dcaAddress,
+}) => UserSummary(
+  userNumber: 1,
+  groups: const [],
+  profile: const UserProfile(firstName: '', lastName: ''),
+  email: '',
+  balances: const [],
+  language: language,
+  currency: currency,
+  emailNotificationsEnabled: emailNotifications,
+  dca: UserDca(isActive: dcaActive, address: dcaAddress),
+  autoBuy: UserAutoBuy(
+    isActive: autoBuyActive,
+    addresses: const UserAutoBuyAddresses(),
+  ),
+);
 
 void main() {
   group('confirm settlement', () {
@@ -212,6 +270,101 @@ void main() {
     });
   });
 
+  group('recipient settlement', () {
+    final interac = InteracEmailCadDetails.create(
+      email: 'Sat@Example.com',
+      name: 'Satoshi',
+      securityQuestion: 'colour?',
+      securityAnswer: 'orange',
+    );
+    final request = recipientIdentity(interac);
+
+    test('the identity holds the type and the account, never the answer', () {
+      expect(request, {'type': 'interacEmailCad', 'email': 'sat@example.com'});
+    });
+
+    test('a recipient with the same identity is applied', () {
+      expect(
+        recipientSettlement(request, [
+          _recipient(
+            InteracEmailCadDetails.create(
+              email: 'sat@example.com ',
+              name: 'Someone else',
+            ),
+          ),
+        ]),
+        UnknownWriteSettlement.applied,
+      );
+    });
+
+    test('another account or another type is not applied', () {
+      expect(
+        recipientSettlement(request, [
+          _recipient(
+            InteracEmailCadDetails.create(email: 'hal@example.com', name: 'H'),
+          ),
+          _recipient(SinpeMovilCrcDetails.create(phoneNumber: '88887777')),
+        ]),
+        UnknownWriteSettlement.notApplied,
+      );
+      expect(
+        recipientSettlement(request, []),
+        UnknownWriteSettlement.notApplied,
+      );
+    });
+
+    test('a confidential SEPA recipient does not match a plain one', () {
+      final plain = SepaEurDetails.create(
+        iban: 'DE89 3704 0044 0532 0130 00',
+        isCorporate: false,
+        firstname: 'A',
+        lastname: 'B',
+      );
+      final confidential = SepaEurDetails.create(
+        iban: 'DE89370400440532013000',
+        isCorporate: false,
+        firstname: 'A',
+        lastname: 'B',
+        isConfidential: true,
+      );
+      expect(
+        recipientSettlement(recipientIdentity(confidential), [
+          _recipient(plain),
+        ]),
+        UnknownWriteSettlement.notApplied,
+      );
+      expect(
+        recipientSettlement(recipientIdentity(plain), [_recipient(plain)]),
+        UnknownWriteSettlement.applied,
+      );
+    });
+  });
+
+  group('preferences settlement', () {
+    final table = <(Map<String, String>, UserSummary), UnknownWriteSettlement>{
+      ({'dcaEnabled': 'false'}, _summary()): UnknownWriteSettlement.applied,
+      ({'dcaEnabled': 'true'}, _summary()): UnknownWriteSettlement.notApplied,
+      (
+        {'currency': 'EUR', 'language': 'fr'},
+        _summary(currency: 'EUR', language: 'fr'),
+      ): UnknownWriteSettlement.applied,
+      ({'currency': 'EUR', 'language': 'fr'}, _summary(currency: 'EUR')):
+          UnknownWriteSettlement.notApplied,
+      ({'autoBuyEnabled': 'true'}, _summary(autoBuyActive: true)):
+          UnknownWriteSettlement.applied,
+      ({'emailNotificationsEnabled': 'false'}, _summary()):
+          UnknownWriteSettlement.notApplied,
+      ({'currency': 'CAD'}, _summary(currency: null)):
+          UnknownWriteSettlement.notApplied,
+    };
+    for (final MapEntry(key: (request, summary), value: settlement)
+        in table.entries) {
+      test('$request -> $settlement', () {
+        expect(preferencesSettlement(request, summary), settlement);
+      });
+    }
+  });
+
   group('use case', () {
     late InMemoryUnknownWriteJournal journal;
 
@@ -238,6 +391,7 @@ void main() {
       Result<UserSummary, ExchangeFailure>? summary,
       Result<List<LimitOrder>, ExchangeFailure>? limitOrders,
       Result<DefaultWallets, ExchangeFailure>? defaultWallets,
+      _Recipients? recipients,
     }) => ReconcileUnknownWritesUsecase(
       journal: journal,
       orders: (_) => orders,
@@ -247,6 +401,8 @@ void main() {
           limitOrders ?? const Err(ExchangeNetworkFailure()),
       getDefaultWallets: () async =>
           defaultWallets ?? const Err(ExchangeNetworkFailure()),
+      recipients:
+          recipients ?? _Recipients([const Err(RecipientsNetworkFailure())]),
     );
 
     test('settles what the re-reads decide and keeps the rest open', () async {
@@ -339,6 +495,94 @@ void main() {
       ).execute(ExchangeEnvironment.testnet);
 
       expect(journal.entries.single.$2, UnknownWriteSettlement.applied);
+    });
+
+    test('a recipient entry is settled from every page of the list', () async {
+      final wanted = InteracEmailCadDetails.create(
+        email: 'sat@example.com',
+        name: 'Satoshi',
+      );
+      await record(
+        UnknownWriteKind.recipientCreate,
+        request: recipientIdentity(wanted),
+      );
+      final other = _recipient(
+        InteracEmailCadDetails.create(email: 'hal@example.com', name: 'H'),
+      );
+      final recipients = _Recipients([
+        Ok((recipients: [other], totalRecipients: 2)),
+        Ok((recipients: [_recipient(wanted, id: 'r-2')], totalRecipients: 2)),
+      ]);
+
+      final _ = await reconcile(
+        _Orders(const {}),
+        recipients: recipients,
+      ).execute(ExchangeEnvironment.testnet);
+
+      expect(recipients.reads, [1, 2]);
+      expect(journal.entries.single.$2, UnknownWriteSettlement.applied);
+    });
+
+    test('a complete list without the recipient is not applied', () async {
+      await record(
+        UnknownWriteKind.recipientCreate,
+        request: const {'type': 'interacEmailCad', 'email': 'sat@example.com'},
+      );
+
+      final _ = await reconcile(
+        _Orders(const {}),
+        recipients: _Recipients([
+          const Ok((recipients: <Recipient>[], totalRecipients: 0)),
+        ]),
+      ).execute(ExchangeEnvironment.testnet);
+
+      expect(journal.entries.single.$2, UnknownWriteSettlement.notApplied);
+    });
+
+    test('a page that fails keeps the recipient entry open', () async {
+      await record(
+        UnknownWriteKind.recipientCreate,
+        request: const {'type': 'interacEmailCad', 'email': 'sat@example.com'},
+      );
+      final other = _recipient(
+        InteracEmailCadDetails.create(email: 'hal@example.com', name: 'H'),
+      );
+
+      final _ = await reconcile(
+        _Orders(const {}),
+        recipients: _Recipients([
+          Ok((recipients: [other], totalRecipients: 2)),
+          const Err(RecipientsNetworkFailure()),
+        ]),
+      ).execute(ExchangeEnvironment.testnet);
+
+      expect(journal.entries.single.$2, isNull);
+    });
+
+    test('a preferences entry is settled from the user summary', () async {
+      await record(
+        UnknownWriteKind.preferencesSave,
+        request: const {'dcaEnabled': 'false'},
+      );
+
+      final _ = await reconcile(
+        _Orders(const {}),
+        summary: Ok(_summary()),
+      ).execute(ExchangeEnvironment.testnet);
+
+      expect(journal.entries.single.$2, UnknownWriteSettlement.applied);
+    });
+
+    test('an unreadable summary keeps the preferences entry open', () async {
+      await record(
+        UnknownWriteKind.preferencesSave,
+        request: const {'dcaEnabled': 'false'},
+      );
+
+      final _ = await reconcile(_Orders(const {}))
+          .execute(ExchangeEnvironment.testnet);
+
+      expect(journal.entries.single.$2, isNull);
     });
 
     test('nothing is ever sent: only reads are used', () async {

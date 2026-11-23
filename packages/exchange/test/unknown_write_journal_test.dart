@@ -133,6 +133,8 @@ void main() {
         UnknownWriteKind.dcaCreate: 'dca_create',
         UnknownWriteKind.limitOrderCreate: 'limit_order_create',
         UnknownWriteKind.defaultWalletSave: 'default_wallet_save',
+        UnknownWriteKind.recipientCreate: 'recipient_create',
+        UnknownWriteKind.preferencesSave: 'preferences_save',
       },
     );
     for (final kind in UnknownWriteKind.values) {

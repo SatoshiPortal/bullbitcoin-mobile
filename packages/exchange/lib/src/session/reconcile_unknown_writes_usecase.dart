@@ -10,6 +10,9 @@ import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_orders.dart';
 import '../domain/unknown_write_journal.dart';
+import '../recipients/domain/entities/recipient.dart';
+import '../recipients/domain/recipient_identity.dart';
+import '../recipients/exchange_recipients.dart';
 
 /// What one reconciliation did: how many open entries it settled and how
 /// many are still open (a re-read failed or could not decide).
@@ -48,6 +51,7 @@ final class ReconcileUnknownWritesUsecase {
   _listOpenLimitOrders;
   final Future<Result<DefaultWallets, ExchangeFailure>> Function()
   _getDefaultWallets;
+  final ExchangeRecipients _recipients;
 
   const ReconcileUnknownWritesUsecase({
     required UnknownWriteJournal journal,
@@ -60,11 +64,18 @@ final class ReconcileUnknownWritesUsecase {
     listOpenLimitOrders,
     required Future<Result<DefaultWallets, ExchangeFailure>> Function()
     getDefaultWallets,
+    required ExchangeRecipients recipients,
   }) : _journal = journal,
        _orders = orders,
        _getUserSummary = getUserSummary,
        _listOpenLimitOrders = listOpenLimitOrders,
-       _getDefaultWallets = getDefaultWallets;
+       _getDefaultWallets = getDefaultWallets,
+       _recipients = recipients;
+
+  /// At most this many recipient pages are read for one entry; a longer
+  /// list leaves the entry open.
+  static const recipientPageLimit = 20;
+  static const recipientPageSize = 50;
 
   @useResult
   Future<Result<UnknownWriteReconciliation, UnknownWriteJournalFailure>>
@@ -111,7 +122,9 @@ final class ReconcileUnknownWritesUsecase {
             UnknownWriteKind.withdrawConfirm ||
             UnknownWriteKind.dcaCreate ||
             UnknownWriteKind.limitOrderCreate ||
-            UnknownWriteKind.defaultWalletSave => confirmSettlement(order),
+            UnknownWriteKind.defaultWalletSave ||
+            UnknownWriteKind.recipientCreate ||
+            UnknownWriteKind.preferencesSave => confirmSettlement(order),
           },
           Err() => null,
         };
@@ -130,7 +143,40 @@ final class ReconcileUnknownWritesUsecase {
           Ok(:final value) => defaultWalletSettlement(entry.request, value),
           Err() => null,
         };
+      case UnknownWriteKind.recipientCreate:
+        final recipients = await _allRecipients(environment);
+        if (recipients == null) return null;
+        return recipientSettlement(entry.request, recipients);
+      case UnknownWriteKind.preferencesSave:
+        return switch (await _getUserSummary(environment)) {
+          Ok(:final value) => preferencesSettlement(entry.request, value),
+          Err() => null,
+        };
     }
+  }
+
+  /// Every fiat recipient of the account, or null when a page can't be read
+  /// or the list is longer than [recipientPageLimit] pages.
+  Future<List<Recipient>?> _allRecipients(
+    ExchangeEnvironment environment,
+  ) async {
+    final all = <Recipient>[];
+    for (var page = 1; page <= recipientPageLimit; page++) {
+      switch (await _recipients.listRecipients(
+        isTestnet: environment == ExchangeEnvironment.testnet,
+        page: page,
+        pageSize: recipientPageSize,
+      )) {
+        case Err():
+          return null;
+        case Ok(:final value):
+          all.addAll(value.recipients);
+          if (value.recipients.isEmpty || all.length >= value.totalRecipients) {
+            return all;
+          }
+      }
+    }
+    return null;
   }
 }
 
@@ -206,6 +252,39 @@ UnknownWriteSettlement? defaultWalletSettlement(
     BtcNetwork.liquid => wallets.liquid,
   };
   return wallet != null && wallet.address == request['address']
+      ? UnknownWriteSettlement.applied
+      : UnknownWriteSettlement.notApplied;
+}
+
+/// A recipient with the identity sent (type and account fields) means the
+/// create took effect; a complete list without one means it did not, so
+/// saving again can't duplicate it.
+UnknownWriteSettlement recipientSettlement(
+  Map<String, String> request,
+  List<Recipient> recipients,
+) {
+  bool same(Map<String, String> identity) =>
+      identity.length == request.length &&
+      identity.entries.every((field) => request[field.key] == field.value);
+  return recipients.any((r) => same(recipientIdentity(r.details)))
+      ? UnknownWriteSettlement.applied
+      : UnknownWriteSettlement.notApplied;
+}
+
+/// Every field sent holds the value sent: the save took effect. Anything
+/// else: it did not (a preference save can be sent again safely).
+UnknownWriteSettlement preferencesSettlement(
+  Map<String, String> request,
+  UserSummary summary,
+) {
+  final current = {
+    'language': summary.language,
+    'currency': summary.currency,
+    'dcaEnabled': '${summary.dca.isActive}',
+    'autoBuyEnabled': '${summary.autoBuy.isActive}',
+    'emailNotificationsEnabled': '${summary.emailNotificationsEnabled}',
+  };
+  return request.entries.every((field) => current[field.key] == field.value)
       ? UnknownWriteSettlement.applied
       : UnknownWriteSettlement.notApplied;
 }

@@ -21,6 +21,7 @@ import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/journaling_exchange_orders.dart';
+import 'data/journaling_exchange_recipients.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
 import 'domain/entities/btc_network.dart';
@@ -625,16 +626,22 @@ final class Exchange {
         );
       }, completionCheck: _CompletionCheck.read),
       access,
-      ExchangeRecipientsImpl(
-        read: <T>(environment, operation) => withClient<T>(
-          (client) => operation(client),
-          environment: environment,
-          completionCheck: _CompletionCheck.read,
+      _journalRecipients(
+        ExchangeRecipientsImpl(
+          read: <T>(environment, operation) => withClient<T>(
+            (client) => operation(client),
+            environment: environment,
+            completionCheck: _CompletionCheck.read,
+          ),
+          write: <T>(environment, operation) => withClient<T>(
+            (client) => operation(client),
+            environment: environment,
+            completionCheck: _CompletionCheck.write,
+          ),
         ),
-        write: <T>(environment, operation) => withClient<T>(
-          (client) => operation(client),
-          environment: environment,
-          completionCheck: _CompletionCheck.write,
+        recorder,
+        () async => (await sessionSnapshot()).map(
+          (s) => (environment: s.environment, epoch: s.epoch),
         ),
       ),
       sessionPreferences,
@@ -910,6 +917,8 @@ final class Exchange {
 
   /// Replaces the account's preference set. Supply all existing values that
   /// should be retained when changing only one field.
+  /// With a journal, a save whose outcome is unknown is recorded (the fields
+  /// sent) before it is returned.
   @useResult
   Future<Result<void, ExchangeFailure>> saveUserPreference(
     ExchangeEnvironment environment, {
@@ -918,14 +927,43 @@ final class Exchange {
     bool? dcaEnabled,
     String? autoBuyEnabled,
     bool? emailNotificationsEnabled,
-  }) => _saveUserPreference(
-    environment,
-    language: language,
-    currency: currency,
-    dcaEnabled: dcaEnabled,
-    autoBuyEnabled: autoBuyEnabled,
-    emailNotificationsEnabled: emailNotificationsEnabled,
-  );
+  }) async {
+    final result = await _saveUserPreference(
+      environment,
+      language: language,
+      currency: currency,
+      dcaEnabled: dcaEnabled,
+      autoBuyEnabled: autoBuyEnabled,
+      emailNotificationsEnabled: emailNotificationsEnabled,
+    );
+    final journal = _unknownWrites;
+    if (journal == null ||
+        result is! Err<void, ExchangeFailure> ||
+        result.failure is! ExchangePreferencesSaveOutcomeUnknownFailure) {
+      return result;
+    }
+    await UnknownWriteRecorder(journal).record(
+      UnknownWriteDraft(
+        kind: UnknownWriteKind.preferencesSave,
+        environment: environment,
+        sessionEpoch: await _epochOf(environment),
+        request: {
+          'language': ?language,
+          'currency': ?currency,
+          'dcaEnabled': ?dcaEnabled?.toString(),
+          'autoBuyEnabled': ?autoBuyEnabled,
+          'emailNotificationsEnabled': ?emailNotificationsEnabled?.toString(),
+        },
+      ),
+    );
+    return result;
+  }
+
+  Future<int?> _epochOf(ExchangeEnvironment environment) async =>
+      switch (await _readSessionPoint()) {
+        Ok(:final value) when value.environment == environment => value.epoch,
+        _ => null,
+      };
 
   /// Binds operations to the caller's selected backend, not to a credential.
   /// Every request checks that the active session still matches that backend.
@@ -938,11 +976,7 @@ final class Exchange {
           _orders(environment),
           UnknownWriteRecorder(journal),
           environment: environment,
-          readEpoch: () async => switch (await _readSessionPoint()) {
-            Ok(:final value) when value.environment == environment =>
-              value.epoch,
-            _ => null,
-          },
+          readEpoch: () => _epochOf(environment),
         ),
         null => _orders(environment),
       };
@@ -984,6 +1018,7 @@ final class Exchange {
           getUserSummary: (environment) => _getUserSummary(environment),
           listOpenLimitOrders: limitOrders.listActive,
           getDefaultWallets: _defaultWallets.get,
+          recipients: recipients,
         ).execute(value.environment);
     }
   }
@@ -1078,6 +1113,22 @@ final class Exchange {
 
   Future<void> close() => _notifications.close();
 }
+
+ExchangeRecipients _journalRecipients(
+  ExchangeRecipients recipients,
+  UnknownWriteRecorder? recorder,
+  Future<Result<_SessionPoint, ExchangeFailure>> Function() readSessionPoint,
+) => switch (recorder) {
+  null => recipients,
+  final recorder => JournalingExchangeRecipients(
+    recipients,
+    recorder,
+    readEpoch: (environment) async => switch (await readSessionPoint()) {
+      Ok(:final value) when value.environment == environment => value.epoch,
+      _ => null,
+    },
+  ),
+};
 
 /// Builds the public capability with scenario-controlled results.
 Exchange exchangeForTesting({
@@ -1212,11 +1263,16 @@ Exchange exchangeForTesting({
   getConfidentialSepaAvailability ??
       () => throw StateError('Unexpected Confidential SEPA availability check'),
   access,
-  recipients ??
-      ExchangeRecipientsImpl(
-        read: <T>(_, _) => throw StateError('Unexpected fiat recipient read'),
-        write: <T>(_, _) => throw StateError('Unexpected fiat recipient write'),
-      ),
+  _journalRecipients(
+    recipients ??
+        ExchangeRecipientsImpl(
+          read: <T>(_, _) => throw StateError('Unexpected fiat recipient read'),
+          write: <T>(_, _) =>
+              throw StateError('Unexpected fiat recipient write'),
+        ),
+    unknownWrites == null ? null : UnknownWriteRecorder(unknownWrites),
+    readSessionPoint ?? () => throw StateError('Unexpected session read'),
+  ),
   sessionPreferences,
   null,
   unknownWrites,
