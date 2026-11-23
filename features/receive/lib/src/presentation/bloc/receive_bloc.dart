@@ -653,7 +653,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     final admitted = await _admitEntry(_wallet);
     if (generation != _receiveGeneration || emit.isDone) return;
     if (admitted case Err(:final failure)) {
-      emit(state.copyWith(wallet: null, failure: failure));
+      emit(
+        state.copyWith(wallet: null, walletAdmitted: false, failure: failure),
+      );
       return;
     }
     final presetWallet = (admitted as Ok<ReceiveWallet?, ReceiveFailure>).value;
