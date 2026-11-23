@@ -96,6 +96,25 @@ adb pull /data/app/com.bullbitcoin.mobile-.../split_config.arm64_v8a.apk ~/bullb
 
 Then pass `--apk ~/bullbitcoin-splits/` to the script.
 
+## Verifying the release signature
+
+Each [GitHub release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases) ships `HASHSUMS256`, the SHA-256 of the APK, and `HASHSUMS256.asc`, its detached GPG signature. The signing key is published in this repository at [`keys/i5hi.asc`](../keys/i5hi.asc).
+
+| | Fingerprint |
+|---|---|
+| Primary key (Vishal Menon, [i5hi](https://github.com/i5hi)) | `BC5A D8A2 6AAC D383 EF63  0D45 5AE8 AC51 D171 F109` |
+| Signing subkey | `7247 8AF1 8BD0 F955 3A16  B9F1 9F4E 17C3 203E 0D49` |
+
+With the APK, `HASHSUMS256` and `HASHSUMS256.asc` of a release in the current directory, from a checkout of this repository:
+
+```bash
+gpg --import keys/i5hi.asc
+gpg --verify HASHSUMS256.asc HASHSUMS256
+sha256sum --check HASHSUMS256
+```
+
+`gpg --verify` must report a good signature made with the signing subkey above, and `sha256sum` must report `OK` for the APK (on macOS, `shasum -a 256 --check HASHSUMS256`).
+
 ## Known gaps that need infra/org access to close
 
 These came out of a full reproducibility audit (2026-07) but require access
