@@ -17,8 +17,13 @@ import 'package:go_router/go_router.dart';
 
 class ReceiveQrPage extends StatelessWidget {
   final Widget Function(OrderSwapRecord)? orderSwapUnderReview;
+  final void Function(BuildContext)? openPayjoinSettings;
 
-  const ReceiveQrPage({super.key, this.orderSwapUnderReview});
+  const ReceiveQrPage({
+    super.key,
+    this.orderSwapUnderReview,
+    this.openPayjoinSettings,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +54,11 @@ class ReceiveQrPage extends StatelessWidget {
           ),
         ),
         if (!state.isLightning)
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: ReceiveAdvancedSettingsLink(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: ReceiveAdvancedSettingsLink(
+              openPayjoinSettings: openPayjoinSettings,
+            ),
           ),
       ],
     );

@@ -11,8 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatefulWidget {
-  const ReceiveAmountScreen({super.key, this.onContinueNavigation});
+  const ReceiveAmountScreen({
+    super.key,
+    this.onContinueNavigation,
+    this.openPayjoinSettings,
+  });
   final Function? onContinueNavigation;
+  final void Function(BuildContext)? openPayjoinSettings;
 
   @override
   State<ReceiveAmountScreen> createState() => _ReceiveAmountScreenState();
@@ -116,9 +121,11 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: ReceiveAdvancedSettingsLink(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ReceiveAdvancedSettingsLink(
+              openPayjoinSettings: widget.openPayjoinSettings,
+            ),
           ),
           ReceiveAmountContinueButton(
             onContinueNavigation: widget.onContinueNavigation,

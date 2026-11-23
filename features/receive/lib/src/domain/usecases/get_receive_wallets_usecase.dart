@@ -41,7 +41,7 @@ class GetReceiveWalletsUsecase {
     if (environment case Err(:final failure)) return _loadFailed(failure);
     final env =
         (environment as Ok<Environment, PreferencesFailure>).value.networkEnv;
-    final networks = [
+    final networks = <Network>[
       if (onlyLiquid != true)
         ...BitcoinNetwork.values.where((n) => n.env == env),
       if (onlyBitcoin != true)

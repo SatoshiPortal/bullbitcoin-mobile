@@ -77,8 +77,6 @@ import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SettingsFacade;
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -449,6 +447,8 @@ class AppLocator {
             ),
         setPayjoinEnabled: locator<SettingsFacade>().setPayjoinReceiveEnabled,
         openHome: (context) => context.goNamed(WalletRoute.walletHome.name),
+        openPayjoinSettings: (context) =>
+            context.pushNamed(SettingsRoute.payjoinSettings.name),
         successAnimation: AssetImage(Assets.animations.successTick.path),
         orderSwapUnderReview: (order) =>
             OrderSwapUnderReviewCard(orderSwap: order),

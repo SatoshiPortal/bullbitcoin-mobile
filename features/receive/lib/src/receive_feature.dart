@@ -55,6 +55,7 @@ final class ReceiveFeature {
     required CreateReceiveOrder createOrder,
     required SetReceivePayjoinEnabled setPayjoinEnabled,
     required void Function(BuildContext) openHome,
+    required void Function(BuildContext) openPayjoinSettings,
     required ImageProvider successAnimation,
     required Widget Function(OrderSwapRecord) orderSwapUnderReview,
   }) {
@@ -158,6 +159,7 @@ final class ReceiveFeature {
         createBloc: (wallet) => locator<ReceiveBloc>(param1: wallet),
         poll: locator<PollReceiveWalletUsecase>(),
         openHome: openHome,
+        openPayjoinSettings: openPayjoinSettings,
         successAnimation: successAnimation,
         orderSwapUnderReview: orderSwapUnderReview,
       ),

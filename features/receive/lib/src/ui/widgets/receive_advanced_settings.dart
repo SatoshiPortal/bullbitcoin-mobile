@@ -8,10 +8,11 @@ import 'package:receive/src/ui/screens/receive_qr_screen.dart';
 import 'package:receive/src/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class ReceiveAdvancedSettingsLink extends StatelessWidget {
-  const ReceiveAdvancedSettingsLink({super.key});
+  final void Function(BuildContext)? openPayjoinSettings;
+
+  const ReceiveAdvancedSettingsLink({super.key, this.openPayjoinSettings});
 
   @override
   Widget build(BuildContext context) {
@@ -30,22 +31,32 @@ class ReceiveAdvancedSettingsLink extends StatelessWidget {
     return BullSettingsEntryTile(
       label: context.loc.receiveAdvancedSettings,
       summary: summary,
-      onPressed: () => ReceiveAdvancedSettings.show(context),
+      onPressed: () => ReceiveAdvancedSettings.show(
+        context,
+        openPayjoinSettings: openPayjoinSettings,
+      ),
     );
   }
 }
 
 class ReceiveAdvancedSettings extends StatefulWidget {
-  const ReceiveAdvancedSettings({super.key});
+  final void Function(BuildContext)? openPayjoinSettings;
 
-  static Future<void> show(BuildContext context) async {
+  const ReceiveAdvancedSettings({super.key, this.openPayjoinSettings});
+
+  static Future<void> show(
+    BuildContext context, {
+    void Function(BuildContext)? openPayjoinSettings,
+  }) async {
     final bloc = context.read<ReceiveBloc>();
     await BullBottomSheet.show<void>(
       context: context,
       avoidKeyboard: true,
       child: BlocProvider.value(
         value: bloc,
-        child: const ReceiveAdvancedSettings(),
+        child: ReceiveAdvancedSettings(
+          openPayjoinSettings: openPayjoinSettings,
+        ),
       ),
     );
     if (!bloc.isClosed) bloc.add(const ReceiveNoteSaved());
@@ -223,8 +234,7 @@ class _ReceiveAdvancedSettingsState extends State<ReceiveAdvancedSettings> {
                 icon: BullIcons.settings,
                 contentPadding: EdgeInsets.zero,
                 title: context.loc.receivePayjoinSettings,
-                onTap: () =>
-                    context.pushNamed(SettingsRoute.payjoinSettings.name),
+                onTap: () => widget.openPayjoinSettings?.call(context),
               ),
             ],
             if (state.advancedOptions.showNewAddress) ...[

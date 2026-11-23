@@ -34,6 +34,7 @@ class ReceiveRouter {
     required ReceiveBloc Function(ReceiveWallet?) createBloc,
     required PollReceiveWalletUsecase poll,
     required void Function(BuildContext) openHome,
+    required void Function(BuildContext) openPayjoinSettings,
     required ImageProvider successAnimation,
     Widget Function(OrderSwapRecord)? orderSwapUnderReview,
   }) => ShellRoute(
@@ -184,7 +185,10 @@ class ReceiveRouter {
             bloc.add(ReceiveBitcoinStarted(wallet));
           }
           return NoTransitionPage(
-            child: ReceiveQrPage(orderSwapUnderReview: orderSwapUnderReview),
+            child: ReceiveQrPage(
+              orderSwapUnderReview: orderSwapUnderReview,
+              openPayjoinSettings: openPayjoinSettings,
+            ),
           );
         },
         routes: [
@@ -222,6 +226,7 @@ class ReceiveRouter {
           }
           return NoTransitionPage(
             child: ReceiveAmountScreen(
+              openPayjoinSettings: openPayjoinSettings,
               onContinueNavigation: () => context.pushNamed(
                 ReceiveRoute.lightningQr.name,
                 extra: state.extra,
@@ -234,14 +239,20 @@ class ReceiveRouter {
             name: ReceiveRoute.lightningQr.name,
             path: ReceiveRoute.lightningQr.path,
             pageBuilder: (context, state) => NoTransitionPage(
-              child: ReceiveQrPage(orderSwapUnderReview: orderSwapUnderReview),
+              child: ReceiveQrPage(
+                orderSwapUnderReview: orderSwapUnderReview,
+                openPayjoinSettings: openPayjoinSettings,
+              ),
             ),
             routes: [
               GoRoute(
                 name: ReceiveRoute.lightningAmount.name,
                 path: ReceiveRoute.lightningAmount.path,
-                pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: ReceiveAmountScreen()),
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: ReceiveAmountScreen(
+                    openPayjoinSettings: openPayjoinSettings,
+                  ),
+                ),
               ),
               GoRoute(
                 name: ReceiveRoute.lightningPaymentInProgress.name,
@@ -299,7 +310,10 @@ class ReceiveRouter {
           }
 
           return NoTransitionPage(
-            child: ReceiveQrPage(orderSwapUnderReview: orderSwapUnderReview),
+            child: ReceiveQrPage(
+              orderSwapUnderReview: orderSwapUnderReview,
+              openPayjoinSettings: openPayjoinSettings,
+            ),
           );
         },
         routes: [],

@@ -3,8 +3,6 @@ import 'package:receive/receive.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
 import 'package:receive/src/presentation/receive_failure_l10n.dart';
 
-import 'payjoin_disclaimer_dialog.dart';
-
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
