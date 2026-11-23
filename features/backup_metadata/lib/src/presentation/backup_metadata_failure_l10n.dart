@@ -1,11 +1,16 @@
+import 'package:flutter/widgets.dart';
+
+import '../../generated/l10n/backup_metadata_localizations.dart';
 import '../domain/backup_metadata_failure.dart';
 
-/// Message identifiers until the presentation lane supplies its localizations.
 extension BackupMetadataFailureL10n on BackupMetadataFailure {
-  String get messageKey => switch (this) {
-    BackupMetadataNotReadyFailure() => 'backupMetadataNotReady',
-    BackupMetadataStalePlanFailure() => 'backupMetadataStalePlan',
-    BackupMetadataTooLargeFailure() => 'backupMetadataTooLarge',
-    BackupMetadataUnexpectedFailure() => 'backupMetadataUnexpected',
-  };
+  String toTranslated(BuildContext context) {
+    final l10n = BackupMetadataLocalizations.of(context);
+    return switch (this) {
+      BackupMetadataNotReadyFailure() => l10n.failureNotReady,
+      BackupMetadataStalePlanFailure() => l10n.failureStalePlan,
+      BackupMetadataTooLargeFailure() => l10n.failureTooLarge,
+      BackupMetadataUnexpectedFailure() => l10n.failureUnexpected,
+    };
+  }
 }
