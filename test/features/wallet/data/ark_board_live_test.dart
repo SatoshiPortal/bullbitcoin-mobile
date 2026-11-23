@@ -19,6 +19,7 @@ library;
 import 'package:labels/testing.dart';
 
 import 'package:electrum/testing.dart';
+import 'package:preferences/testing.dart';
 
 import 'package:mempool/testing.dart';
 
@@ -46,6 +47,7 @@ import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../support/owner_databases.dart';
+import '../../../support/preferences_database.dart';
 
 /// Writes [content] to a new private file, never replacing an existing one.
 void _writePrivate(File file, String content) {
@@ -164,6 +166,15 @@ void main() {
             tor: tor,
           ),
         ),
+        openPreferences: (legacy) async {
+          final owner = await createPreferencesDatabase(
+            copySettingsFrom: legacy,
+          );
+          addTearDown(owner.close);
+          return Ok(
+            PreferencesTesting.fromDatabases(owner: owner, legacy: legacy),
+          );
+        },
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),

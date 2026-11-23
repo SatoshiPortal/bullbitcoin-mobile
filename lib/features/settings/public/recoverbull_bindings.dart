@@ -10,7 +10,7 @@ import 'package:primitives/primitives.dart' show RegtestHostProfile;
 import '../domain/regtest_recoverbull_profile.dart';
 
 final class SettingsRecoverBullBindings {
-  static Future<String> setup(
+  static Future<({String path, Uri server})> setup(
     GetIt locator, {
     required String databasePath,
     @visibleForTesting String? regtestHost,
@@ -36,8 +36,12 @@ final class SettingsRecoverBullBindings {
     );
     locator.registerSingleton<RecoverBullEnvironmentPort>(adapter);
     locator.registerSingleton<RecoverBullLegacySettingsPort>(adapter);
-    return host == null
-        ? databasePath
-        : p.join(p.dirname(databasePath), 'recoverbull-regtest.sqlite');
+    locator.registerSingleton<RecoverBullPermissionPort>(adapter);
+    return (
+      path: host == null
+          ? databasePath
+          : p.join(p.dirname(databasePath), 'recoverbull-regtest.sqlite'),
+      server: adapter.configuredServer,
+    );
   }
 }

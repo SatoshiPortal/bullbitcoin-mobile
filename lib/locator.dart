@@ -86,17 +86,18 @@ class AppLocator {
     GetIt locator, {
     required String databasePath,
   }) async {
-    final selectedDatabasePath = await SettingsRecoverBullBindings.setup(
+    final settings = await SettingsRecoverBullBindings.setup(
       locator,
       databasePath: databasePath,
     );
     WalletRecoverBullBindings.setup(locator);
-    final family = selectedDatabasePath == databasePath ? null : 'regtest';
+    final family = settings.path == databasePath ? null : 'regtest';
     final feature = await RecoverBullFeature.mount(
+      server: settings.server,
       secrets: locator<Secrets>(),
       wallets: locator<RecoverBullWalletPort>(),
       environment: locator<RecoverBullEnvironmentPort>(),
-      legacy: locator<RecoverBullLegacySettingsPort>(),
+      permission: locator<RecoverBullPermissionPort>(),
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
       admission: locator<RuntimeAdmission>(),
@@ -123,6 +124,10 @@ class AppLocator {
       Tor Function() tor,
     )
     openElectrum,
+    required Future<Result<Preferences, PreferencesFailure>> Function(
+      SqliteDatabase legacy,
+    )
+    openPreferences,
     required Future<Result<Mempool, MempoolFailure>> Function(
       Tor Function() tor,
       TorHttpClientFactory http,
@@ -213,8 +218,13 @@ class AppLocator {
       openLabels: openLabels,
     );
     if (labels case Err(:final failure)) return Err(failure);
+    final openedPreferences = await openPreferences(database);
+    if (openedPreferences case Err(:final failure)) return Err(failure);
+    final preferences =
+        (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
     final repositories = await CoreLocator.registerRepositories(
       locator,
+      preferences: preferences,
       regtestProfile: regtestProfile,
     );
     if (repositories case Err()) return repositories;

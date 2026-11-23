@@ -115,7 +115,9 @@ graph TB
     ONBOARDING[Onboarding]
     SETTINGS[Settings]
     PREFERENCES[Preferences Package]
-    CORE -->|Drift composition| PREFERENCES
+    PREFERENCES --> LEGACY_STORAGE
+    PREFERENCES --> SECRETS
+    CORE -->|admitted owner and borrowed legacy| PREFERENCES
     NETWORK --> PREFERENCES
     SETTINGS --> PREFERENCES
     WALLETS --> PREFERENCES
@@ -725,3 +727,5 @@ Secrets uses Legacy Storage for lifecycle admission and participates in split-v1
 Electrum also implements its import participant through `legacy_storage` and opens its encrypted store through `secrets`. Foreground and background connection/cache consumers use that store; historical tables remain only for the legacy migration chain.
 
 Labels implements its participant through `legacy_storage`, opens its encrypted store through `secrets`, and supplies Sync with its owner-built freeze and reserved-address ports. Label, Payjoin and BIP-329 consumers share that authority.
+
+Preferences owns an encrypted schema-1 settings and RecoverBull permission store, with row/sequence/import-receipt atomicity. It never imports a RecoverBull URL. Its legacy credential projection and announcement dismissals borrow the tracked legacy connection. Foreground prepares under exclusive cutover admission; foreground and consuming background tasks open existing Preferences under shared admission and receipt checks. The legacy and standalone RecoverBull files are retained.

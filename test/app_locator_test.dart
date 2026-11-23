@@ -1,5 +1,6 @@
 import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
+import 'package:preferences/testing.dart';
 import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
@@ -36,8 +37,19 @@ import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:preferences/preferences.dart';
 import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'support/preferences_database.dart';
+
+Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
+  SqliteDatabase legacy,
+) async {
+  final owner = await createPreferencesDatabase(copySettingsFrom: legacy);
+  addTearDown(owner.close);
+  return Ok(PreferencesTesting.fromDatabases(owner: owner, legacy: legacy));
+}
 
 class _SecureStorage extends FakeSecureStoragePlatform {
   final Fingerprint parent;
@@ -133,6 +145,7 @@ void main() {
               tor: tor,
             ),
           ),
+          openPreferences: _openTestPreferences,
           openMempool: (tor, http) async => Ok(
             createMempoolForTesting(
               database: database,
@@ -386,6 +399,7 @@ void main() {
             tor: tor,
           ),
         ),
+        openPreferences: _openTestPreferences,
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
@@ -466,6 +480,7 @@ void main() {
           tor: tor,
         ),
       ),
+      openPreferences: _openTestPreferences,
       openMempool: (tor, http) async => Ok(
         createMempoolForTesting(database: database, tor: tor, torHttp: http),
       ),

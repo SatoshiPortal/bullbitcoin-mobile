@@ -3,8 +3,6 @@ import 'package:primitives/primitives.dart' show NetworkEnv, Ok;
 
 import 'dart:async';
 
-import 'package:preferences/storage.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:preferences/preferences.dart' as settings;
@@ -13,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:swaps/swaps.dart';
 
 import 'support/real_swap_backends.dart';
+import '../../support/preferences_database.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +19,7 @@ void main() {
     test(
       'R1 real settings and engine agree after ${rapid ? 'rapid round trip' : 'single switch control'}',
       () async {
-        final appDb = SqliteDatabase(NativeDatabase.memory());
+        final appDb = await createPreferencesDatabase();
         await appDb.customStatement(
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 '
           'WHERE id = 1',

@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/wallet/background_setup.dart'
     show setupArkBackgroundTask;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:preferences/migration.dart';
 
 /// Task-specific composition; deliberately never constructs the app locator.
 Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
@@ -38,6 +39,7 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
   final logger = LoggerBackgroundTaskLogger(log);
   const intervals = SharedPreferencesBackgroundSyncIntervalRepository();
   final support = await getApplicationSupportDirectory();
+  final preferencesFile = File('${support.path}/databases/preferences.sqlite');
   final cutover = StorageCutover(
     directory: Directory('${support.path}/storage-coordination'),
     legacy: LegacySourceStore(
@@ -51,6 +53,9 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
     participants: [
       if (task == BackgroundTask.walletsSync)
         ElectrumImport(file: File('${support.path}/databases/electrum.sqlite')),
+      if (task == BackgroundTask.arkRenewal ||
+          task == BackgroundTask.walletsSync)
+        PreferencesImport(file: preferencesFile),
     ],
   );
   final admitted = await cutover.admit();
@@ -67,8 +72,11 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
     logger: logger,
     intervals: intervals,
     tasks: {
-      BackgroundTask.arkRenewal: (resources) =>
-          setupArkBackgroundTask(resources, documents),
+      BackgroundTask.arkRenewal: (resources) => setupArkBackgroundTask(
+        resources,
+        documents,
+        preferencesFile: preferencesFile,
+      ),
       BackgroundTask.logsPrune: (resources) async => () async {
         await log.prune();
         return const BackgroundTaskExecutionResult.success();
@@ -79,6 +87,7 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
           documents,
           clock,
           intervals: intervals,
+          preferencesFile: preferencesFile,
         );
       },
     },

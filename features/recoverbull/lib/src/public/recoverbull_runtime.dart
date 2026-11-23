@@ -17,11 +17,9 @@ import '../data/secrets_vault_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
-import '../domain/entities/backup_settings.dart' show LegacyBackupSettings;
 import '../domain/recoverbull_failure.dart';
-import '../domain/recoverbull_legacy_settings_port.dart';
+import '../domain/recoverbull_permission_port.dart';
 import '../domain/recoverbull_route_port.dart';
-import '../domain/recoverbull_server_url.dart';
 import '../domain/recoverbull_wallet_port.dart';
 import '../domain/wallet_backup_usage.dart';
 import '../domain/usecases/acknowledge_backup_alerts_usecase.dart';
@@ -98,7 +96,8 @@ final class RecoverBullRuntime {
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
-    required RecoverBullLegacySettingsPort legacy,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
     required RecoverBullCutover cutover,
@@ -110,14 +109,8 @@ final class RecoverBullRuntime {
     environment: environment,
     routes: routes,
     clients: clients,
-    configuredServer: () async {
-      if (!cutover.regtest) return Uri.parse(recoverBullDefaultServerUrl);
-      final configuration = await legacy.read();
-      if (configuration is! Ok<LegacyBackupSettings, RecoverBullFailure>) {
-        throw const _MissingRecoverBullConfiguration();
-      }
-      return configuration.value.server;
-    },
+    server: server,
+    permission: permission,
   );
 
   static Future<RecoverBullRuntime> openWithStorage({
@@ -127,7 +120,8 @@ final class RecoverBullRuntime {
     required RecoverBullEnvironmentPort environment,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
-    required Future<Uri?> Function() configuredServer,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
   }) async {
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive.open());
@@ -138,15 +132,15 @@ final class RecoverBullRuntime {
     RecoverBullFailure unavailable = const RecoverBullJournalFailure();
     try {
       final database = await storage.open();
-      final server = await configuredServer();
-      metadata = BackupMetadataRepositoryImpl(
+      metadata = BackupMetadataRepositoryImpl.configured(
         database,
-        configuredServer: server,
+        server: server,
+        permission: permission,
       );
       monitoring = AttemptMonitoringRepositoryImpl(
         database,
         durable: true,
-        configuredServer: server,
+        readLiveSettings: metadata.settings,
       );
     } on Exception {
       unavailable = storage.unavailableFailure ?? unavailable;
@@ -284,8 +278,4 @@ final class RecoverBullRuntime {
     _drive.dispose();
     await _storage.dispose();
   }
-}
-
-final class _MissingRecoverBullConfiguration implements Exception {
-  const _MissingRecoverBullConfiguration();
 }

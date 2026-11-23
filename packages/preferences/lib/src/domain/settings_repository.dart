@@ -97,27 +97,6 @@ abstract interface class SettingsRepository
   Future<void> close();
 
   @useResult
-  Future<Result<void, PreferencesFailure>> store({
-    required int id,
-    required Environment environment,
-    required BitcoinUnit bitcoinUnit,
-    required String currency,
-    required Language language,
-    required bool hideAmounts,
-    required bool isSuperuser,
-    required bool isDevModeEnabled,
-    required bool useTorProxy,
-    required int torProxyPort,
-    TorTransportMode torTransportMode = TorTransportMode.automatic,
-    TorTransport? lastSuccessfulTorTransport,
-    AppThemeMode themeMode = AppThemeMode.system,
-    bool isErrorReportingEnabled = false,
-    bool screenCaptureProtectionEnabled = true,
-    String? exchangeTestnetBasicAuthUsername,
-    String? exchangeTestnetBasicAuthPassword,
-  });
-
-  @useResult
   Future<Result<SettingsEntity, PreferencesFailure>> fetch();
 
   @useResult

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -13,6 +14,7 @@ final class RecoverBullSettingsAdapter
     implements
         RecoverBullRoutePort,
         RecoverBullEnvironmentPort,
+        RecoverBullPermissionPort,
         RecoverBullLegacySettingsPort {
   final Preferences _settings;
   final RecoverBullPreferences _preferences;
@@ -37,6 +39,39 @@ final class RecoverBullSettingsAdapter
         (!regtest ||
             (settings.isSuperuser == true &&
                 settings.isDevModeEnabled == true));
+  }
+
+  Uri get configuredServer =>
+      regtestProfile?.server ?? Uri.parse(SettingsConstants.recoverbullUrl);
+
+  @override
+  Future<Result<({bool granted, int revision}), RecoverBullFailure>>
+  readPermission() async {
+    if (!await _runtimeIsCurrent()) {
+      return const Err(VaultContextChangedFailure());
+    }
+    final permission = await _preferences.readState(
+      regtest: regtestProfile != null,
+    );
+    if (!await _runtimeIsCurrent()) {
+      return const Err(VaultContextChangedFailure());
+    }
+    return switch (permission) {
+      Ok(value: final value?) => Ok(value),
+      _ => const Err(VaultStorageFailure()),
+    };
+  }
+
+  @override
+  Future<Result<void, RecoverBullFailure>> savePermission(bool granted) async {
+    if (!await _runtimeIsCurrent()) {
+      return const Err(VaultContextChangedFailure());
+    }
+    final saved = await _preferences.setPermission(
+      granted,
+      regtest: regtestProfile != null,
+    );
+    return saved.mapErr((_) => const VaultStorageFailure());
   }
 
   Future<bool> _runtimeIsCurrent() async {
@@ -80,29 +115,19 @@ final class RecoverBullSettingsAdapter
         return const Err(VaultContextChangedFailure());
       }
       final profile = regtestProfile;
-      if (profile != null) {
-        return Ok(
-          LegacyBackupSettings(
-            server: profile.server,
-            permissionGranted: false,
-          ),
-        );
-      }
-      final stored = await _preferences.read();
-      final RecoverBullServerPreference? preference;
+      final stored = await _preferences.read(regtest: profile != null);
+      final bool? permission;
       switch (stored) {
         case Ok(:final value):
-          preference = value;
-        case Err(failure: PreferencesInvalidFailure()):
-          return const Err(VaultInvalidFailure());
+          permission = value;
         case Err():
           return const Err(VaultStorageFailure());
       }
-      if (preference == null) return const Err(VaultStorageFailure());
+      if (permission == null) return const Err(VaultStorageFailure());
       return Ok(
         LegacyBackupSettings(
-          server: preference.server,
-          permissionGranted: preference.permissionGranted,
+          server: configuredServer,
+          permissionGranted: permission,
         ),
       );
     } on FormatException {

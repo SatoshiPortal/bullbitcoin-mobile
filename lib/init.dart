@@ -30,6 +30,7 @@ import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
+import 'package:preferences/migration.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
@@ -155,6 +156,9 @@ class Bull {
       standalone: standalone('recoverbull-regtest.sqlite'),
       regtest: true,
     );
+    final preferencesFile = File(
+      p.join(support.path, 'databases', 'preferences.sqlite'),
+    );
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -172,6 +176,12 @@ class Bull {
         regtestPayjoin.participant,
         recoverBull.participant,
         regtestRecoverBull.participant,
+        PreferencesImport(
+          file: preferencesFile,
+          standaloneRecoverBullFile: File(
+            p.join(bullDirectory.path, 'recoverbull.sqlite'),
+          ),
+        ),
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
@@ -248,6 +258,11 @@ class Bull {
           admission: admission,
           readPreferences: readPreferences,
           tor: tor,
+        ),
+        openPreferences: (legacy) => Preferences.open(
+          file: preferencesFile,
+          admission: admission,
+          legacyDatabase: legacy,
         ),
         openMempool: (tor, http) => Mempool.open(
           file: mempoolFile,

@@ -46,7 +46,8 @@ void main() {
         secrets: secrets,
         wallets: owners,
         environment: owners,
-        configuredServer: () async => null,
+        server: Uri.parse('http://fixture.onion'),
+        permission: owners,
         routes: routes,
         clients: const TorHttpClientFactory(),
       );
@@ -100,7 +101,7 @@ final class _Owners
     implements
         RecoverBullWalletPort,
         RecoverBullEnvironmentPort,
-        RecoverBullLegacySettingsPort {
+        RecoverBullPermissionPort {
   VaultContext? restored;
   @override
   Future<Result<VaultContext?, RecoverBullFailure>> currentDefault() async =>
@@ -117,7 +118,11 @@ final class _Owners
   Future<Result<BitcoinNetwork, RecoverBullFailure>> currentNetwork() async =>
       const Ok(BitcoinNetwork.testnet);
   @override
-  Future<Result<LegacyBackupSettings, RecoverBullFailure>> read() async =>
+  Future<Result<({bool granted, int revision}), RecoverBullFailure>>
+  readPermission() async => const Err(RecoverBullUnexpectedFailure());
+
+  @override
+  Future<Result<void, RecoverBullFailure>> savePermission(bool granted) async =>
       const Err(RecoverBullUnexpectedFailure());
 }
 

@@ -11,7 +11,7 @@ import '../../generated/l10n/recoverbull_localizations.dart';
 import '../domain/entities/encrypted_vault.dart' as domain;
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
-import '../domain/recoverbull_legacy_settings_port.dart';
+import '../domain/recoverbull_permission_port.dart';
 import '../domain/recoverbull_route_port.dart';
 import '../ui/recoverbull_flow_navigator.dart';
 import '../ui/widgets/backup_alarm_overlay.dart';
@@ -41,7 +41,8 @@ final class RecoverBullFeature {
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
-    required RecoverBullLegacySettingsPort legacy,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
     required RecoverBullCutover cutover,
@@ -51,7 +52,8 @@ final class RecoverBullFeature {
       secrets: secrets,
       wallets: wallets,
       environment: environment,
-      legacy: legacy,
+      server: server,
+      permission: permission,
       routes: routes,
       clients: clients,
       cutover: cutover,

@@ -1,21 +1,21 @@
 import 'package:preferences/testing.dart';
-import 'package:preferences/storage.dart' show PreferencesDao;
 
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/data/recoverbull_settings_adapter.dart';
 import 'package:bb_mobile/features/settings/domain/regtest_recoverbull_profile.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, NetworkEnv, RegtestHostProfile;
+
+import '../../../support/preferences_database.dart';
 
 class _Settings extends Mock implements Preferences {}
 
@@ -66,15 +66,16 @@ void main() {
   late _Embedded embedded;
   late _External external;
   late _Tor tor;
-  late SqliteDatabase database;
+  late PreferencesDatabase database;
   late SettingsEntity selected;
   final adapters = <RecoverBullSettingsAdapter>[];
-  setUp(() {
+  setUp(() async {
     settings = _Settings();
     embedded = _Embedded();
     external = _External();
     tor = _Tor();
-    database = SqliteDatabase(NativeDatabase.memory());
+    database = await createPreferencesDatabase();
+    await database.customStatement('INSERT INTO recoverbull VALUES (1, 0)');
     selected = _selected(Environment.regtest);
     when(settings.fetch).thenAnswer((_) async => Ok(selected));
     when(() => tor.external).thenReturn(external);
@@ -127,7 +128,7 @@ void main() {
             regtestHost: 'stack.example',
           );
           expect(
-            capturedPath,
+            capturedPath.path,
             startsOnRegtest
                 ? '/tmp/scope/recoverbull-regtest.sqlite'
                 : '/tmp/scope/recoverbull.sqlite',
@@ -267,8 +268,11 @@ void main() {
     verifyZeroInteractions(embedded);
   });
   test(
-    'regtest legacy import is the fixture without production consent',
+    'regtest uses the fixture URL and its isolated imported permission',
     () async {
+      await database.customStatement(
+        "INSERT INTO recoverbull_permission_overrides (family, is_permission_granted) VALUES ('regtest', 1)",
+      );
       final result = await adapter().read();
       expect(
         result,
@@ -278,7 +282,7 @@ void main() {
               'server',
               'http://regtest.recoverbull.onion:3000',
             )
-            .having((r) => r.value.permissionGranted, 'consent', false),
+            .having((r) => r.value.permissionGranted, 'consent', true),
       );
     },
   );
@@ -335,13 +339,13 @@ void main() {
   });
   for (final environment in [Environment.mainnet, Environment.testnet]) {
     test(
-      '$environment preserves the original external route and legacy row',
+      '$environment preserves the external route and uses default server',
       () async {
         selected = _selected(environment);
         final value = adapter(regtest: false);
-        final row = await database.managers.recoverbull
-            .filter((f) => f.id(1))
-            .getSingle();
+        await database.customStatement(
+          'UPDATE recoverbull SET is_permission_granted = 1 WHERE id = 1',
+        );
         expect(
           await value.currentNetwork(),
           isA<Ok<BitcoinNetwork, RecoverBullFailure>>().having(
@@ -353,12 +357,12 @@ void main() {
         expect(
           await value.read(),
           isA<Ok<LegacyBackupSettings, RecoverBullFailure>>()
-              .having((r) => r.value.server.toString(), 'server', row.url)
               .having(
-                (r) => r.value.permissionGranted,
-                'permission',
-                row.isPermissionGranted,
-              ),
+                (r) => r.value.server.toString(),
+                'server',
+                SettingsConstants.recoverbullUrl,
+              )
+              .having((r) => r.value.permissionGranted, 'permission', true),
         );
         expect(
           await value.open(),
@@ -381,7 +385,7 @@ void main() {
         final services = GetIt.asNewInstance();
         services.registerSingleton<Preferences>(settings);
         services.registerSingleton<RecoverBullPreferences>(
-          PreferencesTesting.fromDao(database.preferencesDao).recoverBull,
+          PreferencesTesting.fromDao(PreferencesDao(database)).recoverBull,
         );
         services.registerSingleton<Tor>(tor);
         final path = await SettingsRecoverBullBindings.setup(
@@ -390,7 +394,7 @@ void main() {
           regtestHost: 'stack.example',
         );
         expect(
-          path,
+          path.path,
           environment == Environment.regtest
               ? '/tmp/scope/recoverbull-regtest.sqlite'
               : '/tmp/scope/recoverbull.sqlite',

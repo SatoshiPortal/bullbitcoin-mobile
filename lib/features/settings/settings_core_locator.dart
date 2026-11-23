@@ -1,11 +1,14 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:get_it/get_it.dart';
 import 'package:preferences/preferences.dart' as domain;
 
 class SettingsLocator {
-  static Future<void> registerRepositories(GetIt locator) async {
-    locator.registerLazySingleton<domain.Preferences>(
-      () => domain.Preferences.open(database: locator<SqliteDatabase>()),
+  static Future<void> registerRepositories(
+    GetIt locator,
+    domain.Preferences preferences,
+  ) async {
+    locator.registerSingleton<domain.Preferences>(
+      preferences,
+      dispose: (value) => value.close(),
     );
 
     locator.registerLazySingleton<domain.AmountDisplayPreferencesReader>(

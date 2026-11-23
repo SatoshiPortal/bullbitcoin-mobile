@@ -42,6 +42,8 @@ export 'src/domain/recoverbull_environment_port.dart'
     show RecoverBullEnvironmentPort;
 export 'src/domain/recoverbull_legacy_settings_port.dart'
     show RecoverBullLegacySettingsPort;
+export 'src/domain/recoverbull_permission_port.dart'
+    show RecoverBullPermissionPort;
 export 'src/domain/recoverbull_wallet_port.dart' show RecoverBullWalletPort;
 export 'src/public/recoverbull_facade.dart' show RecoverBullFacade;
 export 'src/public/recoverbull_feature.dart' show RecoverBullFeature;

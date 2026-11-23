@@ -1,14 +1,14 @@
-import 'package:preferences/storage.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:drift/native.dart';
+import 'package:preferences/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/preferences_database.dart';
+
 void main() {
-  late SqliteDatabase database;
+  late PreferencesDatabase database;
   late PreferencesDao datasource;
 
   setUp(() async {
-    database = SqliteDatabase(NativeDatabase.memory());
+    database = await createPreferencesDatabase();
     datasource = PreferencesDao(database);
     await database.customStatement(
       "UPDATE settings SET environment = 'testnet', "
@@ -62,7 +62,7 @@ void main() {
       expect(settings.isSuperuser, isFalse);
       expect(settings.isDevModeEnabled, isFalse);
 
-      final row = await database.managers.settings.getSingle();
+      final row = await database.managers.ownerSettings.getSingle();
       expect(row.environment, 'mainnet');
       expect(row.isDevModeEnabled, isFalse);
     });

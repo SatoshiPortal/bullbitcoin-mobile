@@ -1,5 +1,6 @@
 import 'package:legacy_storage/coordination.dart';
-import 'package:preferences/preferences.dart' show Preferences;
+import 'package:preferences/preferences.dart'
+    show Preferences, PreferencesFailure;
 
 export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
 
@@ -55,6 +56,7 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   BackgroundTaskResources resources,
   Directory documents,
   Stopwatch clock, {
+  required File preferencesFile,
   required BackgroundSyncIntervalRepository intervals,
 }) async {
   final admission = resources.storageAdmission;
@@ -72,7 +74,16 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
     ),
     create: SqliteDatabase.new,
   ).open(admission);
-  final settings = Preferences.open(database: sqlite);
+  final openedPreferences = await Preferences.open(
+    file: preferencesFile,
+    admission: admission,
+    legacyDatabase: sqlite,
+  );
+  if (openedPreferences case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final settings =
+      (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
   resources.onClose(settings.close);
   final preferences = (await settings.fetch()).fold(
     (value) => value,

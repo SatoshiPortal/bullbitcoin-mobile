@@ -18,7 +18,6 @@ import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:preferences/recoverbull_table.dart';
 import 'package:preferences/settings_table.dart';
-import 'package:preferences/preferences_dao.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:mempool/storage.dart';
@@ -35,7 +34,6 @@ import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 import 'sqlite_database.drift.dart';
 
 @DriftDatabase(
-  daos: [PreferencesDao],
   tables: [
     Transactions,
     WalletMetadatas,

@@ -1,6 +1,7 @@
 import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
 import 'package:preferences/preferences.dart';
+import 'package:preferences/testing.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 
@@ -9,6 +10,7 @@ import 'dart:io';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -22,6 +24,9 @@ import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sqlite3/sqlite3.dart' show sqlite3;
+
+import 'support/preferences_database.dart';
 
 class _NativeTor implements TorNativeInitializer {
   int calls = 0;
@@ -46,8 +51,11 @@ void main() {
         'recoverbull-composition-',
       );
       final database = SqliteDatabase(NativeDatabase.memory());
+      final owner = await createPreferencesDatabase();
+      await owner.customStatement('INSERT INTO recoverbull VALUES (1, 0)');
       addTearDown(() async {
         await services.reset();
+        await owner.close();
         await database.close();
         await directory.delete(recursive: true);
       });
@@ -55,7 +63,10 @@ void main() {
       services.registerLazySingleton<Secrets>(
         () => Secrets(scratchDirectory: () async => directory.path),
       );
-      await SettingsLocator.registerRepositories(services);
+      await SettingsLocator.registerRepositories(
+        services,
+        PreferencesTesting.fromDatabases(owner: owner, legacy: database),
+      );
       // Replace native initialization through the published host seam; keep
       // the real backend, repository and owner registrations.
       final nativeTor = _NativeTor();
@@ -110,11 +121,68 @@ void main() {
         services,
         databasePath: '${directory.path}/recoverbull.sqlite',
       );
+      final standalone = sqlite3.open('${directory.path}/recoverbull.sqlite');
+      try {
+        standalone.execute(
+          "UPDATE recoverbull_state SET server='http://obsolete.onion', "
+          'permission_granted=1, legacy_import_complete=1',
+        );
+      } finally {
+        standalone.close();
+      }
 
       expect(
         services<RecoverBullFacade>(),
         same(services<RecoverBullFeature>().facade),
       );
+      expect(
+        await services<RecoverBullFacade>().settings(),
+        isA<Ok<BackupSettings, RecoverBullFailure>>()
+            .having(
+              (result) => result.value.server.toString(),
+              'server',
+              SettingsConstants.recoverbullUrl,
+            )
+            .having(
+              (result) => result.value.permissionGranted,
+              'permission',
+              isFalse,
+            ),
+      );
+      final facade = services<RecoverBullFacade>();
+      expect(
+        await facade.acceptServer(Uri.parse('http://obsolete.onion')),
+        isA<Err<BackupSettings, RecoverBullFailure>>(),
+      );
+      expect(
+        await facade.acceptServer(Uri.parse(SettingsConstants.recoverbullUrl)),
+        isA<Ok<BackupSettings, RecoverBullFailure>>().having(
+          (result) => result.value.permissionGranted,
+          'permission',
+          isTrue,
+        ),
+      );
+      expect(
+        (await owner
+                .customSelect(
+                  'SELECT is_permission_granted, revision '
+                  'FROM recoverbull_permission_overrides',
+                )
+                .getSingle())
+            .data,
+        {'is_permission_granted': 1, 'revision': 1},
+      );
+      final granted = await facade.settings();
+      expect(
+        await facade.acceptServer(Uri.parse(SettingsConstants.recoverbullUrl)),
+        isA<Ok>(),
+      );
+      final grantedAgain = await facade.settings();
+      final before = (granted as Ok<BackupSettings, RecoverBullFailure>).value;
+      final after =
+          (grantedAgain as Ok<BackupSettings, RecoverBullFailure>).value;
+      expect(after.generation, before.generation);
+      expect(after.sameGeneration(before), isFalse);
       expect(
         services<RecoverBullRoutePort>(),
         same(services<RecoverBullEnvironmentPort>()),

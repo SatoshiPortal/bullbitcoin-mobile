@@ -75,9 +75,10 @@ class CoreLocator {
 
   static Future<Result<void, ElectrumFailure>> registerRepositories(
     GetIt locator, {
+    required settings.Preferences preferences,
     RegtestElectrumProfile? regtestProfile,
   }) async {
-    await SettingsLocator.registerRepositories(locator);
+    await SettingsLocator.registerRepositories(locator, preferences);
     final settingsRepository = locator<settings.Preferences>();
     final appSettings = (await settingsRepository.fetch()).fold(
       (value) => value,

@@ -172,7 +172,7 @@ final class ManageVaultSessionUsecase {
         Ok(:final value) =>
           value.permissionGranted &&
               value.server == expected.server &&
-              value.generation == expected.generation,
+              value.sameGeneration(expected),
         Err() => false,
       };
 
@@ -206,7 +206,7 @@ final class ManageVaultSessionUsecase {
       if (server != null &&
           (newRoute ||
               _settings?.server != settings.server ||
-              _settings?.generation != settings.generation)) {
+              !(_settings?.sameGeneration(settings) ?? false))) {
         _server = null;
         await server.close();
         server = null;

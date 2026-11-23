@@ -5,6 +5,7 @@ import 'package:bull_recoverbull/src/data/backup_metadata_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/entities/backup_settings.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_permission_port.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,9 +28,10 @@ void main() {
         isA<Ok<void, RecoverBullFailure>>(),
       );
 
-      final admitted = BackupMetadataRepositoryImpl(
+      final admitted = BackupMetadataRepositoryImpl.configured(
         database,
-        configuredServer: configured,
+        server: configured,
+        permission: _Permission(),
       );
       expect(
         await admitted.settings(),
@@ -53,7 +55,7 @@ void main() {
       final monitoring = AttemptMonitoringRepositoryImpl(
         database,
         durable: true,
-        configuredServer: configured,
+        readLiveSettings: admitted.settings,
       );
       final settings = (await admitted.settings()).fold(
         (settings) => settings,
@@ -117,4 +119,18 @@ void main() {
       ));
     },
   );
+}
+
+final class _Permission implements RecoverBullPermissionPort {
+  bool granted = false;
+
+  @override
+  Future<Result<({bool granted, int revision}), RecoverBullFailure>>
+  readPermission() async => Ok((granted: granted, revision: 0));
+
+  @override
+  Future<Result<void, RecoverBullFailure>> savePermission(bool granted) async {
+    this.granted = granted;
+    return const Ok(null);
+  }
 }

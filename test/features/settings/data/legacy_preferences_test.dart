@@ -4,9 +4,9 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart'
     show Environment, ExchangeTestnetBasicAuthPreferences;
-import 'package:preferences/recoverbull_table.drift.dart';
-import 'package:preferences/storage.dart';
 import 'package:primitives/primitives.dart' show Ok;
+
+import '../../../support/preferences_database.dart';
 
 void main() {
   late SqliteDatabase database;
@@ -14,7 +14,7 @@ void main() {
 
   setUp(() {
     database = SqliteDatabase(NativeDatabase.memory());
-    dao = database.preferencesDao;
+    dao = PreferencesDao(database);
   });
 
   tearDown(() => database.close());
@@ -49,36 +49,42 @@ void main() {
     },
   );
 
-  test('RecoverBull reads the existing server and permission row', () async {
-    final preferences = PreferencesTesting.fromDao(dao).recoverBull;
+  test('RecoverBull reads the owner permission without a URL', () async {
+    final owner = await createPreferencesDatabase();
+    addTearDown(owner.close);
+    await owner.customStatement('INSERT INTO recoverbull VALUES (1, 0)');
+    final settings = PreferencesTesting.fromDatabases(
+      owner: owner,
+      legacy: database,
+    );
+    addTearDown(settings.close);
+    final preferences = settings.recoverBull;
     final seeded = (await preferences.read()).fold(
       (value) => value,
       (failure) => throw Exception('Preferences read failed'),
     );
-    expect(seeded?.permissionGranted, isFalse);
-
-    await database
-        .into(database.recoverbull)
-        .insertOnConflictUpdate(
-          const RecoverbullRow(
-            id: 1,
-            url: 'https://example.test',
-            isPermissionGranted: true,
-          ),
-        );
+    expect(seeded, isFalse);
+    await owner.customStatement(
+      'UPDATE recoverbull SET is_permission_granted = 1 WHERE id = 1',
+    );
     expect(
       (await preferences.read()).fold(
         (value) => value,
         (failure) => throw Exception('Preferences read failed'),
       ),
-      (server: Uri.parse('https://example.test'), permissionGranted: true),
+      isTrue,
     );
   });
 
   test(
     'exchange testnet credentials stay in the existing settings row',
     () async {
-      final settings = PreferencesTesting.fromDao(dao);
+      final owner = await createPreferencesDatabase();
+      addTearDown(owner.close);
+      final settings = PreferencesTesting.fromDatabases(
+        owner: owner,
+        legacy: database,
+      );
       addTearDown(settings.close);
       final ExchangeTestnetBasicAuthPreferences auth = settings;
 
@@ -113,7 +119,11 @@ void main() {
       expect(await auth.setExchangeTestnetBasicAuth(), isA<Ok>());
 
       final row = await database.managers.settings.getSingle();
-      expect(row.environment, 'testnet');
+      expect(
+        (await owner.managers.ownerSettings.getSingle()).environment,
+        'testnet',
+      );
+      expect(row.environment, 'mainnet');
       expect(row.exchangeTestnetBasicAuthUsername, isNull);
       expect(row.exchangeTestnetBasicAuthPassword, isNull);
     },

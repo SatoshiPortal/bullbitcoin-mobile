@@ -196,6 +196,8 @@ graph TD
   preferences --> bull_reporting
   preferences --> bull_tor
   preferences --> primitives
+  preferences --> legacy_storage
+  preferences --> secrets
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings
