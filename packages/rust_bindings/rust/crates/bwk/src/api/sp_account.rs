@@ -920,18 +920,11 @@ impl SpAccount {
             .map_err(|e| e.to_string())
     }
 
-    /// USER-TRIGGERED ONLY. The bb-mobile app contract is that this method
-    /// is invoked exclusively from `ScanSpWalletUsecase`, which itself is
-    /// invoked exclusively from `SpCubit.scan()` (the Scan button handler).
-    /// Do not call from app lifecycle hooks, route observers, timers, or
-    /// background services. Doing so violates the documented invariant.
+    /// Starts a one-shot scan. The Dart ScanSpWalletUsecase accepts manual starts
+    /// and foreground starts admitted by its wallet sync policy.
     ///
-    /// Not `#[frb(sync)]`: the underlying bwk_sp scan walker is fully
-    /// synchronous and would freeze the Dart UI isolate for the entire
-    /// scan duration if dispatched there. FRB runs `async` methods on a
-    /// worker isolate. The inner mutex is held for the full scan — that
-    /// serializes against other methods, which is acceptable because SP
-    /// scans are user-triggered and rare.
+    /// The Rust bridge dispatches this off the Dart UI isolate. BWK owns the
+    /// scanner worker and publishes progress and terminal notifications.
     ///
     /// Cancellation: `stop_scan` flips `self.scan_cancel` (a clone of the
     /// bwk_sp::Account's internal `scanner_stop`), which causes the scan
