@@ -240,6 +240,7 @@ final class _Spend extends _SpendPreviews {
                     unsignedPset: built.encoded,
                     fee: Sats.fromInt(price.feeSat),
                     amountSent: Sats(amount),
+                    discountedVsize: price.discountedVsize,
                   ),
                 ),
               (Err(:final failure), _) ||
