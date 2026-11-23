@@ -26,7 +26,7 @@ const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'access wallet',
   'app_startup':
-      'access import_mnemonic logs onboarding recoverbull settings wallet',
+      'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'address_view send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
@@ -41,13 +41,14 @@ const _allowedTargets = <String, String>{
   'exchange_support_chat': 'exchange',
   'fund_exchange': 'exchange recipients',
   'import_coldcard': 'import_watch_only_wallet scanning signers',
-  'import_mnemonic': 'wallet',
+  'import_mnemonic': 'mnemonic_entry wallet',
   'import_qr_device': 'import_watch_only_wallet signers',
   'import_wallet': 'import_coldcard import_mnemonic import_qr_device import_watch_only_wallet settings signers',
   'import_watch_only_wallet': 'scanning signers wallet',
   'limit_orders': 'address_view default_wallets exchange fund_exchange wallet',
   'network': 'recoverbull',
-  'onboarding': 'import_mnemonic recoverbull settings wallet network',
+  'onboarding':
+      'import_mnemonic mnemonic_entry recoverbull settings wallet network',
   'pay': 'address_view bitcoin_price coins exchange fees recipients send transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',
@@ -60,7 +61,8 @@ const _allowedTargets = <String, String>{
   'sp': 'wallet',
   'support': 'exchange_support_chat',
   'swap': 'address_view ark autoswap coins consolidation fees send transactions wallet',
-  'test_wallet_backup': 'access onboarding recoverbull wallet',
+  'test_wallet_backup':
+      'access onboarding physical_backup_verification recoverbull wallet',
   'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
   'wallet': 'ark backup_settings bip85_entropy bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
   'withdraw': 'exchange recipients transactions',
