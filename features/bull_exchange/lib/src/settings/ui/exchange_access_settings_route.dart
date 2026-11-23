@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../domain/manage_exchange_access_usecase.dart';
-import '../presentation/exchange_access_settings_cubit.dart';
+import '../presentation/exchange_access_settings_bloc.dart';
 import 'screens/exchange_access_settings_screen.dart';
 
 /// Navigation to the exchange access controls nested under app settings.
@@ -32,7 +32,7 @@ GoRoute exchangeAccessSettingsRoute({
   name: ExchangeAccessSettingsNavigation.name,
   path: ExchangeAccessSettingsNavigation.path,
   builder: (context, state) => BlocProvider(
-    create: (_) => ExchangeAccessSettingsCubit(
+    create: (_) => ExchangeAccessSettingsBloc(
       WatchExchangeAccessUsecase(host.actions),
       ManageExchangeAccessUsecase(host.actions),
     ),

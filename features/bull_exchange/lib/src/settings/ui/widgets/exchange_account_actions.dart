@@ -1,6 +1,9 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 
+import 'package:go_router/go_router.dart';
+
+import '../exchange_access_settings_route.dart';
 import 'exchange_account_sheets.dart';
 import '../../../exchange_l10n.dart';
 
@@ -60,19 +63,23 @@ class ExchangeAccountActions extends StatelessWidget {
             ExchangeAccountSheets.confirmLogout(
               context,
               onConfirm: () async {
+                // A failed sign-out leaves access in SignOutIncomplete: the
+                // session is gone from this screen, which may close, so the
+                // message points to where the sign-out is finished (B18).
+                final overlay = Overlay.of(context, rootOverlay: true);
+                final router = GoRouter.of(context);
+                final loc = context.loc;
                 final result = await exchange().signOut();
-                final failure = switch (result) {
-                  Err(:final failure) => failure,
-                  Ok() => null,
-                };
-                if (!context.mounted || failure == null) return;
-                // The session survived, so the user is still
-                // signed in — say so rather than letting the UI
-                // imply the account is gone from this device.
-                BullSnackBar.show(
-                  context,
-                  message: failureMessage(context, failure),
-                );
+                if (result case Err()) {
+                  BullSnackBar.showOnOverlay(
+                    overlay,
+                    message: loc.exchangeLogoutDidNotFinish,
+                    actionLabel: loc.exchangeAccessRetryLogout,
+                    onAction: () => router.pushNamed<void>(
+                      ExchangeAccessSettingsNavigation.name,
+                    ),
+                  );
+                }
               },
             );
           },

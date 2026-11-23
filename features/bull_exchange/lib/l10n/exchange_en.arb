@@ -495,6 +495,14 @@
   "@exchangeAccessRetryLogout": {
     "description": "Exchange access recovery and navigation"
   },
+  "exchangeAccessExpiring": "Your session expired. Signing you out on this device.",
+  "@exchangeAccessExpiring": {
+    "description": "Exchange access settings while an expired session is being signed out (INT-15)"
+  },
+  "exchangeLogoutDidNotFinish": "Sign out didn't finish on this device.",
+  "@exchangeLogoutDidNotFinish": {
+    "description": "Snackbar after a failed sign-out from exchange settings; its action opens the exchange access settings to finish it (B18)"
+  },
   "fundExchangeTitle": "Funding",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"

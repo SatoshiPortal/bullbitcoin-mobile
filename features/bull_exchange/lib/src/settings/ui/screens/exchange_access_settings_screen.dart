@@ -1,9 +1,25 @@
+import 'dart:async';
+
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../exchange_l10n.dart';
-import '../../presentation/exchange_access_settings_cubit.dart';
+import '../../presentation/exchange_access_settings_bloc.dart';
+import '../../presentation/exchange_access_settings_machine.dart';
+
+enum _AccessView { controls, signOutIncomplete, unreadable, expiring }
+
+_AccessView _viewOf(ExchangeAccess access) => switch (access) {
+  ExchangeAccessResolving() ||
+  ExchangeAccessDisabled() ||
+  ExchangeAccessSignedOut() ||
+  ExchangeAccessSignedIn() => _AccessView.controls,
+  ExchangeAccessSignOutIncomplete() => _AccessView.signOutIncomplete,
+  ExchangeAccessUnreadable() ||
+  ExchangeAccessCredentialUnreadable() => _AccessView.unreadable,
+  ExchangeAccessExpiring() => _AccessView.expiring,
+};
 
 class ExchangeAccessSettingsScreen extends StatelessWidget {
   const ExchangeAccessSettingsScreen({
@@ -21,17 +37,6 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
   final VoidCallback onDisabled;
   final bool activationAllowed;
   final String description;
-
-  Future<void> _enable(ExchangeAccessSettingsCubit cubit) async {
-    if (!await cubit.setEnabled(true) || cubit.isClosed) return;
-    if (cubit.state.access case ExchangeAccessSignedOut()) {
-      await onAuthenticate();
-    }
-  }
-
-  Future<void> _logout(ExchangeAccessSettingsCubit cubit) async {
-    if (await cubit.setEnabled(false) && !cubit.isClosed) onDisabled();
-  }
 
   Future<bool> _confirmLogout(BuildContext context) async =>
       await BullBottomSheet.show<bool>(
@@ -61,9 +66,28 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
       ) ??
       false;
 
+  void _followUp(ExchangeAccessSettingsState state) {
+    if (state case AccessSettingsSucceeded(:final attempt, :final access)) {
+      switch (attempt) {
+        case ExchangeAccessAttempt.enable:
+          if (access is ExchangeAccessSignedOut) unawaited(onAuthenticate());
+        case ExchangeAccessAttempt.signOut:
+          onDisabled();
+        case ExchangeAccessAttempt.retry:
+          break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<ExchangeAccessSettingsCubit>();
+    final bloc = context.read<ExchangeAccessSettingsBloc>();
+    Future<void> confirmSignOut() async {
+      if (await _confirmLogout(context) && !bloc.isClosed) {
+        bloc.add(const AccessSettingsSignOutRequested());
+      }
+    }
+
     return BullScaffold(
       body: SafeArea(
         child: Column(
@@ -76,26 +100,23 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child:
-                    BlocBuilder<
-                      ExchangeAccessSettingsCubit,
+                    BlocConsumer<
+                      ExchangeAccessSettingsBloc,
                       ExchangeAccessSettingsState
                     >(
+                      listenWhen: (_, next) => next is AccessSettingsSucceeded,
+                      listener: (_, state) => _followUp(state),
                       builder: (context, state) {
                         final access = state.access;
+                        final busy = state is AccessSettingsWorking;
                         final enabled = access.isEnabled;
                         final signedIn = access.isSignedIn;
-                        final incomplete =
-                            access is ExchangeAccessSignOutIncomplete;
-                        final unreadable =
-                            access is ExchangeAccessUnreadable ||
-                            access is ExchangeAccessCredentialUnreadable ||
-                            access is ExchangeAccessExpiring;
+                        final view = _viewOf(access);
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if ((activationAllowed || signedIn) &&
-                                !incomplete &&
-                                !unreadable) ...[
+                            if (view == _AccessView.controls &&
+                                (activationAllowed || signedIn)) ...[
                               MergeSemantics(
                                 child: Row(
                                   children: [
@@ -108,21 +129,16 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                     BullSwitch(
                                       value: enabled,
                                       onChanged:
-                                          state.busy ||
+                                          busy ||
                                               access is ExchangeAccessResolving
                                           ? null
                                           : (value) async {
                                               if (value) {
-                                                await _enable(cubit);
+                                                bloc.add(
+                                                  const AccessSettingsEnableRequested(),
+                                                );
                                               } else {
-                                                final confirmed =
-                                                    await _confirmLogout(
-                                                      context,
-                                                    );
-                                                if (confirmed &&
-                                                    !cubit.isClosed) {
-                                                  await _logout(cubit);
-                                                }
+                                                await confirmSignOut();
                                               }
                                             },
                                     ),
@@ -142,7 +158,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                 style: context.bullType.body,
                               ),
                             ],
-                            if (incomplete) ...[
+                            if (view == _AccessView.signOutIncomplete) ...[
                               BullText(
                                 context.loc.exchangeAccessLogoutIncomplete,
                                 style: context.bullType.body,
@@ -150,43 +166,44 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                               const Gap(16),
                               BullButton.primary(
                                 label: context.loc.exchangeAccessRetryLogout,
-                                onPressed: (state.busy)
+                                onPressed: busy
                                     ? null
-                                    : () => _logout(cubit),
+                                    : () => bloc.add(
+                                        const AccessSettingsSignOutRequested(),
+                                      ),
                               ),
                             ],
-                            if (unreadable) ...[
+                            if (view == _AccessView.unreadable ||
+                                view == _AccessView.expiring) ...[
                               BullText(
-                                context.loc.exchangeAccessUnreadable,
+                                view == _AccessView.expiring
+                                    ? context.loc.exchangeAccessExpiring
+                                    : context.loc.exchangeAccessUnreadable,
                                 style: context.bullType.body,
                               ),
                               const Gap(16),
                               BullButton.primary(
                                 label: context.loc.exchangeTradingRetry,
-                                onPressed: (state.busy) ? null : cubit.retry,
+                                onPressed: busy
+                                    ? null
+                                    : () => bloc.add(
+                                        const AccessSettingsRetryRequested(),
+                                      ),
                               ),
                               const Gap(12),
                               BullButton.secondary(
                                 label: context.loc.exchangeAccessReset,
-                                onPressed: (state.busy)
-                                    ? null
-                                    : () async {
-                                        if (await _confirmLogout(context) &&
-                                            !cubit.isClosed) {
-                                          await _logout(cubit);
-                                        }
-                                      },
+                                onPressed: busy ? null : confirmSignOut,
                               ),
                             ],
-                            if (state.failure != null) ...[
+                            if (state is AccessSettingsFailed) ...[
                               const Gap(16),
                               BullText(
                                 context.loc.settingsErrorSavingSetting,
                                 style: context.bullType.body,
                               ),
                             ],
-                            if (!incomplete &&
-                                !unreadable &&
+                            if (view == _AccessView.controls &&
                                 (signedIn ||
                                     (activationAllowed && enabled))) ...[
                               const Gap(24),
@@ -194,7 +211,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                 label: signedIn
                                     ? context.loc.settingsAccountSettingsTitle
                                     : context.loc.exchangeAccessSignIn,
-                                onPressed: (state.busy)
+                                onPressed: busy
                                     ? null
                                     : signedIn
                                     ? onOpenAccount
