@@ -1,4 +1,5 @@
 import 'package:ark/funding.dart';
+
 import 'dart:convert';
 
 import 'package:bull_ark/ark_wallet_setup.dart';

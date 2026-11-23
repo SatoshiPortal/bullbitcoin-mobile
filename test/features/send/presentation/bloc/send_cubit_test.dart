@@ -1,4 +1,3 @@
-import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 
 import '../../testing/send_spend_test_double.dart';

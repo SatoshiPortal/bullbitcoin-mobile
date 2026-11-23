@@ -387,9 +387,8 @@ void main() {
           },
         );
         final usecase = SetDcaUsecase(
-          wallet: wallet,
+          payouts: ExchangePayoutWallets(wallet, walletAddress),
           settingsRepository: settings,
-          walletAddressRepository: walletAddress,
           exchange: testExchange(
             http,
             // The old runner reads credentials a fifth time, after the

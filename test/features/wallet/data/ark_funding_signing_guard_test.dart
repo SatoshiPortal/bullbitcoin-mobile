@@ -1,5 +1,6 @@
 import 'package:ark/funding.dart';
 import 'package:ark/ark.dart' show ArkWalletFailure;
+
 import 'dart:async';
 import 'dart:isolate';
 
