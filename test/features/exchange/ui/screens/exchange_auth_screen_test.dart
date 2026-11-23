@@ -14,7 +14,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_au
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
@@ -181,7 +182,10 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<ExchangeCubit>.value(
             value: cubit,
-            child: ExchangeAuthScreen(onExit: () => exits++),
+            child: ExchangeAuthScreen(
+              onExit: () => exits++,
+              host: ExchangeScope.authHost,
+            ),
           ),
         ),
       );

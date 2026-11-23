@@ -13,6 +13,8 @@ import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.d
 import 'src/default_wallets/presentation/default_wallets_cubit.dart';
 
 export 'src/ui/screens/exchange_landing_screen.dart' show ExchangeLandingScreen;
+export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthScreen;
+export 'src/auth/exchange_exit_on_back.dart' show ExchangeExitOnBack;
 export 'src/settings/ui/screens/exchange_settings_screen.dart'
     show ExchangeSettingsScreen;
 export 'src/settings/ui/screens/security_navigation.dart'
