@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
+import 'package:legacy_storage/app_database.dart'
+    show Bip85ApplicationColumn, Bip85StatusColumn;
 
 import '../domain/bip85_derivation_entity.dart';
 
@@ -27,6 +29,27 @@ extension Bip85StatusMapping on Bip85StatusColumn {
 }
 
 extension Bip85ApplicationMapping on Bip85ApplicationColumn {
+  int get number {
+    switch (this) {
+      case Bip85ApplicationColumn.bip39:
+        return const bip85.MnemonicApplication().number;
+      case Bip85ApplicationColumn.wif:
+        return const bip85.WifApplication().number;
+      case Bip85ApplicationColumn.xprv:
+        return const bip85.XprvApplication().number;
+      case Bip85ApplicationColumn.hex:
+        return const bip85.HexApplication().number;
+      case Bip85ApplicationColumn.pwdBase64:
+        return const bip85.PasswordBase64Application().number;
+      case Bip85ApplicationColumn.pwdBase85:
+        return const bip85.PasswordBase85Application().number;
+      case Bip85ApplicationColumn.rsa:
+        return const bip85.RsaApplication().number;
+      case Bip85ApplicationColumn.dice:
+        return const bip85.DiceApplication().number;
+    }
+  }
+
   static Bip85ApplicationColumn fromEntity(Bip85Application application) {
     switch (application) {
       case Bip85Application.bip39:

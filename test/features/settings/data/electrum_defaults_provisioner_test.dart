@@ -1,18 +1,21 @@
-import 'package:electrum/testing.dart';
-import 'package:bb_mobile/core/storage/database_seeds.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
-import 'package:electrum/electrum.dart';
-import 'package:electrum/setup.dart';
-
 import 'dart:io';
 
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:electrum/storage.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
+import 'package:drift/drift.dart' show QueryExecutor;
 import 'package:drift/native.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
+import 'package:electrum/storage.dart'
+    show ElectrumServerRow, ElectrumSettingsRow;
+import 'package:electrum/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:legacy_storage/app_database_testing.dart' show DatabaseSeeds;
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../../../packages/electrum/test/electrum_test_database.dart';
 
 class _AppSettings extends Mock implements Preferences {}
 
@@ -46,8 +49,32 @@ class _FixtureElectrumFacade extends ElectrumDefaultsProvisioner {
   );
 }
 
+ElectrumTestDatabase _openCatalog(QueryExecutor executor) =>
+    ElectrumTestDatabase(
+      executor,
+      schemaVersion: SqliteDatabase.currentSchemaVersion,
+    );
+
+Future<void> _withLegacyDatabase(
+  File file,
+  Future<void> Function(SqliteDatabase) use,
+) async {
+  final legacy = SqliteDatabase(NativeDatabase(file));
+  try {
+    await use(legacy);
+  } finally {
+    await legacy.close();
+  }
+}
+
+Future<void> _initializeLegacyDatabase(File file) =>
+    _withLegacyDatabase(file, (legacy) async {
+      await legacy.customSelect('SELECT 1').getSingle();
+    });
+
 void main() {
-  late SqliteDatabase database;
+  late File legacyFile;
+  late ElectrumTestDatabase database;
   late ElectrumDefaultsProvisioner provisioner;
   late DriftElectrumServerRepository servers;
   late DriftElectrumSettingsRepository settings;
@@ -61,7 +88,12 @@ void main() {
   });
 
   setUp(() async {
-    database = SqliteDatabase(NativeDatabase.memory());
+    final directory = Directory.systemTemp.createTempSync('electrum-catalog-');
+    addTearDown(() => directory.delete(recursive: true));
+    legacyFile = File('${directory.path}/legacy.sqlite');
+    await _initializeLegacyDatabase(legacyFile);
+    database = _openCatalog(NativeDatabase(legacyFile));
+    addTearDown(database.close);
     // Model an interrupted or older unreleased foreground provisioning.
     await database.select(database.electrumSettings).get();
     await database.delete(database.electrumSettings).go();
@@ -112,7 +144,6 @@ void main() {
       ),
     ).thenAnswer((_) async => null);
   });
-  tearDown(() => database.close());
 
   Future<Result<ElectrumPreferences, Failure>> readPreferences() async =>
       (await app.fetch()).map(
@@ -148,8 +179,10 @@ void main() {
   );
 
   Future<void> seedProductionCatalogs() async {
-    await DatabaseSeeds.seedDefaultElectrumServers(database);
-    await DatabaseSeeds.seedDefaultElectrumSettings(database);
+    await _withLegacyDatabase(legacyFile, (legacy) async {
+      await DatabaseSeeds.seedDefaultElectrumServers(legacy);
+      await DatabaseSeeds.seedDefaultElectrumSettings(legacy);
+    });
     for (final network in [
       ElectrumServerNetwork.bitcoinRegtest,
       ElectrumServerNetwork.liquidRegtest,
@@ -210,7 +243,7 @@ void main() {
     await database
         .into(database.electrumSettings)
         .insert(
-          const ElectrumSettingsRow(
+          ElectrumSettingsRow(
             network: network,
             validateDomain: false,
             stopGap: 111,
@@ -295,18 +328,19 @@ void main() {
       'electrum-provision-',
     );
     final file = File('${directory.path}/test.sqlite');
-    final first = SqliteDatabase(
+    await _initializeLegacyDatabase(file);
+    final first = _openCatalog(
       NativeDatabase.createInBackground(
         file,
         setup: (db) => db.execute('PRAGMA busy_timeout = 2000'),
       ),
     );
-    SqliteDatabase? second;
+    ElectrumTestDatabase? second;
     try {
       await first.select(first.electrumSettings).get();
       await first.delete(first.electrumSettings).go();
       await first.delete(first.electrumServers).go();
-      final other = second = SqliteDatabase(
+      final other = second = _openCatalog(
         NativeDatabase.createInBackground(
           file,
           setup: (db) => db.execute('PRAGMA busy_timeout = 2000'),
@@ -478,7 +512,10 @@ void main() {
       const first = 'tcp://first.example:50001';
       const second = 'ssl://second.example:50002';
       const defaultUrl = 'ssl://default.example:50002';
-      await DatabaseSeeds.seedDefaultElectrumSettings(database);
+      await _withLegacyDatabase(
+        legacyFile,
+        DatabaseSeeds.seedDefaultElectrumSettings,
+      );
       for (final (url, priority, isCustom) in [
         (first, 7, true),
         (second, 9, true),

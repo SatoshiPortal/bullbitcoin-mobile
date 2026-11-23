@@ -9,8 +9,8 @@ import 'package:bb_mobile/features/bip85_entropy/data/bip85_datasource.dart';
 import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'package:legacy_storage/app_database.dart'
+    show Bip85ApplicationColumn, SqliteDatabase;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';

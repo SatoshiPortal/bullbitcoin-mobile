@@ -1,4 +1,3 @@
-import 'package:electrum/setup.dart' show ElectrumDefaultEndpoints;
 import 'package:material_ui/material_ui.dart';
 
 class Device {
@@ -17,8 +16,6 @@ class SettingsConstants {
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
   static const exchangeTermsAndConditionsLink =
       'https://www.bullbitcoin.com/terms';
-  static const recoverbullUrl =
-      'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
 
 class ConversionConstants {
@@ -56,19 +53,6 @@ class ApiServiceConstants {
       'https://liquid.network'; // note: not used
   static const publicLiquidMempoolTestnetUrl =
       'https://liquid.network/testnet'; // note: not used
-
-  // Historical migrations reference these defaults.
-  static const fulcrumElectrumUrl = ElectrumDefaultEndpoints.fulcrumElectrumUrl;
-  static const bbElectrumUrl = ElectrumDefaultEndpoints.bbElectrumUrl;
-  static const publicElectrumUrl = ElectrumDefaultEndpoints.publicElectrumUrl;
-  static const publicElectrumTestUrl =
-      ElectrumDefaultEndpoints.publicElectrumTestUrl;
-  static const bbLiquidElectrumUrlPath =
-      ElectrumDefaultEndpoints.bbLiquidElectrumUrlPath;
-  static const publicLiquidElectrumUrlPath =
-      ElectrumDefaultEndpoints.publicLiquidElectrumUrlPath;
-  static const publicliquidElectrumTestUrlPath =
-      ElectrumDefaultEndpoints.publicliquidElectrumTestUrlPath;
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';

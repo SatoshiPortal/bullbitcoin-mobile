@@ -9,7 +9,7 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    CORE[Core<br/>---<br/>API Clients, Tor Adapters,<br/>DI & Router setup,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     ARK[Ark]
     ARK_PROTOCOL[Ark Protocol Package]
@@ -30,7 +30,12 @@ graph TB
     ELECTRUM[Electrum package<br/>Server selection, settings and transaction lookup]
     SYNC[Sync Package<br/>Native lifecycle, Electrum sync, BitcoinTx, review values, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
-    LEGACY_STORAGE[Legacy Storage Package<br/>Cutover marker, lifecycle admission and imports]
+    LEGACY_STORAGE[Legacy Storage Package<br/>Historical app database, cutover marker,<br/>lifecycle admission and imports]
+    CORE --> LEGACY_STORAGE
+    WALLETS --> LEGACY_STORAGE
+    BIP85 --> LEGACY_STORAGE
+    LEGACY_STORAGE --> BULL_LOGGER
+    LEGACY_STORAGE --> BULL_REPORTING
     BG_TASKS --> LEGACY_STORAGE
     MEMPOOL --> LEGACY_STORAGE
     MEMPOOL --> SECRETS
@@ -738,7 +743,7 @@ The app owners still use the legacy catalog to resolve identity and access nativ
 
 ## Encrypted database import foundation
 
-The `legacy_storage` workspace member depends on `primitives` for typed import results. Module migration code can use it to copy a frozen legacy source into the owning database with a committed receipt. `secrets` can open a keyed Drift executor for an owner. Foreground startup now composes the split-v1 coordinator and Mempool participant before publishing Mempool's encrypted store. Background Tasks holds the same lifecycle admission until resource closure, and requests retry on incomplete setup or failed cleanup. Legacy Storage remains independent of Mempool; each owner implements the participant contract. Other owners retain their historical connections while the manifest is incomplete; this development coexistence never authorizes legacy retirement.
+The `legacy_storage` workspace member owns the historical application database, schema and migrations. The app and its remaining legacy consumers use `package:legacy_storage/app_database.dart`. The member depends on `primitives` for typed import results and uses Bull Logger and Bull Reporting for migration diagnostics. Module migration code can use it to copy a frozen legacy source into the owning database with a committed receipt. `secrets` can open a keyed Drift executor for an owner. Foreground startup now composes the split-v1 coordinator and Mempool participant before publishing Mempool's encrypted store. Background Tasks holds the same lifecycle admission until resource closure, and requests retry on incomplete setup or failed cleanup. Legacy Storage remains independent of Mempool; each owner implements the participant contract. Other owners retain their historical connections while the manifest is incomplete; this development coexistence never authorizes legacy retirement.
 
 Secrets uses Legacy Storage for lifecycle admission and participates in split-v1 through its migration library. The encrypted Secrets store owns wallet definitions, derivation records and view access state. Sync's inventory composition library translates the descriptor projection to the native catalog contract.
 

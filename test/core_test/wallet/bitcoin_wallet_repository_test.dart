@@ -30,7 +30,7 @@ import 'dart:typed_data';
 import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';

@@ -1,6 +1,7 @@
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_column_mapping.dart';
 import 'package:bb_mobile/features/bip85_entropy/data/bip85_derivation_model.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'package:legacy_storage/app_database.dart'
+    show Bip85ApplicationColumn, Bip85StatusColumn, SqliteDatabase;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:drift/drift.dart';

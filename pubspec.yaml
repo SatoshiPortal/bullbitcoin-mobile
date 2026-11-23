@@ -148,7 +148,6 @@ dependencies:
   webview_flutter_wkwebview: ^3.23.4
   async: ^2.11.0
   drift: ^2.35.4
-  drift_flutter: ^0.3.1
   sqlite3: ^3.5.2
   package_info_plus: ^10.2.2
   share_plus: ^13.3.1

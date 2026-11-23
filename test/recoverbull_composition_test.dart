@@ -9,7 +9,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
