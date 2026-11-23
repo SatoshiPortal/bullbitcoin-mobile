@@ -1,12 +1,11 @@
 import 'dart:io';
 
-import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/storage.dart';
 import 'package:bull_recoverbull/testing.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/coordination.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
@@ -14,23 +13,33 @@ import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
-import 'package:signers/storage.dart';
-import 'package:sync/storage.dart';
+
+final class _Environment implements ActiveEnvironmentReader {
+  _Environment(this.result);
+
+  Result<Environment, PreferencesFailure> result;
+
+  @override
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async {
+    return result;
+  }
+}
 
 void main() {
-  // Mainnet and regtest deliberately use separate files and executors.
+  // Mainnet and regtest deliberately use separate files.
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
 
   late SecretsInventory inventory;
   late RecoverBullWalletBackups mainBackups;
   late RecoverBullWalletBackups regtestBackups;
-  late SecretsWalletRegistrations registrations;
-  late Result<Environment, PreferencesFailure> environment;
+  late RecoverBullWalletProperties properties;
+  late _Environment environment;
   late BackupStatus vaultStatus;
   late List<VaultContext> vaultReads;
 
   setUp(() async {
-    environment = const Ok(Environment.mainnet);
+    environment = _Environment(const Ok(Environment.mainnet));
     vaultStatus = const BackupStatus();
     vaultReads = [];
     final directory = await Directory.systemTemp.createTemp('wallet-backups-');
@@ -38,9 +47,6 @@ void main() {
     File file(String name) => File('${directory.path}/$name.sqlite');
 
     FakeSecureStoragePlatform().install();
-    final secrets = Secrets(scratchDirectory: () async => directory.path);
-    final signerKeys = secrets.databaseKeys(module: 'signers');
-    final syncKeys = secrets.databaseKeys(module: 'sync');
     final main = recoverBullCutoverForTesting(
       file: file('recoverbull'),
       standalone: file('standalone'),
@@ -56,8 +62,6 @@ void main() {
     );
     final participants = [
       SecretsImport(file: file('secrets')),
-      signersWalletMetadataImport(file: file('signers'), keys: signerKeys),
-      syncWalletMetadataImport(file: file('sync'), keys: syncKeys),
       main.participant,
       regtest.participant,
     ];
@@ -73,20 +77,6 @@ void main() {
     inventory = _ok(
       await SecretsInventory.open(file: file('secrets'), admission: admission),
     );
-    final signers = _ok(
-      await SignerDevices.open(
-        file: file('signers'),
-        admission: admission,
-        keys: signerKeys,
-      ),
-    );
-    final sync = _ok(
-      await SyncFreshness.open(
-        file: file('sync'),
-        admission: admission,
-        keys: syncKeys,
-      ),
-    );
     mainBackups = _ok(
       await RecoverBullWalletBackups.open(
         cutover: main,
@@ -101,14 +91,11 @@ void main() {
         legacy: legacy.source,
       ),
     );
-    registrations = SecretsWalletRegistrations(
-      inventory,
-      signers,
-      sync,
-      mainBackups,
-      regtestBackups,
-      () async => environment,
-      (context) async {
+    properties = RecoverBullWalletProperties(
+      backups: mainBackups,
+      regtestBackups: regtestBackups,
+      environment: environment,
+      vaultStatus: (context) async {
         vaultReads.add(context);
         return Ok(vaultStatus);
       },
@@ -145,31 +132,31 @@ void main() {
     final wallet = await registerWallet();
     _ok(await mainBackups.write(_backup(wallet, physical: true)));
 
-    expect(_ok(await registrations.hasVerifiedBackups([wallet])), isTrue);
+    expect(_ok(await properties.hasVerifiedBackups([wallet])), isTrue);
     expect(vaultReads, isEmpty);
   });
 
   test('reads regtest backup facts only from the regtest store', () async {
-    environment = const Ok(Environment.regtest);
+    environment.result = const Ok(Environment.regtest);
     final wallet = await registerWallet(regtest: true);
     _ok(await mainBackups.write(_backup(wallet, physical: true)));
 
-    expect(_ok(await registrations.hasVerifiedBackups([wallet])), isFalse);
+    expect(_ok(await properties.hasVerifiedBackups([wallet])), isFalse);
     expect(vaultReads.single.network, BitcoinNetwork.regtest);
     vaultReads.clear();
 
     _ok(await regtestBackups.write(_backup(wallet, encrypted: true)));
-    expect(_ok(await registrations.hasVerifiedBackups([wallet])), isTrue);
+    expect(_ok(await properties.hasVerifiedBackups([wallet])), isTrue);
     expect(vaultReads, isEmpty);
   });
 
   test('ignores a backed-up default from another environment', () async {
-    environment = const Ok(Environment.regtest);
+    environment.result = const Ok(Environment.regtest);
     final wallet = await registerWallet();
     _ok(await regtestBackups.write(_backup(wallet, physical: true)));
     vaultStatus = BackupStatus(verifiedAt: DateTime.utc(2026));
 
-    expect(_ok(await registrations.hasVerifiedBackups([wallet])), isFalse);
+    expect(_ok(await properties.hasVerifiedBackups([wallet])), isFalse);
     expect(vaultReads, isEmpty);
   });
 
@@ -185,7 +172,7 @@ void main() {
           verifiedAt: verified ? date : null,
         );
 
-        expect(_ok(await registrations.hasVerifiedBackups([wallet])), verified);
+        expect(_ok(await properties.hasVerifiedBackups([wallet])), verified);
         expect(vaultReads.single.fingerprint, wallet.secretFingerprint);
         expect(vaultReads.single.network, BitcoinNetwork.mainnet);
       },
@@ -196,7 +183,7 @@ void main() {
     final wallet = await registerWallet(isDefault: false);
     _ok(await mainBackups.write(_backup(wallet, physical: true)));
 
-    expect(_ok(await inventory.hasVerifiedBackups(registrations)), isFalse);
+    expect(_ok(await inventory.hasVerifiedBackups(properties)), isFalse);
     expect(vaultReads, isEmpty);
   });
 
@@ -205,10 +192,10 @@ void main() {
     () async {
       final wallet = await registerWallet();
       _ok(await mainBackups.write(_backup(wallet, physical: true)));
-      environment = const Err(PreferencesReadFailure());
+      environment.result = const Err(PreferencesReadFailure());
 
       expect(
-        await registrations.hasVerifiedBackups([wallet]),
+        await properties.hasVerifiedBackups([wallet]),
         isA<Err<bool, SecretFailure>>().having(
           (result) => result.failure,
           'failure',
@@ -218,6 +205,35 @@ void main() {
       expect(vaultReads, isEmpty);
     },
   );
+
+  test('a recreated wallet starts without any tested backup', () async {
+    final draft = WalletPropertyDraft(
+      id: 'wpkh([01234567/84h/1h/0h]):regtest',
+      network: BitcoinNetwork.regtest,
+      secretFingerprint: Fingerprint('01234567'),
+      signerDevice: null,
+    );
+    _ok(
+      await regtestBackups.write((
+        walletId: draft.id,
+        secretFingerprint: draft.secretFingerprint?.hex,
+        encryptedVaultTested: true,
+        physicalBackupTested: true,
+        latestEncryptedBackup: 12,
+        latestPhysicalBackup: 13,
+      )),
+    );
+
+    _ok(await properties.prepareWallet(draft));
+
+    final prepared = _ok(await regtestBackups.read(draft.id));
+    expect(prepared?.encryptedVaultTested, isFalse);
+    expect(prepared?.physicalBackupTested, isFalse);
+    expect(prepared?.latestEncryptedBackup, isNull);
+    expect(prepared?.latestPhysicalBackup, isNull);
+    // The reset stays in the network's own store.
+    expect(_ok(await mainBackups.read(draft.id)), isNull);
+  });
 }
 
 WalletBackupUsage _backup(

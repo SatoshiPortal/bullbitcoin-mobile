@@ -3,7 +3,15 @@ import 'dart:convert';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, LiquidNetwork, Ok, Result, ScriptType;
+    show
+        BitcoinNetwork,
+        BitcoinUnit,
+        Err,
+        Fingerprint,
+        LiquidNetwork,
+        Ok,
+        Result,
+        ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart'
     show Wallet, Network;
@@ -19,17 +27,84 @@ import 'package:secrets/testing.dart';
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {
-  int storeDeletions = 0;
+class _MockWalletRepository extends Mock implements WalletRepository {}
+
+/// Records the repair account creations the startup check performs.
+final class _RecordingAccounts implements WalletProvisioning {
+  final List<({Secret secret, primitives.Network network})> created = [];
 
   @override
-  dynamic noSuchMethod(Invocation invocation) {
-    if (invocation.memberName == #deleteLwkDb) {
-      storeDeletions++;
-      return Future<void>.value();
-    }
-    return super.noSuchMethod(invocation);
+  Future<Result<void, WalletProvisioningFailure>> resume() async =>
+      const Ok(null);
+
+  @override
+  Future<Result<String, WalletProvisioningFailure>> createDefault(
+    Secret secret,
+    primitives.Network network, {
+    DateTime? birthday,
+  }) async {
+    created.add((secret: secret, network: network));
+    return Ok(network.toString());
   }
+
+  @override
+  Future<Result<void, ParentCustodyFailure>> importMnemonic({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    String? label,
+  }) => throw StateError('Unexpected mnemonic provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) => throw StateError('Unexpected descriptor provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required String label,
+  }) => throw StateError('Unexpected xpub provisioning');
+}
+
+final class _FailingAccounts implements WalletProvisioning {
+  @override
+  Future<Result<void, WalletProvisioningFailure>> resume() async =>
+      const Ok(null);
+
+  @override
+  Future<Result<String, WalletProvisioningFailure>> createDefault(
+    Secret secret,
+    primitives.Network network, {
+    DateTime? birthday,
+  }) async => fail('complete default pair');
+
+  @override
+  Future<Result<void, ParentCustodyFailure>> importMnemonic({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    String? label,
+  }) => throw StateError('Unexpected mnemonic provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) => throw StateError('Unexpected descriptor provisioning');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required String label,
+  }) => throw StateError('Unexpected xpub provisioning');
 }
 
 /// Startup must not collapse three different states into one screen.
@@ -110,29 +185,24 @@ void main() {
     );
   });
 
+  var hasWalletsCalls = 0;
+
   CheckForExistingDefaultWalletsUsecase usecaseOn(
-    FakeSecureStoragePlatform storage,
-  ) {
+    FakeSecureStoragePlatform storage, {
+    WalletProvisioning? accounts,
+  }) {
     storage.install();
+    hasWalletsCalls = 0;
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     return CheckForExistingDefaultWalletsUsecase(
       preferences: _StartupPreferences(settings),
       inventory: _StartupInventory(wallets),
-      hasWallets: () async => (await wallets.hasStoredWallets()).mapErr(
-        (_) => const FetchSecretFailure(),
-      ),
+      hasWallets: () async {
+        hasWalletsCalls++;
+        return const Ok(true);
+      },
       secrets: secrets,
-      repair: DefaultWalletRepair(secrets, (secret, network) async {
-        await wallets.createWallet(
-          secret: secret,
-          network: Network.fromEnvironment(
-            environment: network.env,
-            isLiquid: network is LiquidNetwork,
-          ),
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        );
-      }),
+      repair: DefaultWalletRepair(secrets, accounts ?? _RecordingAccounts()),
     );
   }
 
@@ -154,7 +224,6 @@ void main() {
           environment: Environment.regtest,
         ),
       ).thenAnswer((_) async => const Ok([]));
-      when(wallets.hasStoredWallets).thenAnswer((_) async => const Ok(true));
       final storage = FakeSecureStoragePlatform();
       final result = await usecaseOn(storage).execute();
       expect(
@@ -171,7 +240,11 @@ void main() {
           environment: Environment.regtest,
         ),
       ).called(2);
-      verify(wallets.hasStoredWallets).called(1);
+      expect(
+        hasWalletsCalls,
+        1,
+        reason: 'the existing catalog proves the device',
+      );
       verifyNoMoreInteractions(wallets);
       expect(storage.entries, isEmpty);
     },
@@ -221,26 +294,14 @@ void main() {
   test(
     'a bitcoin-only regtest set heals its Liquid default from the default seed',
     () async {
-      // `Secret` is final; mocktail's fallback for `any(named: 'secret')` is a
-      // real one, read from the same fake keystore.
       final storage = FakeSecureStoragePlatform(
         entries: {'seed_$fingerprint': entry},
       );
       storage.install();
-      final fallback = await Secrets(scratchDirectory: () async => '/tmp')
-          .fetch(Fingerprint(fingerprint));
-      registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
       onRegtest([wallet(Network.bitcoinRegtest)]);
-      when(
-        () => wallets.createWallet(
-          secret: any(named: 'secret'),
-          network: Network.liquidRegtest,
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        ),
-      ).thenAnswer((_) async => wallet(Network.liquidRegtest).id);
+      final accounts = _RecordingAccounts();
 
-      final result = await usecaseOn(storage).execute();
+      final result = await usecaseOn(storage, accounts: accounts).execute();
 
       expect(
         result,
@@ -250,15 +311,9 @@ void main() {
           true,
         ),
       );
-      final created = verify(
-        () => wallets.createWallet(
-          secret: captureAny(named: 'secret'),
-          network: Network.liquidRegtest,
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-        ),
-      )..called(1);
-      expect((created.captured.single as Secret).id.hex, fingerprint);
+      final created = accounts.created.single;
+      expect(created.secret.id.hex, fingerprint);
+      expect(created.network, LiquidNetwork.regtest);
       // The catalog is read once, then re-read after the heal.
       verify(
         () => wallets.getWallets(
@@ -270,7 +325,7 @@ void main() {
     },
   );
 
-  test('a status conflict never deletes stores or retries the read', () async {
+  test('a status conflict never retries the read', () async {
     when(
       () => wallets.getWallets(
         onlyDefaults: any(named: 'onlyDefaults'),
@@ -279,7 +334,8 @@ void main() {
     ).thenAnswer((_) async => const Err(WalletLwkStatusConflictFailure()));
     final result = await usecaseOn(FakeSecureStoragePlatform()).execute();
     expect(result, isA<Err<bool, AppStartupFailure>>());
-    expect(wallets.storeDeletions, 0);
+    // Startup no longer owns store deletion: a conflict only fails the check.
+    expect(hasWalletsCalls, 0);
     verify(
       () => wallets.getWallets(
         onlyDefaults: true,
@@ -413,10 +469,7 @@ void main() {
       inventory: inventory,
       hasWallets: () async => const Ok(true),
       secrets: secrets,
-      repair: DefaultWalletRepair(
-        secrets,
-        (_, _) async => fail('complete pair'),
-      ),
+      repair: DefaultWalletRepair(secrets, _FailingAccounts()),
     );
     expect(
       await usecase.execute(),

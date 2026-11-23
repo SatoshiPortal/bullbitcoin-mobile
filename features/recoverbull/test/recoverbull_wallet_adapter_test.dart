@@ -6,7 +6,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provisioning/provisioning.dart' show DefaultWalletProvisioning;
-import 'package:secrets/secrets.dart' show Secret, Secrets, WalletInventory;
+import 'package:secrets/secrets.dart' show Secrets, WalletInventory;
 import 'package:secrets/testing.dart';
 
 class _Settings extends Mock implements DeveloperEnvironmentReader {}

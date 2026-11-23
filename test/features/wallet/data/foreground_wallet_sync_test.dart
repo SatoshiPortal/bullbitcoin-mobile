@@ -6,14 +6,13 @@ import 'package:background_tasks/native_sync.dart';
 import 'dart:async';
 
 import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:labels/labels.dart';
-import 'package:wallet_import/wallet_import.dart';
-import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -26,12 +25,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
-
-class _Native extends Mock implements WalletNativeLifecycle {}
-
-class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
-
-class _Descriptor extends Mock implements satoshifier.Descriptor {}
 
 class _Labels extends Mock implements Labels {}
 
@@ -333,27 +326,38 @@ void main() {
   );
 
   test(
-    'single-wallet usecase forwards discovery and initial-scan policy',
+    'single-wallet usecase forwards discovery through the foreground pass',
     () async {
-      final requests = <(bool, bool)>[];
+      log = Logger.replace(directory: directory);
+      final forwarding = _Policy();
       final repository = WalletRepository(
         walletRegistrations: metadata,
         walletValuesDatasource: values,
-        synchronize: (
-          metadata, {
-          bool discover = false,
-          allowInitialScan = true,
-          SyncReason reason = SyncReason.auto,
-        }) async => requests.add((discover, allowInitialScan)),
-        syncStarted: const Stream.empty(),
-        syncFinished: const Stream.empty(),
+        synchronization: ForegroundWalletSynchronization(
+          ElectrumSync(
+            connections: forwarding,
+            documentsDirectory: () async => directory.path,
+            readRevision: (_) async => const Err(SyncNotFoundFailure()),
+          ),
+        ),
+        syncStarted: const Stream<String>.empty(),
+        syncFinished: const Stream<String>.empty(),
       );
       final wallet =
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
       await repository.sync(wallet);
       await repository.sync(wallet, discover: true);
       await repository.sync(wallet, allowInitialScan: false);
-      expect(requests, [(false, true), (true, true), (false, false)]);
+      // Every call reaches the pass; only the discovery request is marked.
+      expect(forwarding.calls, 3);
+      final rows = (await log.readLogs())
+          .where((row) => row.contains('Electrum sync '))
+          .toList();
+      expect(rows.where((row) => row.contains('discovery=true')), hasLength(1));
+      expect(
+        rows.where((row) => row.contains('discovery=false')),
+        hasLength(2),
+      );
     },
   );
 
@@ -492,78 +496,6 @@ void main() {
     );
     verifyNever(() => values.getBalance(key: any(named: 'key')));
   });
-  test(
-    'descriptor import persists catalog then creates offline before sync',
-    () async {
-      final descriptor = _Descriptor();
-      when(() => descriptor.network)
-          .thenReturn(satoshifier.Network.bitcoinTestnet);
-      when(() => descriptor.derivation)
-          .thenReturn(satoshifier.Derivation.bip84);
-      when(() => descriptor.external).thenReturn('wpkh(public)');
-      when(() => descriptor.internal).thenReturn('wpkh(change)');
-      when(() => descriptor.pubkey).thenReturn(
-        'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
-      );
-      when(() => descriptor.fingerprint).thenReturn('aabbccdd');
-      final watchOnly = _WatchOnly();
-      when(() => watchOnly.descriptor).thenReturn(descriptor);
-      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
-      when(() => metadata.fetch(id)).thenAnswer((_) async => null);
-      var provisioned = false;
-      final native = _Native();
-      when(() => native.prepareCreate(any())).thenAnswer((_) async {
-        verifyNever(() => metadata.insert(any()));
-        return const Ok(null);
-      });
-      when(() => native.create(any())).thenAnswer((_) async {
-        verify(() => metadata.insert(any())).called(1);
-        verifyNever(() => values.getBalance(key: any(named: 'key')));
-        provisioned = true;
-        return const Ok(null);
-      });
-      var synchronized = false;
-      final originalBalance = await values.getBalance(
-        key: WalletSyncBinding.keyFromMetadata(row),
-      );
-      when(() => values.getBalance(key: any(named: 'key')))
-          .thenAnswer((_) async {
-            expect(provisioned, isTrue);
-            return originalBalance;
-          });
-      clearInteractions(values);
-      final importing = WalletRepository(
-        native: native,
-        walletRegistrations: metadata,
-        walletValuesDatasource: values,
-        synchronize:
-            (
-              value, {
-              bool discover = false,
-              allowInitialScan = true,
-              SyncReason reason = SyncReason.auto,
-            }) async {
-              expect(provisioned, isTrue);
-              expect(value.id, id);
-              verify(() => native.create(any())).called(1);
-              synchronized = true;
-            },
-        syncStarted: const Stream.empty(),
-        syncFinished: const Stream.empty(),
-      );
-      final input = WatchOnlyInput.fromDescriptor(watchOnly);
-      final result = await importing.importDescriptor(
-        descriptor:
-            (input as Ok<WatchOnlyDescriptorInput, ImportFailure>).value,
-        signer: SignerEntity.remote,
-        label: '',
-        sync: true,
-      );
-      expect(synchronized, isTrue);
-      expect((result as Ok<Wallet, ImportWatchOnlyFailure>).value.id, id);
-      verify(() => values.getBalance(key: any(named: 'key'))).called(1);
-    },
-  );
 }
 
 final class _ThrowingPolicy implements WalletConnectionPort {
@@ -588,7 +520,8 @@ final class _Bridge {
 
   Stream<String> get started => sync.started.map((key) => key.id);
   Stream<String> get finished => sync.finished.map((event) => event.key.id);
-  Stream<ElectrumSyncResult> get results => ElectrumSyncResult.watch(sync.finished);
+  Stream<ElectrumSyncResult> get results =>
+      ElectrumSyncResult.watch(sync.finished);
 
   Future<void> synchronize(
     WalletMetadataModel metadata, {

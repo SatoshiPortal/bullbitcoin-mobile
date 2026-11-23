@@ -51,10 +51,7 @@ void main() {
         catalog: TestWalletCatalog(metadata),
         reserved: _Reserved(),
         inputReservations: _NoInputReservations(),
-        deleteCatalogEntry: (key) async {
-          await metadata.delete(key.id);
-          return const Ok(null);
-        },
+        deleteCatalogEntry: (_) async => const Ok(null),
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
@@ -101,10 +98,7 @@ void main() {
         catalog: TestWalletCatalog(metadata),
         reserved: _Reserved(),
         inputReservations: _NoInputReservations(),
-        deleteCatalogEntry: (key) async {
-          await metadata.delete(key.id);
-          return const Ok(null);
-        },
+        deleteCatalogEntry: (_) async => const Ok(null),
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
@@ -213,19 +207,18 @@ void main() {
     secret.dispose();
     mnemonic.dispose();
     final rows = <String, WalletMetadataModel>{row.id: row};
+    final deletedFromCatalog = <String>[];
     final metadata = _Metadata();
     when(() => metadata.fetchAll())
         .thenAnswer((_) async => rows.values.toList());
     when(() => metadata.fetch(row.id)).thenAnswer((_) async => rows[row.id]);
-    when(() => metadata.delete(row.id)).thenAnswer((_) async {
-      rows.remove(row.id);
-    });
     WalletNativeRuntime open() => WalletNativeRuntime.open(
       catalog: TestWalletCatalog(metadata),
       reserved: _Reserved(),
       inputReservations: _NoInputReservations(),
       deleteCatalogEntry: (key) async {
-        await metadata.delete(key.id);
+        deletedFromCatalog.add(key.id);
+        rows.remove(key.id);
         return const Ok(null);
       },
       sync: ElectrumSync(
@@ -409,7 +402,7 @@ void main() {
       runtime = open();
       WalletSyncBinding.value(await runtime.initialize());
       expect(rows, isEmpty);
-      verify(() => metadata.delete(row.id)).called(1);
+      expect(deletedFromCatalog, [row.id]);
       // Re-import is interrupted after its catalog row becomes visible.
       WalletSyncBinding.value(
         await runtime.prepareCreate(WalletSyncBinding.keyFromMetadata(row)),
