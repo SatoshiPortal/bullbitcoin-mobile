@@ -29,7 +29,7 @@ const _allowedTargets = <String, String>{
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price',
-  'coins': 'address_view bitcoin_price wallet',
+  'coins': 'address_view bitcoin_price',
   'exchange': 'address_view bull_exchange transactions wallet',
   'import_coldcard': 'scanning signers wallet_import',
   'import_mnemonic': 'mnemonic_entry wallet wallet_import',
