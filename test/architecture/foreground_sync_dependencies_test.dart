@@ -22,6 +22,7 @@ import 'package:path/path.dart' as p;
 // consumers use that surface while data-only consumers depend on the package.
 // Wallet reader ownership (2026-11-22): see FEATURES.md for the address,
 // coin, receive and history edges that replace the legacy wallet placements.
+// Exchange workspace UI consumers use the published routes (see FEATURES.md).
 const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'access wallet',
@@ -31,14 +32,13 @@ const _allowedTargets = <String, String>{
   'autoswap': 'address_view send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
   'broadcast_signed_tx': 'scanning send wallet',
-  'buy': 'address_view exchange fund_exchange transactions wallet',
+  'buy':
+      'address_view bull_exchange exchange fund_exchange transactions wallet',
   'coins': 'bitcoin_price wallet',
   'consolidation': 'send wallet',
   'dca': 'address_view exchange fund_exchange wallet',
   'default_wallets': 'exchange wallet',
-  'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange transactions withdraw',
-  'exchange_settings': 'exchange',
-  'exchange_support_chat': 'exchange',
+  'exchange': 'autobuy bitcoin_price bull_exchange dca fund_exchange transactions withdraw',
   'fund_exchange': 'exchange recipients',
   'import_coldcard': 'import_watch_only_wallet scanning signers',
   'import_mnemonic': 'wallet',
@@ -48,17 +48,17 @@ const _allowedTargets = <String, String>{
   'limit_orders': 'address_view default_wallets exchange fund_exchange wallet',
   'network': 'recoverbull',
   'onboarding': 'import_mnemonic recoverbull settings wallet network',
-  'pay': 'address_view bitcoin_price coins exchange fees recipients send transactions wallet',
+  'pay': 'address_view bitcoin_price bull_exchange coins exchange fees recipients send transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',
   'recipients': 'exchange',
   'replace_by_fee': 'fees send wallet',
   'scanning': 'signers',
-  'sell': 'address_view bitcoin_price coins exchange fees recipients send transactions wallet',
+  'sell': 'address_view bitcoin_price bull_exchange coins exchange fees recipients send transactions wallet',
   'send': 'address_view ark coins consolidation fees label_editor signers sp swap transactions wallet',
-  'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings fees import_wallet label_editor logs network pay quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
+  'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx bull_exchange default_wallets exchange fees import_wallet label_editor logs network pay quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
   'sp': 'wallet',
-  'support': 'exchange_support_chat',
+  'support': 'bull_exchange',
   'swap': 'address_view ark autoswap coins consolidation fees send transactions wallet',
   'test_wallet_backup': 'access onboarding recoverbull wallet',
   'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
