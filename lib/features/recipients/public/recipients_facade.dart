@@ -2,13 +2,10 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/interac_security_details.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/update_interac_security_details_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
 import 'package:meta/meta.dart';
 
 export '../ui/screens/virtual_iban_onboarding_screen.dart'
     show VirtualIbanOnboardingScreen;
-export '../domain/entities/confidential_sepa_availability.dart';
 export '../domain/entities/recipient_type.dart' show RecipientType;
 
 export '../presentation/recipient_type_l10n.dart';
@@ -34,18 +31,7 @@ export 'recipient_view_model.dart';
 class RecipientsFacade {
   final UpdateInteracSecurityDetailsUsecase
   _updateInteracSecurityDetailsUsecase;
-  final GetConfidentialSepaAvailabilityUsecase
-  _getConfidentialSepaAvailabilityUsecase;
-
-  RecipientsFacade(
-    this._updateInteracSecurityDetailsUsecase,
-    this._getConfidentialSepaAvailabilityUsecase,
-  );
-
-  @useResult
-  Future<Result<ConfidentialSepaAvailability, RecipientsFailure>>
-  getConfidentialSepaAvailability() =>
-      _getConfidentialSepaAvailabilityUsecase.execute();
+  RecipientsFacade(this._updateInteracSecurityDetailsUsecase);
 
   @useResult
   Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({

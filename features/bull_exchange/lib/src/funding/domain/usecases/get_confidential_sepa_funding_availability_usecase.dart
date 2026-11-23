@@ -14,7 +14,7 @@ class GetConfidentialSepaFundingAvailabilityUsecase {
 
   @useResult
   Future<Result<bool, FundExchangeFailure>> execute() async =>
-      (await _exchange.isConfidentialSepaFundingAvailable()).mapErr(
-        mapFundingFailure,
-      );
+      (await _exchange.getConfidentialSepaAvailability())
+          .map((value) => value != ConfidentialSepaAvailability.unavailable)
+          .mapErr(mapFundingFailure);
 }

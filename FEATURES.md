@@ -86,7 +86,7 @@ graph TB
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
-    EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC and stats]
+    EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
     BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account and access settings, support chat, funding]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
@@ -111,6 +111,7 @@ graph TB
     EXCHANGE_DOMAIN -->|account, KYC, statistics, chat, notifications, funding, virtual IBANs, orders and default payouts| BBX_API
     BULL_EXCHANGE -->|support chat, account, statistics and funding| EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
+    RECIPIENTS -->|Confidential SEPA eligibility| EXCHANGE_DOMAIN
 
     SIGNERS[Signers<br/>Workspace Feature]
     SIGNERS --> PRIMITIVES

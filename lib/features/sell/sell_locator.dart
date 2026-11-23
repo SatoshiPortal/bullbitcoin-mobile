@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/send/public/send_setup.dart'
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
@@ -124,9 +123,7 @@ class SellLocator {
     );
 
     locator.registerFactory<GetSellConfidentialSepaAvailabilityUsecase>(
-      () => GetSellConfidentialSepaAvailabilityUsecase(
-        locator<RecipientsFacade>(),
-      ),
+      () => GetSellConfidentialSepaAvailabilityUsecase(locator<Exchange>()),
     );
 
     locator.registerFactory<RefreshSellOrderUsecase>(

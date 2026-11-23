@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:material_ui/material_ui.dart' show MaterialLocalizations;
 import 'package:bb_mobile/features/recipients/ui/widgets/jurisdiction_dropdown.dart';

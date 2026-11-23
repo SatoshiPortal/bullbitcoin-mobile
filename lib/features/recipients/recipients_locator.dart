@@ -97,12 +97,7 @@ class RecipientsLocator {
           GetAccountOwnerNameUsecase(locator<GetExchangeUserSummaryUsecase>()),
     );
     locator.registerFactory<GetConfidentialSepaAvailabilityUsecase>(
-      () => GetConfidentialSepaAvailabilityUsecase(
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        virtualIbans: locator<Exchange>().virtualIbans,
-        getRecipientsEnvironmentUsecase:
-            locator<GetRecipientsEnvironmentUsecase>(),
-      ),
+      () => GetConfidentialSepaAvailabilityUsecase(locator<Exchange>()),
     );
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(
@@ -138,10 +133,7 @@ class RecipientsLocator {
       ),
     );
     locator.registerLazySingleton<RecipientsFacade>(
-      () => RecipientsFacade(
-        locator<UpdateInteracSecurityDetailsUsecase>(),
-        locator<GetConfidentialSepaAvailabilityUsecase>(),
-      ),
+      () => RecipientsFacade(locator<UpdateInteracSecurityDetailsUsecase>()),
     );
   }
 

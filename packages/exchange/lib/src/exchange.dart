@@ -18,12 +18,14 @@ import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
 import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';
 import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
+import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
@@ -124,8 +126,8 @@ final class Exchange {
   final ExchangeFunding funding;
   final ExchangeVirtualIbans virtualIbans;
   final ExchangeKycConfigurationRepository? _kyc;
-  final Future<Result<bool, ExchangeFailure>> Function()
-  _isConfidentialSepaFundingAvailable;
+  final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
+  _getConfidentialSepaAvailability;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -143,7 +145,7 @@ final class Exchange {
     this.funding,
     this.virtualIbans,
     this._kyc,
-    this._isConfidentialSepaFundingAvailable,
+    this._getConfidentialSepaAvailability,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -491,12 +493,14 @@ final class Exchange {
             return const Err(ExchangeAccountUnavailableFailure());
           case Ok(:final value):
             if (!value.isEligibleForConfidentialSepa) {
-              return const Ok(false);
+              return const Ok(ConfidentialSepaAvailability.unavailable);
             }
         }
-        return (await BbxApiVirtualIbanRepository(
-          untimedClient(),
-        ).find()).map((_) => true);
+        return (await BbxApiVirtualIbanRepository(untimedClient()).find()).map(
+          (iban) => iban is ActiveVirtualIban
+              ? ConfidentialSepaAvailability.ready
+              : ConfidentialSepaAvailability.needsVirtualIban,
+        );
       }, checkCompletion: true),
     );
   }
@@ -533,11 +537,11 @@ final class Exchange {
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
 
-  /// Eligible accounts can fund through Confidential SEPA even before their
-  /// virtual IBAN is active, but a failed IBAN lookup is not eligibility.
+  /// Checks account eligibility and then the IBAN under one session. A failed
+  /// lookup is distinct from an eligible account without an active IBAN.
   @useResult
-  Future<Result<bool, ExchangeFailure>> isConfidentialSepaFundingAvailable() =>
-      _isConfidentialSepaFundingAvailable();
+  Future<Result<ConfidentialSepaAvailability, ExchangeFailure>>
+  getConfidentialSepaAvailability() => _getConfidentialSepaAvailability();
 
   @useResult
   Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
@@ -675,8 +679,8 @@ Exchange exchangeForTesting({
   ExchangeLimitOrders? limitOrders,
   ExchangeFunding? funding,
   ExchangeVirtualIbans? virtualIbans,
-  Future<Result<bool, ExchangeFailure>> Function()?
-  isConfidentialSepaFundingAvailable,
+  Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
+  getConfidentialSepaAvailability,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -748,8 +752,8 @@ Exchange exchangeForTesting({
         create: (_) => throw StateError('Unexpected virtual IBAN creation'),
       ),
   null,
-  isConfidentialSepaFundingAvailable ??
-      () => throw StateError('Unexpected Confidential SEPA funding check'),
+  getConfidentialSepaAvailability ??
+      () => throw StateError('Unexpected Confidential SEPA availability check'),
 );
 
 Exchange exchangeWithTransportForTesting({

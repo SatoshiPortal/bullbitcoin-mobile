@@ -1,3 +1,4 @@
+/// Whether the account can use Confidential SEPA and whether its IBAN is ready.
 enum ConfidentialSepaAvailability {
   /// The user's account cannot use Confidential SEPA.
   unavailable,

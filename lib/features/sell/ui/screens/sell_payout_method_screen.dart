@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart' show ConfidentialSepaAvailability;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';

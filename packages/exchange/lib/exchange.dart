@@ -2,6 +2,7 @@
 library;
 
 export 'src/domain/entities/announcement.dart';
+export 'src/domain/entities/confidential_sepa_availability.dart';
 export 'src/domain/entities/dca.dart';
 export 'src/domain/entities/default_wallet.dart';
 export 'src/domain/entities/funding_details.dart';

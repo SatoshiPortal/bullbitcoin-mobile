@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/account_owner_name.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipient_view_model_mapper.dart';
