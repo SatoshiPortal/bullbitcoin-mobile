@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
@@ -41,7 +41,7 @@ Exchange _exchange(_Notifications notifications) => exchangeForTesting(
 
 class _Access extends Mock implements ExchangeAccessRepository {}
 
-class _Keys extends Mock implements ExchangeApiKeyRepository {}
+class _Keys extends Mock implements ExchangeCredentials {}
 
 class _MockSettings extends Mock implements Preferences {}
 

@@ -1,18 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../core/exchange/order_json_fixture.dart';
 import '../../features/exchange/data/bbx_api_test_http.dart';
 
 class _Throwing implements HttpClientAdapter {
@@ -32,22 +28,15 @@ class _Throwing implements HttpClientAdapter {
 }
 
 void main() {
-  BbxApiOrderRepository orders(Bbx api) =>
-      BbxApiOrderRepository(api: api, isTestnet: true);
-
   test(
     'Dio-wrapped programming errors still propagate from order reads',
     () async {
-      final repository = orders(
-        bbxForTesting(
-          endpoint: testBbxEndpoint,
-          adapter: _Throwing(
-            DioException(
-              requestOptions: RequestOptions(path: '/synthetic'),
-              error: StateError('synthetic programming defect'),
-            ),
+      final repository = testExchangeOrders(
+        _Throwing(
+          DioException(
+            requestOptions: RequestOptions(path: '/synthetic'),
+            error: StateError('synthetic programming defect'),
           ),
-          readActiveApiKey: bbxCredentialRead(null),
         ),
       );
       await expectLater(repository.getOrders(), throwsStateError);
@@ -69,10 +58,10 @@ void main() {
     'invalid-envelope',
   ]) {
     test('order read maps invalid wire envelope ${body.runtimeType}', () async {
-      final repository = orders(FakeBbxHttp(body: body).client());
+      final repository = testExchangeOrders(FakeBbxHttp(body: body));
       expect(
         await repository.getOrders(),
-        isA<Err<dynamic, ExchangeOrderFailure>>().having(
+        isA<Err<dynamic, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',
           isA<ExchangeOrderLoadFailure>(),
@@ -80,7 +69,7 @@ void main() {
       );
       expect(
         await repository.getOrderByTxId('synthetic-tx'),
-        isA<Err<dynamic, ExchangeOrderFailure>>(),
+        isA<Err<dynamic, ExchangeFailure>>(),
       );
     });
   }
@@ -127,13 +116,13 @@ void main() {
       'error': {'code': 'synthetic-rejection'},
     },
     {
-      'result': {...orderJsonFixture(), 'orderId': 42},
+      'result': {'orderId': 42, 'orderType': 'Buy Bitcoin'},
     },
   ]) {
-    test('action wire mismatch remains an infrastructure exception', () async {
-      await expectLater(
-        orders(FakeBbxHttp(body: body).client()).getOrder('synthetic'),
-        throwsA(isA<Exception>()),
+    test('action wire mismatch returns a typed failure', () async {
+      expect(
+        await testExchangeOrders(FakeBbxHttp(body: body)).getOrder('synthetic'),
+        isA<Err<Order, ExchangeFailure>>(),
       );
     });
   }

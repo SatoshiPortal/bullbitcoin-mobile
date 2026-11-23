@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
+import 'package:bb_mobile/features/buy/domain/map_buy_order_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/buy_payjoin_window.dart';
@@ -10,15 +9,13 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateBuyOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
   final PayjoinReceiver _payjoinReceiver;
   final PayjoinPolicyAccess _payjoinPolicy;
 
   CreateBuyOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
     required this._payjoinReceiver,
     required this._payjoinPolicy,
@@ -46,10 +43,13 @@ class CreateBuyOrderUsecase {
     int? payjoinAmountSat,
   }) async {
     try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(BuyUnexpectedFailure('Preferences read failed'));
+      }
       final environment = settings.environment.networkEnv;
       final exchangeNetwork = switch (environment) {
         NetworkEnv.mainnet => BitcoinNetwork.mainnet,
@@ -65,9 +65,9 @@ class CreateBuyOrderUsecase {
         return const Err(BuyUnsupportedNetworkFailure());
       }
       final isTestnet = environment == NetworkEnv.testnet;
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
+      final repo = _exchange.orders(
+        isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
+      );
       final network = isLiquid
           ? OrderBitcoinNetwork.liquid
           : OrderBitcoinNetwork.bitcoin;
@@ -134,8 +134,19 @@ class CreateBuyOrderUsecase {
         }
       }
 
+      Future<void> cancelOrphanReceiver() async {
+        // The session would otherwise sit and poll the directory for a day for
+        // an order that never existed.
+        if (payjoinId case final id?) {
+          final result = await _payjoinReceiver.cancel(id);
+          if (result case Err()) {
+            log.warning('Failed to drop an orphan Payjoin session');
+          }
+        }
+      }
+
       try {
-        final order = await repo.placeBuyOrder(
+        final result = await repo.placeBuyOrder(
           toAddress: toAddress,
           orderAmount: orderAmount,
           currency: currency,
@@ -143,6 +154,18 @@ class CreateBuyOrderUsecase {
           isOwner: isOwner,
           payjoinBip21: payjoinBip21,
         );
+        final BuyOrder order;
+        switch (result) {
+          case Ok(:final value):
+            order = value;
+          case Err(:final failure):
+            // A stale completion may have created an order on the old
+            // session. Do not cancel its receiver or repeat the write.
+            if (failure is! ExchangeOperationStaleFailure) {
+              await cancelOrphanReceiver();
+            }
+            return Err(mapBuyOrderFailure(failure));
+        }
         // Some create/confirm responses do not echo the submitted BIP21 URI.
         // Preserve the local URI so the confirmation and success screens know
         // that this order has an active receiver.
@@ -150,52 +173,17 @@ class CreateBuyOrderUsecase {
             ? order.copyWith(bip21URI: payjoinBip21)
             : order;
         return Ok(orderWithPayjoin);
-      } catch (_) {
-        // The session would otherwise sit and poll the directory for a day for
-        // an order that never existed.
-        if (payjoinId != null) {
-          final result = await _payjoinReceiver.cancel(payjoinId);
-          if (result case Err()) {
-            log.warning('Failed to drop an orphan Payjoin session');
-          }
-        }
+      } on Exception {
+        await cancelOrphanReceiver();
         rethrow;
       }
-    } on ExchangeCredentialUnavailableException {
-      log.warning('Exchange order unavailable: credential read refused');
-      return const Err(BuyUnexpectedFailure());
-    } on ApiKeyException catch (e, st) {
-      // A missing or expired session is recoverable, including mid-flow.
-      log.warning(
-        'Buy order rejected: not authenticated',
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'Failed to place the buy order',
         error: e.runtimeType,
         trace: st,
       );
-      return const Err(BuyUnauthenticatedFailure());
-    } on BullBitcoinApiMinAmountException catch (e) {
-      // The two amount bounds are expected user input errors, so they are
-      // logged at info rather than severe; the bound itself travels in the
-      // failure so the screen can name it.
-      log.info('Buy order below the minimum: ${e.message}');
-      return Err(
-        BuyBelowMinAmountFailure(
-          minAmount: e.minAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      log.info('Buy order above the maximum: ${e.message}');
-      return Err(
-        BuyAboveMaxAmountFailure(
-          maxAmount: e.maxAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } catch (e, st) {
-      log.severe(message: 'Failed to place the buy order', error: e, trace: st);
-      return Err(BuyUnexpectedFailure('$e'));
+      return Err(BuyUnexpectedFailure(e.runtimeType.toString()));
     }
   }
 }

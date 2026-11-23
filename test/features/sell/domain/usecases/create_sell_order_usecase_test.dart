@@ -1,9 +1,7 @@
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -12,8 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -27,7 +24,7 @@ class _MockFiatPaymentOrder extends Mock implements FiatPaymentOrder {}
 
 void main() {
   var spendStatus = BitcoinSpendStatus.ready;
-  late _MockExchangeOrderRepository mainnet;
+  late _MockExchangeOrders mainnet;
   late _MockPayjoinPolicy payjoinPolicy;
   late CreateSellOrderUsecase usecase;
 
@@ -39,7 +36,7 @@ void main() {
 
   setUp(() {
     spendStatus = BitcoinSpendStatus.ready;
-    mainnet = _MockExchangeOrderRepository();
+    mainnet = _MockExchangeOrders();
     final settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
@@ -56,8 +53,11 @@ void main() {
         const Stream.empty(),
         spendStatus: (_, {replacing}) async => spendStatus,
       ),
-      mainnetExchangeOrderRepository: mainnet,
-      testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? _MockExchangeOrders()
+            : mainnet,
+      ),
       settingsRepository: settingsRepository,
       payjoinPolicy: payjoinPolicy,
     );
@@ -70,7 +70,7 @@ void main() {
     network: OrderBitcoinNetwork.bitcoin,
   );
 
-  void stubThrow(Object error) {
+  void stubFailure(ExchangeFailure error) {
     when(
       () => mainnet.placeSellOrder(
         orderAmount: any(named: 'orderAmount'),
@@ -78,7 +78,7 @@ void main() {
         network: any(named: 'network'),
         usePayjoin: any(named: 'usePayjoin'),
       ),
-    ).thenThrow(error);
+    ).thenAnswer((_) async => Err(error));
   }
 
   test('gated Bitcoin wallet creates no exchange order', () async {
@@ -112,7 +112,7 @@ void main() {
 
   test('regtest refuses sell creation before backend IO', () async {
     final settings = _MockSettingsRepository();
-    final testnet = _MockExchangeOrderRepository();
+    final testnet = _MockExchangeOrders();
     when(settings.fetch).thenAnswer(
       (_) async => Ok(
         const SettingsEntity(
@@ -127,8 +127,10 @@ void main() {
         const Stream.empty(),
         spendStatus: (_, {replacing}) async => spendStatus,
       ),
-      mainnetExchangeOrderRepository: mainnet,
-      testnetExchangeOrderRepository: testnet,
+      exchange: exchangeForTesting(
+        orders: (environment) =>
+            environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+      ),
       settingsRepository: settings,
       payjoinPolicy: payjoinPolicy,
     );
@@ -174,7 +176,7 @@ void main() {
                 paymentProcessor: processor,
                 usePayjoin: network == OrderBitcoinNetwork.bitcoin,
               ),
-            ).thenAnswer((_) async => order);
+            ).thenAnswer((_) async => Ok(order));
             final result = await usecase.execute(
               walletId: 'wallet-1',
               orderAmount: const FiatAmount(100),
@@ -237,7 +239,7 @@ void main() {
           recipientId: 'interac',
           network: OrderBitcoinNetwork.liquid,
         ),
-      ).thenAnswer((_) async => order);
+      ).thenAnswer((_) async => Ok(order));
       final result = await usecase.execute(
         walletId: 'wallet-1',
         orderAmount: const FiatAmount(100),
@@ -285,8 +287,8 @@ void main() {
             network: OrderBitcoinNetwork.bitcoin,
             paymentProcessor: SepaPaymentProcessor.confidential,
           ),
-        ).thenThrow(
-          const BullBitcoinApiConfidentialSepaNotActivatedException(),
+        ).thenAnswer(
+          (_) async => const Err(ExchangeConfidentialSepaInactiveFailure()),
         );
         final result = await usecase.execute(
           walletId: 'wallet-1',
@@ -318,7 +320,7 @@ void main() {
           network: any(named: 'network'),
           usePayjoin: any(named: 'usePayjoin'),
         ),
-      ).thenAnswer((_) async => _MockSellOrder());
+      ).thenAnswer((_) async => Ok(_MockSellOrder()));
 
       final _ = await usecase.execute(
         walletId: 'wallet-1',
@@ -366,7 +368,7 @@ void main() {
         network: any(named: 'network'),
         usePayjoin: any(named: 'usePayjoin'),
       ),
-    ).thenAnswer((_) async => order);
+    ).thenAnswer((_) async => Ok(order));
 
     expect(await run(), isA<Ok<Order, SellFailure>>());
   });
@@ -374,7 +376,13 @@ void main() {
   // These three used to be translated inside the shared exchange repository,
   // which is why SellError lived in core. The mapping now happens here.
   test('maps a below-minimum API rejection with its bound', () async {
-    stubThrow(BullBitcoinApiMinAmountException(minAmount: 25, currency: 'CAD'));
+    stubFailure(
+      const ExchangeOrderLimitFailure(
+        ExchangeOrderAmountBound.minimum,
+        25,
+        'CAD',
+      ),
+    );
 
     final failure = (await run() as Err<Order, SellFailure>).failure;
 
@@ -384,8 +392,12 @@ void main() {
   });
 
   test('maps an above-maximum API rejection with its bound', () async {
-    stubThrow(
-      BullBitcoinApiMaxAmountException(maxAmount: 5000, currency: 'CAD'),
+    stubFailure(
+      const ExchangeOrderLimitFailure(
+        ExchangeOrderAmountBound.maximum,
+        5000,
+        'CAD',
+      ),
     );
 
     final failure = (await run() as Err<Order, SellFailure>).failure;
@@ -395,7 +407,7 @@ void main() {
   });
 
   test('maps an unauthenticated API to its own failure', () async {
-    stubThrow(ApiKeyException('API key not found or inactive'));
+    stubFailure(const ExchangeNotAuthenticatedFailure());
 
     expect(
       (await run() as Err<Order, SellFailure>).failure,
@@ -403,19 +415,12 @@ void main() {
     );
   });
 
-  test(
-    'sanitizes an unexpected error and keeps the reason for logs only',
-    () async {
-      stubThrow(Exception('Dio 500 apikey=secret123'));
+  test('keeps foreign diagnostic text out of an unexpected failure', () async {
+    stubFailure(const ExchangeOrderLoadFailure());
 
-      final failure = (await run() as Err<Order, SellFailure>).failure;
+    final failure = (await run() as Err<Order, SellFailure>).failure;
 
-      expect(failure, isA<SellUnexpectedFailure>());
-      expect(
-        failure.logMessage,
-        contains('secret123'),
-        reason: 'the reason belongs in the log, not in the user message',
-      );
-    },
-  );
+    expect(failure, isA<SellUnexpectedFailure>());
+    expect(failure.logMessage, isNull);
+  });
 }

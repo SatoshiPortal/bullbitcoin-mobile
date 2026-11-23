@@ -1,3 +1,4 @@
+import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
@@ -10,7 +11,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_acco
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
@@ -39,7 +39,7 @@ class ExchangeLocator {
             false);
     locator.registerLazySingleton<ExchangeAccessRepository>(
       () => ExchangeAccessRepositoryImpl(
-        apiKeyRepository: locator<ExchangeApiKeyRepository>(),
+        apiKeyRepository: locator<ExchangeCredentials>(),
         readEnvironment: () async =>
             ((await locator<settings_contract.Preferences>().fetch()).fold(
               (value) => value,

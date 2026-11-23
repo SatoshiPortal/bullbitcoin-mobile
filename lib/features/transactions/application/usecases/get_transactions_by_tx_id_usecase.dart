@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -25,8 +25,7 @@ class GetTransactionsByTxIdUsecase {
   final WalletTransactionRepository _walletTransactionRepository;
   final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final GetTransactionOrderSwapsUsecase _getTransactionOrderSwapsUsecase;
 
   GetTransactionsByTxIdUsecase({
@@ -34,8 +33,7 @@ class GetTransactionsByTxIdUsecase {
     required this._walletTransactionRepository,
     required this._swapStore,
     required this._payjoinSessions,
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._getTransactionOrderSwapsUsecase,
   });
 
@@ -44,10 +42,15 @@ class GetTransactionsByTxIdUsecase {
     String txId,
   ) async {
     try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(
+            TransactionUnexpectedFailure('Preferences read failed'),
+          );
+      }
       final environment = settings.environment;
       if (environment.networkEnv == NetworkEnv.regtest) {
         final transactions = await _walletTransactionRepository
@@ -58,9 +61,11 @@ class GetTransactionsByTxIdUsecase {
               .toList(),
         );
       }
-      final orderRepository = environment.requireHistoricalTestnet()
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
+      final exchangeOrders = _exchange.orders(
+        environment.requireHistoricalTestnet()
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet,
+      );
 
       // Fetch wallet transactions, swap and payjoins by txId
       final (
@@ -76,7 +81,7 @@ class GetTransactionsByTxIdUsecase {
         ),
         _swapStore.byTxId(txId),
         _payjoinSessions.byTransactionId(txId),
-        orderRepository.getOrderByTxId(txId),
+        exchangeOrders.getOrderByTxId(txId),
         _getTransactionOrderSwapsUsecase.execute(),
       ).wait;
       final order = switch (orderResult) {

@@ -7,6 +7,7 @@ import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
+import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -339,7 +340,9 @@ class AppLocator {
     }
 
     ExchangeLocator.setup(locator);
-    DefaultWalletsLocator.setup(locator);
+    locator.registerLazySingleton<DefaultWalletsFacade>(
+      () => DefaultWalletsFacade(locator<Exchange>()),
+    );
     AutoBuyLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
     BuyLocator.setup(locator);

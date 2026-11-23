@@ -37,7 +37,7 @@ const _allowedTargets = <String, String>{
   'coins': 'bitcoin_price wallet',
   'consolidation': 'send wallet',
   'dca': 'address_view exchange fund_exchange wallet',
-  'default_wallets': 'exchange wallet',
+  'default_wallets': 'wallet',
   'exchange': 'autobuy bitcoin_price bull_exchange dca fund_exchange transactions withdraw',
   'fund_exchange': 'exchange recipients',
   'import_coldcard': 'import_watch_only_wallet scanning signers',
@@ -145,6 +145,11 @@ Map<String, String> _edges(
 }
 
 void main() {
+  test('the retired core exchange has no compatibility library', () {
+    expect(Directory('lib/core/exchange').existsSync(), isFalse);
+    expect(File('lib/core/errors/exchange_errors.dart').existsSync(), isFalse);
+  });
+
   test(
     'preferences are consumed through feature use cases in presentation',
     () {

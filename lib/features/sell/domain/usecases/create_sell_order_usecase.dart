@@ -1,8 +1,6 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
+import 'package:bb_mobile/features/sell/domain/map_sell_order_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -12,15 +10,13 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateSellOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
   final PayjoinPolicyAccess _payjoinPolicy;
   final WalletFacade _wallet;
 
   CreateSellOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
     required this._payjoinPolicy,
     required this._wallet,
@@ -54,10 +50,13 @@ class CreateSellOrderUsecase {
           );
         }
       }
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(SellUnexpectedFailure('Preferences read failed'));
+      }
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,
@@ -69,9 +68,9 @@ class CreateSellOrderUsecase {
         Err() => false,
       };
       final isTestnet = settings.environment.requireHistoricalTestnet();
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
+      final repo = _exchange.orders(
+        isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
+      );
       final resolvedUsePayjoin =
           usePayjoin &&
           payjoinEnabled &&
@@ -81,16 +80,16 @@ class CreateSellOrderUsecase {
         'sellEnabled=$payjoinEnabled, '
         'network=${network.value}, sent=$resolvedUsePayjoin',
       );
-      final Order order;
+      final Result<Order, ExchangeFailure> result;
       if (recipient == null) {
-        order = await repo.placeSellOrder(
+        result = await repo.placeSellOrder(
           orderAmount: orderAmount,
           currency: currency,
           network: network,
           usePayjoin: resolvedUsePayjoin,
         );
       } else {
-        order = await repo.placePayOrder(
+        result = await repo.placePayOrder(
           orderAmount: orderAmount,
           recipientId: recipient.id,
           network: network,
@@ -103,41 +102,25 @@ class CreateSellOrderUsecase {
           usePayjoin: resolvedUsePayjoin,
         );
       }
+      final Order order;
+      switch (result) {
+        case Ok(:final value):
+          order = value;
+        case Err(:final failure):
+          return Err(mapSellOrderFailure(failure));
+      }
       log.fine(
         'Sell Payjoin order response: requested=$resolvedUsePayjoin, '
         'bip21Present=${order.payjoinBip21 != null}',
       );
       return Ok(order);
-    } on ExchangeCredentialUnavailableException {
-      log.warning('Exchange order unavailable: credential read refused');
-      return const Err(SellUnexpectedFailure());
-    } on BullBitcoinApiConfidentialSepaNotActivatedException {
-      return const Err(SellConfidentialSepaNotActivatedFailure());
-    } on ApiKeyException {
-      return const Err(SellUnauthenticatedFailure());
-    } on BullBitcoinApiMinAmountException catch (e) {
-      return Err(
-        SellBelowMinAmountFailure(
-          minAmount: e.minAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      return Err(
-        SellAboveMaxAmountFailure(
-          maxAmount: e.maxAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to place the sell order',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(SellUnexpectedFailure('$e'));
+      return Err(SellUnexpectedFailure(e.runtimeType.toString()));
     }
   }
 }

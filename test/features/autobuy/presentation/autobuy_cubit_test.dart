@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/autobuy/domain/autobuy_status.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,14 +1,12 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
-import 'package:bb_mobile/features/default_wallets/data/bbx_api_exchange_recipient_repository.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
+import 'package:exchange/exchange.dart';
+import 'package:exchange/src/data/bbx_api_exchange_recipient_repository.dart';
+import 'package:test/test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/bbx_api_test_http.dart';
+import 'bbx_api_test_http.dart';
 
 const _bitcoin = {
   'recipientId': 'btc',
@@ -56,30 +54,42 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
   );
 }
 
+T _value<T>(Result<T, ExchangeFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('Expected success, got ${failure.runtimeType}'),
+};
+
+Matcher _failure<T>(Matcher matcher) => isA<Err<T, ExchangeFailure>>().having(
+  (result) => result.failure,
+  'failure',
+  matcher,
+);
+
 void main() {
   group('the requests are the ones the old repository sent, as recorded', () {
-    final calls = <String, Future<void> Function(ExchangeRecipientRepository)>{
-      'getDefaultWallets': (r) => r.getDefaultWallets(),
-      'saveDefaultWallet, new': (r) => r.saveDefaultWallet(
-        walletType: WalletAddressType.lightning,
-        address: 'sat@example.com',
-      ),
-      'saveDefaultWallet, empty id': (r) => r.saveDefaultWallet(
-        walletType: WalletAddressType.liquid,
-        address: 'lq1address',
-        existingRecipientId: '',
-      ),
-      'saveDefaultWallet, existing': (r) => r.saveDefaultWallet(
-        walletType: WalletAddressType.bitcoin,
-        address: 'bc1qaddress',
-        existingRecipientId: 'btc',
-      ),
-      'deleteDefaultWallet': (r) => r.deleteDefaultWallet(
-        recipientId: 'btc',
-        walletType: WalletAddressType.bitcoin,
-        address: 'bc1qaddress',
-      ),
-    };
+    final calls =
+        <String, Future<void> Function(BbxApiExchangeRecipientRepository)>{
+          'getDefaultWallets': (r) => r.getDefaultWallets(),
+          'saveDefaultWallet, new': (r) => r.saveDefaultWallet(
+            walletType: WalletAddressType.lightning,
+            address: 'sat@example.com',
+          ),
+          'saveDefaultWallet, empty id': (r) => r.saveDefaultWallet(
+            walletType: WalletAddressType.liquid,
+            address: 'lq1address',
+            existingRecipientId: '',
+          ),
+          'saveDefaultWallet, existing': (r) => r.saveDefaultWallet(
+            walletType: WalletAddressType.bitcoin,
+            address: 'bc1qaddress',
+            existingRecipientId: 'btc',
+          ),
+          'deleteDefaultWallet': (r) => r.deleteDefaultWallet(
+            recipientId: 'btc',
+            walletType: WalletAddressType.bitcoin,
+            address: 'bc1qaddress',
+          ),
+        };
     for (final MapEntry(key: name, value: call) in calls.entries) {
       test(name, () async {
         final body = {
@@ -140,8 +150,9 @@ void main() {
         },
       };
 
-      final wallets = await _repository(FakeBbxHttp(body: body))
-          .getDefaultWallets();
+      final wallets = _value(
+        await _repository(FakeBbxHttp(body: body)).getDefaultWallets(),
+      );
 
       expect(_fields(wallets.bitcoin), (
         'btc',
@@ -164,9 +175,10 @@ void main() {
     });
 
     test('no element list is no default wallet', () async {
-      final wallets = await _repository(
-        FakeBbxHttp(body: {'result': <String, Object?>{}}),
-      ).getDefaultWallets();
+      final wallets = _value(
+        await _repository(FakeBbxHttp(body: {'result': <String, Object?>{}}))
+            .getDefaultWallets(),
+      );
 
       expect(wallets.bitcoin, isNull);
       expect(wallets.lightning, isNull);
@@ -193,31 +205,33 @@ void main() {
               address: 'a',
             );
 
-        expect(_fields(wallet), ('x', WalletAddressType.bitcoin, '', false));
+        expect(_fields(_value(wallet)), (
+          'x',
+          WalletAddressType.bitcoin,
+          '',
+          false,
+        ));
       },
     );
   });
 
   group('failures', () {
-    test('a JSON-RPC error throws without its message', () async {
-      await expectLater(
-        _repository(FakeBbxHttp(body: _rpcError)).getDefaultWallets(),
-        throwsA(
-          isA<Exception>().having(
-            (e) => '$e',
-            'message',
-            allOf(
-              startsWith('Exception: Failed to get default wallets'),
-              isNot(contains('bc1qsecret')),
-            ),
+    test('a JSON-RPC error retains its code but not its message', () async {
+      expect(
+        await _repository(FakeBbxHttp(body: _rpcError)).getDefaultWallets(),
+        _failure<DefaultWallets>(
+          isA<ExchangeUnexpectedFailure>().having(
+            (failure) => failure.logMessage,
+            'log message',
+            allOf(contains('-32602'), isNot(contains('bc1qsecret'))),
           ),
         ),
       );
     });
 
-    test('an invalid element throws', () async {
-      await expectLater(
-        _repository(
+    test('an invalid element is a typed failure', () async {
+      expect(
+        await _repository(
           FakeBbxHttp(
             body: {
               'result': {
@@ -228,39 +242,27 @@ void main() {
             },
           ),
         ).getDefaultWallets(),
-        throwsA(isA<Exception>()),
+        _failure<DefaultWallets>(isA<ExchangeUnexpectedFailure>()),
       );
     });
 
-    test('a failed save and delete throw', () async {
+    test('a failed save and delete return a typed failure', () async {
       final repository = _repository(FakeBbxHttp(body: _rpcError));
 
-      await expectLater(
-        repository.saveDefaultWallet(
+      expect(
+        await repository.saveDefaultWallet(
           walletType: WalletAddressType.bitcoin,
           address: 'bc1q',
         ),
-        throwsA(
-          isA<Exception>().having(
-            (e) => '$e',
-            'message',
-            startsWith('Exception: Failed to save default wallet'),
-          ),
-        ),
+        _failure<DefaultWallet>(isA<ExchangeUnexpectedFailure>()),
       );
-      await expectLater(
-        repository.deleteDefaultWallet(
+      expect(
+        await repository.deleteDefaultWallet(
           recipientId: 'btc',
           walletType: WalletAddressType.bitcoin,
           address: 'bc1q',
         ),
-        throwsA(
-          isA<Exception>().having(
-            (e) => '$e',
-            'message',
-            startsWith('Exception: Failed to delete default wallet'),
-          ),
-        ),
+        _failure<void>(isA<ExchangeUnexpectedFailure>()),
       );
     });
 
@@ -270,9 +272,9 @@ void main() {
         api: http.client(readApiKey: () async => const Ok(null)),
       );
 
-      await expectLater(
-        repository.getDefaultWallets(),
-        throwsA(isA<ApiKeyNotFoundException>()),
+      expect(
+        await repository.getDefaultWallets(),
+        _failure<DefaultWallets>(isA<ExchangeNotAuthenticatedFailure>()),
       );
       expect(http.requests, isEmpty);
     });
@@ -280,16 +282,16 @@ void main() {
     test('an unreadable credential is unavailable', () async {
       final repository = BbxApiExchangeRecipientRepository(
         api: FakeBbxHttp().client(
-          readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+          readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
         ),
       );
 
-      await expectLater(
-        repository.saveDefaultWallet(
+      expect(
+        await repository.saveDefaultWallet(
           walletType: WalletAddressType.bitcoin,
           address: 'bc1q',
         ),
-        throwsA(isA<ExchangeCredentialUnavailableException>()),
+        _failure<DefaultWallet>(isA<ExchangeApiKeyStorageFailure>()),
       );
     });
   });

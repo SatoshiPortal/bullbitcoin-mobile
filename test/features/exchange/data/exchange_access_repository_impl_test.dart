@@ -1,13 +1,11 @@
+import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_availability.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:exchange/exchange.dart';
@@ -16,7 +14,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _Keys extends Mock implements ExchangeApiKeyRepository {}
+class _Keys extends Mock implements ExchangeCredentials {}
 
 class _Auth extends Mock implements ExchangeAuthRepository {}
 
@@ -32,7 +30,7 @@ void main() {
         isActive: true,
         createdAt: 0,
         updatedAt: 0,
-      ) as Ok<ExchangeApiKey, ExchangeApiKeyFailure>).value,
+      ) as Ok<ExchangeApiKey, ExchangeFailure>).value,
     );
   });
 
@@ -233,9 +231,7 @@ void main() {
       createdAt: 0,
       updatedAt: 0,
     );
-    generated.complete(
-      Ok((key as Ok<ExchangeApiKey, ExchangeApiKeyFailure>).value),
-    );
+    generated.complete(Ok((key as Ok<ExchangeApiKey, ExchangeFailure>).value));
     expect(await authentication, isA<Err>());
     verifyNever(
       () => keys.saveApiKey(any(), isTestnet: any(named: 'isTestnet')),
@@ -560,7 +556,7 @@ void main() {
       });
       final keys = _Keys();
       final readStarted = Completer<void>();
-      final nextKey = Completer<Result<String?, ExchangeApiKeyFailure>>();
+      final nextKey = Completer<Result<String?, ExchangeFailure>>();
       var isTestnet = false;
       when(() => keys.readActiveApiKey(isTestnet: false))
           .thenAnswer((_) async => const Ok('active'));

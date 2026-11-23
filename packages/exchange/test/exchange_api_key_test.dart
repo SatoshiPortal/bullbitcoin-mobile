@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
-Result<ExchangeApiKey, ExchangeApiKeyFailure> _create(String key) =>
+Result<ExchangeApiKey, ExchangeFailure> _create(String key) =>
     ExchangeApiKey.create(
       id: 'id',
       key: key,
@@ -39,7 +39,7 @@ void main() {
       'invalid header material is a failure without retaining its value',
       () {
         final result = _create(key);
-        expect(result, isA<Err<ExchangeApiKey, ExchangeApiKeyFailure>>());
+        expect(result, isA<Err<ExchangeApiKey, ExchangeFailure>>());
         if (result case Err(:final failure)) {
           expect(failure.logMessage, isNull);
         }

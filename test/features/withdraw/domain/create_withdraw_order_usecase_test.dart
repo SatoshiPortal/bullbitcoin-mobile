@@ -1,7 +1,5 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
+import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
@@ -10,8 +8,7 @@ import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -30,18 +27,21 @@ F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
 };
 
 void main() {
-  late _MockExchangeOrderRepository mainnetRepository;
-  late _MockExchangeOrderRepository testnetRepository;
+  late _MockExchangeOrders mainnetRepository;
+  late _MockExchangeOrders testnetRepository;
   late _MockSettingsRepository settingsRepository;
   late CreateWithdrawOrderUsecase usecase;
 
   setUp(() {
-    mainnetRepository = _MockExchangeOrderRepository();
-    testnetRepository = _MockExchangeOrderRepository();
+    mainnetRepository = _MockExchangeOrders();
+    testnetRepository = _MockExchangeOrders();
     settingsRepository = _MockSettingsRepository();
     usecase = CreateWithdrawOrderUsecase(
-      mainnetExchangeOrderRepository: mainnetRepository,
-      testnetExchangeOrderRepository: testnetRepository,
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? testnetRepository
+            : mainnetRepository,
+      ),
       settingsRepository: settingsRepository,
     );
     when(() => settingsRepository.fetch()).thenAnswer(
@@ -82,7 +82,7 @@ void main() {
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
       ),
-    ).thenAnswer((_) async => order);
+    ).thenAnswer((_) async => Ok(order));
 
     final result = _ok(
       await usecase.execute(
@@ -116,7 +116,7 @@ void main() {
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
       ),
-    ).thenAnswer((_) async => order);
+    ).thenAnswer((_) async => Ok(order));
 
     final result = _ok(
       await usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
@@ -185,7 +185,7 @@ void main() {
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
       ),
-    ).thenAnswer((_) async => order);
+    ).thenAnswer((_) async => Ok(order));
 
     final result = _ok(
       await usecase.execute(fiatAmount: 125, recipientId: 'recipient-1'),
@@ -216,7 +216,9 @@ void main() {
   group('SEPA payment processor', () {
     setUpAll(() => registerFallbackValue(SepaPaymentProcessor.regular));
 
-    void stubPlace(Future<WithdrawOrder> Function() answer) {
+    void stubPlace(
+      Future<Result<WithdrawOrder, ExchangeFailure>> Function() answer,
+    ) {
       when(
         () => mainnetRepository.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),
@@ -242,7 +244,7 @@ void main() {
       (RecipientType.speiClabeMxn, null),
     ]) {
       test('a ${type.name} withdrawal sends $processor', () async {
-        stubPlace(() async => _MockWithdrawOrder());
+        stubPlace(() async => Ok(_MockWithdrawOrder()));
 
         _ok(
           await usecase.execute(
@@ -258,8 +260,7 @@ void main() {
 
     test('an inactive virtual payee is its own failure', () async {
       stubPlace(
-        () async =>
-            throw const BullBitcoinApiConfidentialSepaNotActivatedException(),
+        () async => const Err(ExchangeConfidentialSepaInactiveFailure()),
       );
 
       final failure = _err(

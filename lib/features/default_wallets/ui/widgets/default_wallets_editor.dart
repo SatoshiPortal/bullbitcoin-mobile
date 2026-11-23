@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';

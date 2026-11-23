@@ -50,15 +50,14 @@ void main() {
   test('forwards the order on success', () async {
     final order = _order();
     when(() => getOrder.execute(orderId: 'order-1'))
-        .thenAnswer((_) async => order);
+        .thenAnswer((_) async => Ok(order));
 
     expect(_valueOf(await usecase.execute('order-1')), order);
   });
 
   test('sanitizes an exchange API error', () async {
-    when(() => getOrder.execute(orderId: 'order-1')).thenThrow(
-      GetOrderException('401 {"error":"invalid api key bb_live_abc123"}'),
-    );
+    when(() => getOrder.execute(orderId: 'order-1'))
+        .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
     final result = await usecase.execute('order-1');
 

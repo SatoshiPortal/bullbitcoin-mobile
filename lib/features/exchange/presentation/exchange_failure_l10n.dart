@@ -33,6 +33,13 @@ extension ExchangeFailureL10n on ExchangeFailure {
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
     ExchangeUnexpectedFailure() ||
+    ExchangeApiKeyInvalidFailure() ||
+    ExchangeApiKeySaveFailure() ||
+    ExchangeApiKeyDeleteFailure() ||
+    ExchangeOrderLimitFailure() ||
+    ExchangeConfidentialSepaInactiveFailure() ||
+    ExchangeOrderRejectedFailure() ||
+    ExchangeOrderLoadFailure() ||
     ExchangeCredentialReadFailure() ||
     ExchangeStatisticsUnavailableFailure() ||
     ExchangeDocumentUploadFailure() ||

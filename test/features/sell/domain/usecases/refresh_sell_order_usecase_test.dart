@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
+import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -8,8 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -22,22 +20,24 @@ class _MockFiatPaymentOrder extends Mock implements FiatPaymentOrder {}
 const _confirmedAddress = 'bc1qtheaddressuserconfirmed';
 
 void main() {
-  late _MockExchangeOrderRepository mainnet;
-  late _MockExchangeOrderRepository testnet;
+  late _MockExchangeOrders mainnet;
+  late _MockExchangeOrders testnet;
   late _MockSettingsRepository settingsRepository;
   late RefreshSellOrderUsecase usecase;
 
   setUp(() {
-    mainnet = _MockExchangeOrderRepository();
-    testnet = _MockExchangeOrderRepository();
+    mainnet = _MockExchangeOrders();
+    testnet = _MockExchangeOrders();
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
     when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
 
     usecase = RefreshSellOrderUsecase(
-      mainnetExchangeOrderRepository: mainnet,
-      testnetExchangeOrderRepository: testnet,
+      exchange: exchangeForTesting(
+        orders: (environment) =>
+            environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+      ),
       settingsRepository: settingsRepository,
     );
   });
@@ -81,7 +81,7 @@ void main() {
     () async {
       final order = orderPaying(_confirmedAddress);
       when(() => mainnet.refreshSellOrder('order-1'))
-          .thenAnswer((_) async => order);
+          .thenAnswer((_) async => Ok(order));
 
       final result = await usecase.execute(
         orderId: 'order-1',
@@ -100,7 +100,7 @@ void main() {
         when(() => order.liquidAddress).thenReturn(null);
         when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
         when(() => mainnet.refreshPayOrder('bank-order'))
-            .thenAnswer((_) async => order);
+            .thenAnswer((_) async => Ok(order));
         final result = await usecase.execute(
           orderId: 'bank-order',
           expectedDepositAddress: _confirmedAddress,
@@ -124,7 +124,7 @@ void main() {
         when(() => order.payinMethod).thenReturn(OrderPaymentMethod.lnInvoice);
         when(() => order.lightningInvoice).thenReturn(invoice);
         when(() => mainnet.refreshPayOrder('lightning-order'))
-            .thenAnswer((_) async => order);
+            .thenAnswer((_) async => Ok(order));
         final result = await usecase.execute(
           orderId: 'lightning-order',
           expectedDepositAddress: null,
@@ -146,7 +146,7 @@ void main() {
   test('refuses an order whose deposit address moved', () async {
     final order = orderPaying('bc1qattackercontrolledaddress');
     when(() => mainnet.refreshSellOrder('order-1'))
-        .thenAnswer((_) async => order);
+        .thenAnswer((_) async => Ok(order));
 
     final result = await usecase.execute(
       orderId: 'order-1',
@@ -164,7 +164,7 @@ void main() {
   test('refuses when there is no address to compare against', () async {
     final order = orderPaying(_confirmedAddress);
     when(() => mainnet.refreshSellOrder('order-1'))
-        .thenAnswer((_) async => order);
+        .thenAnswer((_) async => Ok(order));
 
     for (final expected in [null, '']) {
       final result = await usecase.execute(
@@ -182,7 +182,7 @@ void main() {
 
   test('maps an unauthenticated API to its own failure', () async {
     when(() => mainnet.refreshSellOrder('order-1'))
-        .thenThrow(ApiKeyException('API key not found or inactive'));
+        .thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
     final result = await usecase.execute(
       orderId: 'order-1',
@@ -197,7 +197,7 @@ void main() {
 
   test('sanitizes any other error into the catch-all', () async {
     when(() => mainnet.refreshSellOrder('order-1'))
-        .thenThrow(Exception('Dio 500: {"token":"secret"}'));
+        .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
     final result = await usecase.execute(
       orderId: 'order-1',
@@ -216,7 +216,7 @@ void main() {
     when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
     final order = orderPaying(_confirmedAddress);
     when(() => testnet.refreshSellOrder('order-1'))
-        .thenAnswer((_) async => order);
+        .thenAnswer((_) async => Ok(order));
 
     final result = await usecase.execute(
       orderId: 'order-1',

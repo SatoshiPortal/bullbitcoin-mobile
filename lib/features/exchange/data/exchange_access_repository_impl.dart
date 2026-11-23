@@ -1,7 +1,8 @@
+import 'package:exchange/setup.dart';
+
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
@@ -11,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
   ExchangeAccessRepositoryImpl({
-    required ExchangeApiKeyRepository apiKeyRepository,
+    required ExchangeCredentials apiKeyRepository,
     required this._readEnvironment,
     required this._platformAllowed,
     required this._disconnectNotifications,
@@ -20,7 +21,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
   }) : _keys = apiKeyRepository;
 
   static const preferenceKey = 'exchange_access';
-  final ExchangeApiKeyRepository _keys;
+  final ExchangeCredentials _keys;
   final Future<bool> Function() _readEnvironment;
   final Future<bool> Function() _platformAllowed;
   final Future<void> Function() _disconnectNotifications;

@@ -1,12 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bbx_api/bbx_api.dart'
@@ -39,8 +34,8 @@ void main() {
   late _NoNetwork network;
   late Bbx api;
   late Exchange user;
-  late BbxApiOrderRepository orders;
-  Result<String?, ExchangeApiKeyFailure> credential = const Ok(null);
+  late ExchangeOrders orders;
+  Result<String?, ExchangeFailure> credential = const Ok(null);
 
   setUp(() {
     credential = const Ok(null);
@@ -70,7 +65,7 @@ void main() {
         readActiveApiKey: readKey,
       ),
     );
-    orders = BbxApiOrderRepository(api: api, isTestnet: true);
+    orders = user.orders(ExchangeEnvironment.testnet);
   });
   tearDown(() {
     expect(network.sends, 0);
@@ -81,19 +76,21 @@ void main() {
       'EUR sell payout preserves credential refusal: $storageFailure',
       () async {
         credential = storageFailure
-            ? const Err(ExchangeApiKeyReadFailure())
+            ? const Err(ExchangeCredentialReadFailure())
             : const Ok(null);
-        await expectLater(
-          orders.placePayOrder(
+        expect(
+          await orders.placePayOrder(
             orderAmount: const FiatAmount(100),
             recipientId: 'own-account',
             paymentProcessor: SepaPaymentProcessor.regular,
             network: OrderBitcoinNetwork.bitcoin,
           ),
-          throwsA(
+          isA<Err>().having(
+            (r) => r.failure,
+            'failure',
             storageFailure
-                ? isA<ExchangeCredentialUnavailableException>()
-                : isA<ApiKeyException>(),
+                ? isA<ExchangeCredentialReadFailure>()
+                : isA<ExchangeNotAuthenticatedFailure>(),
           ),
         );
       },
@@ -130,9 +127,13 @@ void main() {
       );
       final history = await orders.getOrders();
       expect(history, isA<Ok>().having((r) => r.value, 'history', isEmpty));
-      await expectLater(
-        orders.getOrder('order'),
-        throwsA(isA<ApiKeyException>()),
+      expect(
+        await orders.getOrder('order'),
+        isA<Err>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeNotAuthenticatedFailure>(),
+        ),
       );
     },
   );
@@ -140,7 +141,7 @@ void main() {
   test(
     'storage failure is not presented as logout or empty account history',
     () async {
-      credential = const Err(ExchangeApiKeyReadFailure());
+      credential = const Err(ExchangeCredentialReadFailure());
       expect(
         await user.getUserSummary(ExchangeEnvironment.testnet),
         isA<Err>().having(
@@ -170,7 +171,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'history',
-          isA<ExchangeOrderCredentialFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
       expect(
@@ -178,7 +179,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'lookup',
-          isA<ExchangeOrderCredentialFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
     },
@@ -215,7 +216,7 @@ void main() {
           isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
-      credential = const Err(ExchangeApiKeyReadFailure());
+      credential = const Err(ExchangeCredentialReadFailure());
       expect(
         await funding.listInstitutions(
           jurisdiction: FundingJurisdiction.canada,

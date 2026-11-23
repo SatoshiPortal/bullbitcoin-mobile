@@ -1,5 +1,5 @@
+import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
@@ -8,12 +8,9 @@ import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
-
-class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
 
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
 
@@ -30,23 +27,23 @@ F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
 };
 
 void main() {
-  late _MockExchangeOrderRepository mainnetRepository;
-  late _MockExchangeOrderRepository testnetRepository;
+  late _MockExchangeOrders mainnetRepository;
+  late _MockExchangeOrders testnetRepository;
   late _MockSettingsRepository settingsRepository;
-  late _MockRecipientsFacade recipientsFacade;
   late ConfirmWithdrawOrderUsecase usecase;
   late InteracSecurityDetails interacSecurityDetails;
 
   setUp(() {
-    mainnetRepository = _MockExchangeOrderRepository();
-    testnetRepository = _MockExchangeOrderRepository();
+    mainnetRepository = _MockExchangeOrders();
+    testnetRepository = _MockExchangeOrders();
     settingsRepository = _MockSettingsRepository();
-    recipientsFacade = _MockRecipientsFacade();
     usecase = ConfirmWithdrawOrderUsecase(
-      mainnetExchangeOrderRepository: mainnetRepository,
-      testnetExchangeOrderRepository: testnetRepository,
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? testnetRepository
+            : mainnetRepository,
+      ),
       settingsRepository: settingsRepository,
-      recipientsFacade: recipientsFacade,
     );
     interacSecurityDetails = _ok(
       InteracSecurityDetails.create(
@@ -87,109 +84,47 @@ void main() {
       expect(_err(result), isA<WithdrawUnsupportedNetworkFailure>());
       verifyZeroInteractions(mainnetRepository);
       verifyZeroInteractions(testnetRepository);
-      verifyZeroInteractions(recipientsFacade);
     },
   );
 
-  test('confirms the order before saving Interac defaults', () async {
-    final order = _MockWithdrawOrder();
-    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => order);
-    when(
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: any(named: 'recipientId'),
-        email: any(named: 'email'),
-        securityQuestion: any(named: 'securityQuestion'),
-        securityAnswer: any(named: 'securityAnswer'),
-      ),
-    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
+  for (final saveDefaults in [true, false]) {
+    test(
+      'confirms with the selected Interac defaults (save: $saveDefaults)',
+      () async {
+        final order = _MockWithdrawOrder();
+        Future<Result<WithdrawOrder, ExchangeFailure>> confirm() =>
+            mainnetRepository.confirmWithdrawOrder(
+              'order-1',
+              interacUpdate: (
+                recipientId: 'recipient-1',
+                email: 'person@example.com',
+                securityQuestion: saveDefaults ? 'Favourite city?' : null,
+                securityAnswer: saveDefaults ? 'Montreal' : null,
+              ),
+            );
+        when(confirm).thenAnswer((_) async => Ok(order));
 
-    final result = await usecase.execute(
-      orderId: 'order-1',
-      interacSecurityDetails: interacSecurityDetails,
-      saveSecurityDetailsAsDefault: true,
+        final result = await usecase.execute(
+          orderId: 'order-1',
+          interacSecurityDetails: interacSecurityDetails,
+          saveSecurityDetailsAsDefault: saveDefaults,
+        );
+
+        expect(_ok(result), same(order));
+        verify(confirm).called(1);
+      },
     );
-
-    expect(_ok(result), same(order));
-    verifyInOrder([
-      () => mainnetRepository.confirmWithdrawOrder('order-1'),
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: 'recipient-1',
-        email: 'person@example.com',
-        securityQuestion: 'Favourite city?',
-        securityAnswer: 'Montreal',
-      ),
-    ]);
-  });
-
-  test('clears saved Interac defaults when save is not selected', () async {
-    final order = _MockWithdrawOrder();
-    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => order);
-    when(
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: any(named: 'recipientId'),
-        email: any(named: 'email'),
-        securityQuestion: any(named: 'securityQuestion'),
-        securityAnswer: any(named: 'securityAnswer'),
-      ),
-    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
-
-    final result = await usecase.execute(
-      orderId: 'order-1',
-      interacSecurityDetails: interacSecurityDetails,
-    );
-
-    expect(_ok(result), same(order));
-
-    verify(
-      () => recipientsFacade.updateInteracSecurityDetails(
-        recipientId: 'recipient-1',
-        email: 'person@example.com',
-        securityQuestion: null,
-        securityAnswer: null,
-      ),
-    ).called(1);
-  });
-
-  test(
-    'does not fail a confirmed order when updating defaults fails',
-    () async {
-      final order = _MockWithdrawOrder();
-      when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-          .thenAnswer((_) async => order);
-      when(
-        () => recipientsFacade.updateInteracSecurityDetails(
-          recipientId: any(named: 'recipientId'),
-          email: any(named: 'email'),
-          securityQuestion: any(named: 'securityQuestion'),
-          securityAnswer: any(named: 'securityAnswer'),
-        ),
-      ).thenAnswer(
-        (_) async => const Err<void, RecipientsFailure>(
-          RecipientsUnexpectedFailure('update failed'),
-        ),
-      );
-
-      final result = await usecase.execute(
-        orderId: 'order-1',
-        interacSecurityDetails: interacSecurityDetails,
-        saveSecurityDetailsAsDefault: true,
-      );
-
-      expect(_ok(result), same(order));
-    },
-  );
+  }
 
   test('does not update recipients for non-Interac withdrawals', () async {
     final order = _MockWithdrawOrder();
     when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => order);
+        .thenAnswer((_) async => Ok(order));
 
     final result = await usecase.execute(orderId: 'order-1');
 
     expect(_ok(result), same(order));
-    verifyZeroInteractions(recipientsFacade);
+    verify(() => mainnetRepository.confirmWithdrawOrder('order-1')).called(1);
   });
 
   test('routes testnet confirmation to the testnet repository', () async {
@@ -204,7 +139,7 @@ void main() {
       ),
     );
     when(() => testnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => order);
+        .thenAnswer((_) async => Ok(order));
 
     final result = await usecase.execute(orderId: 'order-1');
 
@@ -214,7 +149,7 @@ void main() {
 
   test('sanitizes unexpected confirmation failures', () async {
     when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenThrow(Exception('Montreal'));
+        .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
     final result = await usecase.execute(orderId: 'order-1');
 

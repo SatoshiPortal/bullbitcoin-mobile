@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
@@ -14,8 +12,12 @@ import '../../../../core/exchange/fake_exchange_users.dart';
 class MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
+abstract interface class _DefaultWalletReader {
+  Future<Result<DefaultWallets, ExchangeFailure>> execute();
+}
+
 class MockGetDefaultWalletsUsecase extends Mock
-    implements GetDefaultWalletsUsecase {}
+    implements _DefaultWalletReader {}
 
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserOperations {}
@@ -93,9 +95,12 @@ void main() {
     );
     usecase = SetAutoBuyUsecase(
       getUserSummary,
-      getDefaultWallets,
       settings,
-      fakeExchangeUsers(savePreferences, testnetUsers),
+      fakeExchangeUsers(
+        savePreferences,
+        testnetUsers,
+        getDefaultWallets: getDefaultWallets.execute,
+      ),
     );
   });
 
@@ -109,7 +114,8 @@ void main() {
         ),
       ),
     );
-    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
     stubSaveSucceeds();
 
@@ -130,7 +136,8 @@ void main() {
   });
 
   test('requires a default wallet before enabling AutoBuy', () async {
-    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _noWallets);
+    when(() => getDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(_noWallets));
 
     final result = await usecase.execute(enabled: true);
 
@@ -145,7 +152,8 @@ void main() {
   test(
     'reads the current default wallets instead of trusting the caller',
     () async {
-      when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+      when(() => getDefaultWallets.execute())
+          .thenAnswer((_) async => const Ok(_wallets));
       when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
       stubSaveSucceeds();
 
@@ -167,7 +175,8 @@ void main() {
   });
 
   test('refuses to enable AutoBuy on a funding-restricted account', () async {
-    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute())
         .thenAnswer((_) async => _restrictedSummary);
 
@@ -200,7 +209,8 @@ void main() {
   });
 
   test('preserves the existing preferences when enabling AutoBuy', () async {
-    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
     stubSaveSucceeds();
 
@@ -220,7 +230,7 @@ void main() {
 
   test('maps an unreadable default wallet list to the catch-all', () async {
     when(() => getDefaultWallets.execute())
-        .thenThrow(Exception('recipient request failed'));
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
 
     final result = await usecase.execute(enabled: true);
 
@@ -232,7 +242,8 @@ void main() {
   });
 
   test('maps an unavailable account to a typed failure', () async {
-    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute())
         .thenThrow(GetExchangeUserSummaryException('account request failed'));
 
@@ -246,7 +257,8 @@ void main() {
   });
 
   test('maps an unclassified account error to the catch-all', () async {
-    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute())
         .thenThrow(Exception('something nobody classified'));
 

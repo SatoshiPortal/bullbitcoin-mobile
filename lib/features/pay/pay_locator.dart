@@ -1,7 +1,7 @@
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
@@ -70,12 +70,7 @@ class PayLocator {
     locator.registerFactory<PlacePayOrderUsecase>(
       () => PlacePayOrderUsecase(
         wallet: locator<WalletFacade>(),
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
@@ -83,12 +78,7 @@ class PayLocator {
 
     locator.registerFactory<RefreshPayOrderUsecase>(
       () => RefreshPayOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator(),
       ),
     );

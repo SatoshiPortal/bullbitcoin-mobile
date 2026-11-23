@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
+import 'package:exchange/testing.dart';
 
 import 'dart:collection';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
@@ -33,8 +32,7 @@ class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
@@ -82,8 +80,8 @@ void main() {
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
-  late _MockExchangeOrderRepository mainnetOrderRepository;
-  late _MockExchangeOrderRepository testnetOrderRepository;
+  late _MockExchangeOrders mainnetOrderRepository;
+  late _MockExchangeOrders testnetOrderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late List<Order> orders;
   late _MockGetTransactionOrderSwapsUsecase getOrderSwaps;
@@ -110,8 +108,8 @@ void main() {
     walletTransactionRepository = _MockWalletTransactionRepository();
     swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
-    mainnetOrderRepository = _MockExchangeOrderRepository();
-    testnetOrderRepository = _MockExchangeOrderRepository();
+    mainnetOrderRepository = _MockExchangeOrders();
+    testnetOrderRepository = _MockExchangeOrders();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
     orders = [];
     getOrderSwaps = _MockGetTransactionOrderSwapsUsecase();
@@ -148,8 +146,11 @@ void main() {
       walletTransactionRepository: walletTransactionRepository,
       swapStore: swapStore,
       payjoinSessions: payjoinSessions,
-      mainnetExchangeOrderRepository: mainnetOrderRepository,
-      testnetExchangeOrderRepository: testnetOrderRepository,
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? testnetOrderRepository
+            : mainnetOrderRepository,
+      ),
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
       getTransactionOrderSwapsUsecase: getOrderSwaps,
     );
@@ -196,7 +197,7 @@ void main() {
         isIncoming: true,
       );
       when(() => mainnetOrderRepository.getOrders())
-          .thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+          .thenAnswer((_) async => const Err(ExchangeCredentialReadFailure()));
       when(
         () => walletTransactionRepository.getWalletTransactions(
           walletId: any(named: 'walletId'),

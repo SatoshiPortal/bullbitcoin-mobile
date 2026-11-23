@@ -1,3 +1,5 @@
+import 'package:exchange/testing.dart';
+
 // Behavioral proof for two audit findings on GetTransactionsUsecase
 // (issues #2663 and #2664 fixes).
 //
@@ -9,7 +11,6 @@
 import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
@@ -46,8 +47,7 @@ class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
@@ -88,7 +88,7 @@ void main() {
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
-  late _MockExchangeOrderRepository orderRepository;
+  late _MockExchangeOrders orderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late _MockGetTransactionOrderSwapsUsecase getTransactionOrderSwapsUsecase;
   late GetTransactionsUsecase usecase;
@@ -102,7 +102,7 @@ void main() {
     walletTransactionRepository = _MockWalletTransactionRepository();
     swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
-    orderRepository = _MockExchangeOrderRepository();
+    orderRepository = _MockExchangeOrders();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
     getTransactionOrderSwapsUsecase = _MockGetTransactionOrderSwapsUsecase();
 
@@ -134,8 +134,11 @@ void main() {
       walletTransactionRepository: walletTransactionRepository,
       swapStore: swapStore,
       payjoinSessions: payjoinSessions,
-      mainnetExchangeOrderRepository: orderRepository,
-      testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? _MockExchangeOrders()
+            : orderRepository,
+      ),
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
       getTransactionOrderSwapsUsecase: getTransactionOrderSwapsUsecase,
     );
