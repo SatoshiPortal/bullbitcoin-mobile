@@ -10,6 +10,8 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart'
+    show VirtualIbanFundingScreen;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_exit_on_back.dart';
@@ -19,7 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
-  exchangeHome('/exchange'),
+  exchangeHome(BullExchangeNavigation.dashboardPath),
   exchangeAuth('/exchange/auth');
 
   final String path;
@@ -137,6 +139,19 @@ class ExchangeRouter {
     onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
     settings: settings,
+    funding: exchange == null
+        ? null
+        : (
+            exchange: exchange,
+            isLoggedIn: (context) =>
+                !context.read<ExchangeCubit>().state.notLoggedIn,
+            buildVirtualIbanFunding:
+                ({required onUseRegularSepa, required onDone}) =>
+                    VirtualIbanFundingScreen(
+                      onUseRegularSepa: onUseRegularSepa,
+                      onDone: onDone,
+                    ),
+          ),
     kyc: switch (config.loadKyc) {
       final load? => ExchangeKycHost(
         loadConfiguration: load,

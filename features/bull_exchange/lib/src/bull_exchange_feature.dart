@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'funding/fund_exchange_router.dart';
 import 'kyc/exchange_kyc_host.dart';
 import 'kyc/exchange_kyc_screen.dart';
 import 'settings/ui/exchange_settings_router.dart';
@@ -48,8 +49,10 @@ final class BullExchangeFeature {
     ExchangeSupportChatHost? supportChat,
     ExchangeKycHost? kyc,
     ExchangeSettingsHost? settings,
+    ExchangeFundingHost? funding,
   }) => BullExchangeFeature._(
     List.unmodifiable([
+      if (funding != null) ...FundExchangeRouter.routes(funding),
       GoRoute(
         name: BullExchangeNavigation.landingName,
         path: BullExchangeNavigation.landingPath,

@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
-import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';

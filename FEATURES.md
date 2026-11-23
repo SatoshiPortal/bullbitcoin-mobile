@@ -87,7 +87,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC and stats]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account and access settings, support chat and its login screen]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account and access settings, support chat, funding]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
@@ -102,7 +102,6 @@ graph TB
     DCA --> EXCHANGE_DOMAIN
     DEFAULT_WALLETS -->|default payout reads and writes| EXCHANGE_DOMAIN
     AUTOBUY --> EXCHANGE_DOMAIN
-    FUNDING --> EXCHANGE_DOMAIN
     LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
     TX_HISTORY --> EXCHANGE_DOMAIN
@@ -110,7 +109,7 @@ graph TB
     EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
     EXCHANGE_DOMAIN -->|database key and legacy credential lifecycle| SECRETS
     EXCHANGE_DOMAIN -->|account, KYC, statistics, chat, notifications, funding, virtual IBANs, orders and default payouts| BBX_API
-    BULL_EXCHANGE -->|support chat, account and statistics| EXCHANGE_DOMAIN
+    BULL_EXCHANGE -->|support chat, account, statistics and funding| EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
 
     SIGNERS[Signers<br/>Workspace Feature]
@@ -197,7 +196,6 @@ graph TB
     UTXO_MGMT[UTXO Management]
     ADDRESS_MGMT[Address Management]
     RECIPIENTS[Recipients]
-    FUNDING[Funding]
     BACKUPS[Backups]
     SWAPS[Swaps]
     WITHDRAWAL[Withdrawal]
@@ -334,7 +332,7 @@ graph TB
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
     BUY --> TX_HISTORY
-    BUY --> FUNDING
+    BUY -->|funding navigation| BULL_EXCHANGE
     BUY --> LABELS
     COINS --> UTXO_MGMT
     COINS --> LABELS
@@ -357,7 +355,6 @@ graph TB
     LIMIT_ORDERS --> EXCHANGE
     EXCHANGE --> BTC_PRICE
     EXCHANGE --> DCA
-    EXCHANGE --> FUNDING
     EXCHANGE --> TX_HISTORY
     EXCHANGE --> WITHDRAWAL
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
@@ -368,9 +365,8 @@ graph TB
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS -->|default-wallet editor navigation| DEFAULT_WALLETS
-    LIMIT_ORDERS --> FUNDING
-    FUNDING --> EXCHANGE
-    FUNDING --> RECIPIENTS
+    LIMIT_ORDERS -->|funding navigation| BULL_EXCHANGE
+    EXCHANGE -->|composes virtual IBAN funding view| RECIPIENTS
     HW_WALLETS --> CORE
     CORE --> LABELS
     PAY --> RECIPIENTS
@@ -524,7 +520,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams

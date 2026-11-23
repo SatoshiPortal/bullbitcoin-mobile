@@ -28,10 +28,7 @@ class GetConfidentialSepaAvailabilityUsecase {
     final bool isEligible;
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
-      isEligible =
-          summary.isFullyVerifiedKycLevel &&
-          !summary.isCorporate &&
-          summary.isEuropeanJurisdiction;
+      isEligible = summary.isEligibleForConfidentialSepa;
     } on Object catch (e, st) {
       log.warning(
         'Could not read the exchange summary for Confidential SEPA',

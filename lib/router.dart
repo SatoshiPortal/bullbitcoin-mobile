@@ -28,7 +28,6 @@ import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart'
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
@@ -258,7 +257,6 @@ class AppRouter {
       SwapRouter.route,
       SwapRouter.settingsRoute,
       ...BuyRouter.routes,
-      ...FundExchangeRouter.routes,
       SellRouter.route,
       WithdrawRouter.route,
       PayRouter.route,

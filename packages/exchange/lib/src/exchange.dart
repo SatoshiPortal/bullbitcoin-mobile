@@ -124,6 +124,8 @@ final class Exchange {
   final ExchangeFunding funding;
   final ExchangeVirtualIbans virtualIbans;
   final ExchangeKycConfigurationRepository? _kyc;
+  final Future<Result<bool, ExchangeFailure>> Function()
+  _isConfidentialSepaFundingAvailable;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -141,6 +143,7 @@ final class Exchange {
     this.funding,
     this.virtualIbans,
     this._kyc,
+    this._isConfidentialSepaFundingAvailable,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -482,6 +485,19 @@ final class Exchange {
         ),
       ),
       kyc == null ? null : ExchangeKycConfigurationRepository(kyc),
+      () => withClient((client, untimedClient) async {
+        switch (await BbxApiUserRepository(api: client).getUserSummary()) {
+          case Err():
+            return const Err(ExchangeAccountUnavailableFailure());
+          case Ok(:final value):
+            if (!value.isEligibleForConfidentialSepa) {
+              return const Ok(false);
+            }
+        }
+        return (await BbxApiVirtualIbanRepository(
+          untimedClient(),
+        ).find()).map((_) => true);
+      }, checkCompletion: true),
     );
   }
 
@@ -516,6 +532,12 @@ final class Exchange {
   Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
+
+  /// Eligible accounts can fund through Confidential SEPA even before their
+  /// virtual IBAN is active, but a failed IBAN lookup is not eligibility.
+  @useResult
+  Future<Result<bool, ExchangeFailure>> isConfidentialSepaFundingAvailable() =>
+      _isConfidentialSepaFundingAvailable();
 
   @useResult
   Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
@@ -653,6 +675,8 @@ Exchange exchangeForTesting({
   ExchangeLimitOrders? limitOrders,
   ExchangeFunding? funding,
   ExchangeVirtualIbans? virtualIbans,
+  Future<Result<bool, ExchangeFailure>> Function()?
+  isConfidentialSepaFundingAvailable,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -724,6 +748,8 @@ Exchange exchangeForTesting({
         create: (_) => throw StateError('Unexpected virtual IBAN creation'),
       ),
   null,
+  isConfidentialSepaFundingAvailable ??
+      () => throw StateError('Unexpected Confidential SEPA funding check'),
 );
 
 Exchange exchangeWithTransportForTesting({

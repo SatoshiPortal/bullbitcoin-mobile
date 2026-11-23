@@ -4,6 +4,7 @@ library;
 export 'src/bull_exchange_feature.dart' show BullExchangeFeature;
 export 'src/exchange_landing_copy.dart' show ExchangeLandingCopy;
 export 'src/exchange_landing_navigation.dart' show BullExchangeNavigation;
+export 'src/funding/fund_exchange_router.dart' show FundExchangeRoute;
 export 'src/kyc/exchange_kyc_host.dart' show ExchangeKycHost;
 export 'src/settings/ui/exchange_access_settings_route.dart'
     show ExchangeAccessSettingsNavigation;
