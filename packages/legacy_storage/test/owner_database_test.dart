@@ -173,6 +173,23 @@ void main() {
       isFalse,
     );
   });
+
+  test('quarantine without a replacement is not an empty source', () async {
+    final standalone = File('${directory.path}/payjoin.sqlite');
+    final quarantine = File('${standalone.path}.unreadable-1');
+    await quarantine.writeAsBytes([0, 1, 255]);
+    final reasons = <String>[];
+    expect(
+      await readStandaloneSource(
+        standalone,
+        (_) async => fail('orphaned quarantine must not be opened'),
+        onRejected: reasons.add,
+      ),
+      isFalse,
+    );
+    expect(reasons, ['standalone_orphaned_quarantine']);
+    expect(await quarantine.readAsBytes(), [0, 1, 255]);
+  });
 }
 
 const _createRows = '''
