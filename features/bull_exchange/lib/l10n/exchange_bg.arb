@@ -839,7 +839,6 @@
   "buyAboveMaxAmountError": "Опитвате се да купите над максималната сума.",
   "dcaAccountUnavailableError": "Профилът ви не можа да бъде зареден. Проверете връзката си, уверете се, че сте влезли, и опитайте отново.",
   "dcaLightningAddressRequiredError": "Въведете Lightning адрес, за да получавате покупките си.",
-  "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
   "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно.",
   "closeDialogButton": "Затвори",
   "@closeDialogButton": {

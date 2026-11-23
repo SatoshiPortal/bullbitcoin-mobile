@@ -719,7 +719,6 @@
   },
   "dcaAccountUnavailableError": "Ihr Konto konnte nicht geladen werden. Prüfen Sie Ihre Verbindung, stellen Sie sicher, dass Sie angemeldet sind, und versuchen Sie es erneut.",
   "dcaLightningAddressRequiredError": "Geben Sie eine Lightning-Adresse ein, um Ihre Käufe zu erhalten.",
-  "dcaReceiveAddressError": "In Ihrer Wallet konnte keine Empfangsadresse vorbereitet werden. Bitte versuchen Sie es erneut.",
   "dcaOrderCreationError": "Der Sparplan konnte nicht erstellt werden. Bitte versuchen Sie es später erneut.",
   "payjoinBuyRegularSend": "Bitcoin per regulärer Transaktion an Ihre Wallet gesendet.",
   "payjoinInProgress": "Payjoin wird durchgeführt…",

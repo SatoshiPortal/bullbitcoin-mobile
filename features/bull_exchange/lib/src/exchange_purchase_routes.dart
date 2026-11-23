@@ -21,6 +21,7 @@ import 'buy/domain/validate_buy_destination_usecase.dart';
 import 'buy/domain/watch_buy_bitcoin_unit_usecase.dart';
 import 'buy/presentation/buy_bloc.dart';
 import 'buy/ui/buy_router.dart';
+import 'dca/domain/usecases/get_dca_default_wallets_usecase.dart';
 import 'dca/domain/usecases/set_dca_usecase.dart';
 import 'dca/domain/usecases/start_dca_usecase.dart';
 import 'dca/presentation/dca_bloc.dart';
@@ -112,8 +113,10 @@ GoRoute mountDca(ExchangePurchaseHost host) => DcaRouter.route(
         settingsRepository: preferences,
         exchange: exchange,
       ),
+      getDcaDefaultWalletsUsecase: GetDcaDefaultWalletsUsecase(
+        exchange: exchange,
+      ),
       setDcaUsecase: SetDcaUsecase(
-        payouts: ExchangePayoutWallets(host.inventory(), host.native()),
         settingsRepository: preferences,
         exchange: exchange,
       ),

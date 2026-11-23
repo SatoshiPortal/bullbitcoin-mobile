@@ -982,7 +982,6 @@
   },
   "dcaAccountUnavailableError": "ไม่สามารถโหลดบัญชีของคุณได้ ตรวจสอบการเชื่อมต่อและการเข้าสู่ระบบของคุณ แล้วลองอีกครั้ง",
   "dcaLightningAddressRequiredError": "ป้อนที่อยู่ Lightning เพื่อรับการซื้อของคุณ",
-  "dcaReceiveAddressError": "ไม่สามารถเตรียมที่อยู่รับในกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
   "dcaOrderCreationError": "ไม่สามารถสร้างการซื้อแบบประจำได้ โปรดลองอีกครั้งภายหลัง",
   "payPleasePayInvoice": "กรุณาชําระเงิน",
   "@payPleasePayInvoice": {

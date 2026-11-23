@@ -22,10 +22,11 @@ final class DcaLightningAddressRequiredFailure extends DcaFailure {
   const DcaLightningAddressRequiredFailure();
 }
 
-/// No default wallet exists for the selected network, or generating a
-/// receive address on it failed — either way no destination for the buys.
-final class DcaReceiveAddressFailure extends DcaFailure {
-  const DcaReceiveAddressFailure([super.logMessage]);
+/// Bitcoin or Liquid was selected but no payout address was given (neither
+/// the exchange default wallet nor a typed address). Defensive: the
+/// wallet-selection screen only continues with an address.
+final class DcaDestinationAddressRequiredFailure extends DcaFailure {
+  const DcaDestinationAddressRequiredFailure();
 }
 
 /// The exchange rejected the DCA order itself.

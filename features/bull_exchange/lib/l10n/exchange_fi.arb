@@ -718,7 +718,6 @@
   },
   "dcaAccountUnavailableError": "Tiliäsi ei voitu ladata. Tarkista yhteytesi, varmista että olet kirjautunut sisään ja yritä uudelleen.",
   "dcaLightningAddressRequiredError": "Anna Lightning-osoite ostojesi vastaanottamista varten.",
-  "dcaReceiveAddressError": "Lompakkoosi ei voitu valmistella vastaanotto-osoitetta. Yritä uudelleen.",
   "dcaOrderCreationError": "Toistuvaa ostoa ei voitu luoda. Yritä myöhemmin uudelleen.",
   "sellTitle": "Myy bitcoinia",
   "sellSelectWallet": "Valitse lompakko",

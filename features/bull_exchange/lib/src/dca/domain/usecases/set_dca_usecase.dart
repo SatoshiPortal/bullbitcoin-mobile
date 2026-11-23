@@ -4,20 +4,16 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_exchange/src/dca/domain/dca_failure.dart';
 import 'package:meta/meta.dart';
-import 'package:secrets/secrets.dart' show WalletSelection;
 
-import '../../../exchange_payout_wallets.dart';
-
+/// Creates the recurring buy. [execute]'s `address` is the payout destination
+/// for every run (the server reuses it): an exchange default wallet's address,
+/// a typed address or a Lightning address, never an app wallet's receive
+/// address.
 class SetDcaUsecase {
-  final ExchangePayoutWallets _payouts;
   final Preferences _settingsRepository;
   final Exchange _exchange;
 
-  SetDcaUsecase({
-    required this._payouts,
-    required this._settingsRepository,
-    required this._exchange,
-  });
+  SetDcaUsecase({required this._settingsRepository, required this._exchange});
 
   @useResult
   Future<Result<Dca, DcaFailure>> execute({
@@ -25,7 +21,7 @@ class SetDcaUsecase {
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
-    String? lightningAddress,
+    required String address,
   }) async {
     final SettingsEntity settings;
     try {
@@ -52,36 +48,14 @@ class SetDcaUsecase {
       return const Err(DcaAccountUnavailableFailure('network unsupported'));
     }
 
-    final String address;
-    switch (network) {
-      case DcaNetwork.lightning:
-        // Defensive: the wallet-selection screen validates this before we run.
-        if (lightningAddress == null || lightningAddress.isEmpty) {
-          return const Err(DcaLightningAddressRequiredFailure());
-        }
-        address = lightningAddress;
-      case DcaNetwork.bitcoin:
-      case DcaNetwork.liquid:
-        final Network chain = network == DcaNetwork.bitcoin
-            ? BitcoinNetwork.fromName(environment.name)
-            : LiquidNetwork.fromName(environment.name);
-        switch (await _payouts.walletsForNetwork(chain)) {
-          case Ok(value: WalletSelection(defaultWallet: final wallet?))
-              when wallet.network == chain:
-            final issued = await _payouts.receive(
-              wallet,
-              advance: true,
-              requiresDefault: true,
-            );
-            if (issued == null) return const Err(DcaReceiveAddressFailure());
-            address = issued;
-          case Ok():
-            return const Err(DcaReceiveAddressFailure());
-          case Err(:final failure):
-            return Err(
-              DcaUnexpectedFailure('default wallet: ${failure.runtimeType}'),
-            );
-        }
+    // Defensive: the wallet-selection screen only continues with an address.
+    if (address.isEmpty) {
+      final DcaFailure failure = switch (network) {
+        DcaNetwork.lightning => const DcaLightningAddressRequiredFailure(),
+        DcaNetwork.bitcoin ||
+        DcaNetwork.liquid => const DcaDestinationAddressRequiredFailure(),
+      };
+      return Err(failure);
     }
 
     final exchangeEnvironment = environment.requireHistoricalTestnet()

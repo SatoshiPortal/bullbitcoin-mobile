@@ -982,7 +982,6 @@
   },
   "dcaAccountUnavailableError": "Hesabınız yüklenemedi. Bağlantınızı kontrol edin, giriş yaptığınızdan emin olun ve tekrar deneyin.",
   "dcaLightningAddressRequiredError": "Satın alımlarınızı almak için bir Lightning adresi girin.",
-  "dcaReceiveAddressError": "Cüzdanınızda alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
   "dcaOrderCreationError": "Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin.",
   "payPleasePayInvoice": "Lütfen bu faturayı ödeme",
   "@payPleasePayInvoice": {

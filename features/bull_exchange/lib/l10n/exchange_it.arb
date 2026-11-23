@@ -720,7 +720,6 @@
   },
   "dcaAccountUnavailableError": "Impossibile caricare il tuo account. Controlla la connessione, assicurati di aver effettuato l'accesso e riprova.",
   "dcaLightningAddressRequiredError": "Inserisci un indirizzo Lightning per ricevere i tuoi acquisti.",
-  "dcaReceiveAddressError": "Non è stato possibile preparare un indirizzo di ricezione nel tuo portafoglio. Riprova.",
   "dcaOrderCreationError": "Non è stato possibile creare l'acquisto ricorrente. Riprova più tardi.",
   "limitOrdersLightningAddressHint": "tu@dominio.com",
   "payjoinBuyRegularSend": "Bitcoin inviati al tuo portafoglio con un invio normale",

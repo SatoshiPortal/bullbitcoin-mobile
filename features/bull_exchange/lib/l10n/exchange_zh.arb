@@ -718,7 +718,6 @@
   },
   "dcaAccountUnavailableError": "无法加载您的账户。请检查网络连接，确认您已登录，然后重试。",
   "dcaLightningAddressRequiredError": "输入 Lightning 地址以接收您购买的比特币。",
-  "dcaReceiveAddressError": "无法在您的钱包中准备接收地址。请重试。",
   "dcaOrderCreationError": "无法创建定期买入。请稍后重试。",
   "payPleasePayInvoice": "请支付这一发票",
   "payPayinAmount": "收款金额",

@@ -982,7 +982,6 @@
   "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
   "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.",
   "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
-  "dcaReceiveAddressError": "Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.",
   "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein.",
   "sellTitle": "Bitcoin Becho",
   "@sellTitle": {

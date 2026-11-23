@@ -982,7 +982,6 @@
   },
   "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.",
   "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
-  "dcaReceiveAddressError": "V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.",
   "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.",
   "payPleasePayInvoice": "Tuto fakturu prosím vyplňte",
   "@payPleasePayInvoice": {

@@ -75,6 +75,7 @@ export 'src/buy/ui/screens/buy_input_screen.dart';
 export 'src/buy/ui/screens/buy_success_screen.dart';
 export 'src/buy/ui/widgets/buy_amount_input_fields.dart';
 export 'src/dca/domain/dca_failure.dart';
+export 'src/dca/domain/usecases/get_dca_default_wallets_usecase.dart';
 export 'src/dca/domain/usecases/set_dca_usecase.dart';
 export 'src/dca/domain/usecases/start_dca_usecase.dart';
 export 'src/dca/presentation/dca_bloc.dart';

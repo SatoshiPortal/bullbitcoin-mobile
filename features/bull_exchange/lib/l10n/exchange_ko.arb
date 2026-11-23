@@ -982,7 +982,6 @@
   },
   "dcaAccountUnavailableError": "계정을 불러올 수 없습니다. 인터넷 연결과 로그인 상태를 확인한 뒤 다시 시도하세요.",
   "dcaLightningAddressRequiredError": "구매한 비트코인을 받을 Lightning 주소를 입력하세요.",
-  "dcaReceiveAddressError": "지갑에서 수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
   "dcaOrderCreationError": "반복 구매를 생성할 수 없습니다. 나중에 다시 시도해 주세요.",
   "payPleasePayInvoice": "결제하기",
   "@payPleasePayInvoice": {

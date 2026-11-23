@@ -718,7 +718,6 @@
   },
   "dcaAccountUnavailableError": "Не вдалося завантажити ваш обліковий запис. Перевірте з'єднання, переконайтеся, що ви ввійшли, і спробуйте ще раз.",
   "dcaLightningAddressRequiredError": "Введіть Lightning-адресу для отримання ваших покупок.",
-  "dcaReceiveAddressError": "Не вдалося підготувати адресу для отримання у вашому гаманці. Спробуйте ще раз.",
   "dcaOrderCreationError": "Не вдалося створити регулярну покупку. Спробуйте пізніше.",
   "sellTitle": "Bitcoin у USD",
   "sellSelectWallet": "Виберіть гаманець",

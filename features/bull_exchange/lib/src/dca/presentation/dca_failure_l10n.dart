@@ -7,7 +7,8 @@ extension DcaFailureL10n on DcaFailure {
     DcaAccountUnavailableFailure() => context.loc.dcaAccountUnavailableError,
     DcaLightningAddressRequiredFailure() =>
       context.loc.dcaLightningAddressRequiredError,
-    DcaReceiveAddressFailure() => context.loc.dcaReceiveAddressError,
+    DcaDestinationAddressRequiredFailure() =>
+      context.loc.dcaDestinationAddressRequiredError,
     DcaOrderCreationFailure() => context.loc.dcaOrderCreationError,
     DcaUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };

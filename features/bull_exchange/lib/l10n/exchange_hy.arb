@@ -673,7 +673,6 @@
   "buyAboveMaxAmountError": "Դուք փորձում եք գնել առավելագույն գումարից ավելի։",
   "dcaAccountUnavailableError": "Չհաջողվեց բեռնել ձեր հաշիվը։ Ստուգեք կապը, համոզվեք, որ մուտք եք գործել, և կրկին փորձեք։",
   "dcaLightningAddressRequiredError": "Մուտքագրեք Lightning հասցե՝ ձեր գնումները ստանալու համար։",
-  "dcaReceiveAddressError": "Չհաջողվեց պատրաստել ստացման հասցե ձեր դրամապանակում։ Խնդրում ենք կրկին փորձել։",
   "dcaOrderCreationError": "Չհաջողվեց ստեղծել կրկնվող գնումը։ Խնդրում ենք փորձել ավելի ուշ։",
   "viewerTapToCopy": "Հպեք պատճենելու համար",
   "invoiceViewerTitle": "Ապրանքագիր ",

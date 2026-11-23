@@ -982,7 +982,6 @@
   "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
   "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique sua conexão, veja se você está conectado e tente novamente.",
   "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
-  "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
   "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde.",
   "payPayinAmount": "Quantidade de pagamento",
   "@payPayinAmount": {

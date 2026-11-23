@@ -746,7 +746,6 @@
   },
   "dcaAccountUnavailableError": "No se pudo cargar tu cuenta. Comprueba tu conexión, asegúrate de haber iniciado sesión e inténtalo de nuevo.",
   "dcaLightningAddressRequiredError": "Introduce una dirección Lightning para recibir tus compras.",
-  "dcaReceiveAddressError": "No se pudo preparar una dirección de recepción en tu monedero. Vuelve a intentarlo.",
   "dcaOrderCreationError": "No se pudo crear la compra recurrente. Vuelve a intentarlo más tarde.",
   "payjoinInProgress": "Payjoin en curso",
   "payjoinSucceeded": "Payjoin completado",

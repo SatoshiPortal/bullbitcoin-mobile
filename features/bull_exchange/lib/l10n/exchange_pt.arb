@@ -721,7 +721,6 @@
   },
   "dcaAccountUnavailableError": "Não foi possível carregar a sua conta. Verifique a sua ligação, certifique-se de que tem sessão iniciada e tente novamente.",
   "dcaLightningAddressRequiredError": "Introduza um endereço Lightning para receber as suas compras.",
-  "dcaReceiveAddressError": "Não foi possível preparar um endereço de receção na sua carteira. Tente novamente.",
   "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde.",
   "payPleasePayInvoice": "Por favor, pague esta fatura",
   "payPayinAmount": "Quantidade de pagamento",

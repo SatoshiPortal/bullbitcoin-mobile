@@ -10,8 +10,10 @@ sealed class DcaEvent with _$DcaEvent {
   }) = DcaBuyInputContinuePressed;
   const factory DcaEvent.walletSelected({
     required DcaNetwork network,
-    String? lightningAddress,
-    bool? useDefaultLightningAddress,
+    required String address,
+    @Default(false) bool isDefaultAddress,
   }) = DcaWalletSelected;
+  const factory DcaEvent.defaultWalletsRefreshRequested() =
+      DcaDefaultWalletsRefreshRequested;
   const factory DcaEvent.confirmed() = DcaConfirmed;
 }

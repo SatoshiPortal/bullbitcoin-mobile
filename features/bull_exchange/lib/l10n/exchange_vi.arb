@@ -673,7 +673,6 @@
   "buyAboveMaxAmountError": "Bạn đang cố mua vượt quá số tiền tối đa.",
   "dcaAccountUnavailableError": "Không thể tải tài khoản của bạn. Hãy kiểm tra kết nối, đảm bảo bạn đã đăng nhập và thử lại.",
   "dcaLightningAddressRequiredError": "Nhập địa chỉ Lightning để nhận các giao dịch mua của bạn.",
-  "dcaReceiveAddressError": "Không thể chuẩn bị địa chỉ nhận trong ví của bạn. Vui lòng thử lại.",
   "dcaOrderCreationError": "Không thể tạo giao dịch mua định kỳ. Vui lòng thử lại sau.",
   "viewerTapToCopy": "Nhấn để sao chép",
   "invoiceViewerTitle": "Hóa đơn",

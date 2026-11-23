@@ -745,7 +745,6 @@
   },
   "dcaAccountUnavailableError": "Impossible de charger votre compte. Vérifiez votre connexion, assurez-vous d'être connecté et réessayez.",
   "dcaLightningAddressRequiredError": "Saisissez une adresse Lightning pour recevoir vos achats.",
-  "dcaReceiveAddressError": "Impossible de préparer une adresse de réception dans votre portefeuille. Veuillez réessayer.",
   "dcaOrderCreationError": "L'achat récurrent n'a pas pu être créé. Veuillez réessayer plus tard.",
   "payjoinInProgress": "Payjoin en cours",
   "payjoinSucceeded": "Payjoin réussi",

@@ -982,7 +982,6 @@
   },
   "dcaAccountUnavailableError": "تعذر تحميل حسابك. تحقق من اتصالك، وتأكد من تسجيل الدخول، ثم حاول مرة أخرى.",
   "dcaLightningAddressRequiredError": "أدخل عنوان Lightning لاستلام مشترياتك.",
-  "dcaReceiveAddressError": "تعذر تجهيز عنوان استلام في محفظتك. يُرجى المحاولة مرة أخرى.",
   "dcaOrderCreationError": "تعذر إنشاء الشراء المتكرر. يُرجى المحاولة لاحقًا.",
   "payPleasePayInvoice": "يرجى دفع هذه الفواتير",
   "@payPleasePayInvoice": {

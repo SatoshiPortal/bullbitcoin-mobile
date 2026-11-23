@@ -2916,13 +2916,45 @@
   "@dcaLightningAddressRequiredError": {
     "description": "Shown when Lightning was chosen as the DCA payout network but no lightning address was provided."
   },
-  "dcaReceiveAddressError": "Could not prepare a receiving address in your wallet. Please try again.",
-  "@dcaReceiveAddressError": {
-    "description": "Shown when no default wallet exists for the chosen DCA network or generating a receive address failed."
-  },
   "dcaOrderCreationError": "The recurring buy could not be created. Please try again later.",
   "@dcaOrderCreationError": {
     "description": "Shown when the exchange rejects creating the recurring buy order."
+  },
+  "dcaUseDefaultBitcoinWallet": "Use my default Bitcoin wallet",
+  "@dcaUseDefaultBitcoinWallet": {
+    "description": "Checkbox in recurring buy wallet selection: pay out to the Bitcoin address saved in the user's exchange default wallets."
+  },
+  "dcaUseDefaultLiquidWallet": "Use my default Liquid wallet",
+  "@dcaUseDefaultLiquidWallet": {
+    "description": "Checkbox in recurring buy wallet selection: pay out to the Liquid address saved in the user's exchange default wallets."
+  },
+  "dcaNoDefaultBitcoinWallet": "You have no default Bitcoin wallet on your Bull Bitcoin account. Set one, or enter a Bitcoin address below.",
+  "@dcaNoDefaultBitcoinWallet": {
+    "description": "Shown in recurring buy wallet selection when Bitcoin is chosen and the user's exchange account has no default Bitcoin wallet."
+  },
+  "dcaNoDefaultLiquidWallet": "You have no default Liquid wallet on your Bull Bitcoin account. Set one, or enter a Liquid address below.",
+  "@dcaNoDefaultLiquidWallet": {
+    "description": "Shown in recurring buy wallet selection when Liquid is chosen and the user's exchange account has no default Liquid wallet."
+  },
+  "dcaManageDefaultWallets": "Set default wallets",
+  "@dcaManageDefaultWallets": {
+    "description": "Button in recurring buy wallet selection that opens the exchange default wallets editor."
+  },
+  "dcaEnterBitcoinAddressLabel": "Enter Bitcoin address",
+  "@dcaEnterBitcoinAddressLabel": {
+    "description": "Label of the field where the user types the Bitcoin address that receives the recurring buys."
+  },
+  "dcaEnterLiquidAddressLabel": "Enter Liquid address",
+  "@dcaEnterLiquidAddressLabel": {
+    "description": "Label of the field where the user types the Liquid address that receives the recurring buys."
+  },
+  "dcaConfirmPayoutAddress": "Receiving address",
+  "@dcaConfirmPayoutAddress": {
+    "description": "Recurring buy confirmation row: the Bitcoin or Liquid address every purchase is sent to."
+  },
+  "dcaDestinationAddressRequiredError": "Choose your default wallet or enter an address to receive your purchases.",
+  "@dcaDestinationAddressRequiredError": {
+    "description": "Shown when Bitcoin or Liquid was chosen as the recurring buy payout but no address was given."
   },
   "payjoinInProgress": "Payjoin in progress",
   "@payjoinInProgress": {

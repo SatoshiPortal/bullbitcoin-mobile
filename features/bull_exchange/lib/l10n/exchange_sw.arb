@@ -673,7 +673,6 @@
   "buyAboveMaxAmountError": "Unajaribu kununua zaidi ya kiwango cha juu.",
   "dcaAccountUnavailableError": "Akaunti yako haikuweza kupakiwa. Angalia muunganisho wako, hakikisha umeingia, kisha ujaribu tena.",
   "dcaLightningAddressRequiredError": "Weka anwani ya Lightning ili kupokea manunuzi yako.",
-  "dcaReceiveAddressError": "Haikuwezekana kuandaa anwani ya kupokea kwenye pochi yako. Tafadhali jaribu tena.",
   "dcaOrderCreationError": "Ununuzi wa mara kwa mara haukuweza kuundwa. Tafadhali jaribu tena baadaye.",
   "viewerTapToCopy": "Gusa kunakili",
   "invoiceViewerTitle": "Ankara",

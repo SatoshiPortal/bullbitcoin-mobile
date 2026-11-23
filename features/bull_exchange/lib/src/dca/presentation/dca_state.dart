@@ -5,11 +5,13 @@ sealed class DcaState with _$DcaState {
   const factory DcaState.initial({DcaFailure? failure}) = DcaInitialState;
   const factory DcaState.buyInput({
     required String? defaultLightningAddress,
+    required DefaultWallets defaultWallets,
     required List<UserBalance> balances,
     FiatCurrency? currency,
   }) = DcaBuyInputState;
   const factory DcaState.walletSelection({
     required String? defaultLightningAddress,
+    required DefaultWallets defaultWallets,
     required List<UserBalance> balances,
     required double amount,
     required FiatCurrency currency,
@@ -17,13 +19,14 @@ sealed class DcaState with _$DcaState {
   }) = DcaWalletSelectionState;
   const factory DcaState.confirmation({
     required String? defaultLightningAddress,
+    required DefaultWallets defaultWallets,
     required List<UserBalance> balances,
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
-    String? lightningAddress,
-    @Default(false) bool isDefaultLightningAddress,
+    required String address,
+    @Default(false) bool isDefaultAddress,
     @Default(false) bool isConfirmingDca,
     DcaFailure? failure,
   }) = DcaConfirmationState;
@@ -34,200 +37,107 @@ sealed class DcaState with _$DcaState {
   }) = DcaSuccessState;
   const DcaState._();
 
-  String? get defaultLightningAddress {
-    return when(
-      initial: (failure) => null,
-      buyInput: (defaultLightningAddress, balances, currency) =>
-          defaultLightningAddress,
-      walletSelection: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-      ) => defaultLightningAddress,
-      confirmation:
-          (
-            defaultLightningAddress,
-            balances,
-            amount,
-            currency,
-            frequency,
-            network,
-            lightningAddress,
-            isDefaultLightningAddress,
-            isConfirmingDca,
-            failure,
-          ) {
-            return defaultLightningAddress;
-          },
-      success: (amount, currency, frequency) => null,
-    );
-  }
+  String? get defaultLightningAddress => switch (this) {
+    DcaInitialState() || DcaSuccessState() => null,
+    DcaBuyInputState(:final defaultLightningAddress) ||
+    DcaWalletSelectionState(:final defaultLightningAddress) ||
+    DcaConfirmationState(
+      :final defaultLightningAddress,
+    ) => defaultLightningAddress,
+  };
 
-  DcaBuyInputState? get toCleanBuyInputState {
-    return whenOrNull(
-      buyInput: (defaultLightningAddress, balances, currency) {
-        return DcaBuyInputState(
-          defaultLightningAddress: defaultLightningAddress,
-          balances: balances,
-          currency: currency,
-        );
-      },
-      walletSelection:
-          (defaultLightningAddress, balances, amount, currency, frequency) {
-            return DcaBuyInputState(
-              defaultLightningAddress: defaultLightningAddress,
-              balances: balances,
-              currency: currency,
-            );
-          },
-      confirmation:
-          (
-            defaultLightningAddress,
-            balances,
-            amount,
-            currency,
-            frequency,
-            network,
-            lightningAddress,
-            isDefaultLightningAddress,
-            isConfirmingDca,
-            failure,
-          ) {
-            return DcaBuyInputState(
-              defaultLightningAddress: defaultLightningAddress,
-              balances: balances,
-              currency: currency,
-            );
-          },
-    );
-  }
+  DcaBuyInputState? get toCleanBuyInputState => switch (this) {
+    DcaInitialState() || DcaSuccessState() => null,
+    DcaBuyInputState(
+      :final defaultLightningAddress,
+      :final defaultWallets,
+      :final balances,
+      :final currency,
+    ) =>
+      DcaBuyInputState(
+        defaultLightningAddress: defaultLightningAddress,
+        defaultWallets: defaultWallets,
+        balances: balances,
+        currency: currency,
+      ),
+    DcaWalletSelectionState(
+      :final defaultLightningAddress,
+      :final defaultWallets,
+      :final balances,
+      :final currency,
+    ) ||
+    DcaConfirmationState(
+      :final defaultLightningAddress,
+      :final defaultWallets,
+      :final balances,
+      :final currency,
+    ) => DcaBuyInputState(
+      defaultLightningAddress: defaultLightningAddress,
+      defaultWallets: defaultWallets,
+      balances: balances,
+      currency: currency,
+    ),
+  };
 
-  DcaWalletSelectionState? get toCleanWalletSelectionState {
-    return whenOrNull(
-      walletSelection:
-          (defaultLightningAddress, balances, amount, currency, frequency) {
-            return DcaWalletSelectionState(
-              defaultLightningAddress: defaultLightningAddress,
-              balances: balances,
-              amount: amount,
-              currency: currency,
-              frequency: frequency,
-            );
-          },
-      confirmation:
-          (
-            defaultLightningAddress,
-            balances,
-            amount,
-            currency,
-            frequency,
-            network,
-            lightningAddress,
-            isDefaultLightningAddress,
-            isConfirmingDca,
-            failure,
-          ) {
-            return DcaWalletSelectionState(
-              defaultLightningAddress: defaultLightningAddress,
-              balances: balances,
-              amount: amount,
-              currency: currency,
-              frequency: frequency,
-            );
-          },
-    );
-  }
+  DcaWalletSelectionState? get toCleanWalletSelectionState => switch (this) {
+    DcaInitialState() || DcaSuccessState() || DcaBuyInputState() => null,
+    DcaWalletSelectionState(
+      :final defaultLightningAddress,
+      :final defaultWallets,
+      :final balances,
+      :final amount,
+      :final currency,
+      :final frequency,
+    ) ||
+    DcaConfirmationState(
+      :final defaultLightningAddress,
+      :final defaultWallets,
+      :final balances,
+      :final amount,
+      :final currency,
+      :final frequency,
+    ) => DcaWalletSelectionState(
+      defaultLightningAddress: defaultLightningAddress,
+      defaultWallets: defaultWallets,
+      balances: balances,
+      amount: amount,
+      currency: currency,
+      frequency: frequency,
+    ),
+  };
 
-  DcaConfirmationState? get toCleanConfirmationState {
-    return whenOrNull(
-      confirmation:
-          (
-            defaultLightningAddress,
-            balances,
-            amount,
-            currency,
-            frequency,
-            network,
-            lightningAddress,
-            isDefaultLightningAddress,
-            isConfirmingDca,
-            failure,
-          ) {
-            return DcaConfirmationState(
-              defaultLightningAddress: defaultLightningAddress,
-              balances: balances,
-              amount: amount,
-              currency: currency,
-              frequency: frequency,
-              network: network,
-              lightningAddress: lightningAddress,
-              isDefaultLightningAddress: isDefaultLightningAddress,
-              isConfirmingDca: false,
-              failure: null,
-            );
-          },
-    );
-  }
+  DcaConfirmationState? get toCleanConfirmationState => switch (this) {
+    DcaInitialState() ||
+    DcaSuccessState() ||
+    DcaBuyInputState() ||
+    DcaWalletSelectionState() => null,
+    final DcaConfirmationState confirmation => DcaConfirmationState(
+      defaultLightningAddress: confirmation.defaultLightningAddress,
+      defaultWallets: confirmation.defaultWallets,
+      balances: confirmation.balances,
+      amount: confirmation.amount,
+      currency: confirmation.currency,
+      frequency: confirmation.frequency,
+      network: confirmation.network,
+      address: confirmation.address,
+      isDefaultAddress: confirmation.isDefaultAddress,
+    ),
+  };
 
-  FiatCurrency? get currency {
-    return when(
-      initial: (failure) => null,
-      buyInput: (defaultLightningAddress, balances, currency) => currency,
-      walletSelection: (
-        defaultLightningAddress,
-        balances,
-        amount,
-        currency,
-        frequency,
-      ) => currency,
-      confirmation:
-          (
-            defaultLightningAddress,
-            balances,
-            amount,
-            currency,
-            frequency,
-            network,
-            lightningAddress,
-            isDefaultLightningAddress,
-            isConfirmingDca,
-            failure,
-          ) {
-            return currency;
-          },
-      success: (amount, currency, frequency) => currency,
-    );
-  }
+  FiatCurrency? get currency => switch (this) {
+    DcaInitialState() => null,
+    DcaBuyInputState(:final currency) => currency,
+    DcaWalletSelectionState(:final currency) ||
+    DcaConfirmationState(:final currency) ||
+    DcaSuccessState(:final currency) => currency,
+  };
 
-  List<UserBalance> get balances => when(
-    initial: (failure) => [],
-    buyInput: (defaultLightningAddress, balances, currency) => balances,
-    walletSelection: (
-      defaultLightningAddress,
-      balances,
-      amount,
-      currency,
-      frequency,
-    ) => balances,
-    confirmation:
-        (
-          defaultLightningAddress,
-          balances,
-          amount,
-          currency,
-          frequency,
-          network,
-          lightningAddress,
-          isDefaultLightningAddress,
-          isConfirmingDca,
-          failure,
-        ) {
-          return balances;
-        },
-    success: (amount, currency, frequency) => [],
-  );
+  List<UserBalance> get balances => switch (this) {
+    DcaInitialState() || DcaSuccessState() => const [],
+    DcaBuyInputState(:final balances) ||
+    DcaWalletSelectionState(:final balances) ||
+    DcaConfirmationState(:final balances) => balances,
+  };
 }
 
 extension DcaBuyInputStateX on DcaBuyInputState {
@@ -238,6 +148,7 @@ extension DcaBuyInputStateX on DcaBuyInputState {
   }) {
     return DcaWalletSelectionState(
       defaultLightningAddress: defaultLightningAddress,
+      defaultWallets: defaultWallets,
       balances: balances,
       amount: amount,
       currency: currency,
@@ -249,18 +160,19 @@ extension DcaBuyInputStateX on DcaBuyInputState {
 extension DcaWalletSelectionStateX on DcaWalletSelectionState {
   DcaConfirmationState toConfirmationState({
     required DcaNetwork network,
-    String? lightningAddress,
-    bool isDefaultLightningAddress = false,
+    required String address,
+    bool isDefaultAddress = false,
   }) {
     return DcaConfirmationState(
       defaultLightningAddress: defaultLightningAddress,
+      defaultWallets: defaultWallets,
       balances: balances,
       amount: amount,
       currency: currency,
       frequency: frequency,
       network: network,
-      lightningAddress: lightningAddress,
-      isDefaultLightningAddress: isDefaultLightningAddress,
+      address: address,
+      isDefaultAddress: isDefaultAddress,
     );
   }
 }
