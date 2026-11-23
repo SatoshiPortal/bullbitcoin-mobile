@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
@@ -29,19 +28,23 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
         Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };
 
-      const application = Bip85Application.bip39;
       // BIP85 children are English by design.
       const language = bip39.Language.english;
-      final indexResult = await _bip85Repository.fetchNextIndexForApplication(
-        application,
+      final reservation = await _bip85Repository.reserveMnemonic(
+        parent: secret.id,
+        length: length,
+        alias: alias,
+        language: language,
       );
-      switch (indexResult) {
+      switch (reservation) {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
+          final index = value.index;
+          if (index == null) return const Err(Bip85StorageFailure());
           final words = switch (await secret.derive.bip85.mnemonic(
             wordCount: MnemonicLength.values.byName(length.name),
-            index: value,
+            index: index,
             language: language,
           )) {
             Ok(:final value) => value,
@@ -49,21 +52,13 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
               failure.runtimeType.toString(),
             ),
           };
-          return (await _bip85Repository.recordMnemonic(
-            xprvFingerprint: secret.id.hex,
-            length: length,
-            index: value,
-            alias: alias,
-            language: language,
-          )).map(
-            (derivation) => (
-              derivation: derivation,
-              mnemonic: bip39.Mnemonic.fromWords(
-                words: words,
-                language: language,
-              ),
+          return Ok((
+            derivation: value.path,
+            mnemonic: bip39.Mnemonic.fromWords(
+              words: words,
+              language: language,
             ),
-          );
+          ));
       }
     } catch (e, st) {
       log.severe(

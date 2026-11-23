@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/bip85_entropy/data/bip85_datasource.dart';
 import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/activate_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/alias_bip85_derivation_usecase.dart';
@@ -6,19 +5,13 @@ import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_fr
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:secrets/storage.dart';
 import 'package:get_it/get_it.dart';
 
 class Bip85DerivationsLocator {
-  static void registerDatasources(GetIt locator) {
-    locator.registerLazySingleton<Bip85Datasource>(
-      () => Bip85Datasource(sqlite: locator<SqliteDatabase>()),
-    );
-  }
-
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<Bip85Repository>(
-      () => Bip85Repository(datasource: locator<Bip85Datasource>()),
+      () => Bip85Repository(inventory: locator<SecretsInventory>()),
     );
   }
 
