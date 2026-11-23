@@ -301,6 +301,7 @@ graph TB
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES
     IMPORT_MNEMONIC --> WALLETS
+    IMPORT_MNEMONIC --> SECRETS
     ONBOARDING --> WALLET_IMPORT
     ONBOARDING --> SETTINGS
     ONBOARDING --> WALLETS
@@ -701,7 +702,7 @@ RecoverBull navigation is a public, stateless module entry point; onboarding, ba
 
 Electrum owns foreground preparation of its current-schema storage and exposes it through `electrum.foregroundStorage` (`package:electrum/setup.dart`). Startup passes the single normalized Settings snapshot through SettingsBootstrap before awaiting this passive barrier; it performs no network IO. Regtest provisions both Bitcoin and Liquid rows in one idempotent transaction, preserves custom endpoints and options, and replaces only obsolete managed defaults. The regtest endpoint host comes from BULL_REGTEST_HOST at build time, with a loopback default, and is read only for a captured regtest selection. Mainnet/testnet preparation validates both production views for their existing hot switch and never creates fixture rows. Background entry points inspect readiness without seeding or repairing storage.
 
-`ImportFeature.mount` contributes the QR device instruction routes and composes the mnemonic prescan. The member owns mnemonic entry, hardware instructions, QR descriptor selection, public watch-only validation and their translations. The legacy import flows still own confirmation, wallet registration and scanner acquisition.
+`ImportFeature.mount` contributes the QR device instruction routes and composes the mnemonic prescan. The member owns mnemonic entry, hardware instructions, QR descriptor selection, public watch-only validation and their translations. The app import flows own confirmation and scanner acquisition. Mnemonic duplicate checks read the active, network-scoped Secrets inventory, and confirmation registers mnemonic and watch-only wallets in Secrets through the foreground wallet provisioning path.
 
 Watch-only import captures the selected Bitcoin environment before parsing. Test-family public-key versions may represent testnet or regtest; the captured selection resolves that ambiguity while preserving the public key. Regtest accepts software BIP84 watch-only input, retains the original network identity and refuses hardware provenance or a mainnet key. The existing capability policy controls explorer actions and Lightning availability. Receive uses that same Lightning capability when choosing its initial Liquid/Lightning mode, so a regtest Liquid wallet opens a supported selection.
 

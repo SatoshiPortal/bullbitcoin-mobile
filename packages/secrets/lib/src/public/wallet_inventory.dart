@@ -12,7 +12,8 @@ abstract interface class WalletInventory {
   Future<Result<WalletRegistration, SecretFailure>> readWallet(String id);
 
   /// Read choices for exactly [network], with no fallback to another network.
-  /// Skips unreadable rows unless there are rows but none can be read.
+  /// Skips unreadable rows and marks the selection incomplete. If all rows
+  /// are unreadable, returns an [UnreadableWalletFailure].
   /// Networks with no persisted representation are unsupported.
   @useResult
   Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
