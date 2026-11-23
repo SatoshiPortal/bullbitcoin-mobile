@@ -52,6 +52,18 @@ final class BuyQuoteUnavailableFailure extends BuyFailure {
   const BuyQuoteUnavailableFailure([super.logMessage]);
 }
 
+/// The confirm request may have reached the exchange and re-reading the order
+/// could not tell whether it was confirmed. Confirm is not offered again.
+final class BuyConfirmOutcomeUnknownFailure extends BuyFailure {
+  const BuyConfirmOutcomeUnknownFailure([super.logMessage]);
+}
+
+/// The accelerate request may have reached the exchange without an answer.
+/// Accelerate is not offered again in this flow.
+final class BuyAccelerateOutcomeUnknownFailure extends BuyFailure {
+  const BuyAccelerateOutcomeUnknownFailure([super.logMessage]);
+}
+
 /// The catch-all.
 ///
 /// Carries the raw reason in `logMessage` for diagnosis only — the translation

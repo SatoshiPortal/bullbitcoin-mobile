@@ -166,7 +166,7 @@ void main() {
       final order = _MockBuyOrder();
       when(() => order.toAddress).thenReturn('bc1qpayoutaddress');
       when(() => mainnet.confirmBuyOrder('order-1'))
-          .thenAnswer((_) async => Ok(order));
+          .thenAnswer((_) async => WriteDone(order));
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -174,9 +174,10 @@ void main() {
       verifyNever(() => order.toAddress);
     });
 
-    test('sanitizes a failure', () async {
-      when(() => mainnet.confirmBuyOrder('order-1'))
-          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
+    test('a refusal is a plain failure without a re-read', () async {
+      when(() => mainnet.confirmBuyOrder('order-1')).thenAnswer(
+        (_) async => const WriteRefused(ExchangeRefusal(rpcCode: -1)),
+      );
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -186,6 +187,93 @@ void main() {
         case Err(:final failure):
           expect(failure, isA<BuyUnexpectedFailure>());
       }
+      verifyNever(() => mainnet.getOrder(any()));
+    });
+
+    test('a rejected session is unauthenticated', () async {
+      when(() => mainnet.confirmBuyOrder('order-1'))
+          .thenAnswer((_) async => const WriteSessionRejected());
+
+      expect(
+        await build().execute(orderId: 'order-1'),
+        isA<Err<BuyOrder, BuyFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<BuyUnauthenticatedFailure>(),
+        ),
+      );
+    });
+
+    group('an unknown outcome re-reads the order (INT-12, BUY-4)', () {
+      setUp(() {
+        when(
+          () => mainnet.confirmBuyOrder('order-1'),
+        ).thenAnswer((_) async => const WriteOutcomeUnknown('receive timeout'));
+      });
+
+      void reread(OrderStatus status) {
+        final order = _MockBuyOrder();
+        when(() => order.orderStatus).thenReturn(status);
+        when(() => mainnet.getOrder('order-1'))
+            .thenAnswer((_) async => Ok(order));
+      }
+
+      for (final status in [OrderStatus.inProgress, OrderStatus.completed]) {
+        test('a ${status.name} order was confirmed', () async {
+          reread(status);
+          expect(
+            await build().execute(orderId: 'order-1'),
+            isA<Ok<BuyOrder, BuyFailure>>(),
+          );
+        });
+      }
+
+      for (final status in [
+        OrderStatus.awaitingConfirmation,
+        OrderStatus.canceled,
+        OrderStatus.expired,
+        OrderStatus.orderExpired,
+        OrderStatus.rejected,
+        OrderStatus.failed,
+      ]) {
+        test('a ${status.name} order was not confirmed', () async {
+          reread(status);
+          expect(
+            await build().execute(orderId: 'order-1'),
+            isA<Err<BuyOrder, BuyFailure>>().having(
+              (r) => r.failure,
+              'failure',
+              isA<BuyUnexpectedFailure>(),
+            ),
+          );
+        });
+      }
+
+      test('an unknown status keeps the outcome unknown', () async {
+        reread(OrderStatus.unknown);
+        expect(
+          await build().execute(orderId: 'order-1'),
+          isA<Err<BuyOrder, BuyFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<BuyConfirmOutcomeUnknownFailure>(),
+          ),
+        );
+      });
+
+      test('a failed re-read keeps the outcome unknown', () async {
+        when(() => mainnet.getOrder('order-1'))
+            .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
+        expect(
+          await build().execute(orderId: 'order-1'),
+          isA<Err<BuyOrder, BuyFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<BuyConfirmOutcomeUnknownFailure>(),
+          ),
+        );
+        verify(() => mainnet.confirmBuyOrder('order-1')).called(1);
+      });
     });
   });
 
@@ -201,7 +289,7 @@ void main() {
     test('returns the accelerated order', () async {
       final order = _MockBuyOrder();
       when(() => mainnet.accelerateBuyOrder('order-1'))
-          .thenAnswer((_) async => Ok(order));
+          .thenAnswer((_) async => WriteDone(order));
 
       expect(
         (await build().execute('order-1') as Ok<BuyOrder, BuyFailure>).value,
@@ -209,9 +297,10 @@ void main() {
       );
     });
 
-    test('sanitizes a failure', () async {
-      when(() => mainnet.accelerateBuyOrder('order-1'))
-          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
+    test('sanitizes a refusal', () async {
+      when(() => mainnet.accelerateBuyOrder('order-1')).thenAnswer(
+        (_) async => const WriteRefused(ExchangeRefusal(rpcCode: -1)),
+      );
 
       final result = await build().execute('order-1');
 
@@ -221,6 +310,21 @@ void main() {
         case Err(:final failure):
           expect(failure, isA<BuyUnexpectedFailure>());
       }
+    });
+
+    test('an unknown outcome is never sent again (INT-12)', () async {
+      when(
+        () => mainnet.accelerateBuyOrder('order-1'),
+      ).thenAnswer((_) async => const WriteOutcomeUnknown('receive timeout'));
+
+      expect(
+        await build().execute('order-1'),
+        isA<Err<BuyOrder, BuyFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<BuyAccelerateOutcomeUnknownFailure>(),
+        ),
+      );
     });
   });
 }

@@ -2306,6 +2306,10 @@
   "@withdrawConfirmCheckAgainButton": {
     "description": "Button on the withdrawal confirmation that re-reads the order after a confirmation whose outcome is unknown."
   },
+  "exchangeOrderActionOutcomeUnknownError": "We could not tell whether this went through. Check the order before you try again.",
+  "@exchangeOrderActionOutcomeUnknownError": {
+    "description": "Shown when confirming or accelerating an exchange order failed after the request may have reached the server, and the order could not tell whether it worked. The action is not offered again."
+  },
   "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
   "@withdrawConfidentialSepaNotActivatedError": {
     "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"

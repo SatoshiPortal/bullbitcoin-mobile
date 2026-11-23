@@ -230,16 +230,17 @@ void main() {
     test('returns the confirmed order', () async {
       final order = _MockWithdrawOrder();
       when(() => mainnet.confirmWithdrawOrder('order-1'))
-          .thenAnswer((_) async => Ok(order));
+          .thenAnswer((_) async => WriteDone(order));
 
       final result = await build().execute(orderId: 'order-1');
 
       expect(_ok(result), order);
     });
 
-    test('sanitizes a failure, keeping the raw reason out of logs', () async {
-      when(() => mainnet.confirmWithdrawOrder('order-1'))
-          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
+    test('sanitizes a refusal, keeping the raw reason out of logs', () async {
+      when(() => mainnet.confirmWithdrawOrder('order-1')).thenAnswer(
+        (_) async => const WriteRefused(ExchangeRefusal(rpcCode: -32603)),
+      );
 
       switch (await build().execute(orderId: 'order-1')) {
         case Ok():
@@ -252,9 +253,9 @@ void main() {
 
     test('maps a missing or inactive API key to unauthenticated', () async {
       {
-        when(
-          () => mainnet.confirmWithdrawOrder('order-1'),
-        ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
+        when(() => mainnet.confirmWithdrawOrder('order-1')).thenAnswer(
+          (_) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
+        );
 
         final result = await build().execute(orderId: 'order-1');
 

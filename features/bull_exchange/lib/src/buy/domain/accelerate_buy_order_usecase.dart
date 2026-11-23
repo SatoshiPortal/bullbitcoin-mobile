@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart';
-import 'package:bull_exchange/src/buy/domain/map_buy_order_failure.dart';
 import 'package:bull_exchange/src/buy/domain/buy_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
@@ -43,8 +42,20 @@ class AccelerateBuyOrderUsecase {
       final repo = _exchange.orders(
         isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
-      return (await repo.accelerateBuyOrder(orderId))
-          .mapErr(mapBuyOrderFailure);
+      return switch (await repo.accelerateBuyOrder(orderId)) {
+        WriteDone(:final value) => Ok(value),
+        WriteRefused(:final reason) => Err(
+          BuyUnexpectedFailure('accelerate refused: $reason'),
+        ),
+        WriteNotSent(reason: ExchangeNotSentReason.signedOut) ||
+        WriteSessionRejected() => const Err(BuyUnauthenticatedFailure()),
+        WriteNotSent(:final reason) => Err(
+          BuyUnexpectedFailure('accelerate not sent: ${reason.name}'),
+        ),
+        WriteOutcomeUnknown(:final reason) => Err(
+          BuyAccelerateOutcomeUnknownFailure(reason),
+        ),
+      };
     } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to accelerate the buy order',

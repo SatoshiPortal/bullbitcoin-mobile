@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart';
-import 'package:bull_exchange/src/withdraw/domain/map_withdraw_order_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
@@ -70,11 +69,19 @@ class ConfirmWithdrawOrderUsecase {
               ),
       );
       switch (result) {
-        case Ok(:final value):
+        case WriteDone(:final value):
           return Ok(value);
-        case Err(:final failure):
-          final mapped = mapWithdrawOrderFailure(failure);
-          if (mapped is! WithdrawUnexpectedFailure) return Err(mapped);
+        case WriteRefused(:final reason):
+          // The server answered: nothing was confirmed.
+          return Err(WithdrawUnexpectedFailure('confirm refused: $reason'));
+        case WriteNotSent(reason: ExchangeNotSentReason.signedOut) ||
+            WriteSessionRejected():
+          return const Err(WithdrawUnauthenticatedFailure());
+        case WriteNotSent(:final reason):
+          return Err(
+            WithdrawUnexpectedFailure('confirm not sent: ${reason.name}'),
+          );
+        case WriteOutcomeUnknown():
           // The request may have reached the server and confirmed the order:
           // the order itself says whether it did, never a retry.
           return _confirmedAfterUnknownOutcome(

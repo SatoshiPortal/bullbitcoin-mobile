@@ -5,6 +5,7 @@ import 'entities/btc_network.dart';
 import 'entities/dca.dart';
 import 'entities/order.dart';
 import 'entities/sepa_payment_processor.dart';
+import 'exchange_call_result.dart';
 import 'exchange_failure.dart';
 
 /// Orders for the selected backend; requests require the matching session.
@@ -48,13 +49,16 @@ abstract interface class ExchangeOrders {
     String? securityQuestion,
     String? securityAnswer,
   });
+
+  /// A reply of another order type, or one that can't be mapped, is
+  /// [WriteOutcomeUnknown]: the order may be confirmed.
   @useResult
-  Future<Result<BuyOrder, ExchangeFailure>> confirmBuyOrder(String orderId);
+  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId);
 
   /// An optional update uses the same session as the confirmation. Its
   /// failure leaves the confirmed withdrawal successful.
   @useResult
-  Future<Result<WithdrawOrder, ExchangeFailure>> confirmWithdrawOrder(
+  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -73,7 +77,7 @@ abstract interface class ExchangeOrders {
     String orderId,
   );
   @useResult
-  Future<Result<BuyOrder, ExchangeFailure>> accelerateBuyOrder(String orderId);
+  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId);
   @useResult
   Future<Result<Order, ExchangeFailure>> getOrder(String orderId);
 

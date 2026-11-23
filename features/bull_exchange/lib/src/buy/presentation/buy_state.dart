@@ -22,6 +22,10 @@ sealed class BuyState with _$BuyState {
     // follows the order on the success screen: it is never confirmed again
     // and leaving it never cancels its payjoin, whatever its payin status.
     @Default(false) bool isOrderConfirmed,
+    // The confirm request may have reached the exchange, and re-reading the
+    // order could not tell. Confirm is not offered again and leaving never
+    // cancels the order's payjoin, as for a confirmed order.
+    @Default(false) bool isConfirmOutcomeUnknown,
     BuyOrder? buyOrder,
     @Default(false) bool payjoinGloballyEnabled,
     @Default(true) bool isPayjoinEnabled,
@@ -30,6 +34,9 @@ sealed class BuyState with _$BuyState {
     BuyFailure? failure,
   }) = _BuyState;
   const BuyState._();
+
+  /// The order is confirmed, or may be: it is never confirmed again.
+  bool get isConfirmLocked => isOrderConfirmed || isConfirmOutcomeUnknown;
 
   bool get isFullyVerifiedKycLevel =>
       userSummary?.isFullyVerifiedKycLevel == true;

@@ -436,6 +436,42 @@ void main() {
       });
     });
 
+    group('a confirm whose outcome stays unknown (INT-12)', () {
+      late BuyOrder live;
+
+      setUp(() {
+        live = order.copyWith(
+          confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
+        );
+        bloc.seed(BuyState(buyOrder: live));
+        when(
+          () => confirm.execute(orderId: 'quote-order'),
+        ).thenAnswer((_) async => const Err(BuyConfirmOutcomeUnknownFailure()));
+      });
+
+      test('locks Confirm and is never confirmed a second time', () async {
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+        expect(bloc.state.isConfirmOutcomeUnknown, isTrue);
+        expect(bloc.state.isConfirmLocked, isTrue);
+        expect(bloc.state.failure, isA<BuyConfirmOutcomeUnknownFailure>());
+
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+        verify(() => confirm.execute(orderId: 'quote-order')).called(1);
+      });
+
+      test('back and close never cancel the payjoin', () async {
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+        bloc.add(const BuyEvent.orderCreationAbandoned());
+        await pumpEventQueue();
+        await bloc.close();
+
+        verifyNever(() => cancel.execute(any()));
+      });
+    });
+
     test('an expired order read without a confirmation is not refreshed', () {
       // The accelerate route builds a fresh bloc and only reads the order.
       when(refreshCall).thenAnswer(

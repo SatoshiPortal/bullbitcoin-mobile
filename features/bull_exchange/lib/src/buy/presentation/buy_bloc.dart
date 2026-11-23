@@ -266,11 +266,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         isCreatingOrder: true,
         buyOrder: null,
         isOrderConfirmed: false,
+        isConfirmOutcomeUnknown: false,
         failure: null,
       ),
     );
     try {
-      if (!input.isOrderConfirmed) {
+      if (!input.isConfirmLocked) {
         await _cancelAbandonedPayjoin(input.buyOrder);
       }
       if (!isCurrent()) return;
@@ -349,7 +350,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     Emitter<BuyState> emit,
   ) async {
     if (state.isConfirmingOrder ||
-        state.isOrderConfirmed ||
+        state.isConfirmLocked ||
         state.buyOrder?.isPayinCompleted == true) {
       return;
     }
@@ -471,7 +472,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyQuoteRefreshGaveUp event,
     Emitter<BuyState> emit,
   ) {
-    if (state.isOrderConfirmed ||
+    if (state.isConfirmLocked ||
         state.isConfirmingOrder ||
         state.buyOrder?.isPayinCompleted == true) {
       return;
@@ -486,7 +487,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     if (state.isCreatingOrder ||
         state.isRefreshingOrder ||
         state.isConfirmingOrder ||
-        state.isOrderConfirmed) {
+        state.isConfirmLocked) {
       return;
     }
     final orderId = state.buyOrder?.orderId;
@@ -517,6 +518,11 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       switch (confirmResult) {
         case Ok(:final value):
           confirmedOrder = value;
+        case Err(failure: final BuyConfirmOutcomeUnknownFailure failure):
+          // The order may be confirmed: no new quote, no second confirm.
+          _quoteScheduler.cancel();
+          emit(state.copyWith(failure: failure, isConfirmOutcomeUnknown: true));
+          return;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           // The refresh the scheduler fired meanwhile was skipped as in
@@ -560,7 +566,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     ++_orderCreationGeneration;
     _quoteScheduler.dispose();
     await _displayBitcoinUnitSubscription?.cancel();
-    if (!state.isOrderConfirmed) await _cancelAbandonedPayjoin(state.buyOrder);
+    if (!state.isConfirmLocked) await _cancelAbandonedPayjoin(state.buyOrder);
     return super.close();
   }
 
@@ -625,6 +631,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       );
       return;
     }
+    // The last request may have accelerated the order: never send another.
+    if (state.failure is BuyAccelerateOutcomeUnknownFailure) return;
 
     try {
       emit(state.copyWith(isAcceleratingOrder: true, failure: null));

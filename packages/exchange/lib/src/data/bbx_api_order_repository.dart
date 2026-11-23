@@ -7,10 +7,12 @@ import '../domain/entities/btc_network.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
+import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_orders.dart';
 import 'bbx_api_order_mapper.dart';
 import 'btc_network_wire.dart';
+import 'exchange_call_classifier.dart';
 
 typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
   Future<Result<T, ExchangeFailure>> Function(bbx.Bbx),
@@ -46,11 +48,14 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   ) => _read((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> confirmBuyOrder(String orderId) =>
-      _write((api) => _readOrder(api.orders.confirmOrderSummary(orderId)));
+  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId) =>
+      _orderWrite<BuyOrder>(
+        'confirmBuyOrder',
+        (api) => api.orders.confirmOrderSummary(orderId),
+      );
 
   @override
-  Future<Result<WithdrawOrder, ExchangeFailure>> confirmWithdrawOrder(
+  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -59,11 +64,11 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       String? securityAnswer,
     })?
     interacUpdate,
-  }) => _write((api) async {
-    final result = await _readOrder<WithdrawOrder>(
-      api.orders.confirmOrderSummary(orderId),
-    );
-    if (result is Ok<WithdrawOrder, ExchangeFailure> && interacUpdate != null) {
+  }) => _orderWrite<WithdrawOrder>(
+    'confirmWithdrawOrder',
+    (api) => api.orders.confirmOrderSummary(orderId),
+    afterDone: (api) async {
+      if (interacUpdate == null) return;
       final update = await api.recipients.updateInteracSecurityDetails(
         recipientId: interacUpdate.recipientId,
         email: interacUpdate.email,
@@ -75,14 +80,15 @@ final class BbxApiOrderRepository implements ExchangeOrders {
           'Withdrawal completed without updating Interac security details',
         );
       }
-    }
-    return result;
-  });
+    },
+  );
 
   @override
-  Future<Result<BuyOrder, ExchangeFailure>> accelerateBuyOrder(
-    String orderId,
-  ) => _write((api) => _readOrder(api.orders.unbatchAndExpressOrder(orderId)));
+  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId) =>
+      _orderWrite<BuyOrder>(
+        'accelerateBuyOrder',
+        (api) => api.orders.unbatchAndExpressOrder(orderId),
+      );
 
   @override
   Future<Result<BuyOrder, ExchangeFailure>> placeBuyOrder({
@@ -342,6 +348,33 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     };
   }
 
+  /// Runs the order write [call] in the write session and classifies it. A
+  /// reply of another order type, or one that can't be mapped, is
+  /// [WriteOutcomeUnknown]: the server accepted the write. [afterDone] runs in
+  /// the same session after a [WriteDone] and can't change the result.
+  Future<ExchangeWrite<T>> _orderWrite<T extends Order>(
+    String operation,
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call, {
+    Future<void> Function(bbx.Bbx)? afterDone,
+  }) async {
+    final result = await _write<ExchangeWrite<T>>((api) async {
+      final write = await exchangeWrite<bbx.OrderSummary, T>(
+        operation,
+        () => call(api),
+        (summary) => switch (orderFromBbxApi(summary, isTestnet: _isTestnet)) {
+          final T order => order,
+          final other => throw _UnexpectedOrderType(other.runtimeType),
+        },
+      );
+      if (write is WriteDone<T>) await afterDone?.call(api);
+      return Ok(write);
+    });
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => writeNotRun(failure),
+    };
+  }
+
   Result<T, ExchangeFailure> _mapOrder<T extends Order>(
     bbx.OrderSummary summary,
   ) {
@@ -447,4 +480,14 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     bbx.BbxOutcomeUnknownFailure() => const ExchangeNetworkFailure(),
     _ => const ExchangeOrderLoadFailure(),
   };
+}
+
+/// The server answered a write with an order of another type.
+final class _UnexpectedOrderType implements Exception {
+  final Type type;
+
+  const _UnexpectedOrderType(this.type);
+
+  @override
+  String toString() => 'UnexpectedOrderType($type)';
 }

@@ -1093,11 +1093,14 @@ void main() {
   });
 
   group('confirm and accelerate', () {
+    T done<T>(ExchangeWrite<T> write) => switch (write) {
+      WriteDone(:final value) => value,
+      _ => fail('Unexpected write result: $write'),
+    };
+
     test('confirmBuyOrder confirms the order summary', () async {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
-      final order = _valueOf(
-        await _repository(http).confirmBuyOrder('order-1'),
-      );
+      final order = done(await _repository(http).confirmBuyOrder('order-1'));
       expect(
         (http.requests.single.data as Map)['method'],
         'confirmOrderSummary',
@@ -1111,7 +1114,7 @@ void main() {
         body: {'result': orderJsonFixture(orderType: 'Withdraw')},
       );
       expect(
-        _valueOf(await _repository(http).confirmWithdrawOrder('order-1')),
+        done(await _repository(http).confirmWithdrawOrder('order-1')),
         isA<WithdrawOrder>(),
       );
       expect(_params(http), {'orderId': 'order-1'});
@@ -1120,7 +1123,7 @@ void main() {
     test('accelerateBuyOrder unbatches and expresses the order', () async {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
       expect(
-        _valueOf(await _repository(http).accelerateBuyOrder('order-1')),
+        done(await _repository(http).accelerateBuyOrder('order-1')),
         isA<BuyOrder>(),
       );
       expect(
@@ -1130,54 +1133,93 @@ void main() {
       expect(_params(http), {'orderId': 'order-1'});
     });
 
-    test('another order type returns a load failure', () async {
+    test('another order type is an unknown outcome, not a failure', () async {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
       expect(
         await _repository(http).confirmWithdrawOrder('order-1'),
-        _fails(isA<ExchangeOrderLoadFailure>()),
+        isA<WriteOutcomeUnknown<WithdrawOrder>>(),
       );
     });
 
-    test('a JSON-RPC rejection omits its message', () async {
-      for (final call
-          in <Future<Result<Order, ExchangeFailure>> Function(ExchangeOrders)>[
-            (r) => r.confirmBuyOrder('o'),
-            (r) => r.confirmWithdrawOrder('o'),
-            (r) => r.accelerateBuyOrder('o'),
-          ]) {
+    final calls =
+        <String, Future<ExchangeWrite<Order>> Function(ExchangeOrders)>{
+          'confirmBuyOrder': (r) => r.confirmBuyOrder('o'),
+          'confirmWithdrawOrder': (r) => r.confirmWithdrawOrder('o'),
+          'accelerateBuyOrder': (r) => r.accelerateBuyOrder('o'),
+        };
+
+    for (final MapEntry(key: name, value: call) in calls.entries) {
+      test('$name: a JSON-RPC rejection keeps only its codes', () async {
         expect(
           await call(_repository(FakeBbxHttp(body: _rpcError))),
-          _fails(
-            isA<ExchangeOrderRejectedFailure>()
-                .having(
-                  (e) => e.toString(),
-                  'diagnostics',
-                  isNot(contains('sat@example.com')),
-                )
-                .having((e) => e.rpcCode, 'rpcCode', -1),
+          isA<WriteRefused<Order>>()
+              .having((w) => w.reason.rpcCode, 'rpcCode', -1)
+              .having(
+                (w) => w.reason.toString(),
+                'diagnostics',
+                isNot(contains('sat@example.com')),
+              ),
+        );
+      });
+
+      test('$name: a timeout after sending is an unknown outcome', () async {
+        expect(
+          await call(
+            _repository(FakeBbxHttp(error: DioExceptionType.receiveTimeout)),
+          ),
+          isA<WriteOutcomeUnknown<Order>>(),
+        );
+      });
+
+      test('$name: a connect timeout was not sent', () async {
+        expect(
+          await call(
+            _repository(FakeBbxHttp(error: DioExceptionType.connectionTimeout)),
+          ),
+          isA<WriteNotSent<Order>>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.unreachable,
           ),
         );
-      }
-    });
+      });
 
-    test('a limit error on confirm is not an amount failure', () async {
-      expect(
-        await _repository(FakeBbxHttp(body: _limits([(20, _min)])))
-            .confirmBuyOrder('o'),
-        _fails(isA<ExchangeOrderRejectedFailure>()),
-      );
-    });
+      test('$name: an unreadable reply is an unknown outcome', () async {
+        expect(
+          await call(_repository(FakeBbxHttp(body: {'result': null}))),
+          isA<WriteOutcomeUnknown<Order>>(),
+        );
+      });
 
-    test('no stored key is ExchangeNotAuthenticatedFailure', () async {
-      expect(
-        await _signedOut(FakeBbxHttp()).confirmWithdrawOrder('o'),
-        _fails(isA<ExchangeNotAuthenticatedFailure>()),
-      );
-      expect(
-        await _signedOut(FakeBbxHttp()).accelerateBuyOrder('o'),
-        _fails(isA<ExchangeNotAuthenticatedFailure>()),
-      );
-    });
+      test('$name: an HTTP 401 is a rejected session', () async {
+        expect(
+          await call(_repository(FakeBbxHttp(status: 401, body: const {}))),
+          isA<WriteSessionRejected<Order>>(),
+        );
+      });
+
+      test('$name: no stored key was not sent', () async {
+        expect(
+          await call(_signedOut(FakeBbxHttp())),
+          isA<WriteNotSent<Order>>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.signedOut,
+          ),
+        );
+      });
+    }
+
+    test(
+      'a limit error on confirm is a refusal, not an amount failure',
+      () async {
+        expect(
+          await _repository(FakeBbxHttp(body: _limits([(20, _min)])))
+              .confirmBuyOrder('o'),
+          isA<WriteRefused<BuyOrder>>(),
+        );
+      },
+    );
   });
 
   group('createDca', () {

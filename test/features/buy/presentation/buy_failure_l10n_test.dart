@@ -21,6 +21,8 @@ final _everyFailure = <BuyFailure>[
   ),
   const BuyQuoteExpiredFailure(_rawReason),
   const BuyQuoteUnavailableFailure(_rawReason),
+  const BuyConfirmOutcomeUnknownFailure(_rawReason),
+  const BuyAccelerateOutcomeUnknownFailure(_rawReason),
   const BuyUnexpectedFailure(_rawReason),
 ];
 

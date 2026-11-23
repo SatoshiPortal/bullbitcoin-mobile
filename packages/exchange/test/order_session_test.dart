@@ -148,16 +148,17 @@ void main() {
           },
         ),
       );
-      expect(
-        await pending,
-        write && status == 200
-            ? isA<Ok<BuyOrder, ExchangeFailure>>()
-            : isA<Err<Order, ExchangeFailure>>().having(
-                (result) => result.failure,
-                'failure',
-                isA<ExchangeOperationStaleFailure>(),
-              ),
-      );
+      // A write keeps the answer of the session that sent it: a write that
+      // may have happened is never turned into a stale failure.
+      expect(await pending, switch ((write, status)) {
+        (true, 200) => isA<WriteDone<BuyOrder>>(),
+        (true, _) => isA<WriteSessionRejected<BuyOrder>>(),
+        (false, _) => isA<Err<Order, ExchangeFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ExchangeOperationStaleFailure>(),
+        ),
+      });
       expect(http.requests, hasLength(1));
     });
   }
@@ -265,7 +266,7 @@ void main() {
         ),
       );
 
-      expect(await pending, isA<Ok<WithdrawOrder, ExchangeFailure>>());
+      expect(await pending, isA<WriteDone<WithdrawOrder>>());
       expect(http.requests.map((request) => (request.data as Map)['method']), [
         'confirmOrderSummary',
         if (!changeSession) 'updateMyRecipient',

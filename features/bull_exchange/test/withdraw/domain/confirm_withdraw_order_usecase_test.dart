@@ -97,7 +97,7 @@ void main() {
       'confirms with the selected Interac defaults (save: $saveDefaults)',
       () async {
         final order = _MockWithdrawOrder();
-        Future<Result<WithdrawOrder, ExchangeFailure>> confirm() =>
+        Future<ExchangeWrite<WithdrawOrder>> confirm() =>
             mainnetRepository.confirmWithdrawOrder(
               'order-1',
               interacUpdate: (
@@ -107,7 +107,7 @@ void main() {
                 securityAnswer: saveDefaults ? 'Montreal' : null,
               ),
             );
-        when(confirm).thenAnswer((_) async => Ok(order));
+        when(confirm).thenAnswer((_) async => WriteDone(order));
 
         final result = await usecase.execute(
           orderId: 'order-1',
@@ -124,7 +124,7 @@ void main() {
   test('does not update recipients for non-Interac withdrawals', () async {
     final order = _MockWithdrawOrder();
     when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => Ok(order));
+        .thenAnswer((_) async => WriteDone(order));
 
     final result = await usecase.execute(orderId: 'order-1');
 
@@ -144,7 +144,7 @@ void main() {
       ),
     );
     when(() => testnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => Ok(order));
+        .thenAnswer((_) async => WriteDone(order));
 
     final result = await usecase.execute(orderId: 'order-1');
 
@@ -152,16 +152,13 @@ void main() {
     verifyZeroInteractions(mainnetRepository);
   });
 
-  test('sanitizes unexpected confirmation failures', () async {
-    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-        .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
-    final pending = _MockWithdrawOrder();
-    when(() => pending.orderStatus)
-        .thenReturn(OrderStatus.awaitingConfirmation);
-    when(() => mainnetRepository.getOrder('order-1'))
-        .thenAnswer((_) async => Ok(pending));
+  test('a refusal is a plain failure without a re-read', () async {
+    when(() => mainnetRepository.confirmWithdrawOrder('order-1')).thenAnswer(
+      (_) async => const WriteRefused(ExchangeRefusal(rpcCode: -32603)),
+    );
 
     final result = await usecase.execute(orderId: 'order-1');
+    verifyNever(() => mainnetRepository.getOrder(any()));
 
     expect(
       _err(result),
@@ -177,7 +174,7 @@ void main() {
     'an unauthenticated confirmation is reported without a re-read',
     () async {
       when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
-          .thenAnswer((_) async => const Err(ExchangeSessionRejectedFailure()));
+          .thenAnswer((_) async => const WriteSessionRejected());
 
       final result = await usecase.execute(orderId: 'order-1');
 
@@ -193,9 +190,7 @@ void main() {
           'order-1',
           interacUpdate: any(named: 'interacUpdate'),
         ),
-      ).thenAnswer(
-        (_) async => const Err(ExchangeNetworkFailure('receive timeout')),
-      );
+      ).thenAnswer((_) async => const WriteOutcomeUnknown('receive timeout'));
     });
 
     test('is a success when the re-read order is confirmed', () async {
