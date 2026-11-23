@@ -6,6 +6,10 @@ import '../domain/wallet_registration.dart';
 
 /// Foreground reads from the currently authorized wallet inventory.
 abstract interface class WalletInventory {
+  /// Public origins across the authorized view, including watch-only wallets.
+  @useResult
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints();
+
   /// Resolve a visible wallet without handing the caller its descriptors.
   /// Absence, unreadable rows and storage errors are distinct failures.
   @useResult

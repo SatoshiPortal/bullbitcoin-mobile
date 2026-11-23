@@ -11,8 +11,6 @@ import 'package:bull_ark/ark_wallet_setup.dart';
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
-import 'data/catalog_wallet_secret_references_repository.dart';
-import 'domain/repositories/wallet_secret_references_repository.dart';
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
@@ -108,22 +106,17 @@ class WalletLocator {
       }
     }
 
-    locator.registerFactory<WalletSecretReferencesRepository>(
-      () => CatalogWalletSecretReferencesRepository(
-        locator<WalletRegistrations>(),
-      ),
-    );
     locator.registerFactory<LoadNetworkWalletSetupUsecase>(
       () => LoadNetworkWalletSetupUsecase(
         locator<DeveloperEnvironmentReader>(),
-        locator<WalletSecretReferencesRepository>(),
+        locator<SecretsInventory>(),
         locator<Secrets>(),
       ),
     );
     locator.registerFactory<CreateNetworkWalletUsecase>(
       () => CreateNetworkWalletUsecase(
         locator<DeveloperEnvironmentReader>(),
-        locator<WalletSecretReferencesRepository>(),
+        locator<SecretsInventory>(),
         locator<Secrets>(),
         locator<CreateDefaultWalletsUsecase>(),
       ),

@@ -22,6 +22,17 @@ final class InventoryRepository {
         return List.unmodifiable(rows.map((row) => _decode(row.data)));
       }, orElse: FetchSecretFailure.new);
 
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints(
+    String view,
+  ) => boundary(() async {
+    final rows = await _listRows(view);
+    final fingerprints = <Fingerprint>{
+      for (final row in rows)
+        ?Fingerprint.tryParse(row.read<String>('master_fingerprint')),
+    };
+    return List.unmodifiable(fingerprints);
+  }, orElse: FetchSecretFailure.new);
+
   Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
     String view,
   ) => boundary(() async {

@@ -150,6 +150,11 @@ final class SecretsInventory implements WalletInventory {
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
       _inSession((_) => _wallets.list(defaultViewId));
 
+  @override
+  @useResult
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() =>
+      _inSession((_) => _wallets.referencedFingerprints(defaultViewId));
+
   /// Whether the authorized view has any wallet, including on other networks.
   @useResult
   Future<Result<bool, SecretFailure>> hasWallets() async =>
