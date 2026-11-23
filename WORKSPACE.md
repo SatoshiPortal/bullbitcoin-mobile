@@ -96,6 +96,8 @@ graph TD
   style swaps stroke:#3665e3
   sync["sync"]
   style sync stroke:#5262f9
+  wallet_import["wallet_import"]
+  style wallet_import stroke:#eeb6de
   access --> bull_logger
   access --> bull_ui
   access --> primitives
@@ -243,6 +245,15 @@ graph TD
   sync --> bull_logger
   sync --> primitives
   sync --> secrets
+  wallet_import --> bull_logger
+  wallet_import --> bull_ui
+  wallet_import --> electrum
+  wallet_import --> preferences
+  wallet_import --> primitives
+  wallet_import --> satoshifier
+  wallet_import --> secrets
+  wallet_import --> signers
+  wallet_import --> sync
   subgraph features0 ["features"]
     access
     announcements
@@ -257,6 +268,7 @@ graph TD
     label_editor
     network
     signers
+    wallet_import
   end
   subgraph packages1 ["packages"]
     ark
