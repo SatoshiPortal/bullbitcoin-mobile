@@ -589,9 +589,9 @@ void main() {
       await readStarted.future;
       var authorized = false;
       final entry = repository.tradingAvailability().then((value) {
-            authorized = true;
-            return value;
-          });
+        authorized = true;
+        return value;
+      });
       await Future<void>.delayed(Duration.zero);
       expect(authorized, isFalse);
       nextKey.complete(const Ok(null));

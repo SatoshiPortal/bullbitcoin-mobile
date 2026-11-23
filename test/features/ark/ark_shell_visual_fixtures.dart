@@ -223,8 +223,7 @@ class ArkShellVisualFixtures {
       ),
     );
 
-    when(() => _exchange.current)
-        .thenReturn(const ExchangeAccessDisabled());
+    when(() => _exchange.current).thenReturn(const ExchangeAccessDisabled());
     when(_exchange.watch)
         .thenAnswer((_) => const Stream<ExchangeAccess>.empty());
     when(_wallet.close).thenAnswer((_) async {});

@@ -221,8 +221,7 @@ void main() {
     final exchange = _Exchange();
     final settings = _Settings();
     when(() => settings.state).thenReturn(const SettingsState());
-    when(() => exchange.current)
-        .thenReturn(const ExchangeAccessDisabled());
+    when(() => exchange.current).thenReturn(const ExchangeAccessDisabled());
     var listens = 0;
     var cancels = 0;
     final changes = StreamController<ExchangeAccess>.broadcast(

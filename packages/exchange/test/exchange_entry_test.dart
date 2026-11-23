@@ -37,14 +37,12 @@ void main() {
     });
 
     test('an unreadable preference does not hide Exchange', () async {
-      when(
-        preferences.readExchangeWebPreferences,
-      ).thenAnswer((_) async => const Err(PreferencesReadFailure()));
+      when(preferences.readExchangeWebPreferences)
+          .thenAnswer((_) async => const Err(PreferencesReadFailure()));
 
       expect(
-        await exchangeForTesting(
-          sessionPreferences: preferences,
-        ).networkUnavailable(),
+        await exchangeForTesting(sessionPreferences: preferences)
+            .networkUnavailable(),
         isFalse,
       );
     });
@@ -70,9 +68,8 @@ void main() {
         access.tradingAvailability,
       ).thenAnswer((_) async => const Ok(ExchangeAvailability.signInRequired));
 
-      final result = await exchangeForTesting(
-        access: access,
-      ).guardTradingEntry();
+      final result = await exchangeForTesting(access: access)
+          .guardTradingEntry();
 
       expect(
         (result as Ok<ExchangeAvailability, ExchangeFailure>).value,

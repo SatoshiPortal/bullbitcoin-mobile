@@ -36,8 +36,7 @@ class SettingsLocator {
             : QuickActionsLayout.defaults,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
           exchange: locator<Exchange>(),
-          networkUnavailable: () =>
-              locator<Exchange>().networkUnavailable(),
+          networkUnavailable: () => locator<Exchange>().networkUnavailable(),
           settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<Settings>().watchSuperuser().map(

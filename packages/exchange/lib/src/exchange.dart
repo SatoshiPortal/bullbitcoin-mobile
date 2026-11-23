@@ -590,10 +590,11 @@ final class Exchange {
   }
 
   /// Whether the active network has no Exchange service.
-  Future<bool> networkUnavailable() async => switch (await loadWebPreferences()) {
-    Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
-    _ => false,
-  };
+  Future<bool> networkUnavailable() async =>
+      switch (await loadWebPreferences()) {
+        Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
+        _ => false,
+      };
 
   /// Decides whether a trading route may open now.
   @useResult

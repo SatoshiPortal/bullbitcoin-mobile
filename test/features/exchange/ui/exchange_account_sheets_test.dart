@@ -68,8 +68,9 @@ void main() {
                         context,
                         message: AppLocalizations.of(context)
                             .notLoggedInMessage,
-                        onSignIn: () =>
-                            context.goNamed(BullExchangeNavigation.dashboardName),
+                        onSignIn: () => context.goNamed(
+                          BullExchangeNavigation.dashboardName,
+                        ),
                       ),
                     },
                   ),

@@ -8,20 +8,16 @@ import 'exchange_auth_screen.dart';
 ExchangeAuthHost exchangeAuthHost(Exchange Function() exchange) => (
   loadConfiguration: () => exchange().loadWebPreferences(),
   authenticate:
-      (
-        context,
-        evaluateJavaScript, {
-        required isTestnet,
-        required isCurrent,
-      }) => ExchangeSessionScope.finishAuthentication(
-        context,
-        ({required isCurrent}) => exchange().authenticateWebSession(
-          isTestnet: isTestnet,
-          evaluateJavaScript: evaluateJavaScript,
-          isCurrent: isCurrent,
-        ),
-        isCurrent: isCurrent,
-      ),
+      (context, evaluateJavaScript, {required isTestnet, required isCurrent}) =>
+          ExchangeSessionScope.finishAuthentication(
+            context,
+            ({required isCurrent}) => exchange().authenticateWebSession(
+              isTestnet: isTestnet,
+              evaluateJavaScript: evaluateJavaScript,
+              isCurrent: isCurrent,
+            ),
+            isCurrent: isCurrent,
+          ),
   failureMessage: (context, failure) => failure.toTranslated(context),
   mainnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthUrl),
   testnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthTestUrl),

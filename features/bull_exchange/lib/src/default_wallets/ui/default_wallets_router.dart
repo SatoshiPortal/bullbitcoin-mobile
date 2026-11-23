@@ -27,8 +27,6 @@ GoRoute defaultWalletsRoute(
   path: DefaultWalletsNavigation.path,
   redirect: (_, _) async =>
       await host.isAvailable() ? null : host.unavailableRedirectPath,
-  builder: (_, _) => DefaultWalletsScreen(
-    exchange: exchange(),
-    payoutFields: payoutFields,
-  ),
+  builder: (_, _) =>
+      DefaultWalletsScreen(exchange: exchange(), payoutFields: payoutFields),
 );

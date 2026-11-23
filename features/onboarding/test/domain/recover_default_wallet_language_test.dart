@@ -72,7 +72,8 @@ void main() {
       },
     );
     final verification = _Verification();
-    when(() => verification.execute(any())).thenAnswer((_) async => const Ok(null));
+    when(() => verification.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
     usecase = RecoverOnboardingWalletUsecase(
       defaultWallets: provisioning,
       completePhysicalBackupVerificationUsecase: verification,

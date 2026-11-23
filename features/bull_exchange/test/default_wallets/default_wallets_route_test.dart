@@ -28,15 +28,14 @@ void main() {
         onExit: (_) {},
         payoutFields: (
           validate: (_, _) async => null,
-          buildField:
-              ({
-                required type,
-                required value,
-                required hint,
-                required enabled,
-                required onChanged,
-                required onValidationChanged,
-              }) => const SizedBox.shrink(),
+          buildField: ({
+            required type,
+            required value,
+            required hint,
+            required enabled,
+            required onChanged,
+            required onValidationChanged,
+          }) => const SizedBox.shrink(),
         ),
         settings: ExchangeSettingsHost(
           exchange: () => exchange,

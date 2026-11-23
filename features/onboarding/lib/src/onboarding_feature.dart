@@ -43,9 +43,8 @@ final class OnboardingFeature {
     required ImageProvider encryptedBackupIcon,
     required ImageProvider physicalBackupIcon,
   }) => mountOnboardingRoutes(
-    createWallet: CreateOnboardingWalletUsecase(
-      defaultWallets: defaultWallets,
-    ).execute,
+    createWallet: CreateOnboardingWalletUsecase(defaultWallets: defaultWallets)
+        .execute,
     recoverWallet: RecoverOnboardingWalletUsecase(
       defaultWallets: defaultWallets,
       completePhysicalBackupVerificationUsecase:
@@ -85,10 +84,8 @@ OnboardingFeature mountOnboardingRoutes({
     loading: loading,
     logo: logo,
     background: background,
-    advancedOptions: (_) => AdvancedOptions(
-      languageOf: languageOf,
-      changeLanguage: changeLanguage,
-    ),
+    advancedOptions: (_) =>
+        AdvancedOptions(languageOf: languageOf, changeLanguage: changeLanguage),
   );
 
   return OnboardingFeature._(

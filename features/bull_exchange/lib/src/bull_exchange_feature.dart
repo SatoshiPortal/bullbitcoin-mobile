@@ -200,7 +200,10 @@ final class BullExchangeFeature {
           color: context.appColors.onSurface,
         ),
       ),
-      funding: (exchange: exchange, isLoggedIn: ExchangeSessionScope.hasAccount),
+      funding: (
+        exchange: exchange,
+        isLoggedIn: ExchangeSessionScope.hasAccount,
+      ),
       kyc: ExchangeKycHost(
         loadConfiguration: () => exchange().loadKyc(),
         failureMessage: failureMessage,

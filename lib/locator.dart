@@ -538,7 +538,9 @@ class AppLocator {
     );
     locator.registerLazySingleton(
       () => CoinsFeature.mount<app_wallet.Wallet>(
-        resolveWalletKey: (id) async => switch (await inventory.readWallet(id)) {
+        resolveWalletKey: (id) async => switch (await inventory.readWallet(
+          id,
+        )) {
           Ok(:final value) => WalletKey(id: value.id, network: value.network),
           Err(failure: WalletRegistrationNotFoundFailure()) =>
             throw const WalletSnapshotException(SyncNotFoundFailure()),

@@ -238,9 +238,8 @@ class AppRouter {
         notifyRootObserver: true,
         builder: (context, state, child) {
           final location = state.uri.toString();
-          final tabIndex = location.startsWith(BullExchangeNavigation.dashboardPath)
-              ? 1
-              : 0;
+          final tabIndex =
+              location.startsWith(BullExchangeNavigation.dashboardPath) ? 1 : 0;
 
           final shell = PopScope(
             canPop: false,
