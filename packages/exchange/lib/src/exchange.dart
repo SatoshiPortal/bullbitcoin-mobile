@@ -28,6 +28,7 @@ import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_access.dart';
+import 'domain/exchange_availability.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
@@ -587,6 +588,19 @@ final class Exchange {
     if (preferences == null) return const Err(ExchangeUnexpectedFailure());
     return GetExchangeWebSettingsUsecase(preferences: preferences).execute();
   }
+
+  /// Whether the active network has no Exchange service.
+  Future<bool> networkUnavailable() async => switch (await loadWebPreferences()) {
+    Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
+    _ => false,
+  };
+
+  /// Decides whether a trading route may open now.
+  @useResult
+  Future<Result<ExchangeAvailability, ExchangeFailure>>
+  guardTradingEntry() async =>
+      await _access?.tradingAvailability() ??
+      const Err(ExchangeAccountUnavailableFailure());
 
   @useResult
   Future<Result<void, ExchangeFailure>> resolveAccess() async =>
