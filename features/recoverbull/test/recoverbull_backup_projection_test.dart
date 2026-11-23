@@ -16,6 +16,7 @@ void main() {
     () async {
       final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
       addTearDown(database.close);
+      await database.forceOpen();
       final old = Uri.parse('http://old.onion');
       final configured = Uri.parse('http://configured.onion');
       final historical = BackupMetadataRepositoryImpl(database);
