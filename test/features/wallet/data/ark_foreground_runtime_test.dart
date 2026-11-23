@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:background_tasks/background_tasks.dart';
 
 import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bull_ark/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart';
