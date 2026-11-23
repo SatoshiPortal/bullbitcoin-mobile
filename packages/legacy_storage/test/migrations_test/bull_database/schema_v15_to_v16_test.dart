@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,8 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/catalog_wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:preferences/preferences.dart';

@@ -22,8 +22,7 @@ import 'package:bb_mobile/features/transactions/data/wallet_transaction_reposito
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';

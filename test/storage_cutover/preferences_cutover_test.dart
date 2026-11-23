@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;
 import 'package:bull_recoverbull/migration.dart'
@@ -18,7 +18,8 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
-import 'generated/schema_v15.dart' as v15;
+import '../../packages/legacy_storage/test/migrations_test/bull_database/generated/schema_v15.dart'
+    as v15;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

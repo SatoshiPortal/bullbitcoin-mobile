@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_13_to_14.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:legacy_storage/src/app_database/migrations/schema_13_to_14.dart';
+import 'package:legacy_storage/src/app_database/sqlite_database.steps.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';

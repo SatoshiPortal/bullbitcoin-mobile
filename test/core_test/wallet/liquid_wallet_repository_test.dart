@@ -19,7 +19,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';

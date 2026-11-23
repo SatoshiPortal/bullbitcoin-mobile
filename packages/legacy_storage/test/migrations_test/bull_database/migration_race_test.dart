@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
-import '../../../tools/testing/sqlite_test_timing.dart';
+import '../../../../../tools/testing/sqlite_test_timing.dart';
 
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v10.dart' as v10;

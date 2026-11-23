@@ -25,8 +25,8 @@ import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:preferences/settings_table.drift.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:legacy_storage/app_database_testing.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
@@ -42,6 +42,7 @@ import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/preferences_database.dart';
+import '../packages/electrum/test/electrum_test_database.dart';
 
 Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
   SqliteDatabase legacy,
@@ -439,11 +440,13 @@ void main() {
     FakeSecureStoragePlatform().install();
     SharedPreferences.setMockInitialValues({});
     final database = SqliteDatabase(NativeDatabase.memory());
+    final electrumDatabase = ElectrumTestDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
       await locator.reset();
+      await electrumDatabase.close();
       await database.close();
       PathProviderPlatform.instance = previousPaths;
       await directory.delete(recursive: true);
@@ -458,9 +461,7 @@ void main() {
             isDevModeEnabled: Value(true),
           ),
         );
-    await database.delete(database.electrumSettings).go();
-    await database.delete(database.electrumServers).go();
-    await database.customStatement(
+    await electrumDatabase.customStatement(
       "CREATE TRIGGER fail_boot_regtest BEFORE INSERT ON electrum_servers WHEN NEW.network = 'liquidRegtest' BEGIN SELECT RAISE(ABORT, 'fixture provisioning failure'); END",
     );
     final result = await AppLocator.setup(
@@ -475,7 +476,7 @@ void main() {
       ),
       openElectrum: (readPreferences, tor) async => Ok(
         createElectrumForTesting(
-          database: database,
+          database: electrumDatabase,
           readPreferences: readPreferences,
           tor: tor,
         ),
@@ -497,7 +498,13 @@ void main() {
     expect(locator.isRegistered<WalletRepository>(), isFalse);
     expect(locator.isRegistered<SyncCoordinator>(), isFalse);
     expect(locator.isRegistered<SpTipWatcher>(), isFalse);
-    expect(await database.select(database.electrumServers).get(), isEmpty);
-    expect(await database.select(database.electrumSettings).get(), isEmpty);
+    expect(
+      await electrumDatabase.select(electrumDatabase.electrumServers).get(),
+      isEmpty,
+    );
+    expect(
+      await electrumDatabase.select(electrumDatabase.electrumSettings).get(),
+      isEmpty,
+    );
   });
 }
