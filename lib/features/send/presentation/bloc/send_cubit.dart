@@ -35,7 +35,7 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
 import 'package:spend/legacy_exceptions.dart'
-    show ConsolidationRequiredException;
+    show BroadcastTransactionException, ConsolidationRequiredException;
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 import 'package:send/send.dart';

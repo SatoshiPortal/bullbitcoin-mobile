@@ -221,6 +221,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           LogsLocalizations.delegate,
                           NetworkLocalizations.delegate,
                           BtcMapFeature.localizationsDelegate,
+                          BackupsFeature.localizationsDelegate,
                           NovlangQuickActionsLocalizationsDelegate(
                             novlangPolicy,
                             const QuickActionsFallbackDelegate(),

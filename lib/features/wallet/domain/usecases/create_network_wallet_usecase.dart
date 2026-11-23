@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.da
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:secrets/storage.dart' show WalletInventory;
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -46,7 +45,9 @@ final class CreateNetworkWalletUsecase {
       if (reuse != null) {
         switch (await _inventory.referencedFingerprints()) {
           case Err():
-            return const Err(NetworkWalletSetupReadFailure(WalletStorageFailure()));
+            return const Err(
+              NetworkWalletSetupReadFailure(WalletStorageFailure()),
+            );
           case Ok(:final value) when !value.contains(reuse):
             return const Err(
               NetworkWalletSetupReadFailure(WalletNotFoundFailure()),

@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart'
     as chains
     show BitcoinNetwork, LiquidNetwork;

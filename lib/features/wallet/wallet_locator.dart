@@ -1,5 +1,4 @@
 import 'package:overview/overview.dart' show WalletDiscoveryUnavailableFailure;
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:notifications/payment_store.dart';
 import 'package:provisioning/provisioning.dart';

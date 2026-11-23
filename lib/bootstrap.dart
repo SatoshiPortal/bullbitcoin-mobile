@@ -8,8 +8,7 @@ import 'package:bb_mobile/app.dart';
 import 'package:startup/startup.dart' show AppInitErrorScreen;
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show paymentNotificationChannelId;
+import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
@@ -27,7 +26,7 @@ Future<void> startApp() async {
         WidgetsFlutterBinding.ensureInitialized();
         final wizard = WizardFeature.mount();
         final startup = await wizard.runIfNeeded(
-          notificationChannelId: paymentNotificationChannelId,
+          notificationChannelId: PaymentNotifications.channelId,
           branding: WizardBranding(
             headerLogo: AssetImage(Assets.logos.bbLogoSmall.path),
             welcomeLogo: AssetImage(Assets.logos.bbLogoWhite.path),

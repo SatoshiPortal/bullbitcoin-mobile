@@ -2,8 +2,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
 import 'dart:typed_data';
 
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 

@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:address_view/address_view.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';

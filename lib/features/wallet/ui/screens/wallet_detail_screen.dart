@@ -22,8 +22,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullDisclosureLink,
         BullPullableBody,
         BullShapesX,
-        BullShimmerBox,
-        BullShimmerLine,
         BullText,
         Gap,
         BullTypographyX;

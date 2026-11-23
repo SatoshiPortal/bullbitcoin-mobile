@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.da
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:secrets/storage.dart' show WalletInventory;
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:secrets/secrets.dart';

@@ -1,3 +1,4 @@
+import 'package:overview/overview.dart' show SyncOutcome;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
