@@ -4,7 +4,7 @@ import 'dart:isolate';
 
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show RootIsolateToken;
 import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -88,12 +88,13 @@ final class PreferencesStore {
           result = const Err(DatabaseNotReady());
         } else {
           final status = ReceivePort();
-          final statusFuture = status.first;
+          final statusFuture = _receiveAcknowledgement(status);
           final sendStatus = status.sendPort;
           final path = file.path;
           final confirmation = ReceivePort();
           closedPort = confirmation;
-          closedFuture = confirmation.first.then<void>((_) {});
+          closedFuture = _receiveAcknowledgement(confirmation)
+              .then<void>((_) {});
           try {
             final DriftIsolate isolate;
             if (testingWorker != null) {
@@ -105,9 +106,16 @@ final class PreferencesStore {
               );
             } else if (token != null) {
               isolate = await _spawnPreferencesWorker(
-                path,
-                existing,
-                token,
+                Secrets.databaseOpener<DatabaseOpenFailure>(
+                  module: 'preferences',
+                  name: 'main',
+                  file: file,
+                  schema: 1,
+                  deferred: const DatabaseNotReady(),
+                  unavailable: const DatabaseFileUnavailable(
+                    DatabaseFileProblem.inaccessible,
+                  ),
+                )(existing),
                 sendStatus,
                 confirmation.sendPort,
               );
@@ -162,6 +170,15 @@ final class PreferencesStore {
   }
 }
 
+// A worker that never started closes its ports without a first message.
+Future<Object?> _receiveAcknowledgement(ReceivePort port) {
+  final received = Completer<Object?>();
+  port.listen((Object? message) {
+    if (!received.isCompleted) received.complete(message);
+  });
+  return received.future;
+}
+
 final class _StoreOpenException implements Exception {
   const _StoreOpenException();
 }
@@ -169,27 +186,14 @@ final class _StoreOpenException implements Exception {
 // Keep the spawn closure in a scope containing only transferable arguments.
 // Capturing the open() frame could capture its ReceivePort and live admission.
 Future<DriftIsolate> _spawnPreferencesWorker(
-  String path,
-  bool existing,
-  RootIsolateToken token,
+  Future<Result<QueryExecutor, DatabaseOpenFailure>> Function() openExecutor,
   SendPort sendStatus,
   SendPort closed,
 ) => DriftIsolate.spawn(() {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(token);
   final notification = NativeCloseAcknowledgement(closed);
   return DatabaseConnection(
     LazyDatabase(() async {
-      final opened =
-          await Secrets(
-                scratchDirectory: () async =>
-                    throw UnsupportedError('Database-only capability'),
-              )
-              .databaseKeys(module: 'preferences')
-              .open(
-                name: 'main',
-                file: File(path),
-                existingSchemaVersion: existing ? 1 : null,
-              );
+      final opened = await openExecutor();
       switch (opened) {
         case Ok(:final value):
           sendStatus.send(null);
