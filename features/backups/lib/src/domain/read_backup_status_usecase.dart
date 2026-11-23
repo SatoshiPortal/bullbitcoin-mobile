@@ -46,19 +46,20 @@ final class ReadBackupStatusUsecase {
   Future<Result<BackupStatusSummary, TestWalletBackupFailure>> execute() async {
     final environment = await _environment.readActiveEnvironment();
     if (environment is! Ok<Environment, PreferencesFailure>) {
-      return const Err(TestWalletBackupWalletsUnavailableFailure());
+      return const Err(TestWalletBackupUnexpectedFailure());
     }
     final network = backupNetwork(environment.value);
     final selection = await _inventory.walletsForNetwork(network);
     if (selection is! Ok<WalletSelection, SecretFailure>) {
-      return const Err(TestWalletBackupWalletsUnavailableFailure());
+      return const Err(TestWalletBackupUnexpectedFailure());
     }
     final wallet = selection.value.defaultWallet;
     final fingerprint = wallet?.secretFingerprint;
     if (fingerprint == null) return const Ok(BackupStatusSummary());
     final facts = await _readProjection(network, fingerprint);
-    if (facts is! Ok<SecretBackupProjection, rb.RecoverBullFailure>)
+    if (facts is! Ok<SecretBackupProjection, rb.RecoverBullFailure>) {
       return const Err(TestWalletBackupUnexpectedFailure());
+    }
     final projection = facts.value;
     final status = await _vaultStatus(
       rb.VaultContext(fingerprint: fingerprint, network: network),

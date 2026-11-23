@@ -1,3 +1,4 @@
+export 'src/backups_copy.dart' show BackupsCopy;
 export 'src/backups_feature.dart' show backupOptionsRoute, createBackupBloc;
 export 'src/domain/backup_wallet.dart' show BackupWallet;
 export 'src/domain/test_wallet_backup_failure.dart';

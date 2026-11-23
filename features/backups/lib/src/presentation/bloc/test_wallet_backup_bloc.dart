@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:primitives/primitives.dart';
 import 'package:backups/src/domain/backup_wallet.dart';
-import 'package:physical_backup_verification/physical_backup_verification.dart';
 import 'package:backups/src/domain/test_wallet_backup_failure.dart';
 import 'package:backups/src/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:backups/src/domain/usecases/get_secret_from_fingerprint_usecase.dart';
@@ -54,8 +53,9 @@ class TestWalletBackupBloc
       return const Err(TestWalletBackupNoWalletSelectedFailure());
     }
     final fingerprint = wallet.fingerprint;
-    if (fingerprint == null)
+    if (fingerprint == null) {
       return const Err(TestWalletBackupSeedUnavailableFailure());
+    }
     return _getSecretFromFingerprintUsecase.execute(fingerprint.hex);
   }
 

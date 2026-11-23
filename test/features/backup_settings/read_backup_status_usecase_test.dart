@@ -31,7 +31,7 @@ void main() {
     addTearDown(fixture.close);
     final registered = await fixture.inventory.registerWallet(
       RegisteredWallet(
-        id: 'default',
+        id: 'wpkh([deadbeef/84h/1h/0h])',
         secretFingerprint: 'deadbeef',
         masterFingerprint: 'deadbeef',
         signer: 'local',

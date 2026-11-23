@@ -53,7 +53,10 @@ class VerifyMnemonicScreen extends StatelessWidget {
         final wallet = state.selectedWallet;
         final walletName = wallet?.isDefault ?? false
             ? context.loc.testBackupDefaultWallets
-            : wallet?.label ?? context.loc.walletDetailsUnnamedWalletFallback;
+            : wallet?.label ??
+                  (wallet == null
+                      ? ''
+                      : context.loc.walletDetailsUnnamedWalletFallback);
         return Scaffold(
           backgroundColor: context.bull.onSecondary,
           appBar: PreferredSize(
