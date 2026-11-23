@@ -21,6 +21,8 @@ graph TB
     ARK --> ARK_PROTOCOL
     ARK --> PRIMITIVES
     ARK --> SECRETS
+    ARK --> SCANNING
+    ARK --> PREFERENCES
     ARK --> BG_TASKS
     ARK --> NOTIFICATIONS
     ARK --> BULL_UI
@@ -160,6 +162,8 @@ graph TB
     ARK_NATIVE[Ark Package<br/>Native lifecycle and protocol operations]
     ARK --> ARK_NATIVE
     ARK --> SECRETS
+    ARK --> SCANNING
+    ARK --> PREFERENCES
     ARK --> PRIMITIVES
     ARK --> BULL_UI
     ARK --> BG_TASKS

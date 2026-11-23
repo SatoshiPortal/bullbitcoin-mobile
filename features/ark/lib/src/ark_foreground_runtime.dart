@@ -1,6 +1,3 @@
-import 'package:bb_mobile/features/settings/public/language_locale.dart'
-    show LanguageExtension;
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -10,9 +7,6 @@ import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
 import 'package:secrets/bip85.dart';
 import 'package:preferences/preferences.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
@@ -185,6 +179,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   required Uri primaryEsploraUrl,
   required bool initializeNew,
   required ArkBoardFundingBinding boardFunding,
+  required WalletInventory inventory,
   ArkPreferencesRepository? preferences,
   BackgroundTaskDispatcher? dispatcher,
   ArkScanner? scanner,
@@ -192,7 +187,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   try {
     final selection = _WalletArkSelection(
       locator<ActiveEnvironmentReader>(),
-      locator<WalletRegistrations>(),
+      inventory,
       arkUrl,
       primaryEsploraUrl,
     );
@@ -232,14 +227,19 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     ArkForegroundMaintenance? maintenance;
     WalletArkDisplayData? displayData;
     try {
-      final locale =
-          ((await locator<RuntimeDisplayPreferencesReader>().readLanguage())
-                  .fold(
-                    (value) => value,
-                    (failure) => throw Exception('Preferences read failed'),
-                  ))
-              ?.locale ??
-          const Locale('en');
+      final language =
+          (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
+              .fold(
+                (value) => value,
+                (failure) => throw Exception('Preferences read failed'),
+              );
+      final locale = language == null
+          ? const Locale('en')
+          : Locale.fromSubtags(
+              languageCode: language.languageCode,
+              scriptCode: language.scriptCode,
+              countryCode: language.countryCode,
+            );
       final openedMaintenance = await openArkForegroundMaintenance(
         path: '${directory.path}/reminders.sqlite',
         locale: locale,
@@ -408,7 +408,7 @@ final class _SelectionFailure implements Exception {
 
 final class _WalletArkSelection implements ArkAccountSelectionPort {
   final ActiveEnvironmentReader _settings;
-  final WalletRegistrations _wallets;
+  final WalletInventory _wallets;
   final Uri _arkUrl;
   final Uri _esploraUrl;
 
@@ -457,17 +457,19 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
           Environment.regtest) {
         return const Err(ArkNetworkUnavailableFailure());
       }
-      final eligible = (await _wallets.fetchAll())
+      final selected = await _wallets.walletsForNetwork(BitcoinNetwork.regtest);
+      if (selected case Err()) return const Err(ArkFeatureStorageFailure());
+      final wallets = (selected as Ok<WalletSelection, SecretFailure>).value;
+      if (!wallets.isComplete) return const Err(ArkFeatureStorageFailure());
+      final eligible = wallets.defaults
           .where(
             (wallet) =>
-                wallet.networkCode == 'bitcoinRegtest' &&
-                wallet.signer == Signer.local &&
-                wallet.isDefault &&
-                wallet.seedFingerprint != null,
+                wallet.signer == WalletSigner.local &&
+                wallet.secretFingerprint != null,
           )
           .toList();
       if (eligible.length != 1) return const Err(ArkAccountRecoveryFailure());
-      final parent = eligible.single.seedFingerprint;
+      final parent = eligible.single.secretFingerprint;
       if (parent == null) return const Err(ArkAccountRecoveryFailure());
       return Ok((
         ArkAccountConfig(

@@ -2,6 +2,8 @@
 library;
 
 import 'package:ark/ark.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:get_it/get_it.dart';
 import 'package:bull_ark/ark_setup.dart'
     show ArkBoardFundingPort, ArkFailure, ArkServiceUnavailableFailure;
 import 'package:bull_ark/ark_wallet_setup.dart';
@@ -79,4 +81,18 @@ final class WalletArkFundingFactory {
     _closed = true;
     await _actor?.close();
   }
+}
+
+/// Constructs one legacy Bitcoin funding actor per Ark runtime.
+ArkBoardFundingBinding arkBoardFundingBinding(GetIt locator) {
+  final factory = WalletArkFundingFactory(
+    authority: locator<SqliteArkFundingReservations>(),
+    runtime: locator<WalletNativeRuntime>(),
+    metadata: locator<WalletRegistrations>(),
+    sourceSync: locator<ForegroundWalletSync>(),
+    secrets: locator<Secrets>(),
+    fees: locator<Fees>(),
+    custody: locator<ParentCustodyAdmissionPort>(),
+  );
+  return (bind: factory.bindRealClient, close: factory.close);
 }

@@ -32,7 +32,8 @@ import 'package:startup/startup.dart';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:background_tasks/background_tasks.dart'
     show configureBackgroundTasks;
 import 'package:bb_mobile/background_entrypoint.dart';
@@ -401,8 +402,10 @@ Future<void> _setupArkRegtestProfile() async {
   final arkUrl = Uri.tryParse(_arkUrl);
   final esploraUrl = Uri.tryParse(_arkEsploraUrl);
   if (!_arkProfileAdmitted || arkUrl == null || esploraUrl == null) return;
-  await setupArkForeground(
+  await ArkForegroundHost.setup(
     locator,
+    inventory: locator<SecretsInventory>(),
+    boardFunding: () => arkBoardFundingBinding(locator),
     arkUrl: arkUrl,
     primaryEsploraUrl: esploraUrl,
     initializeNew: _arkInitializeNew,

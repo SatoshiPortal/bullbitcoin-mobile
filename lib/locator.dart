@@ -40,7 +40,7 @@ import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Err, Failure;
 import 'package:electrum/setup.dart'
     show ElectrumServersPort, ReadElectrumPreferences, RegtestElectrumProfile;

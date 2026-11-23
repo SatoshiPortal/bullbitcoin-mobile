@@ -3,13 +3,9 @@ import 'dart:async';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:ark/ark.dart' show ArkSnapshot;
 
-import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:sync/write.dart' show WalletNativeRuntime;
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
-import 'package:bull_ark/ark_wallet_setup.dart';
+import 'ark_foreground_runtime.dart';
+import 'ui/ark_payment_scanner.dart';
+
 import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/ark_ui_setup.dart';
@@ -18,7 +14,7 @@ import 'package:bull_ark/bull_ark.dart'
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:primitives/primitives.dart';
 
 /// Every route path the Ark feature composes; the host serves these only.
@@ -51,6 +47,7 @@ final class ArkForegroundHost {
   final ArkScanner? _scanner;
   final BackgroundTaskDispatcher? dispatcher;
   final ArkBoardFundingBinding Function() _boardFunding;
+  final WalletInventory _inventory;
   ArkForegroundRuntime? _runtime;
   Future<Result<ArkForegroundRuntime, ArkFailure>>? _pending;
   int _pendingGeneration = 0;
@@ -64,7 +61,10 @@ final class ArkForegroundHost {
     required Uri arkUrl,
     required Uri primaryEsploraUrl,
     required bool initializeNew,
+    required WalletInventory inventory,
+    required ArkBoardFundingBinding Function() boardFunding,
     required this._boardFunding,
+    required this._inventory,
     this._preferences,
     this._scanner,
     this.dispatcher,
@@ -82,6 +82,8 @@ final class ArkForegroundHost {
     required Uri arkUrl,
     required Uri primaryEsploraUrl,
     required bool initializeNew,
+    required WalletInventory inventory,
+    required ArkBoardFundingBinding Function() boardFunding,
     ArkPreferencesRepository? preferences,
     BackgroundTaskDispatcher? dispatcher,
     ArkScanner? scanner,
@@ -92,20 +94,9 @@ final class ArkForegroundHost {
       primaryEsploraUrl: primaryEsploraUrl,
       initializeNew: initializeNew,
       preferences: preferences,
-      scanner: scanner,
-      dispatcher: dispatcher,
-      boardFunding: () {
-        final factory = WalletArkFundingFactory(
-          authority: locator<SqliteArkFundingReservations>(),
-          runtime: locator<WalletNativeRuntime>(),
-          metadata: locator<WalletRegistrations>(),
-          sourceSync: locator<ForegroundWalletSync>(),
-          secrets: locator<Secrets>(),
-          fees: locator<Fees>(),
-          custody: locator<ParentCustodyAdmissionPort>(),
-        );
-        return (bind: factory.bindRealClient, close: factory.close);
-      },
+      scanner: scanner ?? scanArkPayment,
+      boardFunding: boardFunding,
+      inventory: inventory,
     );
     locator.registerSingleton<ArkForegroundHost>(
       host,
@@ -263,6 +254,7 @@ final class ArkForegroundHost {
       primaryEsploraUrl: _esplora,
       initializeNew: _initialize,
       boardFunding: _boardFunding(),
+      inventory: _inventory,
       preferences: _preferences,
       dispatcher: dispatcher,
       scanner: _scanner,
@@ -343,7 +335,10 @@ class _ArkHostPageState extends State<_ArkHostPage> {
       FutureBuilder<Result<ArkForegroundRuntime, ArkFailure>>(
         future: _runtime,
         builder: (context, snapshot) {
-          final unavailable = createArkUnavailableRoutes().first.builder!;
+          final unavailable = createArkUnavailableRoutes().first.builder;
+          if (unavailable == null) {
+            throw StateError('Ark unavailable route has no builder');
+          }
           if (snapshot.hasError) {
             log.warning(
               'Ark runtime failed to open: ${snapshot.error.runtimeType}',
@@ -360,8 +355,9 @@ class _ArkHostPageState extends State<_ArkHostPage> {
               return unavailable(context, widget.state);
             case Ok(:final value):
               for (final route in value.feature.routes) {
-                if (route.path == widget.path) {
-                  return route.builder!(context, widget.state);
+                final builder = route.builder;
+                if (route.path == widget.path && builder != null) {
+                  return builder(context, widget.state);
                 }
               }
               return unavailable(context, widget.state);
