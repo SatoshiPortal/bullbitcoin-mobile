@@ -81,7 +81,7 @@ void main() {
             orderAmount: const FiatAmount(100),
             recipientId: 'own-account',
             paymentProcessor: SepaPaymentProcessor.regular,
-            network: OrderBitcoinNetwork.bitcoin,
+            network: BtcNetwork.bitcoin,
           ),
           isA<Err>().having(
             (r) => r.failure,

@@ -335,9 +335,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       walletKey: event.wallet.key,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
-      network: event.wallet.isLiquid
-          ? OrderBitcoinNetwork.liquid
-          : OrderBitcoinNetwork.bitcoin,
+      network: event.wallet.btcNetwork,
       paymentDescription: walletSelectionState.paymentDescription,
       usePayjoin:
           !event.wallet.isLiquid &&

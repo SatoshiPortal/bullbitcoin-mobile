@@ -32,7 +32,7 @@ class CreateSellOrderUsecase {
     required OrderAmount orderAmount,
     required WalletKey? walletKey,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     bool usePayjoin = false,
     RecipientSelection? recipient,
   }) async {
@@ -60,8 +60,8 @@ class CreateSellOrderUsecase {
           (walletKey.network.env != settings.environment.networkEnv ||
               network !=
                   (walletKey.network is BitcoinNetwork
-                      ? OrderBitcoinNetwork.bitcoin
-                      : OrderBitcoinNetwork.liquid))) {
+                      ? BtcNetwork.bitcoin
+                      : BtcNetwork.liquid))) {
         return const Err(SellPayinNetworkMismatchFailure());
       }
       if (walletKey != null) {
@@ -81,13 +81,11 @@ class CreateSellOrderUsecase {
         isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
       final resolvedUsePayjoin =
-          usePayjoin &&
-          payjoinEnabled &&
-          network == OrderBitcoinNetwork.bitcoin;
+          usePayjoin && payjoinEnabled && network == BtcNetwork.bitcoin;
       log.fine(
         'Sell Payjoin order request: requested=$usePayjoin, '
         'sellEnabled=$payjoinEnabled, '
-        'network=${network.value}, sent=$resolvedUsePayjoin',
+        'network=${network.name}, sent=$resolvedUsePayjoin',
       );
       final Result<Order, ExchangeFailure> result;
       if (recipient == null) {

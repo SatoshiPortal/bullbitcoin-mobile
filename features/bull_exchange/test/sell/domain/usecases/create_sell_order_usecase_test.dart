@@ -32,7 +32,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(const FiatAmount(1));
     registerFallbackValue(FiatCurrency.cad);
-    registerFallbackValue(OrderBitcoinNetwork.bitcoin);
+    registerFallbackValue(BtcNetwork.bitcoin);
   });
 
   setUp(() {
@@ -65,7 +65,7 @@ void main() {
     walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
     orderAmount: const FiatAmount(100),
     currency: FiatCurrency.cad,
-    network: OrderBitcoinNetwork.bitcoin,
+    network: BtcNetwork.bitcoin,
   );
 
   void stubFailure(ExchangeFailure error) {
@@ -87,7 +87,7 @@ void main() {
         walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.testnet),
         orderAmount: const FiatAmount(100),
         currency: FiatCurrency.cad,
-        network: OrderBitcoinNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
       );
 
       expect(
@@ -157,7 +157,7 @@ void main() {
       walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
       orderAmount: const FiatAmount(100),
       currency: FiatCurrency.cad,
-      network: OrderBitcoinNetwork.bitcoin,
+      network: BtcNetwork.bitcoin,
     );
     expect(
       result,
@@ -173,7 +173,7 @@ void main() {
   });
 
   group('recipient payouts', () {
-    for (final network in OrderBitcoinNetwork.values) {
+    for (final network in BtcNetwork.values) {
       for (final type in [
         RecipientType.sepaEur,
         RecipientType.confidentialSepaEur,
@@ -193,20 +193,20 @@ void main() {
                 recipientId: 'own-account',
                 network: network,
                 paymentProcessor: processor,
-                usePayjoin: network == OrderBitcoinNetwork.bitcoin,
+                usePayjoin: network == BtcNetwork.bitcoin,
               ),
             ).thenAnswer((_) async => Ok(order));
             final result = await usecase.execute(
               walletKey: switch (network) {
-                OrderBitcoinNetwork.bitcoin => WalletKey(
+                BtcNetwork.bitcoin => WalletKey(
                   id: 'wallet-1',
                   network: BitcoinNetwork.mainnet,
                 ),
-                OrderBitcoinNetwork.liquid => WalletKey(
+                BtcNetwork.liquid => WalletKey(
                   id: 'wallet-1',
                   network: LiquidNetwork.mainnet,
                 ),
-                OrderBitcoinNetwork.lightning => null,
+                BtcNetwork.lightning => null,
               },
               orderAmount: const FiatAmount(100),
               currency: FiatCurrency.eur,
@@ -246,7 +246,7 @@ void main() {
           walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
           orderAmount: const FiatAmount(100),
           currency: FiatCurrency.eur,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           recipient: const RecipientSelection(
             id: 'own-account',
             type: RecipientType.confidentialSepaEur,
@@ -266,14 +266,14 @@ void main() {
         () => mainnet.placePayOrder(
           orderAmount: const FiatAmount(100),
           recipientId: 'interac',
-          network: OrderBitcoinNetwork.liquid,
+          network: BtcNetwork.liquid,
         ),
       ).thenAnswer((_) async => Ok(order));
       final result = await usecase.execute(
         walletKey: WalletKey(id: 'wallet-1', network: LiquidNetwork.mainnet),
         orderAmount: const FiatAmount(100),
         currency: FiatCurrency.cad,
-        network: OrderBitcoinNetwork.liquid,
+        network: BtcNetwork.liquid,
         recipient: const RecipientSelection(
           id: 'interac',
           type: RecipientType.interacEmailCad,
@@ -298,7 +298,7 @@ void main() {
           walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
           orderAmount: const FiatAmount(100),
           currency: currency,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           recipient: RecipientSelection(id: 'recipient', type: type),
         );
         expect(result, isA<Err<Order, SellFailure>>());
@@ -313,7 +313,7 @@ void main() {
           () => mainnet.placePayOrder(
             orderAmount: any(named: 'orderAmount'),
             recipientId: 'own-account',
-            network: OrderBitcoinNetwork.bitcoin,
+            network: BtcNetwork.bitcoin,
             paymentProcessor: SepaPaymentProcessor.confidential,
           ),
         ).thenAnswer(
@@ -323,7 +323,7 @@ void main() {
           walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
           orderAmount: const FiatAmount(100),
           currency: FiatCurrency.eur,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           recipient: const RecipientSelection(
             id: 'own-account',
             type: RecipientType.confidentialSepaEur,
@@ -355,7 +355,7 @@ void main() {
         walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
         orderAmount: const FiatAmount(100),
         currency: FiatCurrency.cad,
-        network: OrderBitcoinNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
         usePayjoin: true,
       );
 

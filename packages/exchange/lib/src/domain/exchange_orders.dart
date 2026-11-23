@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'entities/btc_network.dart';
 import 'entities/dca.dart';
 import 'entities/order.dart';
 import 'entities/sepa_payment_processor.dart';
@@ -16,7 +17,7 @@ abstract interface class ExchangeOrders {
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     required bool isOwner,
     String? payjoinBip21,
   });
@@ -27,14 +28,14 @@ abstract interface class ExchangeOrders {
   Future<Result<SellOrder, ExchangeFailure>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     bool usePayjoin = false,
   });
   @useResult
   Future<Result<FiatPaymentOrder, ExchangeFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,

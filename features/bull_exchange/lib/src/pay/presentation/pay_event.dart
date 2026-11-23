@@ -15,7 +15,7 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.walletSelected({required ExchangePayinWallet wallet}) =
       PayWalletSelected;
   const factory PayEvent.externalWalletNetworkSelected({
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
   }) = PayExternalWalletNetworkSelected;
   const factory PayEvent.paymentPreparationAbandoned() =
       PayPaymentPreparationAbandoned;

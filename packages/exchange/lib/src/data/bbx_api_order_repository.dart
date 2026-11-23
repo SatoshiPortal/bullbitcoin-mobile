@@ -3,12 +3,14 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/catalog/exchange_catalog.dart';
+import '../domain/entities/btc_network.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_orders.dart';
 import 'bbx_api_order_mapper.dart';
+import 'btc_network_wire.dart';
 
 typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
   Future<Result<T, ExchangeFailure>> Function(bbx.Bbx),
@@ -87,14 +89,14 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     required bool isOwner,
     String? payjoinBip21,
   }) => _write(
     (api) => _readOrder(
       api.orders.createOrderBuy(
         fiatCurrency: currency.code,
-        network: network.value,
+        network: BtcNetworkWire.orderNetwork(network),
         isOwner: isOwner,
         address: payjoinBip21 == null ? toAddress : null,
         bip21URI: payjoinBip21,
@@ -109,13 +111,13 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   Future<Result<SellOrder, ExchangeFailure>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     bool usePayjoin = false,
   }) => _write(
     (api) => _readOrder(
       api.orders.sellToBalance(
         fiatCurrency: currency.code,
-        bitcoinNetwork: network.value,
+        bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
         usePayjoin: usePayjoin,
         fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
         bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
@@ -128,7 +130,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   Future<Result<FiatPaymentOrder, ExchangeFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
@@ -137,7 +139,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       api.orders.sellToRecipient(
         recipientId: recipientId,
         paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
-        bitcoinNetwork: network.value,
+        bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
         usePayjoin: usePayjoin,
         fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
         bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,

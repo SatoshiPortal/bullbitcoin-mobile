@@ -14,7 +14,7 @@ import 'package:bull_ui/bull_ui.dart'
 class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const SellExternalWalletNetworkSelectionScreen({super.key});
 
-  void _selectNetwork(BuildContext context, OrderBitcoinNetwork network) {
+  void _selectNetwork(BuildContext context, BtcNetwork network) {
     context.pushNamed(
       SellRoute.sellPayout.name,
       extra: SellPayinSource.external(network),
@@ -50,10 +50,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     trailing: const Icon(Icons.chevron_right),
                     onTap: isCreatingSellOrder
                         ? null
-                        : () => _selectNetwork(
-                            context,
-                            OrderBitcoinNetwork.bitcoin,
-                          ),
+                        : () => _selectNetwork(context, BtcNetwork.bitcoin),
                   ),
                   const Gap(24.0),
                   ListTile(
@@ -63,10 +60,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     trailing: const Icon(Icons.chevron_right),
                     onTap: isCreatingSellOrder
                         ? null
-                        : () => _selectNetwork(
-                            context,
-                            OrderBitcoinNetwork.lightning,
-                          ),
+                        : () => _selectNetwork(context, BtcNetwork.lightning),
                   ),
                   const Gap(24.0),
                   ListTile(
@@ -76,10 +70,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     trailing: const Icon(Icons.chevron_right),
                     onTap: isCreatingSellOrder
                         ? null
-                        : () => _selectNetwork(
-                            context,
-                            OrderBitcoinNetwork.liquid,
-                          ),
+                        : () => _selectNetwork(context, BtcNetwork.liquid),
                   ),
                   const Gap(24.0),
                   const _SellError(),

@@ -414,9 +414,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
         recipient: event.recipient,
-        network: event.wallet.isLiquid
-            ? OrderBitcoinNetwork.liquid
-            : OrderBitcoinNetwork.bitcoin,
+        network: event.wallet.btcNetwork,
         // Asking for payjoin only makes the exchange publish a bip21URI on the
         // order; whether the payin actually uses it is decided at confirmation
         // time. So requesting it here costs nothing when the payment ends up

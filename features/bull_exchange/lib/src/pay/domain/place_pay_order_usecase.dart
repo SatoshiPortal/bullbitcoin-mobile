@@ -29,7 +29,7 @@ class PlacePayOrderUsecase {
     required OrderAmount orderAmount,
     required WalletKey? walletKey,
     required String recipientId,
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     String? paymentDescription,
     bool usePayjoin = false,
   }) async {
@@ -51,8 +51,8 @@ class PlacePayOrderUsecase {
           (walletKey.network.env != settings.environment.networkEnv ||
               network !=
                   (walletKey.network is BitcoinNetwork
-                      ? OrderBitcoinNetwork.bitcoin
-                      : OrderBitcoinNetwork.liquid))) {
+                      ? BtcNetwork.bitcoin
+                      : BtcNetwork.liquid))) {
         return const Err(PayPayinNetworkMismatchFailure());
       }
       if (walletKey != null) {
@@ -73,13 +73,11 @@ class PlacePayOrderUsecase {
       );
 
       final resolvedUsePayjoin =
-          usePayjoin &&
-          payjoinEnabled &&
-          network == OrderBitcoinNetwork.bitcoin;
+          usePayjoin && payjoinEnabled && network == BtcNetwork.bitcoin;
       log.fine(
         'Pay Payjoin order request: requested=$usePayjoin, '
         'sellEnabled=$payjoinEnabled, '
-        'network=${network.value}, sent=$resolvedUsePayjoin',
+        'network=${network.name}, sent=$resolvedUsePayjoin',
       );
       final FiatPaymentOrder order;
       switch (await repo.placePayOrder(

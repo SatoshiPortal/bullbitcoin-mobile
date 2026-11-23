@@ -44,25 +44,6 @@ enum OrderType {
   }
 }
 
-enum OrderBitcoinNetwork {
-  bitcoin('bitcoin'),
-  liquid('liquid'),
-  lightning('lightning');
-
-  final String value;
-  const OrderBitcoinNetwork(this.value);
-
-  @override
-  String toString() => value;
-
-  static OrderBitcoinNetwork fromValue(String value) {
-    return OrderBitcoinNetwork.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => throw Exception('Unknown OrderBitcoinNetwork: $value'),
-    );
-  }
-}
-
 sealed class OrderAmount {
   final double amount;
 

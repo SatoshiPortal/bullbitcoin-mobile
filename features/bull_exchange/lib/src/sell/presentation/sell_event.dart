@@ -13,7 +13,7 @@ sealed class SellEvent with _$SellEvent {
     RecipientSelection? recipient,
   }) = SellWalletSelected;
   const factory SellEvent.externalWalletNetworkSelected({
-    required OrderBitcoinNetwork network,
+    required BtcNetwork network,
     RecipientSelection? recipient,
   }) = SellExternalWalletNetworkSelected;
   const factory SellEvent.paymentPreparationAbandoned() =

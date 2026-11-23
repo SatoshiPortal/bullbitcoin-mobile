@@ -41,7 +41,7 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
                         ? null
                         : () => context.read<PayBloc>().add(
                             const PayEvent.externalWalletNetworkSelected(
-                              network: OrderBitcoinNetwork.bitcoin,
+                              network: BtcNetwork.bitcoin,
                             ),
                           ),
                   ),
@@ -55,7 +55,7 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
                         ? null
                         : () => context.read<PayBloc>().add(
                             const PayEvent.externalWalletNetworkSelected(
-                              network: OrderBitcoinNetwork.lightning,
+                              network: BtcNetwork.lightning,
                             ),
                           ),
                   ),
@@ -69,7 +69,7 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
                         ? null
                         : () => context.read<PayBloc>().add(
                             const PayEvent.externalWalletNetworkSelected(
-                              network: OrderBitcoinNetwork.liquid,
+                              network: BtcNetwork.liquid,
                             ),
                           ),
                   ),

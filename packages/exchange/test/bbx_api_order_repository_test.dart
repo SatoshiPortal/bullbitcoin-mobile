@@ -597,7 +597,7 @@ void main() {
           toAddress: 'lq1address',
           orderAmount: const FiatAmount(5),
           currency: FiatCurrency.cad,
-          network: OrderBitcoinNetwork.liquid,
+          network: BtcNetwork.liquid,
           isOwner: true,
         ),
       );
@@ -623,7 +623,7 @@ void main() {
           toAddress: 'bc1address',
           orderAmount: const BitcoinAmount(0.001),
           currency: FiatCurrency.eur,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           isOwner: false,
           payjoinBip21: 'bitcoin:bc1address?pj=https://payjo.in/s',
         ),
@@ -643,7 +643,7 @@ void main() {
           toAddress: 'bc1address',
           orderAmount: const FiatAmount(5),
           currency: FiatCurrency.cad,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           isOwner: true,
         );
 
@@ -793,7 +793,7 @@ void main() {
             toAddress: 'bc1address',
             orderAmount: const FiatAmount(5),
             currency: FiatCurrency.cad,
-            network: OrderBitcoinNetwork.bitcoin,
+            network: BtcNetwork.bitcoin,
             isOwner: true,
           ),
           _fails(isA<ExchangeNotAuthenticatedFailure>()),
@@ -808,7 +808,7 @@ void main() {
           toAddress: 'bc1address',
           orderAmount: const FiatAmount(5),
           currency: FiatCurrency.cad,
-          network: OrderBitcoinNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           isOwner: true,
         ),
         _fails(isA<ExchangeCredentialReadFailure>()),
@@ -823,7 +823,7 @@ void main() {
     }) => _repository(http).placeSellOrder(
       orderAmount: const FiatAmount(100),
       currency: FiatCurrency.eur,
-      network: OrderBitcoinNetwork.bitcoin,
+      network: BtcNetwork.bitcoin,
       usePayjoin: usePayjoin,
     );
 
@@ -894,7 +894,7 @@ void main() {
     }) => _repository(http).placePayOrder(
       orderAmount: amount,
       recipientId: 'r-1',
-      network: OrderBitcoinNetwork.bitcoin,
+      network: BtcNetwork.bitcoin,
       paymentDescription: description,
       paymentProcessor: processor,
       usePayjoin: usePayjoin,

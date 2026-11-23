@@ -308,7 +308,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
             ? FiatAmount(fiatAmount)
             : BitcoinAmount(bitcoinAmount),
         currency: currency,
-        isLiquid: wallet?.network is LiquidNetwork,
+        // An external buy destination is a bitcoin address.
+        network: wallet?.network is LiquidNetwork
+            ? BtcNetwork.liquid
+            : BtcNetwork.bitcoin,
         isOwner: true,
         expectedEnvironment: _payoutEnvironment,
         payjoinWalletId: usePayjoin ? wallet?.id : null,

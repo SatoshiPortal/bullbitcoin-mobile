@@ -33,7 +33,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const FiatAmount(100));
-    registerFallbackValue(OrderBitcoinNetwork.bitcoin);
+    registerFallbackValue(BtcNetwork.bitcoin);
   });
 
   setUp(() {
@@ -74,7 +74,7 @@ void main() {
     walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
     orderAmount: const FiatAmount(100),
     recipientId: 'recipient-1',
-    network: OrderBitcoinNetwork.bitcoin,
+    network: BtcNetwork.bitcoin,
   );
 
   test(
@@ -85,7 +85,7 @@ void main() {
         walletKey: WalletKey(id: 'wallet-1', network: LiquidNetwork.mainnet),
         orderAmount: const FiatAmount(100),
         recipientId: 'recipient-1',
-        network: OrderBitcoinNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
       );
 
       expect(
@@ -184,7 +184,7 @@ void main() {
         walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.mainnet),
         orderAmount: const FiatAmount(100),
         recipientId: 'recipient-1',
-        network: OrderBitcoinNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
         usePayjoin: true,
       );
 

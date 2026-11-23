@@ -38,7 +38,7 @@ class CreateBuyOrderUsecase {
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required bool isLiquid,
+    required BtcNetwork network,
     required bool isOwner,
     Environment? expectedEnvironment,
     String? payjoinWalletId,
@@ -74,10 +74,7 @@ class CreateBuyOrderUsecase {
       final repo = _exchange.orders(
         isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
-      final network = isLiquid
-          ? OrderBitcoinNetwork.liquid
-          : OrderBitcoinNetwork.bitcoin;
-      final Network payoutNetwork = isLiquid
+      final Network payoutNetwork = network == BtcNetwork.liquid
           ? LiquidNetwork.fromName(settings.environment.name)
           : exchangeNetwork;
       if (expectedEnvironment != null &&
@@ -91,7 +88,7 @@ class CreateBuyOrderUsecase {
         Err() => false,
       };
       final wantsPayjoin =
-          !isLiquid &&
+          network == BtcNetwork.bitcoin &&
           payjoinEnabled &&
           payjoinWalletId != null &&
           payjoinAmountSat != null;

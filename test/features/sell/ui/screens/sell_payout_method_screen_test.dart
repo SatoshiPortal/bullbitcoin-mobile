@@ -118,7 +118,7 @@ void main() {
           final popped = appRouter.pushNamed<Object?>(
             SellRoute.sellPayout.name,
             extra: hasArguments
-                ? const SellPayinSource.external(OrderBitcoinNetwork.bitcoin)
+                ? const SellPayinSource.external(BtcNetwork.bitcoin)
                 : null,
           );
           await tester.pumpAndSettle();
@@ -178,7 +178,7 @@ void main() {
         GoRoute(
           path: '/',
           builder: (_, _) => const SellPayoutMethodScreen(
-            source: SellPayinSource.external(OrderBitcoinNetwork.bitcoin),
+            source: SellPayinSource.external(BtcNetwork.bitcoin),
           ),
         ),
         GoRoute(
