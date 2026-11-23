@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart';
@@ -24,10 +23,7 @@ class _Reader implements AmountDisplayPreferencesReader {
 
 void main() {
   final reader = _Reader();
-  final consumers = {
-    'wallet': WatchWalletAmountDisplayUsecase(reader).execute,
-    'coins': WatchCoinsAmountDisplayUsecase(reader).execute,
-  };
+  final consumers = {'wallet': WatchWalletAmountDisplayUsecase(reader).execute};
   for (final consumer in consumers.entries) {
     test(
       '${consumer.key} masks after failure and accepts the recovered preference',

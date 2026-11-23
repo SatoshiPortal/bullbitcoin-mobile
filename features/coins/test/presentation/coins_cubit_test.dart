@@ -1,29 +1,26 @@
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
-import 'package:primitives/primitives.dart' as primitives;
+import 'package:coins/src/domain/usecases/watch_wallet_revisions_usecase.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
-import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
-import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
+import 'package:coins/src/domain/coins_failure.dart';
+import 'package:coins/src/domain/usecases/freeze_utxos_usecase.dart';
+import 'package:coins/src/domain/usecases/get_utxos_usecase.dart';
+import 'package:coins/src/domain/usecases/refresh_coins_usecase.dart';
+import 'package:coins/src/domain/usecases/unfreeze_utxos_usecase.dart';
+import 'package:coins/src/domain/utxo_sort_filter.dart';
+import 'package:coins/src/presentation/coins_cubit.dart';
+import 'package:coins/src/presentation/coins_state.dart';
 import 'package:labels/labels.dart';
+import 'package:sync/sync.dart'
+    show WalletRevisionState, WalletKey, WalletRevision, WalletLifecycle;
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
-import 'package:bb_mobile/features/coins/domain/usecases/load_coin_label_filters_usecase.dart';
+import 'package:coins/src/domain/usecases/load_coin_label_filters_usecase.dart';
 
 class _MockGetUtxosUsecase extends Mock implements GetUtxosUsecase {}
 
@@ -35,29 +32,23 @@ class _MockRefreshCoinsUsecase extends Mock implements RefreshCoinsUsecase {}
 
 class _MockLabels extends Mock implements Labels {}
 
-class _MockWatchStarted extends Mock
-    implements WatchStartedWalletSyncsUsecase {}
-
-class _MockWatchFinished extends Mock
-    implements WatchFinishedWalletSyncsUsecase {}
-
 void main() {
   late _MockGetUtxosUsecase getUtxos;
   late _MockFreezeUtxosUsecase freezeUtxos;
   late _MockUnfreezeUtxosUsecase unfreezeUtxos;
   late _MockRefreshCoinsUsecase refreshCoins;
   late _MockLabels labelsFacade;
-  late _MockWatchStarted watchStarted;
-  late _MockWatchFinished watchFinished;
   late StreamController<WalletRevisionState> revisions;
   late StreamController<String> startedController;
-  late StreamController<Wallet> finishedController;
+  late StreamController<String> finishedController;
 
   const walletId = 'w1';
 
   CoinsCubit buildCubit() => CoinsCubit(
     watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-      WalletFacade(revisions.stream),
+      (id) => revisions.stream
+          .map((r) => r.stamp.key.id)
+          .where((value) => id == null || value == id),
     ),
     walletId: walletId,
     getUtxosUsecase: getUtxos,
@@ -65,8 +56,8 @@ void main() {
     unfreezeUtxosUsecase: unfreezeUtxos,
     refreshCoinsUsecase: refreshCoins,
     loadCoinLabelFilters: LoadCoinLabelFiltersUsecase(labelsFacade),
-    watchStartedWalletSyncsUsecase: watchStarted,
-    watchFinishedWalletSyncsUsecase: watchFinished,
+    startedSyncs: startedController.stream,
+    finishedSyncs: finishedController.stream,
   );
 
   setUp(() {
@@ -76,15 +67,9 @@ void main() {
     unfreezeUtxos = _MockUnfreezeUtxosUsecase();
     refreshCoins = _MockRefreshCoinsUsecase();
     labelsFacade = _MockLabels();
-    watchStarted = _MockWatchStarted();
-    watchFinished = _MockWatchFinished();
     startedController = StreamController<String>.broadcast();
-    finishedController = StreamController<Wallet>.broadcast();
+    finishedController = StreamController<String>.broadcast();
 
-    when(() => watchStarted.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => startedController.stream);
-    when(() => watchFinished.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => finishedController.stream);
     when(() => labelsFacade.suggestions())
         .thenAnswer((_) async => Ok(<String>{}));
     when(() => refreshCoins.execute(walletId: any(named: 'walletId')))
@@ -105,10 +90,7 @@ void main() {
       WalletRevisionState revision(String id, int number) =>
           WalletRevisionState(
             stamp: WalletRevision(
-              key: WalletKey(
-                id: id,
-                network: primitives.BitcoinNetwork.testnet,
-              ),
+              key: WalletKey(id: id, network: BitcoinNetwork.testnet),
               generation: 1,
               revision: number,
             ),
@@ -338,12 +320,12 @@ void main() {
         final cubit = buildCubit();
 
         // Sync started → syncing flips true.
-        startedController.add(_fakeWallet().id);
+        startedController.add(walletId);
         async.flushMicrotasks();
         expect(cubit.state.syncing, isTrue);
 
         // Sync finished → reload only after the debounce window.
-        finishedController.add(_fakeWallet());
+        finishedController.add(walletId);
         async.flushMicrotasks();
         expect(loadCalls, 0);
 
@@ -367,11 +349,11 @@ void main() {
 
         final cubit = buildCubit();
 
-        finishedController.add(_fakeWallet());
+        finishedController.add(walletId);
         async.elapse(const Duration(seconds: 1));
-        finishedController.add(_fakeWallet());
+        finishedController.add(walletId);
         async.elapse(const Duration(seconds: 1));
-        finishedController.add(_fakeWallet());
+        finishedController.add(walletId);
 
         // Only the last timer survives; advance past it.
         async.elapse(const Duration(seconds: 3));
@@ -399,11 +381,4 @@ void main() {
       await cubit.close();
     });
   });
-}
-
-Wallet _fakeWallet() => _FakeWallet();
-
-class _FakeWallet extends Fake implements Wallet {
-  @override
-  String get id => 'w1';
 }

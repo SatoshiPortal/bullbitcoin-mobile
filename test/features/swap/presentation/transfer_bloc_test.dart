@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart'
     as legacy
     show Network;
@@ -605,7 +605,7 @@ void main() {
         bloc = buildBloc(
           bitcoinBroadcast: BroadcastBitcoinTransactionUsecase(
             bitcoinBlockchainRepository: blockchain,
-            walletUtxoRepository: EmptyFrozenOutpoints(),
+            coins: EmptyFrozenOutpoints(),
             settingsRepository: settings,
             wallet: wallet,
           ),

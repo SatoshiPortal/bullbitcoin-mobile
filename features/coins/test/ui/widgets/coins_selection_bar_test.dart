@@ -1,9 +1,9 @@
-import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
+import 'package:coins/src/presentation/coins_state.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/coins/ui/widgets/coins_selection_bar.dart';
-import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:coins/src/ui/widgets/coins_selection_bar.dart';
+import 'package:coins/src/presentation/coins_cubit.dart';
+import 'package:coins/setup.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,8 +32,11 @@ void main() {
 
     Widget buildApp({required bool anyFrozen}) => MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: [
+        CoinsLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: CoinsLocalizations.supportedLocales,
       home: BlocProvider<CoinsCubit>.value(
         value: coinsCubit,
         child: Scaffold(

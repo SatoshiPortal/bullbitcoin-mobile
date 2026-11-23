@@ -6,16 +6,17 @@ import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Result;
+    show BitcoinNetwork, BitcoinUnit, Err, Result;
 import 'package:spend/legacy_exceptions.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
-import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:coins/coins.dart';
+import 'package:coins/setup.dart';
 import 'package:send/testing.dart';
 import 'package:labels/labels.dart';
+import 'package:preferences/preferences.dart'
+    show AmountDisplayPreferencesReader;
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
@@ -29,11 +30,12 @@ class _MockBlockchain extends Mock implements BitcoinBlockchainRepository {}
 
 class _MockSettings extends Mock implements Preferences {}
 
-class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
-
-class _MockWalletRegistrations extends Mock implements WalletRegistrations {}
+class _MockCoins extends Mock implements Coins {}
 
 class _MockLabels extends Mock implements Labels {}
+
+class _MockDisplayPreferences extends Mock
+    implements AmountDisplayPreferencesReader {}
 
 class _VerifyingSpend extends FakeSpend {
   @override
@@ -73,20 +75,29 @@ void main() {
   late _MockBlockchain blockchain;
   late _MockSettings settings;
 
-  BroadcastBitcoinTransactionUsecase usecase({
-    WalletUtxoRepository? walletUtxoRepository,
-  }) => BroadcastBitcoinTransactionUsecase(
-    bitcoinBlockchainRepository: blockchain,
-    settingsRepository: settings,
-    walletUtxoRepository:
-        walletUtxoRepository ??
-        WalletUtxoRepositoryImpl(
-          walletRegistrations: _MockWalletRegistrations(),
-          labelsFacade: _MockLabels(),
-          loadWallet: (_) async => throw StateError('Unexpected coin read'),
-          freezesDatasource: SyncFreezesDatasource(sync: () async => sync),
-        ),
-  );
+  BroadcastBitcoinTransactionUsecase usecase({Coins? coins}) =>
+      BroadcastBitcoinTransactionUsecase(
+        bitcoinBlockchainRepository: blockchain,
+        settingsRepository: settings,
+        coins:
+            coins ??
+            CoinsFeature.mount<String>(
+              resolveWalletKey: (_) async =>
+                  throw StateError('Unexpected wallet lookup'),
+              labels: _MockLabels(),
+              loadWallet: (_) async => throw StateError('Unexpected coin read'),
+              foreground: () async => Ok(sync),
+              preferences: _MockDisplayPreferences(),
+              poll: (_) async {},
+              watchRevisions: (_) => const Stream.empty(),
+              watchStartedSyncs: (_) => const Stream.empty(),
+              watchFinishedSyncs: (_) => const Stream.empty(),
+              walletId: (id) => id,
+              missingWalletRedirect: '/',
+              onSend: (_, _, _) async {},
+              onSweep: (_, _, _) async {},
+            ).coins,
+      );
 
   Future<void> freeze(String txId, int vout) =>
       SyncFreezesDatasource(sync: () async => sync).freezeAttributed([
@@ -210,12 +221,12 @@ void main() {
     });
 
     test('refuses when the frozen store cannot be read', () async {
-      final failing = _MockWalletUtxoRepository();
-      when(failing.getAllFrozenOutpoints)
-          .thenThrow(const FileSystemException('store unavailable'));
+      final failing = _MockCoins();
+      when(failing.frozenOutpoints)
+          .thenAnswer((_) async => const Err(CoinsLoadFailure()));
 
       await expectLater(
-        usecase(walletUtxoRepository: failing)
+        usecase(coins: failing)
             .execute(psbt, isPsbt: true, network: Network.bitcoinMainnet),
         throwsA(isA<BroadcastTransactionException>()),
       );

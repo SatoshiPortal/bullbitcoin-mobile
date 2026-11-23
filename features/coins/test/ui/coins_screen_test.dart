@@ -1,16 +1,16 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Outpoint;
-import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
-import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
-import 'package:bb_mobile/features/coins/ui/screens/coins_screen.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:coins/src/presentation/coins_cubit.dart';
+import 'package:coins/src/presentation/coins_state.dart';
+import 'package:coins/src/ui/screens/coins_screen.dart';
+import 'package:coins/setup.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 class _MockCoinsCubit extends Mock implements CoinsCubit {}
 
@@ -76,8 +76,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: [
+            CoinsLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: CoinsLocalizations.supportedLocales,
           routerConfig: router,
         ),
       );

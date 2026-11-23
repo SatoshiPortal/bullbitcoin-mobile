@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/coins/ui/coins_router.dart';
+import 'package:coins/src/ui/coins_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +10,9 @@ void main() {
     final router = GoRouter(
       initialLocation: '/coins',
       routes: [
-        CoinsRouter.route(
+        coinsRoute<String>(
+          walletId: (wallet) => wallet,
+          createCubit: (_) => fail('unexpected Coins cubit creation'),
           missingWalletRedirect: '/fallback',
           onSend: (_, _, _) async => fail('unexpected Send navigation'),
           onSweep: (_, _, _) async => fail('unexpected Sweep navigation'),
@@ -26,6 +28,11 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
 
+    expect(find.text('wallet fallback'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    router.goNamed(coinsRouteName, extra: 42);
+    await tester.pumpAndSettle();
     expect(find.text('wallet fallback'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

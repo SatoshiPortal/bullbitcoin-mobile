@@ -1,9 +1,9 @@
 import 'package:sync/sync.dart' show Keychain;
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
+import 'package:coins/coins.dart';
+import 'package:coins/src/domain/utxo_sort_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 void main() {
   group('sortAndFilterUtxos — sorting', () {

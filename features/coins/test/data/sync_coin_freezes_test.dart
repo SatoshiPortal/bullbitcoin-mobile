@@ -2,22 +2,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    as app
-    show Network;
+import 'package:coins/coins.dart';
+import 'package:coins/src/data/wallet_utxo_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
-
-class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Labels extends Mock implements Labels {}
 
@@ -31,7 +22,6 @@ void main() {
 
   late Directory dir;
   late sync.Sync owner;
-  late _Metadata metadata;
   late _Labels labels;
 
   sync.BitcoinCoin coin(Outpoint outpoint) => sync.BitcoinCoin(
@@ -46,10 +36,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('coin-freezes-');
     owner = freezesOnlySync(dir.path);
-    metadata = _Metadata();
     labels = _Labels();
-    when(() => metadata.fetch(walletId))
-        .thenAnswer((_) async => _row(walletId));
     when(() => labels.fetch(reference: any(named: 'reference')))
         .thenAnswer((_) async => Ok([]));
   });
@@ -60,10 +47,13 @@ void main() {
 
   WalletUtxoRepositoryImpl repository(sync.Wallet wallet) =>
       WalletUtxoRepositoryImpl(
-        walletRegistrations: metadata,
+        resolveWalletKey: (id) async {
+          expect(id, walletId);
+          return key;
+        },
         labelsFacade: labels,
         loadWallet: (_) async => Ok(wallet),
-        freezesDatasource: SyncFreezesDatasource(sync: () async => owner),
+        foreground: () async => Ok(owner),
       );
 
   test('coins carry the frozen state sync publishes', () async {
@@ -73,7 +63,8 @@ void main() {
       frozen: {frozen},
     );
 
-    final utxos = await repository(wallet).getWalletUtxos(walletId: walletId);
+    final result = await repository(wallet).getWalletUtxos(walletId: walletId);
+    final utxos = (result as Ok<List<WalletUtxo>, CoinsFailure>).value;
 
     expect(
       {for (final u in utxos) u.outpoint: u.isFrozen},
@@ -82,17 +73,20 @@ void main() {
   });
 
   test('unfreeze lifts a freeze attributed to another origin', () async {
-    final freezes = SyncFreezesDatasource(sync: () async => owner);
-    await freezes.freezeAttributed([
-      sync.FrozenOutpoint(frozen, origin: ''),
-      sync.FrozenOutpoint(frozen, origin: 'tr([73c5da0a/86h/1h/0h])'),
-    ]);
+    expect(await owner.coins.freeze(frozen, origin: ''), isA<Ok>());
+    expect(
+      await owner.coins.freeze(frozen, origin: 'tr([73c5da0a/86h/1h/0h])'),
+      isA<Ok>(),
+    );
     final wallet = await testWallet(key: key);
 
-    await repository(wallet)
-        .unfreezeUtxos(walletId: walletId, outpoints: [frozen]);
-
-    expect(await repository(wallet).getAllFrozenOutpoints(), isEmpty);
+    expect(
+      await repository(wallet)
+          .unfreezeUtxos(walletId: 'another wallet', outpoints: [frozen]),
+      isA<Ok>(),
+    );
+    final result = await repository(wallet).getAllFrozenOutpoints();
+    expect((result as Ok<List<Outpoint>, CoinsFailure>).value, isEmpty);
   });
 
   test('an unreadable freeze store fails; it is never empty', () async {
@@ -101,31 +95,19 @@ void main() {
       freezes: MemoryFreezeStore()..failure = const sync.SyncStorageFailure(),
     );
     addTearDown(broken.close);
-    final freezes = SyncFreezesDatasource(sync: () async => broken);
-
-    await expectLater(
-      freezes.getFrozenOutpoints(),
-      throwsA(
-        isA<WalletSnapshotException>().having(
-          (e) => e.failure,
-          'failure',
-          isA<sync.SyncStorageFailure>(),
-        ),
+    final repository = WalletUtxoRepositoryImpl(
+      resolveWalletKey: (_) async => fail('unexpected wallet lookup'),
+      labelsFacade: labels,
+      loadWallet: (_) async => fail('unexpected wallet load'),
+      foreground: () async => Ok(broken),
+    );
+    expect(
+      await repository.getAllFrozenOutpoints(),
+      isA<Err<List<Outpoint>, CoinsFailure>>().having(
+        (e) => e.failure,
+        'failure',
+        isA<CoinsLoadFailure>(),
       ),
     );
   });
 }
-
-WalletMetadataModel _row(String id) => WalletMetadataModel(
-  id: id,
-  networkCode: app.Network.bitcoinTestnet.name,
-  masterFingerprint: '73c5da0a',
-  xpubFingerprint: 'deadbeef',
-  isEncryptedVaultTested: false,
-  isPhysicalBackupTested: false,
-  xpub: 'public-test-key',
-  externalPublicDescriptor: 'wpkh(public-test-key/0/*)',
-  internalPublicDescriptor: 'wpkh(public-test-key/1/*)',
-  signer: Signer.local,
-  isDefault: true,
-);

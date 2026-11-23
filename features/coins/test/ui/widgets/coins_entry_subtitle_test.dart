@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:coins/setup.dart';
+import 'package:coins/coins.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,10 +11,11 @@ Future<void> _pump(WidgetTester tester, BitcoinUnit unit, int frozen) {
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: [
-        ...appLocalizationsDelegates,
+        CoinsLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
         ...bullUiLocalizationsDelegates,
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: CoinsLocalizations.supportedLocales,
       home: BullAmountScope(
         snapshot: BullAmountSnapshot(
           unit: unit,

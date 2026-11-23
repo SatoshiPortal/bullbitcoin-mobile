@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../../coins/wallet_utxo_fixture.dart';
+import 'package:coins/testing.dart';
 
 class _MockPrepare extends Mock implements PrepareBitcoinSendUsecase {}
 
