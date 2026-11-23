@@ -1,0 +1,10 @@
+{
+  "@@locale": "hy",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Ընտրովի Passphrase",
+  "recipientsInfoLabel": "Պիտակ",
+  "requiredHint": "Պարտադիր",
+  "submitButton": "Ուղարկել",
+  "emptyMnemonicWordsError": "Մուտքագրեք ձեր մնեմոնիկի բոլոր բառերը",
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց"
+}

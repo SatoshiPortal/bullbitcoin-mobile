@@ -1,0 +1,46 @@
+{
+  "@@locale": "th",
+  "scanningProgressLabel": "การสแกน: {percent}",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "ความคืบหน้า UR: {parts} ส่วน",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "การสแกนเสร็จสิ้น",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "การถอดรหัสล้มเหลว",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "กระบวนการประมวลผลล้มเหลว",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "การสแกน NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "การเชื่อมต่อ NFC ขาดหาย กรุณาถืออุปกรณ์ไว้ใกล้แท็ก NFC แล้วลองใหม่อีกครั้ง",
+  "nfcWriteFailed": "การถ่ายโอนผ่าน NFC ล้มเหลว กรุณาลองใหม่อีกครั้ง",
+  "nfcDisabled": "NFC ถูกปิดใช้งานอยู่ กรุณาเปิดใช้งานในการตั้งค่า",
+  "nfcNotAvailable": "อุปกรณ์นี้ไม่รองรับ NFC",
+  "nfcFailed": "Oops! สิ่งที่ไม่ผิด",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "ไม่พบข้อมูล NFC ที่รองรับ"
+}

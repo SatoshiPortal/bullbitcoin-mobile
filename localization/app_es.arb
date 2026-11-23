@@ -1297,25 +1297,6 @@
   "pasteInputDefaultHint": "Pegue una dirección de pago o factura",
   "copyDialogButton": "Copiar",
   "closeDialogButton": "Cerrar",
-  "scanningProgressLabel": "Escaneando: {percent}%",
-  "@scanningProgressLabel": {
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
-  "urProgressLabel": "Progreso UR: {parts} partes",
-  "@urProgressLabel": {
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningCompletedMessage": "Escaneo completado",
-  "urDecodingFailedMessage": "Decodificación UR fallida",
-  "urProcessingFailedMessage": "Procesamiento UR fallido",
   "scanNfcButton": "Escanear NFC",
   "viewLogsLabel": "Ver registros",
   "errorSharingLogsMessage": "Error al compartir registros: {error}",
@@ -1326,10 +1307,6 @@
       }
     }
   },
-  "submitButton": "Enviar",
-  "optionalPassphraseHint": "Frase de contraseña opcional",
-  "requiredHint": "Requerido",
-  "emptyMnemonicWordsError": "Ingrese todas las palabras de su mnemónico",
   "tryAgainButton": "Intentar de nuevo",
   "errorGenericTitle": "¡Ups! Algo salió mal",
   "confirmSendTitle": "Confirmar envío",
@@ -3541,12 +3518,6 @@
   "liquidRiskDisclosureSemanticLabel": "Abrir la divulgación de riesgos de Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Divulgación de riesgos de Liquid Bitcoin de la Billetera de Pagos Instantáneos",
   "liquidRiskDisclosureBody": "Los fondos de la Billetera de Pagos Instantáneos no son bitcoin \"real\". Son Liquid Network Bitcoin (L-BTC), un token respaldado por bitcoin que existe en un registro independiente llamado \"sidechain\".\n\nCada Liquid Bitcoin está respaldado 1:1 por bitcoin real mediante un mecanismo de anclaje transparente que mantiene una federación de 15 empresas. Las reservas de bitcoin que custodia la Federación Liquid son totalmente auditables, y cualquiera puede verificar que cada Liquid Bitcoin está respaldado por un bitcoin real.\n\nMantener dinero en la red Liquid es mucho más seguro que usar una billetera custodial tradicional o un exchange. Sin embargo, guardar tu dinero como Liquid Bitcoin en la Billetera de Pagos Instantáneos es mucho menos seguro que guardarlo como bitcoin real en la Billetera Bitcoin Segura.\n\nLos pagos en la red Liquid son más rápidos, baratos y privados que los pagos normales de Bitcoin. Tienes la autocustodia total de los activos Liquid Bitcoin de la Billetera de Pagos Instantáneos y no necesitas permiso de nadie para enviar y recibir pagos.\n\nEres total y exclusivamente responsable de proteger el acceso a la copia de seguridad de tu billetera; sin ella, nadie puede restaurar el acceso a tus activos Liquid Bitcoin.\n\nEl valor real de los L-BTC depende de que puedas canjearlos por bitcoin real, lo que a su vez depende de los proveedores de intercambio que son miembros de la red Liquid, lo que a su vez depende de que la federación de la red Liquid nunca se vea comprometida ni se cierre.\n\nDicho de otro modo, si los miembros de la federación de la red Liquid no pudieran o no quisieran canjear tus Liquid Bitcoin por bitcoin real, los tokens L-BTC perderían todo su valor.\n\n> Recomendación\n> Guarda solo cantidades pequeñas en la Billetera de Pagos Instantáneos. Guarda tus ahorros en la Billetera Bitcoin Segura o en una billetera de hardware importada.\n\n## ¿Qué es la Billetera de Pagos Instantáneos?\n\nCada vez que recibes un pago de Lightning Network con la Billetera de Pagos Instantáneos, en realidad los fondos del remitente los recibe un proveedor de intercambio externo, que los convierte en Liquid Bitcoin y los envía a tu billetera.\n\nCada vez que envías un pago de Lightning Network con esta billetera, en realidad envías un pago en Liquid Bitcoin a un proveedor de intercambio externo, que lo convierte en bitcoin real en Lightning Network y envía un pago de Lightning Network al destinatario.\n\nEstos intercambios no son custodiales y no requieren confianza, lo que significa que el proveedor de intercambio no tiene forma de robar tus fondos. Bull Bitcoin no participa en esas transacciones de intercambio y no solicita ni almacena ninguna información personal.\n\n## ¿Para qué debo usar esta billetera?\n\nLa Billetera de Pagos Instantáneos está pensada para que puedas recibir pagos en bitcoin (o comprar bitcoin) y enviar pagos en bitcoin (o vender bitcoin) en el día a día sin pagar comisiones de la red Bitcoin.\n\nSi eres comerciante o estás acumulando bitcoin, usa esta billetera para recibir pagos inferiores a 0.01 BTC y, cuando hayas acumulado más de 0.01 BTC, transfiere esos bitcoins a la Billetera Bitcoin Segura o a cualquier otra billetera Bitcoin de autocustodia.\n\nSi quieres gastar tus bitcoins, transfiere una pequeña cantidad a la Billetera de Pagos Instantáneos y úsala para pagar tus gastos. Cuando se te acaben los fondos de la Billetera de Pagos Instantáneos, simplemente vuelve a recargarla.\n\n## ¿Qué es el intercambio automático y cómo funciona?\n\nEl intercambio automático (auto-swap), también llamado transferencia automática, es una función creada por Bull Bitcoin que convierte automáticamente Liquid Network Bitcoin (L-BTC) en Bitcoin (BTC) cuando el monto de L-BTC de tu billetera alcanza un umbral definido.\n\nEl intercambio automático está activado por defecto:\n\n- **Saldo máximo de la billetera instantánea:** 0.005 BTC\n- **Saldo objetivo tras el intercambio automático:** 0.0025 BTC\n- **Monto mínimo de transferencia:** 0.0025 BTC\n\nCuando tu saldo alcanza 0.005 BTC, se inicia una transferencia en cuanto abres la app y los fondos que superen 0.0025 BTC se convierten de L-BTC a BTC.\n\n### Ejemplo\n\nSi tienes 0.006 L-BTC y el intercambio automático está activado, se iniciará una transferencia de 0.0035 L-BTC, te quedarán 0.0025 L-BTC y tu saldo de BTC aumentará en 0.0035 BTC.\n\n## ¿Cómo deposito o retiro L-BTC de la Billetera Bitcoin Instantánea?\n\nPara depositar bitcoin \"real\" en la billetera, toca \"Recibir\" y selecciona \"Lightning\". Para retirar L-BTC, toca \"Enviar\" y pega una factura Lightning.\n\n## ¿Cómo funciona la copia de seguridad?\n\nLa Billetera Bitcoin Instantánea usa las mismas palabras semilla de respaldo que la Billetera Bitcoin Segura. Solo necesitas una copia de seguridad para ambas billeteras.\n\n## ¿Debo usar la Billetera de Pagos Instantáneos en lugar de una billetera Lightning Network no custodial?\n\nUsar una billetera Lightning Network no custodial como Phoenix Wallet te dará un mayor grado de seguridad. Como tendrás que gestionar canales de Lightning Network, puede ser menos cómodo y más difícil de usar.\n\nComo los canales Lightning requieren transacciones on-chain para abrirse y cerrarse, y como probablemente tendrás que pagar una comisión a proveedores de servicios Lightning, en algunos casos puede resultar más caro usar una billetera Lightning totalmente no custodial.\n\nSi puedes y quieres usar una billetera Lightning pura y totalmente no custodial, te recomendamos encarecidamente que pruebes Phoenix Wallet.\n\n## ¿Cuáles son las comisiones de transacción?\n\nCada pago que entra o sale de la Billetera de Pagos Instantáneos implica dos transacciones en la red Liquid. Normalmente son muy pequeñas y deberían rondar los 0.00000050 BTC (50 sats).\n\nSi recibes o envías pagos de Lightning Network con la Billetera Bitcoin Segura, tendrás que pagar dos transacciones de Bitcoin on-chain por cada pago, lo que puede resultar bastante caro.\n\nAdemás, el proveedor de intercambio también puede cobrar comisiones de intercambio. Actualmente, el proveedor de intercambio (Boltz) cobra las siguientes comisiones:\n\n- **Recibir pagos de Lightning Network en la Billetera de Pagos Instantáneos:** 0.25%\n- **Enviar pagos de Lightning Network desde la Billetera de Pagos Instantáneos:** 0.1%\n- **Recibir pagos de Lightning Network en la Billetera Bitcoin Segura:** 0.5%\n- **Enviar pagos de Lightning Network desde la Billetera Bitcoin Segura:** 0.1%",
-  "nfcNotAvailable": "NFC no es compatible con este dispositivo",
-  "nfcDisabled": "NFC está deshabilitado. Actívelo en los ajustes.",
-  "nfcInvalidData": "No se encontraron datos NFC compatibles",
-  "nfcConnectionLost": "Se perdió la conexión NFC. Mantenga su dispositivo cerca de la etiqueta NFC e inténtelo de nuevo.",
-  "nfcWriteFailed": "La transferencia NFC falló. Inténtelo de nuevo.",
-  "nfcError": "Error NFC: {error}",
   "sendCoordinatingPayjoinTransaction": "Coordinando una transacción Payjoin.",
   "sendErrorInvoiceExpired": "Esta factura ha expirado. Solicite una nueva factura al destinatario.",
   "importWalletColdcardMk4": "Coldcard Mk4",
@@ -3642,9 +3613,6 @@
   "receivePayjoinQrBadge": "Payjoin",
   "addressViewErrorWalletNotFound": "No se pudo encontrar esta cartera.",
   "addressViewErrorLoadFailed": "No se pudieron cargar tus direcciones. Inténtalo de nuevo.",
-  "mnemonicPossibleLastWords": "{count} posibles últimas palabras",
-  "mnemonicInvalidChecksumError": "Esta frase de recuperación no es válida. Hay una palabra mal escrita o fuera de orden.",
-  "mnemonicUnknownWordError": "Algunas palabras no están en la lista de palabras de recuperación; los números en rojo indican cuáles.",
   "sellDepositAddress": "Dirección de depósito",
   "payDepositAddress": "Dirección de depósito",
   "sellDepositAddressChangedError": "La dirección de depósito de esta orden ha cambiado de forma inesperada. Por tu seguridad, no pagues esta orden: vuelve atrás y crea una nueva.",
@@ -3668,7 +3636,6 @@
   "torSettingsExternalProxyDescription": "Puedes usar Orbot en modo VPN para enrutar el tráfico de red de Bull a través de Tor. Configurar abajo el puerto SOCKS de Orbot solo enruta a través de Tor el tráfico de RecoverBull y de los servidores Bitcoin Electrum .onion.",
   "swapErrorRouteUnavailable": "{fromNetwork} a {toNetwork} no está disponible.",
   "swapErrorRouteUnavailableGeneric": "Este intercambio no está disponible.",
-  "mnemonicShuffleKeyboardHint": "Mezclar las teclas y las sugerencias en cada toque",
   "settingsScreenPrivacyTitle": "Privacidad de pantalla",
   "settingsScreenPrivacyDisabledMessage": "Ahora se permiten capturas de pantalla en pantallas sensibles",
   "settingsSearchHint": "Buscar en ajustes",
@@ -3995,11 +3962,6 @@
   "appStartupMissingSecretMessage": "Este dispositivo ya no guarda la frase de recuperación de tu billetera. Vuelve a introducirla para recuperar tu billetera.",
   "appStartupRestoreSecretButton": "Introducir mi frase de recuperación",
   "appStartupRestoreMismatch": "Esta frase de recuperación pertenece a otra billetera. Introduce la frase de la billetera de este dispositivo.",
-  "mnemonicLanguageLabel": "Idioma de la frase de recuperación",
-  "mnemonicLanguageSuggestion": "Estas palabras corresponden al idioma {language}. Selecciónalo para continuar.",
-  "mnemonicLanguageAmbiguous": "Estas palabras corresponden a más de un idioma. Selecciona el idioma de tu frase de recuperación.",
-  "mnemonicLanguageName": "{language, select, english{Inglés} french{Francés} spanish{Español} italian{Italiano} portuguese{Portugués} czech{Checo} korean{Coreano} simplifiedChinese{Chino (simplificado)} traditionalChinese{Chino (tradicional)} japanese{Japonés} other{Idioma desconocido}}",
-  "mnemonicOtherLanguageWordsError": "Estas palabras pertenecen a la lista del idioma {language}, no del idioma {selected}, y tampoco forman una frase de recuperación válida en ese idioma. Revisa cada palabra y su posición.",
   "importMnemonicScanServerUnavailable": "No se pudo conectar con un servidor para comprobar esta billetera. Aun así, puedes importarla.",
   "importMnemonicScanTimeout": "El servidor tardó demasiado en comprobar esta billetera. Aun así, puedes importarla.",
   "importMnemonicScanInvalidMnemonic": "No se pudieron comprobar estas palabras para este tipo de billetera.",
@@ -4085,7 +4047,6 @@
   "broadcastSignedTxErrorRejected": "La red rechazó esta transacción. Puede que no esté completamente firmada, que no sea válida o que entre en conflicto con otro pago.",
   "broadcastSignedTxErrorOutcomeUnknown": "No pudimos confirmar que tu transacción se haya transmitido. Revisa un explorador de bloques antes de volver a intentarlo.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
-  "passphraseOption": "Tengo una frase de contraseña",
   "passphraseWhitespaceWarning": "Los espacios al principio o al final forman parte de tu frase de contraseña.",
   "passphraseBackupPrompt": "Introduce tu frase de contraseña para verificar tu copia de seguridad.",
   "passphraseIncorrect": "Frase de contraseña incorrecta.",
@@ -4096,16 +4057,11 @@
   "onboardingScanUnavailableTitle": "No se pudo comprobar el historial de transacciones de Bitcoin.",
   "onboardingScanUnavailableMessage": "No se pudo comprobar tu historial de Bitcoin. Puedes reintentarlo o continuar sin comprobarlo.",
   "onboardingContinueWithoutChecking": "Continuar sin comprobar",
-  "passphraseClearedNotice": "Por tu privacidad, se ha borrado tu frase de contraseña. Vuelve a introducirla o elige continuar sin ella.",
-  "continueWithoutPassphrase": "Continuar sin frase de contraseña",
   "passphraseWordsIncompleteWarning": "Estas palabras por sí solas no pueden restaurar esta billetera. Guarda tu frase de contraseña por separado.",
   "settingsDarkModeTitle": "Modo oscuro",
   "settingsSourceCodeTitle": "Código fuente",
   "parentCustodyMetadataUnavailable": "Faltan los registros de seguridad de la billetera o están dañados. Se ha detenido esta acción para proteger tu semilla. Contacta con soporte antes de volver a intentarlo.",
   "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
-  "mnemonicWordCountLabel": "Palabras",
-  "passphraseOptionOffSubtitle": "Palabra adicional opcional (BIP39)",
-  "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra",
   "networkWalletReuseNoRecoveryPhrase": "Esta billetera no tiene frase de recuperación, así que no se puede reutilizar aquí. Importa una frase de recuperación o crea una billetera nueva.",
   "importMnemonicUnsupportedScript": "Este tipo de billetera no es compatible con la red Bitcoin seleccionada.",
   "transactionOrderTypeSellUsdt": "Vender USDT",

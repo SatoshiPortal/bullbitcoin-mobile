@@ -1,0 +1,28 @@
+{
+  "@@locale": "fa",
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "optionalPassphraseHint": "Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "برچسب",
+  "requiredHint": "نیاز",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "ارسال",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "emptyMnemonicWordsError": "تمام کلمات mnemonic خود را وارد کنید",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

@@ -16,6 +16,8 @@ workspace:
   - packages/exchange
   - features/label_editor
   - features/network
+  - features/mnemonic_entry
+  - features/scanning
   - features/signers
   - features/access
   - features/all_seed_view
@@ -54,6 +56,7 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - features/physical_backup_verification
   - packages/rust_bindings
   - packages/onion
   - packages/boltz_stream
@@ -70,6 +73,8 @@ dependencies:
   labels:
   label_editor:
   network:
+  mnemonic_entry:
+  scanning:
   signers:
   silent:
   ark:
@@ -77,6 +82,7 @@ dependencies:
   fees:
   fees_feature:
   swap_feature:
+  physical_backup_verification:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:

@@ -1,0 +1,46 @@
+{
+  "@@locale": "as",
+  "scanningProgressLabel": "স্কেনিং: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR অগ্ৰগতি: {parts} অংশ",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "স্কেনিং সম্পন্ন হৈছে",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR ডিকোডিং বিফল হৈছে",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR প্ৰক্ৰিয়াকৰণ বিফল হৈছে",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "NFC স্কেন কৰক",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "NFC সংযোগ বিচ্ছিন্ন হ'ল। আপোনাৰ ডিভাইচ NFC ট্যাগৰ ওচৰত ধৰি ৰাখক আৰু পুনৰ চেষ্টা কৰক।",
+  "nfcWriteFailed": "NFC স্থানান্তৰ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "nfcDisabled": "NFC নিষ্ক্ৰিয় কৰা আছে। ছেটিংছত ইয়াক সক্ষম কৰক।",
+  "nfcNotAvailable": "এই ডিভাইচত NFC সমৰ্থিত নহয়",
+  "nfcFailed": "উফ্! কিবা এটা ভুল হৈছে",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "কোনো সমৰ্থিত NFC ডাটা পোৱা নগ'ল"
+}

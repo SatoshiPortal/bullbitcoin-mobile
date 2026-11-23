@@ -1,0 +1,122 @@
+{
+  "@@locale": "en",
+  "mnemonicWordCountLabel": "Words",
+  "@mnemonicWordCountLabel": {
+    "description": "Label above the control choosing how many words the recovery phrase has"
+  },
+  "mnemonicLanguageAmbiguous": "These words match more than one language. Select the language of your recovery phrase.",
+  "@mnemonicLanguageAmbiguous": {
+    "description": "Requires explicit language confirmation when wordlists overlap."
+  },
+  "mnemonicLanguageSuggestion": "These words match {language}. Select that language to continue.",
+  "@mnemonicLanguageSuggestion": {
+    "description": "Suggestion only; never silently changes the mnemonic language.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
+  "@mnemonicLanguageName": {
+    "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "passphraseOption": "I have a passphrase",
+  "@passphraseOption": {},
+  "passphraseOptionOnSubtitle": "Entered below, never shown",
+  "@passphraseOptionOnSubtitle": {
+    "description": "Subtitle of the passphrase switch while it is on: the passphrase field below stays obscured"
+  },
+  "passphraseOptionOffSubtitle": "Optional extra word (BIP39)",
+  "@passphraseOptionOffSubtitle": {
+    "description": "Subtitle of the passphrase switch while it is off"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "optionalPassphraseHint": "Optional Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "passphraseShow": "Show passphrase",
+  "@passphraseShow": {
+    "description": "Accessible name of the button that reveals the typed passphrase"
+  },
+  "passphraseHide": "Hide passphrase",
+  "@passphraseHide": {
+    "description": "Accessible name of the button that hides the typed passphrase"
+  },
+  "passphraseClearedNotice": "For your privacy, your passphrase was cleared. Enter it again or choose to continue without one.",
+  "@passphraseClearedNotice": {
+    "description": "Recovery notice after clearing a transient passphrase."
+  },
+  "continueWithoutPassphrase": "Continue without a passphrase",
+  "@continueWithoutPassphrase": {
+    "description": "Explicitly allow recovery without re-entering the cleared passphrase."
+  },
+  "passphraseWhitespaceWarning": "Leading or trailing spaces are part of your passphrase.",
+  "@passphraseWhitespaceWarning": {},
+  "recipientsInfoLabel": "Label",
+  "@recipientsInfoLabel": {
+    "description": "Info-row label for the user-set label of a recipient on a list tile."
+  },
+  "requiredHint": "Required",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "Submit",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
+  "@mnemonicShuffleKeyboardHint": {
+    "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
+  },
+  "mnemonicLanguageLabel": "Recovery phrase language",
+  "@mnemonicLanguageLabel": {
+    "description": "Label for the BIP39 wordlist picker, independent of app language."
+  },
+  "mnemonicPossibleLastWords": "{count} possible last words",
+  "@mnemonicPossibleLastWords": {
+    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emptyMnemonicWordsError": "Enter all words of your mnemonic",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
+  "@mnemonicInvalidChecksumError": {
+    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
+  },
+  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
+  "@mnemonicUnknownWordError": {
+    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
+  },
+  "mnemonicOtherLanguageWordsError": "These words belong to the {language} word list, not {selected}, and do not form a valid recovery phrase in {language} either. Check each word and its position.",
+  "@mnemonicOtherLanguageWordsError": {
+    "description": "Complete phrase whose words belong to another BIP39 wordlist than the selected one, with an invalid checksum there too. Never names a word.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      },
+      "selected": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

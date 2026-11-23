@@ -806,10 +806,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Εισάγετε όλα τα λόγια της αρμονικής σας",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupButton": "Backup Test Backup Test Backup",
   "@testBackupButton": {
     "description": "Button label to test backup"
@@ -3074,10 +3070,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "Απαιτείται",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -4734,10 +4726,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "Υποβολή",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "Καμία στατιστική δεν είναι διαθέσιμη",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -4795,15 +4783,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "UR Progress: {parts} τμήματα",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "coldcardInstructionsTitle": "Coldcard Q Οδηγίες",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
@@ -4811,15 +4790,6 @@
   "onboardingRecoverWallet": "Ανακαλύψτε το Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "Scanning: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "backupWalletHowToDecide": "Πώς να αποφασίσετε?",
   "@backupWalletHowToDecide": {
@@ -4920,10 +4890,6 @@
   "payNewRecipients": "Νέοι παραλήπτες",
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
-  },
-  "urProcessingFailedMessage": "Η επεξεργασία απέτυχε",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "Επιλέξτε χώρο θύλακα",
   "@backupWalletChooseVaultLocationTitle": {
@@ -5330,10 +5296,6 @@
   "fundExchangeSpeiSubtitle": "Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
-  },
-  "urDecodingFailedMessage": "Η αποκωδικοποίηση απέτυχε",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "Επιλέξτε τη χώρα και τη μέθοδο πληρωμής",
   "@fundExchangeAccountSubtitle": {
@@ -6510,10 +6472,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Optional Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "Σαφή Όλα",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -6620,10 +6578,6 @@
   "swapTotalFees": "Ολοκληρωμένες χρεώσεις ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "Η σάρωση ολοκληρώθηκε",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "Έγινε",
   "@payDone": {
@@ -9113,12 +9067,6 @@
   "autoswapActiveCardTitle": "Autoswap είναι ενεργό",
   "autoswapWarningExplanationBold": "αυτόματα",
   "autoswapInfoConsentMessage": "Το Autoswap είναι αυτή τη στιγμή ενεργοποιημένο, αλλά δεν θα ενεργοποιηθεί μέχρι να δώσετε τη συγκατάθεσή σας. Θέλετε να παραμείνει ενεργό;",
-  "nfcNotAvailable": "Το NFC δεν υποστηρίζεται σε αυτή τη συσκευή",
-  "nfcDisabled": "Το NFC είναι απενεργοποιημένο. Ενεργοποιήστε το από τις ρυθμίσεις.",
-  "nfcInvalidData": "Δεν βρέθηκαν υποστηριζόμενα δεδομένα NFC",
-  "nfcConnectionLost": "Η σύνδεση NFC χάθηκε. Κρατήστε τη συσκευή σας κοντά στην ετικέτα NFC και δοκιμάστε ξανά.",
-  "nfcWriteFailed": "Η μεταφορά NFC απέτυχε. Δοκιμάστε ξανά.",
-  "nfcError": "Σφάλμα NFC: {error}",
   "deleteLogsTitle": "Διαγραφή αρχείων καταγραφής",
   "logsDeletedMessage": "Τα αρχεία καταγραφής διαγράφηκαν",
   "sendSelfTransfer": "Αυτομεταφορά",

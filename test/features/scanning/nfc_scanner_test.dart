@@ -1,5 +1,5 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';

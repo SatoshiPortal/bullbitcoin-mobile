@@ -1,0 +1,29 @@
+{
+  "@@locale": "de",
+  "scanningProgressLabel": "Wird gescannt: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR-Fortschritt: {parts} Teile",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Scannen abgeschlossen",
+  "urDecodingFailedMessage": "UR-Dekodierung fehlgeschlagen",
+  "urProcessingFailedMessage": "UR-Verarbeitung fehlgeschlagen",
+  "scanNfcButton": "NFC scannen",
+  "nfcConnectionLost": "NFC-Verbindung unterbrochen. Halten Sie Ihr Gerät in die Nähe des NFC-Tags und versuchen Sie es erneut.",
+  "nfcWriteFailed": "NFC-Übertragung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+  "nfcDisabled": "NFC ist deaktiviert. Aktivieren Sie es in den Einstellungen.",
+  "nfcNotAvailable": "NFC wird auf diesem Gerät nicht unterstützt",
+  "nfcFailed": "Ups! Etwas ist schief gelaufen",
+  "nfcInvalidData": "Es wurden keine unterstützten NFC-Daten gefunden"
+}

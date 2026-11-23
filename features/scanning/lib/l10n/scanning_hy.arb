@@ -1,0 +1,15 @@
+{
+  "@@locale": "hy",
+  "scanningProgressLabel": "Սկանավորում․ {percent}%",
+  "urProgressLabel": "UR առաջընթաց․ {parts} մաս",
+  "scanningCompletedMessage": "Սկանավորումն ավարտված է",
+  "urDecodingFailedMessage": "UR ապակոդավորումը ձախողվեց",
+  "urProcessingFailedMessage": "UR-ի մշակումը ձախողվեց",
+  "scanNfcButton": "Սկանավորել NFC",
+  "nfcConnectionLost": "NFC կապը կորավ։ Պահեք ձեր սարքը NFC պիտակի մոտ և կրկին փորձեք։",
+  "nfcWriteFailed": "NFC փոխանցումը ձախողվեց։ Խնդրում ենք կրկին փորձել։",
+  "nfcDisabled": "NFC-ն անջատված է։ Միացրեք այն կարգավորումներում։",
+  "nfcNotAvailable": "NFC-ն չի աջակցվում այս սարքի կողմից",
+  "nfcFailed": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "nfcInvalidData": "Աջակցվող NFC տվյալներ չեն գտնվել"
+}

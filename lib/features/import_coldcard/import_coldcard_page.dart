@@ -2,7 +2,7 @@ import 'package:signers/signers.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_ui/app_theme.dart' show Device;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';

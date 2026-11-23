@@ -1,0 +1,17 @@
+{
+  "@@locale": "it",
+  "mnemonicWordCountLabel": "Parole",
+  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata",
+  "passphraseOptionOffSubtitle": "Parola aggiuntiva facoltativa (BIP39)",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Passphrase facoltativa",
+  "recipientsInfoLabel": "Etichetta",
+  "requiredHint": "Obbligatorio",
+  "submitButton": "Inviare",
+  "mnemonicShuffleKeyboardHint": "Mescola tasti e suggerimenti a ogni tocco",
+  "mnemonicPossibleLastWords": "{count} possibili ultime parole",
+  "emptyMnemonicWordsError": "Inserisci tutte le parole della tua mnemonica",
+  "mnemonicInvalidChecksumError": "Questa frase di recupero non è valida: una parola è scritta male o fuori posto.",
+  "mnemonicUnknownWordError": "Alcune parole non fanno parte dell'elenco delle parole di recupero: i numeri in rosso indicano quali.",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va"
+}

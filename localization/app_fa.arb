@@ -1325,10 +1325,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "تمام کلمات mnemonic خود را وارد کنید",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "روی کلمات بازیابی در\nدستور صحیح",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -3541,10 +3537,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "نیاز",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5163,10 +5155,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "submitButton": "ارسال",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "هیچ آماری در دسترس نیست",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5224,15 +5212,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "پیشرفت: {parts}",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "یادداشت های آدرس",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5244,15 +5223,6 @@
   "onboardingRecoverWallet": "بازیابی کیف پول",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "اسکن: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "شماره مرجع",
   "@transactionOrderLabelReferenceNumber": {
@@ -5365,10 +5335,6 @@
   "testBackupConfirm": "تایید",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "پردازش شکست خورد",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "انتخاب موقعیت مکانی",
   "@backupWalletChooseVaultLocationTitle": {
@@ -5794,10 +5760,6 @@
   "fundExchangeSpeiSubtitle": "انتقال وجوه با استفاده از CLABE",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
-  },
-  "urDecodingFailedMessage": "رمزگشایی شکست خورد",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "کشور و روش پرداخت خود را انتخاب کنید",
   "@fundExchangeAccountSubtitle": {
@@ -7033,10 +6995,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "همه چیز روشن",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7131,10 +7089,6 @@
   "swapTotalFees": "مجموع هزینه ها ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "اسکن تکمیل شده",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "انجام کارها",
   "@payDone": {
@@ -9010,12 +8964,6 @@
   "autoswapActiveCardTitle": "Autoswap فعال است",
   "autoswapWarningExplanationBold": "به‌طور خودکار",
   "autoswapInfoConsentMessage": "Autoswap در حال حاضر فعال است اما تا زمانی که رضایت ندهید فعال نخواهد شد. آیا می‌خواهید آن را فعال نگه دارید؟",
-  "nfcNotAvailable": "NFC روی این دستگاه پشتیبانی نمی‌شود",
-  "nfcDisabled": "NFC غیرفعال است. آن را در تنظیمات فعال کنید.",
-  "nfcInvalidData": "هیچ داده‌ی NFC پشتیبانی‌شده‌ای پیدا نشد",
-  "nfcConnectionLost": "اتصال NFC قطع شد. دستگاه خود را نزدیک تگ NFC نگه دارید و دوباره امتحان کنید.",
-  "nfcWriteFailed": "انتقال NFC ناموفق بود. لطفاً دوباره امتحان کنید.",
-  "nfcError": "خطای NFC: {error}",
   "deleteLogsTitle": "حذف گزارش‌ها",
   "logsDeletedMessage": "گزارش‌ها حذف شدند",
   "sendSelfTransfer": "انتقال به خود",

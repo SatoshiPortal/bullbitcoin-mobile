@@ -1,0 +1,46 @@
+{
+  "@@locale": "ar",
+  "scanningProgressLabel": "المسح: {percent}٪",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} parts",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "اكتمل المسح",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR decoding failed",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR processing failed",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "انقطع اتصال NFC. قرّب جهازك من علامة NFC وحاول مجددًا.",
+  "nfcWriteFailed": "فشل نقل البيانات عبر NFC. يرجى المحاولة مرة أخرى.",
+  "nfcDisabled": "خاصية NFC معطّلة. فعّلها من الإعدادات.",
+  "nfcNotAvailable": "خاصية NFC غير مدعومة على هذا الجهاز",
+  "nfcFailed": "! شيء ما حدث",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "لم يُعثر على بيانات NFC مدعومة"
+}

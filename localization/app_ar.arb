@@ -842,10 +842,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "أدخل كل كلماتك",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "تخطي كلمات الاسترداد في\nالأمر الصحيح",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -3274,10 +3270,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "المطلوبة",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5032,10 +5024,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "submitButton": "Submit",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "لا توجد إحصاءات متاحة",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5093,15 +5081,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "UR Progress: {parts} parts",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "ملاحظات",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5113,15 +5092,6 @@
   "onboardingRecoverWallet": "Recover Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "المسح: {percent}٪",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "العدد المرجعي",
   "@transactionOrderLabelReferenceNumber": {
@@ -5250,10 +5220,6 @@
   "testBackupConfirm": "Confirm",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "UR processing failed",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "موقع قبو الاختيار",
   "@backupWalletChooseVaultLocationTitle": {
@@ -5719,10 +5685,6 @@
   "fundExchangeSpeiSubtitle": "تحويل الأموال باستخدام الـ \" سي بي \"",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
-  },
-  "urDecodingFailedMessage": "UR decoding failed",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "اختيار بلدكم وطريقة الدفع",
   "@fundExchangeAccountSubtitle": {
@@ -7056,10 +7018,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "التصاريح الاختيارية",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "خالي",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7162,10 +7120,6 @@
   "swapTotalFees": "مجموع الرسوم ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "اكتمل المسح",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "تم",
   "@payDone": {
@@ -9014,12 +8968,6 @@
   "autoswapActiveCardTitle": "النقل الآلي مفعّل",
   "autoswapWarningExplanationBold": "تلقائيًا",
   "autoswapInfoConsentMessage": "النقل الآلي مفعّل حاليًا لكنه لن يُنفَّذ حتى توافق عليه. هل ترغب في إبقائه مفعّلاً؟",
-  "nfcNotAvailable": "خاصية NFC غير مدعومة على هذا الجهاز",
-  "nfcDisabled": "خاصية NFC معطّلة. فعّلها من الإعدادات.",
-  "nfcInvalidData": "لم يُعثر على بيانات NFC مدعومة",
-  "nfcConnectionLost": "انقطع اتصال NFC. قرّب جهازك من علامة NFC وحاول مجددًا.",
-  "nfcWriteFailed": "فشل نقل البيانات عبر NFC. يرجى المحاولة مرة أخرى.",
-  "nfcError": "خطأ NFC: {error}",
   "deleteLogsTitle": "حذف السجلات",
   "logsDeletedMessage": "تم حذف السجلات",
   "sendSelfTransfer": "تحويل ذاتي",

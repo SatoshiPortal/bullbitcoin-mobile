@@ -17,8 +17,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_suc
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_backup_passphrase_usecase.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -184,12 +183,8 @@ void main({bool isInitialized = false}) {
       expect(bitcoin.external, contains(secret.id.hex));
       expect(liquid, contains(secret.id.hex));
 
-      final verification = const VerifyBackupPassphraseUsecase();
-      expect(
-        (await verification.execute(secret, 'wrong') as Ok).value,
-        isFalse,
-      );
-      expect((await verification.execute(secret, phrase) as Ok).value, isTrue);
+      expect(custodyValue(await secret.verify.passphrase('wrong')), isFalse);
+      expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
 
       final backup = custodyValue(await secret.backup.recoverbull());
       expect(
@@ -550,7 +545,6 @@ void registerPhysicalRecoveryTests() {
         loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
         getSecretFromFingerprintUsecase:
             locator<GetSecretFromFingerprintUsecase>(),
-        verifyBackupPassphraseUsecase: locator<VerifyBackupPassphraseUsecase>(),
       )..add(const LoadWallets());
       final selectedBloc = backupBloc;
       await tester.pumpWidget(

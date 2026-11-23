@@ -170,6 +170,8 @@ translations:
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@(cd features/signers && fvm flutter gen-l10n)
+	@(cd features/scanning && fvm flutter gen-l10n)
+	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
 	@(cd features/bip85 && fvm flutter gen-l10n)
 	@(cd features/all_seed_view && fvm flutter gen-l10n)

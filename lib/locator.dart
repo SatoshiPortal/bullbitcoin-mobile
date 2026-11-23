@@ -46,7 +46,7 @@ import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:signers/routes.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';

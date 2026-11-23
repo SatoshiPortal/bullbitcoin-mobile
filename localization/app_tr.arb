@@ -912,10 +912,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Mnemonik tüm kelimeler girin",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "Kurtarma kelimelerini içeri girin\nDoğru düzen",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -3523,10 +3519,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "Gerekli",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5427,10 +5419,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "Gönder",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "Mevcut istatistikler mevcut değildir",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5488,15 +5476,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "UR Progress: {parts} parçaları",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "Adres Notları",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5508,15 +5487,6 @@
   "onboardingRecoverWallet": "Recover Cüzdan",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "Tarama: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "Referans Numarası",
   "@transactionOrderLabelReferenceNumber": {
@@ -5649,10 +5619,6 @@
   "testBackupConfirm": "Onay Onay Onay Onaylandı",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "UR işleme başarısız oldu",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "Select away location",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6134,10 +6100,6 @@
   "encryptedVaultRecommendationText": "Emin değilsiniz ve yedekleme güvenlik uygulamaları hakkında bilgi edinmek için daha fazla zamana ihtiyacınız var.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
-  },
-  "urDecodingFailedMessage": "UR decoding başarısız oldu",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "Ülkenizi ve ödeme yöntemini seçin",
   "@fundExchangeAccountSubtitle": {
@@ -7596,10 +7558,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Seçmeli Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "Clear All Clear All Clear",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7701,10 +7659,6 @@
   "swapTotalFees": "Toplam Ücretler ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "Scanning tamamlandı",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "Done",
   "@payDone": {
@@ -9010,12 +8964,6 @@
   "autoswapActiveCardTitle": "Autoswap aktif",
   "autoswapWarningExplanationBold": "otomatik olarak",
   "autoswapInfoConsentMessage": "Autoswap şu anda etkin, ancak siz onay verene kadar tetiklenmeyecek. Etkin kalmasını ister misiniz?",
-  "nfcNotAvailable": "Bu cihazda NFC desteklenmiyor",
-  "nfcDisabled": "NFC devre dışı. Ayarlardan etkinleştirin.",
-  "nfcInvalidData": "Desteklenen bir NFC verisi bulunamadı",
-  "nfcConnectionLost": "NFC bağlantısı kesildi. Cihazınızı NFC etiketine yakın tutun ve tekrar deneyin.",
-  "nfcWriteFailed": "NFC aktarımı başarısız oldu. Lütfen tekrar deneyin.",
-  "nfcError": "NFC hatası: {error}",
   "deleteLogsTitle": "Günlükleri sil",
   "logsDeletedMessage": "Günlükler silindi",
   "sendSelfTransfer": "Kendine transfer",

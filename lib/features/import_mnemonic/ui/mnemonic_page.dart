@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';

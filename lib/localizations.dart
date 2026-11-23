@@ -9,6 +9,8 @@ import 'package:signers/routes.dart' show SignersLocalizations;
 import 'package:silent/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
+import 'package:scanning/scanning.dart';
 
 export 'package:bb_mobile/generated/l10n/localization.dart'
     show AppLocalizations, lookupAppLocalizations;
@@ -24,5 +26,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   SignersLocalizations.delegate,
   SilentLocalizations.delegate,
   LabelEditorLocalizations.delegate,
+  ScanningLocalizations.delegate,
+  MnemonicEntryLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,
 ];

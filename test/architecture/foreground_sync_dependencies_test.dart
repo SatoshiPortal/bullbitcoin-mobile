@@ -27,7 +27,7 @@ const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'access',
   'app_startup':
-      'access import_mnemonic logs onboarding recoverbull settings wallet',
+      'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'address_view send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
@@ -41,13 +41,14 @@ const _allowedTargets = <String, String>{
   'exchange': 'autobuy bitcoin_price bull_exchange dca fund_exchange transactions withdraw',
   'fund_exchange': 'exchange recipients',
   'import_coldcard': 'import_watch_only_wallet scanning signers',
-  'import_mnemonic': 'wallet',
+  'import_mnemonic': 'mnemonic_entry wallet',
   'import_qr_device': 'import_watch_only_wallet signers',
   'import_wallet': 'import_coldcard import_mnemonic import_qr_device import_watch_only_wallet settings signers',
   'import_watch_only_wallet': 'scanning signers wallet',
   'limit_orders': 'address_view default_wallets exchange fund_exchange wallet',
   'network': 'recoverbull',
-  'onboarding': 'import_mnemonic recoverbull settings wallet network',
+  'onboarding':
+      'import_mnemonic mnemonic_entry recoverbull settings wallet network',
   'pay': 'address_view bitcoin_price bull_exchange coins exchange fees recipients send transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',
@@ -59,7 +60,7 @@ const _allowedTargets = <String, String>{
   'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85 bitcoin_price broadcast_signed_tx bull_exchange default_wallets exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
   'support': 'bull_exchange',
   'swap': 'address_view ark coins consolidation fees send transactions wallet',
-  'test_wallet_backup': 'access onboarding recoverbull wallet',
+  'test_wallet_backup': 'access onboarding physical_backup_verification recoverbull wallet',
   'transactions':
       'ark buy exchange label_editor pay replace_by_fee swap wallet',
   'wallet': 'ark backup_settings bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',

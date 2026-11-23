@@ -1,0 +1,29 @@
+{
+  "@@locale": "fr",
+  "scanningProgressLabel": "Analyse : {percent} %",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "Progression UR : {parts} parties",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Analyse terminée",
+  "urDecodingFailedMessage": "Échec du décodage UR",
+  "urProcessingFailedMessage": "Échec du traitement UR",
+  "scanNfcButton": "Scanner NFC",
+  "nfcConnectionLost": "Connexion NFC perdue. Maintenez votre appareil près de la puce NFC et réessayez.",
+  "nfcWriteFailed": "Le transfert NFC a échoué. Veuillez réessayer.",
+  "nfcDisabled": "Le NFC est désactivé. Activez-le dans les paramètres.",
+  "nfcNotAvailable": "Le NFC n'est pas pris en charge sur cet appareil",
+  "nfcFailed": "Oups ! Une erreur s'est produite",
+  "nfcInvalidData": "Aucune donnée NFC prise en charge n'a été trouvée"
+}

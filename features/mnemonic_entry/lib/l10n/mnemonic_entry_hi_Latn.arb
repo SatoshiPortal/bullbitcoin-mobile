@@ -1,0 +1,28 @@
+{
+  "@@locale": "hi_Latn",
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "optionalPassphraseHint": "Optional Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "Label",
+  "requiredHint": "Zaroori",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "Submit Karo",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "emptyMnemonicWordsError": "Apne mnemonic ke saare words daalo",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

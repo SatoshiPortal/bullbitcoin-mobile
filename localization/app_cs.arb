@@ -1073,10 +1073,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Zadejte všechny slova svého mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -3555,10 +3551,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "Vyžadováno",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "čeština",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5424,10 +5416,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "Odeslat",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "Žádné statistiky",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5481,15 +5469,6 @@
   "@payEnterValidAmount": {
     "description": "Validation error for invalid amount format"
   },
-  "urProgressLabel": "UR Progress: {parts} díly",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "Poznámky k adresám",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5501,15 +5480,6 @@
   "onboardingRecoverWallet": "Obnovit peněženku",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "Skenování: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "Referenční číslo",
   "@transactionOrderLabelReferenceNumber": {
@@ -5626,10 +5596,6 @@
   "transactionLabelSendNetworkFees": "Odeslat poplatky",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "urProcessingFailedMessage": "UR zpracování selhalo",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "Vyberte umístění klenby",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6116,10 +6082,6 @@
   "encryptedVaultRecommendationText": "Nejste si jisti a potřebujete více času se dozvědět o postupech zabezpečení zálohování.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
-  },
-  "urDecodingFailedMessage": "UR dekódování selhalo",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "Vyberte zemi a způsob platby",
   "@fundExchangeAccountSubtitle": {
@@ -7506,10 +7468,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Volitelné Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "Vše",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7620,10 +7578,6 @@
   "swapTotalFees": "Celkové poplatky ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "Skenování dokončeno",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "Čeština",
   "@payDone": {
@@ -9113,12 +9067,6 @@
   "autoswapActiveCardTitle": "Autoswap je aktivní",
   "autoswapWarningExplanationBold": "automaticky",
   "autoswapInfoConsentMessage": "Autoswap je momentálně povolen, ale nespustí se, dokud s tím nebudete souhlasit. Chcete ho ponechat zapnutý?",
-  "nfcNotAvailable": "Toto zařízení nepodporuje NFC",
-  "nfcDisabled": "NFC je vypnuté. Zapněte ho v nastavení.",
-  "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC",
-  "nfcConnectionLost": "Připojení NFC bylo ztraceno. Přiložte zařízení k NFC štítku a zkuste to znovu.",
-  "nfcWriteFailed": "Přenos NFC selhal. Zkuste to prosím znovu.",
-  "nfcError": "Chyba NFC: {error}",
   "deleteLogsTitle": "Smazat logy",
   "logsDeletedMessage": "Logy smazány",
   "sendSelfTransfer": "Vlastní převod",

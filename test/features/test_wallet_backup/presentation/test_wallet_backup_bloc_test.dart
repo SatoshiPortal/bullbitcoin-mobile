@@ -98,56 +98,6 @@ void main() {
       await bloc.close();
     });
 
-    test(
-      'records the backup once the sealed challenge has judged it',
-      () async {
-        // The comparison no longer happens here: `MnemonicChallenge` runs it
-        // through `secret.verify.mnemonic`, inside the package, and the event
-        // that reaches this bloc carries no words at all. What is left to test
-        // is the bookkeeping.
-        when(() => completeUsecase.execute())
-            .thenAnswer((_) async => const Ok(null));
-        final bloc = buildBloc();
-        bloc.seed(
-          TestWalletBackupState(
-            selectedWallet: _wallet(isDefault: true, origin: 'a'),
-          ),
-        );
-
-        final expectation = expectLater(
-          bloc.stream,
-          emits(
-            predicate<TestWalletBackupState>(
-              (s) => s.verificationStatus == BackupVerificationStatus.success,
-            ),
-          ),
-        );
-        bloc.add(const VerifyPhysicalBackup());
-        await expectation;
-
-        verify(() => completeUsecase.execute()).called(1);
-        await bloc.close();
-      },
-    );
-
-    test('refuses to record a backup with no wallet selected', () async {
-      final bloc = buildBloc();
-
-      final expectation = expectLater(
-        bloc.stream,
-        emits(
-          predicate<TestWalletBackupState>(
-            (s) => s.failure is TestWalletBackupNoWalletSelectedFailure,
-          ),
-        ),
-      );
-      bloc.add(const VerifyPhysicalBackup());
-      await expectation;
-
-      verifyNever(() => completeUsecase.execute());
-      await bloc.close();
-    });
-
     test('hands out a handle, never the words', () async {
       // The bloc cannot return a mnemonic any more: the usecase gives a
       // `Secret`, which carries a description and a reference. There is no
@@ -189,33 +139,6 @@ void main() {
       for (final word in _mnemonicWords) {
         expect(bloc.state.toString(), isNot(contains(word)));
       }
-      await bloc.close();
-    });
-
-    test('reports a failed completion instead of claiming success', () async {
-      when(() => completeUsecase.execute()).thenAnswer(
-        (_) async =>
-            const Err(TestWalletBackupCompletionFailure('drift: locked')),
-      );
-      final bloc = buildBloc();
-      bloc.seed(
-        TestWalletBackupState(
-          selectedWallet: _wallet(isDefault: true, origin: 'a'),
-        ),
-      );
-
-      final expectation = expectLater(
-        bloc.stream,
-        emits(
-          predicate<TestWalletBackupState>(
-            (s) =>
-                s.failure is TestWalletBackupCompletionFailure &&
-                s.verificationStatus != BackupVerificationStatus.success,
-          ),
-        ),
-      );
-      bloc.add(const VerifyPhysicalBackup());
-      await expectation;
       await bloc.close();
     });
 

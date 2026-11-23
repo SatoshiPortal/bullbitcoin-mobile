@@ -274,7 +274,7 @@ void main() {
   // binding fails the test over a pending timer at teardown.
   Future<void> drainSnackBar(WidgetTester tester) async {
     await tester.pump(const Duration(seconds: 4));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
   }
 
   final spinner = find.byType(CircularProgressIndicator);
@@ -349,6 +349,80 @@ void main() {
     await flush(tester, until: success.tryEvaluate);
     expect(success, findsOneWidget);
     verify(() => completeUsecase.execute()).called(1);
+  });
+
+  testWidgets('only the sealed verdict records a backup', (tester) async {
+    stubSecret(_secretA);
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    challenge.onProgress?.call(12, 12);
+    await tester.pump();
+    verifyNever(() => completeUsecase.execute());
+
+    challenge.onSolved();
+    await flush(
+      tester,
+      until: find.byType(BackupTestSuccessScreen).tryEvaluate,
+    );
+    expect(find.byType(BackupTestSuccessScreen), findsOneWidget);
+    verify(() => completeUsecase.execute()).called(1);
+  });
+
+  testWidgets('drops a verdict after the wallet selection is cleared', (
+    tester,
+  ) async {
+    stubSecret(_secretA);
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    // Emit the new selection before the old widget gets a chance to rebuild.
+    bloc.seed(bloc.state.copyWith(selectedWallet: null));
+    challenge.onSolved();
+    await tester.pump();
+    expect(find.byType(BackupTestSuccessScreen), findsNothing);
+    verifyNever(() => completeUsecase.execute());
+    await drainSnackBar(tester);
+  });
+
+  testWidgets('drops a verdict for a different selected wallet', (
+    tester,
+  ) async {
+    stubSecret(_secretA);
+    stubSecret(_secretB);
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    final challenge = tester.widget<MnemonicChallenge>(
+      find.byType(MnemonicChallenge),
+    );
+    bloc.seed(_selected(_walletB));
+    challenge.onSolved();
+    await tester.pump();
+    expect(find.byType(BackupTestSuccessScreen), findsNothing);
+    verifyNever(() => completeUsecase.execute());
+    await drainSnackBar(tester);
+  });
+
+  testWidgets('a failed write does not report success', (tester) async {
+    stubSecret(_secretA);
+    when(
+      () => completeUsecase.execute(),
+    ).thenAnswer((_) async => const Err(TestWalletBackupCompletionFailure()));
+    bloc.seed(_selected(_walletA));
+    await pumpScreen(tester);
+    await flush(tester);
+    tester.widget<MnemonicChallenge>(find.byType(MnemonicChallenge)).onSolved();
+    await tester.pump();
+    expect(find.byType(BackupTestSuccessScreen), findsNothing);
+    verify(() => completeUsecase.execute()).called(1);
+    await drainSnackBar(tester);
   });
 
   testWidgets('a protected backup offers explicit passphrase reveal', (
