@@ -460,6 +460,8 @@ Electrum owns the declarations, generated rows and queries for `ElectrumServers`
 
 The native flock sentinel is stable and independently opened per admission. Temporary connections close before exclusivity is released; runtime reacquires shared admission and revalidates. All resources register before publication. Failed or uncertain closure retains the admission in quarantine; Background Tasks returns retry after cleanup failure. The historical file and PIN entries cannot be retired by this slice. Platform durability and native lifecycle validation remain separate release gates.
 
+Announcements reads and writes dismissals only in its encrypted schema-1 database under runtime admission. Its cutover participant preserves even unknown announcement IDs and compares the raw historical timestamp text before committing the import receipt.
+
 ### Secrets inventory storage
 
 The schema owned by `packages/secrets` stores wallet definitions, derivation records, access views, credentials and the global access state. Its split-v1 participant imports raw schema-16 rows, the initial view and its access state under exclusive admission. Its receipt commits in the same transaction after row-by-row verification. Secret material and module keys stay in the OS keystore. The participant leaves the source and legacy access entries available for coordinated retirement after the complete manifest verifies.

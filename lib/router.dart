@@ -12,7 +12,6 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
 import 'package:announcements/setup.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show SwapFacade;
-import 'package:preferences/preferences.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';

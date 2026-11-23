@@ -5,6 +5,8 @@ import 'package:electrum/migration.dart';
 
 import 'dart:io';
 
+import 'package:announcements/migration.dart';
+import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:legacy_storage/coordination.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
@@ -21,7 +23,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
-import 'package:preferences/preferences.dart';
+import 'package:preferences/preferences.dart' show Preferences;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
@@ -88,6 +90,9 @@ class Bull {
       p.join(support.path, 'databases', 'electrum.sqlite'),
     );
     final labelsFile = File(p.join(support.path, 'databases', 'labels.sqlite'));
+    final announcementsFile = File(
+      p.join(support.path, 'databases', 'announcements.sqlite'),
+    );
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -97,6 +102,7 @@ class Bull {
           File(p.join(support.path, 'databases', '$owner.sqlite')),
       ],
       participants: [
+        AnnouncementsStore.participant(announcementsFile),
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
@@ -119,6 +125,17 @@ class Bull {
     );
     var initialized = false;
     try {
+      final announcements = await AnnouncementsStore.open(
+        announcementsFile,
+        admission,
+      );
+      if (announcements case Err(:final failure)) return Err(failure);
+      if (announcements case Ok(:final value)) {
+        locator.registerSingleton<AnnouncementDismissals>(
+          value,
+          dispose: (_) => value.close(),
+        );
+      }
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),

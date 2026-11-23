@@ -5,7 +5,8 @@ import 'package:announcements/src/presentation/announcements_cubit.dart';
 import 'package:announcements/src/ui/widgets/announcement_carousel.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:preferences/preferences.dart' show AnnouncementDismissals;
+
+import 'domain/announcement_dismissals.dart';
 
 final class AnnouncementsFeature {
   final DismissAnnouncementUsecase _dismiss;
