@@ -1,23 +1,20 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../features/exchange/data/bbx_api_test_http.dart';
-
-class _MockRepo extends Mock implements ExchangeSupportChatRepository {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -41,32 +38,36 @@ class _Throwing implements HttpClientAdapter {
 
 void main() {
   group('BbxApiSupportChatRepository (the sanitization boundary)', () {
-    BbxApiSupportChatRepository repository(Bbx api) =>
-        BbxApiSupportChatRepository(
-          users: api.users,
-          commcenter: api.commcenter,
-        );
+    Exchange repository(
+      HttpClientAdapter http, {
+      String? key = anonymousTestApiKey,
+    }) => exchangeWithTransportForTesting(
+      readSession: () async =>
+          Ok((environment: ExchangeEnvironment.mainnet, epoch: 0, apiKey: key)),
+      openClient: (endpoint, readKey) => bbxForTesting(
+        endpoint: endpoint.toString(),
+        adapter: http,
+        readActiveApiKey: readKey,
+      ),
+    );
 
     test('maps a missing API key to NotAuthenticatedFailure', () async {
       final result = await repository(
-        FakeBbxHttp().client(readApiKey: () async => const Ok(null)),
-      ).getMessages();
+        FakeBbxHttp(),
+        key: null,
+      ).getSupportMessages();
 
-      expect((result as Err).failure, isA<NotAuthenticatedFailure>());
+      expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
     });
 
     test('maps a transport throw to a sanitized LoadAttachmentFailure '
         'keeping the raw reason for logs only', () async {
-      final api = bbxForTesting(
-        endpoint: testBbxEndpoint,
-        adapter: _Throwing(Exception('network down at host=secret.internal')),
-        readActiveApiKey: bbxCredentialRead(null),
-      );
-
-      final result = await repository(api).getMessageAttachment('a1');
+      final result = await repository(
+        _Throwing(Exception('network down at host=secret.internal')),
+      ).getSupportAttachment('a1');
 
       final failure = (result as Err).failure;
-      expect(failure, isA<LoadAttachmentFailure>());
+      expect(failure, isA<ExchangeChatLoadAttachmentFailure>());
       expect(failure.logMessage, isNot(contains('secret.internal')));
     });
 
@@ -74,10 +75,11 @@ void main() {
       'sendMessage with a missing API key returns NotAuthenticatedFailure',
       () async {
         final result = await repository(
-          FakeBbxHttp().client(readApiKey: () async => const Ok(null)),
-        ).sendMessage(text: 'hi');
+          FakeBbxHttp(),
+          key: null,
+        ).sendSupportMessage(text: 'hi');
 
-        expect((result as Err).failure, isA<NotAuthenticatedFailure>());
+        expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
       },
     );
 
@@ -85,21 +87,17 @@ void main() {
         'failure, and the thread is never requested', () async {
       final http = FakeBbxHttp(body: {'result': null});
 
-      final result = await repository(http.client()).getMessages();
+      final result = await repository(http).getSupportMessages();
 
-      expect((result as Err).failure, isA<NotAuthenticatedFailure>());
+      expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
       expect(http.requests.map((r) => r.path), ['/ak/api-users']);
     });
   });
 
-  group('support chat use-cases (thin forwarders)', () {
-    late _MockRepo mainnetRepo;
-    late _MockRepo testnetRepo;
+  group('support chat use-cases', () {
     late _MockSettingsRepository settingsRepository;
 
     setUp(() {
-      mainnetRepo = _MockRepo();
-      testnetRepo = _MockRepo();
       settingsRepository = _MockSettingsRepository();
 
       final settings = _MockSettingsEntity();
@@ -109,20 +107,20 @@ void main() {
     });
 
     test(
-      'GetSupportChatMessagesUsecase forwards the repository Result',
+      'GetSupportChatMessagesUsecase forwards the successful result',
       () async {
         final usecase = GetSupportChatMessagesUsecase(
-          mainnetRepository: mainnetRepo,
-          testnetRepository: testnetRepo,
-          settingsRepository: settingsRepository,
-        );
-        when(
-          () => mainnetRepo.getMessages(
-            page: any(named: 'page'),
-            pageSize: any(named: 'pageSize'),
+          exchange: exchangeForTesting(
+            chat: (
+              getMessages: ({page, pageSize}) async {
+                expect((page, pageSize), (1, 10));
+                return const Ok([SupportChatMessage(messageId: '1')]);
+              },
+              sendMessage: ({required text, attachments}) async =>
+                  fail('unexpected send'),
+              getAttachment: (_) async => fail('unexpected download'),
+            ),
           ),
-        ).thenAnswer(
-          (_) async => const Ok([SupportChatMessage(messageId: '1')]),
         );
 
         final result = await usecase.execute(page: 1, pageSize: 10);
@@ -132,15 +130,21 @@ void main() {
     );
 
     test(
-      'use-case maps a settings-fetch throw to a sanitized failure',
+      'use-case maps a settings read failure without sending a request',
       () async {
         final usecase = GetSupportChatMessagesUsecase(
-          mainnetRepository: mainnetRepo,
-          testnetRepository: testnetRepo,
-          settingsRepository: settingsRepository,
+          exchange: exchangeWithTransportForTesting(
+            readSession: () => readLegacyExchangeSession(
+              preferences: settingsRepository,
+              readEpoch: () => 0,
+              readKey: ({required isTestnet}) async =>
+                  fail('unexpected credential read'),
+            ),
+            openClient: (_, _) => fail('unexpected HTTP request'),
+          ),
         );
         when(() => settingsRepository.fetch())
-            .thenThrow(Exception('storage locked'));
+            .thenAnswer((_) async => const Err(PreferencesReadFailure()));
 
         final result = await usecase.execute(page: 1, pageSize: 10);
 
@@ -152,19 +156,18 @@ void main() {
     );
 
     test(
-      'SendSupportChatMessageUsecase forwards a repository failure',
+      'SendSupportChatMessageUsecase maps an Exchange send failure',
       () async {
         final usecase = SendSupportChatMessageUsecase(
-          mainnetRepository: mainnetRepo,
-          testnetRepository: testnetRepo,
-          settingsRepository: settingsRepository,
-        );
-        when(
-          () => mainnetRepo.sendMessage(
-            text: any(named: 'text'),
-            attachments: any(named: 'attachments'),
+          exchange: exchangeForTesting(
+            chat: (
+              getMessages: ({page, pageSize}) async => fail('unexpected read'),
+              sendMessage: ({required text, attachments}) async =>
+                  const Err(ExchangeChatSendMessageFailure('raw')),
+              getAttachment: (_) async => fail('unexpected download'),
+            ),
           ),
-        ).thenAnswer((_) async => const Err(SendMessageFailure('raw')));
+        );
 
         final result = await usecase.execute(text: 'hi');
 
@@ -173,15 +176,19 @@ void main() {
     );
 
     test(
-      'GetSupportChatMessageAttachmentUsecase forwards the Result',
+      'GetSupportChatMessageAttachmentUsecase maps a download failure',
       () async {
         final usecase = GetSupportChatMessageAttachmentUsecase(
-          mainnetRepository: mainnetRepo,
-          testnetRepository: testnetRepo,
-          settingsRepository: settingsRepository,
+          exchange: exchangeForTesting(
+            chat: (
+              getMessages: ({page, pageSize}) async => fail('unexpected read'),
+              sendMessage: ({required text, attachments}) async =>
+                  fail('unexpected send'),
+              getAttachment: (_) async =>
+                  const Err(ExchangeChatLoadAttachmentFailure('raw')),
+            ),
+          ),
         );
-        when(() => mainnetRepo.getMessageAttachment(any()))
-            .thenAnswer((_) async => const Err(LoadAttachmentFailure('raw')));
 
         final result = await usecase.execute('a1');
 

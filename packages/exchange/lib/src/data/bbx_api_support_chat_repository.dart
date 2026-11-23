@@ -1,29 +1,30 @@
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
-/// [ExchangeSupportChatRepository] through the `bbx_api` package.
+import '../domain/entities/support_chat_message.dart';
+import '../domain/entities/support_chat_message_attachment.dart';
+import '../domain/exchange_failure.dart';
+
+/// Support chat through the `bbx_api` package.
 ///
 /// [users] and [commcenter] may come from different clients: the chat calls
 /// carry attachments and run without the request timeout.
-class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
+final class BbxApiSupportChatRepository {
   static const _source = 'BULL Mobile';
 
   final bbx.UsersApi _users;
   final bbx.CommcenterApi _commcenter;
 
-  BbxApiSupportChatRepository({
+  const BbxApiSupportChatRepository({
     required this._users,
     required this._commcenter,
   });
 
-  @override
-  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>>
-  getMessages({int? page, int? pageSize}) async {
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getMessages({
+    int? page,
+    int? pageSize,
+  }) async {
     try {
       final userResult = await _users.getUserSummary();
       final String? userId;
@@ -33,13 +34,15 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
         case Err(failure: bbx.BbxRpcFailure()):
           userId = null;
         case Err(:final failure):
-          return Err(_failure(failure, LoadMessagesFailure.new, 'load'));
+          return Err(
+            _failure(failure, ExchangeChatLoadMessagesFailure.new, 'load'),
+          );
       }
       if (userId == null) {
         // No usable identity behind the key: the session is not good enough
         // to read the thread, which is an auth problem rather than transport.
         log.warning('Support chat: user summary carries no user id');
-        return const Err(NotAuthenticatedFailure());
+        return const Err(ExchangeNotAuthenticatedFailure());
       }
 
       final messagesResult = await _commcenter.listMessages(
@@ -49,16 +52,17 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
       return switch (messagesResult) {
         Ok(:final value) => Ok([for (final m in value) _message(m, userId)]),
         Err(:final failure) => Err(
-          _failure(failure, LoadMessagesFailure.new, 'load'),
+          _failure(failure, ExchangeChatLoadMessagesFailure.new, 'load'),
         ),
       };
     } catch (e, st) {
-      return Err(_unexpected(e, st, LoadMessagesFailure.new, 'load'));
+      return Err(
+        _unexpected(e, st, ExchangeChatLoadMessagesFailure.new, 'load'),
+      );
     }
   }
 
-  @override
-  Future<Result<void, ExchangeSupportChatFailure>> sendMessage({
+  Future<Result<void, ExchangeFailure>> sendMessage({
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) async {
@@ -82,35 +86,45 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
       return switch (result) {
         Ok() => const Ok(null),
         Err(:final failure) => Err(
-          _failure(failure, SendMessageFailure.new, 'send'),
+          _failure(failure, ExchangeChatSendMessageFailure.new, 'send'),
         ),
       };
     } catch (e, st) {
-      return Err(_unexpected(e, st, SendMessageFailure.new, 'send'));
+      return Err(
+        _unexpected(e, st, ExchangeChatSendMessageFailure.new, 'send'),
+      );
     }
   }
 
-  @override
-  Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   getMessageAttachment(String attachmentId) async {
     try {
       final result = await _commcenter.getMessageAttachment(attachmentId);
       return switch (result) {
         Ok(:final value) => Ok(_attachment(value, messageId: value.messageId)),
         Err(:final failure) => Err(
-          _failure(failure, LoadAttachmentFailure.new, 'load attachment'),
+          _failure(
+            failure,
+            ExchangeChatLoadAttachmentFailure.new,
+            'load attachment',
+          ),
         ),
       };
     } catch (e, st) {
       return Err(
-        _unexpected(e, st, LoadAttachmentFailure.new, 'load attachment'),
+        _unexpected(
+          e,
+          st,
+          ExchangeChatLoadAttachmentFailure.new,
+          'load attachment',
+        ),
       );
     }
   }
 
-  static ExchangeSupportChatFailure _failure(
+  static ExchangeFailure _failure(
     bbx.BbxFailure failure,
-    ExchangeSupportChatFailure Function(String) onFailure,
+    ExchangeFailure Function(String) onFailure,
     String operation,
   ) {
     switch (failure) {
@@ -119,7 +133,7 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
           'Support chat: not authenticated',
           error: failure.runtimeType,
         );
-        return const NotAuthenticatedFailure();
+        return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onFailure('Exchange credential unavailable');
       default:
@@ -131,10 +145,10 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
     }
   }
 
-  static ExchangeSupportChatFailure _unexpected(
+  static ExchangeFailure _unexpected(
     Object e,
     StackTrace st,
-    ExchangeSupportChatFailure Function(String) onFailure,
+    ExchangeFailure Function(String) onFailure,
     String operation,
   ) {
     if (e is Error) Error.throwWithStackTrace(e, st);

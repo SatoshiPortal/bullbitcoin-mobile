@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/exchange/data/services/exchange_notification_
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
@@ -16,7 +15,6 @@ import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:exchange/exchange.dart';
@@ -113,19 +111,6 @@ class ExchangeLocator {
         instanceName: '${environment}ExchangeOrderRepository',
       );
     }
-
-    for (final environment in ['mainnet', 'testnet']) {
-      locator.registerLazySingleton<ExchangeSupportChatRepository>(
-        () => BbxApiSupportChatRepository(
-          users: locator<bbx.Bbx>(instanceName: '${environment}BbxApiClient')
-              .users,
-          commcenter: locator<bbx.Bbx>(
-            instanceName: '${environment}BbxApiClientWithoutTimeout',
-          ).commcenter,
-        ),
-        instanceName: '${environment}ExchangeSupportChatRepository',
-      );
-    }
   }
 
   static void registerUseCases(GetIt locator) {
@@ -161,39 +146,16 @@ class ExchangeLocator {
     );
 
     locator.registerFactory<GetSupportChatMessagesUsecase>(
-      () => GetSupportChatMessagesUsecase(
-        mainnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'mainnetExchangeSupportChatRepository',
-        ),
-        testnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'testnetExchangeSupportChatRepository',
-        ),
-        settingsRepository: locator<Preferences>(),
-      ),
+      () => GetSupportChatMessagesUsecase(exchange: locator<Exchange>()),
     );
 
     locator.registerFactory<SendSupportChatMessageUsecase>(
-      () => SendSupportChatMessageUsecase(
-        mainnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'mainnetExchangeSupportChatRepository',
-        ),
-        testnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'testnetExchangeSupportChatRepository',
-        ),
-        settingsRepository: locator<Preferences>(),
-      ),
+      () => SendSupportChatMessageUsecase(exchange: locator<Exchange>()),
     );
 
     locator.registerFactory<GetSupportChatMessageAttachmentUsecase>(
-      () => GetSupportChatMessageAttachmentUsecase(
-        mainnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'mainnetExchangeSupportChatRepository',
-        ),
-        testnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'testnetExchangeSupportChatRepository',
-        ),
-        settingsRepository: locator<Preferences>(),
-      ),
+      () =>
+          GetSupportChatMessageAttachmentUsecase(exchange: locator<Exchange>()),
     );
 
     locator.registerFactory<CreateLogAttachmentUsecase>(

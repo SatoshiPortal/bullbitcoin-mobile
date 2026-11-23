@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';

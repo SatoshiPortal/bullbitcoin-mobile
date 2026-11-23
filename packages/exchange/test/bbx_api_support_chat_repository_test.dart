@@ -1,20 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
+import 'package:bbx_api/bbx_api.dart'
+    show BbxCredentialUnavailableFailure, BbxFailure;
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/src/data/bbx_api_support_chat_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'bbx_api_support_chat_repository_legacy.dart';
-import 'bbx_api_test_http.dart';
 
 /// Answers each JSON-RPC method with its body in [bodies], or throws [error].
 class _ChatHttp implements HttpClientAdapter {
@@ -92,14 +88,14 @@ const _rpcError = {
   'error': {'code': -32000, 'message': 'rejected'},
 };
 
-ExchangeSupportChatRepository _new(
+BbxApiSupportChatRepository _new(
   HttpClientAdapter http, {
-  ReadExchangeApiKey? key,
+  Future<Result<String?, BbxFailure>> Function()? key,
 }) {
   final api = bbxForTesting(
-    endpoint: testBbxEndpoint,
+    endpoint: 'https://example.invalid',
     adapter: http,
-    readActiveApiKey: bbxCredentialRead(key),
+    readActiveApiKey: key ?? () async => const Ok('synthetic-anonymous-key'),
   );
   return BbxApiSupportChatRepository(
     users: api.users,
@@ -136,14 +132,13 @@ Object? _value(Object? value) => switch (value) {
 };
 
 /// The value of an [Ok], or the failure type of an [Err].
-Object? _outcome(Result<Object?, ExchangeSupportChatFailure> result) =>
-    switch (result) {
-      Ok(:final value) => ['ok', _value(value)],
-      Err(:final failure) => failure.runtimeType,
-    };
+Object? _outcome(Result<Object?, ExchangeFailure> result) => switch (result) {
+  Ok(:final value) => ['ok', _value(value)],
+  Err(:final failure) => failure.runtimeType,
+};
 
-typedef _Call = Future<Result<Object?, ExchangeSupportChatFailure>> Function(
-  ExchangeSupportChatRepository,
+typedef _Call = Future<Result<Object?, ExchangeFailure>> Function(
+  BbxApiSupportChatRepository,
 );
 
 /// Runs [call] on the repository; returns what the old repository sent and
@@ -154,7 +149,7 @@ Future<((List<Object?>, Object?), (List<(String, String)>, Object?))> _both(
   _Call call,
   Map<String, Object?> bodies, {
   DioExceptionType? error,
-  ReadExchangeApiKey? key,
+  Future<Result<String?, BbxFailure>> Function()? key,
 }) async {
   final http = _ChatHttp(bodies, error: error);
   final outcome = _outcome(await call(_new(http, key: key)));
@@ -475,7 +470,7 @@ void main() {
           '$name with an unreadable key',
           call,
           bodies,
-          key: () async => const Err(ExchangeApiKeyReadFailure()),
+          key: () async => const Err(BbxCredentialUnavailableFailure()),
         );
 
         expect(outcome, isNot(NotAuthenticatedFailure));

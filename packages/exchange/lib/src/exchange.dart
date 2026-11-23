@@ -5,10 +5,13 @@ import 'package:primitives/primitives.dart';
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_kyc_repository.dart';
 import 'data/bbx_api_order_stats_repository.dart';
+import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
 import 'domain/entities/order_stats.dart';
+import 'domain/entities/support_chat_message.dart';
+import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
@@ -30,6 +33,21 @@ typedef ExchangeSessionReader =
     >
     Function();
 
+typedef ExchangeChatOperations = ({
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> Function({
+    int? page,
+    int? pageSize,
+  })
+  getMessages,
+  Future<Result<void, ExchangeFailure>> Function({
+    required String text,
+    List<SupportChatMessageAttachment>? attachments,
+  })
+  sendMessage,
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(String)
+  getAttachment,
+});
+
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
@@ -49,6 +67,7 @@ final class Exchange {
   )
   _listAnnouncements;
   final _SaveUserPreference _saveUserPreference;
+  final ExchangeChatOperations _chat;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -58,6 +77,7 @@ final class Exchange {
     this._getUserSummary,
     this._listAnnouncements,
     this._saveUserPreference,
+    this._chat,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -77,6 +97,8 @@ final class Exchange {
       readActiveApiKey: readKey,
       timeouts: BbxTimeouts.standard,
     ),
+    openUntimedClient: (endpoint, readKey) =>
+        Bbx.open(endpoint: endpoint.toString(), readActiveApiKey: readKey),
   );
 
   static Exchange _open({
@@ -84,6 +106,7 @@ final class Exchange {
     required Uri testnetEndpoint,
     required ExchangeSessionReader readSession,
     required OpenInventoryClient openClient,
+    required OpenInventoryClient openUntimedClient,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -99,9 +122,11 @@ final class Exchange {
         );
 
     Future<Result<T, ExchangeFailure>> withClient<T>(
-      Future<Result<T, ExchangeFailure>> Function(Bbx) operation, {
+      Future<Result<T, ExchangeFailure>> Function(Bbx, Bbx Function())
+      operation, {
       ExchangeEnvironment? environment,
       ExchangeFailure Function()? credentialReadFailure,
+      bool untimed = false,
     }) async {
       switch (await sessionSnapshot()) {
         case Err(failure: ExchangeCredentialReadFailure())
@@ -114,18 +139,33 @@ final class Exchange {
           return const Err(ExchangeOperationStaleFailure());
         case Ok(:final value):
           var stale = false;
-          final client = openClient(value.endpoint, () async {
+          Future<Result<String?, BbxCredentialUnavailableFailure>>
+          readKey() async {
             if (await sessionSnapshot() case Ok(value: final current)
                 when current == value) {
               return Ok(value.apiKey);
             }
             stale = true;
             return const Err(BbxCredentialUnavailableFailure());
-          });
+          }
+          final client = (untimed ? openUntimedClient : openClient)(
+            value.endpoint,
+            readKey,
+          );
+          Bbx? untimedClient;
           try {
-            final result = await operation(client);
+            final result = await operation(
+              client,
+              () => untimed
+                  ? client
+                  : untimedClient ??= openUntimedClient(
+                      value.endpoint,
+                      readKey,
+                    ),
+            );
             return stale ? const Err(ExchangeOperationStaleFailure()) : result;
           } finally {
+            untimedClient?.dispose();
             client.dispose();
           }
       }
@@ -138,10 +178,10 @@ final class Exchange {
     return Exchange._(
       inventory.hasPendingOrders,
       () => withClient(
-        (client) => BbxApiOrderStatsRepository(api: client).getOrderStats(),
+        (client, _) => BbxApiOrderStatsRepository(api: client).getOrderStats(),
       ),
       ({required fileBytes, required fileName}) => withClient(
-        (client) => BbxApiKycRepository(api: client).uploadDocument(
+        (client, _) => BbxApiKycRepository(api: client).uploadDocument(
           fileBytes: fileBytes,
           fileName: fileName,
           docType: 'ID',
@@ -149,16 +189,16 @@ final class Exchange {
         ),
       ),
       (environment) => withClient(
-        (client) => BbxApiAccountRepository(client).getAccount(),
+        (client, _) => BbxApiAccountRepository(client).getAccount(),
         environment: environment,
         credentialReadFailure: ExchangeAccountUnavailableFailure.new,
       ),
       (environment) => withClient(
-        (client) => BbxApiUserRepository(api: client).getUserSummary(),
+        (client, _) => BbxApiUserRepository(api: client).getUserSummary(),
         environment: environment,
       ),
       (environment) => withClient(
-        (client) => BbxApiUserRepository(api: client).listAnnouncements(),
+        (client, _) => BbxApiUserRepository(api: client).listAnnouncements(),
         environment: environment,
       ),
       (
@@ -169,7 +209,7 @@ final class Exchange {
         autoBuyEnabled,
         emailNotificationsEnabled,
       }) => withClient(
-        (client) => BbxApiUserRepository(api: client).saveUserPreference(
+        (client, _) => BbxApiUserRepository(api: client).saveUserPreference(
           language: language,
           currency: currency,
           dcaEnabled: dcaEnabled,
@@ -177,6 +217,31 @@ final class Exchange {
           emailNotificationsEnabled: emailNotificationsEnabled,
         ),
         environment: environment,
+      ),
+      (
+        getMessages: ({page, pageSize}) => withClient(
+          (timed, getUntimed) => BbxApiSupportChatRepository(
+            users: timed.users,
+            commcenter: getUntimed().commcenter,
+          ).getMessages(page: page, pageSize: pageSize),
+          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+        ),
+        sendMessage: ({required text, attachments}) => withClient(
+          (client, _) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
+          ).sendMessage(text: text, attachments: attachments),
+          untimed: true,
+          credentialReadFailure: ExchangeChatSendMessageFailure.new,
+        ),
+        getAttachment: (attachmentId) => withClient(
+          (client, _) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
+          ).getMessageAttachment(attachmentId),
+          untimed: true,
+          credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
+        ),
       ),
     );
   }
@@ -225,6 +290,20 @@ final class Exchange {
     autoBuyEnabled: autoBuyEnabled,
     emailNotificationsEnabled: emailNotificationsEnabled,
   );
+
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
+    int? page,
+    int? pageSize,
+  }) => _chat.getMessages(page: page, pageSize: pageSize);
+
+  Future<Result<void, ExchangeFailure>> sendSupportMessage({
+    required String text,
+    List<SupportChatMessageAttachment>? attachments,
+  }) => _chat.sendMessage(text: text, attachments: attachments);
+
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
+  getSupportAttachment(String attachmentId) =>
+      _chat.getAttachment(attachmentId);
 }
 
 /// Builds the public capability with scenario-controlled results.
@@ -253,6 +332,7 @@ Exchange exchangeForTesting({
     bool? emailNotificationsEnabled,
   })?
   saveUserPreference,
+  ExchangeChatOperations? chat,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -272,6 +352,15 @@ Exchange exchangeForTesting({
         autoBuyEnabled,
         emailNotificationsEnabled,
       }) => throw StateError('Unexpected preference write'),
+  chat ??
+      (
+        getMessages: ({page, pageSize}) =>
+            throw StateError('Unexpected chat history request'),
+        sendMessage: ({required text, attachments}) =>
+            throw StateError('Unexpected chat send'),
+        getAttachment: (_) =>
+            throw StateError('Unexpected chat attachment request'),
+      ),
 );
 
 Exchange exchangeWithTransportForTesting({
@@ -282,4 +371,5 @@ Exchange exchangeWithTransportForTesting({
   testnetEndpoint: Uri.parse('https://testnet.example.invalid'),
   readSession: readSession,
   openClient: openClient,
+  openUntimedClient: openClient,
 );

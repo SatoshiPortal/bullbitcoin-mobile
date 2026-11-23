@@ -1,4 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
+import 'package:exchange/exchange.dart';
+
+typedef NotAuthenticatedFailure = ExchangeNotAuthenticatedFailure;
+typedef LoadMessagesFailure = ExchangeChatLoadMessagesFailure;
+typedef SendMessageFailure = ExchangeChatSendMessageFailure;
+typedef LoadAttachmentFailure = ExchangeChatLoadAttachmentFailure;
 
 /// What the removed ExchangeSupportChatRepositoryImpl sent and gave for each
 /// case of `bbx_api_support_chat_repository_test.dart`: the requests, and the

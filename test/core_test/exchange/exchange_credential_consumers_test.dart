@@ -5,11 +5,9 @@ import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
@@ -58,7 +56,6 @@ void main() {
   late _NoNetwork network;
   late Bbx api;
   late Exchange user;
-  late BbxApiSupportChatRepository support;
   late BbxApiOrderRepository orders;
   Result<String?, ExchangeApiKeyFailure> credential = const Ok(null);
 
@@ -89,10 +86,6 @@ void main() {
         adapter: network,
         readActiveApiKey: readKey,
       ),
-    );
-    support = BbxApiSupportChatRepository(
-      users: api.users,
-      commcenter: api.commcenter,
     );
     orders = BbxApiOrderRepository(api: api, isTestnet: true);
   });
@@ -143,13 +136,13 @@ void main() {
         announcements,
         isA<Ok>().having((r) => r.value, 'announcements', isEmpty),
       );
-      final messages = await support.getMessages();
+      final messages = await user.getSupportMessages();
       expect(
         messages,
         isA<Err>().having(
           (r) => r.failure,
           'chat',
-          isA<NotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       final history = await orders.getOrders();
@@ -182,8 +175,12 @@ void main() {
         ),
       );
       expect(
-        await support.getMessages(),
-        isA<Err>().having((r) => r.failure, 'chat', isA<LoadMessagesFailure>()),
+        await user.getSupportMessages(),
+        isA<Err>().having(
+          (r) => r.failure,
+          'chat',
+          isA<ExchangeChatLoadMessagesFailure>(),
+        ),
       );
       expect(
         await orders.getOrders(),

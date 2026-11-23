@@ -107,7 +107,8 @@ graph TB
     EXCHANGE_DOMAIN --> PRIMITIVES
     EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
     EXCHANGE_DOMAIN -->|database key and legacy credential reads| SECRETS
-    EXCHANGE_DOMAIN -->|account, KYC, statistics and complete order pages| BBX_API
+    EXCHANGE_DOMAIN -->|account, KYC, statistics, support chat and complete order pages| BBX_API
+    EXCHANGE_SUPPORT_CHAT --> EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
 
     SIGNERS[Signers<br/>Workspace Feature]

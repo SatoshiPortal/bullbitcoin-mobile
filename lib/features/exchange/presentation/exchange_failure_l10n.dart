@@ -37,6 +37,9 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeStatisticsUnavailableFailure() ||
     ExchangeDocumentUploadFailure() ||
     ExchangeConsentRegistrationFailure() ||
+    ExchangeChatLoadMessagesFailure() ||
+    ExchangeChatSendMessageFailure() ||
+    ExchangeChatLoadAttachmentFailure() ||
     ExchangeOrderInventoryUnavailableFailure() ||
     ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
   };

@@ -114,3 +114,15 @@ final class ExchangeDocumentUploadFailure extends ExchangeFailure {
 final class ExchangeConsentRegistrationFailure extends ExchangeFailure {
   const ExchangeConsentRegistrationFailure([super.logMessage]);
 }
+
+final class ExchangeChatLoadMessagesFailure extends ExchangeFailure {
+  const ExchangeChatLoadMessagesFailure([super.logMessage]);
+}
+
+final class ExchangeChatSendMessageFailure extends ExchangeFailure {
+  const ExchangeChatSendMessageFailure([super.logMessage]);
+}
+
+final class ExchangeChatLoadAttachmentFailure extends ExchangeFailure {
+  const ExchangeChatLoadAttachmentFailure([super.logMessage]);
+}

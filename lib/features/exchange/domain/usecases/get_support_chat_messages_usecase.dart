@@ -1,45 +1,28 @@
-import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
-import 'package:preferences/preferences.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 class GetSupportChatMessagesUsecase {
-  final ExchangeSupportChatRepository _mainnetRepository;
-  final ExchangeSupportChatRepository _testnetRepository;
-  final Preferences _settingsRepository;
+  final Exchange _exchange;
 
-  GetSupportChatMessagesUsecase({
-    required this._mainnetRepository,
-    required this._testnetRepository,
-    required this._settingsRepository,
-  });
+  const GetSupportChatMessagesUsecase({required this._exchange});
 
   @useResult
   Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>> execute({
     int? page,
     int? pageSize,
-  }) async {
-    final ExchangeSupportChatRepository repository;
-    try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
+  }) async =>
+      (await _exchange.getSupportMessages(
+        page: page,
+        pageSize: pageSize,
+      )).mapErr(
+        (failure) => switch (failure) {
+          ExchangeNotAuthenticatedFailure() => const NotAuthenticatedFailure(),
+          ExchangeChatLoadMessagesFailure() => LoadMessagesFailure(
+            failure.logMessage,
+          ),
+          _ => const ExchangeSupportChatUnexpectedFailure(),
+        },
       );
-      repository = settings.environment.requireHistoricalTestnet()
-          ? _testnetRepository
-          : _mainnetRepository;
-    } catch (e, st) {
-      log.warning(
-        'Failed to resolve support chat network',
-        error: e,
-        trace: st,
-      );
-      return Err(ExchangeSupportChatUnexpectedFailure('$e'));
-    }
-
-    return repository.getMessages(page: page, pageSize: pageSize);
-  }
 }
