@@ -1634,9 +1634,92 @@ fn map_sp_notification(
 mod tests {
     use super::*;
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
+    use std::{
+        io::{BufRead, BufReader, ErrorKind, Write},
+        net::TcpListener,
+        time::Instant,
+    };
     use tempfile::tempdir;
 
     const TEST_MNEMONIC: &str = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+
+    fn serve_blindbit_responses(
+        responses: &'static [(&str, Option<&str>)],
+    ) -> (String, JoinHandle<()>) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let url = format!("http://{}", listener.local_addr().unwrap());
+        let worker = std::thread::spawn(move || {
+            for (path, body) in responses {
+                let deadline = Instant::now() + Duration::from_secs(5);
+                let (mut socket, _) = loop {
+                    match listener.accept() {
+                        Ok(connection) => break connection,
+                        Err(error)
+                            if error.kind() == ErrorKind::WouldBlock
+                                && Instant::now() < deadline =>
+                        {
+                            std::thread::sleep(Duration::from_millis(5));
+                        }
+                        Err(error) => panic!("Blindbit probe did not request {path}: {error}"),
+                    }
+                };
+                socket.set_nonblocking(false).unwrap();
+                socket
+                    .set_read_timeout(Some(Duration::from_secs(5)))
+                    .unwrap();
+                let mut reader = BufReader::new(&mut socket);
+                let mut line = String::new();
+                reader.read_line(&mut line).unwrap();
+                assert_eq!(line.split_ascii_whitespace().nth(1), Some(*path));
+                loop {
+                    line.clear();
+                    if reader.read_line(&mut line).unwrap() == 0 || line == "\r\n" {
+                        break;
+                    }
+                }
+                let (status, body) = match body {
+                    Some(body) => ("200 OK", *body),
+                    None => ("404 Not Found", "{}"),
+                };
+                write!(
+                    socket,
+                    "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                    body.len()
+                )
+                .unwrap();
+            }
+        });
+        (url, worker)
+    }
+
+    #[test]
+    fn blindbit_probe_rejects_a_server_that_only_serves_height() {
+        const HEIGHT: &str = r#"{"block_height":199}"#;
+        let (url, worker) = serve_blindbit_responses(&[
+            ("/block-height", Some(HEIGHT)),
+            ("/block-height", Some(HEIGHT)),
+            ("/info", None),
+            ("/tweak-index/199", None),
+        ]);
+        assert_eq!(blindbit_tip(url.clone()).unwrap(), 199);
+        assert!(test_blindbit_scan_data(url).is_err());
+        worker.join().unwrap();
+    }
+
+    #[test]
+    fn blindbit_probe_accepts_the_scan_endpoints_without_info() {
+        const FILTER: &str = r#"{"block_hash":"0000000000000000000000000000000000000000000000000000000000000001","data":"00"}"#;
+        let (url, worker) = serve_blindbit_responses(&[
+            ("/block-height", Some(r#"{"block_height":199}"#)),
+            ("/info", None),
+            ("/tweak-index/199", Some("[]")),
+            ("/filter/new-utxos/199", Some(FILTER)),
+            ("/filter/spent/199", Some(FILTER)),
+        ]);
+        assert_eq!(test_blindbit_scan_data(url).unwrap(), 199);
+        worker.join().unwrap();
+    }
 
     #[test]
     fn legacy_mainnet_scan_state_stays_within_the_blindbit_range() {
