@@ -195,7 +195,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         NovlangReceiveLocalizationsDelegate(novlangPolicy),
                         AddressViewLocalizations.delegate,
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
-                        NovlangAnnouncementsLocalizationsDelegate(novlangPolicy),
+                        NovlangAnnouncementsLocalizationsDelegate(
+                          novlangPolicy,
+                        ),
                         NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
                         NovlangSettingsLocalizationsDelegate(novlangPolicy),
                         NovlangExchangeLocalizationsDelegate(novlangPolicy),

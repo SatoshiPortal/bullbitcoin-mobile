@@ -7,15 +7,14 @@ import 'package:get_it/get_it.dart';
 void main() {
   PaymentDestinationField payoutField(WalletAddressType type) =>
       exchangePurchaseHost(GetIt.asNewInstance()).payoutField(
-            type: type,
-            value: '',
-            label: 'label',
-            hint: 'hint',
-            enabled: true,
-            onChanged: (_) {},
-            onValidated: (_) {},
-          )
-          as PaymentDestinationField;
+        type: type,
+        value: '',
+        label: 'label',
+        hint: 'hint',
+        enabled: true,
+        onChanged: (_) {},
+        onValidated: (_) {},
+      ) as PaymentDestinationField;
 
   test('lightning payout field accepts LNURL like the limit order base', () {
     expect(payoutField(WalletAddressType.lightning).allowLnurl, isTrue);
