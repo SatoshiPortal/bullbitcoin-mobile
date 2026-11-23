@@ -37,11 +37,19 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
     required this._reset,
     required this._warning,
     required Stream<bool> exchangeVisible,
+    Stream<bool> exchangeEntry = const Stream.empty(),
     List<QuickAction> defaults = QuickActionsLayout.defaults,
   }) : _defaults = defaults,
        super(
-         QuickActionsState(available: _available(false), defaults: defaults),
+         QuickActionsState(
+           available: _available(visible: false, entry: false),
+           defaults: defaults,
+         ),
        ) {
+    _entry = exchangeEntry.listen((entry) {
+      _exchangeEntry = entry;
+      _publishAvailable();
+    });
     _visibility = exchangeVisible.listen(
       (visible) {
         _applyVisibility(visible);
@@ -61,9 +69,15 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   void _applyVisibility(bool visible) {
     if (isClosed) return;
     if (!_firstVisibility.isCompleted) _firstVisibility.complete();
+    _exchangeVisible = visible;
+    _publishAvailable();
+  }
+
+  void _publishAvailable() {
+    if (isClosed) return;
     emit(
       QuickActionsState(
-        available: _available(visible),
+        available: _available(visible: _exchangeVisible, entry: _exchangeEntry),
         defaults: _defaults,
         selection: state.selection,
         initialized: state.initialized,
@@ -81,18 +95,24 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   final ResetQuickActionsUsecase _reset;
   final void Function(String) _warning;
   late final StreamSubscription<bool> _visibility;
+  late final StreamSubscription<bool> _entry;
+  bool _exchangeVisible = false;
+  bool _exchangeEntry = false;
   Future<void> _pendingWrite = Future.value();
   int _generation = 0;
-  static Set<QuickAction> _available(bool visible) => Set.unmodifiable(
+
+  /// Pay needs a usable exchange; the exchange entry also shows while the
+  /// exchange is off but could be activated.
+  static Set<QuickAction> _available({
+    required bool visible,
+    required bool entry,
+  }) => Set.unmodifiable(
     QuickAction.values.where(
-      (action) =>
-          visible ||
-          !{
-            QuickAction.buy,
-            QuickAction.sell,
-            QuickAction.pay,
-            QuickAction.exchange,
-          }.contains(action),
+      (action) => switch (action) {
+        QuickAction.pay => visible,
+        QuickAction.exchange => visible || entry,
+        _ => true,
+      },
     ),
   );
 
@@ -181,6 +201,7 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   @override
   Future<void> close() async {
     await _visibility.cancel();
+    await _entry.cancel();
     await super.close();
     if (!_firstVisibility.isCompleted) _firstVisibility.complete();
   }

@@ -129,7 +129,7 @@ class ArkShellVisualFixtures {
           // These are the actual visible shell components in AppRouter.
           builder: (_, _, child) => BackupWarningOverlay(
             child: Scaffold(
-              appBar: WalletHomeAppBar(onSettings: () {}),
+              appBar: const WalletHomeAppBar(),
               extendBodyBehindAppBar: true,
               body: child,
             ),
@@ -152,6 +152,12 @@ class ArkShellVisualFixtures {
                 quickActions: fixture._quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
+                exchangePrompt: createExchangePromptCubit(
+                  storage: _MemoryQuickActionsStorage(),
+                  warning: (_) {},
+                  offered: const Stream.empty(),
+                ),
+                onActivateExchange: (_) {},
               ),
             ),
           ],

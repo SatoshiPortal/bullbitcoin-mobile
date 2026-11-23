@@ -26,68 +26,57 @@ void main() {
     )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
   });
 
-  testWidgets('a failed write restores the persisted segment', (tester) async {
-    final semantics = tester.ensureSemantics();
-    try {
-      final cubit = _Settings();
-      when(() => cubit.state).thenReturn(
-        const SettingsState(
-          storedSettings: SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-          ),
+  testWidgets('a failed write keeps the persisted choice', (tester) async {
+    final cubit = _Settings();
+    when(() => cubit.state).thenReturn(
+      const SettingsState(
+        storedSettings: SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
         ),
-      );
-      when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-      when(() => cubit.setStartAmountsInFiat(true))
-          .thenAnswer((_) async => const Err(SettingsStorageFailure()));
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: const [
-            bullUiLocalizationsDelegate,
-            ...appLocalizationsDelegates,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider<SettingsCubit>.value(
-            value: cubit,
-            child: const Scaffold(body: AmountInputModeSetting()),
-          ),
+      ),
+    );
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+    when(() => cubit.setStartAmountsInFiat(true))
+        .thenAnswer((_) async => const Err(SettingsStorageFailure()));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...appLocalizationsDelegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider<SettingsCubit>.value(
+          value: cubit,
+          child: const Scaffold(body: AmountInputModeSetting()),
         ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('CAD'));
-      await tester.pumpAndSettle();
-      expect(
-        tester.getSemantics(find.text('Bitcoin')),
-        matchesSemantics(
-          label: 'Bitcoin',
-          isButton: true,
-          hasEnabledState: true,
-          isEnabled: true,
-          hasTapAction: true,
-          hasFocusAction: true,
-          isFocusable: true,
-          isSelected: true,
-          hasSelectedState: true,
-          isInMutuallyExclusiveGroup: true,
-        ),
-      );
-      verify(() => cubit.setStartAmountsInFiat(true)).called(1);
-      await tester.pump(const Duration(seconds: 4));
-      await tester.pumpAndSettle();
-      await tester.pumpWidget(const SizedBox.shrink());
-    } finally {
-      semantics.dispose();
-    }
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BullPickerChip<bool>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('CAD').last);
+    await tester.pumpAndSettle();
+    verify(() => cubit.setStartAmountsInFiat(true)).called(1);
+    expect(
+      find.descendant(
+        of: find.byType(BullPickerChip<bool>),
+        matching: find.text('Bitcoin'),
+      ),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
-    testWidgets('amount input setting is named and selected in ${theme.name}', (
+    testWidgets('amount input setting is a named picker in ${theme.name}', (
       tester,
     ) async {
-      tester.view.physicalSize = const Size(390, 520);
+      tester.view.physicalSize = const Size(390, 430);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -135,24 +124,12 @@ void main() {
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         expect(find.text('Enter amounts in'), findsOneWidget);
-        final selected = find.descendant(
-          of: find.byType(BullSegmented),
-          matching: find.text('Bitcoin'),
-        );
         expect(
-          tester.getSemantics(selected),
-          matchesSemantics(
-            label: 'Bitcoin',
-            isButton: true,
-            hasEnabledState: true,
-            isEnabled: true,
-            hasTapAction: true,
-            hasFocusAction: true,
-            isFocusable: true,
-            isSelected: true,
-            hasSelectedState: true,
-            isInMutuallyExclusiveGroup: true,
+          find.descendant(
+            of: find.byType(BullPickerChip<bool>),
+            matching: find.text('Bitcoin'),
           ),
+          findsOneWidget,
         );
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
         await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
@@ -165,11 +142,9 @@ void main() {
           find.byKey(boundary),
           matchesGoldenFile('goldens/amount-input-settings-${theme.name}.png'),
         );
-        final cad = find.descendant(
-          of: find.byType(BullSegmented),
-          matching: find.text('CAD'),
-        );
-        await tester.tap(cad);
+        await tester.tap(find.byType(BullPickerChip<bool>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('CAD').last);
         await tester.pumpAndSettle();
         verify(() => cubit.setStartAmountsInFiat(true)).called(1);
       } finally {

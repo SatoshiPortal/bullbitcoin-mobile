@@ -1,4 +1,4 @@
-import 'package:bull_ui/bull_ui.dart' show BullAlertCard;
+import 'package:bull_ui/bull_ui.dart' show BullAlertCard, BullSizes;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -70,14 +70,17 @@ class _ConsolidationBannerViewState extends State<_ConsolidationBannerView> {
         if (!required) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: BullAlertCard(
-            title: switch (widget.walletName) {
-              final name? => context.loc.consolidationRequiredTitleNamed(name),
-              null => context.loc.consolidationRequiredTitle,
-            },
-            onTap: () => context.pushNamed(
-              ConsolidationRoute.consolidation.name,
-              pathParameters: {'walletId': widget.walletId},
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
+            child: BullAlertCard(
+              title: switch (widget.walletName) {
+                final name? => context.loc.consolidationRequiredTitleNamed(name),
+                null => context.loc.consolidationRequiredTitle,
+              },
+              onTap: () => context.pushNamed(
+                ConsolidationRoute.consolidation.name,
+                pathParameters: {'walletId': widget.walletId},
+              ),
             ),
           ),
         );

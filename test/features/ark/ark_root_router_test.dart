@@ -123,6 +123,12 @@ void main() {
       );
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
+      final exchangePrompt = createExchangePromptCubit(
+        storage: Memory(),
+        warning: (_) {},
+        offered: const Stream.empty(),
+      );
+      locator.registerSingleton<ExchangePromptCubit>(exchangePrompt);
       locator.registerSingleton<RecoverBullFeature>(recovery);
       FakeSecureStoragePlatform().install();
       final inventoryFixture = await tester.runAsync(
@@ -260,6 +266,8 @@ void main() {
         await signerServices.reset();
         await locator.unregister<ExchangeFacade>();
         await locator.unregister<QuickActionsCubit>();
+        await exchangePrompt.close();
+        await locator.unregister<ExchangePromptCubit>();
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();

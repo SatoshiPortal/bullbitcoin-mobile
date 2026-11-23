@@ -89,7 +89,15 @@ class WalletDetailScreen extends StatelessWidget {
       body: wallet == null
           ? const BullShimmerBox(height: 100)
           : balanceSat == null
-          ? Center(child: Text(context.loc.walletLoadFailed))
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  context.loc.walletLoadFailed,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
           : scopeWalletHistory(
               walletId,
               Builder(

@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCarousel, BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullCarousel, BullInfoCard, BullSizes, Gap;
 
 class HomeWarnings extends StatelessWidget {
   const HomeWarnings({super.key});
@@ -72,7 +73,18 @@ class HomeWarnings extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (errorCards.isNotEmpty) BullCarousel(children: errorCards),
+              if (errorCards.isNotEmpty)
+                BullCarousel(
+                  children: [
+                    for (final card in errorCards)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: BullSizes.homeCard,
+                        ),
+                        child: card,
+                      ),
+                  ],
+                ),
               if (showBackupWarning) ...[
                 if (errorCards.isNotEmpty) const Gap(5),
                 BackupCard(

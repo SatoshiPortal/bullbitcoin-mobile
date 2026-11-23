@@ -3683,7 +3683,6 @@
   "wizardNotificationsDescription": "Sachez quand un paiement arrive.",
   "amountInputBitcoin": "Bitcoin",
   "amountInputTitle": "Saisir les montants en",
-  "amountInputSettingsHint": "Également disponible dans la liste des devises de chaque champ de montant.",
   "amountInputStartChanged": "Les montants commencent désormais en {currency}",
   "amountEnteredAtRate": "Vous avez saisi {amount} {currency} · cours de {time}",
   "amountInputHeader": "Montants en",

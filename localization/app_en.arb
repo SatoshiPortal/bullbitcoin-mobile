@@ -11331,8 +11331,6 @@
   "@amountInputBitcoin": {},
   "amountInputTitle": "Enter amounts in",
   "@amountInputTitle": {},
-  "amountInputSettingsHint": "Also available from the currency list of any amount field.",
-  "@amountInputSettingsHint": {},
   "amountInputStartChanged": "Amounts now start in {currency}",
   "@amountInputStartChanged": {
     "placeholders": {
