@@ -311,5 +311,7 @@
   "exchangeBitcoinWalletsAddressEmpty": "L'adresse ne peut pas être vide",
   "exchangeBitcoinWalletsSaveFailed": "Impossible d'enregistrer l'adresse du portefeuille",
   "exchangeBitcoinWalletsDeleteFailed": "Impossible de supprimer l'adresse du portefeuille",
-  "destinationExpectedType": "Saisissez ou scannez une adresse valide : {type}."
+  "destinationExpectedType": "Saisissez ou scannez une adresse valide : {type}.",
+  "wizardExchangeTitle": "BULL Exchange",
+  "wizardExchangeDescription": "Achetez, vendez et payez avec Bull Bitcoin directement depuis votre portefeuille."
 }

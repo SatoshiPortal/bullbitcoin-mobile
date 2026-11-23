@@ -1274,5 +1274,13 @@
         "type": "String"
       }
     }
+  },
+  "wizardExchangeTitle": "BULL Exchange",
+  "@wizardExchangeTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet.",
+  "@wizardExchangeDescription": {
+    "description": "Optional exchange access or wallet quick action setting."
   }
 }

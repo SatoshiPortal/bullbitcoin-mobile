@@ -2020,6 +2020,18 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Enter or scan a valid {type}.'**
   String destinationExpectedType(String type);
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'BULL Exchange'**
+  String get wizardExchangeTitle;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy, sell and pay with Bull Bitcoin directly from your wallet.'**
+  String get wizardExchangeDescription;
 }
 
 class _ExchangeLocalizationsDelegate

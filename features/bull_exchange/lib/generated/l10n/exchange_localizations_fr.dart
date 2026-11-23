@@ -1125,4 +1125,11 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
   String destinationExpectedType(String type) {
     return 'Saisissez ou scannez une adresse valide : $type.';
   }
+
+  @override
+  String get wizardExchangeTitle => 'BULL Exchange';
+
+  @override
+  String get wizardExchangeDescription =>
+      'Achetez, vendez et payez avec Bull Bitcoin directement depuis votre portefeuille.';
 }
