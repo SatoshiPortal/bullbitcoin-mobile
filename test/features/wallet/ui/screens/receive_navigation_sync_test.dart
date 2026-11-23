@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
+import 'package:secrets/storage.dart' show WalletInventory;
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:secrets/secrets.dart';
 
@@ -23,7 +23,7 @@ class _WalletBloc extends Mock implements WalletBloc {}
 
 class _Settings extends Mock implements Preferences {}
 
-class _References extends Mock implements WalletSecretReferencesRepository {}
+class _References extends Mock implements WalletInventory {}
 
 class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
 

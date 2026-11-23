@@ -325,6 +325,37 @@ void main() {
     },
   );
 
+  test('reads distinct public origins across the authorized view', () async {
+    for (final (id, network, fingerprint) in [
+      ('a', 'bitcoinMainnet', '73C5DA0A'),
+      ('b', 'bitcoinRegtest', '73c5da0a'),
+      ('c', 'legacy-unresolved', 'deadbeef'),
+      ('d', 'bitcoinMainnet', ''),
+    ]) {
+      _value(await inventory.registerWallet(RegisteredWallet(
+        id: id,
+        secretFingerprint: null,
+        masterFingerprint: fingerprint,
+        signer: 'none',
+        network: network,
+        xpub: 'public-key-marker',
+        externalDescriptor: 'external-marker',
+        internalDescriptor: 'internal-marker',
+        label: null,
+        birthday: null,
+        isDefault: false,
+      )));
+    }
+    expect(_value(await inventory.referencedFingerprints()), [
+      Fingerprint('73c5da0a'),
+      Fingerprint('deadbeef'),
+    ]);
+    final pending = inventory.referencedFingerprints();
+    inventory.lock();
+    expect(await pending, isA<Err>());
+    expect(await inventory.referencedFingerprints(), isA<Err>());
+  });
+
   test('background opt-out stops descriptor access at the owner', () async {
     expect(
       await inventory.registerWallet(_wallet('test-wallet', '01234567')),
