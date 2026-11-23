@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:transactions/testing.dart';
 import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';

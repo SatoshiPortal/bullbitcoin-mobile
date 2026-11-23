@@ -79,11 +79,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
   final RunRecipientOperation _read;
   final RunRecipientOperation _write;
 
-  const ExchangeRecipientsImpl({
-    required RunRecipientOperation read,
-    required RunRecipientOperation write,
-  }) : _read = read,
-       _write = write;
+  const ExchangeRecipientsImpl({required this._read, required this._write});
 
   Future<Result<T, RecipientsFailure>> _execute<T>(
     RunRecipientOperation run,
