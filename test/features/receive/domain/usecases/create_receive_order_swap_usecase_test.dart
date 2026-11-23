@@ -1,7 +1,6 @@
 import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart' show PaymentNetwork;
 import 'package:satoshifier/payment_request.dart';
-import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:primitives/primitives.dart'
     show Network, BitcoinNetwork, LiquidNetwork;

@@ -1,6 +1,5 @@
 import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
-import 'package:swaps/order_swaps.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 
 import '../../domain/send_amount_conversion.dart';
