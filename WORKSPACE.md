@@ -366,12 +366,16 @@ graph TD
   wallet_import --> bull_logger
   wallet_import --> bull_ui
   wallet_import --> electrum
+  wallet_import --> mnemonic_entry
   wallet_import --> preferences
   wallet_import --> primitives
   wallet_import --> satoshifier
+  wallet_import --> scanning
+  wallet_import --> screen_privacy
   wallet_import --> secrets
   wallet_import --> signers
   wallet_import --> sync
+  wallet_import -.-> rust_bindings
   subgraph features0 ["features"]
     access
     address_view
