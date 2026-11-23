@@ -16,6 +16,10 @@ graph TD
   style ark stroke:#18f150
   background_tasks["background_tasks"]
   style background_tasks stroke:#e69535
+  backup_metadata["backup_metadata"]
+  style backup_metadata stroke:#599abd
+  backup_storage["backup_storage"]
+  style backup_storage stroke:#aa55b0
   backups["backups"]
   style backups stroke:#e0e4c1
   bb_mobile["bb_mobile"]
@@ -163,6 +167,13 @@ graph TD
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
+  backup_metadata --> bull_ui
+  backup_metadata --> primitives
+  backup_metadata --> backup_storage
+  backup_metadata --> labels
+  backup_metadata --> secrets
+  backup_storage --> primitives
+  backup_storage --> google_drive
   backups --> access
   backups --> bull_logger
   backups --> bull_recoverbull
@@ -219,7 +230,7 @@ graph TD
   bull_quick_actions --> primitives
   bull_recoverbull --> primitives
   bull_recoverbull --> file_system
-  bull_recoverbull --> google_drive
+  bull_recoverbull --> backup_storage
   bull_recoverbull --> secrets
   bull_recoverbull --> legacy_storage
   bull_recoverbull --> bull_logger
@@ -422,6 +433,7 @@ graph TD
     address_view
     all_seed_view
     announcements
+    backup_metadata
     backups
     bip85
     bitcoin_price
@@ -450,6 +462,7 @@ graph TD
   subgraph packages1 ["packages"]
     ark
     background_tasks
+    backup_storage
     bbx_api
     bitbox_transport
     boltz_stream
