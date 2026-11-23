@@ -748,7 +748,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
         xpub: wallet.xpub,
         isDefault: wallet.isDefault,
         label: wallet.label,
-        signer: Signer.fromName(wallet.signer.name),
+        signer: wallet.signer.toSqlite(),
       ),
       discover: discover,
       allowInitialScan: allowInitialScan,
