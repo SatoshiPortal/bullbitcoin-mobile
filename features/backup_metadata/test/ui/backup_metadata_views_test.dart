@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:backup_storage/backup_storage.dart';
 import 'package:backup_metadata/backup_metadata_ui.dart';
-import 'package:backup_metadata/backup_metadata.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
