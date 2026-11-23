@@ -339,7 +339,7 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 `packages/exchange` owns the account, order and DCA domain values and their invariants. `Exchange.open` provides a strict account-level pending-order scan over an authoritative session snapshot, and typed operations for order statistics and KYC uploads. Exchange Settings owns document selection and validation. BBX decoding remains in the transport; the ordinary Exchange library does not expose wire values, codecs or repositories.
 
-The Exchange credential participant owns a separate encrypted schema and uses Secrets for the module database key and read-only access to the two fixed legacy records. It is not yet active in app composition. Activation requires the coordinator's pre-marker provenance check and draining both legacy credential writers.
+The Exchange credential participant owns a separate encrypted schema. It uses the scoped Secrets database worker opener with native-close admission and reads the two fixed legacy records on the foreground isolate. It is not yet active in app composition. Activation requires the coordinator's pre-marker provenance check and draining both legacy credential writers.
 
 `BullExchangeFeature.mount` contributes the two presentations of the exchange landing route from `features/bull_exchange`. During extraction the legacy exchange router supplies the host's store-aware localized copy, branding and navigation to existing routes.
 

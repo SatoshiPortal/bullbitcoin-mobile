@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:exchange/migration.dart';
+import 'package:exchange/src/data/storage/exchange_credential_import.dart'
+    show exchangeCredentialImportForTesting;
 import 'package:exchange/src/data/storage/exchange_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -32,7 +34,10 @@ void main() {
     gate = NativeFileGate(File('${directory.path}/lifecycle.lock'));
     destination = File('${directory.path}/exchange.sqlite');
     source = File('${directory.path}/legacy.sqlite');
-    participant = ExchangeCredentialImport(file: destination, secrets: secrets);
+    participant = exchangeCredentialImportForTesting(
+      file: destination,
+      secrets: secrets,
+    );
   });
 
   tearDown(() async {
@@ -143,7 +148,7 @@ void main() {
           OwnerReadiness.imported,
         );
         final store = _value(
-          await ExchangeStore.open(
+          await ExchangeStore.openForTesting(
             file: destination,
             admission: runtime,
             keys: secrets.databaseKeys(module: 'exchange'),
@@ -206,7 +211,7 @@ void main() {
         expect(_value(await owner.receipt()), OwnerReadiness.pending);
         _value(await owner.close());
         final store = _value(
-          await ExchangeStore.open(
+          await ExchangeStore.openForTesting(
             file: destination,
             admission: lease,
             keys: secrets.databaseKeys(module: 'exchange'),

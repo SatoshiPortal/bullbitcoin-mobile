@@ -14,14 +14,28 @@ const _freshReceipt = 'fresh-v1/exchange';
 typedef _Records = ({String? mainnet, String? testnet});
 typedef _BasicAuth = ({int id, String? username, String? password});
 
+/// Uses the fake keystore installed on the test isolate, not a platform worker.
+ExchangeCredentialImport exchangeCredentialImportForTesting({
+  required File file,
+  required Secrets secrets,
+}) => ExchangeCredentialImport._(
+  file,
+  secrets.exchangeKeychain,
+  secrets.databaseKeys(module: 'exchange'),
+);
+
 /// Copies the two fixed keychain records and the historical Settings rows.
 /// The foreground coordinator must freeze both sets of legacy writers before
 /// calling any operation under exclusive admission.
 final class ExchangeCredentialImport implements LegacyImportParticipant {
   final File _file;
-  final Secrets _secrets;
+  final ExchangeKeychain _legacy;
+  final DatabaseKeys? _testingKeys;
 
-  const ExchangeCredentialImport({required this._file, required this._secrets});
+  ExchangeCredentialImport({required File file, required Secrets secrets})
+    : this._(file, secrets.exchangeKeychain, null);
+
+  const ExchangeCredentialImport._(this._file, this._legacy, this._testingKeys);
 
   @override
   String get ownerId => 'exchange';
@@ -42,7 +56,7 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
     required bool legacySqlitePresent,
   }) async {
     if (!admission.isOpen) return const Err(LegacyImportDeferred());
-    return switch (await _readRecords(_secrets.exchangeKeychain)) {
+    return switch (await _readRecords(_legacy)) {
       Err(:final failure) => Err(failure),
       Ok(:final value)
           when !legacySqlitePresent &&
@@ -55,18 +69,18 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
   Future<Result<ExchangeStore, LegacyImportFailure>> _open(
     LifecycleAdmission admission, {
     required bool existing,
-  }) async => switch (await ExchangeStore.open(
-    file: _file,
-    admission: admission,
-    keys: _secrets.databaseKeys(module: ownerId),
-    existing: existing,
-  )) {
-    Ok(:final value) => Ok(value),
-    Err(failure: DatabaseNotReady()) ||
-    Err(
-      failure: DatabaseKeyUnavailable(reason: DatabaseKeyProblem.locked),
-    ) => const Err(LegacyImportDeferred()),
-    Err() => const Err(LegacyImportUnavailable()),
+  }) => switch (_testingKeys) {
+    final keys? => ExchangeStore.openForTesting(
+      file: _file,
+      admission: admission,
+      keys: keys,
+      existing: existing,
+    ),
+    null => ExchangeStore.open(
+      file: _file,
+      admission: admission,
+      existing: existing,
+    ),
   };
 
   @override
@@ -86,7 +100,7 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
     return (await _open(
       admission,
       existing: false,
-    )).map((store) => _PreparedExchange(store, _secrets.exchangeKeychain));
+    )).map((store) => _PreparedExchange(store, _legacy));
   }
 
   @override
@@ -97,7 +111,7 @@ final class ExchangeCredentialImport implements LegacyImportParticipant {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
-        final owner = _PreparedExchange(value, _secrets.exchangeKeychain);
+        final owner = _PreparedExchange(value, _legacy);
         final receipt = await owner.receipt();
         return switch (await owner.close()) {
           Ok() => receipt,

@@ -32,10 +32,12 @@ class LegacyImportReceipts extends Table {
   tables: [ExchangeApiCredentials, ExchangeBasicAuth, LegacyImportReceipts],
 )
 class ExchangeDatabase extends $ExchangeDatabase {
+  static const schema = 1;
+
   ExchangeDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => schema;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
