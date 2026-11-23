@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_u
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:swaps/swaps.dart' as boltz;
+import 'package:swaps/swaps.dart' show SwapRoute;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

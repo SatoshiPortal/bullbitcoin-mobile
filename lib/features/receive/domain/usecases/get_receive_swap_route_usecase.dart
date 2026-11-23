@@ -1,5 +1,7 @@
 import '../receive_lightning_limits.dart';
 
+import 'package:swaps/swaps.dart' show SwapRoute;
+
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class GetReceiveSwapRouteUsecase {

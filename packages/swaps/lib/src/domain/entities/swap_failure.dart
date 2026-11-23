@@ -1,6 +1,10 @@
 import 'package:swaps/src/util.dart';
 import 'package:primitives/primitives.dart';
 
+import 'auto_swap.dart';
+
+part 'autoswap_failure.dart';
+
 /// The swap engine's modeled failures — one sealed family, per the
 /// project-wide error convention: variants carry typed data, the catch-all
 /// carries only a `logMessage` that is logged at the boundary and never

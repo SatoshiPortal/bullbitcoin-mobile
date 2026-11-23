@@ -262,7 +262,7 @@ graph TB
     BTC_PRICE --> BULL_UI
     BTC_PRICE --> BULL_LOGGER
     BTC_PRICE --> PRIMITIVES
-    SWAPS_PKG[Swaps Package<br/>Boltz engine, provider and autoswap settings]
+    SWAPS_PKG[Swaps Package<br/>Boltz engine, swap routing and autoswap policy]
     SWAPS_PKG --> PRIMITIVES
     SWAPS_PKG --> BULL_LOGGER
     SWAPS_PKG --> ELECTRUM
@@ -501,7 +501,6 @@ graph TB
     REPLACE_BY_FEE --> SEND
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
-    SWAPS --> AUTOSWAP
     SWAPS --> FEES_UI
     TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS

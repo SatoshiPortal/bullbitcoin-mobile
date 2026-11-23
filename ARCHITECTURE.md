@@ -444,6 +444,8 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 `packages/swaps` depends directly on `secrets`: `SwapStorage` owns the legacy `swap_` key composition and maps `SwapKeychain` failures inside the engine. Composition injects the closed capability directly, with no feature-owned secret-store bridge. Its regtest view shares the canonical capability and fingerprint allocation locks; only swap blobs use the separate `swap_regtest_` namespace.
 
+`packages/swaps` owns the provider routing decision and the `Autoswap` execution policy. The app still composes finished-sync notifications and the payment operations used by the two providers; these are not exported as new app adapters.
+
 ## Legacy SQLite composition
 
 `lib/core/storage/sqlite_database.dart` composes the existing tables with modular Drift generation. The physical `bullbitcoin_sqlite` database, schema 16, migrations, defaults and text date-time representation remain unchanged. `Labels` and `FrozenUtxos` live in `packages/labels`. Other tables stay at their current paths until each owner moves its table, queries, mapper and consumers together. Consumers import generated rows and companions directly from the table’s `.drift.dart` library; the composer does not re-export them. The transaction row mapper lives beside the Electrum adapter.

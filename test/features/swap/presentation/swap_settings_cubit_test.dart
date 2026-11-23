@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:swaps/swaps.dart' show SwapServer;
+import 'package:swaps/swaps.dart' show SwapRouteOverride, SwapServer;
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_server_usecase.dart';

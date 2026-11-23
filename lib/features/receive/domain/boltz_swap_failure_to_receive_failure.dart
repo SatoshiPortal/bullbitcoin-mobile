@@ -24,6 +24,7 @@ extension BoltzSwapFailureToReceiveFailure on SwapsFailure {
     SwapsInvalidAutoSwapSettingsFailure() ||
     SwapsInvalidLockupFailure() ||
     SwapsStorageFailure() ||
-    SwapsUnexpectedFailure() => ReceiveUnexpectedFailure(logMessage),
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => ReceiveUnexpectedFailure(logMessage),
   };
 }

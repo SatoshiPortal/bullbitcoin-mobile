@@ -1,24 +1,26 @@
-import 'package:swaps/swaps.dart' show AutoSwap, AutoSwapSettings;
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:swaps/swaps.dart';
+import 'package:test/test.dart';
 
-class _MockGetSettings extends Mock implements AutoSwapSettings {}
+abstract interface class _Host {
+  Future<Result<AutoSwap, AutoswapFailure>> readSettings();
+  Future<SwapRoute> getRoute();
+}
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockHost extends Mock implements _Host {}
 
-class _MockProvider extends Mock implements AutoswapProviderPort {}
+abstract interface class _Provider {
+  Future<Result<String, AutoswapFailure>> execute(AutoSwap settings);
+}
+
+class _MockProvider extends Mock implements _Provider {}
 
 void main() {
-  late _MockGetSettings getSettings;
-  late _MockSwapFacade swapFacade;
+  late _MockHost host;
   late _MockProvider boltz;
   late _MockProvider exchange;
-  late ExecuteAutoswapUsecase usecase;
+  late Autoswap usecase;
 
   const valid = AutoSwap(
     enabled: true,
@@ -31,18 +33,17 @@ void main() {
   setUpAll(() => registerFallbackValue(const AutoSwap()));
 
   setUp(() {
-    getSettings = _MockGetSettings();
-    swapFacade = _MockSwapFacade();
+    host = _MockHost();
     boltz = _MockProvider();
     exchange = _MockProvider();
-    usecase = ExecuteAutoswapUsecase(
-      getSettings,
-      swapFacade,
-      boltzProvider: boltz,
-      exchangeProvider: exchange,
+    usecase = Autoswap.open(
+      readSettings: host.readSettings,
+      resolveRoute: host.getRoute,
+      runBoltz: boltz.execute,
+      runExchange: exchange.execute,
     );
-    when(() => getSettings.readAutoSwap()).thenAnswer((_) async => Ok(valid));
-    when(() => swapFacade.getRoute()).thenAnswer((_) async => SwapRoute.boltz);
+    when(host.readSettings).thenAnswer((_) async => const Ok(valid));
+    when(host.getRoute).thenAnswer((_) async => SwapRoute.boltz);
     when(() => boltz.execute(any()))
         .thenAnswer((_) async => const Ok('boltz-swap'));
     when(() => exchange.execute(any()))
@@ -60,8 +61,7 @@ void main() {
   });
 
   test('runs the exchange when the route is exchange-only', () async {
-    when(() => swapFacade.getRoute())
-        .thenAnswer((_) async => SwapRoute.exchange);
+    when(host.getRoute).thenAnswer((_) async => SwapRoute.exchange);
 
     expect(okValue(await usecase.execute()), 'exchange-order');
     verifyNever(() => boltz.execute(any()));
@@ -79,7 +79,7 @@ void main() {
 
   test('falls back to the exchange when Boltz cannot take the transfer '
       'and the fallback is on', () async {
-    when(() => swapFacade.getRoute())
+    when(host.getRoute)
         .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
     for (final failure in const <AutoswapFailure>[
       AutoswapBoltzUnavailableFailure(),
@@ -92,7 +92,7 @@ void main() {
   });
 
   test('never falls back once Boltz has created a swap', () async {
-    when(() => swapFacade.getRoute())
+    when(host.getRoute)
         .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
     for (final failure in const <AutoswapFailure>[
       AutoswapPendingFailure(),
@@ -110,7 +110,7 @@ void main() {
   });
 
   test('does not call a provider while consent is pending', () async {
-    when(() => getSettings.readAutoSwap())
+    when(host.readSettings)
         .thenAnswer((_) async => Ok(valid.copyWith(showWarning: true)));
 
     final result = await usecase.execute();
@@ -121,7 +121,7 @@ void main() {
   });
 
   test('does not call a provider with invalid settings', () async {
-    when(() => getSettings.readAutoSwap())
+    when(host.readSettings)
         .thenAnswer((_) async => Ok(valid.copyWith(recipientWalletId: null)));
 
     final result = await usecase.execute();

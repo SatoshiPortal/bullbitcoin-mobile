@@ -22,6 +22,7 @@ extension SwapsFailureL10n on SwapsFailure {
     SwapsInvalidAutoSwapSettingsFailure() ||
     SwapsInvalidLockupFailure() ||
     SwapsStorageFailure() ||
-    SwapsUnexpectedFailure() => context.loc.swapsFailureUnexpected,
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => context.loc.swapsFailureUnexpected,
   };
 }

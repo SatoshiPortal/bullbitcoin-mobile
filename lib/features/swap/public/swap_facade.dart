@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.d
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
@@ -22,7 +21,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_s
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
-import 'package:swaps/swaps.dart' show RetryOngoingSwapsUsecase;
+import 'package:swaps/swaps.dart' show RetryOngoingSwapsUsecase, SwapRoute;
 
 export '../domain/entities/order_swap_refresh_batch.dart';
 export '../domain/entities/order_swap_polling.dart';
@@ -33,7 +32,6 @@ export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
-export 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 export 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 export 'package:bb_mobile/features/swap/public/order_swap_under_review_card.dart';
 

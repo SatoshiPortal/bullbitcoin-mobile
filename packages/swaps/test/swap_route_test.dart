@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:swaps/swaps.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('SwapRoute.resolve', () {

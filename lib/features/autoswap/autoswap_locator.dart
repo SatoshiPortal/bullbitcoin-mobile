@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -17,11 +16,15 @@ import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit
 import 'package:swaps/swaps.dart'
     show
         AutoSwapSettings,
+        Autoswap,
+        AutoswapSettingsUnavailableFailure,
+        AutoswapUnsupportedNetworkFailure,
         CreateLiquidToBitcoinSwapUsecase,
         DropPendingSwapLockupUsecase,
         GetSwapLimitsAndFeesUsecase,
         RecordPendingSwapLockupUsecase,
-        RecordSwapLockupUsecase;
+        RecordSwapLockupUsecase,
+        SwapsUnsupportedNetworkFailure;
 import 'package:get_it/get_it.dart';
 
 class AutoSwapLocator {
@@ -72,12 +75,21 @@ class AutoSwapLocator {
     locator.registerFactory<SaveAutoswapSettingsUsecase>(
       () => SaveAutoswapSettingsUsecase(locator<AutoSwapSettings>()),
     );
-    locator.registerFactory<ExecuteAutoswapUsecase>(
-      () => ExecuteAutoswapUsecase(
-        locator<AutoSwapSettings>(),
-        locator<SwapFacade>(),
-        boltzProvider: locator<BoltzAutoswapProvider>(),
-        exchangeProvider: locator<ExchangeAutoswapProvider>(),
+    locator.registerFactory<Autoswap>(
+      () => Autoswap.open(
+        readSettings: () async =>
+            (await locator<AutoSwapSettings>().readAutoSwap()).mapErr(
+              (failure) => switch (failure) {
+                SwapsUnsupportedNetworkFailure() =>
+                  const AutoswapUnsupportedNetworkFailure(),
+                _ => AutoswapSettingsUnavailableFailure(
+                  failure.runtimeType.toString(),
+                ),
+              },
+            ),
+        resolveRoute: locator<SwapFacade>().getRoute,
+        runBoltz: locator<BoltzAutoswapProvider>().execute,
+        runExchange: locator<ExchangeAutoswapProvider>().execute,
       ),
     );
   }
@@ -95,7 +107,7 @@ class AutoSwapLocator {
     locator.registerLazySingleton<AutoswapWatcher>(
       () => AutoswapWatcher(
         locator<WatchFinishedWalletSyncsUsecase>(),
-        locator<ExecuteAutoswapUsecase>(),
+        locator<Autoswap>(),
       ),
       dispose: (watcher) => watcher.dispose(),
     );

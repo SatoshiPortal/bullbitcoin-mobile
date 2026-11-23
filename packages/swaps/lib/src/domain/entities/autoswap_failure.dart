@@ -1,7 +1,6 @@
-import 'package:primitives/primitives.dart' show Failure;
-import 'package:swaps/swaps.dart' show AutoSwapSettingsViolation;
+part of 'swap_failure.dart';
 
-sealed class AutoswapFailure extends Failure {
+sealed class AutoswapFailure extends SwapsFailure {
   const AutoswapFailure([super.logMessage]);
 }
 
