@@ -1,7 +1,6 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 
 import 'dart:async';
 
@@ -20,7 +19,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
 
 class MockWallet extends Mock implements Wallet {}
 
-class _MockMetadata extends Mock implements WalletRegistrations {}
+class _MockWalletInventory extends Mock implements WalletInventory {}
 
 class _MockSettings extends Mock implements Preferences {}
 
@@ -46,8 +45,6 @@ typedef _Scan = Future<Result<MnemonicScan, ImportMnemonicScanFailure>>;
 
 class MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
-
-class MockMetadata extends Mock implements WalletRegistrations {}
 
 class MockSettings extends Mock implements Preferences {}
 
@@ -84,8 +81,7 @@ void main() {
   test('accepts a Japanese vector before scanning', () async {
     FakeSecureStoragePlatform().install();
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
-    final metadata = _MockMetadata();
-    when(metadata.fetchAll).thenAnswer((_) async => []);
+    final inventory = _MockWalletInventory();
     final settings = _MockSettings();
     when(settings.fetch).thenAnswer(
       (_) async => Ok(
@@ -100,7 +96,7 @@ void main() {
       importWalletUsecase: importWallet,
       scanMnemonic: scanMnemonic.execute,
       checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
-        metadata: metadata,
+        inventory: inventory,
         settings: settings,
         secrets: secrets,
       ),

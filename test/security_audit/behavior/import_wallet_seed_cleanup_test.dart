@@ -92,7 +92,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(() => checkDuplicate.isReferenced(any(), any()))
-        .thenAnswer((_) async => false);
+        .thenAnswer((_) async => const Ok(false));
     // No wallet references any seed unless a test says so.
     when(() => walletRepository.getWallets())
         .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));

@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -54,6 +56,37 @@ final class InventoryFixture {
     final inventory =
         (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
     return InventoryFixture._(admission, inventory);
+  }
+
+  Future<void> registerMnemonic(
+    Secret secret, {
+    Network network = Network.bitcoinMainnet,
+    String? unresolvedNetwork,
+    String? internalDescriptor,
+  }) async {
+    final metadata = await WalletMetadataService.deriveFromSecret(
+      secret: secret,
+      network: network,
+      scriptType: ScriptType.bip84,
+      isDefault: false,
+    );
+    final registered = await inventory.registerWallet(
+      RegisteredWallet(
+        id: unresolvedNetwork == null ? metadata.id : 'invalid origin',
+        secretFingerprint: secret.id.hex,
+        masterFingerprint: metadata.masterFingerprint,
+        signer: 'local',
+        network: unresolvedNetwork ?? metadata.networkCode,
+        xpub: metadata.xpub,
+        externalDescriptor: metadata.externalPublicDescriptor,
+        internalDescriptor:
+            internalDescriptor ?? metadata.internalPublicDescriptor,
+        label: metadata.label,
+        birthday: null,
+        isDefault: false,
+      ),
+    );
+    expect(registered, isA<Ok<void, SecretFailure>>());
   }
 
   void register(GetIt services) {
