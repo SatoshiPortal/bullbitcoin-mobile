@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
+import 'package:bull_exchange/src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_cubit.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

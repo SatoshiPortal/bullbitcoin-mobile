@@ -39,7 +39,6 @@ const _legacyImports = {
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_home_screen.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_auth_screen.dart -> locator.dart',
-  'lib/features/default_wallets/ui/default_wallets_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',

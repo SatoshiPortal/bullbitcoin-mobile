@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_failure_l10n.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_failure_l10n.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -12,8 +12,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('fr'),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          ExchangeLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: ExchangeLocalizations.supportedLocales,
         home: Builder(
           builder: (c) {
             context = c;
