@@ -3,16 +3,14 @@ import 'dart:io';
 
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
+import 'package:wallet_import/src/domain/scan_mnemonic_usecase.dart';
+import 'package:wallet_import/src/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    show UnsupportedNetworkException;
 
 class _MockCheckWalletStatusUsecase extends Mock
     implements CheckWalletStatusUsecase {}
@@ -36,7 +34,7 @@ void main() {
     Function()
     answer,
   ) => when(
-    () => checkWalletStatus(
+    () => checkWalletStatus.execute(
       words: any(named: 'words'),
       language: any(named: 'language'),
       passphrase: any(named: 'passphrase'),
@@ -106,7 +104,7 @@ void main() {
         ),
         (
           'an unsupported wallet script',
-          const UnsupportedNetworkException(),
+          const UnsupportedImportScanException(),
           isA<ImportMnemonicScanUnsupportedFailure>(),
         ),
         (

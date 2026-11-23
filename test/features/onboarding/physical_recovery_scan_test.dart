@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/scan_onboarding_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';

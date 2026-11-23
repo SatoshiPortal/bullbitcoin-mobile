@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:wallet_import/src/ui/mnemonic_widget.dart' show MnemonicWord;
+import 'package:bull_ui/testing.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullMnemonicKeyboard, BullSegmented, BullTypography;
@@ -39,9 +39,12 @@ Future<void> pumpWidget(
     MaterialApp(
       // The passphrase field renders BullInputText, which reads the BullTheme
       // extension off the ambient ThemeData and throws without it.
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(extensions: testBullExtensions),
+      localizationsDelegates: const [
+        ImportLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: ImportLocalizations.supportedLocales,
       home: Scaffold(
         // MnemonicWidget owns its own scroll and docks the keyboard, so it is
         // given bounded height (the test surface) rather than an outer scroll.

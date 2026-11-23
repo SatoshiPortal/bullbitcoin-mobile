@@ -1,4 +1,6 @@
 import 'package:fees/fees.dart';
+import 'package:electrum/setup.dart' show ElectrumServersPort;
+import 'package:wallet_import/wallet_import.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
@@ -32,6 +34,10 @@ class PricePreferences extends Mock
         ActiveEnvironmentReader,
         AmountDisplayPreferencesReader,
         RuntimeDisplayPreferencesReader {}
+
+class ImportPreferences extends Mock implements Preferences {}
+
+class ElectrumServers extends Mock implements ElectrumServersPort {}
 
 class Exchange extends Mock implements ExchangeFacade {}
 
@@ -115,6 +121,14 @@ void main() {
           display: preferences,
         ),
       );
+      locator.registerSingleton(
+        ImportFeature.mount(
+          preferences: ImportPreferences(),
+          servers: ElectrumServers(),
+          secrets: Secrets(scratchDirectory: () async => directory.path),
+          qrIllustration: const AssetImage('unused.png'),
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -130,6 +144,7 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<ImportFeature>();
         await locator.unregister<BitcoinPriceFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
@@ -147,6 +162,21 @@ void main() {
         false,
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
+      for (final device in QrImportDevice.values) {
+        expect(router.namedLocation(device.routeName), device.path);
+        expect(
+          router.configuration.findMatch(Uri.parse(device.path)).isError,
+          false,
+        );
+      }
+      expect(
+        router.namedLocation(ImportNavigation.watchOnlyScannerName),
+        ImportNavigation.watchOnlyScannerPath,
+      );
+      expect(
+        router.namedLocation(ImportNavigation.watchOnlyConfirmationName),
+        ImportNavigation.watchOnlyConfirmationPath,
+      );
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

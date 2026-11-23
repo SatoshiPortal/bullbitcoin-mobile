@@ -1,9 +1,10 @@
+import 'package:wallet_import/src/ui/mnemonic_widget.dart' show MnemonicWord;
+
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/testing.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullMnemonicKeyboard, BullSecretTextInput, BullSegmented;
@@ -18,9 +19,12 @@ Future<void> host(
   bool allowPassphrase = false,
 }) => tester.pumpWidget(
   MaterialApp(
-    theme: AppTheme.themeData(AppThemeType.light),
-    localizationsDelegates: appLocalizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
+    theme: ThemeData(extensions: testBullExtensions),
+    localizationsDelegates: const [
+      ImportLocalizations.delegate,
+      ...GlobalMaterialLocalizations.delegates,
+    ],
+    supportedLocales: ImportLocalizations.supportedLocales,
     home: Scaffold(
       body: MnemonicWidget(
         initialLength: bip39.MnemonicLength.words12,
@@ -67,8 +71,8 @@ const ambiguous = [
   'wagon',
 ];
 
-AppLocalizations loc(WidgetTester tester) =>
-    AppLocalizations.of(tester.element(find.byType(MnemonicWidget)));
+ImportLocalizations loc(WidgetTester tester) =>
+    ImportLocalizations.of(tester.element(find.byType(MnemonicWidget)));
 
 String fieldText(WidgetTester tester, int index) =>
     tester
@@ -379,7 +383,7 @@ void main() {
       await fill(tester, words);
       // Find by the localization itself rather than assuming its English wording.
       final context = tester.element(find.byType(MnemonicWidget));
-      final loc = AppLocalizations.of(context);
+      final loc = ImportLocalizations.of(context);
       final action = find.text(
         loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('spanish')),
       );
@@ -434,9 +438,12 @@ void main() {
       Mnemonic? submitted;
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          theme: ThemeData(extensions: testBullExtensions),
+          localizationsDelegates: const [
+            ImportLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: ImportLocalizations.supportedLocales,
           home: Scaffold(
             body: MnemonicWidget(
               language: language,

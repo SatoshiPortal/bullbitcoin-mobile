@@ -8,7 +8,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -26,7 +26,21 @@ class _MockSettings extends Mock implements Preferences {}
 
 class MockImportWalletUsecase extends Mock implements ImportWalletUsecase {}
 
-class MockScanMnemonicUsecase extends Mock implements ScanMnemonicUsecase {}
+class MockScanMnemonic extends Mock {
+  Stream<MnemonicScanUpdate> execute({
+    required List<String>? words,
+    required bip39.Language? language,
+    required String? passphrase,
+    required Set<ScriptType>? scriptTypes,
+  }) => super.noSuchMethod(
+    Invocation.method(#execute, [], {
+      #words: words,
+      #language: language,
+      #passphrase: passphrase,
+      #scriptTypes: scriptTypes,
+    }),
+  ) as Stream<MnemonicScanUpdate>;
+}
 
 typedef _Scan = Future<Result<MnemonicScan, ImportMnemonicScanFailure>>;
 
@@ -39,18 +53,18 @@ class MockSettings extends Mock implements Preferences {}
 
 void main() {
   late MockImportWalletUsecase importWallet;
-  late MockScanMnemonicUsecase scanMnemonic;
+  late MockScanMnemonic scanMnemonic;
   late MockCheckDuplicateMnemonicUsecase checkDuplicate;
 
   ImportMnemonicCubit buildCubit() => ImportMnemonicCubit(
     importWalletUsecase: importWallet,
-    scanMnemonicUsecase: scanMnemonic,
+    scanMnemonic: scanMnemonic.execute,
     checkDuplicateMnemonicUsecase: checkDuplicate,
   );
 
   setUp(() {
     importWallet = MockImportWalletUsecase();
-    scanMnemonic = MockScanMnemonicUsecase();
+    scanMnemonic = MockScanMnemonic();
     checkDuplicate = MockCheckDuplicateMnemonicUsecase();
     when(
       () => scanMnemonic.execute(
@@ -59,7 +73,7 @@ void main() {
         passphrase: any(named: 'passphrase'),
         scriptTypes: any(named: 'scriptTypes'),
       ),
-    ).thenReturn({});
+    ).thenAnswer((_) => const Stream.empty());
   });
 
   setUpAll(() {
@@ -84,7 +98,7 @@ void main() {
     );
     final cubit = ImportMnemonicCubit(
       importWalletUsecase: importWallet,
-      scanMnemonicUsecase: scanMnemonic,
+      scanMnemonic: scanMnemonic.execute,
       checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
         metadata: metadata,
         settings: settings,
@@ -246,9 +260,12 @@ void main() {
             scriptTypes: any(named: 'scriptTypes'),
           ),
         ).thenAnswer(
-          (invocation) => answer(
-            invocation.namedArguments[#scriptTypes] as Set<ScriptType>,
-          ),
+          (invocation) => Stream.fromFutures([
+            for (final MapEntry(key: script, value: scan) in answer(
+              invocation.namedArguments[#scriptTypes] as Set<ScriptType>,
+            ).entries)
+              scan.then((result) => (scriptType: script, result: result)),
+          ]),
         );
 
     test(

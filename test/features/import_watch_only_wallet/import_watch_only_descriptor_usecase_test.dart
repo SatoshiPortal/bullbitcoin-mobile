@@ -11,34 +11,34 @@ import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockWatchOnlyDescriptor extends Mock
-    implements satoshifier.WatchOnlyDescriptor {}
-
-class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
+WatchOnlyDescriptorEntity _descriptor(satoshifier.Network network) =>
+    WatchOnlyDescriptorEntity(
+      watchOnlyDescriptor: satoshifier.WatchOnlyDescriptor(
+        descriptor: satoshifier.Descriptor(
+          operand: satoshifier.ScriptOperand.wpkh,
+          fingerprint: '86241f88',
+          pubkey: 'xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7',
+          network: network,
+          derivation: satoshifier.Derivation.bip84,
+          account: 0,
+        ),
+      ),
+    );
 
 void main() {
   late _MockWalletRepository repository;
   late ImportWatchOnlyDescriptorUsecase usecase;
   late WatchOnlyDescriptorEntity entity;
-  late _MockDescriptor descriptor;
 
   setUp(() {
     repository = _MockWalletRepository();
     usecase = ImportWatchOnlyDescriptorUsecase(walletRepository: repository);
-    descriptor = _MockDescriptor();
-    when(() => descriptor.network)
-        .thenReturn(satoshifier.Network.bitcoinMainnet);
-    final watchOnlyDescriptor = _MockWatchOnlyDescriptor();
-    when(() => watchOnlyDescriptor.descriptor).thenReturn(descriptor);
-    entity = WatchOnlyDescriptorEntity(
-      watchOnlyDescriptor: watchOnlyDescriptor,
-    );
+    entity = _descriptor(satoshifier.Network.bitcoinMainnet);
   });
 
   group('ImportWatchOnlyDescriptorUsecase', () {
     test('rejects Liquid descriptors before persistence', () async {
-      when(() => descriptor.network)
-          .thenReturn(satoshifier.Network.liquidMainnet);
+      final entity = _descriptor(satoshifier.Network.liquidMainnet);
 
       final result = await usecase.execute(watchOnlyDescriptor: entity);
 

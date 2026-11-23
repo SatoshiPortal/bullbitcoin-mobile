@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
+import 'package:wallet_import/src/domain/scan_mnemonic_usecase.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
 
 import 'dart:async';
 import 'dart:io';
@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
+import 'package:wallet_import/src/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,7 +16,6 @@ import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Ok, ScriptType;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 
@@ -26,7 +25,7 @@ class _MockPrescan extends Mock {
   Future<({BigInt satoshis, int transactions})> dryScan({
     required String? externalDescriptor,
     required String? internalDescriptor,
-    required Network? network,
+    required BitcoinNetwork? network,
     required ElectrumConnection? electrumServer,
   }) => super.noSuchMethod(
     Invocation.method(#dryScan, [], {
@@ -102,7 +101,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_FakeConnection());
-    registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(BitcoinNetwork.mainnet);
   });
 
   late Directory logDirectory;
@@ -144,7 +143,7 @@ void main() {
     test('$env: scans the public descriptors secrets derives', () async {
       environment(env);
 
-      final scans = await usecase()(
+      final scans = await usecase().execute(
         words: words,
         language: bip39.Language.english,
         passphrase: 'TREZOR',
@@ -172,10 +171,7 @@ void main() {
         () => wallets.dryScan(
           externalDescriptor: expected.external,
           internalDescriptor: expected.internal,
-          network: Network.fromEnvironment(
-            environment: env.networkEnv,
-            isLiquid: false,
-          ),
+          network: network,
           electrumServer: servers.connection,
         ),
       ).called(1);
@@ -224,7 +220,7 @@ void main() {
     environment(Environment.mainnet);
 
     await expectLater(
-      usecase()(
+      usecase().execute(
         words: [...words.take(11), 'abandon'],
         language: bip39.Language.english,
         passphrase: '',
@@ -266,7 +262,7 @@ void main() {
         ),
       ).thenThrow(Exception('unreachable server'));
 
-      final scans = await usecase()(
+      final scans = await usecase().execute(
         words: words,
         language: bip39.Language.english,
         passphrase: '',
@@ -305,7 +301,7 @@ void main() {
           () => wallets.dryScan(
             externalDescriptor: pair.external,
             internalDescriptor: pair.internal,
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             electrumServer: servers.connection,
           ),
         ).called(1);
@@ -327,7 +323,7 @@ void main() {
       ),
     ).thenThrow(StateError('wpkh([73c5da0a/84h/0h/0h]xpub...)'));
 
-    final scans = await usecase()(
+    final scans = await usecase().execute(
       words: words,
       language: bip39.Language.english,
       passphrase: '',
@@ -357,7 +353,7 @@ void main() {
       ),
     ).thenThrow(TimeoutException('no answer'));
 
-    final scans = await usecase()(
+    final scans = await usecase().execute(
       words: words,
       language: bip39.Language.english,
       passphrase: '',
