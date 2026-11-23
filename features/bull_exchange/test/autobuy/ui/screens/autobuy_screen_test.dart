@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
-import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
-import 'package:bb_mobile/features/autobuy/ui/screens/autobuy_screen.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_failure.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/set_autobuy_usecase.dart';
+import 'package:bull_exchange/src/autobuy/presentation/autobuy_cubit.dart';
+import 'package:bull_exchange/src/autobuy/ui/screens/autobuy_screen.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,12 +33,27 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+        supportedLocales: ExchangeLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: cubit,
-          child: AutoBuyScreen(exchange: exchange),
+          child: AutoBuyScreen(
+            exchange: exchange,
+            payoutFields: (
+              validate: (_, _) async => null,
+              buildField: ({
+                required type,
+                required value,
+                required hint,
+                required enabled,
+                required onChanged,
+                required onValidationChanged,
+              }) => const SizedBox.shrink(),
+            ),
+            addressViewer: (_, address) => Text(address),
+            terms: Uri.https('example.com'),
+          ),
         ),
       ),
     );

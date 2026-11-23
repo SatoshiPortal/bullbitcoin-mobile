@@ -1,16 +1,28 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_failure.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../core/exchange/fake_exchange_users.dart';
-
 class MockGetExchangeUserSummaryUsecase extends Mock
-    implements GetExchangeUserSummaryUsecase {}
+    implements _SummaryReader {}
+
+abstract interface class _SummaryReader {
+  Future<Result<UserSummary, ExchangeFailure>> execute();
+}
+
+abstract interface class _PreferenceWriter {
+  Future<Result<void, ExchangeFailure>> saveUserPreference({
+    String? language,
+    String? currency,
+    bool? dcaEnabled,
+    String? autoBuyEnabled,
+    bool? emailNotificationsEnabled,
+  });
+}
 
 abstract interface class _DefaultWalletReader {
   Future<Result<DefaultWallets, ExchangeFailure>> execute();
@@ -19,8 +31,7 @@ abstract interface class _DefaultWalletReader {
 class MockGetDefaultWalletsUsecase extends Mock
     implements _DefaultWalletReader {}
 
-class MockExchangeUserRepository extends Mock
-    implements ExchangeUserOperations {}
+class MockExchangeUserRepository extends Mock implements _PreferenceWriter {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
 
@@ -94,12 +105,29 @@ void main() {
       ),
     );
     usecase = SetAutoBuyUsecase(
-      getUserSummary,
       settings,
-      fakeExchangeUsers(
-        savePreferences,
-        testnetUsers,
+      exchangeForTesting(
+        getUserSummary: (_) => getUserSummary.execute(),
         getDefaultWallets: getDefaultWallets.execute,
+        saveUserPreference:
+            (
+              environment, {
+              language,
+              currency,
+              dcaEnabled,
+              autoBuyEnabled,
+              emailNotificationsEnabled,
+            }) =>
+                (environment == ExchangeEnvironment.mainnet
+                        ? savePreferences
+                        : testnetUsers)
+                    .saveUserPreference(
+                      language: language,
+                      currency: currency,
+                      dcaEnabled: dcaEnabled,
+                      autoBuyEnabled: autoBuyEnabled,
+                      emailNotificationsEnabled: emailNotificationsEnabled,
+                    ),
       ),
     );
   });
@@ -116,7 +144,7 @@ void main() {
     );
     when(() => getDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(_wallets));
-    when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+    when(() => getUserSummary.execute()).thenAnswer((_) async => Ok(_summary));
     stubSaveSucceeds();
 
     for (final enabled in [true, false]) {
@@ -154,7 +182,8 @@ void main() {
     () async {
       when(() => getDefaultWallets.execute())
           .thenAnswer((_) async => const Ok(_wallets));
-      when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+      when(() => getUserSummary.execute())
+          .thenAnswer((_) async => Ok(_summary));
       stubSaveSucceeds();
 
       final result = await usecase.execute(enabled: true);
@@ -165,7 +194,7 @@ void main() {
   );
 
   test('does not read the default wallets when disabling AutoBuy', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+    when(() => getUserSummary.execute()).thenAnswer((_) async => Ok(_summary));
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: false);
@@ -178,7 +207,7 @@ void main() {
     when(() => getDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute())
-        .thenAnswer((_) async => _restrictedSummary);
+        .thenAnswer((_) async => Ok(_restrictedSummary));
 
     final result = await usecase.execute(enabled: true);
 
@@ -191,7 +220,7 @@ void main() {
 
   test('still allows disabling AutoBuy on a restricted account', () async {
     when(() => getUserSummary.execute())
-        .thenAnswer((_) async => _restrictedSummary);
+        .thenAnswer((_) async => Ok(_restrictedSummary));
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: false);
@@ -211,7 +240,7 @@ void main() {
   test('preserves the existing preferences when enabling AutoBuy', () async {
     when(() => getDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(_wallets));
-    when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+    when(() => getUserSummary.execute()).thenAnswer((_) async => Ok(_summary));
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: true);
@@ -245,7 +274,7 @@ void main() {
     when(() => getDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute())
-        .thenThrow(GetExchangeUserSummaryException('account request failed'));
+        .thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
     final result = await usecase.execute(enabled: true);
 
@@ -256,23 +285,23 @@ void main() {
     verifyZeroInteractions(savePreferences);
   });
 
-  test('maps an unclassified account error to the catch-all', () async {
+  test('maps a failed account query to an unavailable account', () async {
     when(() => getDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(_wallets));
     when(() => getUserSummary.execute())
-        .thenThrow(Exception('something nobody classified'));
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
 
     final result = await usecase.execute(enabled: true);
 
     expect(
       (result as Err<void, AutoBuyFailure>).failure,
-      isA<AutoBuyUnexpectedFailure>(),
+      isA<AutoBuyAccountUnavailableFailure>(),
     );
     verifyZeroInteractions(savePreferences);
   });
 
   test('maps a rejected preference update to a typed failure', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+    when(() => getUserSummary.execute()).thenAnswer((_) async => Ok(_summary));
     when(
       () => savePreferences.saveUserPreference(
         language: any(named: 'language'),

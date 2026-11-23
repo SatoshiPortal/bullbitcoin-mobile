@@ -1,9 +1,9 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_status.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
-import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_failure.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_status.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/set_autobuy_usecase.dart';
+import 'package:bull_exchange/src/autobuy/presentation/autobuy_cubit.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';

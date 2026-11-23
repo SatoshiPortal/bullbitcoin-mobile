@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_status.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
-import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
-import 'package:bb_mobile/features/autobuy/ui/widgets/autobuy_home_card.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_status.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/set_autobuy_usecase.dart';
+import 'package:bull_exchange/src/autobuy/presentation/autobuy_cubit.dart';
+import 'package:bull_exchange/src/autobuy/ui/widgets/autobuy_home_card.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,9 +27,9 @@ void main() {
     required VoidCallback onActivate,
     required Future<void> Function() onStatusChanged,
   }) => MaterialApp(
-    theme: AppTheme.themeData(AppThemeType.light),
-    localizationsDelegates: appLocalizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
+    theme: ThemeData(extensions: testBullExtensions),
+    localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+    supportedLocales: ExchangeLocalizations.supportedLocales,
     home: Scaffold(
       body: BlocProvider.value(
         value: cubit,

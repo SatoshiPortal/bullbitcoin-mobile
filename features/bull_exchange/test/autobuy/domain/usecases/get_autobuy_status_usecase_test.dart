@@ -1,14 +1,18 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_status.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_failure.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_status.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGetExchangeUserSummaryUsecase extends Mock
-    implements GetExchangeUserSummaryUsecase {}
+    implements _SummaryReader {}
+
+abstract interface class _SummaryReader {
+  Future<Result<UserSummary, ExchangeFailure>> execute();
+}
 
 UserSummary _summary({
   required bool autoBuyActive,
@@ -35,12 +39,14 @@ void main() {
 
   setUp(() {
     getUserSummary = MockGetExchangeUserSummaryUsecase();
-    usecase = GetAutoBuyStatusUsecase(getUserSummary);
+    usecase = GetAutoBuyStatusUsecase(
+      exchangeForTesting(getUserSummary: (_) => getUserSummary.execute()),
+    );
   });
 
   test('reports an active, unrestricted account', () async {
     when(() => getUserSummary.execute())
-        .thenAnswer((_) async => _summary(autoBuyActive: true));
+        .thenAnswer((_) async => Ok(_summary(autoBuyActive: true)));
 
     final status =
         (await usecase.execute() as Ok<AutoBuyStatus, AutoBuyFailure>).value;
@@ -51,9 +57,11 @@ void main() {
 
   test('reports the funding restriction from the account groups', () async {
     when(() => getUserSummary.execute()).thenAnswer(
-      (_) async => _summary(
-        autoBuyActive: false,
-        groups: ['KYC_IDENTITY_VERIFIED', 'RESTRICTED_FULL'],
+      (_) async => Ok(
+        _summary(
+          autoBuyActive: false,
+          groups: ['KYC_IDENTITY_VERIFIED', 'RESTRICTED_FULL'],
+        ),
       ),
     );
 
@@ -66,7 +74,7 @@ void main() {
 
   test('maps an unavailable account to a typed failure', () async {
     when(() => getUserSummary.execute())
-        .thenThrow(GetExchangeUserSummaryException('account request failed'));
+        .thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
     final result = await usecase.execute();
 
@@ -76,15 +84,15 @@ void main() {
     );
   });
 
-  test('maps an unclassified account error to the catch-all', () async {
+  test('maps a failed account query to an unavailable account', () async {
     when(() => getUserSummary.execute())
-        .thenThrow(Exception('something nobody classified'));
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
 
     final result = await usecase.execute();
 
     expect(
       (result as Err<AutoBuyStatus, AutoBuyFailure>).failure,
-      isA<AutoBuyUnexpectedFailure>(),
+      isA<AutoBuyAccountUnavailableFailure>(),
     );
   });
 

@@ -7,8 +7,6 @@ import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.da
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
@@ -145,12 +143,8 @@ void main() {
             wallets,
             _Rates(),
           ).execute(),
-          'autobuy status' => GetAutoBuyStatusUsecase(summary).execute(),
-          'autobuy update' => SetAutoBuyUsecase(
-            summary,
-            _Settings(),
-            repo,
-          ).execute(enabled: false),
+          'autobuy status' => autoBuyStatusForTesting(repo),
+          'autobuy update' => disableAutoBuyForTesting(repo, _Settings()),
           _ => fail('Unexpected use case name'),
         };
         if (refusal is _Thrown && refusal.isProgrammerError) {
