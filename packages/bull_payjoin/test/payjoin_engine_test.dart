@@ -42,6 +42,18 @@ class _FailingAbortLocal extends LocalPayjoinDatasource {
       Future.error(StateError('disk full'));
 }
 
+class _RefusingAbortLocal extends LocalPayjoinDatasource {
+  final bool throws;
+
+  _RefusingAbortLocal({required super.db, required this.throws});
+
+  @override
+  Future<bool> markAborted(PayjoinModel payjoin) async {
+    if (throws) throw Exception('Abort write failed');
+    return false;
+  }
+}
+
 /// Records nothing as completed: the write that follows a successful payjoin
 /// broadcast is what fails.
 class _FailingCompleteLocal extends LocalPayjoinDatasource {
@@ -1065,6 +1077,83 @@ void main() {
       verifyNever(() => pdk.startListeningForProposal(model));
     },
   );
+
+  for (final throws in [true, false]) {
+    test('a refused unposted sender cannot broadcast after restart '
+        '(abort ${throws ? 'throws' : 'returns false'})', () async {
+      await engine.dispose();
+      final abortLocal = _RefusingAbortLocal(db: database, throws: throws);
+      PayjoinRepositoryImpl open(LocalPayjoinDatasource storage) =>
+          PayjoinRepositoryImpl(
+            codec: const TestPayjoinCodec(),
+            localPayjoinDatasource: storage,
+            pdkPayjoinDatasource: pdk,
+            log: PayjoinLogger(logs),
+            wallet: wallet,
+            blockchain: blockchain,
+            transactions: transactions,
+            policy: policy,
+            labels: labels,
+          );
+      engine = open(abortLocal);
+      final model = expiredSender();
+      stubCreateSender(model, model.copyWith(sender: '["posted"]'));
+      await expectLater(
+        engine.createPayjoinSender(
+          walletId: model.walletId,
+          isTestnet: model.isTestnet,
+          bip21: model.id,
+          originalPsbt: model.originalPsbt,
+          amountSat: model.amountSat,
+          networkFeesSatPerVb: 1,
+          admitOriginal: ({required sessionId, required persist}) async {
+            await persist();
+            expect(
+              (await engine.getInputReservations()).single.sessionId,
+              sessionId,
+            );
+            return const Err(PayjoinSpendBlockedFailure(busy: true));
+          },
+        ),
+        throwsA(isA<PayjoinSpendBlockedException>()),
+      );
+      expect((await local.fetchSender(model.id))?.isAborted, isFalse);
+      await engine.dispose();
+      engine = open(local);
+      when(
+        () => blockchain.broadcastPsbt(
+          walletId: model.walletId,
+          sessionId: model.id,
+          network: BitcoinNetwork.testnet,
+          psbt: model.originalPsbt,
+        ),
+      ).thenThrow(const PayjoinBroadcastNotAttemptedException());
+
+      await engine.resumePayjoinsOnStartup();
+
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+      expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+      expect(
+        await engine.tryBroadcastOriginalTransaction(model.toEntity()),
+        isA<Err<internal.Payjoin, PayjoinFailure>>(),
+      );
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+    });
+  }
 
   test('visibleCompetingTransaction reports the session spend the network '
       'knows and null for an unknown session', () async {
