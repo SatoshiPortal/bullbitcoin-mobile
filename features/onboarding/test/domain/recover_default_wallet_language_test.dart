@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:onboarding/src/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:onboarding/onboarding.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
+import 'package:onboarding/src/domain/usecases/recover_onboarding_wallet_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' show hex;
 import 'package:flutter_test/flutter_test.dart';
@@ -72,7 +72,7 @@ void main() {
       },
     );
     final verification = _Verification();
-    when(() => verification.execute(any())).thenAnswer((_) async {});
+    when(() => verification.execute(any())).thenAnswer((_) async => const Ok(null));
     usecase = RecoverOnboardingWalletUsecase(
       defaultWallets: provisioning,
       completePhysicalBackupVerificationUsecase: verification,

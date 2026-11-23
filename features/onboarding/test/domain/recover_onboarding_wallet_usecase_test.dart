@@ -1,9 +1,9 @@
 import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart' show WalletRegistration;
-import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:onboarding/src/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:onboarding/onboarding.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
+import 'package:onboarding/src/domain/usecases/recover_onboarding_wallet_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -63,8 +63,7 @@ void main() {
     });
 
     test(
-      'maps a foreign backup-verification failure to '
-      'OnboardingBackupVerificationFailure without leaking the raw exception',
+      'forwards a backup-verification failure after the wallets are restored',
       () async {
         when(
           () => createDefaultWalletsUsecase.execute(
@@ -74,7 +73,9 @@ void main() {
           ),
         ).thenAnswer((_) async => const Ok([]));
         when(() => completePhysicalBackupVerificationUsecase.execute(any()))
-            .thenThrow(Exception('No default wallet found'));
+            .thenAnswer(
+              (_) async => const Err(OnboardingBackupVerificationFailure()),
+            );
 
         final result = await usecase.execute(
           mnemonicWords: mnemonicWords,
@@ -98,7 +99,7 @@ void main() {
         ),
       ).thenAnswer((_) async => const Ok([]));
       when(() => completePhysicalBackupVerificationUsecase.execute(any()))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async => const Ok(null));
       expect(
         await usecase.execute(
           mnemonicWords: mnemonicWords,
@@ -124,7 +125,7 @@ void main() {
         ),
       ).thenAnswer((_) async => const Ok([]));
       when(() => completePhysicalBackupVerificationUsecase.execute(any()))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute(
         mnemonicWords: mnemonicWords,

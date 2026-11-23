@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart' show WalletRegistration;
 import 'package:onboarding/onboarding.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
+import 'package:onboarding/src/domain/usecases/create_onboarding_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
