@@ -83,7 +83,10 @@ void main() {
       final status = await summary(const rb.BackupStatus());
       expect(status.encryptedHistorical, isTrue);
       expect(status.encryptedVerified, isFalse);
-      expect(status.encryptedAt, legacyDate);
+      expect(
+        status.encryptedAt?.millisecondsSinceEpoch,
+        legacyDate.millisecondsSinceEpoch,
+      );
     },
   );
 
@@ -112,7 +115,10 @@ void main() {
       },
     );
     expect(status.physicalVerified, isTrue);
-    expect(status.physicalAt, physicalDate);
+    expect(
+      status.physicalAt?.millisecondsSinceEpoch,
+      physicalDate.millisecondsSinceEpoch,
+    );
     expect(status.encryptedVerified, isFalse);
   });
 
