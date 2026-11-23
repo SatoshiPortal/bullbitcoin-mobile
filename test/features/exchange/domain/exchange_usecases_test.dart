@@ -6,8 +6,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_set
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

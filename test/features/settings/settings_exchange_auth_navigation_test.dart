@@ -1,8 +1,6 @@
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bull_exchange/testing.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;

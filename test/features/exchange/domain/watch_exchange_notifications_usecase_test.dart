@@ -6,10 +6,9 @@ import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

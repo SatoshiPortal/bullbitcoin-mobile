@@ -1,6 +1,7 @@
 import '../../fixtures/legacy_access.dart';
 
 import 'package:exchange/setup.dart';
+import 'package:exchange/exchange.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
@@ -12,8 +13,6 @@ import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.d
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -32,8 +31,9 @@ class _Keys extends Mock implements ExchangeCredentials {}
 
 class _Cubit extends Mock implements ExchangeCubit {}
 
-class _FakeAuthentication extends Fake
-    implements CompleteExchangeAuthenticationUsecase {}
+typedef _Authenticate = Future<Result<void, ExchangeFailure>> Function({
+  required bool Function() isCurrent,
+});
 
 class _Platform extends FakeWebViewPlatform {
   _Delegate? delegate;
@@ -87,7 +87,12 @@ class _Delegate extends FakePlatformNavigationDelegate {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() => registerFallbackValue(_FakeAuthentication()));
+  setUpAll(() {
+    Future<Result<void, ExchangeFailure>> fallback({
+      required bool Function() isCurrent,
+    }) async => const Ok(null);
+    registerFallbackValue(fallback);
+  });
   for (final scenario in [
     'deferred',
     'acknowledge',
@@ -132,12 +137,10 @@ void main() {
         ),
       ).thenAnswer(
         (invocation) =>
-            (invocation.positionalArguments.single
-                    as CompleteExchangeAuthenticationUsecase)
-                .execute(
-                  isCurrent:
-                      invocation.namedArguments[#isCurrent] as bool Function(),
-                ),
+            (invocation.positionalArguments.single as _Authenticate)(
+              isCurrent:
+                  invocation.namedArguments[#isCurrent] as bool Function(),
+            ),
       );
       locator.registerSingleton<GetExchangeWebSettingsUsecase>(settings);
       locator.registerFactoryParam<

@@ -6,8 +6,6 @@ import 'package:bitcoin_price/bitcoin_price.dart'
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
@@ -87,7 +85,7 @@ ExchangeHomeScreen _dashboard({
   required VoidCallback onExit,
   Future<void> Function()? refreshAccount,
 }) => ExchangeHomeScreen(
-  watchDashboard: ExchangeScope.watchDashboard,
+  watchDashboard: ExchangeSessionScope.watchDashboard,
   exchange: ExchangeScope.exchange,
   preferences: ExchangeScope.preferences,
   brandAsset: Assets.logos.bbLogoSmall.path,

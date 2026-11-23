@@ -1,8 +1,9 @@
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
@@ -17,6 +18,8 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _Exchange extends Mock implements ExchangeFacade {}
+
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _ExchangeCubit extends MockCubit<ExchangeState>
     implements ExchangeCubit {}
@@ -43,12 +46,13 @@ void main() {
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
-    final cubit = _ExchangeCubit();
-    when(cubit.enableForSupport).thenAnswer((_) async => const Ok(null));
-    addTearDown(cubit.close);
+    final lifecycle = _Access();
+    when(() => lifecycle.enable(forSupport: true))
+        .thenAnswer((_) async => const Ok(null));
+    final capability = exchangeForTesting(access: lifecycle);
     final feature = ExchangeRouter.mount(
       _config(unavailable: () async => false),
-      exchange: () => fail('should not open the chat before signing in'),
+      exchange: () => capability,
     );
     GoRouterState? authentication;
     final router = GoRouter(
@@ -68,18 +72,15 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      BlocProvider<ExchangeCubit>.value(
-        value: cubit,
-        child: MaterialApp.router(
-          theme: AppTheme.themeData(AppThemeType.light),
-          locale: const Locale('en'),
-          localizationsDelegates: const [
-            ExchangeLocalizations.delegate,
-            ...AppLocalizations.localizationsDelegates,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: router,
-        ),
+      MaterialApp.router(
+        theme: AppTheme.themeData(AppThemeType.light),
+        locale: const Locale('en'),
+        localizationsDelegates: const [
+          ExchangeLocalizations.delegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
       ),
     );
     await tester.pumpAndSettle();
@@ -92,7 +93,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    verify(cubit.enableForSupport).called(1);
+    verify(() => lifecycle.enable(forSupport: true)).called(1);
     expect(authentication?.extra, same(draft));
     expect(authentication?.uri.queryParameters['from'], 'support');
   });

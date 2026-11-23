@@ -20,6 +20,8 @@ export 'src/dashboard/exchange_home_actions.dart' show ExchangeHomeActions;
 export 'src/dashboard/announcement_banner.dart' show AnnouncementBanner;
 export 'src/settings/ui/widgets/exchange_account_sheets.dart'
     show ExchangeAccountSheets;
+export 'src/session/exchange_cubit.dart' show ExchangeCubit;
+export 'src/session/exchange_state.dart' show ExchangeState;
 export 'src/settings/ui/screens/exchange_settings_screen.dart'
     show ExchangeSettingsScreen;
 export 'src/settings/ui/screens/security_navigation.dart'

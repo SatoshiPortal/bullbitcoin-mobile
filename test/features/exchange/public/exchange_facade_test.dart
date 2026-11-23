@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_acces
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -41,8 +40,8 @@ void main() {
     webSettings = _MockWebSettings();
     facade = ExchangeFacade(
       getExchangeWebSettingsUsecase: webSettings,
-      getExchangeAccountUsecase: getAccount,
-      saveExchangePreferencesUsecase: savePreferences,
+      loadAccount: getAccount.execute,
+      saveAccountPreferences: savePreferences.execute,
       resolveAccess: _Resolve(),
       enable: _Enable(),
       signOut: _SignOut(),
