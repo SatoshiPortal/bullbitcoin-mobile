@@ -47,11 +47,7 @@ final class InventoryPayinWallets implements PayinWallets {
     if (await _localKey(key.id) != key) return const Err(SyncNotFoundFailure());
     switch (await _native.wallet(key)) {
       case Ok(:final value):
-        final derived = await value.addresses
-            .at(index)
-            .watch()
-            .firstWhere((value) => value.status != ValueStatus.notLoaded);
-        return derived.latest.map((address) => address.address);
+        return readPayinAddress(value.addresses.at(index).watch());
       case Err(:final failure):
         return Err(failure);
     }
@@ -67,4 +63,25 @@ final class InventoryPayinWallets implements PayinWallets {
         return Err(failure);
     }
   }
+}
+
+Future<Result<String, SyncFailure>> readPayinAddress(
+  Stream<WalletAddressAt> publications,
+) async {
+  final WalletAddressAt derived;
+  try {
+    derived = await publications.firstWhere(
+      (value) => value.status != ValueStatus.notLoaded,
+      orElse: () => const WalletAddressAt.closed(),
+    );
+  } on SyncFailure catch (failure) {
+    return Err(failure);
+  } on Object {
+    // Dart streams can emit any object as an error. Keep foreign details out.
+    return const Err(SyncStorageFailure());
+  }
+  if (derived.status == ValueStatus.closed) {
+    return const Err(SyncClosedFailure());
+  }
+  return derived.latest.map((address) => address.address);
 }
