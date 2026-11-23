@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 final class MemoryBackupStorage implements BackupStorage {
   final Map<String, Map<StoredObject, Uint8List>> accounts = {};
   final List<String> deleted = [];
+  final Set<String> unavailableReads = {};
   final Durability durability;
 
   String accountId = 'a';
@@ -71,6 +72,9 @@ final class _Session implements StorageSession {
     StoredObject object, {
     required int maxBytes,
   }) async {
+    if (storage.unavailableReads.contains(object.id)) {
+      return const Err(BackupStorageUnavailableFailure());
+    }
     final bytes = objects[object];
     if (bytes == null) return const Err(BackupStorageNotFoundFailure());
     if (bytes.length > maxBytes) {

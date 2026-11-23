@@ -196,6 +196,182 @@ void main() {
     },
   );
 
+  Uint8List envelopeFor(int revision) => Uint8List.fromList(
+    utf8.encode(jsonEncode([inventory.descriptor, revision.toString()])),
+  );
+
+  StoredObject objectById(String id) =>
+      storage.objects.keys.singleWhere((object) => object.id == id);
+
+  Uint8List corruptSecondGeneration() {
+    final second = objectById('2');
+    final damaged = Uint8List.fromList([31, 41, 59]);
+    storage.objects.remove(second);
+    final pending = StoredObject(
+      id: second.id,
+      name: second.name,
+      createdAt: second.createdAt,
+      size: damaged.length,
+      durability: Durability.pending,
+    );
+    storage.objects[pending] = damaged;
+    expect(objectById('2').durability, Durability.pending);
+    expect(storage.objects[pending], orderedEquals(damaged));
+    return damaged;
+  }
+
+  Future<void> seedFolderGenerations() async {
+    storage = MemoryBackupStorage(destination: BackupDestination.folder);
+    await enable();
+    labels.revision = 0;
+    await run();
+    labels.revision = 1;
+    await run();
+    expect(storage.created, 2);
+    expect(storage.objects[objectById('1')], orderedEquals(envelopeFor(0)));
+    expect(storage.objects[objectById('2')], orderedEquals(envelopeFor(1)));
+  }
+
+  test(
+    'folder repairs unchanged digest when latest receipt no longer matches',
+    () async {
+      await seedFolderGenerations();
+      corruptSecondGeneration();
+
+      await run();
+
+      expect(
+        storage.created,
+        3,
+        reason: 'a pending same-id object cannot satisfy the unchanged digest',
+      );
+      expect(storage.objects[objectById('1')], orderedEquals(envelopeFor(0)));
+      expect(storage.objects[objectById('3')], orderedEquals(envelopeFor(1)));
+      expect(objectById('3').durability, Durability.durable);
+    },
+  );
+
+  test(
+    'folder keeps the previous readable generation after a corrupt latest',
+    () async {
+      await seedFolderGenerations();
+      final damaged = corruptSecondGeneration();
+      labels.revision = 2;
+
+      await run();
+
+      expect(storage.created, 3);
+      expect(storage.objects[objectById('3')], orderedEquals(envelopeFor(2)));
+      expect(storage.objects[objectById('2')], orderedEquals(damaged));
+      final fallback = storage.objects.entries
+          .where((entry) => entry.key.id == '1')
+          .map((entry) => entry.value)
+          .firstOrNull;
+      expect(
+        fallback,
+        orderedEquals(envelopeFor(0)),
+        reason: 'G3 and corrupt same-id G2 cannot justify pruning readable G1',
+      );
+      expect(storage.deleted, isNot(contains('1')));
+    },
+  );
+
+  void useV1Store() {
+    final db = sqlite3.open(path);
+    try {
+      db.execute('ALTER TABLE verified DROP COLUMN envelope_digest');
+      db.userVersion = 1;
+    } finally {
+      db.close();
+    }
+  }
+
+  test(
+    'v1 pending folder generations remain unproven and can be replaced',
+    () async {
+      await seedFolderGenerations();
+      corruptSecondGeneration();
+      // Even matching bytes are unproven without a receipt or stored digest.
+      storage.objects[objectById('2')] = envelopeFor(1);
+      useV1Store();
+
+      final result = await repository().status();
+      final status = result.fold(
+        (status) => status.groups.single,
+        (failure) => throw StateError(failure.runtimeType.toString()),
+      );
+      expect(status.pendingChanges, isTrue);
+      expect(status.previousVersionKept, isFalse);
+      expect(status.lastDurableBackup, isNotNull);
+
+      expect((await run()).pendingChanges, isFalse);
+      expect(storage.created, 3);
+      expect(storage.objects[objectById('1')], orderedEquals(envelopeFor(0)));
+      expect(storage.objects[objectById('3')], orderedEquals(envelopeFor(1)));
+      expect(objectById('2').durability, Durability.pending);
+      expect(storage.deleted, isEmpty);
+    },
+  );
+
+  test(
+    'v1 lost folder response recovers from its intent without a receipt',
+    () async {
+      storage = MemoryBackupStorage(
+        destination: BackupDestination.folder,
+        durability: Durability.pending,
+      )..failAfterCreate = true;
+      await enable();
+      expect((await run()).lastDurableBackup, isNull);
+      final original = objectById('1');
+      useV1Store();
+      storage.failAfterCreate = false;
+
+      expect((await run()).pendingChanges, isFalse);
+      expect((await run()).lastDurableBackup, isNotNull);
+      expect(storage.created, 1);
+      expect(storage.objects[original], orderedEquals(envelopeFor(0)));
+      expect(original.durability, Durability.pending);
+      final db = sqlite3.open(path);
+      try {
+        expect(db.userVersion, 2);
+        expect(db.select('SELECT * FROM intents'), isEmpty);
+        expect(
+          db
+              .select('SELECT envelope_digest FROM verified')
+              .single['envelope_digest'],
+          sha256.convert(envelopeFor(0)).toString(),
+        );
+      } finally {
+        db.close();
+      }
+    },
+  );
+
+  test('a transient pending-folder read does not replace or prune', () async {
+    await seedFolderGenerations();
+    corruptSecondGeneration();
+    storage.unavailableReads.add('2');
+
+    final unchanged = await run();
+
+    expect(unchanged.actionNeeded, BackupActionReason.unavailable);
+    expect(storage.created, 2);
+    expect(storage.deleted, isEmpty);
+
+    labels.revision = 2;
+    final changed = await run();
+
+    expect(changed.actionNeeded, BackupActionReason.unavailable);
+    expect(storage.created, 3);
+    expect(storage.deleted, isEmpty);
+    expect(storage.objects[objectById('1')], orderedEquals(envelopeFor(0)));
+    expect(storage.objects[objectById('3')], orderedEquals(envelopeFor(2)));
+
+    expect((await run()).actionNeeded, BackupActionReason.unavailable);
+    expect(storage.created, 3);
+    expect(storage.deleted, isEmpty);
+  });
+
   test('does not acknowledge a capture with unreadable rows', () async {
     await enable();
     await run();
