@@ -42,8 +42,8 @@ final DefaultWalletsPayoutFields exchangePayoutFields = (
       ),
 );
 
-/// Buy, DCA and limit-order destinations; LNURL is accepted for on-chain
-/// payouts.
+/// Buy, DCA and limit-order destinations; LNURL is accepted for every
+/// payout type.
 Widget exchangePurchasePayoutField({
   required WalletAddressType type,
   required String value,
@@ -58,7 +58,6 @@ Widget exchangePurchasePayoutField({
   hint: hint,
   enabled: enabled,
   acceptedTypes: {_destinationType(type)},
-  allowLnurl: type != WalletAddressType.lightning,
   keyboardType: _keyboard(type),
   onChanged: onChanged,
   onValidated: (destination) => onValidated(destination?.address),

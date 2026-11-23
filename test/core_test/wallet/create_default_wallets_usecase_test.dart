@@ -14,6 +14,8 @@ void main() {
   late List<WalletRegistration> registrations;
   late List<Network> created;
   late Network? failNetwork;
+  late Object failure;
+  late List<Secret> received;
   late DefaultWalletProvisioning provisioning;
 
   setUp(() {
@@ -23,6 +25,8 @@ void main() {
     registrations = [];
     created = [];
     failNetwork = null;
+    failure = Exception('temporary failure');
+    received = [];
     registerFallbackValue(BitcoinNetwork.mainnet);
     when(() => inventory.walletsForNetwork(any())).thenAnswer((
       invocation,
@@ -45,9 +49,10 @@ void main() {
       resume: () async {},
       create: (secret, network, birthday) async {
         created.add(network);
+        received.add(secret);
         if (network == failNetwork) {
           failNetwork = null;
-          throw Exception('temporary failure');
+          throw failure;
         }
         final id = network.toString();
         registrations.add(
@@ -130,6 +135,85 @@ void main() {
       }
     });
   }
+
+  test('a Liquid StateError preserves Bitcoin and resumes the same protected custody', () async {
+    final protected = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+      passphrase: 'synthetic-passphrase',
+    ) as Ok<Secret, SecretFailure>).value;
+    failNetwork = LiquidNetwork.mainnet;
+    failure = StateError('synthetic failure');
+    final first = await provisioning.execute(secret: protected);
+    expect((first as Err).failure, isA<DefaultWalletCreationFailure>());
+    expect(registrations.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
+    ]);
+    final before = Map<String, String>.of(storage.entries);
+    final resumed = await provisioning.execute(secret: protected);
+    final wallets =
+        (resumed as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.network), [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
+    expect(created, [
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]);
+    expect(received.every((secret) => secret.id == protected.id), isTrue);
+    expect(storage.entries, before);
+  });
+
+  test(
+    'a settings StateError returns a typed failure before wallet access',
+    () async {
+      final failing = DefaultWalletProvisioning(
+        secrets: secrets,
+        inventory: inventory,
+        environment: () async => throw StateError('synthetic failure'),
+        resume: () async {},
+        create: (_, _, _) async => fail('creation should not start'),
+      );
+      expect(
+        (await failing.execute() as Err).failure,
+        isA<DefaultWalletUnexpectedFailure>(),
+      );
+      expect(storage.entries, isEmpty);
+      verifyZeroInteractions(inventory);
+    },
+  );
+
+  test('both default wallets retain the supplied passphrase secret', () async {
+    final protected = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+      passphrase: 'synthetic-passphrase',
+    ) as Ok<Secret, SecretFailure>).value;
+    final wallets = (await provisioning.execute(
+      secret: protected,
+    ) as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
+    expect(wallets.map((wallet) => wallet.secretFingerprint), [
+      protected.id,
+      protected.id,
+    ]);
+    expect(received.map((secret) => secret.id), [protected.id, protected.id]);
+    expect(received.every((secret) => secret.info.hasPassphrase), isTrue);
+  });
+
+  test('a passphrase without words is rejected before wallet access', () async {
+    final stored = (await secrets.import(
+      words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
+    ) as Ok<Secret, SecretFailure>).value;
+    await expectLater(
+      provisioning.execute(secret: stored, passphrase: 'synthetic-passphrase'),
+      throwsArgumentError,
+    );
+    verifyZeroInteractions(inventory);
+    expect(created, isEmpty);
+  });
 
   for (final candidate in ['', 'incorrect', 'synthetic-passphrase']) {
     test(

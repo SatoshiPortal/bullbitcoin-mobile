@@ -14,7 +14,7 @@ import 'presentation/network_wallet_setup_cubit.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:bb_mobile/features/settings/public/language_locale.dart';
+import 'package:settings/settings.dart' show LanguageExtension;
 
 import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
 
