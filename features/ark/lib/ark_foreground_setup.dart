@@ -8,5 +8,4 @@ export 'src/ark_foreground_runtime.dart'
         ArkBoardFundingFactory,
         ArkForegroundRuntime,
         openArkForeground,
-        prepareArkCustodyReferences,
-        prepareArkMaintenanceSchedule;
+        prepareArkCustodyReferences;

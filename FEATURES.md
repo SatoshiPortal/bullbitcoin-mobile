@@ -21,12 +21,11 @@ graph TB
     ARK --> ARK_PROTOCOL
     ARK --> PRIMITIVES
     ARK --> SECRETS
-    ARK --> SCANNING
-    ARK --> PREFERENCES
     ARK --> BG_TASKS
     ARK --> NOTIFICATIONS
     ARK --> BULL_UI
     ARK --> BULL_PRICER
+    ARK --> BULL_LOGGER
     ARK -->|funding and wallet display data| SYNC
     TX_HISTORY -->|Payjoin signing guard| ARK_PROTOCOL
     TX_HISTORY -->|Payjoin receiver fees| FEES_PACKAGE
@@ -270,7 +269,6 @@ graph TB
     WALLET_IMPORT --> ELECTRUM
     WALLET_IMPORT --> SYNC
     WALLET_IMPORT --> PREFERENCES
-    WALLETS -->|public QR scanning| SCANNING
     SCANNING --> BULL_UI
     RECEIVE[Receive routes, requests and address selection<br/>Workspace Feature]
     TRANSFER[Transfer]

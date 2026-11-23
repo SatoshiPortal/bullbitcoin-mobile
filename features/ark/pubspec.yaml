@@ -21,6 +21,7 @@ dependencies:
   meta: ^1.17.0
   bloc: ^9.2.1
   bull_ui:
+  bull_logger:
   bull_pricer:
   get_it: ^9.1.1
   scanning:
