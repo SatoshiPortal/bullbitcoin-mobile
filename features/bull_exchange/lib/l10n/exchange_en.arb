@@ -2046,6 +2046,14 @@
   "@recipientsConfidentialSepaActivatingDescription": {
     "description": "Description of the Confidential SEPA activation screen while the recipient is being activated"
   },
+  "recipientsConfidentialSepaStatusUnknownTitle": "Activation status unknown",
+  "@recipientsConfidentialSepaStatusUnknownTitle": {
+    "description": "Title of the Confidential SEPA activation screen when the exchange reports a status this app version does not know"
+  },
+  "recipientsConfidentialSepaStatusUnknownDescription": "We couldn't read the activation status of this recipient. Please contact support before using it for Confidential SEPA.",
+  "@recipientsConfidentialSepaStatusUnknownDescription": {
+    "description": "Description of the Confidential SEPA activation screen when the exchange reports a status this app version does not know"
+  },
   "recipientsConfidentialSepaNotActivatedTitle": "Recipient not activated for Confidential SEPA",
   "@recipientsConfidentialSepaNotActivatedTitle": {
     "description": "Title of the Confidential SEPA activation screen when the recipient is not activated yet"
