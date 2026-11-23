@@ -38,19 +38,12 @@ sealed class BuyState with _$BuyState {
 
   bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
 
-  bool isKycOk({FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
-    return userSummary?.isKycOk(effectiveCurrency) ?? false;
-  }
-
-  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
-    return userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
-  }
-
   bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
+    final summary = userSummary;
+    if (summary == null) return true;
     final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
-    return userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
+    return ExchangeCatalog.market(effectiveCurrency).kyc
+        .needsUpgrade(summary.kycGroups, amount);
   }
 
   double? get balance => balances[currencyInput];

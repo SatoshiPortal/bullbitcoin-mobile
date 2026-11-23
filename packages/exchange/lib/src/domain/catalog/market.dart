@@ -1,5 +1,6 @@
 import '../entities/order.dart';
 import 'jurisdiction.dart';
+import 'kyc_policy.dart';
 
 /// What the exchange offers for one fiat currency.
 ///
@@ -8,8 +9,13 @@ import 'jurisdiction.dart';
 final class Market {
   final FiatCurrency currency;
   final Jurisdiction jurisdiction;
+  final KycPolicy kyc;
 
-  const Market({required this.currency, required this.jurisdiction});
+  const Market({
+    required this.currency,
+    required this.jurisdiction,
+    required this.kyc,
+  });
 
   @override
   String toString() => 'Market(${currency.code})';

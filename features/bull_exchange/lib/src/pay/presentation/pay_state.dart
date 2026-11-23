@@ -96,19 +96,12 @@ sealed class PayState with _$PayState {
 
   bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
 
-  bool isKycOk({FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? this.currency;
-    return userSummary?.isKycOk(effectiveCurrency) ?? false;
-  }
-
-  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? this.currency;
-    return userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
-  }
-
   bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
+    final summary = userSummary;
+    if (summary == null) return true;
     final effectiveCurrency = currency ?? this.currency;
-    return userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
+    return ExchangeCatalog.market(effectiveCurrency).kyc
+        .needsUpgrade(summary.kycGroups, amount);
   }
 
   FiatCurrency get currency => switch (this) {

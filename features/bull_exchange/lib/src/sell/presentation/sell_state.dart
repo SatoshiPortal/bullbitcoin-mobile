@@ -183,25 +183,14 @@ sealed class SellState with _$SellState {
     _ => null,
   };
 
-  /// Whether the user's KYC level permits transactions in [currency].
-  /// Falls back to [fiatCurrency] when [currency] is null.
-  bool isKycOk({FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? fiatCurrency;
-    return _userSummary?.isKycOk(effectiveCurrency) ?? false;
-  }
-
-  /// Whether [amount] exceeds the per-transaction limit for the user's
-  /// KYC level in [currency]. Falls back to [fiatCurrency] when null.
-  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? fiatCurrency;
-    return _userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
-  }
-
   /// Returns true when the "Complete KYC" prompt should be shown instead of
   /// the normal action button.
   bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
+    final summary = _userSummary;
+    if (summary == null) return true;
     final effectiveCurrency = currency ?? fiatCurrency;
-    return _userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
+    return ExchangeCatalog.market(effectiveCurrency).kyc
+        .needsUpgrade(summary.kycGroups, amount);
   }
 }
 
