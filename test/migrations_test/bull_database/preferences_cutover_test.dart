@@ -22,23 +22,51 @@ import 'generated/schema_v15.dart' as v15;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final (name, delayed, legacyUrl, standaloneState, expectedPermission)
-      in [
-        (
-          'late activation preserves consent for the default v16 server',
-          true,
-          recoverBullDefaultServerUrl,
-          null,
-          true,
-        ),
-        (
-          'initialized v1 denial takes precedence over v16 consent',
-          false,
-          recoverBullDefaultServerUrl,
-          (recoverBullDefaultServerUrl, 0, 1),
-          false,
-        ),
-      ]) {
+  const customServer = 'http://custom.onion';
+  for (final (name, delayed, legacyUrl, standaloneState, expectedPermission) in [
+    (
+      'late activation preserves consent for the default v16 server',
+      true,
+      recoverBullDefaultServerUrl,
+      null,
+      true,
+    ),
+    (
+      'late activation discards consent for a custom v16 server',
+      true,
+      customServer,
+      null,
+      false,
+    ),
+    (
+      'published v15 upgrades and an uninitialized v1 falls back to v16',
+      false,
+      recoverBullDefaultServerUrl,
+      (recoverBullDefaultServerUrl, 0, 0),
+      true,
+    ),
+    (
+      'initialized v1 preserves default-server consent over a custom v16 server',
+      false,
+      customServer,
+      (recoverBullDefaultServerUrl, 1, 1),
+      true,
+    ),
+    (
+      'initialized v1 denies custom-server consent without falling back to v16',
+      false,
+      recoverBullDefaultServerUrl,
+      (customServer, 1, 1),
+      false,
+    ),
+    (
+      'initialized v1 denial takes precedence over v16 consent',
+      false,
+      recoverBullDefaultServerUrl,
+      (recoverBullDefaultServerUrl, 0, 1),
+      false,
+    ),
+  ]) {
     test(name, () async {
       final directory = await Directory.systemTemp.createTemp(
         'preferences-upgrade-',
