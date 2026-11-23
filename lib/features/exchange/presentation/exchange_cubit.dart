@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import '../domain/exchange_access.dart';
-
 import 'package:exchange/exchange.dart';
 
 import '../domain/usecases/get_exchange_account_usecase.dart';

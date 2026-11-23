@@ -1,5 +1,4 @@
 import '../repositories/exchange_access_repository.dart';
-import '../exchange_access.dart';
 
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';

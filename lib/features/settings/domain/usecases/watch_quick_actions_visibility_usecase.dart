@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 
 /// Combines the exchange state with the platform and network restrictions.
 class WatchQuickActionsVisibilityUsecase {

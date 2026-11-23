@@ -1,10 +1,17 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
+import 'exchange_access.dart';
+
+enum ExchangePlatform { ios, other }
 
 enum ExchangeAvailability {
   hidden,
   signInRequired,
   ready,
   unavailable;
+
+  static bool platformAllowed(
+    ExchangePlatform platform, {
+    bool isSuperuser = false,
+  }) => platform != ExchangePlatform.ios || isSuperuser;
 
   /// Account management and support authentication remain available when
   /// platform policy hides activation and trading.

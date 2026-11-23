@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/expire_exchange_session_usecase.dart';

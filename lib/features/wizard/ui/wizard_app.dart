@@ -6,8 +6,6 @@ import 'package:background_tasks/background_tasks.dart'
         backgroundSyncAvailable;
 import 'package:notifications/notifications.dart'
     show NotificationPermissionsFacade, notificationPermissions;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
-    show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -44,10 +42,12 @@ class WizardApp extends StatelessWidget {
     super.key,
     required this.onDone,
     required this.notificationChannelId,
+    required this.exchangeAllowed,
   });
 
   final ValueChanged<WizardChoices> onDone;
   final String notificationChannelId;
+  final bool exchangeAllowed;
 
   WizardBloc _createBloc() {
     final datasource = WizardLocalDatasourceImpl();
@@ -75,15 +75,16 @@ class WizardApp extends StatelessWidget {
         if (backgroundSyncAvailable) bloc.add(const WizardEvent.started());
         return bloc;
       },
-      child: _WizardAppView(onDone: onDone),
+      child: _WizardAppView(onDone: onDone, exchangeAllowed: exchangeAllowed),
     );
   }
 }
 
 class _WizardAppView extends StatelessWidget {
-  const _WizardAppView({required this.onDone});
+  const _WizardAppView({required this.onDone, required this.exchangeAllowed});
 
   final ValueChanged<WizardChoices> onDone;
+  final bool exchangeAllowed;
 
   @override
   Widget build(BuildContext context) {
@@ -117,12 +118,7 @@ class _WizardAppView extends StatelessWidget {
           supportedLocales: AppLocalizations.supportedLocales,
           home: WizardScreen(
             backgroundTasksAvailable: backgroundSyncAvailable,
-            exchangeAllowed:
-                ExchangeAvailability.resolve(
-                  platformAllowed: defaultTargetPlatform != TargetPlatform.iOS,
-                  access: const ExchangeAccessResolving(),
-                ) !=
-                ExchangeAvailability.hidden,
+            exchangeAllowed: exchangeAllowed,
           ),
         );
       },

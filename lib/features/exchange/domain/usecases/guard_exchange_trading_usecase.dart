@@ -1,8 +1,5 @@
-import 'package:primitives/primitives.dart';
-
-import '../exchange_availability.dart';
-
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 import '../repositories/exchange_access_repository.dart';
 

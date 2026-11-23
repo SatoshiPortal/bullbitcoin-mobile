@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';

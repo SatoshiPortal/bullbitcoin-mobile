@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
-import 'package:flutter/foundation.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,24 +10,23 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   for (final (platform, allowed) in [
-    (TargetPlatform.iOS, false),
-    (TargetPlatform.android, true),
+    (ExchangePlatform.ios, false),
+    (ExchangePlatform.other, true),
   ]) {
     testWidgets('offers the exchange on ${platform.name}: $allowed', (
       tester,
     ) async {
-      debugDefaultTargetPlatformOverride = platform;
-      try {
-        await tester.pumpWidget(
-          WizardApp(notificationChannelId: 'payments', onDone: (_) {}),
-        );
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        WizardApp(
+          notificationChannelId: 'payments',
+          exchangeAllowed: ExchangeAvailability.platformAllowed(platform),
+          onDone: (_) {},
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        final screen = tester.widget<WizardScreen>(find.byType(WizardScreen));
-        expect(screen.exchangeAllowed, allowed);
-      } finally {
-        debugDefaultTargetPlatformOverride = null;
-      }
+      final screen = tester.widget<WizardScreen>(find.byType(WizardScreen));
+      expect(screen.exchangeAllowed, allowed);
     });
   }
 }

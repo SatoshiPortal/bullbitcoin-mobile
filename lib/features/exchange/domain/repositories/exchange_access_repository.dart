@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
 import 'package:primitives/primitives.dart';

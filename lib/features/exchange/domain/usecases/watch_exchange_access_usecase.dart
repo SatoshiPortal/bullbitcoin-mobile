@@ -1,4 +1,5 @@
-import '../exchange_access.dart';
+import 'package:exchange/exchange.dart';
+
 import '../repositories/exchange_access_repository.dart';
 
 class WatchExchangeAccessUsecase {

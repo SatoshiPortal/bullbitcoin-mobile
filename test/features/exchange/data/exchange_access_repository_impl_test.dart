@@ -1,5 +1,4 @@
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_availability.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 
 import 'dart:async';
@@ -7,7 +6,6 @@ import 'dart:convert';
 
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

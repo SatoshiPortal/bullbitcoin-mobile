@@ -29,14 +29,22 @@ import 'package:get_it/get_it.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeLocator {
-  static void setup(GetIt locator) {
-    Future<bool> platformAllowed() async =>
-        !Platform.isIOS ||
-        (((await locator<settings_contract.Preferences>().fetch()).fold(
-              (value) => value,
-              (failure) => throw Exception('Preferences read failed'),
-            )).isSuperuser ??
-            false);
+  static void setup(GetIt locator, {ExchangePlatform? platform}) {
+    final activePlatform =
+        platform ??
+        (Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other);
+    Future<bool> platformAllowed() async {
+      if (ExchangeAvailability.platformAllowed(activePlatform)) return true;
+      final isSuperuser = switch (await locator<Preferences>().fetch()) {
+        Ok(:final value) => value.isSuperuser == true,
+        Err() => false,
+      };
+      return ExchangeAvailability.platformAllowed(
+        activePlatform,
+        isSuperuser: isSuperuser,
+      );
+    }
+
     locator.registerLazySingleton<ExchangeAccessRepository>(
       () => ExchangeAccessRepositoryImpl(
         apiKeyRepository: locator<ExchangeCredentials>(),

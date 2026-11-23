@@ -4,9 +4,6 @@ import 'package:bull_exchange/bull_exchange.dart';
 import 'package:preferences/preferences.dart' show Environment;
 import 'package:primitives/primitives.dart';
 
-import '../domain/exchange_access.dart';
-import '../domain/exchange_availability.dart';
-
 import 'package:exchange/exchange.dart';
 
 import '../domain/usecases/get_exchange_account_usecase.dart';
@@ -40,8 +37,6 @@ export '../ui/widgets/exchange_amount_input_field.dart'
     show ExchangeAmountInputField;
 export 'exchange_account.dart' show ExchangeAccount;
 
-export '../domain/exchange_access.dart';
-export '../domain/exchange_availability.dart';
 export '../ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
 
 class ExchangeFacade {
