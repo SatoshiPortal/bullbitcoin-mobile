@@ -1311,30 +1311,6 @@
   "@buyTitle": {
     "description": "Screen title for buying Bitcoin"
   },
-  "buyEnterAmount": "Enter amount",
-  "@buyEnterAmount": {
-    "description": "Label for amount input field in buy flow"
-  },
-  "buyPaymentMethod": "Payment method",
-  "@buyPaymentMethod": {
-    "description": "Label for payment method dropdown"
-  },
-  "buyMax": "Max",
-  "@buyMax": {
-    "description": "Button to fill maximum amount"
-  },
-  "buySelectWallet": "Select wallet",
-  "@buySelectWallet": {
-    "description": "Label for wallet selection dropdown"
-  },
-  "buyEnterBitcoinAddress": "Enter bitcoin address",
-  "@buyEnterBitcoinAddress": {
-    "description": "Label for bitcoin address input field"
-  },
-  "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
-  "@buyBitcoinAddressHint": {
-    "description": "Placeholder hint for bitcoin address input"
-  },
   "buyExternalBitcoinWallet": "External Bitcoin wallet",
   "@buyExternalBitcoinWallet": {
     "description": "Label for external wallet option"
@@ -1402,82 +1378,6 @@
   "buyAwaitingConfirmation": "Awaiting confirmation ",
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
-  },
-  "buyConfirmPurchase": "Confirm purchase",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyYouBought": "You bought {amount} with {fiatAmount}",
-  "@buyYouBought": {
-    "description": "Success message with amount bought and the fiat amount debited",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "fiatAmount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Your payout will be sent in ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
-  "buyViewDetails": "View details",
-  "@buyViewDetails": {
-    "description": "Button to view order details"
-  },
-  "buyAccelerateTransaction": "Accelerate Transaction",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
-  },
-  "buyGetConfirmedFaster": "Get it confirmed faster",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
-  "buyConfirmExpressWithdrawal": "Confirm express withdrawal",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
-  },
-  "buyNetworkFeeExplanation": "The Bitcoin network fee will be deducted from the amount you receive and collected by the Bitcoin miners",
-  "@buyNetworkFeeExplanation": {
-    "description": "Explanation of network fees for express withdrawal"
-  },
-  "buyNetworkFees": "Network fees",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
-  },
-  "buyEstimatedFeeValue": "Estimated fee value",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
-  },
-  "buyNetworkFeeRate": "Network fee rate",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
-  },
-  "buyConfirmationTime": "Confirmation time",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
-  },
-  "buyConfirmationTimeValue": "~10 minutes",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
-  "buyWaitForFreeWithdrawal": "Wait for free withdrawal",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
-  "buyConfirmExpress": "Confirm express",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
-  },
-  "buyBitcoinSent": "Bitcoin sent!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
-  },
-  "buyThatWasFast": "That was fast, wasn't it?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "sellTitle": "Sell Bitcoin",
   "@sellTitle": {
@@ -4098,66 +3998,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSuccessTitle": "Recurring Buy is Active!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
-  },
-  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "You will buy {amount} every day",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "You will buy {amount} every week",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "You will buy {amount} every month",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "Back to home",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
-  },
-  "dcaChooseWalletTitle": "Choose Bitcoin Wallet",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
-  },
-  "dcaWalletSelectionDescription": "Bitcoin purchases will be placed automatically per this schedule.",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
-  },
-  "dcaNetworkValidationError": "Please select a network",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
-  },
-  "dcaEnterLightningAddressLabel": "Enter Lightning Address",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
-  },
   "dcaLightningAddressEmptyError": "Please enter a Lightning address",
   "@dcaLightningAddressEmptyError": {
     "description": "Validation error when Lightning address field is empty"
@@ -4165,46 +4005,6 @@
   "dcaLightningAddressInvalidError": "Please enter a valid Lightning address",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "dcaUseDefaultLightningAddress": "Use my default Lightning address.",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
-  "dcaWalletSelectionContinueButton": "Continue",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
-  },
-  "dcaSelectFrequencyLabel": "Select Frequency",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
-  },
-  "dcaSelectWalletTypeLabel": "Select Bitcoin Wallet Type",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
-  },
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
-  },
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
-  },
-  "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
-  "dcaWalletLightningSubtitle": "Requires compatible wallet, maximum 0.25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
-  },
-  "dcaWalletLiquidSubtitle": "Requires compatible wallet",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "swapInternalTransferTitle": "Internal Swap",
   "@swapInternalTransferTitle": {
@@ -8155,123 +7955,6 @@
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
   },
-  "dcaSetupTitle": "Set Recurring Buy",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
-  },
-  "dcaSetupInsufficientBalance": "Insufficient Balance",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
-  },
-  "dcaSetupInsufficientBalanceMessage": "You do not have enough balance to create this order.",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
-  "dcaSetupFundAccount": "Fund your account",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
-  },
-  "dcaSetupScheduleMessage": "Bitcoin purchases will be placed automatically per this schedule.",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
-  "dcaSetupFrequencyError": "Please select a frequency",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
-  "dcaSetupContinue": "Continue",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
-  "dcaConfirmTitle": "Confirm Recurring Buy",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
-  },
-  "dcaConfirmAutoMessage": "Buy orders will be placed automatically per these settings. You can disable them anytime.",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
-  "dcaConfirmFrequency": "Frequency",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
-  "dcaConfirmFrequencyHourly": "Every hour",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
-  "dcaConfirmFrequencyDaily": "Every day",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "dcaConfirmFrequencyWeekly": "Every week",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
-  "dcaConfirmFrequencyMonthly": "Every month",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
-  },
-  "dcaConfirmAmount": "Amount",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
-  },
-  "dcaConfirmPaymentMethod": "Payment method",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
-  },
-  "dcaConfirmPaymentBalance": "{currency} balance",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "Order type",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
-  },
-  "dcaConfirmOrderTypeValue": "Recurring buy",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
-  "dcaConfirmNetwork": "Network",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
-  },
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
-  "dcaConfirmNetworkLightning": "Lightning",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
-  "dcaConfirmLightningAddress": "Lightning address",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
-  },
-  "dcaConfirmContinue": "Continue",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
-  },
-  "buyInputTitle": "Buy Bitcoin",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
-  },
-  "buyInputMinAmountError": "You should buy at least",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "You can't buy more than",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC ID Verification Pending",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -8283,62 +7966,6 @@
   "buyInputCompleteKyc": "Complete KYC",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
-  },
-  "buyInputInsufficientBalance": "Insufficient balance",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
-  "buyInputInsufficientBalanceMessage": "You do not have enough balance to create this order.",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
-  "buyInputFundAccount": "Fund your account",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
-  "buyInputContinue": "Continue",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
-  "buyConfirmTitle": "Buy Bitcoin",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
-  "buyConfirmYouPay": "You pay",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
-  },
-  "buyConfirmYouReceive": "You receive",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
-  "buyConfirmBitcoinPrice": "Bitcoin Price",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
-  "buyConfirmPayoutWallet": "Payout wallet",
-  "@buyConfirmPayoutWallet": {
-    "description": "Field label for the wallet a buy pays out to"
-  },
-  "buyConfirmPayoutMethod": "Payout method",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "buyPayoutMethodLiquid": "L-BTC on Liquid",
-  "@buyPayoutMethodLiquid": {
-    "description": "Payout method for buys paid out over the Liquid network"
-  },
-  "buyPayoutMethodBitcoin": "BTC on Bitcoin chain",
-  "@buyPayoutMethodBitcoin": {
-    "description": "Payout method for buys paid out over the Bitcoin network"
-  },
-  "buyConfirmExternalWallet": "External Bitcoin wallet",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
-  "buyConfirmAwaitingConfirmation": "Awaiting confirmation ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "sellSendPaymentTitle": "Confirm payment",
   "@sellSendPaymentTitle": {
@@ -9042,22 +8669,6 @@
   "navigationTabExchange": "Exchange",
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
-  },
-  "buyUnauthenticatedError": "You are not authenticated. Please log in to continue.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "You are trying to buy below the minimum amount.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "You are trying to buy above the maximum amount.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Your order could not be created right now. Please try again or contact support.",
-  "@buyUnexpectedError": {
-    "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
   },
   "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
   "@withdrawUnauthenticatedError": {
@@ -10555,22 +10166,6 @@
   "receivePayjoinQrBadge": "Payjoin",
   "@receivePayjoinQrBadge": {
     "description": "Short badge shown on the receive QR code corner when the address advertises a payjoin endpoint, signalling the sender may propose a payjoin."
-  },
-  "dcaAccountUnavailableError": "Could not load your account. Check your connection, make sure you are logged in, and try again.",
-  "@dcaAccountUnavailableError": {
-    "description": "Shown when the exchange account summary cannot be loaded, so DCA setup cannot start. Deliberately covers three causes the boundary cannot tell apart: not logged in, no connection, and a backend error."
-  },
-  "dcaLightningAddressRequiredError": "Enter a Lightning address to receive your purchases.",
-  "@dcaLightningAddressRequiredError": {
-    "description": "Shown when Lightning was chosen as the DCA payout network but no lightning address was provided."
-  },
-  "dcaReceiveAddressError": "Could not prepare a receiving address in your wallet. Please try again.",
-  "@dcaReceiveAddressError": {
-    "description": "Shown when no default wallet exists for the chosen DCA network or generating a receive address failed."
-  },
-  "dcaOrderCreationError": "The recurring buy could not be created. Please try again later.",
-  "@dcaOrderCreationError": {
-    "description": "Shown when the exchange rejects creating the recurring buy order."
   },
   "payjoinInProgress": "Payjoin in progress",
   "@payjoinInProgress": {
@@ -12701,10 +12296,6 @@
   "exchangeQuoteUnavailableError": "We couldn't get a fresh price. Try again, or go back and start a new order.",
   "@exchangeQuoteUnavailableError": {
     "description": "Shown on the buy, sell or pay confirmation when the price lock lapsed and the bounded quote refreshes brought no usable price back; nothing was paid."
-  },
-  "buyQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
-  "@buyQuoteExpiredError": {
-    "description": "Shown on the buy confirmation when the price lock expired before the order was confirmed; nothing was bought."
   },
   "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
   "@recipientsFieldBankAccountIban": {

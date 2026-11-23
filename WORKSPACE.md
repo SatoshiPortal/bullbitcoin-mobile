@@ -130,11 +130,16 @@ graph TD
   bull_ark --> notifications
   bull_exchange --> bitcoin_price
   bull_exchange --> bull_logger
+  bull_exchange --> bull_payjoin
+  bull_exchange --> bull_pricer
   bull_exchange --> bull_ui
   bull_exchange --> exchange
+  bull_exchange --> fees
   bull_exchange --> file_system
   bull_exchange --> preferences
   bull_exchange --> primitives
+  bull_exchange --> secrets
+  bull_exchange --> sync
   bull_logs --> bull_logger
   bull_logs --> bull_ui
   bull_logs --> primitives

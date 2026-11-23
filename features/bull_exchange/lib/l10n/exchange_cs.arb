@@ -576,5 +576,412 @@
   "deleteAccountConfirmationDelete": "Delete Account",
   "deleteAccountSuccessTitle": "Žádost o smazání účtu odeslána",
   "deleteAccountSuccessDescription": "Vaše žádost o smazání účtu byla odeslána. Bude zpracována do 5 pracovních dnů.",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "Vaše platba bude zaslána v ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Vyberte Bitcoin Peněženka",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "Externí Bitcoin peněženku",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "Potvrzení o odstoupení od smlouvy",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bezpečné Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Vyžaduje kompatibilní peněženku",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "Dostanete se",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyAboveMaxAmountError": "Snažte se koupit nad maximálním množstvím.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyBelowMinAmountError": "Pokuste se koupit pod minimálním množstvím.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyConfirmPayoutWallet": "Peněženka pro výplatu",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na blockchainu Bitcoin",
+  "buyConfirmPayoutMethod": "Metoda výplaty",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "Čeština",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "Minimální 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaSetupInsufficientBalance": "Nedostatečná rovnováha",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "Můžeš koupit {amount} každou hodinu",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "dcaConfirmPaymentMethod": "Způsob platby",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Cena",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "Odhadovaná hodnota poplatku",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Zadejte částku",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Vyberte síť",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Doba potvrzení",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "Koupili jste {amount} za {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Zrychlení Transakce",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Čeština",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Koupit Bitcoin",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "Vyberte peněženku",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "KYC ID Ověřování",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H ...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "Musíte dokončit ověření totožnosti nejprve",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "Síťové poplatky",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "Můžeš koupit {amount} každý měsíc",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Blesk",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "Vyberte četnost",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Zadejte adresu blesku",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} rovnováhu",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Nákupy Bitcoin budou umístěny automaticky na tento plán.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "Kompletní KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "Čeština",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "Typ objednávky",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "Můžeš koupit {amount} každý den",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Počkejte zdarma výběr",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Vyžaduje kompatibilní peněženku, maximální 0,25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "Fond vašeho účtu",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "~10 minut",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Potvrzení o registraci ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "Opakovaný nákup je aktivní!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "Vyberte frekvenci",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "Koupit Bitcoin",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "To bylo rychlé, nebylo to?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "Každý den",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyConfirmPurchase": "Potvrzení nákupu",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyInputMaxAmountError": "Není možné koupit více než",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyNetworkFeeRate": "Síťový poplatek",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "Zpět na domov",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Okamžité platby",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "Čeština",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "Potvrzení opakování Koupit",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "buyConfirmYouPay": "Platit",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Vyberte typ Bitcoin Peněženky",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "Nedostatečná rovnováha",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "Můžeš koupit {amount} každý týden",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "Množství",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "Každý týden",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "Fond vašeho účtu",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "Zadejte adresu Bitcoin",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Nemáte dostatečnou rovnováhu pro vytvoření této objednávky.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "Koupit objednávky budou automaticky umístěny na tyto nastavení. Můžete je kdykoli vypnout.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "Bleskové sítě (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Poplatek za síť Bitcoin bude odečtena z částky, kterou obdržíte a shromáždil Bitcoin horníci",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "Nákupy Bitcoin budou umístěny automaticky na tento plán.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmNetworkBitcoin": "Čeština",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "Zobrazit podrobnosti",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "Každou hodinu",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "Blesková adresa",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "Způsob platby",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "Každý měsíc",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "Bitcoin poslal!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyInputMinAmountError": "Měli byste si koupit alespoň",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "dcaUseDefaultLightningAddress": "Používejte výchozí adresu blesku.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Potvrdit rychleji",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Potvrzení",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Nákup",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "Kapalina (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Sada opakování nákupu",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaWalletSelectionContinueButton": "Pokračovat",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "buyInputContinue": "Pokračovat",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaSetupContinue": "Pokračovat",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "dcaConfirmContinue": "Pokračovat",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.",
+  "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
+  "dcaReceiveAddressError": "V peněžence se nepodařilo připravit přijímací adresu. Zkuste to prosím znovu.",
+  "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později."
 }

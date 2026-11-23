@@ -2,7 +2,8 @@ import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/buy/public/buy_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart'
+    show AccelerateTransactionListTile, BuyRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';

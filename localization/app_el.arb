@@ -30,10 +30,6 @@
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
   },
-  "buyPayoutWillBeSentIn": "Η πληρωμή σας θα σταλεί ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
   "fundExchangeInstantSepaInfo": "Μόνο χρήση για συναλλαγές κάτω από 20.000 ευρώ. Για μεγαλύτερες συναλλαγές, χρησιμοποιήστε την τακτική επιλογή SEPA.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
@@ -225,10 +221,6 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "buyConfirmExternalWallet": "Εξωτερικό Bitcoin πορτοφόλι",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
   "exchangeCurrencyDropdownTitle": "Επιλέξτε νόμισμα",
   "@exchangeCurrencyDropdownTitle": {
     "description": "Title for the currency selection dropdown"
@@ -244,10 +236,6 @@
   "rbfFastest": "Πιο γρήγορα",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "buyConfirmExpressWithdrawal": "Επιβεβαίωση ρητή απόσυρση",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
   },
   "sellSendPaymentTitle": "Επιβεβαίωση πληρωμής",
   "@sellSendPaymentTitle": {
@@ -362,10 +350,6 @@
   "save": "Εξοικονομήστε",
   "@save": {
     "description": "Generic save button label"
-  },
-  "dcaWalletLiquidSubtitle": "Απαιτείται συμβατό πορτοφόλι",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "fundExchangeCrIbanCrcTitle": "Τραπεζική Μεταφορά (CRC)",
   "@fundExchangeCrIbanCrcTitle": {
@@ -500,10 +484,6 @@
   "@fundExchangeLabelTransitNumber": {
     "description": "Label for transit number field"
   },
-  "buyConfirmYouReceive": "Παίρνεις",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
   "buyDocumentUpload": "Μεταφορτώστε τα έγγραφα",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
@@ -517,10 +497,6 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "Για να λάβετε ανθρώπινη υποστήριξη, πρέπει πρώτα να συνδεθείτε στον λογαριασμό σας Bull Bitcoin. Είναι 100% δωρεάν και δεν απαιτείται KYC, μόνο μια διεύθυνση email.",
-  "buyAboveMaxAmountError": "Προσπαθείτε να αγοράσετε πάνω από το μέγιστο ποσό.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
   "sendShowPsbt": "Show PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -625,10 +601,6 @@
   "sellKYCRejected": "Η επαλήθευση της KYC απέρριψε",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
-  },
-  "buyBelowMinAmountError": "Προσπαθείτε να αγοράσετε κάτω από το ελάχιστο ποσό.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
   },
   "exchangeLandingFeature6": "Ενοποιημένη ιστορία συναλλαγών",
   "@exchangeLandingFeature6": {
@@ -791,17 +763,6 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
-  "buyConfirmPayoutWallet": "Πορτοφόλι πληρωμής",
-  "buyPayoutMethodLiquid": "L-BTC στο Liquid",
-  "buyPayoutMethodBitcoin": "BTC στην αλυσίδα Bitcoin",
-  "buyConfirmPayoutMethod": "Μέθοδος πληρωμής",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "dcaConfirmNetworkLiquid": "Υγρό",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
   "walletDetailsAddressTypeLabel": "Τύπος τύπου διευθύνσεων",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
@@ -899,10 +860,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "dcaWalletBitcoinSubtitle": "Ελάχιστη 0,001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
   "sendOpenTheCamera": "Ανοίξτε την κάμερα",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -946,10 +903,6 @@
   "exchangeAccountInfoLoadErrorMessage": "Δεν είναι σε θέση να φορτώσει πληροφορίες λογαριασμού",
   "@exchangeAccountInfoLoadErrorMessage": {
     "description": "Error message when account information fails to load"
-  },
-  "dcaWalletSelectionContinueButton": "Συνεχίστε να συνεχίζετε",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
   },
   "pinButtonChange": "Αλλαγή PIN",
   "@pinButtonChange": {
@@ -1002,10 +955,6 @@
   "sendErrorLiquidWalletRequired": "Το υγρό πορτοφόλι πρέπει να χρησιμοποιηθεί για ένα υγρό για την εναλλαγή κεραυνών",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
-  },
-  "dcaSetupInsufficientBalance": "Ανεπαρκή ισορροπία",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
   },
   "swapTransferRefundedMessage": "Η ανταλλαγή επιστράφηκε με επιτυχία.",
   "@swapTransferRefundedMessage": {
@@ -1241,7 +1190,6 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
-  "buyUnexpectedError": "Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "fundExchangeArsBankTransferTitle": "Τράπεζα Μεταφοράς",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -1274,10 +1222,6 @@
   "sellSendPaymentOrderNumber": "Αριθμός εντολών",
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
-  },
-  "dcaConfirmPaymentMethod": "Μέθοδος πληρωμής",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
   },
   "sellSendPaymentAdvanced": "Προχωρημένες ρυθμίσεις",
   "@sellSendPaymentAdvanced": {
@@ -1387,10 +1331,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "buyConfirmBitcoinPrice": "Bitcoin Price",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
   "exchangeDcaCancelDialogCancelButton": "Ακύρωση",
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
@@ -1462,10 +1402,6 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "buyEstimatedFeeValue": "Εκτιμώμενη τιμή χρέωσης",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
-  },
   "payName": "Όνομα",
   "@payName": {
     "description": "Label for name field"
@@ -1514,10 +1450,6 @@
   "payPaymentConfirmed": "Η πληρωμή επιβεβαίωσε",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "buyEnterAmount": "Εισαγάγετε ποσό",
-  "@buyEnterAmount": {
-    "description": "Label for amount input field in buy flow"
   },
   "sellShowQrCode": "Show QR code",
   "@sellShowQrCode": {
@@ -1766,10 +1698,6 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "buyInputContinue": "Συνεχίστε να συνεχίζετε",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
   "importQrDeviceJadeStep3": "Ακολουθήστε τις οδηγίες της συσκευής για να ξεκλειδώσετε το Jade",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -1830,10 +1758,6 @@
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
   },
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
   "payNoPayments": "Δεν υπάρχουν πληρωμές ακόμα",
   "@payNoPayments": {
     "description": "Empty state message"
@@ -1845,10 +1769,6 @@
   "exchangeAccountInfoTitle": "Πληροφορίες λογαριασμού",
   "@exchangeAccountInfoTitle": {
     "description": "Title for the account information section"
-  },
-  "buyConfirmationTime": "Επιβεβαίωση χρόνου επιβεβαίωσης",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
   },
   "payLightningInvoice": "Lightning Invoice",
   "@payLightningInvoice": {
@@ -2034,15 +1954,6 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Αγοράσατε {amount} με {fiatAmount}",
-  "@buyYouBought": {
-    "description": "Success message with amount bought",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "Page δεν βρέθηκε",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
@@ -2095,10 +2006,6 @@
   "exchangeAppSettingsEmailNotificationsLabel": "Εφαρμογή ηλεκτρονικού ταχυδρομείου",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
-  },
-  "buyAccelerateTransaction": "Επιτυχημένη συναλλαγή",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
   },
   "backupSettingsTested": "Tested",
   "@backupSettingsTested": {
@@ -2494,10 +2401,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "buyMax": "Max",
-  "@buyMax": {
-    "description": "Button to fill maximum amount"
-  },
   "onboardingCreateNewWallet": "Δημιουργήστε νέο Wallet",
   "@onboardingCreateNewWallet": {
     "description": "Button label for creating a new wallet in onboarding"
@@ -2517,10 +2420,6 @@
   "startBackupButton": "Ξεκινήστε το Backup",
   "@startBackupButton": {
     "description": "Button label to start backup process"
-  },
-  "buyInputTitle": "Αγοράστε Bitcoin Bitcoin",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
   },
   "importMnemonicImport": "Εισαγόμενη εισαγωγή",
   "@importMnemonicImport": {
@@ -2638,10 +2537,6 @@
   "sellLightningNetwork": "Δίκτυο Lightning Network",
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "buySelectWallet": "Επιλέξτε πορτοφόλι",
-  "@buySelectWallet": {
-    "description": "Label for wallet selection dropdown"
   },
   "importColdcardInstructionsStep6": "Επιλέξτε \"Bull Bitcoin\" ως επιλογή εξαγωγής",
   "@importColdcardInstructionsStep6": {
@@ -2919,10 +2814,6 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "buyBitcoinAddressHint": "BC1QYL7J673H ...6Y6ALV70M0",
-  "@buyBitcoinAddressHint": {
-    "description": "Placeholder hint for bitcoin address input"
-  },
   "translationWarningTitle": "AI-Generated Translations",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -2993,10 +2884,6 @@
   "withdrawConfirmEmail": "E-mail email",
   "@withdrawConfirmEmail": {
     "description": "Field label for email (Interac)"
-  },
-  "buyNetworkFees": "Network χρεώσεις",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
   },
   "coldcardStep7": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
   "@coldcardStep7": {
@@ -3313,10 +3200,6 @@
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "dcaConfirmNetworkLightning": "Lightning",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
   "ledgerDefaultWalletLabel": "Ledger Wallet",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
@@ -3324,10 +3207,6 @@
   "importWalletSpecter": "Πουτερ",
   "@importWalletSpecter": {
     "description": "Button label for Specter hardware wallet"
-  },
-  "dcaSelectFrequencyLabel": "Επιλέξτε συχνότητα",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
   },
   "coreSwapsLnSendRefundable": "Το Swap είναι έτοιμο να επιστραφεί.",
   "@coreSwapsLnSendRefundable": {
@@ -3566,15 +3445,6 @@
   "payAmountTooHigh": "Ποσό υπερβαίνει το μέγιστο",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
-  },
-  "dcaConfirmPaymentBalance": "{currency} ισορροπία",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
   },
   "sellBankTransfer": "Τράπεζα Μεταφοράς",
   "@sellBankTransfer": {
@@ -3824,17 +3694,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "dcaConfirmFrequency": "Συχνότητα συχνότητας",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
   "advancedOptionsTitle": "Προχωρημένες επιλογές",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
-  },
-  "dcaConfirmOrderType": "Τύπος τύπου παραγγελίας",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
   },
   "payPriceWillRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@payPriceWillRefreshIn": {
@@ -3957,10 +3819,6 @@
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
-  "buyWaitForFreeWithdrawal": "Περιμένετε δωρεάν απόσυρση",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
   "sellSendPaymentCrcBalance": "CRC ισορροπία ισορροπία",
   "@sellSendPaymentCrcBalance": {
     "description": "CRC balance payout method"
@@ -3980,10 +3838,6 @@
   "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις",
   "@settingsAppSettingsTitle": {
     "description": "Title for the app settings section in the settings menu"
-  },
-  "dcaWalletLightningSubtitle": "Απαιτεί συμβατό πορτοφόλι, μέγιστο 0,25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
   },
   "swapTransferRefundInProgressMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
   "@swapTransferRefundInProgressMessage": {
@@ -4017,10 +3871,6 @@
   "@transactionDetailLabelPayoutStatus": {
     "description": "Label for payout status"
   },
-  "buyInputFundAccount": "Χρηματοδότηση του λογαριασμού σας",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
@@ -4046,17 +3896,9 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "10 λεπτά",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
   "exchangeFileUploadUploading": "Ανεβαίωση...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
-  },
-  "buyConfirmAwaitingConfirmation": "Περιμένοντας επιβεβαίωση ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "allSeedViewShowSeedsButton": "Show Seeds",
   "@allSeedViewShowSeedsButton": {
@@ -4150,10 +3992,6 @@
       }
     }
   },
-  "dcaSetupFrequencyError": "Επιλέξτε μια συχνότητα",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
   "payInvoiceExpired": "Το Invoice έληξε",
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
@@ -4194,10 +4032,6 @@
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
   },
-  "buyConfirmTitle": "Αγοράστε Bitcoin Bitcoin",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
   "exchangeLandingFeature5": "Chat με την υποστήριξη πελατών",
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
@@ -4205,10 +4039,6 @@
   "electrumMainnet": "Mainnet",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
-  },
-  "buyThatWasFast": "Αυτό ήταν γρήγορο, δεν ήταν αυτό?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "importWalletPassport": "Ίδρυμα Passport",
   "@importWalletPassport": {
@@ -4349,14 +4179,6 @@
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
   },
-  "dcaConfirmFrequencyDaily": "Κάθε μέρα",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "buyConfirmPurchase": "Επιβεβαίωση αγοράς",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
   "importQrDeviceKeystoneStep9": "Εισάγετε μια ετικέτα για το πορτοφόλι Keystone και πατήστε \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -4364,10 +4186,6 @@
   "payEnterAmountTitle": "Εισάγετε το ποσό",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "buyInputMaxAmountError": "Δεν μπορείς να αγοράσεις περισσότερα από",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
   },
   "walletDetailsDeletingMessage": "Deleting πορτοφόλι...",
   "@walletDetailsDeletingMessage": {
@@ -4408,10 +4226,6 @@
   "sellWhichWalletQuestion": "Ποιο πορτοφόλι θέλετε να πουλήσετε από?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "buyNetworkFeeRate": "Φόρος χρέωσης δικτύου",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
   },
   "receiveFixedAmount": "Ποσο Ποσό Ποσο",
   "@receiveFixedAmount": {
@@ -4619,10 +4433,6 @@
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
   },
-  "dcaConfirmNetwork": "Network",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
-  },
   "allSeedViewDeleteWarningMessage": "Η διαγραφή του σπόρου είναι μια μη αναστρέψιμη δράση. Μόνο αν έχετε εξασφαλίσει αντίγραφα ασφαλείας αυτού του σπόρου ή τα συνδεδεμένα πορτοφόλια έχουν αποστραγγιστεί πλήρως.",
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
@@ -4741,10 +4551,6 @@
   "exchangeStatisticsNoData": "Καμία στατιστική δεν είναι διαθέσιμη",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
-  },
-  "dcaConfirmTitle": "Επιβεβαίωση Αγοράστε αγορά αγορά",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
   },
   "fundExchangeCrIbanUsdTransferCodeWarning": "Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"διαγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να συμπεριλάβετε αυτόν τον κώδικα, η πληρωμή σας μπορεί να απορριφθεί.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
@@ -4876,14 +4682,6 @@
   "addressCardIndexLabel": "Index: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
-  },
-  "dcaSetupContinue": "Συνεχίστε να συνεχίζετε",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
-  "buyConfirmYouPay": "Πληρώνετε",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
   },
   "importWatchOnlyTitle": "Εισαγωγή ρολόι μόνο",
   "@importWatchOnlyTitle": {
@@ -5025,10 +4823,6 @@
   "paySecurityQuestion": "Ερώτηση ασφαλείας",
   "@paySecurityQuestion": {
     "description": "Label for security question field"
-  },
-  "dcaSelectWalletTypeLabel": "Επιλέξτε Bitcoin Wallet Type",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
   },
   "importQrDeviceJadeStep1": "Μετατρέψτε τη συσκευή Jade",
   "@importQrDeviceJadeStep1": {
@@ -5182,10 +4976,6 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "buyInputInsufficientBalance": "Ανεπαρκή ισορροπία",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
@@ -5262,17 +5052,9 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "buyInputInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
   "swapErrorInsufficientFunds": "Δεν θα μπορούσε να χτίσει συναλλαγές. Ακριβώς λόγω ανεπαρκών κεφαλαίων για την κάλυψη των τελών και του ποσού.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
-  },
-  "dcaConfirmAmount": "Ποσο Ποσό Ποσο",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
   },
   "sellSendPaymentPriceRefresh": "Η τιμή θα ανανεωθεί ",
   "@sellSendPaymentPriceRefresh": {
@@ -5589,10 +5371,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "dcaConfirmFrequencyWeekly": "Κάθε εβδομάδα",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
   "payInstitutionNumberHint": "Εισάγετε τον αριθμό ιδρύματος",
   "@payInstitutionNumberHint": {
     "description": "Hint for institution number input"
@@ -5604,10 +5382,6 @@
   "settingsThemeTitle": "Theme",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "dcaSetupFundAccount": "Χρηματοδότηση του λογαριασμού σας",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
   },
   "payEmail": "E-mail email",
   "@payEmail": {
@@ -5705,10 +5479,6 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "buyEnterBitcoinAddress": "Εισάγετε διεύθυνση bitcoin",
-  "@buyEnterBitcoinAddress": {
-    "description": "Label for bitcoin address input field"
-  },
   "importQrDeviceSpecterStep6": "Επιλέξτε \"Single key\"",
   "@importQrDeviceSpecterStep6": {
     "description": "Specter instruction step 6"
@@ -5805,10 +5575,6 @@
   "@backupWalletLastKnownEncryptedVault": {
     "description": "Label prefix for displaying timestamp of last encrypted vault backup"
   },
-  "dcaSetupInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
   "sendAdvancedOptions": "Προχωρημένες επιλογές",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -5838,17 +5604,9 @@
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "dcaConfirmAutoMessage": "Οι παραγγελίες αγοράς θα τοποθετηθούν αυτόματα ανά αυτές τις ρυθμίσεις. Μπορείτε να τα απενεργοποιήσετε οποιαδήποτε στιγμή.",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
   "coreSwapsLnSendFailedRefunding": "Το Swap θα επιστραφεί σύντομα.",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
-  },
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
   },
   "transactionSwapProgressBroadcasted": "Broadcasted",
   "@transactionSwapProgressBroadcasted": {
@@ -5881,10 +5639,6 @@
   "backupSettingsViewVaultKey": "Δείτε Vault Key Key Key",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
-  },
-  "buyNetworkFeeExplanation": "Το τέλος του δικτύου Bitcoin θα αφαιρεθεί από το ποσό που λαμβάνετε και συλλέγονται από τους ανθρακωρύχους Bitcoin",
-  "@buyNetworkFeeExplanation": {
-    "description": "Explanation of network fees for express withdrawal"
   },
   "fundExchangeCrIbanUsdLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@fundExchangeCrIbanUsdLabelPaymentDescription": {
@@ -5964,10 +5718,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "dcaSetupScheduleMessage": "Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
   "coreSwapsStatusExpired": "Επεκτάθηκαν",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
@@ -5979,10 +5729,6 @@
   "swapProgressRefundMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
-  },
-  "dcaConfirmContinue": "Συνεχίστε να συνεχίζετε",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
   },
   "paySecureBitcoinWallet": "Secure Bitcoin πορτοφόλι",
   "@paySecureBitcoinWallet": {
@@ -6133,10 +5879,6 @@
   "@fundExchangeInfoBankCountryUk": {
     "description": "Info message that bank country is United Kingdom"
   },
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
     "description": "Payment method title for IBAN CRC in method list"
@@ -6173,10 +5915,6 @@
   "settingsSuperuserModeUnlockedMessage": "Η λειτουργία Superuser ξεκλειδώθηκε!",
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
-  },
-  "buyViewDetails": "Δείτε λεπτομέρειες",
-  "@buyViewDetails": {
-    "description": "Button to view order details"
   },
   "paySwapFailed": "Ο Σουβάλ απέτυχε",
   "@paySwapFailed": {
@@ -6227,10 +5965,6 @@
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
-  "dcaConfirmFrequencyHourly": "Κάθε ώρα",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
   "sellSwiftCode": "SWIFT/BIC Code",
   "@sellSwiftCode": {
     "description": "Label for international bank code"
@@ -6247,10 +5981,6 @@
   "transactionStatusTransferExpired": "Η ανταλλαγή έληξε",
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
-  },
-  "dcaConfirmLightningAddress": "Lightning διεύθυνση Lightning",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
   },
   "coreSwapsLnReceiveCompleted": "Το Swap ολοκληρώνεται.",
   "@coreSwapsLnReceiveCompleted": {
@@ -6347,10 +6077,6 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
-  "buyPaymentMethod": "Μέθοδος πληρωμής",
-  "@buyPaymentMethod": {
-    "description": "Label for payment method dropdown"
-  },
   "coreSwapsStatusCompleted": "Πλήρης",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
@@ -6416,10 +6142,6 @@
   "sendEstimatedDeliveryFewHours": "λίγες ώρες",
   "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
-  },
-  "dcaConfirmFrequencyMonthly": "Κάθε μήνα",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
   },
   "importWatchOnlyScriptType": "Script Type",
   "@importWatchOnlyScriptType": {
@@ -6526,10 +6248,6 @@
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
   },
-  "buyBitcoinSent": "Bitcoin αποστέλλεται!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
-  },
   "coreScreensPageNotFound": "Page δεν βρέθηκε",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
@@ -6632,10 +6350,6 @@
   "receiveContinue": "Συνεχίστε να συνεχίζετε",
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
-  },
-  "buyUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
   },
   "importWatchOnlyDisclaimerTitle": "Προνομή Path Warning",
   "@importWatchOnlyDisclaimerTitle": {
@@ -6761,10 +6475,6 @@
   "hwKeystone": "Keystone",
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
-  },
-  "buyInputMinAmountError": "Θα πρέπει να αγοράσετε τουλάχιστον",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
   },
   "payInstitutionCode": "Κώδικας",
   "@payInstitutionCode": {
@@ -6916,10 +6626,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "dcaUseDefaultLightningAddress": "Χρησιμοποιήστε την προεπιλεγμένη διεύθυνση Lightning μου.",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
   "sellEstimatedArrival": "Εκτιμάται η άφιξη: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -7007,17 +6713,9 @@
   "@sellKYCPending": {
     "description": "Message when verification in progress"
   },
-  "buyGetConfirmedFaster": "Αποκτήστε το επιβεβαίωσε πιο γρήγορα",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
   "payCustomFee": "Custom Fee",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "buyConfirmExpress": "Επιβεβαίωση",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
   },
   "fundExchangeBankTransferWireTimeframe": "Κάθε κεφάλαια που στέλνετε θα προστεθεί στο Bitcoin της Bull μέσα σε 1-2 εργάσιμες ημέρες.",
   "@fundExchangeBankTransferWireTimeframe": {
@@ -7061,14 +6759,6 @@
   "importMnemonicContinue": "Συνεχίστε να συνεχίζετε",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
-  },
-  "dcaConfirmOrderTypeValue": "Recuring buy",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
   },
   "fundExchangeLabelInstitutionNumber": "Αριθμός ιδρύματος",
   "@fundExchangeLabelInstitutionNumber": {
@@ -7118,10 +6808,6 @@
   "backupSettingsEncryptedVault": "Κατακρυπτόμενος Vault",
   "@backupSettingsEncryptedVault": {
     "description": "Label for encrypted vault backup status row"
-  },
-  "dcaSetupTitle": "Set Recuring Buy",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
   },
   "sendErrorInsufficientBalanceForPayment": "Όχι αρκετή ισορροπία για να καλύψει αυτή την πληρωμή",
   "@sendErrorInsufficientBalanceForPayment": {
@@ -7247,10 +6933,6 @@
   "importWatchOnlyCancel": "Ακύρωση",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  },
-  "dcaChooseWalletTitle": "Επιλέξτε Bitcoin Wallet",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
   },
   "fundExchangeETransferLabelSecretAnswer": "Μυστική απάντηση",
   "@fundExchangeETransferLabelSecretAnswer": {
@@ -7410,15 +7092,6 @@
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
   },
-  "dcaSuccessMessageHourly": "Θα αγοράζετε {amount} κάθε ώρα",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupChooseVaultLocation": "Επιλέξτε χώρο θύλακα",
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
@@ -7492,10 +7165,6 @@
         "example": "PIN"
       }
     }
-  },
-  "dcaNetworkValidationError": "Επιλέξτε ένα δίκτυο",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
   },
   "passwordLabel": "Password",
   "@passwordLabel": {
@@ -7745,15 +7414,6 @@
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
-  "dcaSuccessMessageMonthly": "Θα αγοράζετε {amount} κάθε μήνα",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "customLocationProvider": "Προσαρμοσμένη τοποθεσία",
   "@customLocationProvider": {
     "description": "Name of custom location provider"
@@ -7765,10 +7425,6 @@
   "recoverVia12WordsDescription": "Ανακαλύψτε το πορτοφόλι σας μέσω 12 λέξεων.",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
-  },
-  "dcaEnterLightningAddressLabel": "Εισάγετε διεύθυνση Lightning",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
   },
   "gotItButton": "Got it Got it Got it",
   "@gotItButton": {
@@ -7814,10 +7470,6 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "dcaWalletSelectionDescription": "Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
-  },
   "enterBackupKeyManuallyDescription": "Αν έχετε εξάγει το πλήκτρο αντιγράφων ασφαλείας σας και το έχετε αποθηκεύσει σε μια θέση seperate από τον εαυτό σας, μπορείτε να το εισάγετε χειροκίνητα εδώ. Διαφορετικά, πηγαίνετε πίσω στην προηγούμενη οθόνη.",
   "@enterBackupKeyManuallyDescription": {
     "description": "Description for entering backup key manually"
@@ -7856,15 +7508,6 @@
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
-  "dcaSuccessMessageDaily": "Θα αγοράσετε {amount} κάθε μέρα",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "takeYourTimeTag": "Πάρτε το χρόνο σας",
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
@@ -7900,10 +7543,6 @@
   "transactionListLoadingTransactions": "Φόρτωση συναλλαγών...",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
-  },
-  "dcaSuccessTitle": "Το Recuring Buy είναι Active!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
   },
   "fundExchangeOnlineBillPaymentDescription": "Κάθε ποσό που στέλνετε μέσω του online λογαριασμού πληρωμής της τράπεζάς σας χρησιμοποιώντας τις παρακάτω πληροφορίες θα πιστωθεί στην ισορροπία λογαριασμού σας Bull Bitcoin εντός 3-4 εργάσιμων ημερών.",
   "@fundExchangeOnlineBillPaymentDescription": {
@@ -7974,10 +7613,6 @@
   "backupWalletGoogleDrivePrivacyMessage4": "ποτέ ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
-  },
-  "dcaBackToHomeButton": "Επιστροφή στο σπίτι",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
   },
   "transactionOrderLabelOriginName": "Όνομα προέλευσης",
   "@transactionOrderLabelOriginName": {
@@ -8091,15 +7726,6 @@
   "transactionDetailLabelAmountSent": "Ποσό που αποστέλλεται",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "dcaSuccessMessageWeekly": "Θα αγοράζετε {amount} κάθε εβδομάδα",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "autoswapRecipientWalletPlaceholder": "Επιλέξτε ένα πορτοφόλι Bitcoin",
   "@autoswapRecipientWalletPlaceholder": {
@@ -9212,10 +8838,6 @@
   "transactionDetailLabelPayjoinAborted": "Ματαιώθηκε",
   "transactionDetailLabelPayjoinFeeContribution": "Συνεισφορά τέλους Payjoin",
   "transactionPayjoinFeeContributionExplanation": "Το Payjoin προσθέτει ένα από τα νομίσματά σας ως επιπλέον είσοδο στην πληρωμή για να βελτιώσει το απόρρητο. Η προμήθεια εξόρυξης για αυτήν την πρόσθετη είσοδο αφαιρείται από το ποσό που λαμβάνετε (BIP78).",
-  "dcaAccountUnavailableError": "Δεν ήταν δυνατή η φόρτωση του λογαριασμού σας. Ελέγξτε τη σύνδεσή σας, βεβαιωθείτε ότι έχετε συνδεθεί και δοκιμάστε ξανά.",
-  "dcaLightningAddressRequiredError": "Εισαγάγετε μια διεύθυνση Lightning για να λαμβάνετε τις αγορές σας.",
-  "dcaReceiveAddressError": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης στο πορτοφόλι σας. Δοκιμάστε ξανά.",
-  "dcaOrderCreationError": "Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "settingsPayjoinDisclaimerTitle": "Ενημέρωση για το Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
   "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",

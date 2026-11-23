@@ -30,10 +30,6 @@
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
   },
-  "buyPayoutWillBeSentIn": "การจ่ายเงินของคุณจะถูกส่ง ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
   "fundExchangeInstantSepaInfo": "การใช้การทําธุรกรรมด้านล่าง€ 20,000 สําหรับการทําธุรกรรมขนาดใหญ่, การใช้งานปกติ SEPA.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
@@ -41,10 +37,6 @@
   "translationWarningContributeButton": "ความช่วยเหลือ",
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
-  },
-  "dcaChooseWalletTitle": "เลือก Bitcoin Wallet",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
   },
   "sellSendPaymentAboveMax": "คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.",
   "@sellSendPaymentAboveMax": {
@@ -269,10 +261,6 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "buyConfirmExternalWallet": "แท็บเล็ต",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
   "exchangeCurrencyDropdownTitle": "เลือกสกุลเงิน",
   "@exchangeCurrencyDropdownTitle": {
     "description": "Title for the currency selection dropdown"
@@ -288,10 +276,6 @@
   "rbfFastest": "รวดเร็ว",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "buyConfirmExpressWithdrawal": "ยืนยันการถอนเงิน",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
   },
   "sellSendPaymentTitle": "ยืนยันการชําระเงิน",
   "@sellSendPaymentTitle": {
@@ -406,10 +390,6 @@
   "save": "บันทึก",
   "@save": {
     "description": "Generic save button label"
-  },
-  "dcaWalletLiquidSubtitle": "ต้องการกระเป๋าสตางค์",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "fundExchangeCrIbanCrcTitle": "ธนาคารธนาคาร (CD)",
   "@fundExchangeCrIbanCrcTitle": {
@@ -552,10 +532,6 @@
   "@fundExchangeLabelTransitNumber": {
     "description": "Label for transit number field"
   },
-  "buyConfirmYouReceive": "คุณจะได้รับ",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
   "buyDocumentUpload": "อัพโหลดเอกสาร",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
@@ -569,10 +545,6 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "หากต้องการความช่วยเหลือจากเจ้าหน้าที่ คุณต้องเข้าสู่ระบบบัญชี Bull Bitcoin ของคุณก่อน ฟรี 100% ไม่ต้องยืนยันตัวตน (KYC) ใช้เพียงที่อยู่อีเมลเท่านั้น",
-  "buyAboveMaxAmountError": "คุณพยายามที่จะซื้อข้างต้น.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
   "sendShowPsbt": "แสดง PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -695,10 +667,6 @@
   "sellKYCRejected": "การยกเลิกการตรวจสอบ",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
-  },
-  "buyBelowMinAmountError": "คุณพยายามที่จะซื้อขั้นต่ํา.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
   },
   "exchangeLandingFeature6": "ประวัติศาสตร์",
   "@exchangeLandingFeature6": {
@@ -901,17 +869,6 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
-  "buyConfirmPayoutWallet": "กระเป๋าเงินรับการจ่าย",
-  "buyPayoutMethodLiquid": "L-BTC บน Liquid",
-  "buyPayoutMethodBitcoin": "BTC บนเชน Bitcoin",
-  "buyConfirmPayoutMethod": "วิธีการชําระเงิน",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "dcaConfirmNetworkLiquid": "ของเหลว",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
   "walletDetailsAddressTypeLabel": "ที่อยู่",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
@@ -1017,10 +974,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "dcaWalletBitcoinSubtitle": "0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
   "sendOpenTheCamera": "เปิดกล้อง",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1076,10 +1029,6 @@
   "exchangeAccountInfoLoadErrorMessage": "สามารถโหลดข้อมูล",
   "@exchangeAccountInfoLoadErrorMessage": {
     "description": "Error message when account information fails to load"
-  },
-  "dcaWalletSelectionContinueButton": "อ่านต่อ",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
   },
   "pinButtonChange": "เปลี่ยน PIN",
   "@pinButtonChange": {
@@ -1152,10 +1101,6 @@
   "sendErrorLiquidWalletRequired": "กระเป๋าของเหลวจะต้องใช้ของเหลวเพื่อส่งสัญญาณ",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
-  },
-  "dcaSetupInsufficientBalance": "สมดุล",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
   },
   "swapTransferRefundedMessage": "คืนเงิน Swap เรียบร้อยแล้ว",
   "@swapTransferRefundedMessage": {
@@ -1276,15 +1221,6 @@
   "withdrawConfirmCard": "บัตรบัตร",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
-  },
-  "dcaSuccessMessageHourly": "คุณจะซื้อ {amount} ทุกชั่วโมง",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "loginButton": "สําเนา",
   "@loginButton": {
@@ -1424,7 +1360,6 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
-  "buyUnexpectedError": "ไม่สามารถสร้างคำสั่งซื้อของคุณได้ในขณะนี้ กรุณาลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "fundExchangeArsBankTransferTitle": "โอนธนาคาร",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -1465,10 +1400,6 @@
   "sellSendPaymentOrderNumber": "ราคา",
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
-  },
-  "dcaConfirmPaymentMethod": "วิธีการชําระเงิน",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
   },
   "sellSendPaymentAdvanced": "การตั้งค่าขั้นสูง",
   "@sellSendPaymentAdvanced": {
@@ -1600,10 +1531,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "buyConfirmBitcoinPrice": "ราคา",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
   "transactionSwapDescLnSendCompleted": "การชําระเงินไร้สายได้รับการส่ง! รหัสของคุณเสร็จสมบูรณ์.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -1693,10 +1620,6 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "buyEstimatedFeeValue": "ค่าธรรมเนียมโดยประมาณ",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
-  },
   "payName": "ชื่อ",
   "@payName": {
     "description": "Label for name field"
@@ -1745,10 +1668,6 @@
   "payPaymentConfirmed": "การชําระเงิน",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "buyEnterAmount": "ใส่จํานวน",
-  "@buyEnterAmount": {
-    "description": "Label for amount input field in buy flow"
   },
   "sellShowQrCode": "แสดงรหัส QR",
   "@sellShowQrCode": {
@@ -1869,10 +1788,6 @@
   "fundExchangeTitle": "กองทุน",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
-  },
-  "dcaNetworkValidationError": "เลือกเครือข่าย",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
   },
   "coldcardStep12": "คลิก \"ฉันทํา\" ในกระเป๋าเงิน Bitcoin.",
   "@coldcardStep12": {
@@ -2043,10 +1958,6 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "buyInputContinue": "อ่านต่อ",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
   "importQrDeviceJadeStep3": "ติดตามอุปกรณ์เพื่อปลดล็อค ปักกิ่ง",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2107,10 +2018,6 @@
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
   },
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
   "payNoPayments": "ไม่มีการชําระเงิน",
   "@payNoPayments": {
     "description": "Empty state message"
@@ -2126,10 +2033,6 @@
   "exchangeDcaActivateTitle": "การเปิดใช้งานซ้ํา",
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
-  },
-  "buyConfirmationTime": "การยืนยัน",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
   },
   "encryptedVaultRecommendation": "การเข้ารหัส: ",
   "@encryptedVaultRecommendation": {
@@ -2339,15 +2242,6 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "คุณซื้อ {amount} ด้วย {fiatAmount}",
-  "@buyYouBought": {
-    "description": "Success message with amount bought",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "หน้า",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
@@ -2400,10 +2294,6 @@
   "exchangeAppSettingsEmailNotificationsLabel": "อีเมล",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
-  },
-  "buyAccelerateTransaction": "คํานวณการทําธุรกรรม",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
   },
   "backupSettingsTested": "การทดสอบ",
   "@backupSettingsTested": {
@@ -2877,10 +2767,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "buyMax": "สูงสุด",
-  "@buyMax": {
-    "description": "Button to fill maximum amount"
-  },
   "onboardingCreateNewWallet": "สร้างข้อความใหม่",
   "@onboardingCreateNewWallet": {
     "description": "Button label for creating a new wallet in onboarding"
@@ -2904,10 +2790,6 @@
   "startBackupButton": "เริ่มต้นการสํารองข้อมูล",
   "@startBackupButton": {
     "description": "Button label to start backup process"
-  },
-  "buyInputTitle": "ซื้อ Bitcoin",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
   },
   "importMnemonicImport": "การนําเข้า",
   "@importMnemonicImport": {
@@ -3049,10 +2931,6 @@
   "sellLightningNetwork": "เครือข่ายไร้สาย",
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "buySelectWallet": "เลือกกระเป๋า",
-  "@buySelectWallet": {
-    "description": "Label for wallet selection dropdown"
   },
   "testBackupErrorIncorrectOrder": "คําสั่งที่ถูกต้อง กรุณาลองอีกครั้ง.",
   "@testBackupErrorIncorrectOrder": {
@@ -3362,10 +3240,6 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "buyBitcoinAddressHint": "BC1QYL7J673H ...6YAL70M0",
-  "@buyBitcoinAddressHint": {
-    "description": "Placeholder hint for bitcoin address input"
-  },
   "exchangeHomeWithdrawButton": "ถอน",
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
@@ -3448,10 +3322,6 @@
   "withdrawConfirmEmail": "อีเมล",
   "@withdrawConfirmEmail": {
     "description": "Field label for email (Interac)"
-  },
-  "buyNetworkFees": "ค่าธรรมเนียมเครือข่าย",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
   },
   "coldcardStep7": "   - เลื่อนเลเซอร์สีแดงและปิดรหัส QR",
   "@coldcardStep7": {
@@ -3780,15 +3650,6 @@
   "@importColdcardInstructionsStep8": {
     "description": "ImportColdcardQ: Eighth instruction step"
   },
-  "dcaSuccessMessageMonthly": "คุณจะซื้อ {amount} ทุกเดือน",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} เหรียญที่เลือก",
   "@sendSelectedCoins": {
     "description": "Label showing number of UTXOs selected",
@@ -3819,10 +3680,6 @@
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "dcaConfirmNetworkLightning": "ฟ้าผ่า",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
   "ledgerDefaultWalletLabel": "จอแสดงผล LED",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
@@ -3834,10 +3691,6 @@
   "customLocationProvider": "สถานที่ที่กําหนดเอง",
   "@customLocationProvider": {
     "description": "Name of custom location provider"
-  },
-  "dcaSelectFrequencyLabel": "เลือกความถี่",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
   },
   "transactionSwapDescChainCompleted": "Swap ของคุณเสร็จสมบูรณ์เรียบร้อยแล้ว! ตอนนี้เงินควรอยู่ในกระเป๋าเงินของคุณแล้ว",
   "@transactionSwapDescChainCompleted": {
@@ -3870,10 +3723,6 @@
   "recoverVia12WordsDescription": "การกู้คืนกระเป๋าสตางค์ของคุณผ่าน 12 คํา.",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
-  },
-  "dcaEnterLightningAddressLabel": "กด",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
   },
   "buyPayoutMethod": "วิธีการชําระเงิน",
   "@buyPayoutMethod": {
@@ -4129,15 +3978,6 @@
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
   },
-  "dcaConfirmPaymentBalance": "{currency} สมดุล",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "sellBankTransfer": "โอนธนาคาร",
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
@@ -4165,10 +4005,6 @@
   "sellSendPaymentBelowMin": "คุณพยายามที่จะขายด้านล่างขั้นต่ําที่สามารถขายกับกระเป๋าสตางค์นี้.",
   "@sellSendPaymentBelowMin": {
     "description": "Below min amount error"
-  },
-  "dcaWalletSelectionDescription": "การซื้อ Bitcoin จะวางไว้โดยอัตโนมัติ.",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
   },
   "sendTypeSend": "ส่ง",
   "@sendTypeSend": {
@@ -4416,17 +4252,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "dcaConfirmFrequency": "ความถี่",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
   "advancedOptionsTitle": "ตัวเลือกขั้นสูง",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
-  },
-  "dcaConfirmOrderType": "รายการ",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
   },
   "payPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
   "@payPriceWillRefreshIn": {
@@ -4513,15 +4341,6 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "dcaSuccessMessageDaily": "คุณจะซื้อ {amount} ทุกวัน",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "กลอง",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4578,10 +4397,6 @@
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
-  "buyWaitForFreeWithdrawal": "ถอนฟรี",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
   "sellSendPaymentCrcBalance": "ซีดี สมดุล",
   "@sellSendPaymentCrcBalance": {
     "description": "CRC balance payout method"
@@ -4605,10 +4420,6 @@
   "settingsAppSettingsTitle": "การตั้งค่า",
   "@settingsAppSettingsTitle": {
     "description": "Title for the app settings section in the settings menu"
-  },
-  "dcaWalletLightningSubtitle": "ต้องการกระเป๋าสตางค์สูงสุด 0.25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
   },
   "swapTransferRefundInProgressMessage": "เกิดข้อผิดพลาดกับ Swap กำลังดำเนินการคืนเงินให้คุณ",
   "@swapTransferRefundInProgressMessage": {
@@ -4650,10 +4461,6 @@
   "@transactionDetailLabelPayoutStatus": {
     "description": "Label for payout status"
   },
-  "buyInputFundAccount": "บัญชีบัญชีของคุณ",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
   "importWatchOnlyZpub": "z",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
@@ -4687,17 +4494,9 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "10 นาที",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
   "exchangeFileUploadUploading": "อัปโหลด ...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
-  },
-  "buyConfirmAwaitingConfirmation": "รับเงินคืน ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "allSeedViewShowSeedsButton": "แสดงเมล็ดพันธุ์",
   "@allSeedViewShowSeedsButton": {
@@ -4726,10 +4525,6 @@
   "transactionListLoadingTransactions": "โหลดการทําธุรกรรม ...",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
-  },
-  "dcaSuccessTitle": "ซื้อซ้ํา!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
   },
   "fundExchangeOnlineBillPaymentDescription": "จํานวนเงินใด ๆ ที่คุณส่งผ่านธนาคารของคุณ ชําระเงินโดยใช้ข้อมูลด้านล่างจะถูกโอนไปยังบัญชี Bitcoin ของคุณภายใน 3-4 วัน.",
   "@fundExchangeOnlineBillPaymentDescription": {
@@ -4819,10 +4614,6 @@
       }
     }
   },
-  "dcaSetupFrequencyError": "เลือกความถี่",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
   "testBackupErrorNoMnemonic": "ไม่มีการโหลด",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
@@ -4867,10 +4658,6 @@
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
   },
-  "buyConfirmTitle": "ซื้อ Bitcoin",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
   "exchangeLandingFeature5": "แชทกับลูกค้า",
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
@@ -4878,10 +4665,6 @@
   "electrumMainnet": "สงวนลิขสิทธิ์",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
-  },
-  "buyThatWasFast": "นั่นคือเร็ว ๆ ไม่?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "importWalletPassport": "หนังสือเดินทาง",
   "@importWalletPassport": {
@@ -5042,14 +4825,6 @@
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
   },
-  "dcaConfirmFrequencyDaily": "ทุกวัน",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "buyConfirmPurchase": "ยืนยัน",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
   "importQrDeviceKeystoneStep9": "ใส่ฉลากสําหรับกระเป๋าสตางค์และแตะ \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -5061,10 +4836,6 @@
   "payEnterAmountTitle": "กรอก",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "buyInputMaxAmountError": "คุณสามารถซื้อมากกว่า",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
   },
   "walletDetailsDeletingMessage": "ข้อความ ...",
   "@walletDetailsDeletingMessage": {
@@ -5115,10 +4886,6 @@
   "sellWhichWalletQuestion": "กระเป๋าเงินที่คุณต้องการขายจาก?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "buyNetworkFeeRate": "ค่าธรรมเนียมเครือข่าย",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
   },
   "autoswapAlwaysBlockLabel": "รายงานค่าใช้จ่ายสูง",
   "@autoswapAlwaysBlockLabel": {
@@ -5292,10 +5059,6 @@
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
   },
-  "dcaBackToHomeButton": "กลับไปบ้าน",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
-  },
   "importQrDeviceKruxInstructionsTitle": "คําแนะนํา",
   "@importQrDeviceKruxInstructionsTitle": {
     "description": "Title for Krux setup instructions"
@@ -5357,10 +5120,6 @@
   "sellSendPaymentFastest": "รวดเร็ว",
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
-  },
-  "dcaConfirmNetwork": "เครือข่ายเครือข่าย",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
   },
   "allSeedViewDeleteWarningMessage": "Deleting เมล็ดเป็นการกระทํา เพียงถ้าคุณมีการสํารองข้อมูลของเมล็ดหรือกระเป๋าสตางค์ที่เกี่ยวข้องกับกระเป๋าสตางค์.",
   "@allSeedViewDeleteWarningMessage": {
@@ -5492,10 +5251,6 @@
   "exchangeStatisticsNoData": "ไม่มีสถิติที่มีอยู่",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
-  },
-  "dcaConfirmTitle": "ยืนยัน ซื้อ",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
   },
   "fundExchangeCrIbanUsdTransferCodeWarning": "คุณต้องเพิ่มรหัสเป็น \"ข้อมูล\" หรือ \"ข้อความ\" หรือ \"ข้อความ\" เมื่อทําการชําระเงิน ถ้าคุณลืมรวมถึงรหัสนี้, การชําระเงินของคุณอาจปฏิเสธ.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
@@ -5648,17 +5403,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "dcaSetupContinue": "อ่านต่อ",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
   "transactionFeesDeductedFrom": "ค่าธรรมเนียมนี้จะถูกหักจากจํานวนเงิน",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
-  },
-  "buyConfirmYouPay": "คุณชําระเงิน",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
   },
   "importWatchOnlyTitle": "การนําเข้า",
   "@importWatchOnlyTitle": {
@@ -5825,10 +5572,6 @@
   "paySecurityQuestion": "คําถาม",
   "@paySecurityQuestion": {
     "description": "Label for security question field"
-  },
-  "dcaSelectWalletTypeLabel": "เลือกรหัส Bitcoin",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
   },
   "backupWalletHowToDecideVaultModalTitle": "วิธีการตัดสินใจ",
   "@backupWalletHowToDecideVaultModalTitle": {
@@ -6026,10 +5769,6 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "buyInputInsufficientBalance": "สมดุล",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
   "withdrawConfirmClabe": "ชั้น",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
@@ -6082,15 +5821,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "dcaSuccessMessageWeekly": "คุณซื้อ {amount} ทุกวัน",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmRecipientName": "ชื่อ",
   "@withdrawConfirmRecipientName": {
     "description": "Field label for recipient name"
@@ -6129,17 +5859,9 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "buyInputInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
   "swapErrorInsufficientFunds": "ไม่สามารถสร้างการทําธุรกรรม เช่นเดียวกับค่าใช้จ่ายไม่เพียงพอต่อค่าธรรมเนียมและจํานวนเงิน.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
-  },
-  "dcaConfirmAmount": "จํานวน",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
   },
   "sellSendPaymentPriceRefresh": "ราคาจะผ่อนคลาย ",
   "@sellSendPaymentPriceRefresh": {
@@ -6519,10 +6241,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "dcaConfirmFrequencyWeekly": "สัปดาห์",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
   "payInstitutionNumberHint": "ป้อนสาขา",
   "@payInstitutionNumberHint": {
     "description": "Hint for institution number input"
@@ -6538,10 +6256,6 @@
   "settingsThemeTitle": "ธีม",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "dcaSetupFundAccount": "บัญชีบัญชีของคุณ",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
   },
   "payEmail": "อีเมล",
   "@payEmail": {
@@ -6673,10 +6387,6 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "buyEnterBitcoinAddress": "ใส่หมายเลข Bitcoin",
-  "@buyEnterBitcoinAddress": {
-    "description": "Label for bitcoin address input field"
-  },
   "transactionDetailLabelPayoutAmount": "จํานวนเงิน",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -6796,10 +6506,6 @@
   "@backupWalletLastKnownEncryptedVault": {
     "description": "Label prefix for displaying timestamp of last encrypted vault backup"
   },
-  "dcaSetupInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
   "sendAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -6829,10 +6535,6 @@
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "dcaConfirmAutoMessage": "ซื้อคําสั่งซื้อจะวางการตั้งค่าโดยอัตโนมัติ คุณสามารถปิดเวลาได้ตลอดเวลา.",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
   "usePasswordInsteadButton": "ใช้ {pinOrPassword}",
   "@usePasswordInsteadButton": {
     "description": "Button to use password/PIN instead",
@@ -6846,10 +6548,6 @@
   "coreSwapsLnSendFailedRefunding": "เงินคืนจะคืนเงิน.",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
-  },
-  "dcaWalletTypeLightning": "เครือข่ายไร้สาย (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
   },
   "transactionSwapProgressBroadcasted": "ออกอากาศ",
   "@transactionSwapProgressBroadcasted": {
@@ -6898,10 +6596,6 @@
   "testBackupSuccessButton": "ดู",
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
-  },
-  "buyNetworkFeeExplanation": "ค่าธรรมเนียมเครือข่าย Bitcoin จะหักจากจํานวนเงินที่คุณได้รับและเก็บรวบรวมโดย Bitcoin นาที",
-  "@buyNetworkFeeExplanation": {
-    "description": "Explanation of network fees for express withdrawal"
   },
   "transactionDetailLabelAddress": "ที่อยู่",
   "@transactionDetailLabelAddress": {
@@ -7015,10 +6709,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "dcaSetupScheduleMessage": "การซื้อ Bitcoin จะวางไว้โดยอัตโนมัติ.",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
   "coreSwapsStatusExpired": "วันหมดอายุ",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
@@ -7034,10 +6724,6 @@
   "swapProgressRefundMessage": "เกิดข้อผิดพลาดกับ Swap กำลังดำเนินการคืนเงินให้คุณ",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
-  },
-  "dcaConfirmContinue": "อ่านต่อ",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
   },
   "decryptVaultButton": "ถอดรหัส",
   "@decryptVaultButton": {
@@ -7226,10 +6912,6 @@
   "@fundExchangeInfoBankCountryUk": {
     "description": "Info message that bank country is United Kingdom"
   },
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IZZ Rica (CN)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
     "description": "Payment method title for IBAN CRC in method list"
@@ -7282,10 +6964,6 @@
   "transactionOrderLabelOriginCedula": "สถานที่กําเนิด",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "buyViewDetails": "ดูรายละเอียด",
-  "@buyViewDetails": {
-    "description": "Button to view order details"
   },
   "paySwapFailed": "การแจ้งเตือน",
   "@paySwapFailed": {
@@ -7340,10 +7018,6 @@
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
-  "dcaConfirmFrequencyHourly": "ทุกวัน",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
   "sellSwiftCode": "รหัส SWIFT/BIC",
   "@sellSwiftCode": {
     "description": "Label for international bank code"
@@ -7372,10 +7046,6 @@
   "backupWalletInstructionLosePhone": "ไม่มีการสํารองข้อมูล, ถ้าคุณสูญเสียหรือทําลายโทรศัพท์ของคุณ, หรือถ้าคุณถอนการติดตั้ง App Bitcoin, Bitcoins, Bitcoin ของคุณจะหายไปตลอดไป.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "dcaConfirmLightningAddress": "ที่อยู่",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
   },
   "coreSwapsLnReceiveCompleted": "รหัสเสร็จสิ้น.",
   "@coreSwapsLnReceiveCompleted": {
@@ -7488,10 +7158,6 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "buyPaymentMethod": "วิธีการชําระเงิน",
-  "@buyPaymentMethod": {
-    "description": "Label for payment method dropdown"
-  },
   "coreSwapsStatusCompleted": "สมบูรณ์",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
@@ -7569,10 +7235,6 @@
   "sendEstimatedDeliveryFewHours": "ชั่วโมง",
   "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
-  },
-  "dcaConfirmFrequencyMonthly": "เดือน",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
   },
   "importWatchOnlyScriptType": "ประเภท",
   "@importWatchOnlyScriptType": {
@@ -7691,10 +7353,6 @@
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
   },
-  "buyBitcoinSent": "Bitcoin!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
-  },
   "coreScreensPageNotFound": "หน้า",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
@@ -7801,10 +7459,6 @@
   "receiveContinue": "อ่านต่อ",
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
-  },
-  "buyUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
   },
   "importWatchOnlyDisclaimerTitle": "การเตือนภัย",
   "@importWatchOnlyDisclaimerTitle": {
@@ -7955,10 +7609,6 @@
   "hwKeystone": "แจ็ค",
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
-  },
-  "buyInputMinAmountError": "คุณควรซื้ออย่างน้อย",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
   },
   "payInstitutionCode": "รหัสสถาบัน",
   "@payInstitutionCode": {
@@ -8126,10 +7776,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "dcaUseDefaultLightningAddress": "ใช้ช่องหมุนของฉัน.",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
   "sellEstimatedArrival": "ประมาณ: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -8217,17 +7863,9 @@
   "@sellKYCPending": {
     "description": "Message when verification in progress"
   },
-  "buyGetConfirmedFaster": "รับการยืนยันได้เร็วขึ้น",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
   "payCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "buyConfirmExpress": "ยืนยัน",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
   },
   "fundExchangeBankTransferWireTimeframe": "เงินทุนใด ๆ ที่คุณส่งให้เพิ่มไปยัง Bitcoin ของคุณภายใน 1-2 วัน.",
   "@fundExchangeBankTransferWireTimeframe": {
@@ -8284,17 +7922,9 @@
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
   },
-  "dcaConfirmOrderTypeValue": "ซื้อ",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
   "testBackupEncryptedVaultTitle": "การเข้ารหัส",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
-  },
-  "dcaWalletTypeLiquid": "ของเหลว (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
   },
   "fundExchangeLabelInstitutionNumber": "จํานวนสถาบัน",
   "@fundExchangeLabelInstitutionNumber": {
@@ -8348,10 +7978,6 @@
   "autoswapAlwaysBlockInfoDisabled": "เมื่อปิดใช้งาน คุณจะได้รับตัวเลือกให้อนุญาต Auto Swap ที่ถูกบล็อกเนื่องจากค่าธรรมเนียมสูง",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
-  },
-  "dcaSetupTitle": "ตั้งค่ารายการซื้อ",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
   },
   "sendErrorInsufficientBalanceForPayment": "ไม่สูญเสียค่าการชําระเงินนี้",
   "@sendErrorInsufficientBalanceForPayment": {
@@ -9216,10 +8842,6 @@
   "transactionDetailLabelPayjoinAborted": "ถูกยกเลิก",
   "transactionDetailLabelPayjoinFeeContribution": "ค่าธรรมเนียมส่วนร่วม Payjoin",
   "transactionPayjoinFeeContributionExplanation": "Payjoin จะเพิ่มเหรียญของคุณหนึ่งเหรียญเป็นอินพุตเพิ่มเติมในการชำระเงินเพื่อเพิ่มความเป็นส่วนตัว ค่าธรรมเนียมการขุดสำหรับอินพุตที่เพิ่มเข้ามานั้นจะถูกหักออกจากจำนวนเงินที่คุณได้รับ (BIP78)",
-  "dcaAccountUnavailableError": "ไม่สามารถโหลดบัญชีของคุณได้ ตรวจสอบการเชื่อมต่อและการเข้าสู่ระบบของคุณ แล้วลองอีกครั้ง",
-  "dcaLightningAddressRequiredError": "ป้อนที่อยู่ Lightning เพื่อรับการซื้อของคุณ",
-  "dcaReceiveAddressError": "ไม่สามารถเตรียมที่อยู่รับในกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
-  "dcaOrderCreationError": "ไม่สามารถสร้างการซื้อแบบประจำได้ โปรดลองอีกครั้งภายหลัง",
   "settingsPayjoinDisclaimerTitle": "ข้อควรทราบเกี่ยวกับ Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "ข้อควรทราบเกี่ยวกับ Payjoin",
   "settingsPayjoinAdvancedTitle": "การตั้งค่า Payjoin ขั้นสูง",

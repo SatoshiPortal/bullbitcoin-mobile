@@ -576,5 +576,412 @@
   "deleteAccountConfirmationDelete": "Account Delete Karo",
   "deleteAccountSuccessTitle": "Account Deletion Request Gayi",
   "deleteAccountSuccessDescription": "Aapki account deletion request ho gayi hai. Ye 5 working days ke andar process ho jayegi.",
-  "deleteAccountSuccessClose": "Band Karo"
+  "deleteAccountSuccessClose": "Band Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "buyEnterAmount": "Raashi daalo",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "buyPaymentMethod": "Payment ka tarika",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "buyMax": "Max",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buySelectWallet": "Wallet chuniye",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyEnterBitcoinAddress": "Bitcoin pata daalo",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyConfirmPurchase": "Khareedari confirm karo",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyYouBought": "Aapne {fiatAmount} mein {amount} kharida",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyPayoutWillBeSentIn": "Aapka payout bheja jayega ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "buyViewDetails": "Jaankari dekho",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "buyAccelerateTransaction": "Transaction Tez Karo",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyGetConfirmedFaster": "Jaldi confirm karwao",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpressWithdrawal": "Express withdrawal confirm karo",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "buyNetworkFeeExplanation": "Bitcoin network fee aapko milne wali raashi se kati jayegi aur Bitcoin miners ko milegi",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "buyNetworkFees": "Network fees",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "buyEstimatedFeeValue": "Anumaan fee kimat",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyNetworkFeeRate": "Network fee rate",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "buyConfirmationTime": "Confirmation samay",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyConfirmationTimeValue": "~10 minute",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyWaitForFreeWithdrawal": "Muft withdrawal ka intezaar karo",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "buyConfirmExpress": "Express confirm karo",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "buyBitcoinSent": "Bitcoin bheja gaya!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyThatWasFast": "Kitni jaldi, hai na?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "globalDefaultBitcoinWalletLabel": "Surakshit Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSuccessTitle": "Recurring Buy Chalu Ho Gaya!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSuccessMessageHourly": "Aap har ghante {amount} kharidoge",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageDaily": "Aap har din {amount} kharidoge",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageWeekly": "Aap har hafte {amount} kharidoge",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessMessageMonthly": "Aap har mahine {amount} kharidoge",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaBackToHomeButton": "Home wapas jao",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "dcaChooseWalletTitle": "Bitcoin Wallet Chuniye",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "dcaWalletSelectionDescription": "Bitcoin khareedari is schedule ke anusar apne aap hogi.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "dcaNetworkValidationError": "Kripya ek network chuniye",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaEnterLightningAddressLabel": "Lightning Address Daalo",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "dcaUseDefaultLightningAddress": "Mera default Lightning address use karo.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "dcaWalletSelectionContinueButton": "Aage Badho",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSelectFrequencyLabel": "Frequency Chuniye",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaSelectWalletTypeLabel": "Bitcoin Wallet Prakar Chuniye",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletLightningSubtitle": "Compatible wallet chahiye, maximum 0.25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "dcaWalletLiquidSubtitle": "Compatible wallet chahiye",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupTitle": "Recurring Buy Set Karo",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaSetupInsufficientBalance": "Insufficient Balance",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaSetupFundAccount": "Apna account fund karo",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "dcaSetupScheduleMessage": "Bitcoin purchases is schedule ke hisaab se automatically place hongi.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaSetupFrequencyError": "Kripya ek frequency select karo",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "dcaSetupContinue": "Continue",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "dcaConfirmTitle": "Recurring Buy Confirm Karo",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaConfirmAutoMessage": "Buy orders in settings ke hisaab se automatically place honge. Aap inhe kisi bhi waqt disable kar sakte hain.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaConfirmFrequency": "Frequency",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmFrequencyHourly": "Har ghante",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmFrequencyDaily": "Har din",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "dcaConfirmFrequencyWeekly": "Har hafte",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaConfirmFrequencyMonthly": "Har mahine",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "dcaConfirmAmount": "Amount",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmPaymentMethod": "Payment method",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "dcaConfirmPaymentBalance": "{currency} balance",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmOrderType": "Order type",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaConfirmOrderTypeValue": "Recurring buy",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaConfirmNetwork": "Network",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaConfirmLightningAddress": "Lightning address",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "dcaConfirmContinue": "Continue",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "buyInputTitle": "Bitcoin Kharido",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buyInputMinAmountError": "Aapko kam se kam itna kharidna chahiye",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "buyInputMaxAmountError": "Aap itne se zyada nahi kharid sakte",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyInputKycPending": "KYC ID Verification Baaki Hai",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyInputKycMessage": "Aapko pehle ID Verification complete karna hoga",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyInputCompleteKyc": "KYC Complete Karo",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "buyInputInsufficientBalance": "Insufficient balance",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "buyInputInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "buyInputFundAccount": "Apna account fund karo",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyInputContinue": "Continue",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "buyConfirmTitle": "Bitcoin Kharido",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyConfirmYouPay": "Aap dete hain",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "buyConfirmYouReceive": "Aap paate hain",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Price",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyConfirmPayoutWallet": "Bhugtaan wallet",
+  "buyPayoutMethodLiquid": "Liquid par L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin chain par BTC",
+  "buyConfirmPayoutMethod": "Payout method",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "buyConfirmExternalWallet": "External Bitcoin wallet",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmAwaitingConfirmation": "Confirmation ka intezaar hai",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "buyUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyBelowMinAmountError": "Aap minimum amount se kam kharidne ki koshish kar rahe hain.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyAboveMaxAmountError": "Aap maximum amount se zyada kharidne ki koshish kar rahe hain.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
+  "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.",
+  "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
+  "dcaReceiveAddressError": "Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.",
+  "dcaOrderCreationError": "Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein."
 }

@@ -576,5 +576,412 @@
   "deleteAccountConfirmationDelete": "Delete Account",
   "deleteAccountSuccessTitle": "Hesap Silme Talep Edildi",
   "deleteAccountSuccessDescription": "Hesap silme talebiniz alındı. 5 iş günü içinde işleme konulacaktır.",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "Ödemeniz gönderilir ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Bitcoin Cüzdanı seçin",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExternalWallet": "Dış Bitcoin cüzdanı",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "Açıklamayı teyit et",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Uyumlu cüzdanlar",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "You receive you receive you receive you receive you receive you receive",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyAboveMaxAmountError": "Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyBelowMinAmountError": "Minimum miktarın altında satın almaya çalışıyorsunuz.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyConfirmPayoutWallet": "Ödeme cüzdanı",
+  "buyPayoutMethodLiquid": "Liquid üzerinde L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin zincirinde BTC",
+  "buyConfirmPayoutMethod": "Payout yöntemi",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "Sıvı",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "Devam etmeye devam et",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "Yetersiz Denge",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "Her saat {amount} satın alacaksınız",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Siparişiniz şu anda oluşturulamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
+  "dcaConfirmPaymentMethod": "Ödeme yöntemi",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Fiyatı",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "Tahmin edilen ücret değeri",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Sayı girin",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Lütfen bir ağ seçin",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "buyInputContinue": "Devam etmeye devam et",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Onay zamanı",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "{fiatAmount} karşılığında {amount} satın aldınız",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Hız İşlemleri",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Max",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Bitcoin satın alın",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "Cüzdan seçin Cüzdan",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "KİTAP ID Verification Pending",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "İlk önce kimlik Doğrulamasını tamamlamanız gerekir",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "Network ücretleri",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "Her ay {amount} satın alacaksınız",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "Frekans seçin",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Lightning Address",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} dengesi",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "Tamamlanan KC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "Frekans",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "Sipariş türü",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "dcaSuccessMessageDaily": "Her gün {amount} satın alacaksınız",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Ücretsiz çekilmek için bekleyin",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Uyumlu cüzdan gerektirir, maksimum 0.25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "Hesabınızı finanse edin",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "~ 10 dakika",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Bekleyen bir onay ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSuccessTitle": "Satın almak Aktif!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaSetupFrequencyError": "Lütfen bir frekansı seçin",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "Bitcoin satın alın",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "Bu hızlıydı, değil miydi?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "Her gün her gün",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyConfirmPurchase": "Satın almayı onaylayın",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyInputMaxAmountError": "Daha fazla satın alamazsınız",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyNetworkFeeRate": "Ağ ücreti oranı oranı",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "Eve dön",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Anında ödeme",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "Ağ Ağı Ağı",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "Onay Satın Al Satın Al",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaSetupContinue": "Devam etmeye devam et",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "buyConfirmYouPay": "Ödersiniz",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Bitcoin Wallet Type seçin",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "Yeterli bakiye",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "dcaSuccessMessageWeekly": "Her hafta {amount} satın alacaksınız",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "$",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "Her hafta her hafta",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "Hesabınızı finanse edin",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "Bitcoin adresi girin",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Bu düzeni oluşturmak için yeterli bakiyeniz yok.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "Satın alma emirleri bu ayarlarda otomatik olarak yerleştirilir. Onları her zaman devre dışı bırakabilirsin.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Bitcoin ağ ücreti, Bitcoin madencileri tarafından aldığınız ve topladığınız miktarın üzerinden silinecektir",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmContinue": "Devam etmeye devam et",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "View details",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "Her saat",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "Lightning address",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "Ödeme yöntemi",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "Her ay",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "Bitcoin gönderdi!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyInputMinAmountError": "En azından satın almalısınız",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "dcaUseDefaultLightningAddress": "Varsayılan Lightning adresimi kullanın.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Daha hızlı teyit et",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Doğru ifade",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Yeniden satın almak",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "Sıvı (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Set Recurring Buy",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaAccountUnavailableError": "Hesabınız yüklenemedi. Bağlantınızı kontrol edin, giriş yaptığınızdan emin olun ve tekrar deneyin.",
+  "dcaLightningAddressRequiredError": "Satın alımlarınızı almak için bir Lightning adresi girin.",
+  "dcaReceiveAddressError": "Cüzdanınızda alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
+  "dcaOrderCreationError": "Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin."
 }

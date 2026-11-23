@@ -219,12 +219,6 @@
   "receiveWaitForPayjoin": "Odota, että lähettäjä suorittaa payjoin-transaktion",
   "receivePayjoinFailQuestion": "Eikö ole aikaa odottaa tai epäonnistuiko payjoin lähettäjän puolella?",
   "buyTitle": "Osta bitcoinia",
-  "buyEnterAmount": "Syötä määrä",
-  "buyPaymentMethod": "Maksutapa",
-  "buyMax": "Maksimi",
-  "buySelectWallet": "Valitse lompakko",
-  "buyEnterBitcoinAddress": "Syötä Bitcoin-osoite",
-  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "buyExternalBitcoinWallet": "Ulkoinen Bitcoin-lompakko",
   "buySecureBitcoinWallet": "Bitcoin-säästölompakko",
   "buyInstantPaymentWallet": "Pikamaksulompakko",
@@ -242,30 +236,6 @@
   "buyBitcoinPrice": "Bitcoin-kurssi",
   "buyPayoutMethod": "Maksutapa",
   "buyAwaitingConfirmation": "Odotetaan vahvistusta ",
-  "buyConfirmPurchase": "Vahvista osto",
-  "buyYouBought": "Ostit {amount} hintaan {fiatAmount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Maksusi lähetetään ",
-  "buyViewDetails": "Näytä tiedot",
-  "buyAccelerateTransaction": "Kiihdytä transaktiota",
-  "buyGetConfirmedFaster": "Saat vahvistuksen nopeammin",
-  "buyConfirmExpressWithdrawal": "Vahvista pikanosto",
-  "buyNetworkFeeExplanation": "Bitcoin-louhijoille menevät Bitcoin-verkon kulut vähennetään saamastasi summasta.",
-  "buyNetworkFees": "Verkkokulut",
-  "buyEstimatedFeeValue": "Arvioitu kulujen määrä",
-  "buyNetworkFeeRate": "Verkkokulujen määrä",
-  "buyConfirmationTime": "Vahvistusviive",
-  "buyConfirmationTimeValue": "~10 minuuttia",
-  "buyWaitForFreeWithdrawal": "Odota ilmaista nostoa",
-  "buyConfirmExpress": "Vahvista pikamaksu",
-  "buyBitcoinSent": "Bitcoin lähetetty!",
-  "buyThatWasFast": "Se oli nopeaa, eikö ollutkin?",
   "sellTitle": "Myy bitcoinia",
   "sellSelectWallet": "Valitse lompakko",
   "sellWhichWalletQuestion": "Mistä lompakosta haluat myydä?",
@@ -1001,56 +971,8 @@
   "bip85NoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
   "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "anErrorOccurred": "Tapahtui virhe",
-  "dcaSuccessTitle": "Toistuva osto on aktiivinen!",
-  "dcaSuccessMessageHourly": "Ostat {amount} joka tunti",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "Ostat {amount} joka päivä",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "Ostat {amount} joka viikko",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "Ostat {amount} joka kuukausi",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "Kotisivulle",
-  "dcaChooseWalletTitle": "Valitse Bitcoin-lompakko",
-  "dcaWalletSelectionDescription": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
-  "dcaNetworkValidationError": "Valitse verkko",
-  "dcaEnterLightningAddressLabel": "Syötä Lightning-osoite",
   "dcaLightningAddressEmptyError": "Syötä Lightning-osoite",
   "dcaLightningAddressInvalidError": "Syötä kelvollinen Lightning-osoite",
-  "dcaUseDefaultLightningAddress": "Käytä oletus Lightning-osoitettani.",
-  "dcaWalletSelectionContinueButton": "Jatka",
-  "dcaSelectFrequencyLabel": "Aikataulu",
-  "dcaSelectWalletTypeLabel": "Valitse Bitcoin-lompakon tyyppi",
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "dcaWalletTypeLightning": "Lightning-verkko (LN)",
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "dcaWalletBitcoinSubtitle": "Vähintään 0.001 BTC",
-  "dcaWalletLightningSubtitle": "Vaatii yhteensopivan lompakon, enintään 0.25 BTC",
-  "dcaWalletLiquidSubtitle": "Vaatii yhteensopivan lompakon",
   "swapInternalTransferTitle": "Sisäinen swap",
   "swapConfirmTransferTitle": "Vahvista swap",
   "swapInfoDescription": "Swappaa Bitcoinia sujuvasti lompakoidesi välillä. Säilytä varoja pikamaksulompakossa vain päivittäistä käyttöä varten.",
@@ -2320,58 +2242,9 @@
   "fundExchangeSpeiSubtitle": "Siirrä varoja CLABE-tunnuksesi avulla",
   "fundExchangeBankTransfer": "Pankkisiirto",
   "fundExchangeBankTransferSubtitle": "Lähetä pankkisiirto pankkitililtäsi",
-  "dcaSetupTitle": "Aseta toistuva osto",
-  "dcaSetupInsufficientBalance": "Riittämätön saldo",
-  "dcaSetupInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
-  "dcaSetupFundAccount": "Talletus",
-  "dcaSetupScheduleMessage": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
-  "dcaSetupFrequencyError": "Valitse aikataulu",
-  "dcaSetupContinue": "Jatka",
-  "dcaConfirmTitle": "Vahvista toistuva osto",
-  "dcaConfirmAutoMessage": "Ostotoimeksiannot suoritetaan automaattisesti näiden asetusten mukaan. Voit poistaa ne käytöstä milloin tahansa.",
-  "dcaConfirmFrequency": "Aikataulu",
-  "dcaConfirmFrequencyHourly": "Joka tunti",
-  "dcaConfirmFrequencyDaily": "Joka päivä",
-  "dcaConfirmFrequencyWeekly": "Joka viikko",
-  "dcaConfirmFrequencyMonthly": "Joka kuukausi",
-  "dcaConfirmAmount": "Määrä",
-  "dcaConfirmPaymentMethod": "Maksutapa",
-  "dcaConfirmPaymentBalance": "{currency}-saldo",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "Toimeksiantotyyppi",
-  "dcaConfirmOrderTypeValue": "Toistuva osto",
-  "dcaConfirmNetwork": "Verkko",
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "dcaConfirmNetworkLightning": "Lightning",
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "dcaConfirmLightningAddress": "Lightning-osoite",
-  "dcaConfirmContinue": "Jatka",
-  "buyInputTitle": "Osta Bitcoinia",
-  "buyInputMinAmountError": "Sinun tulee ostaa vähintään",
-  "buyInputMaxAmountError": "Et voi ostaa enempää kuin",
   "buyInputKycPending": "KYC-vahvistus odottaa",
   "buyInputKycMessage": "Sinun täytyy suorittaa henkilöllisyyden vahvistus ensin",
   "buyInputCompleteKyc": "Suorita KYC",
-  "buyInputInsufficientBalance": "Riittämätön saldo",
-  "buyInputInsufficientBalanceMessage": "Tililläsi ei ole tarpeeksi saldoa tämän toimeksiannon luomiseen.",
-  "buyInputFundAccount": "Talletus",
-  "buyInputContinue": "Jatka",
-  "buyConfirmTitle": "Osta Bitcoinia",
-  "buyConfirmYouPay": "Maksat",
-  "buyConfirmYouReceive": "Saat",
-  "buyConfirmBitcoinPrice": "Bitcoinin hinta",
-  "buyConfirmPayoutWallet": "Maksun lompakko",
-  "buyPayoutMethodLiquid": "L-BTC Liquid-verkossa",
-  "buyPayoutMethodBitcoin": "BTC Bitcoin-lohkoketjussa",
-  "buyConfirmPayoutMethod": "Maksutapa",
-  "buyConfirmExternalWallet": "Ulkoinen Bitcoin-lompakko",
-  "buyConfirmAwaitingConfirmation": "Odottaa vahvistusta ",
   "sellSendPaymentTitle": "Vahvista maksu",
   "sellSendPaymentPriceRefresh": "Hinta päivittyy ",
   "sellSendPaymentOrderNumber": "Tilausnumero",
@@ -2590,10 +2463,6 @@
   "withdrawOwnershipOtherAccount": "Tämä on jonkun toisen tili",
   "navigationTabWallet": "Lompakko",
   "navigationTabExchange": "Pörssi",
-  "buyUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
-  "buyBelowMinAmountError": "Yrität ostaa alle vähimmäismäärän.",
-  "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
-  "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "withdrawBelowMinAmountError": "Minimimäärä on {amount} {currency}",
   "withdrawAboveMaxAmountError": "Maksimimäärä on {amount} {currency}",
@@ -3623,10 +3492,6 @@
   "transactionDetailLabelPayjoinAborted": "Keskeytetty",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin-maksuosuus",
   "transactionPayjoinFeeContributionExplanation": "Payjoin lisää yhden kolikoistasi ylimääräisenä syötteenä maksuun yksityisyyden parantamiseksi. Tuon lisätyn syötteen louhintamaksu vähennetään vastaanottamastasi summasta (BIP78).",
-  "dcaAccountUnavailableError": "Tiliäsi ei voitu ladata. Tarkista yhteytesi, varmista että olet kirjautunut sisään ja yritä uudelleen.",
-  "dcaLightningAddressRequiredError": "Anna Lightning-osoite ostojesi vastaanottamista varten.",
-  "dcaReceiveAddressError": "Lompakkoosi ei voitu valmistella vastaanotto-osoitetta. Yritä uudelleen.",
-  "dcaOrderCreationError": "Toistuvaa ostoa ei voitu luoda. Yritä myöhemmin uudelleen.",
   "settingsPayjoinDisclaimerTitle": "Payjoin-huomautus",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin-huomautus",
   "settingsPayjoinAdvancedTitle": "Payjoinin lisäasetukset",

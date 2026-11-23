@@ -576,5 +576,148 @@
   "deleteAccountConfirmationDelete": "Delete Account",
   "deleteAccountSuccessTitle": "Запит на видалення облікового запису надіслано",
   "deleteAccountSuccessDescription": "Ваш запит на видалення облікового запису надіслано. Його буде опрацьовано протягом 5 робочих днів.",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessClose": "Close",
+  "buyInputFundAccount": "Оберіть Ваш рахунок",
+  "buyEnterAmount": "Введіть номер",
+  "buyPaymentMethod": "Спосіб оплати",
+  "buyMax": "Макс",
+  "buySelectWallet": "Виберіть гаманець",
+  "buyEnterBitcoinAddress": "Введіть адресу електронної пошти",
+  "buyBitcoinAddressHint": "BC1QYL7J673H ...6Y6ALV70M0",
+  "buyNetworkFeeExplanation": "Плата мережі Біткойн буде відхилена від суми, яку ви отримуєте і зібрані на Майнерах Біткойн",
+  "buyNetworkFees": "Мережеві збори",
+  "buyEstimatedFeeValue": "Орієнтовна вартість",
+  "buyNetworkFeeRate": "Курс валют",
+  "buyConfirmationTime": "Термін підтвердження",
+  "buyConfirmationTimeValue": "~10 хвилин",
+  "buyWaitForFreeWithdrawal": "Очікується безкоштовно",
+  "buyConfirmExpress": "Підтвердити експрес",
+  "buyBitcoinSent": "Bitcoin відправлений!",
+  "buyThatWasFast": "Це було швидко, це не так?",
+  "buyConfirmPurchase": "Підтвердити покупку",
+  "buyYouBought": "Ви придбали {amount} за {fiatAmount}",
+  "@buyYouBought": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyPayoutWillBeSentIn": "Ваша виплата буде відправлена в ",
+  "buyViewDetails": "Докладніше",
+  "buyAccelerateTransaction": "Прискорення транзакцій",
+  "buyGetConfirmedFaster": "Отримайте підтвердження швидше",
+  "buyConfirmExpressWithdrawal": "Підтвердити виведення експресу",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin у USD",
+  "globalDefaultLiquidWalletLabel": "Миттєві платежі",
+  "dcaConfirmContinue": "Продовжити",
+  "buyInputTitle": "Bitcoin у USD",
+  "buyInputMinAmountError": "Ви повинні придбати принаймні",
+  "buyInputMaxAmountError": "Ви не можете придбати більше",
+  "buyInputKycPending": "Перевірка ID KYC",
+  "buyInputKycMessage": "Ви повинні завершити перевірку ID першим",
+  "buyInputCompleteKyc": "Повний KYC",
+  "buyInputInsufficientBalance": "Недостатній баланс",
+  "buyInputInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
+  "buyInputContinue": "Продовжити",
+  "buyConfirmTitle": "Bitcoin у USD",
+  "buyConfirmYouPay": "Ви платите",
+  "buyConfirmYouReceive": "Ви отримуєте",
+  "buyConfirmBitcoinPrice": "Ціна Bitcoin",
+  "buyConfirmPayoutWallet": "Гаманець для виплати",
+  "buyPayoutMethodLiquid": "L-BTC у мережі Liquid",
+  "buyPayoutMethodBitcoin": "BTC у мережі Bitcoin",
+  "buyConfirmPayoutMethod": "Спосіб виплати",
+  "buyConfirmExternalWallet": "Зовнішні біткоїни гаманець",
+  "buyConfirmAwaitingConfirmation": "Підтвердження ",
+  "dcaChooseWalletTitle": "Виберіть гаманець Bitcoin",
+  "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
+  "buyAboveMaxAmountError": "Ви намагаєтеся придбати над максимальною кількістю.",
+  "buyBelowMinAmountError": "Ви намагаєтеся придбати нижче мінімальної суми.",
+  "dcaConfirmNetworkLiquid": "Рідина",
+  "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
+  "dcaWalletSelectionContinueButton": "Продовжити",
+  "dcaSetupInsufficientBalance": "Недостатній баланс",
+  "dcaSuccessMessageHourly": "Ви купуєте {amount} кожен час",
+  "@dcaSuccessMessageHourly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "Не вдалося створити ваше замовлення. Спробуйте ще раз або зверніться до підтримки.",
+  "dcaConfirmPaymentMethod": "Спосіб оплати",
+  "dcaNetworkValidationError": "Виберіть мережу",
+  "dcaWalletTypeBitcoin": "Біткін (BTC)",
+  "dcaSuccessMessageMonthly": "Купити {amount} щомісяця",
+  "@dcaSuccessMessageMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "Освітлення",
+  "dcaSelectFrequencyLabel": "Виберіть частоту",
+  "dcaEnterLightningAddressLabel": "Вхід Lightning Адреса",
+  "dcaConfirmPaymentBalance": "{currency} баланс",
+  "@dcaConfirmPaymentBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "Біткіні покупки будуть розміщені автоматично за цей графік.",
+  "dcaConfirmFrequency": "Кількість",
+  "dcaConfirmOrderType": "Тип замовлення",
+  "dcaSuccessMessageDaily": "Купити {amount} кожен день",
+  "@dcaSuccessMessageDaily": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletLightningSubtitle": "Вимагає сумісний гаманець, макс. 0.25 BTC",
+  "dcaSuccessTitle": "Покупка є активним!",
+  "dcaSetupFrequencyError": "Виберіть частоту",
+  "dcaConfirmFrequencyDaily": "Щодня",
+  "dcaBackToHomeButton": "Головна",
+  "dcaConfirmNetwork": "Мережа",
+  "dcaConfirmTitle": "Підтвердження Купити",
+  "dcaSetupContinue": "Продовжити",
+  "dcaSelectWalletTypeLabel": "Виберіть тип Bitcoin Wallet",
+  "dcaSuccessMessageWeekly": "Купити {amount} щотижня",
+  "@dcaSuccessMessageWeekly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmAmount": "Сума",
+  "dcaConfirmFrequencyWeekly": "Щодня",
+  "dcaSetupFundAccount": "Оберіть Ваш рахунок",
+  "dcaSetupInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
+  "dcaConfirmAutoMessage": "Купити замовлення будуть розміщені автоматично на ці налаштування. Ви можете відключити їх в будь-який час.",
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "dcaSetupScheduleMessage": "Біткіні покупки будуть розміщені автоматично за цей графік.",
+  "dcaConfirmNetworkBitcoin": "Bitcoin у USD",
+  "dcaConfirmFrequencyHourly": "Час",
+  "dcaConfirmLightningAddress": "Адреса блискавки",
+  "dcaConfirmFrequencyMonthly": "Місяць",
+  "buyUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
+  "dcaUseDefaultLightningAddress": "Використовуйте свою адресу за замовчуванням.",
+  "dcaConfirmOrderTypeValue": "Закупівля",
+  "dcaWalletTypeLiquid": "Рідина (LBTC)",
+  "dcaSetupTitle": "Встановити Recurring Купити",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaAccountUnavailableError": "Не вдалося завантажити ваш обліковий запис. Перевірте з'єднання, переконайтеся, що ви ввійшли, і спробуйте ще раз.",
+  "dcaLightningAddressRequiredError": "Введіть Lightning-адресу для отримання ваших покупок.",
+  "dcaReceiveAddressError": "Не вдалося підготувати адресу для отримання у вашому гаманці. Спробуйте ще раз.",
+  "dcaOrderCreationError": "Не вдалося створити регулярну покупку. Спробуйте пізніше."
 }

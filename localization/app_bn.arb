@@ -35,10 +35,6 @@
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
   },
-  "buyPayoutWillBeSentIn": "আপনার পেআউট পাঠানো হবে ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
   "fundExchangeInstantSepaInfo": "€20,000-এর নিচে লেনদেনের জন্য কেবল ব্যবহার করুন। বড় লেনদেনের জন্য Regular SEPA বিকল্প ব্যবহার করুন।",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
@@ -46,10 +42,6 @@
   "translationWarningContributeButton": "অনুবাদ উন্নত করতে সাহায্য করুন",
   "@translationWarningContributeButton": {
     "description": "Button to open Weblate translation platform"
-  },
-  "dcaChooseWalletTitle": "বিটকয়েন ওয়ালেট নির্বাচন করুন",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
   },
   "sellSendPaymentAboveMax": "আপনি এই ওয়ালেট থেকে বিক্রি করা সর্বোচ্চ পরিমাণের বেশি বিক্রি করার চেষ্টা করছেন।",
   "@sellSendPaymentAboveMax": {
@@ -266,10 +258,6 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "buyConfirmExternalWallet": "বহিরাগত বিটকয়েন ওয়ালেট",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
   "exchangeCurrencyDropdownTitle": "মুদ্রা নির্বাচন করুন",
   "@exchangeCurrencyDropdownTitle": {
     "description": "Title for the currency selection dropdown"
@@ -285,10 +273,6 @@
   "rbfFastest": "সবচেয়ে দ্রুত",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "buyConfirmExpressWithdrawal": "এক্সপ্রেস উইথড্রয়াল নিশ্চিত করুন",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
   },
   "sellSendPaymentTitle": "পরিশোধ নিশ্চিত করুন",
   "@sellSendPaymentTitle": {
@@ -403,10 +387,6 @@
   "save": "সংরক্ষণ করুন",
   "@save": {
     "description": "Generic save button label"
-  },
-  "dcaWalletLiquidSubtitle": "উপযোগী ওয়ালেট প্রয়োজন",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "fundExchangeCrIbanCrcTitle": "ব্যাংক ট্রান্সফার (CRC)",
   "@fundExchangeCrIbanCrcTitle": {
@@ -549,10 +529,6 @@
   "@fundExchangeLabelTransitNumber": {
     "description": "Label for transit number field"
   },
-  "buyConfirmYouReceive": "আপনি পাবেন",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
   "buyDocumentUpload": "নথিপত্র আপলোড করুন",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
@@ -566,10 +542,6 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "মানবিক সহায়তা পেতে, আপনাকে প্রথমে আপনার Bull Bitcoin অ্যাকাউন্টে লগ ইন করতে হবে। এটি সম্পূর্ণ বিনামূল্যে এবং কোনো KYC প্রয়োজন নেই, শুধুমাত্র একটি ইমেইল ঠিকানা।",
-  "buyAboveMaxAmountError": "আপনি সর্বাধিক পরিমাণের উপরে ক্রয় করার চেষ্টা করছেন।",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
   "sendShowPsbt": "PSBT দেখান",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -691,10 +663,6 @@
   "sellKYCRejected": "KYC যাচাই প্রত্যাখ্যাত",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
-  },
-  "buyBelowMinAmountError": "আপনি ন্যূনতম পরিমাণের নিচে ক্রয় করার চেষ্টা করছেন।",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
   },
   "exchangeLandingFeature6": "একীভূত লেনদেন ইতিহাস",
   "@exchangeLandingFeature6": {
@@ -893,17 +861,6 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
-  "buyConfirmPayoutWallet": "পেআউট ওয়ালেট",
-  "buyPayoutMethodLiquid": "Liquid-এ L-BTC",
-  "buyPayoutMethodBitcoin": "Bitcoin চেইনে BTC",
-  "buyConfirmPayoutMethod": "পাওআউট পদ্ধতি",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "dcaConfirmNetworkLiquid": "লিকুইড নেটওয়ার্ক",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
   "walletDetailsAddressTypeLabel": "ঠিকানার ধরন",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
@@ -1009,10 +966,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "dcaWalletBitcoinSubtitle": "ন্যূনতম 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
   "sendOpenTheCamera": "ক্যামেরা খুলুন",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1068,10 +1021,6 @@
   "exchangeAccountInfoLoadErrorMessage": "অ্যাকাউন্ট তথ্য লোড করা যাচ্ছে না",
   "@exchangeAccountInfoLoadErrorMessage": {
     "description": "Error message when account information fails to load"
-  },
-  "dcaWalletSelectionContinueButton": "চালিয়ে যান",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
   },
   "pinButtonChange": "পিন পরিবর্তন করুন",
   "@pinButtonChange": {
@@ -1144,10 +1093,6 @@
   "sendErrorLiquidWalletRequired": "Liquid ওয়ালেট লিকুইড থেকে লাইটনিং স্যুইপের জন্য ব্যবহার করা আবশ্যক",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
-  },
-  "dcaSetupInsufficientBalance": "অপর্যাপ্ত ব্যালেন্স",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
   },
   "swapTransferRefundedMessage": "সোয়াপ সফলভাবে ফেরত দেওয়া হয়েছে।",
   "@swapTransferRefundedMessage": {
@@ -1264,15 +1209,6 @@
   "withdrawConfirmCard": "কার্ড",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
-  },
-  "dcaSuccessMessageHourly": "আপনি প্রতি ঘণ্টায় {amount} ক্রয় করবেন",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "loginButton": "লগইন",
   "@loginButton": {
@@ -1408,7 +1344,6 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
-  "buyUnexpectedError": "আপনার অর্ডার এই মুহূর্তে তৈরি করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "fundExchangeArsBankTransferTitle": "ব্যাংক স্থানান্তর",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -1445,10 +1380,6 @@
   "sellSendPaymentOrderNumber": "অর্ডার নম্বর",
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
-  },
-  "dcaConfirmPaymentMethod": "পেমেন্ট পদ্ধতি",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
   },
   "sellSendPaymentAdvanced": "উন্নত সেটিংস",
   "@sellSendPaymentAdvanced": {
@@ -1576,10 +1507,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "buyConfirmBitcoinPrice": "বিটকয়েন মূল্য",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
   "transactionSwapDescLnSendCompleted": "লাইটনিং পেমেন্ট সফলভাবে পাঠানো হয়েছে! আপনার সোয়াপ এখন সম্পূর্ণ হয়েছে।",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -1669,10 +1596,6 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "buyEstimatedFeeValue": "আনুমানিক ফি মূল্য",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
-  },
   "payName": "নাম",
   "@payName": {
     "description": "Label for name field"
@@ -1721,10 +1644,6 @@
   "payPaymentConfirmed": "পেমেন্ট নিশ্চিত হয়েছে",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "buyEnterAmount": "পরিমাণ লিখুন",
-  "@buyEnterAmount": {
-    "description": "Label for amount input field in buy flow"
   },
   "sellShowQrCode": "QR code দেখুন",
   "@sellShowQrCode": {
@@ -1841,10 +1760,6 @@
   "fundExchangeTitle": "আর্থায়ন",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
-  },
-  "dcaNetworkValidationError": "একটি নেটওয়ার্ক নির্বাচন করুন",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
   },
   "coldcardStep12": "Bull Bitcoin ওয়ালেট-এ \"আমি শেষ করেছি\" ক্লিক করুন",
   "@coldcardStep12": {
@@ -2002,10 +1917,6 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "buyInputContinue": "চালিয়ে যান",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
   "importQrDeviceJadeStep3": "Jade আনলক করতে ডিভাইস নির্দেশনা অনুসরণ করুন",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2066,10 +1977,6 @@
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
   },
-  "dcaWalletTypeBitcoin": "বিটকয়েন (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
   "payNoPayments": "এখনও কোনো পেমেন্ট হয়নি",
   "@payNoPayments": {
     "description": "Empty state message"
@@ -2085,10 +1992,6 @@
   "exchangeDcaActivateTitle": "আবর্তিত ক্রয় সক্রিয় করুন",
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
-  },
-  "buyConfirmationTime": "নিশ্চিতকরণের সময়",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
   },
   "encryptedVaultRecommendation": "এনক্রিপ্টেড ভল্ট: ",
   "@encryptedVaultRecommendation": {
@@ -2298,15 +2201,6 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "আপনি {fiatAmount} দিয়ে {amount} কিনেছেন",
-  "@buyYouBought": {
-    "description": "Success message with amount bought",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "পৃষ্ঠা পাওয়া যায়নি",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
@@ -2358,10 +2252,6 @@
   "exchangeAppSettingsEmailNotificationsLabel": "ইমেইল নোটিফিকেশন",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
-  },
-  "buyAccelerateTransaction": "লেনদেন ত্বরান্বিত করুন",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
   },
   "backupSettingsTested": "পরীক্ষিত",
   "@backupSettingsTested": {
@@ -2827,10 +2717,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "buyMax": "সর্বোচ্চ",
-  "@buyMax": {
-    "description": "Button to fill maximum amount"
-  },
   "onboardingCreateNewWallet": "নতুন ওয়ালেট তৈরি করুন",
   "@onboardingCreateNewWallet": {
     "description": "Button label for creating a new wallet in onboarding"
@@ -2854,10 +2740,6 @@
   "startBackupButton": "ব্যাকআপ শুরু",
   "@startBackupButton": {
     "description": "Button label to start backup process"
-  },
-  "buyInputTitle": "বিটকয়েন কিনুন",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
   },
   "importMnemonicImport": "ইমপোর্ট",
   "@importMnemonicImport": {
@@ -2998,10 +2880,6 @@
   "sellLightningNetwork": "Lightning Network",
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "buySelectWallet": "ওয়ালেট নির্বাচন করুন",
-  "@buySelectWallet": {
-    "description": "Label for wallet selection dropdown"
   },
   "testBackupErrorIncorrectOrder": "ভুল শব্দের ক্রম। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@testBackupErrorIncorrectOrder": {
@@ -3307,10 +3185,6 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
-  "@buyBitcoinAddressHint": {
-    "description": "Placeholder hint for bitcoin address input"
-  },
   "exchangeHomeWithdrawButton": "উত্তোলন",
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
@@ -3393,10 +3267,6 @@
   "withdrawConfirmEmail": "ইমেইল",
   "@withdrawConfirmEmail": {
     "description": "Field label for email (Interac)"
-  },
-  "buyNetworkFees": "নেটওয়ার্ক ফি",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
   },
   "coldcardStep7": "   - QR কোডের ওপর-নিচে লাল লেজারটি নড়ান",
   "@coldcardStep7": {
@@ -3717,15 +3587,6 @@
   "@importColdcardInstructionsStep8": {
     "description": "ImportColdcardQ: Eighth instruction step"
   },
-  "dcaSuccessMessageMonthly": "আপনি প্রতি মাসে {amount} ক্রয় করবেন",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} কয়েন নির্বাচিত",
   "@sendSelectedCoins": {
     "description": "Label showing number of UTXOs selected",
@@ -3756,10 +3617,6 @@
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "dcaConfirmNetworkLightning": "লাইটনিং নেটওয়ার্ক",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
   "ledgerDefaultWalletLabel": "লেজার ওয়ালেট",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
@@ -3771,10 +3628,6 @@
   "customLocationProvider": "নিজস্ব স্থান",
   "@customLocationProvider": {
     "description": "Name of custom location provider"
-  },
-  "dcaSelectFrequencyLabel": "পুনরাবৃত্তি নির্বাচন করুন",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
   },
   "transactionSwapDescChainCompleted": "আপনার সোয়াপ সফলভাবে সম্পন্ন হয়েছে! তহবিল এখন আপনার ওয়ালেটে পাওয়া যাওয়ার কথা।",
   "@transactionSwapDescChainCompleted": {
@@ -3807,10 +3660,6 @@
   "recoverVia12WordsDescription": "১২টি শব্দের মাধ্যমে আপনার ওয়ালেট পুনরুদ্ধার করুন।",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
-  },
-  "dcaEnterLightningAddressLabel": "লাইটনিং ঠিকানা লিখুন",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
   },
   "buyPayoutMethod": "পেআউট পদ্ধতি",
   "@buyPayoutMethod": {
@@ -4062,15 +3911,6 @@
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
   },
-  "dcaConfirmPaymentBalance": "{currency} ব্যালেন্স",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "sellBankTransfer": "ব্যাংক স্থানান্তর",
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
@@ -4098,10 +3938,6 @@
   "sellSendPaymentBelowMin": "আপনি এই ওয়ালেট থেকে বিক্রি করার ন্যূনতম পরিমাণের নিচে বিক্রি করার চেষ্টা করছেন।",
   "@sellSendPaymentBelowMin": {
     "description": "Below min amount error"
-  },
-  "dcaWalletSelectionDescription": "এই সময়সূচী অনুযায়ী বিটকয়েন ক্রয় স্বয়ংক্রিয়ভাবে সম্পন্ন হবে",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
   },
   "sendTypeSend": "পাঠান",
   "@sendTypeSend": {
@@ -4340,17 +4176,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "dcaConfirmFrequency": "আবৃত্তি",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
   "advancedOptionsTitle": "উন্নত বিকল্পসমূহ",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
-  },
-  "dcaConfirmOrderType": "আদেশের ধরন",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
   },
   "payPriceWillRefreshIn": "দাম আপডেট হবে ",
   "@payPriceWillRefreshIn": {
@@ -4437,15 +4265,6 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "dcaSuccessMessageDaily": "আপনি প্রতিদিন {amount} ক্রয় করবেন",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "Boltz Swap ফি",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4498,10 +4317,6 @@
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
-  "buyWaitForFreeWithdrawal": "বিনামূল্যে উত্তোলনের জন্য অপেক্ষা করুন",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
   "sellSendPaymentCrcBalance": "CRC ব্যালেন্স",
   "@sellSendPaymentCrcBalance": {
     "description": "CRC balance payout method"
@@ -4525,10 +4340,6 @@
   "settingsAppSettingsTitle": "অ্যাপ সেটিংস",
   "@settingsAppSettingsTitle": {
     "description": "Title for the app settings section in the settings menu"
-  },
-  "dcaWalletLightningSubtitle": "উপযোগী ওয়ালেট প্রয়োজন, সর্বোচ্চ 0.25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
   },
   "swapTransferRefundInProgressMessage": "সোয়াপে একটি ত্রুটি ঘটেছে। আপনার রিফান্ড প্রক্রিয়াধীন।",
   "@swapTransferRefundInProgressMessage": {
@@ -4566,10 +4377,6 @@
   "@transactionDetailLabelPayoutStatus": {
     "description": "Label for payout status"
   },
-  "buyInputFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
@@ -4603,17 +4410,9 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "~10 মিনিট",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
   "exchangeFileUploadUploading": "আপলোড হচ্ছে...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
-  },
-  "buyConfirmAwaitingConfirmation": "নিশ্চিতকরণের জন্য অপেক্ষা করছে ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "allSeedViewShowSeedsButton": "সিড দেখুন",
   "@allSeedViewShowSeedsButton": {
@@ -4642,10 +4441,6 @@
   "transactionListLoadingTransactions": "লেনদেনগুলো লোড হচ্ছে।",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
-  },
-  "dcaSuccessTitle": "নিয়মিত ক্রয় সক্রিয়!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
   },
   "fundExchangeOnlineBillPaymentDescription": "নীচের তথ্য ব্যবহার করে আপনার ব্যাংকের অনলাইন বিল পেমেন্ট সিস্টেমের মাধ্যমে পাঠানো যেকোনো পরিমাণ ৩-৪ কার্যদিবসের মধ্যে আপনার Bull Bitcoin অ্যাকাউন্ট ব্যালান্সে ক্রেডিট হবে।",
   "@fundExchangeOnlineBillPaymentDescription": {
@@ -4731,10 +4526,6 @@
       }
     }
   },
-  "dcaSetupFrequencyError": "দয়া করে একটি পুনরাবৃত্তি নির্ধারণ করুন",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
   "testBackupErrorNoMnemonic": "কোনো মেনোমিক লোড করা হয়নি।",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
@@ -4779,10 +4570,6 @@
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
   },
-  "buyConfirmTitle": "বিটকয়েন কিনুন",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
   "exchangeLandingFeature5": "গ্রাহক সহায়তার সঙ্গে চ্যাট করুন",
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
@@ -4790,10 +4577,6 @@
   "electrumMainnet": "মেইননেট",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
-  },
-  "buyThatWasFast": "এটা দ্রুত ছিল, তাই না?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "importWalletPassport": "Foundation Passport",
   "@importWalletPassport": {
@@ -4953,14 +4736,6 @@
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
   },
-  "dcaConfirmFrequencyDaily": "প্রতিদিন",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "buyConfirmPurchase": "ক্রয় নিশ্চিত করুন",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
   "importQrDeviceKeystoneStep9": "Keystone ওয়ালেট-এর জন্য একটি লেবেল লিখুন এবং \"ইমপোর্ট\" চাপুন",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -4972,10 +4747,6 @@
   "payEnterAmountTitle": "পরিমাণ লিখুন",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "buyInputMaxAmountError": "আপনি এত বেশি ক্রয় করতে পারবেন না",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
   },
   "walletDetailsDeletingMessage": "ওয়ালেট মুছে ফেলা হচ্ছে...",
   "@walletDetailsDeletingMessage": {
@@ -5026,10 +4797,6 @@
   "sellWhichWalletQuestion": "আপনি কোন ওয়ালেট থেকে বিক্রি করতে চান?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "buyNetworkFeeRate": "নেটওয়ার্ক ফি হার",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
   },
   "autoswapAlwaysBlockLabel": "উচ্চ ফি সবসময় ব্লক করুন",
   "@autoswapAlwaysBlockLabel": {
@@ -5199,10 +4966,6 @@
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
   },
-  "dcaBackToHomeButton": "হোমে ফিরে যান",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
-  },
   "importQrDeviceKruxInstructionsTitle": "Krux নির্দেশনা",
   "@importQrDeviceKruxInstructionsTitle": {
     "description": "Title for Krux setup instructions"
@@ -5264,10 +5027,6 @@
   "sellSendPaymentFastest": "সবচেয়ে দ্রুত",
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
-  },
-  "dcaConfirmNetwork": "নেটওয়ার্ক",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
   },
   "allSeedViewDeleteWarningMessage": "সিড মুছে ফেলা একটি অপরিবর্তনীয় ক্রিয়া। শুধুই তখন এটি করুন যদি আপনার কাছে এই সিডের নিরাপদ ব্যাকআপ থাকে বা সংশ্লিষ্ট ওয়ালেটগুলো সম্পূর্ণভাবে খালি হয়ে গেছে।",
   "@allSeedViewDeleteWarningMessage": {
@@ -5383,10 +5142,6 @@
   "exchangeStatisticsNoData": "কোনো পরিসংখ্যান নেই",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
-  },
-  "dcaConfirmTitle": "পুনরায় ক্রয় নিশ্চিত করুন",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
   },
   "fundExchangeCrIbanUsdTransferCodeWarning": "পেমেন্ট করার সময় হস্তান্তর কোডটি বার্তা বা কারণ বা বিবরণ হিসেবে যোগ করতে হবে। যদি আপনি এই কোডটি অন্তর্ভুক্ত করতে ভুলেন, আপনার পেমেন্ট প্রত্যাখ্যাত হতে পারে।",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
@@ -5539,17 +5294,9 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "dcaSetupContinue": "চালিয়ে যান",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
   "transactionFeesDeductedFrom": "পাঠানো পরিমাণ থেকে এই ফি কাটা হবে।",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
-  },
-  "buyConfirmYouPay": "আপনি পরিশোধ করবেন",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
   },
   "importWatchOnlyTitle": "- শুধুমাত্র পর্যবেক্ষণ ওয়ালেট আমদানি করুন",
   "@importWatchOnlyTitle": {
@@ -5716,10 +5463,6 @@
   "paySecurityQuestion": "নিরাপত্তা প্রশ্ন",
   "@paySecurityQuestion": {
     "description": "Label for security question field"
-  },
-  "dcaSelectWalletTypeLabel": "বিটকয়েন ওয়ালেট টাইপ নির্বাচন করুন",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
   },
   "backupWalletHowToDecideVaultModalTitle": "কীভাবে সিদ্ধান্ত নেবেন",
   "@backupWalletHowToDecideVaultModalTitle": {
@@ -5912,10 +5655,6 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "buyInputInsufficientBalance": "পর্যাপ্ত ব্যালেন্স নেই",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
@@ -5968,15 +5707,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "dcaSuccessMessageWeekly": "আপনি প্রতি সপ্তাহে {amount} ক্রয় করবেন",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmRecipientName": "প্রাপক নাম",
   "@withdrawConfirmRecipientName": {
     "description": "Field label for recipient name"
@@ -6015,17 +5745,9 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "buyInputInsufficientBalanceMessage": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালান্স নেই",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
   "swapErrorInsufficientFunds": "ট্রান্স্যাকশন তৈরি করা সম্ভব হয়নি। সম্ভবত ফি ও পরিমাণ কভার করতে পর্যাপ্ত তহবিল না থাকার কারণে।",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
-  },
-  "dcaConfirmAmount": "পরিমাণ",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
   },
   "sellSendPaymentPriceRefresh": "দাম আপডেট হবে ",
   "@sellSendPaymentPriceRefresh": {
@@ -6401,10 +6123,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "dcaConfirmFrequencyWeekly": "প্রতি সপ্তাহে",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
   "payInstitutionNumberHint": "প্রতিষ্ঠান নম্বর লিখুন",
   "@payInstitutionNumberHint": {
     "description": "Hint for institution number input"
@@ -6420,10 +6138,6 @@
   "settingsThemeTitle": "থিম",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "dcaSetupFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
   },
   "payEmail": "ইমেইল",
   "@payEmail": {
@@ -6555,10 +6269,6 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "buyEnterBitcoinAddress": "Bitcoin ঠিকানা লিখুন",
-  "@buyEnterBitcoinAddress": {
-    "description": "Label for bitcoin address input field"
-  },
   "transactionDetailLabelPayoutAmount": "পাওআউট পরিমাণ",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -6678,10 +6388,6 @@
   "@backupWalletLastKnownEncryptedVault": {
     "description": "Label prefix for displaying timestamp of last encrypted vault backup"
   },
-  "dcaSetupInsufficientBalanceMessage": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালান্স নেই",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
   "sendAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -6711,10 +6417,6 @@
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "dcaConfirmAutoMessage": "এই সেটিংস অনুযায়ী ক্রয় অর্ডারগুলো স্বয়ংক্রিয়ভাবে করা হবে। আপনি যেকোনো সময়ে এগুলো বন্ধ করতে পারবেন।",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
   "usePasswordInsteadButton": "বিকল্প হিসেবে {pinOrPassword} ব্যবহার করুন >>",
   "@usePasswordInsteadButton": {
     "description": "Button to use password/PIN instead",
@@ -6728,10 +6430,6 @@
   "coreSwapsLnSendFailedRefunding": "Swap শীঘ্রই ফেরত দেওয়া হবে।",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
-  },
-  "dcaWalletTypeLightning": "লাইটনিং নেটওয়ার্ক (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
   },
   "exchangeBitcoinWalletsSaveSuccess": "ওয়ালেট ঠিকানা সফলভাবে সংরক্ষিত হয়েছে",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -6776,10 +6474,6 @@
   "testBackupSuccessButton": "বুঝেছি",
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
-  },
-  "buyNetworkFeeExplanation": "Bitcoin নেটওয়ার্ক ফি আপনি যে পরিমাণ পাবেন তা থেকে কেটে নেওয়া হবে এবং Bitcoin মাইনারদের দ্বারা সংগ্রহ করা হবে",
-  "@buyNetworkFeeExplanation": {
-    "description": "Explanation of network fees for express withdrawal"
   },
   "transactionDetailLabelAddress": "ঠিকানা",
   "@transactionDetailLabelAddress": {
@@ -6893,10 +6587,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "dcaSetupScheduleMessage": "এই সময়সূচী অনুযায়ী বিটকয়েন ক্রয় স্বয়ংক্রিয়ভাবে সম্পন্ন হবে",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
   "coreSwapsStatusExpired": "মেয়াদোত্তীর্ণ",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
@@ -6912,10 +6602,6 @@
   "swapProgressRefundMessage": "সোয়াপে একটি ত্রুটি ঘটেছে। আপনার রিফান্ড প্রক্রিয়াধীন।",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
-  },
-  "dcaConfirmContinue": "চালিয়ে যান",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
   },
   "decryptVaultButton": "ভল্ট ডিক্রিপ্ট করুন",
   "@decryptVaultButton": {
@@ -7104,10 +6790,6 @@
   "@fundExchangeInfoBankCountryUk": {
     "description": "Info message that bank country is United Kingdom"
   },
-  "dcaConfirmNetworkBitcoin": "বিটকয়েন",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN কোস্টা রিকা (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
     "description": "Payment method title for IBAN CRC in method list"
@@ -7160,10 +6842,6 @@
   "transactionOrderLabelOriginCedula": "উৎপত্তি পরিচয়পত্র",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "buyViewDetails": "বিবরণ দেখুন",
-  "@buyViewDetails": {
-    "description": "Button to view order details"
   },
   "paySwapFailed": "বদল ব্যর্থ",
   "@paySwapFailed": {
@@ -7218,10 +6896,6 @@
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
-  "dcaConfirmFrequencyHourly": "প্রতি ঘণ্টা",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
   "sellSwiftCode": "SWIFT/BIC কোড",
   "@sellSwiftCode": {
     "description": "Label for international bank code"
@@ -7250,10 +6924,6 @@
   "backupWalletInstructionLosePhone": "ব্যাকআপ ছাড়া, যদি আপনি আপনার ফোন হারিয়ে ফেলেন বা ভেঙে ফেলেন, অথবা Bull Bitcoin অ্যাপটি আনইনস্টল করেন, আপনার বিটকয়েন চিরতরে হারিয়ে যাবে।",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "dcaConfirmLightningAddress": "লাইটনিং ঠিকানা",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
   },
   "coreSwapsLnReceiveCompleted": "Swap সম্পন্ন হয়েছে।",
   "@coreSwapsLnReceiveCompleted": {
@@ -7366,10 +7036,6 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "buyPaymentMethod": "পেমেন্ট পদ্ধতি",
-  "@buyPaymentMethod": {
-    "description": "Label for payment method dropdown"
-  },
   "coreSwapsStatusCompleted": "সম্পন্ন",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
@@ -7447,10 +7113,6 @@
   "sendEstimatedDeliveryFewHours": "কয়েক ঘণ্টা",
   "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
-  },
-  "dcaConfirmFrequencyMonthly": "প্রতি মাসে",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
   },
   "importWatchOnlyScriptType": "স্ক্রিপ্ট প্রকার",
   "@importWatchOnlyScriptType": {
@@ -7569,10 +7231,6 @@
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
   },
-  "buyBitcoinSent": "Bitcoin পাঠানো হয়েছে!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
-  },
   "coreScreensPageNotFound": "পৃষ্ঠা পাওয়া যায়নি",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
@@ -7675,10 +7333,6 @@
   "receiveContinue": "চালিয়ে যান",
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
-  },
-  "buyUnauthenticatedError": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
   },
   "withdrawConfirmIban": "IBAN",
   "@withdrawConfirmIban": {
@@ -7825,10 +7479,6 @@
   "hwKeystone": "Keystone",
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
-  },
-  "buyInputMinAmountError": "কমপক্ষে কিনুন",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
   },
   "payInstitutionCode": "প্রতিষ্ঠান কোড",
   "@payInstitutionCode": {
@@ -7992,10 +7642,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "dcaUseDefaultLightningAddress": "আমার ডিফল্ট লাইটনিং ঠিকানা ব্যবহার করুন।",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
   "sellEstimatedArrival": "আনুমানিক পৌঁছানোর সময়: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -8079,17 +7725,9 @@
   "@sellKYCPending": {
     "description": "Message when verification in progress"
   },
-  "buyGetConfirmedFaster": "দ্রুত নিশ্চিত করুন",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
   "payCustomFee": "নিজস্ব ফি",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "buyConfirmExpress": "এক্সপ্রেস নিশ্চিত করুন",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
   },
   "fundExchangeBankTransferWireTimeframe": "আপনি যে কোনো তহবিল পাঠালে তা ১-২ কার্যদিবসের মধ্যে আপনার Bull Bitcoin-এ যোগ হবে।",
   "@fundExchangeBankTransferWireTimeframe": {
@@ -8142,17 +7780,9 @@
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
   },
-  "dcaConfirmOrderTypeValue": "নিয়মিত ক্রয়",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
   "testBackupEncryptedVaultTitle": "এনক্রিপ্টেড ভল্ট",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
-  },
-  "dcaWalletTypeLiquid": "লিকুইড (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
   },
   "fundExchangeLabelInstitutionNumber": "Institution number",
   "@fundExchangeLabelInstitutionNumber": {
@@ -8206,10 +7836,6 @@
   "autoswapAlwaysBlockInfoDisabled": "বন্ধ থাকলে, উচ্চ ফির কারণে ব্লক হওয়া একটি অটো-সোয়াপ অনুমোদন করার সুযোগ আপনাকে দেওয়া হবে",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
-  },
-  "dcaSetupTitle": "পুনরায় ক্রয় নির্ধারণ করুন",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
   },
   "sendErrorInsufficientBalanceForPayment": "এই পেমেন্ট কভার করতে যথেষ্ট ব্যালেন্স নেই",
   "@sendErrorInsufficientBalanceForPayment": {
@@ -9395,10 +9021,6 @@
   "transactionDetailLabelPayjoinAborted": "বাতিল করা হয়েছে",
   "transactionDetailLabelPayjoinFeeContribution": "Payjoin ফি অবদান",
   "transactionPayjoinFeeContributionExplanation": "গোপনীয়তা উন্নত করতে Payjoin পেমেন্টে আপনার একটি কয়েন অতিরিক্ত ইনপুট হিসেবে যোগ করে। সেই যোগ করা ইনপুটের মাইনিং ফি আপনার প্রাপ্ত পরিমাণ থেকে কাটা হয় (BIP78)।",
-  "dcaAccountUnavailableError": "আপনার অ্যাকাউন্ট লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করুন, আপনি লগ ইন করেছেন কিনা নিশ্চিত করুন এবং আবার চেষ্টা করুন।",
-  "dcaLightningAddressRequiredError": "আপনার কেনাকাটা পেতে একটি Lightning ঠিকানা লিখুন।",
-  "dcaReceiveAddressError": "আপনার ওয়ালেটে একটি গ্রহণকারী ঠিকানা প্রস্তুত করা যায়নি। আবার চেষ্টা করুন।",
-  "dcaOrderCreationError": "পুনরাবৃত্ত কেনা তৈরি করা যায়নি। পরে আবার চেষ্টা করুন।",
   "settingsPayjoinDisclaimerTitle": "Payjoin দাবিত্যাগ",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবিত্যাগ",
   "settingsPayjoinAdvancedTitle": "উন্নত Payjoin সেটিংস",

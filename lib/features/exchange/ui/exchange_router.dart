@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/dca/public/dca_facade.dart' show DcaRoute;
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart'
     show TransactionsRoute;
 import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
@@ -64,6 +63,7 @@ class ExchangeRouter {
     Exchange Function()? exchange,
     Preferences Function()? preferences,
     ExchangeSettingsHost? settings,
+    ExchangePurchaseHost? purchases,
   }) => BullExchangeFeature.mount(
     networkUnavailable: config.networkUnavailable,
     showWebsiteOnly: (context) =>
@@ -91,6 +91,7 @@ class ExchangeRouter {
     onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
     settings: settings,
+    purchases: purchases,
     auth: ExchangeScope.authHost,
     limitOrders: exchange,
     withdrawal: exchange == null || preferences == null
