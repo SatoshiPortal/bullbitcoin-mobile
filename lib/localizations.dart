@@ -16,6 +16,7 @@ import 'package:silent/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
+import 'package:onboarding/onboarding.dart';
 import 'package:scanning/scanning.dart';
 import 'package:settings/settings.dart' show SettingsLocalizations;
 
@@ -41,6 +42,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   LabelEditorLocalizations.delegate,
   ScanningLocalizations.delegate,
   MnemonicEntryLocalizations.delegate,
+  OnboardingLocalizations.delegate,
   SettingsLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,
 ];

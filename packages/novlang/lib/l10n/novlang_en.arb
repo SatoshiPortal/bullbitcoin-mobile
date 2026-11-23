@@ -157,10 +157,10 @@
   "@app__walletDeletionErrorOngoingSwaps_apple": {
     "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."
   },
-  "app__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
+  "onboarding__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
   "wizard__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
-  "@app__onboardingSplashDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key onboardingSplashDescription."
+  "@onboarding__onboardingSplashDescription_apple": {
+    "description": "Apple (App Store) wording for the onboarding catalogue key onboardingSplashDescription."
   },
   "@wizard__onboardingSplashDescription_apple": {
     "description": "Apple (App Store) wording for the wizard catalogue key onboardingSplashDescription."

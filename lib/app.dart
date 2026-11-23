@@ -52,6 +52,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:novlang/novlang.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/setup.dart';
 
 @visibleForTesting
 void resumePayjoinsOnAppResume(
@@ -229,6 +231,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         NetworkLocalizations.delegate,
                         BtcMapFeature.localizationsDelegate,
                         BackupsFeature.localizationsDelegate,
+                        NovlangOnboardingLocalizationsDelegate(novlangPolicy),
                         NovlangQuickActionsLocalizationsDelegate(
                           novlangPolicy,
                           const QuickActionsFallbackDelegate(),
@@ -250,6 +253,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                             child: BullSupportScope(
                               onContactSupport: SupportFacade.contactSupport,
                               child: AppStartupWidget(
+                                onMissingWallets: () =>
+                                    OnboardingNavigation.go(AppRouter.router),
+                                loadingSplash: locator<OnboardingFeature>()
+                                    .buildLoadingSplash,
                                 onUnlocked: () =>
                                     AppLocator.startWalletsAfterUnlock(locator),
                                 app: locator<RecoverBullFeature>().withAlerts(

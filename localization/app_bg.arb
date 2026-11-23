@@ -269,10 +269,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "Възстановете портфейла си.",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Моля, изберете скорост на таксата.",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -280,10 +276,6 @@
   "transactionSwapDescChainPending": "Вашият обмен е създаден, но все още не е иницииран.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
-  },
-  "onboardingEncryptedVaultDescription": "Възстановете резервното копие чрез облака с вашия ПИН.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "receiveInvoiceCopied": "Инвойсът е копиран в клипборда",
   "@receiveInvoiceCopied": {
@@ -1459,10 +1451,6 @@
   "@passwordLabel": {
     "description": "Label for password input field"
   },
-  "onboardingSplashDescription": "Суверен портфейл за Bitcoin със самоуправление и услуга за обмен само за Bitcoin.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Средствата ще бъдат добавени към баланса ви в акаунта.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2134,10 +2122,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "Създайте нов портфейл",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "Получете биткойн мигновено след плащане",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -2499,10 +2483,6 @@
   "sendSwapDetails": "Подробности за размяната",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "Възстановете портфейла си чрез 12 думи.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "Зареждане",
   "@pinStatusLoading": {
@@ -3834,10 +3814,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "Притежавайте парите си.",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "connectHardwareWalletLedger": "Ledger",
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
@@ -3919,10 +3895,6 @@
   "coldcardInstructionsTitle": "Coldcard Q Инструкции",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "Възстанови портфейла.",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "Номер на справка",
   "@transactionOrderLabelReferenceNumber": {
@@ -4704,10 +4676,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "Физическо резервно копие.",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "От",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -4788,10 +4756,6 @@
   "exchangeAccountInfoVerificationLightVerification": "Лека верификация",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
-  },
-  "onboardingRecoverWalletButton": "Възстанови портфейла.",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "coreSwapsLnSendFailedRefunding": "Обмяната ще бъде възстановена скоро.",
   "@coreSwapsLnSendFailedRefunding": {
@@ -6132,7 +6096,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Нещо се обърка при настройването на портфейла ви. Моля, опитайте отново.",
   "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си.",
   "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
   "coreScreensFeeRateLabel": "Размер на таксата",
@@ -6281,12 +6244,6 @@
   "backupCardSubtitle": "Архивирайте портфейла си сега.",
   "autoswapTargetBalanceLabel": "Целеви баланс на незабавния портфейл",
   "autoswapMaximumBalanceLabel": "Максимален баланс на незабавния портфейл",
-  "onboardingAdvancedOptionsTitle": "Разширени опции",
-  "onboardingAdvancedOptionsDescription": "Конфигурирайте разширените настройки преди да създадете или възстановите портфейла си",
-  "onboardingAdvancedOptionsCustomElectrum": "Персонализиран сървър Electrum",
-  "onboardingAdvancedOptionsCustomMempool": "Персонализиран сървър Mempool",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Персонализиран сървър Recoverbull",
-  "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
   "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
@@ -6965,7 +6922,6 @@
   "settingsSearchErrorReportingKeywords": "доклади за сривове|доклади за грешки|диагностика|телеметрия|логове за грешки",
   "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност",
   "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати.",
-  "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
   "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",

@@ -1,0 +1,31 @@
+{
+  "@@locale": "zh",
+  "onboardingRecoverYourWallet": "恢复您的钱包",
+  "onboardingEncryptedVaultDescription": "利用你的PIN,通过云层回收.",
+  "onboardingSplashDescription": "主权自控墙和特制交换服务.",
+  "onboardingEncryptedVault": "加密",
+  "onboardingCreateNewWallet": "创立新墙",
+  "onboardingPhysicalBackupDescription": "通过 12 个助记词恢复您的钱包",
+  "settingsLanguageTitle": "语言",
+  "onboardingRecover": "恢复",
+  "onboardingBullBitcoin": "页: 1",
+  "onboardingOwnYourMoney": "贵 会",
+  "onboardingRecoverWallet": "恢复钱包",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "onboardingPhysicalBackup": "物理备份",
+  "onboardingRecoverWalletButton": "恢复钱包",
+  "continueButton": "继续",
+  "torSettingsTitle": "三、背景",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "设置钱包时出了点问题，请重试。",
+  "onboardingAdvancedOptionsTitle": "高级选项",
+  "onboardingAdvancedOptionsDescription": "在创建或恢复钱包前配置高级设置",
+  "onboardingAdvancedOptionsCustomElectrum": "自定义 Electrum 服务器",
+  "onboardingAdvancedOptionsCustomMempool": "自定义 Mempool 服务器",
+  "onboardingAdvancedOptionsCustomRecoverbull": "自定义 Recoverbull 服务器",
+  "onboardingAdvancedOptionsFooter": "您可以稍后在应用设置中更改这些设置",
+  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。"
+}

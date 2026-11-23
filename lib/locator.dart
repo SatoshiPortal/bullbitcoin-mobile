@@ -11,7 +11,7 @@ import 'package:bull_exchange/bull_exchange.dart'
 import 'package:backups/backups.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
-import 'package:material_ui/material_ui.dart' show AssetImage;
+import 'package:material_ui/material_ui.dart' show AssetImage, Image;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:labels/labels.dart';
@@ -70,7 +70,9 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
+import 'package:bb_mobile/features/onboarding/wallet_bindings.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -319,7 +321,30 @@ class AppLocator {
       ),
     );
     AppStartupLocator.setup(locator);
-    OnboardingLocator.setup(locator);
+    locator.registerLazySingleton(() {
+      final wallets = bindOnboardingWallets(locator);
+      return OnboardingFeature.mount(
+        createWallet: wallets.create,
+        recoverWallet: wallets.recover,
+        walletImport: locator<ImportFeature>(),
+        onWalletReady: (context) {
+          context.read<WalletBloc>().add(const WalletStarted());
+          context.goNamed(WalletRoute.walletHome.name);
+        },
+        languageOf: (context) => context.select(
+          (SettingsCubit cubit) =>
+              cubit.state.language ?? Language.unitedStatesEnglish,
+        ),
+        changeLanguage: (context, language) =>
+            context.read<SettingsCubit>().changeLanguage(language),
+        logo: SuperuserTapUnlocker(
+          child: Image.asset(Assets.logos.bbLogoWhite.path, height: 127),
+        ),
+        background: AssetImage(Assets.backgrounds.bgLong.path),
+        encryptedBackupIcon: AssetImage(Assets.misc.encryptedVault.path),
+        physicalBackupIcon: AssetImage(Assets.misc.physicalBackup.path),
+      );
+    });
     final bip85 = inventory.bip85(locator<Secrets>());
     locator.registerSingleton<Bip85Derivations>(bip85);
     locator.registerSingleton(

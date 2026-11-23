@@ -193,10 +193,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "Cüzdanını yeniden keşfedin",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Lütfen bir ücret oranını seçin",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -208,10 +204,6 @@
   "coreScreensTransferFeeLabel": "Takas Ücreti",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "Yedeklerinizi PIN'inizi kullanarak bulut aracılığıyla yeniden keşfedin.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Swap Status",
   "@transactionSwapStatusSwapStatus": {
@@ -1650,10 +1642,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "Egemen kendini tutuklama Bitcoin cüzdanı ve Bitcoin- sadece değişim servisi.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2498,10 +2486,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "Yeni Cüzdan Oluştur",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
     "description": "Label for backup ID"
@@ -2965,10 +2949,6 @@
   "sendSwapDetails": "Swap Detayları",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "Cüzdanınızı 12 kelime ile yeniden keşfedin.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "Yükleniyor",
   "@pinStatusLoading": {
@@ -4660,10 +4640,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "Kendi Paranı Kendi Paranız",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4757,10 +4733,6 @@
   "coldcardInstructionsTitle": "Coldcard Q Talimatlar",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "Recover Cüzdan",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "Referans Numarası",
   "@transactionOrderLabelReferenceNumber": {
@@ -5732,10 +5704,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "Fiziksel yedekleme",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "From",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5828,10 +5796,6 @@
   "sellSendPaymentInstantPayments": "Anında ödeme",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "Recover Cüzdan",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "Bunun yerine {pinOrPassword} kullan >>",
   "@usePasswordInsteadButton": {
@@ -7483,7 +7447,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
   "coreScreensFeeRateLabel": "Ücret oranı",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7520,12 +7483,6 @@
   "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin.",
   "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
   "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
-  "onboardingAdvancedOptionsTitle": "Gelişmiş Seçenekler",
-  "onboardingAdvancedOptionsDescription": "Cüzdanınızı oluşturmadan veya kurtarmadan önce gelişmiş ayarları yapılandırın",
-  "onboardingAdvancedOptionsCustomElectrum": "Özel Electrum Sunucusu",
-  "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
-  "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
   "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
@@ -8031,7 +7988,6 @@
   "settingsSearchErrorReportingKeywords": "çökme raporları|hata raporları|tanılama|telemetri|hata günlükleri",
   "settingsSearchScreenPrivacyKeywords": "ekran görüntüleri|ekran kaydı|ekran yakalama koruması|gizlilik",
   "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
-  "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
   "sendErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",

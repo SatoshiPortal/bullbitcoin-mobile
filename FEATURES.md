@@ -167,7 +167,6 @@ graph TB
     WIZARD[Startup Wizard<br/>Workspace Feature]
     MNEMONIC_ENTRY[Mnemonic Entry]
     PHYSICAL_BACKUP_VERIFICATION[Physical Backup Verification]
-    ONBOARDING[Onboarding]
     SETTINGS[Legacy Settings<br/>Preferences and child screens]
     SETTINGS_HUB[Settings home and search<br/>Workspace Feature]
     SETTINGS -->|menu projection and child routes| SETTINGS_HUB
@@ -230,6 +229,23 @@ graph TB
     EXCHANGE[Exchange]
     SUPPORT[Support]
     APP_STARTUP[App Startup]
+    ONBOARDING[Onboarding workspace feature]
+    ONBOARDING_LEGACY[Legacy onboarding provisioning]
+    CORE -->|mount and host bindings| ONBOARDING
+    CORE -->|bind wallet operations| ONBOARDING_LEGACY
+    APP_STARTUP -.->|loading splash supplied by shell| ONBOARDING
+    WALLETS -->|typed recovery navigation| ONBOARDING
+    ONBOARDING_LEGACY -->|typed onboarding failures| ONBOARDING
+    ONBOARDING_LEGACY -->|default provisioning and backup metadata| WALLETS
+    ONBOARDING --> BULL_UI
+    ONBOARDING --> MNEMONIC_ENTRY
+    ONBOARDING --> NETWORK
+    ONBOARDING --> NOVLANG
+    ONBOARDING --> PREFERENCES
+    ONBOARDING --> PRIMITIVES
+    ONBOARDING --> RECOVERBULL
+    ONBOARDING --> SCREEN_PRIVACY
+    ONBOARDING -->|read-only Bitcoin history scan| WALLET_IMPORT
     UTXO_MGMT[UTXO Management]
     BACKUPS[Backups workspace feature<br/>Backup status and verification]
     SEND[Send]
@@ -363,15 +379,11 @@ graph TB
     WALLETS --> QUICK_ACTIONS
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES
-    ONBOARDING --> WALLET_IMPORT
-    ONBOARDING --> MNEMONIC_ENTRY
     APP_STARTUP --> MNEMONIC_ENTRY
     MNEMONIC_ENTRY --> BULL_UI
     BACKUPS --> PHYSICAL_BACKUP_VERIFICATION
     PHYSICAL_BACKUP_VERIFICATION --> BULL_UI
     PHYSICAL_BACKUP_VERIFICATION --> SECRETS
-    ONBOARDING --> SETTINGS
-    ONBOARDING --> WALLETS
 
     %% Legacy Core-to-feature dependencies, pending extraction
 
@@ -455,7 +467,6 @@ graph TB
     NETWORK --> BULL_PAYJOIN
     NETWORK --> RECOVERBULL
     NETWORK --> PRIMITIVES
-    ONBOARDING --> NETWORK
     SWAPS --> LABELS
     SETTINGS --> SP
     SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM

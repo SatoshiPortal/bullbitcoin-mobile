@@ -707,17 +707,9 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "بازیابی کیف پول",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "لطفا نرخ هزینه را انتخاب کنید",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
-  },
-  "onboardingEncryptedVaultDescription": "پشتیبان گیری خود را از طریق ابر با استفاده از PIN خود بازیابی کنید.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "تغییر وضعیت",
   "@transactionSwapStatusSwapStatus": {
@@ -1956,10 +1948,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "بانک مرکزی خود، کیف پول Bitcoin و سرویس تبادل بیت کوین را در اختیار دارد.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "... وجوه به حساب شما اضافه خواهد شد.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2672,10 +2660,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "ایجاد کیف پول جدید",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "دریافت بیت کوین بلافاصله پس از پرداخت",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -3077,10 +3061,6 @@
   "sendSwapDetails": "جزئیات تبادل",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "کیف پول خود را از طریق 12 کلمه بازیابی کنید.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "بارگیری",
   "@pinStatusLoading": {
@@ -4528,10 +4508,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "پول خود را داشته باشید",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "connectHardwareWalletLedger": "Ledger",
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
@@ -4613,10 +4589,6 @@
   "coldcardInstructionsTitle": "دستورالعمل های Cold Card Q",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "بازیابی کیف پول",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "شماره مرجع",
   "@transactionOrderLabelReferenceNumber": {
@@ -5433,10 +5405,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "پشتیبانی فیزیکی",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "از",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5521,10 +5489,6 @@
   "sellSendPaymentInstantPayments": "پرداخت های فوری",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "بازیابی کیف پول",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "استفاده از {pinOrPassword} به جای >>",
   "@usePasswordInsteadButton": {
@@ -7483,7 +7447,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "در راه‌اندازی کیف پول شما مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
   "coreScreensFeeRateLabel": "نرخ کارمزد",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7520,12 +7483,6 @@
   "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
   "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
   "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
-  "onboardingAdvancedOptionsTitle": "گزینه‌های پیشرفته",
-  "onboardingAdvancedOptionsDescription": "پیش از ساخت یا بازیابی کیف پول خود، تنظیمات پیشرفته را پیکربندی کنید",
-  "onboardingAdvancedOptionsCustomElectrum": "سرور Electrum سفارشی",
-  "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
-  "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
-  "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
   "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
   "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
@@ -8031,7 +7988,6 @@
   "settingsSearchErrorReportingKeywords": "گزارش های خرابی|گزارش خطا|اطلاعات تشخیصی|تله متری|گزارش های خطا",
   "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی",
   "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید.",
-  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
   "sendErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sendErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",

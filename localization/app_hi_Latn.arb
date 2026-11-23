@@ -778,25 +778,9 @@
   "@addressCardBalanceLabel": {
     "description": "Label for the balance field in address card"
   },
-  "onboardingRecoverYourWallet": "Apna wallet recover karo",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "onboardingEncryptedVault": "Encrypted vault",
   "@onboardingEncryptedVault": {
     "description": "Title for the encrypted vault recovery option in onboarding"
-  },
-  "onboardingEncryptedVaultDescription": "Apna backup cloud se PIN use karke recover karo.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "onboardingPhysicalBackup": "Physical backup",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
-  "onboardingPhysicalBackupDescription": "Apna wallet 12 words se recover karo.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "onboardingRecover": "Recover Karo",
   "@onboardingRecover": {
@@ -805,26 +789,6 @@
   "onboardingBullBitcoin": "Bull Bitcoin",
   "@onboardingBullBitcoin": {
     "description": "Brand name displayed in onboarding"
-  },
-  "onboardingOwnYourMoney": "Apna Paisa Apna",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
-  "onboardingSplashDescription": "Sovereign self-custody Bitcoin wallet aur Bitcoin-only exchange service.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
-  "onboardingRecoverWallet": "Wallet Recover Karo",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
-  },
-  "onboardingRecoverWalletButton": "Wallet Recover Karo",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
-  },
-  "onboardingCreateNewWallet": "Naya Wallet Banao",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "sendTitle": "Bhejo",
   "@sendTitle": {
@@ -7586,10 +7550,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Aapka wallet setup karte samay kuch galat ho gaya. Kripya phir se try karein.",
-  "@walletSetupErrorTryAgain": {
-    "description": "Generic error shown when default-wallet creation or recovery fails."
-  },
   "recipientsFieldSinpePhoneNumberHint": "Country code ke bina 8 digits",
   "recipientsCopDocCcRecipientNumber": "Recipient ka cédula number",
   "recipientsCopDocCeRecipientNumber": "Recipient ka cédula de extranjería number",
@@ -7611,12 +7571,6 @@
   "backupCardSubtitle": "Abhi apne wallet ka backup lo.",
   "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
   "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",
-  "onboardingAdvancedOptionsTitle": "Advanced Options",
-  "onboardingAdvancedOptionsDescription": "Apna wallet banane ya recover karne se pehle advanced settings configure karo",
-  "onboardingAdvancedOptionsCustomElectrum": "Custom Electrum Server",
-  "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
-  "onboardingAdvancedOptionsFooter": "Aap in settings ko baad mein App Settings mein badal sakte hain",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
   "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai",
   "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
@@ -8104,7 +8058,6 @@
   "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
   "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
   "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein.",
-  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",

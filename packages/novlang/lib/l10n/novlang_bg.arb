@@ -38,7 +38,7 @@
   "app__exchangeTestnetBasicAuthTitle_apple": "Идентификационни данни за testnet сметката",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth за уеб страниците на testnet сметката (вход и KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Не можете да изтриете портфейл с текущи прехвърляния.",
-  "app__onboardingSplashDescription_apple": "Суверен портфейл за Bitcoin със самоуправление и услуги само за Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "Суверен портфейл за Bitcoin със самоуправление и услуги само за Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "Суверен портфейл за Bitcoin със самоуправление и услуги само за Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Прехвърлянията на Bitcoin ще отнемат време за потвърждение.",
   "app__receiveSwapID_apple": "ID на прехвърлянето",

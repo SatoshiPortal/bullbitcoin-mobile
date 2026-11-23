@@ -38,7 +38,7 @@
   "app__exchangeTestnetBasicAuthTitle_apple": "Διαπιστευτήρια λογαριασμού testnet",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth για τις ιστοσελίδες του λογαριασμού testnet (σύνδεση και KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Δεν μπορείτε να διαγράψετε ένα πορτοφόλι με μεταφορές σε εξέλιξη.",
-  "app__onboardingSplashDescription_apple": "Κυρίαρχο πορτοφόλι Bitcoin με αυτοφύλαξη και υπηρεσίες αποκλειστικά για Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "Κυρίαρχο πορτοφόλι Bitcoin με αυτοφύλαξη και υπηρεσίες αποκλειστικά για Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "Κυρίαρχο πορτοφόλι Bitcoin με αυτοφύλαξη και υπηρεσίες αποκλειστικά για Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Οι μεταφορές Bitcoin θα χρειαστούν χρόνο για να επιβεβαιωθούν.",
   "app__receiveSwapID_apple": "ID μεταφοράς",

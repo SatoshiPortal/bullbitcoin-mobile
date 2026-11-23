@@ -38,7 +38,7 @@
   "app__exchangeTestnetBasicAuthTitle_apple": "테스트넷 계정 자격 증명",
   "app__exchangeTestnetBasicAuthDescription_apple": "테스트넷 계정 웹 페이지(로그인 및 KYC)용 HTTP 기본 인증입니다.",
   "app__walletDeletionErrorOngoingSwaps_apple": "진행 중인 이체가 있는 지갑은 삭제할 수 없습니다.",
-  "app__onboardingSplashDescription_apple": "주권적인 자기 보관 Bitcoin 지갑과 Bitcoin 전용 서비스.",
+  "onboarding__onboardingSplashDescription_apple": "주권적인 자기 보관 Bitcoin 지갑과 Bitcoin 전용 서비스.",
   "wizard__onboardingSplashDescription_apple": "주권적인 자기 보관 Bitcoin 지갑과 Bitcoin 전용 서비스.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin 이체는 확인에 시간이 걸립니다.",
   "app__receiveSwapID_apple": "이체 ID",

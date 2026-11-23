@@ -7,9 +7,6 @@ import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:access/access.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -20,10 +17,14 @@ class AppStartupWidget extends StatefulWidget {
     super.key,
     required this.app,
     required this.onUnlocked,
+    required this.onMissingWallets,
+    required this.loadingSplash,
   });
 
   final Widget app;
   final Future<void> Function() onUnlocked;
+  final VoidCallback onMissingWallets;
+  final WidgetBuilder loadingSplash;
 
   @override
   State<AppStartupWidget> createState() => _AppStartupWidgetState();
@@ -33,14 +34,15 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
   @override
   Widget build(BuildContext context) {
     return AppStartupListener(
+      onMissingWallets: widget.onMissingWallets,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: BlocBuilder<AppStartupBloc, AppStartupState>(
           builder: (context, state) {
             if (state is AppStartupInitial) {
-              return const OnboardingSplash(loading: true);
+              return widget.loadingSplash(context);
             } else if (state is AppStartupLoadingInProgress) {
-              return const OnboardingSplash(loading: true);
+              return widget.loadingSplash(context);
               // show status of migration
             } else if (state is AppStartupSuccess) {
               if (state.isPinCodeSet) {
@@ -73,9 +75,14 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
 }
 
 class AppStartupListener extends StatelessWidget {
-  const AppStartupListener({super.key, required this.child});
+  const AppStartupListener({
+    super.key,
+    required this.child,
+    required this.onMissingWallets,
+  });
 
   final Widget child;
+  final VoidCallback onMissingWallets;
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +94,7 @@ class AppStartupListener extends StatelessWidget {
               !current.isPinCodeSet &&
               !current.hasDefaultWallets &&
               previous != current,
-          listener: (context, state) {
-            AppRouter.router.go(OnboardingRoute.onboarding.path);
-          },
+          listener: (_, _) => onMissingWallets(),
         ),
       ],
       child: child,

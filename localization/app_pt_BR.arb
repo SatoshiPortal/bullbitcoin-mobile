@@ -173,10 +173,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "onboardingEncryptedVaultDescription": "Recupere seu backup via nuvem usando seu PIN.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
-  },
   "exchangeStatisticsBuySellRatio": "Relação de compra/venda",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
@@ -228,10 +224,6 @@
   "exchangeCurrencyDropdownTitle": "Selecione a moeda",
   "@exchangeCurrencyDropdownTitle": {
     "description": "Title for the currency selection dropdown"
-  },
-  "onboardingRecoverYourWallet": "Recupere sua carteira",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
   },
   "autoswapUpdateSettingsError": "Falhado para atualizar as configurações de troca automática",
   "@autoswapUpdateSettingsError": {
@@ -1698,10 +1690,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "onboardingSplashDescription": "Soberana auto custódia Bitcoin carteira e serviço de troca apenas Bitcoin.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "coldcardStep6": "   - Aumente o brilho da tela em seu dispositivo",
   "@coldcardStep6": {
     "description": "Coldcard troubleshooting tip 1"
@@ -2434,10 +2422,6 @@
   "@testBackupRetrieveVaultDescription": {
     "description": "Description explaining purpose of vault location selection"
   },
-  "onboardingCreateNewWallet": "Criar nova carteira",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "withdrawUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
@@ -2931,10 +2915,6 @@
   "withdrawConfirmButton": "Confirmação",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "onboardingPhysicalBackupDescription": "Recupere sua carteira através de 12 palavras.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "exchangeStatisticsBillerStats": "Estatísticas de Biller",
   "@exchangeStatisticsBillerStats": {
@@ -4203,10 +4183,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "Possuir seu dinheiro",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewExistingWallets": "Carteiras existentes ({count})",
   "@allSeedViewExistingWallets": {
     "description": "Section header for existing wallets with count",
@@ -4725,10 +4701,6 @@
   "payPhoneNumberHint": "Digite o número de telefone",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
-  },
-  "onboardingRecoverWallet": "Recuperar Carteira",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "coldcardInstructionsTitle": "Instruções do Coldcard Q",
   "@coldcardInstructionsTitle": {
@@ -5875,10 +5847,6 @@
   "@exchangeFileUploadStatusReady": {
     "description": "Status badge when files can be uploaded"
   },
-  "onboardingPhysicalBackup": "Backup físico",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "sendInsufficientFunds": "Fundos insuficientes",
   "@sendInsufficientFunds": {
     "description": "Error when balance too low"
@@ -6029,10 +5997,6 @@
         "type": "String"
       }
     }
-  },
-  "onboardingRecoverWalletButton": "Recuperar Carteira",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "backupSettingsRevealing": "Revelando...",
   "@backupSettingsRevealing": {
@@ -7495,7 +7459,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Algo deu errado ao configurar sua carteira. Por favor, tente novamente.",
   "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
   "coreScreensFeeRateLabel": "Taxa de comissão",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7643,12 +7606,6 @@
   "backupCardSubtitle": "Faça o backup da sua carteira agora.",
   "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
   "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
-  "onboardingAdvancedOptionsTitle": "Opções avançadas",
-  "onboardingAdvancedOptionsDescription": "Configure as opções avançadas antes de criar ou recuperar sua carteira",
-  "onboardingAdvancedOptionsCustomElectrum": "Servidor Electrum personalizado",
-  "onboardingAdvancedOptionsCustomMempool": "Servidor Mempool personalizado",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Servidor Recoverbull personalizado",
-  "onboardingAdvancedOptionsFooter": "Você pode alterar essas configurações mais tarde nas configurações do aplicativo",
   "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "A BitBox só é compatível com Android",
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
@@ -8043,7 +8000,6 @@
   "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de bugs|diagnóstico|telemetria|logs de erros",
   "settingsSearchScreenPrivacyKeywords": "capturas de tela|gravação de tela|proteção contra captura|privacidade",
   "settingsSearchStartTyping": "Comece a digitar para ver os resultados.",
-  "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente.",
   "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",

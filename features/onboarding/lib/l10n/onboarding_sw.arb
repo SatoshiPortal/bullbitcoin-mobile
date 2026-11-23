@@ -1,0 +1,31 @@
+{
+  "@@locale": "sw",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "settingsLanguageTitle": "| Lugha |",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "walletSetupErrorTryAgain": "Hitilafu fulani imetokea wakati wa kuweka pochi yako. Tafadhali jaribu tena.",
+  "onboardingAdvancedOptionsTitle": "Chaguo za Kina",
+  "onboardingAdvancedOptionsDescription": "Sanidi mipangilio ya kina kabla ya kuunda au kurejesha pochi yako",
+  "onboardingAdvancedOptionsCustomElectrum": "Seva Maalum ya Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Seva Maalum ya Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Seva Maalum ya Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Unaweza kubadilisha mipangilio hii baadaye katika Mipangilio ya Programu",
+  "retry": "Jaribu Tena",
+  "onboardingRecoverYourWallet": "Rejesha pochi yako",
+  "onboardingEncryptedVault": "Hifadhi iliyosimbwa",
+  "onboardingEncryptedVaultDescription": "Rejesha nakala rudufu yako kupitia wingu ukitumia PIN yako.",
+  "onboardingPhysicalBackup": "Nakala rudufu ya kimwili",
+  "onboardingPhysicalBackupDescription": "Rejesha pochi yako kwa maneno 12.",
+  "onboardingRecover": "Rejesha",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "Miliki Fedha Zako",
+  "onboardingSplashDescription": "Pochi huru ya Bitcoin ya kujitunza mwenyewe na huduma ya kubadilisha inayohusu Bitcoin pekee.",
+  "onboardingRecoverWallet": "Rejesha Pochi",
+  "onboardingRecoverWalletButton": "Rejesha Pochi",
+  "onboardingCreateNewWallet": "Unda Pochi Mpya",
+  "continueButton": "Endelea",
+  "torSettingsTitle": "Mipangilio ya Tor",
+  "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena."
+}

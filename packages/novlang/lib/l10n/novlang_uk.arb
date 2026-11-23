@@ -38,7 +38,7 @@
   "app__exchangeTestnetBasicAuthTitle_apple": "Облікові дані облікового запису testnet",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth для веб-сторінок облікового запису testnet (вхід та KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Не можна видалити гаманець із поточними переказами.",
-  "app__onboardingSplashDescription_apple": "Суверенний гаманець Bitcoin із самостійним зберіганням і сервіси лише для Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "Суверенний гаманець Bitcoin із самостійним зберіганням і сервіси лише для Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "Суверенний гаманець Bitcoin із самостійним зберіганням і сервіси лише для Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Підтвердження переказів Bitcoin потребуватиме часу.",
   "app__receiveSwapID_apple": "ID переказу",

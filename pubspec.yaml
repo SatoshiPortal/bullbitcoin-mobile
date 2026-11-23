@@ -21,6 +21,7 @@ workspace:
   - packages/exchange
   - features/label_editor
   - features/network
+  - features/onboarding
   - features/mnemonic_entry
   - features/scanning
   - features/settings
@@ -90,6 +91,7 @@ dependencies:
   labels:
   label_editor:
   network:
+  onboarding:
   mnemonic_entry:
   scanning:
   settings:

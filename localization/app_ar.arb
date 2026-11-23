@@ -177,10 +177,6 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "onboardingRecoverYourWallet": "استرجع محفظتك",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "يرجى اختيار معدل الرسوم",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -188,10 +184,6 @@
   "coreScreensTransferFeeLabel": "رسوم المبادلة",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "إسترجع دعمك عبر السحابة باستخدام جهازك.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Swap Status",
   "@transactionSwapStatusSwapStatus": {
@@ -1516,10 +1508,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "محفظة (بيتكوين) الذاتية الملكية وخدمة التبادل فقط.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2304,10 +2292,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "Create New Wallet",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "الاستلام فورا بعد الدفع",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -2754,10 +2738,6 @@
   "sendSwapDetails": "التفاصيل",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "إسترجع محفظتك عبر 12 كلمة.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "Loading",
   "@pinStatusLoading": {
@@ -4325,10 +4305,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "مالك",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4414,10 +4390,6 @@
   "coldcardInstructionsTitle": "Coldcard Q Instructions",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "Recover Wallet",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "العدد المرجعي",
   "@transactionOrderLabelReferenceNumber": {
@@ -5334,10 +5306,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "الدعم المادي",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "من",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5426,10 +5394,6 @@
   "sellSendPaymentInstantPayments": "المدفوعات الثابتة",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "Recover Wallet",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "{pinOrPassword} instead >>",
   "@usePasswordInsteadButton": {
@@ -7474,7 +7438,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
   "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
   "coreScreensFeeRateLabel": "معدل الرسوم",
@@ -7512,12 +7475,6 @@
   "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
   "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
   "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
-  "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
-  "onboardingAdvancedOptionsDescription": "اضبط الإعدادات المتقدمة قبل إنشاء محفظتك أو استردادها",
-  "onboardingAdvancedOptionsCustomElectrum": "خادم Electrum مخصص",
-  "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
-  "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
-  "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
@@ -8022,7 +7979,6 @@
   "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
   "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
   "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
-  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",

@@ -194,10 +194,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "আপনার ওয়ালেট পুনরুদ্ধার করুন",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "অনুগ্রহ করে একটি ফি রেট নির্বাচন করুন",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -209,10 +205,6 @@
   "coreScreensTransferFeeLabel": "সোয়াপ ফি",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "আপনার PIN ব্যবহার করে ক্লাউডের মাধ্যমে আপনার ব্যাকআপ পুনরুদ্ধার করুন।",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "receiveInvoiceCopied": "চালান ক্লিপবোর্ডে কপি হয়েছে",
   "@receiveInvoiceCopied": {
@@ -1637,10 +1629,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "সার্বভৌম সেলফ-কাস্টডি Bitcoin ওয়ালেট এবং শুধুমাত্র Bitcoin এক্সচেঞ্জ সেবা।",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "ফান্ডগুলি আপনার অ্যাকাউন্ট ব্যালান্সে যোগ হবে।",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2488,10 +2476,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "নতুন ওয়ালেট তৈরি করুন",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "পেমেন্টের পরে অবিলম্বে বিটকয়েন গ্রহণ করুন",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -2954,10 +2938,6 @@
   "sendSwapDetails": "বদল বিবরণ",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "12টি শব্দের মাধ্যমে আপনার ওয়ালেট পুনরুদ্ধার করুন।",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "লোড হচ্ছে",
   "@pinStatusLoading": {
@@ -4655,10 +4635,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "আপনার অর্থের মালিক হন",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "বীজ দর্শক",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4752,10 +4728,6 @@
   "coldcardInstructionsTitle": "Coldcard Q নির্দেশনা",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "ওয়ালেট পুনরুদ্ধার করুন",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "রেফারেন্স নম্বর",
   "@transactionOrderLabelReferenceNumber": {
@@ -5739,10 +5711,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "ফিজিক্যাল ব্যাকআপ",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "থেকে",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5835,10 +5803,6 @@
   "sellSendPaymentInstantPayments": "তাত্ক্ষণিক লেনদেন",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "ওয়ালেট পুনরুদ্ধার করুন",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "বিকল্প হিসেবে {pinOrPassword} ব্যবহার করুন >>",
   "@usePasswordInsteadButton": {
@@ -7407,7 +7371,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "আপনার ওয়ালেট সেটআপ করার সময় কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "recoverbullBalance": "ব্যালেন্স: {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -7706,12 +7669,6 @@
   "backupCardSubtitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন।",
   "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet ব্যালেন্স",
   "autoswapMaximumBalanceLabel": "সর্বোচ্চ Instant Wallet ব্যালেন্স",
-  "onboardingAdvancedOptionsTitle": "উন্নত বিকল্প",
-  "onboardingAdvancedOptionsDescription": "আপনার ওয়ালেট তৈরি বা পুনরুদ্ধার করার আগে উন্নত সেটিংস কনফিগার করুন",
-  "onboardingAdvancedOptionsCustomElectrum": "কাস্টম Electrum সার্ভার",
-  "onboardingAdvancedOptionsCustomMempool": "কাস্টম Mempool সার্ভার",
-  "onboardingAdvancedOptionsCustomRecoverbull": "কাস্টম Recoverbull সার্ভার",
-  "onboardingAdvancedOptionsFooter": "আপনি পরে App Settings এ এই সেটিংস পরিবর্তন করতে পারেন",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support এ সাপোর্টের সাথে যোগাযোগ করুন",
   "importWalletBitboxAndroidOnly": "BitBox শুধুমাত্র Android এ সমর্থিত",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
@@ -8178,7 +8135,6 @@
   "settingsSearchErrorReportingKeywords": "Crash report|ত্রুটি প্রতিবেদন|Diagnostic|Telemetry|ত্রুটি লগ",
   "settingsSearchScreenPrivacyKeywords": "স্ক্রিনশট|স্ক্রিন রেকর্ডিং|স্ক্রিন ক্যাপচার সুরক্ষা|গোপনীয়তা",
   "settingsSearchStartTyping": "ফলাফল দেখতে টাইপ করা শুরু করুন।",
-  "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "sendErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
   "sendErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",

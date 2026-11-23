@@ -38,7 +38,7 @@
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet hesap kimlik bilgileri",
   "app__exchangeTestnetBasicAuthDescription_apple": "Testnet hesap web sayfaları (giriş ve KYC) için HTTP basic auth.",
   "app__walletDeletionErrorOngoingSwaps_apple": "Devam eden transferleri olan bir cüzdanı silemezsiniz.",
-  "app__onboardingSplashDescription_apple": "Egemen öz saklamalı Bitcoin cüzdanı ve yalnızca Bitcoin hizmetleri.",
+  "onboarding__onboardingSplashDescription_apple": "Egemen öz saklamalı Bitcoin cüzdanı ve yalnızca Bitcoin hizmetleri.",
   "wizard__onboardingSplashDescription_apple": "Egemen öz saklamalı Bitcoin cüzdanı ve yalnızca Bitcoin hizmetleri.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin transferlerinin onaylanması zaman alacaktır.",
   "app__receiveSwapID_apple": "Transfer ID",

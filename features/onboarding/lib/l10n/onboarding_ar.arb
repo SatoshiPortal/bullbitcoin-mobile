@@ -1,0 +1,79 @@
+{
+  "@@locale": "ar",
+  "onboardingRecoverYourWallet": "استرجع محفظتك",
+  "@onboardingRecoverYourWallet": {
+    "description": "Title for the recover wallet section in onboarding"
+  },
+  "onboardingEncryptedVaultDescription": "إسترجع دعمك عبر السحابة باستخدام جهازك.",
+  "@onboardingEncryptedVaultDescription": {
+    "description": "Description for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingSplashDescription": "محفظة (بيتكوين) الذاتية الملكية وخدمة التبادل فقط.",
+  "@onboardingSplashDescription": {
+    "description": "Description of the app displayed in onboarding splash screen"
+  },
+  "onboardingEncryptedVault": "الخزنة المشفرة",
+  "@onboardingEncryptedVault": {
+    "description": "Title for the encrypted vault recovery option in onboarding"
+  },
+  "onboardingCreateNewWallet": "Create New Wallet",
+  "@onboardingCreateNewWallet": {
+    "description": "Button label for creating a new wallet in onboarding"
+  },
+  "onboardingPhysicalBackupDescription": "إسترجع محفظتك عبر 12 كلمة.",
+  "@onboardingPhysicalBackupDescription": {
+    "description": "Description for the physical backup recovery option in onboarding"
+  },
+  "settingsLanguageTitle": "اللغة",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Recover",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "onboardingOwnYourMoney": "مالك",
+  "@onboardingOwnYourMoney": {
+    "description": "Tagline displayed in onboarding splash screen"
+  },
+  "onboardingRecoverWallet": "Recover Wallet",
+  "@onboardingRecoverWallet": {
+    "description": "Title for the recover wallet screen in onboarding"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "onboardingPhysicalBackup": "الدعم المادي",
+  "@onboardingPhysicalBackup": {
+    "description": "Title for the physical backup recovery option in onboarding"
+  },
+  "onboardingRecoverWalletButton": "Recover Wallet",
+  "@onboardingRecoverWalletButton": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "continueButton": "استمر",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "torSettingsTitle": "تنظيمات التعذيب",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
+  "onboardingAdvancedOptionsDescription": "اضبط الإعدادات المتقدمة قبل إنشاء محفظتك أو استردادها",
+  "onboardingAdvancedOptionsCustomElectrum": "خادم Electrum مخصص",
+  "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
+  "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
+  "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
+  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى."
+}
