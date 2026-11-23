@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -351,7 +352,10 @@ final class _PreparedInventory implements PreparedOwner {
         final ids = {for (final secret in listing.secrets) secret.id.hex};
         for (final entry in listing.unreadable) {
           final id = entry.id;
-          if (id == null) return const Err(LegacyImportVerificationFailed());
+          if (id == null) {
+            log.warning('Secrets import skipped a malformed seed key');
+            continue;
+          }
           ids.add(id.hex);
         }
         return Ok(ids);

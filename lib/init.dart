@@ -54,7 +54,9 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class Bull {
-  static Future<Result<void, Failure>> init() async {
+  static Future<Result<void, Failure>> init({
+    Future<void> Function(LegacyImportFailure)? retryStorage,
+  }) async {
     final bullDirectory = await getApplicationDocumentsDirectory();
 
     await initializeLogging(
@@ -212,9 +214,21 @@ class Bull {
         LabelsImport(file: labelsFile),
       ],
     );
-    final admitted = await cutover.prepare();
-    if (admitted case Err(:final failure)) return Err(failure);
-    final admission = (admitted as Ok<RuntimeAdmission, Failure>).value;
+    var admitted = await cutover.prepare();
+    while (admitted is Err<RuntimeAdmission, LegacyImportFailure>) {
+      if (retryStorage == null) return Err(admitted.failure);
+      switch (admitted.failure) {
+        case final failure
+            when failure is LegacyImportUnavailable ||
+                failure is LegacyImportDeferred:
+          await retryStorage(failure);
+          admitted = await cutover.prepare();
+        case final failure:
+          return Err(failure);
+      }
+    }
+    final admission =
+        (admitted as Ok<RuntimeAdmission, LegacyImportFailure>).value;
     locator.registerSingleton<RuntimeAdmission>(
       admission,
       dispose: (value) => value.close(),
