@@ -3,7 +3,7 @@ import 'dart:io';
 
 import '../../../../support/inventory_fixture.dart';
 
-import 'package:bull_ui/bull_ui.dart' show BullPinPad;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullPinPad;
 
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
@@ -211,9 +211,15 @@ void main() {
       await tester.pump();
     }
     final context = tester.element(find.byType(BullPinPad));
-    await tester.tap(
-      find.text(AccessLocalizations.of(context).appUnlockButton),
+    final label = AccessLocalizations.of(context).appUnlockButton;
+    final unlock = find.byWidgetPredicate(
+      (widget) => widget is BullButton && widget.label == label,
     );
+    await pumpUntilInventoryReady(
+      tester,
+      () => !tester.widget<BullButton>(unlock).disabled,
+    );
+    tester.widget<BullButton>(unlock).onPressed();
     await pumpUntilInventoryReady(
       tester,
       () => find.byType(BullPinPad).evaluate().isEmpty,
@@ -393,6 +399,7 @@ void main() {
     await openRevealGate(tester, pinTitle);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await authorize(tester);
     await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
@@ -476,6 +483,7 @@ void main() {
       await openRevealGate(tester, pinTitle);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await authorize(tester);
       await tester.pumpAndSettle();
       expect(pinTitle, findsNothing);
       await flush(tester);
