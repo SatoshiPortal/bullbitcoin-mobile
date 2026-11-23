@@ -81,7 +81,7 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
     required Future<List<SwapWalletInfo>> Function(NetworkEnv) wallets,
     required Future<Fingerprint?> Function(NetworkEnv)
     defaultBitcoinFingerprint,
-    required Future<String> Function(String) newAddressFor,
+    required NewAddressFor newAddressFor,
     required Future<SwapWalletTx?> Function(String, {required String walletId})
     walletTx,
     required Future<List<SwapWalletTx>> Function(String, {bool sync}) walletTxs,

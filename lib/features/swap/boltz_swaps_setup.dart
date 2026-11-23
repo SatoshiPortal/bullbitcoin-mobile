@@ -56,19 +56,21 @@ class BoltzSwapsSetup {
             ? null
             : Fingerprint(fingerprint);
       },
-      newAddressFor: (id) async =>
-          switch (await locator<AddressView>().receiveAddress(
-            walletId: id,
-            advance: true,
-          )) {
-            Ok(:final value) => value.address,
-            Err(:final failure) => throw SwapsException(
-              'receive address unavailable: ${failure.runtimeType}',
-            ),
-          },
+      newAddressFor: (id) async => switch (await locator<AddressView>()
+          .receiveAddress(walletId: id, advance: true)) {
+        Ok(:final value) => Ok(value.address),
+        Err(failure: AddressViewWriterBusyFailure()) => const Err(
+          SwapsBusyFailure(),
+        ),
+        Err() => const Err(
+          SwapsUnexpectedFailure('Receive address unavailable'),
+        ),
+      },
       walletTx: (txid, {required walletId}) async {
-        final result = await locator<Transactions>()
-            .getWalletTransaction(txid, walletId: walletId);
+        final result = await locator<Transactions>().getWalletTransaction(
+          txid,
+          walletId: walletId,
+        );
         return switch (result) {
           Ok(value: final tx?) => _swapTransaction(tx),
           Ok(value: null) => null,
@@ -78,8 +80,10 @@ class BoltzSwapsSetup {
         };
       },
       walletTxs: (walletId, {bool sync = false}) async {
-        final result = await locator<Transactions>()
-            .getWalletTransactions(walletId: walletId, sync: sync);
+        final result = await locator<Transactions>().getWalletTransactions(
+          walletId: walletId,
+          sync: sync,
+        );
         return switch (result) {
           Ok(:final value) => value.map(_swapTransaction).toList(),
           Err(:final failure) => throw SwapsException(
@@ -193,15 +197,6 @@ class BoltzSwapsSetup {
     );
     locator.registerFactory<LogSwapCensusUsecase>(
       () => LogSwapCensusUsecase(locator<SwapStore>()),
-    );
-    locator.registerFactory<GetSwapMasterKeyUsecase>(
-      () => GetSwapMasterKeyUsecase(locator<BoltzSwaps>()),
-    );
-    locator.registerFactory<GetSwapMnemonicUsecase>(
-      () => GetSwapMnemonicUsecase(locator<BoltzSwaps>()),
-    );
-    locator.registerFactory<DeleteSwapMasterKeyUsecase>(
-      () => DeleteSwapMasterKeyUsecase(locator<BoltzSwaps>()),
     );
   }
 }
