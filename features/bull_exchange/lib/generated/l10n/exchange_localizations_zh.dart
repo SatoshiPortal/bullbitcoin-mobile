@@ -2258,4 +2258,521 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Sell:';
+
+  @override
+  String get sellSelectWallet => '选择钱包';
+
+  @override
+  String get sellWhichWalletQuestion => '你们想要从哪条墙上出售?';
+
+  @override
+  String get sellExternalWallet => '外墙';
+
+  @override
+  String get sellFromAnotherWallet => 'Sell from another Plaza';
+
+  @override
+  String get sellAboveMaxAmountError => '您的卖出金额超出了此钱包最大可售限额';
+
+  @override
+  String get sellBelowMinAmountError => '您的出售金额低于此钱包的最小可售金额';
+
+  @override
+  String get sellInsufficientBalanceError => '当前钱包的余额不足以支付这笔卖出';
+
+  @override
+  String get sellUnauthenticatedError => '你没有认证。 请继续发言.';
+
+  @override
+  String get sellOrderNotFoundError => '没有发现销售订单。 请再次审判.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError => '这一销售订单已经得到确认.';
+
+  @override
+  String get sellSelectNetwork => '选定网络';
+
+  @override
+  String get sellHowToPayInvoice => '你想支付这一发票如何?';
+
+  @override
+  String get sellBitcoinOnChain => '页: 1';
+
+  @override
+  String get sellLightningNetwork => '照明网络';
+
+  @override
+  String get sellLiquidNetwork => '流动网络';
+
+  @override
+  String get sellConfirmPayment => '2. 肯定付款';
+
+  @override
+  String get sellPriceWillRefreshIn => '价格上涨 ';
+
+  @override
+  String get sellOrderNumber => '命令号数';
+
+  @override
+  String get sellPayoutRecipient => '收款人';
+
+  @override
+  String get sellCadBalance => '大会 结余';
+
+  @override
+  String get sellCrcBalance => 'CRC 结余';
+
+  @override
+  String get sellEurBalance => '欧元 结余';
+
+  @override
+  String get sellUsdBalance => '美元 结余';
+
+  @override
+  String get sellMxnBalance => 'MXN 结余';
+
+  @override
+  String get sellArsBalance => 'ARS 平衡';
+
+  @override
+  String get sellCopBalance => '缔约方会议 结余';
+
+  @override
+  String get sellPayinAmount => '薪酬数额';
+
+  @override
+  String get sellPayoutAmount => '薪酬数额';
+
+  @override
+  String get sellExchangeRate => '汇率';
+
+  @override
+  String get sellPayFromWallet => '付款钱包';
+
+  @override
+  String get sellInstantPayments => '经常付款';
+
+  @override
+  String get sellSecureBitcoinWallet => '安全的比特币钱包';
+
+  @override
+  String get sellFeePriority => '妇女优先';
+
+  @override
+  String get sellFastest => '快速';
+
+  @override
+  String get sellAdvancedSettings => '先进环境';
+
+  @override
+  String get sellAdvancedOptions => 'A. 先进选择';
+
+  @override
+  String get sellReplaceByFeeActivated => '替换';
+
+  @override
+  String get sellSelectCoinsManually => '手工选编';
+
+  @override
+  String get sellDone => 'Done';
+
+  @override
+  String get sellPleasePayInvoice => '请支付这一发票';
+
+  @override
+  String get sellBitcoinAmount => '数额';
+
+  @override
+  String get sellCopyInvoice => '复印件';
+
+  @override
+  String get sellShowQrCode => '显示QR代码';
+
+  @override
+  String get sellQrCode => 'QR 法典';
+
+  @override
+  String get sellNoInvoiceData => '无发票数据';
+
+  @override
+  String get sellInProgress => 'A. 正在取得进展......';
+
+  @override
+  String get sellGoHome => 'Go home';
+
+  @override
+  String get sellOrderCompleted => '页: 1!';
+
+  @override
+  String get sellBalanceWillBeCredited => '你的账户余额将在交易收到1份链条确认书后入账.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => '薪金';
+
+  @override
+  String get payDescriptionLabel => '付款说明（可选）';
+
+  @override
+  String get payDescriptionHint => '为此付款添加备注';
+
+  @override
+  String get payPaymentDescription => '付款说明';
+
+  @override
+  String get payRecipientType => '接收器';
+
+  @override
+  String get payRecipientName => '客户名称';
+
+  @override
+  String get payRecipientDetails => '收款人详细情况';
+
+  @override
+  String get payNoDetailsAvailable => '不详';
+
+  @override
+  String get paySelectWallet => '选择钱包';
+
+  @override
+  String get payExternalWallet => '外墙';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return '使用此钱包可支付的最高金额为 $amount。';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return '使用此钱包可支付的最低金额为 $amount。';
+  }
+
+  @override
+  String get payInsufficientBalanceError => '当前钱包的余额不足以支付这笔订单';
+
+  @override
+  String get payUnauthenticatedError => '你没有认证。 请继续发言.';
+
+  @override
+  String get paySelectNetwork => '选定网络';
+
+  @override
+  String get payHowToPayInvoice => '你想支付这一发票如何?';
+
+  @override
+  String get payLightningNetwork => '照明网络';
+
+  @override
+  String get payLiquidNetwork => '流动网络';
+
+  @override
+  String get payConfirmPayment => '普通工资';
+
+  @override
+  String get payOrderNumber => '命令号数';
+
+  @override
+  String get payPayinAmount => '收款金额';
+
+  @override
+  String get payPayoutAmount => '付款金额';
+
+  @override
+  String get payExchangeRate => '汇率';
+
+  @override
+  String get payPayFromWallet => '付款钱包';
+
+  @override
+  String get payInstantPayments => '经常付款';
+
+  @override
+  String get paySecureBitcoinWallet => '安全的比特币钱包';
+
+  @override
+  String get payFeePriority => '妇女优先';
+
+  @override
+  String get payFastest => '快速';
+
+  @override
+  String get payNetworkFees => '网络费';
+
+  @override
+  String get payAdvancedSettings => '先进环境';
+
+  @override
+  String get payAdvancedOptions => 'A. 先进选择';
+
+  @override
+  String get paySelectCoinsManually => '手工选编';
+
+  @override
+  String get payDone => 'Done';
+
+  @override
+  String get payContinue => '继续';
+
+  @override
+  String get payPleasePayInvoice => '请支付这一发票';
+
+  @override
+  String get payBitcoinAmount => '数额';
+
+  @override
+  String get payBitcoinPrice => '价格';
+
+  @override
+  String get payCopyInvoice => '印 度';
+
+  @override
+  String get payShowQrCode => '显示QR代码';
+
+  @override
+  String get payQrCode => 'QR 法典';
+
+  @override
+  String get payNoInvoiceData => '无发票数据';
+
+  @override
+  String get payInvalidState => 'Invalid State';
+
+  @override
+  String get payViewDetails => '观点细节';
+
+  @override
+  String get paySinpeReceipt => 'SINPE 收据';
+
+  @override
+  String get payCompleted => '支付!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => '命令细节';
+
+  @override
+  String get paySinpeMonto => '数额';
+
+  @override
+  String get paySinpeNumeroOrden => '命令号数';
+
+  @override
+  String get paySinpeNumeroComprobante => '参考数字';
+
+  @override
+  String get paySinpeBeneficiario => '受益人';
+
+  @override
+  String get paySinpeOrigen => '1. 起源';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => '页: 1';
+
+  @override
+  String get payPaymentInProgress => '支付:!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => '价格上涨 ';
+
+  @override
+  String get payWhichWallet => '你们想要从哪条墙上花钱?';
+
+  @override
+  String get payExternalWalletDescription => '从其他比特币钱包支付';
+
+  @override
+  String get payRbfActivated => '替换';
+
+  @override
+  String get copyDialogButton => '页: 1';
+
+  @override
+  String get closeDialogButton => '近距离';
+
+  @override
+  String get sellCompleteKYC => '页: 1';
+
+  @override
+  String get sellSendPaymentNetworkFees => '网络费';
+
+  @override
+  String get sellSendPaymentContinue => '继续';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => '价格';
+
+  @override
+  String get sellViewDetailsButton => '观点细节';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID 有待核查';
+
+  @override
+  String get sellKycPendingDescription => '你们必须首先完成对身份识别的核查';
+
+  @override
+  String get sellLoadingGeneric => 'Loading...';
+
+  @override
+  String get viewerTapToCopy => '点击复制';
+
+  @override
+  String get invoiceViewerTitle => '发票';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError => '您的卖出订单当前无法完成。请重试或联系客服。';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor => '网络手续费过低。请选择更高的手续费。';
+
+  @override
+  String get sellErrorFeesUnavailable => '无法加载网络手续费。请检查网络连接后重试。';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => '添加到我的账户余额';
+
+  @override
+  String get sellPayoutSepaDescription => '提款显示为由 Leonod 发送';
+
+  @override
+  String get sellPayoutTitle => '选择收件人';
+
+  @override
+  String get sellPayoutNewBadge => '新增';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      '无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。';
+
+  @override
+  String get sendSelectedUtxosInsufficient => '部分税项不包括所需数额';
+
+  @override
+  String get selectAmountTitle => '选择性数额';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return '要求的数额:$amount';
+  }
+
+  @override
+  String get addressLabel => '地址: ';
+
+  @override
+  String get typeLabel => '类型: ';
+
+  @override
+  String get coinsKeychainReceive => '接收';
+
+  @override
+  String get coinsKeychainChange => '找零';
 }

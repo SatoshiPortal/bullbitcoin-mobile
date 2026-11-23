@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "Xác thực HTTP basic cho các trang web tài khoản testnet (đăng nhập và KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Bạn không thể xóa ví đang có khoản chuyển đang thực hiện.",
   "app__onboardingSplashDescription_apple": "Ví Bitcoin tự quản có chủ quyền và các dịch vụ chỉ dành cho Bitcoin.",
+  "wizard__onboardingSplashDescription_apple": "Ví Bitcoin tự quản có chủ quyền và các dịch vụ chỉ dành cho Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Chuyển khoản Bitcoin sẽ mất thời gian để xác nhận.",
   "app__receiveSwapID_apple": "Mã chuyển khoản",
   "app__receiveBoltzSwapFee_apple": "Phí chuyển khoản Boltz",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Chuyển khoản",
   "label_editor__systemLabelAutoSwap_apple": "Chuyển tiền tự động",
   "app__logoutConfirmationDescription_apple": "Bạn có chắc muốn đăng xuất khỏi tài khoản Bull Bitcoin của mình không? Bạn sẽ cần đăng nhập lại để sử dụng các tính năng của tài khoản.",
-  "app__wizardJourneyTip5_apple": "Chuyển đổi giữa Bitcoin và Liquid mà không cần KYC",
-  "app__wizardJourneyTip6_apple": "Tùy chỉnh cài đặt chuyển tiền tự động của bạn",
+  "wizard__wizardJourneyTip5_apple": "Chuyển đổi giữa Bitcoin và Liquid mà không cần KYC",
+  "wizard__wizardJourneyTip6_apple": "Tùy chỉnh cài đặt chuyển tiền tự động của bạn",
   "app__transactionSwapOpenWithin24h_apple": "Mở ứng dụng trong vòng 24 giờ để hoàn tất khoản chuyển của bạn.",
   "app__homeActionTransfer_apple": "Chuyển",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Tỷ giá không khả dụng. Vui lòng thử lại sau.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemonic chuyển khoản",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Xóa mnemonic chuyển khoản?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng.",
+  "receive__receiveTransferFee_apple": "Phí chuyển khoản",
+  "receive__swapErrorAmountBelowMinimum_apple": "Số tiền thấp hơn số tiền chuyển tối thiểu: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Số tiền vượt quá số tiền chuyển tối đa: {max} sats",
+  "receive__swapTransferTitle_apple": "Chuyển khoản",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Tỷ giá không khả dụng. Vui lòng thử lại sau.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Khoản chuyển này không khả dụng."
 }

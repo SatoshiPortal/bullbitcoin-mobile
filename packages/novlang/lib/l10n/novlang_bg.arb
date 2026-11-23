@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth за уеб страниците на testnet сметката (вход и KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Не можете да изтриете портфейл с текущи прехвърляния.",
   "app__onboardingSplashDescription_apple": "Суверен портфейл за Bitcoin със самоуправление и услуги само за Bitcoin.",
+  "wizard__onboardingSplashDescription_apple": "Суверен портфейл за Bitcoin със самоуправление и услуги само за Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Прехвърлянията на Bitcoin ще отнемат време за потвърждение.",
   "app__receiveSwapID_apple": "ID на прехвърлянето",
   "app__receiveBoltzSwapFee_apple": "Такса за прехвърляне Boltz",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Прехвърляния",
   "label_editor__systemLabelAutoSwap_apple": "Автоматично прехвърляне",
   "app__logoutConfirmationDescription_apple": "Сигурни ли сте, че искате да излезете от акаунта си в Bull Bitcoin? Ще трябва да влезете отново, за да получите достъп до функциите на сметката.",
-  "app__wizardJourneyTip5_apple": "Прехвърляйте между Bitcoin и Liquid без KYC",
-  "app__wizardJourneyTip6_apple": "Персонализирайте настройките за автоматично прехвърляне",
+  "wizard__wizardJourneyTip5_apple": "Прехвърляйте между Bitcoin и Liquid без KYC",
+  "wizard__wizardJourneyTip6_apple": "Персонализирайте настройките за автоматично прехвърляне",
   "app__transactionSwapOpenWithin24h_apple": "Отворете приложението в рамките на 24 часа, за да завършите прехвърлянето си.",
   "app__homeActionTransfer_apple": "Прехвърли",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Курсът не е наличен. Моля, опитайте отново по-късно.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоника за прехвърляне",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Да се изтрие ли мнемониката за прехвърляне?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Това премахва главния ключ за прехвърляне от защитеното хранилище. Той ще бъде извлечен отново от seed-а на портфейла ви следващия път, когато приложението го поиска, със същия отпечатък. Текущите прехвърляния не се засягат."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Това премахва главния ключ за прехвърляне от защитеното хранилище. Той ще бъде извлечен отново от seed-а на портфейла ви следващия път, когато приложението го поиска, със същия отпечатък. Текущите прехвърляния не се засягат.",
+  "receive__receiveTransferFee_apple": "Такса за прехвърляне",
+  "receive__swapErrorAmountBelowMinimum_apple": "Сумата е под минималната сума за прехвърляне: {min} сатоши",
+  "receive__swapErrorAmountAboveMaximum_apple": "Сумата надвишава максималната сума за прехвърляне: {max} сатоши",
+  "receive__swapTransferTitle_apple": "Прехвърляне",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курсът не е наличен. Моля, опитайте отново по-късно.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Това прехвърляне не е налично."
 }

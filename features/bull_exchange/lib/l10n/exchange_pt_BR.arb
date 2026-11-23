@@ -983,5 +983,516 @@
   "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique sua conexão, veja se você está conectado e tente novamente.",
   "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
   "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
-  "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde."
+  "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde.",
+  "payPayinAmount": "Quantidade de pagamento",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "payPleasePayInvoice": "Por favor, pague esta fatura",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "paySinpeBeneficiario": "Beneficiário",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "sellAdvancedOptions": "Opções avançadas",
+  "@sellAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellReplaceByFeeActivated": "Substitui-a-taxa activada",
+  "@sellReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "payInstantPayments": "Pagamentos imediatos",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "payPayoutAmount": "Quantidade de pagamento",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payNetworkFees": "Taxas de rede",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "sellLoadingGeneric": "A carregar...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "payPaymentInProgress": "Pagamento em Progresso!",
+  "@payPaymentInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payAboveMaxAmountError": "O valor máximo que você pode pagar com esta carteira é {amount}.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "payPayFromWallet": "Pagar da carteira",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellCompleteKYC": "KYC completo",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "payLightningNetwork": "Rede de relâmpago",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellExternalWallet": "Carteira externa",
+  "@sellExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payInvalidState": "Estado inválido",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "sellEurBalance": "EUR Balanço",
+  "@sellEurBalance": {
+    "description": "Display text for EUR balance payout method"
+  },
+  "sellBelowMinAmountError": "Você está tentando vender abaixo da quantidade mínima que pode ser vendida com esta carteira.",
+  "@sellBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "sellSelectNetwork": "Selecione Rede",
+  "@sellSelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payNoInvoiceData": "Não existem dados de fatura disponíveis",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "paySinpeMonto": "Montante",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "sellSecureBitcoinWallet": "Carteira Bitcoin segura",
+  "@sellSecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "sellShowQrCode": "Mostrar código QR",
+  "@sellShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "payNoDetailsAvailable": "Sem detalhes disponíveis",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "sellViewDetailsButton": "Ver detalhes",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellOrderAlreadyConfirmedError": "Esta ordem de venda já foi confirmada.",
+  "@sellOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "payShowQrCode": "Mostrar código QR",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "paySinpeOrigen": "Origem",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "paySelectNetwork": "Selecione Rede",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payRecipientType": "Tipo de destinatário",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "sellOrderCompleted": "Ordem concluída!",
+  "@sellOrderCompleted": {
+    "description": "Success message for completed order"
+  },
+  "sellPleasePayInvoice": "Por favor, pague esta fatura",
+  "@sellPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payInsufficientBalanceError": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellCadBalance": "CADA Balanço",
+  "@sellCadBalance": {
+    "description": "Display text for CAD balance payout method"
+  },
+  "sellPayFromWallet": "Pagar da carteira",
+  "@sellPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "sellPriceWillRefreshIn": "Preço irá refrescar-se ",
+  "@sellPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "sellArsBalance": "Saldo ARS",
+  "@sellArsBalance": {
+    "description": "Display text for ARS balance payout method"
+  },
+  "sellBitcoinAmount": "Quantidade de Bitcoin",
+  "@sellBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "payExchangeRate": "Taxa de câmbio",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payQrCode": "Código QR",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellDone": "Feito",
+  "@sellDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellSendPaymentContinue": "Continue",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "sellLightningNetwork": "Rede de relâmpago",
+  "@sellLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "sellInstantPayments": "Pagamentos imediatos",
+  "@sellInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "copyDialogButton": "Entendido",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "payTitle": "Pagamento",
+  "payDescriptionLabel": "Descrição do pagamento (opcional)",
+  "payDescriptionHint": "Adicione uma nota a este pagamento",
+  "payPaymentDescription": "Descrição do pagamento",
+  "@payTitle": {
+    "description": "Screen title for pay feature"
+  },
+  "sellFromAnotherWallet": "Vender de outra carteira Bitcoin",
+  "@sellFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "sellBalanceWillBeCredited": "O saldo da sua conta será creditado após a sua transação receber 1 confirmação de compra.",
+  "@sellBalanceWillBeCredited": {
+    "description": "Information about balance crediting"
+  },
+  "sellQrCode": "Código QR",
+  "@sellQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "sellHowToPayInvoice": "Como você quer pagar esta fatura?",
+  "@sellHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "sellGoHome": "Vai para casa",
+  "@sellGoHome": {
+    "description": "Button to go to home screen"
+  },
+  "sellBitcoinOnChain": "Bitcoin on-chain",
+  "@sellBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payFeePriority": "Prioridade de Taxas",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellNoInvoiceData": "Não existem dados de fatura disponíveis",
+  "@sellNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payRbfActivated": "Substitui-a-taxa activada",
+  "@payRbfActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "sellSelectWallet": "Selecione a carteira",
+  "@sellSelectWallet": {
+    "description": "Dropdown to choose source wallet"
+  },
+  "sellInsufficientBalanceError": "Equilíbrio insuficiente na carteira selecionada para completar esta ordem de venda.",
+  "@sellInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "sellFeePriority": "Prioridade de Taxas",
+  "@sellFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "sellPayinAmount": "Quantidade de pagamento",
+  "@sellPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "sellCopyInvoice": "Fatura de cópia",
+  "@sellCopyInvoice": {
+    "description": "Button to copy invoice"
+  },
+  "payExternalWalletDescription": "Pagar de outra carteira Bitcoin",
+  "@payExternalWalletDescription": {
+    "description": "Description for external wallet option"
+  },
+  "payBitcoinPrice": "Preço de Bitcoin",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "sellMxnBalance": "MXN Balanço",
+  "@sellMxnBalance": {
+    "description": "Display text for MXN balance payout method"
+  },
+  "sellBitcoinPriceLabel": "Preço de Bitcoin",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "closeDialogButton": "Fechar",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellCopBalance": "COP Balanço",
+  "@sellCopBalance": {
+    "description": "Display text for COP balance payout method"
+  },
+  "sellPayoutAmount": "Quantidade de pagamento",
+  "@sellPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "payWhichWallet": "De que carteira queres pagar?",
+  "@payWhichWallet": {
+    "description": "Question prompt for wallet selection"
+  },
+  "sellKycPendingDescription": "Você deve concluir a verificação ID primeiro",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellWhichWalletQuestion": "De que carteira queres vender?",
+  "@sellWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "payHowToPayInvoice": "Como você quer pagar esta fatura?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "paySelectCoinsManually": "Selecione moedas manualmente",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "sellCrcBalance": "CRC Balanço",
+  "@sellCrcBalance": {
+    "description": "Display text for CRC balance payout method"
+  },
+  "payPriceRefreshIn": "Preço irá refrescar-se ",
+  "@payPriceRefreshIn": {
+    "description": "Text before countdown timer"
+  },
+  "payBitcoinAmount": "Quantidade de Bitcoin",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "sellFastest": "Mais rápido",
+  "@sellFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "sellExchangeRate": "Taxa de câmbio",
+  "@sellExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "sellTitle": "Venda de Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "sellUsdBalance": "USD / USD Balanço",
+  "@sellUsdBalance": {
+    "description": "Display text for USD balance payout method"
+  },
+  "sellUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
+  "@sellUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payCopyInvoice": "Fatura de cópia",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "sellKycPendingTitle": "Pendente de Verificação de ID KYC",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "payLiquidNetwork": "Rede líquida",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payBelowMinAmountError": "O valor mínimo que você pode pagar com esta carteira é {amount}.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "payRecipientName": "Nome do destinatário",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "sellConfirmPayment": "Confirmar pagamento",
+  "@sellConfirmPayment": {
+    "description": "Screen title for payment confirmation"
+  },
+  "payOrderDetails": "Detalhes do pedido",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "payOrderNumber": "Número de ordem",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "paySinpeNumeroOrden": "Número de ordem",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "payRecipientDetails": "Detalhes do destinatário",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "sellOrderNumber": "Número de ordem",
+  "@sellOrderNumber": {
+    "description": "Label for order number"
+  },
+  "sellOrderNotFoundError": "A ordem de venda não foi encontrada. Por favor, tente novamente.",
+  "@sellOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "sellPayoutRecipient": "Receptor de pagamento",
+  "@sellPayoutRecipient": {
+    "description": "Label for payout recipient"
+  },
+  "payDone": "Feito",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "sellInProgress": "Vender em progresso...",
+  "@sellInProgress": {
+    "description": "Message for sell in progress"
+  },
+  "payAdvancedSettings": "Configurações avançadas",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "paySelectWallet": "Selecione a carteira",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "sellSendPaymentNetworkFees": "Taxas de rede",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "payCompleted": "Pagamento concluído!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "paySinpeNumeroComprobante": "Número de referência",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySecureBitcoinWallet": "Carteira Bitcoin segura",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payConfirmPayment": "Confirmar pagamento",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "sellAdvancedSettings": "Configurações avançadas",
+  "@sellAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payFastest": "Mais rápido",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "sellSelectCoinsManually": "Selecione moedas manualmente",
+  "@sellSelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payViewDetails": "Ver detalhes",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "payExternalWallet": "Carteira externa",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "sellLiquidNetwork": "Rede líquida",
+  "@sellLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payAdvancedOptions": "Opções avançadas",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
+  "@sellAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "viewerTapToCopy": "Toque para copiar",
+  "invoiceViewerTitle": "Fatura",
+  "paySinpeReceipt": "Recibo SINPE",
+  "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
+  "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "sellPayoutBalance": "Adicionar ao saldo da minha conta",
+  "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
+  "sellPayoutTitle": "Selecionar destinatário",
+  "sellPayoutNewBadge": "NOVO",
+  "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
+  "sendSelectedUtxosInsufficient": "Utxos selecionados não cobre a quantidade necessária",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "selectAmountTitle": "Selecione o valor",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "typeLabel": "Tipo: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "addressLabel": "Endereço: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "amountRequestedLabel": "Montante solicitado: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "coinsKeychainReceive": "Receber",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Troco",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  }
 }

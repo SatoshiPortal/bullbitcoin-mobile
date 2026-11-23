@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "Testnet অ্যাকাউন্টের ওয়েব পৃষ্ঠার জন্য HTTP বেসিক অথ (লগইন এবং KYC)।",
   "app__walletDeletionErrorOngoingSwaps_apple": "চলমান ট্রান্সফার থাকলে ওয়ালেট মুছতে পারবেন না।",
   "app__onboardingSplashDescription_apple": "সার্বভৌম সেলফ-কাস্টডি Bitcoin ওয়ালেট এবং শুধুমাত্র Bitcoin-ভিত্তিক সেবা।",
+  "wizard__onboardingSplashDescription_apple": "সার্বভৌম সেলফ-কাস্টডি Bitcoin ওয়ালেট এবং শুধুমাত্র Bitcoin-ভিত্তিক সেবা।",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin ট্রান্সফার নিশ্চিত হতে সময় লাগবে।",
   "app__receiveSwapID_apple": "ট্রান্সফার ID",
   "app__receiveBoltzSwapFee_apple": "Boltz ট্রান্সফার ফি",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "ট্রান্সফার",
   "label_editor__systemLabelAutoSwap_apple": "অটো ট্রান্সফার",
   "app__logoutConfirmationDescription_apple": "আপনি কি আপনার Bull Bitcoin অ্যাকাউন্ট থেকে লগআউট করতে চান? অ্যাকাউন্টের ফিচার ব্যবহার করতে আপনাকে আবার লগইন করতে হবে।",
-  "app__wizardJourneyTip5_apple": "KYC ছাড়াই Bitcoin এবং Liquid-এর মধ্যে ট্রান্সফার করুন",
-  "app__wizardJourneyTip6_apple": "আপনার অটো ট্রান্সফার সেটিংস কাস্টমাইজ করুন",
+  "wizard__wizardJourneyTip5_apple": "KYC ছাড়াই Bitcoin এবং Liquid-এর মধ্যে ট্রান্সফার করুন",
+  "wizard__wizardJourneyTip6_apple": "আপনার অটো ট্রান্সফার সেটিংস কাস্টমাইজ করুন",
   "app__transactionSwapOpenWithin24h_apple": "আপনার ট্রান্সফার সম্পন্ন করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
   "app__homeActionTransfer_apple": "ট্রান্সফার করুন",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক মুছবেন?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "এটি সুরক্ষিত স্টোরেজ থেকে ট্রান্সফার মাস্টার কী সরিয়ে দেয়। অ্যাপের পরবর্তী প্রয়োজনে এটি আপনার ওয়ালেট সিড থেকে একই ফিঙ্গারপ্রিন্টসহ পুনরায় তৈরি হবে। চলমান ট্রান্সফারগুলো প্রভাবিত হবে না।"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "এটি সুরক্ষিত স্টোরেজ থেকে ট্রান্সফার মাস্টার কী সরিয়ে দেয়। অ্যাপের পরবর্তী প্রয়োজনে এটি আপনার ওয়ালেট সিড থেকে একই ফিঙ্গারপ্রিন্টসহ পুনরায় তৈরি হবে। চলমান ট্রান্সফারগুলো প্রভাবিত হবে না।",
+  "receive__receiveTransferFee_apple": "ট্রান্সফার ফি",
+  "receive__swapErrorAmountBelowMinimum_apple": "পরিমাণ ন্যূনতম ট্রান্সফার পরিমাণের নিচে: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "পরিমাণ সর্বোচ্চ ট্রান্সফার পরিমাণ ছাড়িয়ে গেছে: {max} sats",
+  "receive__swapTransferTitle_apple": "ট্রান্সফার",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "এই ট্রান্সফারটি উপলব্ধ নেই।"
 }

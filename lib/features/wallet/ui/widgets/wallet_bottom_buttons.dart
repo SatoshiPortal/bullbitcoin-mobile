@@ -1,8 +1,8 @@
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:receive/routes.dart';
 import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullReceiveSendButtons, BuildContext, StatelessWidget, Widget;
@@ -19,14 +19,18 @@ class WalletBottomButtons extends StatelessWidget {
       receiveLabel: context.loc.walletButtonReceive,
       sendLabel: context.loc.walletButtonSend,
       onReceive: () {
-        final type =
-            wallet?.defaultReceiveNetwork ?? ReceiveNetworkType.bitcoin;
-        final routeName = switch (type) {
-          ReceiveNetworkType.bitcoin => ReceiveRoute.receiveBitcoin.name,
-          ReceiveNetworkType.lightning => ReceiveRoute.receiveLightning.name,
-          ReceiveNetworkType.liquid => ReceiveRoute.receiveLiquid.name,
-        };
-        context.pushNamed(routeName, extra: wallet);
+        final selected = wallet;
+        ReceiveNavigation.open<void>(
+          context,
+          wallet: selected == null
+              ? null
+              : ReceiveWallet(
+                  id: selected.id,
+                  network: selected.network.shared,
+                  signsLocally: selected.signsLocally,
+                  scriptType: selected.scriptType,
+                ),
+        );
       },
       onSend: wallet?.isWatchOnly == true
           ? null

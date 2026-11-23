@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "Testnet hesap web sayfaları (giriş ve KYC) için HTTP basic auth.",
   "app__walletDeletionErrorOngoingSwaps_apple": "Devam eden transferleri olan bir cüzdanı silemezsiniz.",
   "app__onboardingSplashDescription_apple": "Egemen öz saklamalı Bitcoin cüzdanı ve yalnızca Bitcoin hizmetleri.",
+  "wizard__onboardingSplashDescription_apple": "Egemen öz saklamalı Bitcoin cüzdanı ve yalnızca Bitcoin hizmetleri.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin transferlerinin onaylanması zaman alacaktır.",
   "app__receiveSwapID_apple": "Transfer ID",
   "app__receiveBoltzSwapFee_apple": "Boltz Transfer Ücreti",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Transferler",
   "label_editor__systemLabelAutoSwap_apple": "Otomatik Transfer",
   "app__logoutConfirmationDescription_apple": "Bull Bitcoin hesabınızdan çıkış yapmak istediğinizden emin misiniz? Hesap özelliklerine erişmek için tekrar giriş yapmanız gerekecek.",
-  "app__wizardJourneyTip5_apple": "KYC olmadan Bitcoin ve Liquid arasında transfer yapın",
-  "app__wizardJourneyTip6_apple": "Otomatik transfer ayarlarınızı özelleştirin",
+  "wizard__wizardJourneyTip5_apple": "KYC olmadan Bitcoin ve Liquid arasında transfer yapın",
+  "wizard__wizardJourneyTip6_apple": "Otomatik transfer ayarlarınızı özelleştirin",
   "app__transactionSwapOpenWithin24h_apple": "Transferinizi tamamlamak için uygulamayı 24 saat içinde açın.",
   "app__homeActionTransfer_apple": "Aktar",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Oran kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemoniği",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer mnemoniği silinsin mi?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Bu işlem, transfer ana anahtarını güvenli depolamadan kaldırır. Uygulamanın ihtiyaç duyduğu bir sonraki seferde cüzdan seed'inizden aynı parmak iziyle yeniden türetilecektir. Devam eden transferler etkilenmez."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Bu işlem, transfer ana anahtarını güvenli depolamadan kaldırır. Uygulamanın ihtiyaç duyduğu bir sonraki seferde cüzdan seed'inizden aynı parmak iziyle yeniden türetilecektir. Devam eden transferler etkilenmez.",
+  "receive__receiveTransferFee_apple": "Transfer Ücreti",
+  "receive__swapErrorAmountBelowMinimum_apple": "Tutar minimum transfer miktarının altında: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Tutar maksimum transfer miktarını aşıyor: {max} sats",
+  "receive__swapTransferTitle_apple": "Transfer",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Oran kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Bu transfer kullanılamıyor."
 }

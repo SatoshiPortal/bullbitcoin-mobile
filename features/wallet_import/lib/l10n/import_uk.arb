@@ -120,5 +120,85 @@
   "importColdcardMk4Step9": "Натисніть цифру 3, щоб увімкнути NFC на Coldcard",
   "importColdcardMk4Step10": "Натисніть кнопку «Scan NFC»",
   "importColdcardMk4Step11": "Піднесіть NFC телефона до NFC Coldcard",
-  "importColdcardMk4Step12": "Готово!"
+  "importColdcardMk4Step12": "Готово!",
+  "bitboxScreenDefaultWalletLabel": "BitBox Гаманець",
+  "importColdcardButtonInstructions": "Інструкції",
+  "importColdcardButtonOpenCamera": "Відкрийте камеру",
+  "importColdcardConnectDescription": "Імпортуйте дескриптор гаманця з вашого {deviceName}",
+  "importColdcardConnectTitle": "Підключити {deviceName}",
+  "importColdcardInvalidWalletData": "Недійсні дані гаманця Coldcard",
+  "importColdcardScanNfcSheetTitle": "Піднесіть {deviceName}, щоб імпортувати дескриптор гаманця через NFC",
+  "importMnemonicBalanceLabel": "Баланс: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Продовжити",
+  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
+  "importMnemonicEmptyLabelError": "Для імпорту мнемоніки потрібна мітка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Спадщина",
+  "importMnemonicNestedSegwit": "Нескінченний Segwit",
+  "importMnemonicSegwit": "Сегвейт",
+  "importMnemonicSelectScriptType": "Імпортний мнемічний",
+  "importMnemonicSyncMessage": "Усі три типи гаманця є синхронізацією та їх балансом та операціями. Якщо ви впевнені, що тип гаманця ви хочете імпортувати.",
+  "importMnemonicTitle": "Імпортний мнемічний",
+  "importMnemonicTransactionsLabel": "{count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Холодна картка Q",
+  "importWalletImportMnemonic": "Імпортний мнемічний",
+  "importWalletImportWatchOnly": "Імпорт годинник",
+  "importWalletJade": "Блокстрім Jade",
+  "importWalletKeystone": "Головна",
+  "importWalletKrux": "Кошик",
+  "importWalletLedger": "Клей",
+  "importWalletPassport": "Паспорт Фундації",
+  "importWalletSectionGeneric": "Генетичні гаманці",
+  "importWalletSectionHardware": "Апаратні гаманці",
+  "importWalletSeedSigner": "НасінняСинер",
+  "importWalletSpecter": "Спектр",
+  "importWalletTitle": "Додати новий гаманець",
+  "importWatchOnlyCopiedToClipboard": "Скопіювати до буферу",
+  "importWatchOnlyDescriptor": "Дескриптор",
+  "importWatchOnlyDisclaimerDescription": "Переконайтеся, що шлях деривативації ви обираєтеся відповідати одному, який виготовив даний xpub, перевіривши першу адресу, отриману з гаманця перед використанням. Використання неправильного шляху може призвести до втрати коштів",
+  "importWatchOnlyDisclaimerTitle": "Попередження про заставу",
+  "importWatchOnlyErrorAlreadyExists": "Цей гаманець уже імпортовано.",
+  "importWatchOnlyErrorImportFailed": "Не вдалося імпортувати цей гаманець лише для перегляду. Будь ласка, перевірте дані та спробуйте ще раз.",
+  "importWatchOnlyErrorInvalidFormat": "Це не схоже на дійсний публічний ключ або дескриптор. Перевірте, що ви вставили.",
+  "importWatchOnlyErrorLabelRequired": "Дайте гаманцю назву перед імпортом.",
+  "importWatchOnlyErrorNetworkMismatch": "Цей гаманець зараз використовує іншу мережу Bitcoin. Перемкніться між Mainnet і Testnet та повторіть спробу.",
+  "importWatchOnlyErrorNoWalletSelected": "Спочатку вставте або відскануйте публічний ключ чи дескриптор.",
+  "importWatchOnlyExtendedPublicKey": "Продовжити громадськість Головна",
+  "importWatchOnlyImport": "Імпорт",
+  "importWatchOnlyLabel": "Етикетка",
+  "importWatchOnlyNetworkBitcoinMainnet": "Мережа: основна мережа Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Мережа: тестова мережа Bitcoin",
+  "importWatchOnlyPasteHint": "Паста xpub, ypub, zpub або descriptor",
+  "importWatchOnlyRequired": "Потрібні",
+  "importWatchOnlyScanQR": "Сканування QR",
+  "importWatchOnlySigningDevice": "Пристрої реєстрації",
+  "importWatchOnlyTitle": "Імпорт годинник",
+  "importWatchOnlyType": "Тип",
+  "importWatchOnlyUnknown": "Невідомо",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger гаманець",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Сканер NFC"
 }

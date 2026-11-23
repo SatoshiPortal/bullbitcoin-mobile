@@ -33,6 +33,7 @@ import 'autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'domain/swap_sync_port.dart';
 import 'domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 import 'domain/usecases/check_swap_spend_admission_usecase.dart';
+import 'domain/usecases/create_receive_order_swap_usecase.dart';
 import 'domain/usecases/get_swap_amount_quotes_usecase.dart';
 import 'domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'domain/usecases/get_swap_route_usecase.dart';
@@ -75,6 +76,11 @@ abstract interface class SwapFeature implements SwapActivity {
   GoRoute get autoswapSettingsRoute;
   bool get isWatchingOrders;
   bool get isWatchingAutoswap;
+  Future<Result<OrderSwapRecord, ReceiveFailure>> createReceiveOrder({
+    required ReceiveWallet wallet,
+    required int amountSat,
+    String? note,
+  });
   void start({required bool watchOrders, required bool watchAutoswap});
   Future<void> dispose();
 
@@ -205,6 +211,7 @@ abstract interface class SwapFeature implements SwapActivity {
         ApplyCompletedOrderSwapLabelsUsecase(orders, transactions, labels),
       ),
       RetryOngoingSwapsUsecase(swaps.watcher),
+      CreateReceiveOrderSwapUsecase(orders, addresses),
       OrderSwapWatcher(
         ScheduleOrderSwapRefreshUsecase(scheduler),
         isAppUpdateRequired: () => orders.isAppUpdateRequired,
@@ -233,6 +240,7 @@ final class _SwapFeature implements SwapFeature {
   final GoRoute autoswapSettingsRoute;
   final RefreshOrderSwapsUsecase _refresh;
   final RetryOngoingSwapsUsecase _retry;
+  final CreateReceiveOrderSwapUsecase _createReceiveOrder;
   final OrderSwapWatcher _ordersWatcher;
   final AutoswapWatcher _autoswapWatcher;
   bool _orderWatching = false;
@@ -243,6 +251,7 @@ final class _SwapFeature implements SwapFeature {
     this.autoswapSettingsRoute,
     this._refresh,
     this._retry,
+    this._createReceiveOrder,
     this._ordersWatcher,
     this._autoswapWatcher,
   );
@@ -251,6 +260,17 @@ final class _SwapFeature implements SwapFeature {
   bool get isWatchingOrders => _orderWatching;
   @override
   bool get isWatchingAutoswap => _autoswapWatching;
+
+  @override
+  Future<Result<OrderSwapRecord, ReceiveFailure>> createReceiveOrder({
+    required ReceiveWallet wallet,
+    required int amountSat,
+    String? note,
+  }) => _createReceiveOrder.execute(
+    wallet: wallet,
+    amountSat: amountSat,
+    note: note,
+  );
 
   @override
   void start({required bool watchOrders, required bool watchAutoswap}) {

@@ -2,27 +2,21 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
-import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
-import 'package:background_tasks/background_tasks.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;
 import 'package:drift/native.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/migration.dart';
 import 'package:preferences/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-
-class _Wizard extends Mock implements WizardRepository {}
-
-class _Intervals extends Mock implements BackgroundSyncIntervalRepository {}
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wizard/wizard.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -182,21 +176,35 @@ void main() {
   );
 
   test('wizard commits touched fields only to owner', () async {
-    final wizard = _Wizard();
-    const choices = WizardChoices(
-      defaultCurrency: 'CAD',
-      touched: {WizardField.defaultCurrency},
+    SharedPreferences.setMockInitialValues({
+      'wizard_pending_version': 1,
+      'wizard_pending_currency': 'CAD',
+      'wizard_pending_error_reporting': false,
+    });
+    final wizard = WizardFeature.mount();
+    expect(
+      await wizard.readReportingConsent(),
+      isA<Ok<bool?, WizardFailure>>().having(
+        (result) => result.value,
+        'explicit reporting refusal',
+        isFalse,
+      ),
     );
-    when(wizard.readPending).thenAnswer((_) async => choices);
-    when(wizard.clearPending).thenAnswer((_) async {});
-    when(wizard.markComplete).thenAnswer((_) async {});
-    final apply = ApplyPendingWizardChoicesUsecase(
-      wizardRepository: wizard,
-      settingsRepository: preferences,
-      intervals: _Intervals(),
+    final exchange = Exchange.open(
+      mainnetEndpoint: Uri.https('mainnet.invalid'),
+      testnetEndpoint: Uri.https('testnet.invalid'),
+      readSession: () async => const Err(ExchangeNotAuthenticatedFailure()),
     );
-    await apply.execute();
-    verify(wizard.clearPending).called(1);
+    expect(
+      await wizard.applyPendingChoices(
+        preferences: preferences,
+        exchange: exchange,
+      ),
+      isA<Ok>(),
+    );
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.containsKey('wizard_pending_currency'), isFalse);
+    expect(prefs.getInt('wizard_completed_version'), 1);
     expect(
       (await preferences.readCurrency() as Ok<String, PreferencesFailure>)
           .value,

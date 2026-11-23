@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth՝ testnet հաշվի վեբ էջերի համար (մուտք և KYC):",
   "app__walletDeletionErrorOngoingSwaps_apple": "Դուք չեք կարող ջնջել ընթացիկ փոխանցումներ ունեցող դրամապանակը։",
   "app__onboardingSplashDescription_apple": "Ինքնիշխան ինքնապահպանվող Bitcoin դրամապանակ և միայն Bitcoin ծառայություններ։",
+  "wizard__onboardingSplashDescription_apple": "Ինքնիշխան ինքնապահպանվող Bitcoin դրամապանակ և միայն Bitcoin ծառայություններ։",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin փոխանցումները ժամանակ կխլեն հաստատվելու համար։",
   "app__receiveSwapID_apple": "Փոխանցման ID",
   "app__receiveBoltzSwapFee_apple": "Boltz փոխանցման վճար",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Փոխանցումներ",
   "label_editor__systemLabelAutoSwap_apple": "Ինքնաշխատ փոխանցում",
   "app__logoutConfirmationDescription_apple": "Համոզվա՞ծ եք, որ ցանկանում եք դուրս գալ ձեր Bull Bitcoin հաշվից։ Հաշվի գործառույթներին հասանելիություն ունենալու համար ձեզ նորից անհրաժեշտ կլինի մուտք գործել։",
-  "app__wizardJourneyTip5_apple": "Փոխանցեք Bitcoin-ի և Liquid-ի միջև առանց KYC-ի",
-  "app__wizardJourneyTip6_apple": "Անհատականացրեք ձեր ինքնաշխատ փոխանցման կարգավորումները",
+  "wizard__wizardJourneyTip5_apple": "Փոխանցեք Bitcoin-ի և Liquid-ի միջև առանց KYC-ի",
+  "wizard__wizardJourneyTip6_apple": "Անհատականացրեք ձեր ինքնաշխատ փոխանցման կարգավորումները",
   "app__transactionSwapOpenWithin24h_apple": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր փոխանցումն ավարտելու համար։",
   "app__homeActionTransfer_apple": "Փոխանցել",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Փոխանցման mnemonic",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Ջնջե՞լ փոխանցման mnemonic-ը",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։",
+  "receive__receiveTransferFee_apple": "Փոխանցման վճար",
+  "receive__swapErrorAmountBelowMinimum_apple": "Գումարը փոխանցման նվազագույն գումարից պակաս է․ {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Գումարը գերազանցում է փոխանցման առավելագույն գումարը․ {max} sats",
+  "receive__swapTransferTitle_apple": "Փոխանցում",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Այս փոխանցումը հասանելի չէ։"
 }

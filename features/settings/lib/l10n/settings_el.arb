@@ -1,0 +1,14 @@
+{
+  "translationWarningContributeButton": "Βοηθήστε στη βελτίωση των μεταφράσεων",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "Οι περισσότερες μεταφράσεις σε αυτήν την εφαρμογή δημιουργήθηκαν με χρήση AI και ενδέχεται να περιέχουν ανακρίβειες. Εάν παρατηρήσετε σφάλματα ή θέλετε να βοηθήσετε στη βελτίωση των μεταφράσεων, μπορείτε να υποβάλετε μια διόρθωση στο αποθετήριό μας στο GitHub.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  }
+}

@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth για τις ιστοσελίδες του λογαριασμού testnet (σύνδεση και KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Δεν μπορείτε να διαγράψετε ένα πορτοφόλι με μεταφορές σε εξέλιξη.",
   "app__onboardingSplashDescription_apple": "Κυρίαρχο πορτοφόλι Bitcoin με αυτοφύλαξη και υπηρεσίες αποκλειστικά για Bitcoin.",
+  "wizard__onboardingSplashDescription_apple": "Κυρίαρχο πορτοφόλι Bitcoin με αυτοφύλαξη και υπηρεσίες αποκλειστικά για Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Οι μεταφορές Bitcoin θα χρειαστούν χρόνο για να επιβεβαιωθούν.",
   "app__receiveSwapID_apple": "ID μεταφοράς",
   "app__receiveBoltzSwapFee_apple": "Τέλος μεταφοράς Boltz",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Μεταφορές",
   "label_editor__systemLabelAutoSwap_apple": "Αυτόματη μεταφορά",
   "app__logoutConfirmationDescription_apple": "Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε από τον λογαριασμό σας Bull Bitcoin; Θα χρειαστεί να συνδεθείτε ξανά για να αποκτήσετε πρόσβαση στις λειτουργίες του λογαριασμού.",
-  "app__wizardJourneyTip5_apple": "Μεταφέρετε μεταξύ Bitcoin και Liquid χωρίς KYC",
-  "app__wizardJourneyTip6_apple": "Προσαρμόστε τις ρυθμίσεις αυτόματης μεταφοράς",
+  "wizard__wizardJourneyTip5_apple": "Μεταφέρετε μεταξύ Bitcoin και Liquid χωρίς KYC",
+  "wizard__wizardJourneyTip6_apple": "Προσαρμόστε τις ρυθμίσεις αυτόματης μεταφοράς",
   "app__transactionSwapOpenWithin24h_apple": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε τη μεταφορά σας.",
   "app__homeActionTransfer_apple": "Μεταφορά",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Η ισοτιμία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Μνημονική φράση μεταφοράς",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Διαγραφή μνημονικής φράσης μεταφοράς;",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Αυτό αφαιρεί το κύριο κλειδί μεταφορών από την ασφαλή αποθήκευση. Θα παραχθεί ξανά από το seed του πορτοφολιού σας την επόμενη φορά που θα το χρειαστεί η εφαρμογή, με το ίδιο αποτύπωμα. Οι μεταφορές σε εξέλιξη δεν επηρεάζονται."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Αυτό αφαιρεί το κύριο κλειδί μεταφορών από την ασφαλή αποθήκευση. Θα παραχθεί ξανά από το seed του πορτοφολιού σας την επόμενη φορά που θα το χρειαστεί η εφαρμογή, με το ίδιο αποτύπωμα. Οι μεταφορές σε εξέλιξη δεν επηρεάζονται.",
+  "receive__receiveTransferFee_apple": "Τέλος μεταφοράς",
+  "receive__swapErrorAmountBelowMinimum_apple": "Το ποσό είναι κάτω από το ελάχιστο ποσό μεταφοράς: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Το ποσό υπερβαίνει το μέγιστο ποσό μεταφοράς: {max} sats",
+  "receive__swapTransferTitle_apple": "Μεταφορά",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Η ισοτιμία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Αυτή η μεταφορά δεν είναι διαθέσιμη."
 }

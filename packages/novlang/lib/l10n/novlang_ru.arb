@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth для веб-страниц аккаунта testnet (вход и KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Вы не можете удалить кошелёк с текущими переводами.",
   "app__onboardingSplashDescription_apple": "Кошелёк Bitcoin с суверенным самостоятельным хранением и сервисы только для Bitcoin.",
+  "wizard__onboardingSplashDescription_apple": "Кошелёк Bitcoin с суверенным самостоятельным хранением и сервисы только для Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Переводы Bitcoin потребуют времени для подтверждения.",
   "app__receiveSwapID_apple": "ID перевода",
   "app__receiveBoltzSwapFee_apple": "Комиссия за перевод Boltz",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Переводы",
   "label_editor__systemLabelAutoSwap_apple": "Автоперевод",
   "app__logoutConfirmationDescription_apple": "Вы уверены, что хотите выйти из аккаунта Bull Bitcoin? Чтобы получить доступ к функциям аккаунта, потребуется войти снова.",
-  "app__wizardJourneyTip5_apple": "Переводите между Bitcoin и Liquid без KYC",
-  "app__wizardJourneyTip6_apple": "Настройте параметры автоперевода",
+  "wizard__wizardJourneyTip5_apple": "Переводите между Bitcoin и Liquid без KYC",
+  "wizard__wizardJourneyTip6_apple": "Настройте параметры автоперевода",
   "app__transactionSwapOpenWithin24h_apple": "Откройте приложение в течение 24 часов, чтобы завершить перевод.",
   "app__homeActionTransfer_apple": "Перевести",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступен. Пожалуйста, попробуйте позже.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоника переводов",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Удалить мнемонику переводов?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Это удаляет мастер-ключ переводов из защищённого хранилища. При следующем обращении приложения он будет заново получен из сида вашего кошелька с тем же отпечатком. Текущие переводы не затрагиваются."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Это удаляет мастер-ключ переводов из защищённого хранилища. При следующем обращении приложения он будет заново получен из сида вашего кошелька с тем же отпечатком. Текущие переводы не затрагиваются.",
+  "receive__receiveTransferFee_apple": "Комиссия за перевод",
+  "receive__swapErrorAmountBelowMinimum_apple": "Сумма ниже минимальной суммы перевода: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Сумма превышает максимальную сумму перевода: {max} sats",
+  "receive__swapTransferTitle_apple": "Перевод",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступен. Пожалуйста, попробуйте позже.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Этот перевод недоступен."
 }

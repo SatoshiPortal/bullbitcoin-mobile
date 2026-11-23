@@ -1,0 +1,15 @@
+{
+  "@@locale": "hi",
+  "translationWarningContributeButton": "अनुवाद सुधारने में सहायता करें",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  },
+  "translationWarningDescription": "इस ऐप में अधिकांश अनुवाद AI द्वारा उत्पन्न किए गए हैं और इनमें अशुद्धियाँ हो सकती हैं। यदि आप कोई त्रुटि देखते हैं या अनुवादों को बेहतर बनाने में सहायता करना चाहते हैं, तो आप हमारे सामुदायिक अनुवाद प्लेटफ़ॉर्म के माध्यम से योगदान दे सकते हैं।",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-जनित अनुवाद",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  }
+}

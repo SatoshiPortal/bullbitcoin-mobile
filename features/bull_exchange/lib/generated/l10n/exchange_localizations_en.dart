@@ -2424,4 +2424,537 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Sell Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'Select Wallet';
+
+  @override
+  String get sellWhichWalletQuestion =>
+      'Which wallet do you want to sell from?';
+
+  @override
+  String get sellExternalWallet => 'External wallet';
+
+  @override
+  String get sellFromAnotherWallet => 'Sell from another Bitcoin wallet';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'You are trying to sell above the maximum amount that can be sold with this wallet.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'You are trying to sell below the minimum amount that can be sold with this wallet.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Insufficient balance in the selected wallet to complete this sell order.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'You are not authenticated. Please log in to continue.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'The sell order was not found. Please try again.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'This sell order has already been confirmed.';
+
+  @override
+  String get sellSelectNetwork => 'Select Network';
+
+  @override
+  String get sellHowToPayInvoice => 'How do you want to pay this invoice?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Lightning Network';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get sellConfirmPayment => 'Confirm payment';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Price will refresh in ';
+
+  @override
+  String get sellOrderNumber => 'Order number';
+
+  @override
+  String get sellPayoutRecipient => 'Payout recipient';
+
+  @override
+  String get sellCadBalance => 'CAD Balance';
+
+  @override
+  String get sellCrcBalance => 'CRC Balance';
+
+  @override
+  String get sellEurBalance => 'EUR Balance';
+
+  @override
+  String get sellUsdBalance => 'USD Balance';
+
+  @override
+  String get sellMxnBalance => 'MXN Balance';
+
+  @override
+  String get sellArsBalance => 'ARS Balance';
+
+  @override
+  String get sellCopBalance => 'COP Balance';
+
+  @override
+  String get sellPayinAmount => 'Payin amount';
+
+  @override
+  String get sellPayoutAmount => 'Payout amount';
+
+  @override
+  String get sellExchangeRate => 'Exchange rate';
+
+  @override
+  String get sellPayFromWallet => 'Pay from wallet';
+
+  @override
+  String get sellInstantPayments => 'Instant payments';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Secure Bitcoin wallet';
+
+  @override
+  String get sellFeePriority => 'Fee Priority';
+
+  @override
+  String get sellFastest => 'Fastest';
+
+  @override
+  String get sellAdvancedSettings => 'Advanced Settings';
+
+  @override
+  String get sellAdvancedOptions => 'Advanced options';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee activated';
+
+  @override
+  String get sellSelectCoinsManually => 'Select coins manually';
+
+  @override
+  String get sellDone => 'Done';
+
+  @override
+  String get sellPleasePayInvoice => 'Please pay this invoice';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin amount';
+
+  @override
+  String get sellCopyInvoice => 'Copy invoice';
+
+  @override
+  String get sellShowQrCode => 'Show QR code';
+
+  @override
+  String get sellQrCode => 'QR Code';
+
+  @override
+  String get sellNoInvoiceData => 'No invoice data available';
+
+  @override
+  String get sellInProgress => 'Sell in progress…';
+
+  @override
+  String get sellGoHome => 'Go home';
+
+  @override
+  String get sellOrderCompleted => 'Order completed!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Your account balance will be credited after your transaction receives 1 confirmation onchain.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Pay';
+
+  @override
+  String get payDescriptionLabel => 'Payment description (optional)';
+
+  @override
+  String get payDescriptionHint => 'Add a note for this payment';
+
+  @override
+  String get payPaymentDescription => 'Payment description';
+
+  @override
+  String get payRecipientType => 'Recipient type';
+
+  @override
+  String get payRecipientName => 'Recipient name';
+
+  @override
+  String get payRecipientDetails => 'Recipient details';
+
+  @override
+  String get payNoDetailsAvailable => 'No details available';
+
+  @override
+  String get paySelectWallet => 'Select Wallet';
+
+  @override
+  String get payExternalWallet => 'External wallet';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'The maximum you can pay with this wallet is $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'The minimum you can pay with this wallet is $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Insufficient balance in the selected wallet to complete this pay order.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'You are not authenticated. Please log in to continue.';
+
+  @override
+  String get paySelectNetwork => 'Select Network';
+
+  @override
+  String get payHowToPayInvoice => 'How do you want to pay this invoice?';
+
+  @override
+  String get payLightningNetwork => 'Lightning Network';
+
+  @override
+  String get payLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get payConfirmPayment => 'Confirm Payment';
+
+  @override
+  String get payOrderNumber => 'Order number';
+
+  @override
+  String get payPayinAmount => 'Payin amount';
+
+  @override
+  String get payPayoutAmount => 'Payout amount';
+
+  @override
+  String get payExchangeRate => 'Exchange rate';
+
+  @override
+  String get payPayFromWallet => 'Pay from wallet';
+
+  @override
+  String get payInstantPayments => 'Instant payments';
+
+  @override
+  String get paySecureBitcoinWallet => 'Secure Bitcoin wallet';
+
+  @override
+  String get payFeePriority => 'Fee Priority';
+
+  @override
+  String get payFastest => 'Fastest';
+
+  @override
+  String get payNetworkFees => 'Network fees';
+
+  @override
+  String get payAdvancedSettings => 'Advanced Settings';
+
+  @override
+  String get payAdvancedOptions => 'Advanced options';
+
+  @override
+  String get paySelectCoinsManually => 'Select coins manually';
+
+  @override
+  String get payDone => 'Done';
+
+  @override
+  String get payContinue => 'Continue';
+
+  @override
+  String get payPleasePayInvoice => 'Please pay this invoice';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin amount';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin Price';
+
+  @override
+  String get payCopyInvoice => 'Copy Invoice';
+
+  @override
+  String get payShowQrCode => 'Show QR code';
+
+  @override
+  String get payQrCode => 'QR Code';
+
+  @override
+  String get payNoInvoiceData => 'No invoice data available';
+
+  @override
+  String get payInvalidState => 'Invalid state';
+
+  @override
+  String get payViewDetails => 'View details';
+
+  @override
+  String get paySinpeReceipt => 'SINPE Receipt';
+
+  @override
+  String get payCompleted => 'Payment Completed!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'Order Details';
+
+  @override
+  String get paySinpeMonto => 'Amount';
+
+  @override
+  String get paySinpeNumeroOrden => 'Order number';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Reference number';
+
+  @override
+  String get paySinpeBeneficiario => 'Beneficiary';
+
+  @override
+  String get paySinpeOrigen => 'Origin';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'Payment In Progress!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Price will refresh in ';
+
+  @override
+  String get payWhichWallet => 'Which wallet do you want to pay from?';
+
+  @override
+  String get payExternalWalletDescription => 'Pay from another Bitcoin wallet';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee activated';
+
+  @override
+  String get copyDialogButton => 'Copy';
+
+  @override
+  String get closeDialogButton => 'Close';
+
+  @override
+  String get sellCompleteKYC => 'Complete KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Network fees';
+
+  @override
+  String get sellSendPaymentContinue => 'Continue';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin Price';
+
+  @override
+  String get sellViewDetailsButton => 'View details';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID Verification Pending';
+
+  @override
+  String get sellKycPendingDescription =>
+      'You must complete ID verification first';
+
+  @override
+  String get sellLoadingGeneric => 'Loading…';
+
+  @override
+  String get viewerTapToCopy => 'Tap to copy';
+
+  @override
+  String get invoiceViewerTitle => 'Invoice';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Your sell order could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Add to my account balance';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Withdrawals appear as sent by Leonod';
+
+  @override
+  String get sellPayoutTitle => 'Select recipient';
+
+  @override
+  String get sellPayoutNewBadge => 'NEW';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'We couldn\'t confirm that your transaction was broadcast. Check a block explorer before trying again.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Selected utxos does not cover required amount';
+
+  @override
+  String get selectAmountTitle => 'Select amount';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Amount requested: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Address: ';
+
+  @override
+  String get typeLabel => 'Type: ';
+
+  @override
+  String get coinsKeychainReceive => 'Receive';
+
+  @override
+  String get coinsKeychainChange => 'Change';
 }

@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP-Basisauthentifizierung für die Webseiten des Testnet-Kontos (Anmeldung und Identitätsprüfung).",
   "app__walletDeletionErrorOngoingSwaps_apple": "Sie können keine Wallet löschen, in der noch Transfers laufen.",
   "app__onboardingSplashDescription_apple": "Souveräne, selbstverwahrte Bitcoin-Wallet und reine Bitcoin-Dienste.",
+  "wizard__onboardingSplashDescription_apple": "Souveräne, selbstverwahrte Bitcoin-Wallet und reine Bitcoin-Dienste.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin-Transfers benötigen einige Zeit, um bestätigt zu werden.",
   "app__receiveSwapID_apple": "Transfer-ID",
   "app__receiveBoltzSwapFee_apple": "Boltz-Transfergebühr",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "Transfers",
   "label_editor__systemLabelAutoSwap_apple": "Auto-Transfer",
   "app__logoutConfirmationDescription_apple": "Möchten Sie sich wirklich von Ihrem Bull-Bitcoin-Konto abmelden? Sie müssen sich erneut anmelden, um auf die Kontofunktionen zuzugreifen.",
-  "app__wizardJourneyTip5_apple": "Transferiere zwischen Bitcoin und Liquid ohne KYC",
-  "app__wizardJourneyTip6_apple": "Passen Sie Ihre Auto-Transfer-Einstellungen an",
+  "wizard__wizardJourneyTip5_apple": "Transferiere zwischen Bitcoin und Liquid ohne KYC",
+  "wizard__wizardJourneyTip6_apple": "Passen Sie Ihre Auto-Transfer-Einstellungen an",
   "app__transactionSwapOpenWithin24h_apple": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Transfer abzuschließen.",
   "app__homeActionTransfer_apple": "Transfer",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Kurs nicht verfügbar. Bitte später erneut versuchen.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase löschen?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Dadurch wird der Transfer-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Transfers bleiben davon unberührt."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Dadurch wird der Transfer-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Transfers bleiben davon unberührt.",
+  "receive__receiveTransferFee_apple": "Transfergebühr",
+  "receive__swapErrorAmountBelowMinimum_apple": "Betrag liegt unter dem Mindesttransferbetrag: {min} Sats.",
+  "receive__swapErrorAmountAboveMaximum_apple": "Betrag überschreitet den maximalen Transferbetrag: {max} Sats.",
+  "receive__swapTransferTitle_apple": "Transfer",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Kurs nicht verfügbar. Bitte später erneut versuchen.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Dieser Transfer ist nicht verfügbar."
 }

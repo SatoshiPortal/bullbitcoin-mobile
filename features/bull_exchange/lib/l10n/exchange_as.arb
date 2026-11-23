@@ -907,5 +907,198 @@
   "dcaAccountUnavailableError": "আপোনাৰ একাউণ্ট ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰক, আপুনি লগ ইন কৰা আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "dcaLightningAddressRequiredError": "আপোনাৰ ক্ৰয়সমূহ লাভ কৰিবলৈ এটা Lightning ঠিকনা দিয়ক।",
   "dcaReceiveAddressError": "আপোনাৰ ৱালেটত এটা গ্ৰহণ কৰা ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।"
+  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
+  "sellTitle": "Bitcoin বিক্ৰী কৰক",
+  "sellSelectWallet": "Wallet বাছক",
+  "sellWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা বিক্ৰী কৰিব বিচাৰে?",
+  "sellExternalWallet": "বাহ্যিক wallet",
+  "sellFromAnotherWallet": "আন Bitcoin wallet-ৰ পৰা বিক্ৰী কৰক",
+  "sellAboveMaxAmountError": "আপুনি এই wallet-ৰ সৈতে বিক্ৰী কৰিব পৰা সৰ্বোচ্চ পৰিমাণতকৈ বেছি বিক্ৰী কৰিবলৈ চেষ্টা কৰিছে।",
+  "sellBelowMinAmountError": "আপুনি এই wallet-ৰ সৈতে বিক্ৰী কৰিব পৰা সৰ্বনিম্ন পৰিমাণতকৈ কম বিক্ৰী কৰিবলৈ চেষ্টা কৰিছে।",
+  "sellInsufficientBalanceError": "এই বিক্ৰী অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
+  "sellUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
+  "sellOrderNotFoundError": "বিক্ৰী অৰ্ডাৰ পোৱা নগ'ল। পুনৰ চেষ্টা কৰক।",
+  "sellOrderAlreadyConfirmedError": "এই বিক্ৰী অৰ্ডাৰ ইতিমধ্যে নিশ্চিত কৰা হৈছে।",
+  "sellSelectNetwork": "নেটৱৰ্ক বাছক",
+  "sellHowToPayInvoice": "আপুনি এই invoice কেনেকৈ পৰিশোধ কৰিব বিচাৰে?",
+  "sellBitcoinOnChain": "Bitcoin অন-চেইন",
+  "sellLightningNetwork": "Lightning Network",
+  "sellLiquidNetwork": "Liquid Network",
+  "sellConfirmPayment": "পৰিশোধ নিশ্চিত কৰক",
+  "sellPriceWillRefreshIn": "মূল্য পুনৰ নবীকৰণ হ'ব ",
+  "sellOrderNumber": "অৰ্ডাৰ নম্বৰ",
+  "sellPayoutRecipient": "পেআউট প্ৰাপক",
+  "sellCadBalance": "CAD ব্যালেন্স",
+  "sellCrcBalance": "CRC ব্যালেন্স",
+  "sellEurBalance": "EUR ব্যালেন্স",
+  "sellUsdBalance": "USD ব্যালেন্স",
+  "sellMxnBalance": "MXN ব্যালেন্স",
+  "sellArsBalance": "ARS ব্যালেন্স",
+  "sellCopBalance": "COP ব্যালেন্স",
+  "sellPayinAmount": "পেইন পৰিমাণ",
+  "sellPayoutAmount": "পেআউট পৰিমাণ",
+  "sellExchangeRate": "বিনিময় হাৰ",
+  "sellPayFromWallet": "Wallet-ৰ পৰা পৰিশোধ কৰক",
+  "sellInstantPayments": "তাৎক্ষণিক পৰিশোধ",
+  "sellSecureBitcoinWallet": "সুৰক্ষিত Bitcoin wallet",
+  "sellFeePriority": "মাচুলৰ অগ্ৰাধিকাৰ",
+  "sellFastest": "দ্ৰুততম",
+  "sellAdvancedSettings": "উন্নত ছেটিংছ",
+  "sellAdvancedOptions": "উন্নত বিকল্পসমূহ",
+  "sellReplaceByFeeActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
+  "sellSelectCoinsManually": "Coin হাতেৰে বাছক",
+  "sellDone": "সম্পন্ন",
+  "sellPleasePayInvoice": "অনুগ্ৰহ কৰি এই invoice পৰিশোধ কৰক",
+  "sellBitcoinAmount": "Bitcoin পৰিমাণ",
+  "sellCopyInvoice": "Invoice কপি কৰক",
+  "sellShowQrCode": "QR code দেখুৱাওক",
+  "sellQrCode": "QR Code",
+  "sellNoInvoiceData": "কোনো invoice ডেটা উপলব্ধ নাই",
+  "sellInProgress": "বিক্ৰী চলি আছে...",
+  "sellGoHome": "হোমলৈ যাওক",
+  "sellOrderCompleted": "অৰ্ডাৰ সম্পন্ন হৈছে!",
+  "sellBalanceWillBeCredited": "আপোনাৰ লেনদেনে অনচেইন 1 নিশ্চিতকৰণ পোৱাৰ পিছত আপোনাৰ একাউন্ট ব্যালেন্স জমা হ'ব।",
+  "payTitle": "পৰিশোধ কৰক",
+  "payDescriptionLabel": "পেমেণ্টৰ বিৱৰণ (বৈকল্পিক)",
+  "payDescriptionHint": "এই পেমেণ্টৰ বাবে এটা টোকা যোগ কৰক",
+  "payPaymentDescription": "পেমেণ্টৰ বিৱৰণ",
+  "payRecipientType": "প্ৰাপকৰ ধৰণ",
+  "payRecipientName": "প্ৰাপকৰ নাম",
+  "payRecipientDetails": "প্ৰাপকৰ বিৱৰণ",
+  "payNoDetailsAvailable": "কোনো বিৱৰণ উপলব্ধ নাই",
+  "paySelectWallet": "Wallet বাছক",
+  "payExternalWallet": "বাহ্যিক wallet",
+  "payAboveMaxAmountError": "এই ৱালেটেৰে আপুনি পৰিশোধ কৰিব পৰা সৰ্বাধিক পৰিমাণ হ'ল {amount}।",
+  "payBelowMinAmountError": "এই ৱালেটেৰে আপুনি পৰিশোধ কৰিব পৰা নূন্যতম পৰিমাণ হ'ল {amount}।",
+  "payInsufficientBalanceError": "এই পৰিশোধ অৰ্ডাৰ সম্পন্ন কৰিবলৈ বাছনি কৰা wallet-ত পৰ্যাপ্ত ব্যালেন্স নাই।",
+  "payUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অনুগ্ৰহ কৰি লগ ইন কৰক আৰু অব্যাহত ৰাখক।",
+  "paySelectNetwork": "নেটৱৰ্ক বাছক",
+  "payHowToPayInvoice": "আপুনি এই invoice কেনেকৈ পৰিশোধ কৰিব বিচাৰে?",
+  "payLightningNetwork": "Lightning Network",
+  "payLiquidNetwork": "Liquid Network",
+  "payConfirmPayment": "পৰিশোধ নিশ্চিত কৰক",
+  "payOrderNumber": "অৰ্ডাৰ নম্বৰ",
+  "payPayinAmount": "পেইন পৰিমাণ",
+  "payPayoutAmount": "পেআউট পৰিমাণ",
+  "payExchangeRate": "বিনিময় হাৰ",
+  "payPayFromWallet": "Wallet-ৰ পৰা পৰিশোধ কৰক",
+  "payInstantPayments": "তাৎক্ষণিক পৰিশোধ",
+  "paySecureBitcoinWallet": "সুৰক্ষিত Bitcoin wallet",
+  "payFeePriority": "মাচুলৰ অগ্ৰাধিকাৰ",
+  "payFastest": "দ্ৰুততম",
+  "payNetworkFees": "নেটৱৰ্ক মাচুল",
+  "payAdvancedSettings": "উন্নত ছেটিংছ",
+  "payAdvancedOptions": "উন্নত বিকল্পসমূহ",
+  "paySelectCoinsManually": "Coin হাতেৰে বাছক",
+  "payDone": "সম্পন্ন",
+  "payContinue": "অব্যাহত ৰাখক",
+  "payPleasePayInvoice": "অনুগ্ৰহ কৰি এই invoice পৰিশোধ কৰক",
+  "payBitcoinAmount": "Bitcoin পৰিমাণ",
+  "payBitcoinPrice": "Bitcoin মূল্য",
+  "payCopyInvoice": "Invoice কপি কৰক",
+  "payShowQrCode": "QR code দেখুৱাওক",
+  "payQrCode": "QR Code",
+  "payNoInvoiceData": "কোনো invoice ডেটা উপলব্ধ নাই",
+  "payInvalidState": "অবৈধ অৱস্থা",
+  "payViewDetails": "বিৱৰণ চাওক",
+  "payCompleted": "পৰিশোধ সম্পন্ন হৈছে!",
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "payOrderDetails": "অৰ্ডাৰ বিৱৰণ",
+  "paySinpeMonto": "পৰিমাণ",
+  "paySinpeNumeroOrden": "অৰ্ডাৰ নম্বৰ",
+  "paySinpeNumeroComprobante": "ৰেফাৰেন্স নম্বৰ",
+  "paySinpeBeneficiario": "সুবিধাভোগী",
+  "paySinpeOrigen": "উৎস",
+  "payNotAvailable": "N/A",
+  "payBitcoinOnchain": "Bitcoin অন-চেইন",
+  "payPaymentInProgress": "পৰিশোধ চলি আছে!",
+  "payPriceRefreshIn": "মূল্য পুনৰ নবীকৰণ হ'ব ",
+  "payWhichWallet": "আপুনি কোন wallet-ৰ পৰা পৰিশোধ কৰিব বিচাৰে?",
+  "payExternalWalletDescription": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
+  "payRbfActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
+  "copyDialogButton": "কপি কৰক",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "closeDialogButton": "বন্ধ কৰক",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "sellCompleteKYC": "KYC সম্পূৰ্ণ কৰক",
+  "@sellCompleteKYC": {
+    "description": "Button to start verification process"
+  },
+  "sellSendPaymentNetworkFees": "নেটৱৰ্ক মাচুল",
+  "@sellSendPaymentNetworkFees": {
+    "description": "Field label for network fees"
+  },
+  "sellSendPaymentContinue": "অব্যাহত ৰাখক",
+  "@sellSendPaymentContinue": {
+    "description": "Continue button on sell payment"
+  },
+  "sellBitcoinPriceLabel": "Bitcoin মূল্য",
+  "@sellBitcoinPriceLabel": {
+    "description": "Label for Bitcoin price display"
+  },
+  "sellViewDetailsButton": "বিৱৰণ চাওক",
+  "@sellViewDetailsButton": {
+    "description": "Button text to view order details"
+  },
+  "sellKycPendingTitle": "KYC পৰিচয় যাচাই অপেক্ষাৰত",
+  "@sellKycPendingTitle": {
+    "description": "Title shown when KYC verification is pending"
+  },
+  "sellKycPendingDescription": "আপুনি প্ৰথমে পৰিচয় যাচাই সম্পন্ন কৰিব লাগিব",
+  "@sellKycPendingDescription": {
+    "description": "Description explaining user must complete KYC before proceeding"
+  },
+  "sellLoadingGeneric": "লোড হৈছে...",
+  "@sellLoadingGeneric": {
+    "description": "Generic loading message"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "viewerTapToCopy": "কপি কৰিবলৈ টিপক",
+  "invoiceViewerTitle": "চালান",
+  "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
+  "sellPayoutBalance": "মোৰ একাউণ্টৰ বেলেঞ্চত যোগ কৰক",
+  "sellPayoutSepaDescription": "উলিওৱা ধন Leonod-এ পঠোৱা হিচাপে দেখা যায়",
+  "sellPayoutTitle": "প্ৰাপক বাছক",
+  "sellPayoutNewBadge": "নতুন",
+  "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
+  "sendSelectedUtxosInsufficient": "বাছনি কৰা UTXO-সমূহে প্ৰয়োজনীয় পৰিমাণ পূৰণ কৰিবলৈ অপৰ্যাপ্ত",
+  "selectAmountTitle": "পৰিমাণ নিৰ্বাচন কৰক",
+  "@selectAmountTitle": {
+    "description": "Title for manual coin selection bottom sheet"
+  },
+  "amountRequestedLabel": "অনুৰোধকৃত পৰিমাণ: {amount}",
+  "@amountRequestedLabel": {
+    "description": "Shows the requested amount to send",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addressLabel": "ঠিকনা: ",
+  "@addressLabel": {
+    "description": "Label for UTXO address in coin selection tile"
+  },
+  "typeLabel": "ধৰণ: ",
+  "@typeLabel": {
+    "description": "Label for address type (Receive/Change)"
+  },
+  "coinsKeychainReceive": "গ্ৰহণ",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "চেঞ্জ",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  }
 }

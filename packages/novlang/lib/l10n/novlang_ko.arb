@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "테스트넷 계정 웹 페이지(로그인 및 KYC)용 HTTP 기본 인증입니다.",
   "app__walletDeletionErrorOngoingSwaps_apple": "진행 중인 이체가 있는 지갑은 삭제할 수 없습니다.",
   "app__onboardingSplashDescription_apple": "주권적인 자기 보관 Bitcoin 지갑과 Bitcoin 전용 서비스.",
+  "wizard__onboardingSplashDescription_apple": "주권적인 자기 보관 Bitcoin 지갑과 Bitcoin 전용 서비스.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin 이체는 확인에 시간이 걸립니다.",
   "app__receiveSwapID_apple": "이체 ID",
   "app__receiveBoltzSwapFee_apple": "Boltz 이체 수수료",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "이체",
   "label_editor__systemLabelAutoSwap_apple": "자동 이체",
   "app__logoutConfirmationDescription_apple": "Bull Bitcoin 계정에서 로그아웃하시겠습니까? 계정 기능을 사용하려면 다시 로그인해야 합니다.",
-  "app__wizardJourneyTip5_apple": "KYC 없이 Bitcoin과 Liquid 간 이체",
-  "app__wizardJourneyTip6_apple": "자동 이체 설정 맞춤화",
+  "wizard__wizardJourneyTip5_apple": "KYC 없이 Bitcoin과 Liquid 간 이체",
+  "wizard__wizardJourneyTip6_apple": "자동 이체 설정 맞춤화",
   "app__transactionSwapOpenWithin24h_apple": "24시간 이내에 앱을 열어 이체를 완료하세요.",
   "app__homeActionTransfer_apple": "이체",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "시세를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "이체 니모닉",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "이체 니모닉을 삭제할까요?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "이 작업은 보안 저장소에서 이체 마스터 키를 제거합니다. 앱에서 다시 필요할 때 지갑 시드로부터 동일한 핑거프린트로 다시 파생됩니다. 진행 중인 이체에는 영향이 없습니다."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "이 작업은 보안 저장소에서 이체 마스터 키를 제거합니다. 앱에서 다시 필요할 때 지갑 시드로부터 동일한 핑거프린트로 다시 파생됩니다. 진행 중인 이체에는 영향이 없습니다.",
+  "receive__receiveTransferFee_apple": "이체 수수료",
+  "receive__swapErrorAmountBelowMinimum_apple": "금액이 최소 이체 금액보다 적습니다: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "금액이 최대 이체 금액을 초과합니다: {max} sats",
+  "receive__swapTransferTitle_apple": "이체",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "시세를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "이 이체는 사용할 수 없습니다."
 }

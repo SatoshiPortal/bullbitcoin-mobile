@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show TranslationWarningBottomSheet;
+import 'package:settings/settings.dart'
+    show SettingsLocalizations, TranslationWarningBottomSheet;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -30,7 +30,7 @@ void main() {
     await tester.pumpAndSettle();
     final context = tester.element(warning);
     noticeRoute = ModalRoute.of(context);
-    final loc = AppLocalizations.of(context);
+    final loc = SettingsLocalizations.of(context);
     expect(
       find.ancestor(
         of: find.text(loc.translationWarningTitle),

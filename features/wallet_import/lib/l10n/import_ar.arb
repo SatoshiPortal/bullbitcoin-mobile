@@ -356,5 +356,204 @@
   "importColdcardMk4Step10": "اضغط زر \"مسح NFC\"",
   "importColdcardMk4Step11": "قرّب NFC هاتفك من NFC جهاز Coldcard",
   "importColdcardMk4Step12": "هذا كل شيء!",
-  "recipientsInfoLabel": "التسمية"
+  "recipientsInfoLabel": "التسمية",
+  "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "التعليمات",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "افتح الكاميرا",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "استورد واصف المحفظة من جهاز {deviceName} الخاص بك",
+  "importColdcardConnectTitle": "الاتصال بـ {deviceName}",
+  "importColdcardInvalidWalletData": "بيانات محفظة Coldcard غير صالحة",
+  "importColdcardScanNfcSheetTitle": "قرّب جهاز {deviceName} لاستيراد واصف المحفظة عبر NFC",
+  "importMnemonicBalanceLabel": "الرصيد: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "استمر",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
+  "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "Import Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "جميع أنواع المحفظة الثلاثة متزامنة وسيظهر رصيدها ومعاملاتها قريبا. يمكنك الانتظار حتى يكتمل تزامن أو ينتقل إلى الاستيراد إذا كنت متأكد من أي نوع من المحفظة ترغب في استيراد.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "Import Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "المعاملات: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "Import Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "مراقبة الاستيراد فقط",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "المؤسسة",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "المحافظ العامة",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "محفظات المعدات",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "إضافة محفظة جديدة",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "مركب على لوح مشبك",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "الوصف",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "تأكدي من أن طريق التنشيط الذي تختارينه يطابق المسار الذي أنتج الـ(إكسبوب) بالتحقق من العنوان الأول المستمد من المحفظة قبل استخدامها استخدام الطريق الخطأ يمكن أن يؤدي إلى فقدان الأموال",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "الإنذار بالمرحلة",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "هذه المحفظة مستوردة بالفعل.",
+  "importWatchOnlyErrorImportFailed": "تعذّر علينا استيراد هذه المحفظة للعرض فقط. يُرجى التحقق من التفاصيل والمحاولة مرة أخرى.",
+  "importWatchOnlyErrorInvalidFormat": "لا يبدو هذا مفتاحًا عامًا أو واصفًا صالحًا. تحقق مجددًا مما لصقته.",
+  "importWatchOnlyErrorLabelRequired": "امنح محفظتك اسمًا قبل الاستيراد.",
+  "importWatchOnlyErrorNetworkMismatch": "تستخدم هذه المحفظة حاليًا شبكة بيتكوين مختلفة. بدّل بين الشبكة الرئيسية وشبكة الاختبار، ثم حاول مرة أخرى.",
+  "importWatchOnlyErrorNoWalletSelected": "الصق أو امسح مفتاحًا عامًا أو واصفًا أولًا.",
+  "importWatchOnlyExtendedPublicKey": "الجمهور الموسع المفتاح",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "الواردات",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "Label",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "الشبكة: شبكة Bitcoin الرئيسية",
+  "importWatchOnlyNetworkBitcoinTestnet": "الشبكة: شبكة Bitcoin التجريبية",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub or descriptor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "المطلوبة",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "Scan QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "جهاز التوقيع",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "مراقبة الاستيراد فقط",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "النوع",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "غير معروف",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

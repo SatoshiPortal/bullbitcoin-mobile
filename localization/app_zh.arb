@@ -6,9 +6,6 @@
   "backupWarningLoseReasonKeystore": "更改锁屏密码/设备验证方式时，您的设备会使密钥库（Keystore）失效",
   "backupWarningLoseReasonCloudRestore": "通过云端备份恢复您的设备",
   "backupWarningNoRecovery": "没有备份，就无法恢复您的钱包。",
-  "translationWarningTitle": "AI生成的翻译",
-  "translationWarningDescription": "此应用中的大多数翻译是使用AI生成的，可能存在不准确之处。如果您发现任何错误或想帮助改进翻译，可以在我们的GitHub仓库中提交修复。",
-  "translationWarningContributeButton": "帮助改进翻译",
   "translationWarningDismissButton": "知道了",
   "payTransactionBroadcast": "交易广播",
   "fundExchangeSepaDescriptionExactly": "务必确保信息完全一致。",
@@ -84,7 +81,6 @@
   "importQrDeviceImporting": "导入钱包",
   "rbfFastest": "快速",
   "sellSendPaymentTitle": "2. 肯定付款",
-  "importWatchOnlyCopiedToClipboard": "涂料",
   "dcaLightningAddressInvalidError": "请进入有效的电灯地址",
   "backupInstruction4": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
   "hwKrux": "Krux",
@@ -223,7 +219,6 @@
   "rbfCustomFee": "习俗税",
   "importQrDeviceFingerprint": "Print",
   "physicalBackupRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
-  "importWatchOnlyDescriptor": "说明",
   "payPaymentInProgress": "支付:!",
   "fundExchangeETransferLabelEmail": "E- transfer to this email",
   "bitcoinSettingsTestnetModeTitle": "检测网",
@@ -326,7 +321,6 @@
   "payExpired": "过期",
   "payPaymentSuccessful": "付款成功",
   "exchangeHomeWithdraw": "草原",
-  "importMnemonicSegwit": "Segwit",
   "buyContinue": "继续",
   "swapTransferTitle": "Swap",
   "testBackupSuccessTitle": "成功完成试验!",
@@ -383,7 +377,6 @@
   "mempoolCustomServerUrl": "服务器 URL",
   "fundExchangeArsBankTransferTitle": "银行转账",
   "sendServerNetworkFees": "服务器网",
-  "importWatchOnlyImport": "导入",
   "backupWalletBackupButton": "备份",
   "sellSendPaymentFeePriority": "妇女优先",
   "sellWalletBalance": "余额:{amount}",
@@ -426,7 +419,6 @@
       }
     }
   },
-  "importWalletSeedSigner": "SeedSigner",
   "featureComingSoonTitle": "简历",
   "swapProgressRefundInProgress": "Swap 退款处理中",
   "payBillerName": "账单名称",
@@ -486,8 +478,6 @@
   "transactionDetailTransferProgress": "Swap 进度",
   "sendNormalFee": "正常",
   "importWalletConnectHardware": "连接硬件钱包",
-  "importWatchOnlyType": "类型",
-  "importWalletSectionHardware": "硬件钱包",
   "connectHardwareWalletDescription": "选择您想要连接的硬件钱包",
   "enterPinToContinueMessage": "{pinOrPassword}",
   "@enterPinToContinueMessage": {
@@ -558,7 +548,6 @@
   "sellCashPickup": "现金保险",
   "payInProgress": "支付:!",
   "swapValidationInsufficientBalance": "结余不足",
-  "importWatchOnlyExtendedPublicKey": "扩大公众 关键",
   "autoswapAlwaysBlock": "Always Block High Fees",
   "walletDeletionConfirmationTitle": "删除墙壁",
   "sendNetworkFees": "网络费",
@@ -629,7 +618,6 @@
   "payEmailHint": "电子邮件地址",
   "backupWalletGoogleDrivePermissionWarning": "谷歌将请你与本信分享个人信息.",
   "testCompletedSuccessMessage": "你们能够恢复使用丢失的“红外墙”",
-  "importWatchOnlyScanQR": "Scan",
   "walletBalanceUnconfirmedIncoming": "A. 进展",
   "selectAmountTitle": "选择性数额",
   "routeErrorMessage": "页 次",
@@ -734,14 +722,6 @@
   "exchangeCurrencyDropdownValidation": "请选择货币",
   "withdrawConfirmTitle": "2. 肯定撤回",
   "payPayeeAccountNumber": "收款人账户",
-  "importMnemonicBalanceLabel": "余额:{amount}",
-  "@importMnemonicBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeWarningConfirmation": "我确认,我没有被问到别的人.",
   "confirmSendTitle": "Confirm Send",
   "buyKYCLevel1": "1级——基本",
@@ -860,7 +840,6 @@
   "sellBitcoinOnChain": "页: 1",
   "bip85ExperimentalWarning": "试验\n• 人工支持你的衍生途径",
   "addressViewBalance": "结余",
-  "importMnemonicNestedSegwit": "Nest",
   "sendReplaceByFeeActivated": "替换",
   "coreSwapsLnReceiveFailed": "Swap Failed.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "美元转账资金",
@@ -874,7 +853,6 @@
   "mempoolNetworkLiquidMainnet": "流动主机",
   "sellFromAnotherWallet": "Sell from another Plaza",
   "automaticallyFetchKeyButton": "Fetch Key",
-  "importColdcardButtonOpenCamera": "开放照相机",
   "payFeePriority": "妇女优先",
   "buyInsufficientBalanceDescription": "你们没有足够的平衡来建立这一秩序.",
   "sendSelectNetworkFee": "选择网络收费",
@@ -958,7 +936,6 @@
   "swapConfirmTitle": "确认 Swap",
   "testBackupGoogleDrivePrivacyPart1": "这些资料 ",
   "connectHardwareWalletKeystone": "Keystone",
-  "importWalletTitle": "添加一个新钱包",
   "sendPasteAddressOrInvoice": "扣押付款地址或发票",
   "swapToLabel": "致",
   "payLoadingRecipients": "D. 接收者......",
@@ -988,7 +965,6 @@
   "fundExchangeLabelBankAccountDetails": "银行账户细节",
   "payLiquidAddress": "清算",
   "sellTotalFees": "总费用",
-  "importWatchOnlyUnknown": "不详",
   "payContinue": "继续",
   "importColdcardInstructionsStep8": "页: 1",
   "sendSelectedCoins": "{count} 选定的硬币",
@@ -1011,7 +987,6 @@
   },
   "payRbfActivated": "替换",
   "ledgerDefaultWalletLabel": "Ledger Wallet",
-  "importWalletSpecter": "Specter",
   "customLocationProvider": "习俗地点",
   "transactionSwapDescChainCompleted": "您的 Swap 已成功完成！资金现已存入您的钱包。",
   "coreSwapsLnSendRefundable": "预支款将退还.",
@@ -1037,17 +1012,8 @@
   "gotItButton": "签字",
   "sendFeePriority": "妇女优先",
   "paySelectCountry": "选择国家",
-  "importMnemonicTransactionsLabel": "交易:{count}",
-  "@importMnemonicTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "移案",
   "autoswapAlwaysBlockInfoEnabled": "启用后，费用超过设定上限的 Auto Swap 将始终被阻止",
-  "importMnemonicSelectScriptType": "导入助记词",
   "sellSendPaymentCadBalance": "大会 结余",
   "fundExchangeCanadaPostStep2": "2. 结 论 Ask the moneyier to scan the “Loadhub” QR Code",
   "exchangeAccountInfoEmailLabel": "电子邮件",
@@ -1120,7 +1086,6 @@
   "addressViewAddressesTitle": "地址",
   "transactionSwapProgressPaymentMade": "支付\n.....",
   "coreSwapsChainPending": "Swap 尚未初始化。",
-  "importWalletImportWatchOnly": "导入观察钱包",
   "coldcardStep9": "一旦交易进口到你的冷藏卡,审查目的地地址和数额.",
   "exchangeKycComplete": "完成 KYC",
   "enterBackupKeyManuallyDescription": "如果你出口了你的备用金钥匙,并且通过海因地制宜地将其节省下来,你可以人工进入这里。 否则,又回到以前的屏幕上.",
@@ -1173,7 +1138,6 @@
       }
     }
   },
-  "importWalletJade": "Blockstream Jade",
   "payInvalidInvoice": "无效发票",
   "receiveTotalFee": "共计",
   "dcaConfirmFrequency": "频率",
@@ -1222,7 +1186,6 @@
   "backupSettingsKeyWarningBold": "警告: 如果你节省了支助钥匙,则谨慎行事.",
   "exchangeLandingConnectAccount": "连接您的履带",
   "recoverYourWalletTitle": "恢复您的钱包",
-  "importWatchOnlyLabel": "标签",
   "settingsAppSettingsTitle": "申请情况",
   "swapTransferRefundInProgressMessage": "Swap 出现错误。您的退款正在处理中。",
   "fundExchangeMethodCanadaPostSubtitle": "更愿意亲自支付报酬的人",
@@ -1293,7 +1256,6 @@
   "addressCardUsedLabel": "使用",
   "exchangeLandingFeature5": "客户支持的查塔",
   "electrumMainnet": "Mainnet",
-  "importWalletPassport": "Foundation Passport",
   "buyExpressWithdrawalFee": "快费:{amount}",
   "@buyExpressWithdrawalFee": {
     "placeholders": {
@@ -1358,7 +1320,6 @@
       }
     }
   },
-  "importColdcardButtonInstructions": "指示",
   "sellWhichWalletQuestion": "你们想要从哪条墙上出售?",
   "autoswapAlwaysBlockLabel": "Always Block High Fees",
   "receiveFixedAmount": "数额",
@@ -1501,7 +1462,6 @@
   "addressCardIndexLabel": "指数: ",
   "dcaSetupContinue": "继续",
   "buyConfirmYouPay": "页: 1",
-  "importWatchOnlyTitle": "导入观察钱包",
   "cancel": "Cancel",
   "walletDetailsWalletFingerprintLabel": "Wallet finger",
   "testBackupCreatedAt": "创建:",
@@ -1509,7 +1469,6 @@
   "settingsSuperuserModeDisabledMessage": "超级用户模式残疾.",
   "settingsTermsOfServiceTitle": "任期",
   "importQrDeviceScanning": "扫描......",
-  "importWalletKeystone": "Keystone",
   "payNewRecipients": "新受益者",
   "testBackupConfirm": "执 行",
   "backupWalletChooseVaultLocationTitle": "颜色",
@@ -1587,11 +1546,9 @@
   "replaceByFeeFastestDescription": "大约10分钟",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "exchangeAmountInputValidationZero": "数额必须大于零",
-  "importWatchOnlyRequired": "所需",
   "payWalletNotSynced": "Wallet没有合成。 等候",
   "transactionSwapInfoChainDelay": "由于区块链确认需要时间，链上 Swap 可能需要一段时间才能完成。",
   "sellExchangeRate": "汇率",
-  "importMnemonicLegacy": "遗产",
   "settingsDevModeWarningMessage": "这种方式具有风险。 你们承认你可能失去金钱",
   "sellTitle": "Sell:",
   "transactionListToday": "今天",
@@ -1635,7 +1592,6 @@
   "receiveNoteLabel": "说明",
   "payFirstName": "姓名",
   "recoverViaCloudDescription": "利用你的PIN,通过云层回收.",
-  "importWatchOnlySigningDevice": "信号装置",
   "receiveInvoiceExpired": "发票过期",
   "autoswapMinimumThresholdErrorSats": "最低平衡门槛值为{amount}克拉",
   "@autoswapMinimumThresholdErrorSats": {
@@ -1683,7 +1639,6 @@
   "buyStandardWithdrawal": "标准退出",
   "swapContinue": "继续",
   "transactionDetailLabelTransferFees": "Swap 费用",
-  "importWalletSectionGeneric": "通用钱包",
   "backupSettingsNotTested": "未经测试",
   "googleDrivePrivacyMessage": "谷歌将请你与本信分享个人信息.",
   "errorGenericTitle": "Oops! 某些错误",
@@ -1712,7 +1667,6 @@
   "buyKycPendingDescription": "您必须首先完成身份证明核查",
   "payBelowMinAmountError": "使用此钱包可支付的最低金额为 {amount}。",
   "autoswapRecipientWalletInfo": "选择接收转账资金的比特币钱包（必选）",
-  "importWalletKrux": "Krux",
   "swapContinueButton": "继续",
   "bitcoinSettingsBroadcastTransactionTitle": "广播交易",
   "sendSignWithLedger": "签字人",
@@ -1833,7 +1787,6 @@
   "allSeedViewLoadingMessage": "如果你在这种装置上有多种种子,则可能需要装上.",
   "paySelectWallet": "选择钱包",
   "paySecurityQuestionHint": "进入安全问题(10-40个特点)",
-  "importWatchOnlyPasteHint": "Paste xpub, ypub,zpub or descriptor",
   "sellAccountNumber": "账户编号",
   "backupWalletLastKnownEncryptedVault": "密执安 不详: ",
   "sendAdvancedOptions": "A. 先进选择",
@@ -1872,7 +1825,6 @@
       }
     }
   },
-  "importMnemonicTitle": "导入助记词",
   "payReplaceByFeeActivated": "替换",
   "testBackupDoNotShare": "纽约总部",
   "paySinpeNumeroComprobante": "参考数字",
@@ -1881,7 +1833,6 @@
   "buyNetworkFeeExplanation": "采矿公司收取和收取的电离层网费将从矿工收取和收取的数额中扣除",
   "fundExchangeCrIbanUsdLabelPaymentDescription": "付款说明",
   "fundExchangeInfoBeneficiaryNameLeonod": "受益人的名称应为LEONOD。 如果你做任何事情,你的支付将被拒绝.",
-  "importWalletLedger": "Ledger",
   "exchangeLandingTitle": "BUL BITCOIN",
   "doneButton": "Done",
   "withdrawSuccessTitle": "撤回",
@@ -2122,7 +2073,6 @@
   "swapInfoDescription": "在您的钱包之间无缝 Swap Bitcoin。仅将资金保留在即时支付钱包中用于日常支出。",
   "fundExchangeCanadaPostStep7": "7. 基本生活 这笔资金将在30分钟内添加到您的平流账户余额中",
   "autoswapSaveButton": "Save",
-  "importWatchOnlyDisclaimerDescription": "• 确保你选择的衍生途径与生产特定共和国的产品相匹配,在使用前核实从隔离墙中得出的第一种地址。 使用错误的道路可能导致资金损失",
   "fundExchangeWarningTactic8": "他们正在敦促你迅速采取行动",
   "encryptedVaultStatusLabel": "加密违约",
   "sendConfirmSend": "Confirm Send",
@@ -2149,7 +2099,6 @@
   "swapTotalFees": "总费用 ",
   "payDone": "Done",
   "receiveContinue": "继续",
-  "importWatchOnlyDisclaimerTitle": "D. 抵达道路警报",
   "withdrawConfirmIban": "IBAN",
   "payPayee": "收款人",
   "sellInProgress": "A. 正在取得进展......",
@@ -2165,7 +2114,6 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "添加这一编号为账户编号",
   "backupWalletSavingToDeviceTitle": "销毁你的装置.",
   "paySwapInProgress": "A. 进展速度........",
-  "importMnemonicSyncMessage": "所有三类隔离墙都是yn,其平衡和交易将很快出现。 如果你确信你希望进口哪条围墙,你可以等到yn完成或着手进口.",
   "coreSwapsLnSendClaimable": "斯瓦普可以申请.",
   "autoswapRecipientWalletLabel": "Recipient Wallet",
   "coreScreensConfirmTransfer": "确认 Swap",
@@ -2291,14 +2239,9 @@
   "walletDetailsNetworkLabel": "网络",
   "broadcastSignedTxBroadcasting": "广播.",
   "broadcastSignedTxBroadcastError": "无法广播您的交易。请检查您的网络连接后重试。",
-  "importWatchOnlyErrorNoWalletSelected": "请先粘贴或扫描公钥或描述符。",
-  "importWatchOnlyErrorLabelRequired": "导入前请为您的钱包命名。",
-  "importWatchOnlyErrorInvalidFormat": "这看起来不是有效的公钥或描述符。请仔细检查您粘贴的内容。",
-  "importWatchOnlyErrorImportFailed": "无法导入此只读钱包。请检查信息后重试。",
   "broadcastSignedTxErrorInvalidTransaction": "这看起来不是有效的已签名交易。请确认您粘贴了完整的 PSBT 或交易。",
   "broadcastSignedTxErrorInvalidPushTx": "无法从此标签读取交易。请重新扫描。",
   "receivePayjoinActivated": "Payjoin",
-  "importMnemonicContinue": "继续",
   "chooseVaultLocationTitle": "颜色",
   "testBackupEncryptedVaultTitle": "加密",
   "fundExchangeLabelInstitutionNumber": "机构数目",
@@ -2325,7 +2268,6 @@
   "coldcardStep15": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "comingSoonDefaultMessage": "这一特点目前正在发展之中,不久将出台.",
   "enterBackupKeyManuallyTitle": "手工操作",
-  "importWalletColdcardQ": "Coldcard Q",
   "backupSettingsStartBackup": "启动",
   "sendReceiveAmount": "收款情况",
   "sellNetAmount": "净额",
@@ -2748,41 +2690,7 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "跳过",
-  "wizardPageIndicator": "第 {current} / {total} 页",
-  "wizardNextButton": "下一步",
-  "wizardCustomizeTitle": "个性化您的体验",
-  "wizardCustomizeBody": "通过这些设置，按您的方式使用 BULL。",
-  "wizardCustomizeDefaultCurrency": "默认货币",
-  "wizardMissionTitle": "支持 Bull 的使命",
-  "wizardMissionBody1": "为帮助我们改进软件并确保提供最高级别的安全性、隐私性和易用性,您的应用可以向我们发送错误日志,以便我们在下一次更新中快速检测并修复问题。",
-  "wizardMissionBody2": "这些日志是匿名的,不与您的 IP 地址关联,并且永远不会分享有关您的交易或身份的任何信息。它们纯粹是技术性的,不会让您面临任何风险。这对我们非常有帮助,而且对您没有任何成本。",
-  "wizardMissionQuestion": "您是否同意加入我们的自动化问题报告计划?",
-  "wizardMissionYes": "是",
-  "wizardMissionNo": "否",
-  "wizardMissionRequired": "请在继续之前选择是或否。",
-  "wizardJourneyTitle": "在您的旅程中前进",
-  "wizardJourneyBody": "如果您是 BULL 钱包的新用户,以下是一些您可以利用的功能,以改善您的隐私、安全和用户体验。",
-  "wizardJourneyTip1": "添加安全 PIN 来解锁您的钱包",
-  "wizardJourneyTip2": "尝试加密保险库备份",
-  "wizardJourneyTip3": "连接到您自己的 Bitcoin 节点",
-  "wizardJourneyTip4": "连接到您自己的 Mempool 浏览器",
-  "wizardJourneyTip5": "在 Bitcoin 和 Liquid 之间 Swap，无需 KYC",
-  "wizardJourneyTip6": "自定义您的 autoswap 设置",
-  "wizardJourneyTip7": "在 Bitcoin (BTC) 和 Satoshis (sats) 之间切换",
-  "wizardJourneyTip8": "为您的硬件钱包创建 air-gap 交易",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "设置钱包时出了点问题，请重试。",
-  "importMnemonicDuplicateError": "该助记词已存在",
   "coreScreensResolvingInputs": "正在解析交易输入...",
   "coreScreensFeeRateLabel": "费率",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -2831,10 +2739,6 @@
   "allSeedViewErrorFetch": "加载种子失败。请重试。",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
-  },
-  "importMnemonicEmptyLabelError": "导入助记词需要标签",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "allSeedViewErrorDelete": "删除种子失败。请重试。",
   "@allSeedViewErrorDelete": {
@@ -3138,13 +3042,8 @@
   "fundExchangeJurisdictionColombia": "🇨🇴 哥伦比亚",
   "sendCoordinatingPayjoinTransaction": "正在协调 Payjoin 交易。",
   "sendErrorInvoiceExpired": "该发票已过期，请向收款人索取新的发票。",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "轻触您的 Coldcard 以通过 NFC 接收已签名的交易",
-  "importColdcardInvalidWalletData": "无效的 Coldcard 钱包数据",
-  "importColdcardConnectTitle": "连接 {deviceName}",
-  "importColdcardConnectDescription": "从您的 {deviceName} 导入钱包描述符",
-  "importColdcardScanNfcSheetTitle": "轻触您的 {deviceName} 以通过 NFC 导入钱包描述符",
   "fundExchangeCopDailyLimitWarning": "如果您超过每日交易限额，交易将会失败，您需要联系客服。",
   "fundExchangeCopSenderName": "汇款人姓名",
   "fundExchangeCopIssuingBank": "发卡银行",
@@ -3261,10 +3160,7 @@
   "recipientsFieldPayeeAccountNumber": "收款人账号",
   "exchangeFileUploadStatusRejectedBadge": "已拒绝",
   "exchangeFileUploadTapToReupload": "点击重新上传",
-  "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "可用余额不足 — {amount} 已被冻结。请在“管理币”中解冻后使用。",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "完成",
   "consolidationFailedBody": "发生意外错误。你的资金是安全的：没有广播任何交易。请重试。",
   "consolidationFailedTitle": "整合失败",
@@ -3387,10 +3283,6 @@
   "autoBuyWalletRequiredError": "请至少添加一个默认的 Bitcoin、Lightning 或 Liquid 地址。",
   "autoBuyUpdateError": "无法更新自动买入。请稍后重试。",
   "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。",
-  "importWatchOnlyErrorNetworkMismatch": "此钱包当前正在使用其他 Bitcoin 网络。请在 Mainnet 和 Testnet 之间切换，然后重试。",
-  "importWatchOnlyErrorAlreadyExists": "此钱包已导入。",
-  "importWatchOnlyNetworkBitcoinMainnet": "网络：比特币主网",
-  "importWatchOnlyNetworkBitcoinTestnet": "网络：比特币测试网",
   "broadcastSignedTxErrorPsbtFinalization": "无法完成已签名交易。请确认其中包含所有必需的签名，然后重试。",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
@@ -3540,7 +3432,5 @@
   "openSystemSettings": "打开系统设置",
   "permissionsTitle": "权限",
   "settingsSearchPermissionsKeywords": "通知|后台任务|电池|提醒",
-  "wizardBackgroundTasksDescription": "在应用关闭时检查付款。",
-  "wizardNotificationsDescription": "收到付款时通知您。",
   "sendErrorInvoiceExpiryTooShort": "该发票即将过期，剩余时间不足。请向收款人索取新的发票。"
 }

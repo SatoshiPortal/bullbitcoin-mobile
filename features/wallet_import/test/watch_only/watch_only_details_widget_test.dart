@@ -1,0 +1,141 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
+import 'package:wallet_import/src/presentation/watch_only/import_watch_only_cubit.dart';
+import 'package:wallet_import/src/presentation/watch_only/import_watch_only_state.dart';
+import 'package:wallet_import/src/ui/watch_only/watch_only_details_widget.dart';
+import 'package:signers/signers.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
+import 'package:bull_ui/bull_ui.dart' show BullInputText;
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:satoshifier/satoshifier.dart' as satoshifier;
+
+class _MockImportWatchOnlyCubit extends Mock implements ImportWatchOnlyCubit {}
+
+class _MockWatchOnlyDescriptor extends Mock
+    implements satoshifier.WatchOnlyDescriptor {}
+
+class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
+
+Future<_MockImportWatchOnlyCubit> _pumpDetails(
+  WidgetTester tester, {
+  required satoshifier.Network network,
+  BitcoinNetwork? selectedNetwork,
+  bool missing = false,
+}) async {
+  final descriptor = _MockDescriptor();
+  when(() => descriptor.network).thenReturn(network);
+  when(() => descriptor.combined).thenReturn('wpkh(test)');
+  when(() => descriptor.derivation).thenReturn(satoshifier.Derivation.bip84);
+
+  final watchOnlyDescriptor = _MockWatchOnlyDescriptor();
+  when(() => watchOnlyDescriptor.descriptor).thenReturn(descriptor);
+
+  final wallet = WatchOnlyWalletEntity.descriptor(
+    watchOnlyDescriptor: watchOnlyDescriptor,
+    selectedNetwork: selectedNetwork,
+    signerDevice: selectedNetwork == BitcoinNetwork.regtest
+        ? null
+        : SignerDevice.seedsigner,
+  );
+  final cubit = _MockImportWatchOnlyCubit();
+  when(() => cubit.state).thenReturn(
+    missing
+        ? const ImportWatchOnlyState()
+        : ImportWatchOnlyState(watchOnlyWallet: wallet),
+  );
+  when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+  when(() => cubit.import()).thenAnswer((_) async {});
+
+  await tester.pumpWidget(
+    BlocProvider<ImportWatchOnlyCubit>.value(
+      value: cubit,
+      child: MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: ImportLocalizations.localizationsDelegates,
+        supportedLocales: ImportLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: WatchOnlyDetailsWidget(watchOnlyWallet: wallet),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  return cubit;
+}
+
+void main() {
+  testWidgets('reviews descriptor details and delegates import actions', (
+    tester,
+  ) async {
+    final cubit = await _pumpDetails(
+      tester,
+      network: satoshifier.Network.bitcoinMainnet,
+    );
+
+    expect(find.text('Network: Bitcoin Mainnet'), findsOneWidget);
+    expect(find.text('Descriptor'), findsOneWidget);
+    expect(find.text('wpkh(test)'), findsOneWidget);
+    expect(find.text('Type'), findsOneWidget);
+    expect(find.text(satoshifier.Derivation.bip84.label), findsOneWidget);
+    expect(find.text('Signing Device'), findsOneWidget);
+    expect(find.text(SignerDevice.seedsigner.displayName), findsOneWidget);
+    expect(find.text('Label'), findsOneWidget);
+    expect(find.text('Import'), findsOneWidget);
+
+    final labelInput = find.byWidgetPredicate(
+      (widget) => widget is BullInputText && !widget.disabled,
+    );
+    expect(labelInput, findsOneWidget);
+    await tester.enterText(
+      find.descendant(of: labelInput, matching: find.byType(EditableText)),
+      'Savings',
+    );
+    verify(() => cubit.updateLabel('Savings')).called(1);
+
+    await tester.ensureVisible(find.text('Import'));
+    await tester.tap(find.text('Import'));
+    verify(() => cubit.import()).called(1);
+  });
+
+  testWidgets('regtest software descriptor has no signing-device selector', (
+    tester,
+  ) async {
+    await _pumpDetails(
+      tester,
+      network: satoshifier.Network.bitcoinTestnet,
+      selectedNetwork: BitcoinNetwork.regtest,
+    );
+    expect(find.text('Regtest'), findsOneWidget);
+    expect(find.text('Signing Device'), findsNothing);
+    expect(find.byType(DropdownButtonFormField<SignerDevice?>), findsNothing);
+  });
+
+  testWidgets(
+    'a removed descriptor during review has no stale-value assertion',
+    (tester) async {
+      await _pumpDetails(
+        tester,
+        network: satoshifier.Network.bitcoinTestnet,
+        missing: true,
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('Signing Device'), findsNothing);
+    },
+  );
+
+  for (final (network, label) in [
+    (satoshifier.Network.bitcoinTestnet, 'Network: Bitcoin Testnet'),
+  ]) {
+    testWidgets('shows the localized ${network.name} label', (tester) async {
+      await _pumpDetails(tester, network: network);
+
+      expect(find.text(label), findsOneWidget);
+    });
+  }
+}

@@ -34,6 +34,7 @@ workspace:
   - features/fees
   - features/swap
   - features/wallet_import
+  - features/wizard
   - packages/fees
   - packages/ark
   - packages/secrets
@@ -79,6 +80,7 @@ dependencies:
   bip85:
   access:
   wallet_import:
+  wizard:
   address_view:
   announcements:
   backups:
@@ -229,8 +231,9 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.35.3
   melos: ^8.10.1
-  # Direct dep for tools/novlang_bridge.dart, which reads the novlang manifest.
+  # Manifest parsers for tools/novlang_bridge.dart and tools/workspace_graph.dart.
   yaml: ^3.1.3
+  toml: ^0.18.0
   bloc_test: ^10.0.0
 
 # Payjoin 0.26.0's archive predates upstream's hooks-2 metadata-only fix:

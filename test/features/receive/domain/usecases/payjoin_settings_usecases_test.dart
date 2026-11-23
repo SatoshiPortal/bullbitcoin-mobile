@@ -1,6 +1,6 @@
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
+import 'package:receive/testing.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,14 +8,18 @@ import 'package:primitives/primitives.dart';
 
 class _MockSettingsFacade extends Mock implements SettingsFacade {}
 
+class _MockPolicy extends Mock implements PayjoinPolicyAccess {}
+
 const _rawReason = 'Bad state: No element (settings stream closed)';
 
 void main() {
   group('GetReceivePayjoinPolicyUsecase', () {
     test('returns the policy on success', () async {
-      final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinReceivePolicy()).thenAnswer(
-        (_) => Stream.value((receiveEnabled: true, minimumAmountSat: 10000)),
+      final settings = _MockPolicy();
+      when(() => settings.watch()).thenAnswer(
+        (_) => Stream.value(
+          Ok(PayjoinPolicy.defaults().copyWith(receiveEnabled: true)),
+        ),
       );
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -29,9 +33,8 @@ void main() {
 
     test('an empty stream throws on .first — that must become a failure, '
         'never escape into the bloc', () async {
-      final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinReceivePolicy())
-          .thenAnswer((_) => const Stream.empty());
+      final settings = _MockPolicy();
+      when(() => settings.watch()).thenAnswer((_) => const Stream.empty());
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
 
@@ -47,10 +50,10 @@ void main() {
       }
     });
 
-    test('an errored stream becomes a failure carrying the raw reason in '
+    test('an errored stream becomes a sanitized failure with no raw reason in '
         'logMessage only', () async {
-      final settings = _MockSettingsFacade();
-      when(() => settings.watchPayjoinReceivePolicy())
+      final settings = _MockPolicy();
+      when(() => settings.watch())
           .thenAnswer((_) => Stream.error(StateError(_rawReason)));
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
@@ -60,7 +63,7 @@ void main() {
           fail('an errored policy stream must not be reported as a policy');
         case Err(:final failure):
           expect(failure, isA<ReceivePayjoinPolicyUnavailableFailure>());
-          expect(failure.logMessage, contains('settings stream closed'));
+          expect(failure.logMessage, isNot(contains('settings stream closed')));
       }
     });
   });
@@ -81,7 +84,7 @@ void main() {
       );
 
       final result = await SetReceivePayjoinEnabledUsecase(
-        settingsFacade: settings,
+        settings.setPayjoinReceiveEnabled,
       ).execute(true, requestConsent: () async => true);
 
       switch (result) {
@@ -103,7 +106,7 @@ void main() {
       ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(true));
 
       final result = await SetReceivePayjoinEnabledUsecase(
-        settingsFacade: settings,
+        settings.setPayjoinReceiveEnabled,
       ).execute(true, requestConsent: () async => true);
 
       expect((result as Ok<bool, ReceiveFailure>).value, isTrue);

@@ -6,7 +6,7 @@ This document describes a **target we move toward, not a finished state.** The c
 
 > **New here? Read in this order:** **Feature-Based Architecture** → **How the codebase actually looks today** (the honest snapshot) → **Entry points & code tour** (find your way around the code) → **The architecture we tend toward** (the rules you apply daily). The rest is reference.
 >
-> **Repo doc map:** [README.md](README.md) = the product · **ARCHITECTURE.md** (this file) = the layer model & design rules · [AGENTS.md](AGENTS.md) = toolchain, commits, naming, the day-to-day contract · [FEATURES.md](FEATURES.md) = the cross-feature dependency graph.
+> **Repo doc map:** [README.md](README.md) = the product · **ARCHITECTURE.md** (this file) = the layer model & design rules · [AGENTS.md](AGENTS.md) = toolchain, commits, naming, the day-to-day contract · [WORKSPACE.md](WORKSPACE.md) = internal dependency graphs · [DEPENDENCIES.md](DEPENDENCIES.md) = direct external dependencies.
 
 **Contents:** Feature-Based Architecture · How the codebase actually looks today · Entry points & code tour · The architecture we tend toward (logic homes · use-cases · repositories · datasources · entity/model · vertical slice · errors · capability API · convergence) · Layer glossary · Feature & package templates (incl. *Adding a feature* checklist) · Monorepo Migration · Rules for AI.
 
@@ -18,7 +18,7 @@ A feature is the single owner of its domain, meaning it is solely responsible fo
 
 Other members interact with the feature through its published capability API. The API defines the stable contract, keeps business rules with their owner, and lets the implementation evolve independently of callers.
 
-This approach enables clear ownership, strong encapsulation, and independent development and testing of features. It also helps in maintaining a well-defined, acyclic dependency graph between features, preventing circular dependencies as visualized in the [Features Dependency Diagram](FEATURES.md), this diagram should be updated as the application evolve.
+This approach gives features clear ownership, public boundaries and independent tests. The generated [workspace dependency graphs](WORKSPACE.md) show declared edges; the [workspace dependency rules](#workspace-dependency-rules) explain how those boundaries are enforced.
 
 ## 🧭 How the codebase actually looks today
 
@@ -41,7 +41,7 @@ This split maps almost 1:1 onto the melos target (see Monorepo Migration): `lib/
 New to the code? Start at these files — together they are the app's **composition root**. The shell composes modules; it does not implement them (see "The shell composes, modules construct" under Monorepo Migration):
 
 - **`lib/main.dart`** — process entry, delegates to `startApp()` in `lib/bootstrap.dart`.
-- **`lib/bootstrap.dart`** — Flutter binding, startup wizard, application rendering and startup/global error handling. `lib/features/wizard/startup_wizard.dart` owns the pre-locator wizard flow and pending consent read.
+- **`lib/bootstrap.dart`** — Flutter binding, startup wizard, application rendering and startup/global error handling. `package:wizard/wizard.dart` owns the pre-locator wizard flow and pending consent read.
 - **`lib/init.dart`** — ordered service initialization. `Bull.init()` runs before the wallet app's `runApp()`: logging → error reporting (Sentry, consent-gated through the first-run wizard) → Flutter-Rust-Bridge / `bull_sdk` init → `AppLocator.setup()` → wizard flush. `bull_logger.initializeLogging()` owns log setup; `packages/bull_reporting/lib/src/report_logger_adapter.dart` connects its reporting contract to the app's consent-gated `Report`. Native-library initialization lives in `lib/native_libraries.dart`, Tor diagnostic collection in `features/network`, and background-task scheduling in `lib/background_setup.dart`. The foreground and background composition roots share these helpers without importing one another.
 - **`lib/app.dart`** — root widget, lifecycle handling and always-on top-level blocs (app-startup, wallet, settings, bitcoin-price, exchange).
 - **`lib/locator.dart`** — dependency injection (`get_it`). `AppLocator.setup()` opens capabilities and mounts features alongside legacy core and feature registrations.
@@ -53,7 +53,7 @@ Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Speci
 
 Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input.
 
-`ImportFeature.mount` composes the QR device instruction routes and the read-only mnemonic prescan. The mnemonic preflight uses the active Secrets wallet inventory. The confirmation routes use the Wallet repository to provision native wallets and register them in that same encrypted inventory.
+`ImportFeature.mount` owns the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The mnemonic duplicate check reads the unlocked Secrets inventory for the active Bitcoin network. The shell passes foreground Wallet provisioning operations directly; they still own custody admission, catalog insertion and native creation. Remove those bindings when Secrets and Sync publish the complete provisioning operations.
 
 ## 🎯 The architecture we tend toward
 
@@ -262,7 +262,7 @@ For a new user-facing flow in `features/<feature>/`, working **outside-in is fin
 3. **Presentation.** `<Feature>Bloc`/`Cubit` + sealed state/event, plus the `<feature>_failure_l10n.dart` extension exposing `toTranslated(BuildContext)` (`presentation/`). The bloc stores the `<Feature>Failure` in state; it calls use-cases only — never a repository or datasource.
 4. **UI.** Place screens and widgets in `ui/`. Reuse the `bull_ui` public components, localize strings via `context.loc.<key>` and take colors from the theme (see AGENTS.md "UI Kit").
 5. **Wire it in.** Call `<Feature>Feature.mount(...)` from the shell and add the returned routes in `lib/router.dart`. The mount owns construction and registration of feature internals.
-6. **Publish the consumer contract.** Export typed navigation, any reusable widgets and the owned domain types those APIs use through `lib/<feature>.dart`. Update the graph in [FEATURES.md](FEATURES.md) when cross-feature dependencies change.
+6. **Publish the consumer contract.** Export typed navigation, any reusable widgets and the owned domain types those APIs use through `lib/<feature>.dart`. Regenerate the dependency docs when declarations change; explain non-obvious dependencies in the consuming member's README.
 7. **Generate & test.** `make build-runner` (freezed/drift/json codegen); unit-test every use-case and entity-with-rules (`make unit-test`); add l10n keys and run `make translations`.
 
 **Package (shared foundation — `packages/<name>`):** the `domain/` + `data/` half of the same shape. Its entry library (`lib/<name>.dart`) exports the capability, owned domain values and typed failures. Implementations stay under `lib/src/`. A package that owns a sealed UI component can publish it where the capability requires it (see "Sealed UI" under Monorepo Migration).
@@ -345,11 +345,13 @@ The Exchange credential participant owns a separate encrypted schema. It uses th
 
 `BullExchangeFeature.mount` contributes the exchange landing, authentication, support chat and account settings routes from `features/bull_exchange`. The legacy exchange router supplies the landing's store-aware localized copy, branding and navigation. The workspace feature owns the authentication WebView and its return paths, chat and settings presentation, attachment handling and localized copy. `Exchange.authenticateWebSession` binds credential generation to the configured environment and view lifetime without returning key material to the feature.
 
-The startup wizard receives the platform visibility decision from bootstrap before any services are opened. `packages/exchange` owns that pure decision independently of the later exchange access state, and `bull_exchange` renders the option without opening a session. KYC configuration also belongs to `Exchange`; the feature opens the web view with configuration for the active environment only.
+`WizardFeature.mount` contributes no wallet routes: the wizard renders its own localized app before `Bull.init`, using the shared brand images supplied by bootstrap. It receives the platform visibility decision before any services are opened. `packages/exchange` owns that pure decision independently of the later exchange access state, and `bull_exchange` renders the option without opening a session. KYC configuration also belongs to `Exchange`; the feature opens the web view with configuration for the active environment only.
 
 `BullExchangeFeature.mount` also contributes the manage-access route under app settings and owns its route-scoped state. `packages/exchange` owns the foreground access queue, epoch, and sign-out journal. The host only binds the existing platform preference, cookie cleanup and app navigation; the Wizard applies its pending choice to the same authority through `Exchange.applyInitialChoice`.
 
 The workspace Settings screen owns the logout and deletion confirmations. `Exchange` observes the access authority for Quick Actions and will not sign out a new session when an older deletion request completes.
+
+Exchange persists the installation-wide enabled and sign-out-pending flags separately from environment-scoped credentials. A current server 401 expires the captured environment without disabling Exchange. Explicit sign-out journals cleanup, attempts both credential and cookie removal, and does not let an unreadable preference block Reset. A pending wizard choice cannot override a later explicit decision. Platform restrictions can hide activation and trading independently of support and authenticated account management.
 
 The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange` and uses the workspace virtual IBAN screen. The Exchange domain owns fiat recipients, the CAD directory, SINPE and SEPA activation. Their operations use the untimed BBX client bound to the current session; the feature owns polling, selection and form state.
 
@@ -357,7 +359,9 @@ Buy and DCA mount at their existing root routes in `bull_exchange`. They use the
 
 Withdrawal is mounted in the same feature and reuses its recipient selection and activation. A completed withdrawal is not invalidated by failing to update Interac defaults. The host opens the existing transaction detail route and preserves its return to Exchange.
 
-The Exchange amount and currency controls are intentionally reusable widgets. DCA and Withdrawal use them within `bull_exchange`; Limit Orders, Sell and Pay import them from its public library.
+The Exchange amount and currency controls are intentionally reusable widgets. DCA, Withdrawal, Sell and Pay use them within `bull_exchange`; Limit Orders imports them from its public library.
+
+Sell and Pay mount at their original root routes. Exchange owns order reads and writes, Secrets and Sync check the selected local wallet's exact key, and Sync supplies non-issuing fee-estimation addresses and the current unspent coins to the Coins selection sheet. Spend retains the reviewed preparation through estimation, signing and broadcast. Its Payjoin integration signs that same preparation and admits the session with its persistence callback; only Payjoin publishes the payment after admission.
 
 Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
 
@@ -381,7 +385,13 @@ The same mount owns the active limit-order card, details and cancellation. Creat
 
 **End state: the shell, `features/` and `packages/`.** The wallet is the composition of members, each owning one concept, so no member is named `wallet`. Omit `bull_` from new member names. The exchange feature is `bull_exchange`, alongside the `exchange` domain package. `lib/core` moves into `packages/` and `lib/features` into `features/`; the migration ends when both are empty and deleted, leaving `lib/` with the shell only (routing, DI wiring, composition).
 
-**Why: a real dependency graph.** While code lives in `lib/core` and `lib/features`, it is all one package: any file can import any other and the dependency graph exists only on paper. As workspace members, every dependency is declared in a `pubspec.yaml`, so an undeclared import does not resolve, pub rejects cycles, `implementation_imports` closes every `src/`, and the graph is generated rather than hand-drawn: `fvm dart run melos list --mermaid` prints it, `make workspace-graph` writes it to [WORKSPACE.md](WORKSPACE.md) (checked by `make checks`), and `fvm dart run melos list --cycles` checks it. Each migration commit regenerates that file, so the graph change is visible next to the moved files.
+### Workspace dependency rules
+
+Dependencies stay acyclic and point from shell to features and packages, from a feature to other features' public capabilities or packages, and from a package to other packages. Packages never depend on features. Inside a member, the [layer rules](#-the-architecture-we-tend-toward) apply independently of what its manifest declares.
+
+`fvm dart run melos list --cycles` checks declared workspace dependencies. Successful Pub resolution alone does not rule out cycles. The `implementation_imports` lint guards access to another member's `src/`. A declared edge is not evidence that all source imports use the public API. The [foreground dependency test](test/architecture/foreground_sync_dependencies_test.dart) follows imports and transitive exports, including public barrels, to reject new feature edges against the reviewed baseline. Existing legacy source edges remain subject to the reviewed baseline while their owners are extracted. The [shell import test](test/architecture/shell_imports_test.dart) independently guards app composition imports.
+
+`make workspace-graph` reads the manifests to write [WORKSPACE.md](WORKSPACE.md) and [DEPENDENCIES.md](DEPENDENCIES.md); `make workspace-graph-check` checks them locally and in CI. Legacy app source edges are intentionally not duplicated in those documents. Document the reason for a non-obvious edge in the consuming member's README, not in the generated diagram.
 
 **`lib/core` disappears.** It is the legacy home of what becomes `packages/`. No change adds code to `lib/core`, neither logic nor wiring: a change that needs to touch a `lib/core` domain extracts the part it touches into its package (or feature), so its `lib/core` diff is net negative. The shell calls the package's entry point from composition (`lib/locator.dart`, `lib/bootstrap.dart`), and the package wires its own internals.
 
@@ -402,6 +412,12 @@ The same mount owns the active limit-order card, details and cancellation. Creat
 **Remaining shell import debt.** Legacy feature imports of root `locator.dart` and `router.dart` remain enumerated by `test/architecture/shell_imports_test.dart`; no new exceptions are allowed. The background callback is `backgroundTasksHandler` in `lib/background_entrypoint.dart`; it does not construct a module graph. The relocated wallet address viewer receives its share capability from its caller.
 
 **Foreground and headless are two explicit compositions.** A headless composition (a background task) registers only what that task needs, selected before the graph is built, rather than building the full app graph and switching side effects off. The shell selects the task in `lib/background_bootstrap.dart`; the existing wallet and Electrum settings wiring constructs the headless graph. WorkManager calls `backgroundTasksHandler` in `lib/background_entrypoint.dart`, which delegates to that bootstrap. The rollout remains disabled by `backgroundSyncAvailable` pending device validation.
+
+**Foreground synchronization.** The legacy wallet owner serializes native, swap and Silent Payments work in one foreground queue. Silent gets the foreground-start flag and an exact-network fingerprint reader from composition, not a wallet import. Swap schedules through its own use case and published port, implemented by the wallet owner; its direct refresh path avoids re-enqueuing an active pass.
+
+**Quick actions.** The [Quick Actions member](features/quick_actions) owns the catalogue, defaults, Home/More layout, drag editor and shared cubit. Its use cases go through the member's repository. The host supplies storage, navigation and visibility derived from the public exchange availability policy, without creating a reverse dependency from Quick Actions to those implementations. Hidden choices remain stored; failed writes restore the draft and resetting defaults offers revision-scoped Undo.
+
+**Shared presentation boundaries.** Shared widgets live in `bull_ui`; app-specific screens and localized content belong to their respective features. Address View's public payment-destination input retains the original scanned request and applies each consumer's supported payment types. Buy, DCA and default payouts get that input through host composition; Limit Orders and Swap consume the published surface directly.
 
 Each extracted package gets `resolution: workspace` and is listed under a `workspace:` key in the root `pubspec.yaml`; the root app keeps `useRootAsPackage: true` and consumes the members. Dependencies point one way and stay acyclic: **shell → features → packages**. `packages/` never import `features/`; a feature touches a package only through its published API.
 
@@ -478,6 +494,8 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 `features/access` owns the PIN settings and unlock screens, their translations and the shared cooldown policy. `AccessFeature.mount` contributes the typed unlock and nested PIN settings routes once before startup; the host supplies lazy backup eligibility and navigation callbacks. Startup reads PIN status through `Access.checkPinCodeExists`, which returns `Result<bool, AccessFailure>`. Seed and backup views receive a privately constructed `AppUnlockGrant` only through the successful reauthentication path, including when no PIN is configured. `Secrets.accessKeychain` retains the existing PIN and failed-attempt keys, and Access preserves distinct locked-keychain messages for unlock and PIN settings.
 
+Settings mounts the All Seed View route. Access supplies reauthentication, Secrets the active catalog, guarded seed deletion and sealed wallet phrase rendering, and Swaps the sealed swap phrase widget. Screen protection must succeed before the viewer builds, and neither renderer exposes words through accessibility semantics.
+
 ## Legacy owner-scoped keychain capabilities
 
 `packages/secrets` owns the legacy OS keychain through closed access, exchange, Silent Payments and swap capabilities. Access compares the PIN internally; no stored PIN leaves the package. Consumers select a capability rather than a key or arbitrary prefix. The generic `lib/core/storage` secure key-value datasource and its custody exception are removed. Existing keys and Android/iOS plugin options are preserved, with no data migration. Silent Payments configuration remains in its existing keychain entries even though it is not secret.
@@ -502,9 +520,15 @@ Ordinary `.drift.dart` files are ignored build outputs. Historical schema JSON, 
 
 The Electrum setup library exposes the sync-owned connection contract through an Electrum adapter and supplies the existing fallback integration seam for native operations whose callers own retry eligibility. Foreground composition prepares the regtest catalog explicitly before startup or selection. Headless wallet sync verifies Electrum readiness before opening the existing owner database; failed admission requests a retry.
 
+Startup passes the normalized settings through Settings Bootstrap before awaiting Electrum's passive storage barrier. Regtest preparation provisions Bitcoin and Liquid rows together, preserves custom endpoints and replaces only obsolete managed defaults. Mainnet and testnet validate existing production views without seeding regtest rows. Background readiness checks do not seed or repair storage.
+
 Electrum owns the declarations, generated rows and queries for `ElectrumServers`, `ElectrumSettings` and `Transactions`. The historical composer has separate declarations for the published migration chain to schema 16. Runtime server, settings and transaction cache operations use only the encrypted owner database. Generate Electrum's Drift libraries with `make build-runner`.
 
 `packages/mempool` generates the rows and accessor for `MempoolServers` and `MempoolSettings`. The historical composer defines its own versions of both tables for the supported schema-16 migration chain. Runtime Mempool reads use its encrypted schema-1 store, opened by `Mempool.open` under a shared lifecycle admission after its foreground participant commits a verified import or fresh-setup receipt. Mempool Settings reads the app environment through its setup binding and passes a typed Bitcoin or Liquid network to `mempool.servers`. Fees resolve the active Bitcoin base through the same server capability. Explorer callers use `mempool.links` for typed URI results.
+
+## Wallet import boundary
+
+Wallet Import owns mnemonic prescan and confirmation, hardware instructions, QR descriptor selection and watch-only confirmation. It uses Scanning for QR and NFC acquisition and the selected network's Secrets inventory for duplicate checks. Host bindings call the foreground wallet owner for provisioning. Watch-only import captures the selected environment before parsing so it can disambiguate testnet and regtest public-key versions without changing the key. Mnemonic prescan preserves typed unsupported-script failures so the UI cannot continue with an unsupported import.
 
 ## Per-owner encrypted cutover
 

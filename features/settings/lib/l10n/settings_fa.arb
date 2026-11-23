@@ -1,0 +1,14 @@
+{
+  "translationWarningContributeButton": "کمک به بهبود ترجمه",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "بیشتر ترجمه‌های این برنامه با استفاده از هوش مصنوعی تولید شده‌اند و ممکن است حاوی اشتباهاتی باشند. اگر خطایی مشاهده کردید یا می‌خواهید به بهبود ترجمه‌ها کمک کنید، می‌توانید یک اصلاح در مخزن GitHub ما ارسال کنید.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "ترجمه های AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  }
+}

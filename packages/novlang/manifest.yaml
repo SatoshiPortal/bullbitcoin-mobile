@@ -53,7 +53,20 @@ catalogues:
   all_seed_view:
     path: features/all_seed_view
     description: authenticated recovery phrase viewer
+  receive:
+    path: features/receive
+    description: Bitcoin, Liquid, Lightning and Payjoin receive screens
+  wizard:
+    path: features/wizard
+    output-dir: features/wizard/lib/generated/novlang
+    description: standalone first-run startup wizard
 entries:
+  - {catalogue: receive, key: receiveTransferFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: swapErrorAmountBelowMinimum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: swapErrorAmountAboveMaximum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: swapTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: receive, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: receive, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}
@@ -96,6 +109,7 @@ entries:
   - {catalogue: app, key: exchangeTestnetBasicAuthDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
+  - {catalogue: wizard, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: sendSlowPaymentWarningDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: receiveSwapID, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: receiveBoltzSwapFee, store: apple, word: swap, euphemism: transfer}
@@ -265,8 +279,8 @@ entries:
   - {catalogue: label_editor, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: label_editor, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: logoutConfirmationDescription, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: wizardJourneyTip5, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: wizardJourneyTip6, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: wizard, key: wizardJourneyTip5, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: wizard, key: wizardJourneyTip6, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: transactionSwapOpenWithin24h, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: homeActionTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}

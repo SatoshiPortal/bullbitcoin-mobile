@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth สำหรับหน้าเว็บของบัญชี testnet (การเข้าสู่ระบบและ KYC)",
   "app__walletDeletionErrorOngoingSwaps_apple": "คุณไม่สามารถลบกระเป๋าเงินที่มีการโอนอยู่ระหว่างดำเนินการได้",
   "app__onboardingSplashDescription_apple": "กระเป๋าเงิน Bitcoin แบบดูแลด้วยตนเองที่เป็นอิสระ พร้อมบริการเฉพาะ Bitcoin",
+  "wizard__onboardingSplashDescription_apple": "กระเป๋าเงิน Bitcoin แบบดูแลด้วยตนเองที่เป็นอิสระ พร้อมบริการเฉพาะ Bitcoin",
   "app__sendSlowPaymentWarningDescription_apple": "การโอน Bitcoin จะใช้เวลายืนยันสักครู่",
   "app__receiveSwapID_apple": "ID การโอน",
   "app__receiveBoltzSwapFee_apple": "ค่าธรรมเนียมการโอนของ Boltz",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "การโอน",
   "label_editor__systemLabelAutoSwap_apple": "การโอนอัตโนมัติ",
   "app__logoutConfirmationDescription_apple": "คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบบัญชี Bull Bitcoin ของคุณ? คุณจะต้องเข้าสู่ระบบอีกครั้งเพื่อใช้งานฟีเจอร์ของบัญชี",
-  "app__wizardJourneyTip5_apple": "โอนระหว่าง Bitcoin และ Liquid โดยไม่ต้อง KYC",
-  "app__wizardJourneyTip6_apple": "ปรับแต่งการตั้งค่าการโอนอัตโนมัติของคุณ",
+  "wizard__wizardJourneyTip5_apple": "โอนระหว่าง Bitcoin และ Liquid โดยไม่ต้อง KYC",
+  "wizard__wizardJourneyTip6_apple": "ปรับแต่งการตั้งค่าการโอนอัตโนมัติของคุณ",
   "app__transactionSwapOpenWithin24h_apple": "เปิดแอปภายใน 24 ชั่วโมงเพื่อให้การโอนของคุณเสร็จสมบูรณ์",
   "app__homeActionTransfer_apple": "โอน",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "ไม่มีอัตราให้ใช้งาน โปรดลองอีกครั้งในภายหลัง",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "มนีโมนิกสำหรับการโอน",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ลบมนีโมนิกสำหรับการโอนหรือไม่?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "การดำเนินการนี้จะลบมาสเตอร์คีย์ของการโอนออกจากที่เก็บข้อมูลที่ปลอดภัย ระบบจะสร้างคีย์ขึ้นใหม่จาก seed ของกระเป๋าเงินเมื่อแอปต้องการใช้ครั้งถัดไป โดยมีลายนิ้วมือ (fingerprint) เหมือนเดิม การโอนที่กำลังดำเนินการอยู่จะไม่ได้รับผลกระทบ"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "การดำเนินการนี้จะลบมาสเตอร์คีย์ของการโอนออกจากที่เก็บข้อมูลที่ปลอดภัย ระบบจะสร้างคีย์ขึ้นใหม่จาก seed ของกระเป๋าเงินเมื่อแอปต้องการใช้ครั้งถัดไป โดยมีลายนิ้วมือ (fingerprint) เหมือนเดิม การโอนที่กำลังดำเนินการอยู่จะไม่ได้รับผลกระทบ",
+  "receive__receiveTransferFee_apple": "ค่าธรรมเนียมการโอน",
+  "receive__swapErrorAmountBelowMinimum_apple": "จำนวนเงินต่ำกว่าจำนวนการโอนขั้นต่ำ: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "จำนวนเงินเกินจำนวนการโอนสูงสุด: {max} sats",
+  "receive__swapTransferTitle_apple": "โอน",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "ไม่มีอัตราให้ใช้งาน โปรดลองอีกครั้งในภายหลัง",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "การโอนนี้ไม่พร้อมใช้งาน"
 }

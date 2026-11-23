@@ -121,5 +121,85 @@
   "importColdcardMk4Step9": "Valitse numero 3 käynnistääksesi Coldcardin NFC:n",
   "importColdcardMk4Step10": "Valitse \"Scan NFC\" -painike",
   "importColdcardMk4Step11": "Aseta puhelimen NFC Coldcardin NFC-alueen päälle",
-  "importColdcardMk4Step12": "Valmista!"
+  "importColdcardMk4Step12": "Valmista!",
+  "bitboxScreenDefaultWalletLabel": "BitBox-lompakko",
+  "importColdcardButtonInstructions": "Ohjeet",
+  "importColdcardButtonOpenCamera": "Avaa kamera",
+  "importColdcardConnectDescription": "Tuo lompakon kuvaus (descriptor) {deviceName}-laitteestasi",
+  "importColdcardConnectTitle": "Yhdistä {deviceName}",
+  "importColdcardInvalidWalletData": "Virheelliset Coldcard-lompakkotiedot",
+  "importColdcardScanNfcSheetTitle": "Napauta {deviceName}-laitettasi tuodaksesi lompakon kuvauksen (descriptor) NFC:llä",
+  "importMnemonicBalanceLabel": "Saldo: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Jatka",
+  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
+  "importMnemonicEmptyLabelError": "Muistisanan tuominen edellyttää tunnistetta",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "importMnemonicSegwit": "Segwit",
+  "importMnemonicSelectScriptType": "Tuo siemenlause",
+  "importMnemonicSyncMessage": "Kaikki kolme lompakkotyyppiä synkronoidaan, ja niiden saldot ja transaktiot näkyvät pian. Voit odottaa synkronoinnin valmistumista tai jatkaa tuontia, jos tiedät minkä lompakkotyypin haluat tuoda.",
+  "importMnemonicTitle": "Tuo muistilauseke",
+  "importMnemonicTransactionsLabel": "Transaktioita: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "Tuo siemenlause",
+  "importWalletImportWatchOnly": "Tuo watch-only",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Foundation Passport",
+  "importWalletSectionGeneric": "Yleiset lompakot",
+  "importWalletSectionHardware": "Laitteistolompakot",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "Lisää uusi lompakko",
+  "importWatchOnlyCopiedToClipboard": "Kopioitu leikepöydälle",
+  "importWatchOnlyDescriptor": "Descriptor",
+  "importWatchOnlyDisclaimerDescription": "Varmista, että valitsemasi derivointipolku vastaa sitä, jolla annettu xpub on tuotettu. Tarkista ennen käyttöä ensimmäinen lompakosta johdettu osoite. Väärän polun käyttäminen voi johtaa varojen menetykseen.",
+  "importWatchOnlyDisclaimerTitle": "Derivointipolkuvaroitus",
+  "importWatchOnlyErrorAlreadyExists": "Tämä lompakko on jo tuotu.",
+  "importWatchOnlyErrorImportFailed": "Tämän vain katselun lompakon tuonti ei onnistunut. Tarkista tiedot ja yritä uudelleen.",
+  "importWatchOnlyErrorInvalidFormat": "Tämä ei näytä kelvolliselta julkiselta avaimelta tai deskriptorilta. Tarkista, mitä liitit.",
+  "importWatchOnlyErrorLabelRequired": "Anna lompakollesi nimi ennen tuontia.",
+  "importWatchOnlyErrorNetworkMismatch": "Tämä lompakko käyttää parhaillaan eri Bitcoin-verkkoa. Vaihda Mainnet- ja Testnet-verkon välillä ja yritä uudelleen.",
+  "importWatchOnlyErrorNoWalletSelected": "Liitä tai skannaa ensin julkinen avain tai deskriptori.",
+  "importWatchOnlyExtendedPublicKey": "Laajennettu julkinen avain",
+  "importWatchOnlyImport": "Tuo",
+  "importWatchOnlyLabel": "Tunniste",
+  "importWatchOnlyNetworkBitcoinMainnet": "Verkko: Bitcoin-pääverkko",
+  "importWatchOnlyNetworkBitcoinTestnet": "Verkko: Bitcoin-testiverkko",
+  "importWatchOnlyPasteHint": "Liitä xpub, ypub, zpub tai descriptor",
+  "importWatchOnlyRequired": "Pakollinen",
+  "importWatchOnlyScanQR": "Skannaa QR",
+  "importWatchOnlySigningDevice": "Allekirjoituslaite",
+  "importWatchOnlyTitle": "Tuo watch-only -lompakko",
+  "importWatchOnlyType": "Tyyppi",
+  "importWatchOnlyUnknown": "Tuntematon",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger-lompakko",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Skannaa NFC"
 }

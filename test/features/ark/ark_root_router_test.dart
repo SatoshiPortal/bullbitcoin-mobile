@@ -37,6 +37,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
+import 'package:receive/setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
@@ -240,6 +241,30 @@ void main() {
           preferences: ImportPreferences(),
           servers: ElectrumServers(),
           secrets: secrets,
+          inventory: inventory,
+          admission: _UnusedCustodyAdmission(),
+          provisionMnemonic: ({
+            required parent,
+            required secrets,
+            required admission,
+            required network,
+            required scriptType,
+            label,
+          }) => throw StateError('Unexpected mnemonic provisioning'),
+          provisionDescriptor: ({
+            required descriptor,
+            required signer,
+            required label,
+          }) => throw StateError('Unexpected descriptor provisioning'),
+          provisionXpub: ({
+            required xpub,
+            required network,
+            required scriptType,
+            required label,
+          }) => throw StateError('Unexpected xpub provisioning'),
+          networkOf: (_) => null,
+          onExit: (_) {},
+          onImported: (_) {},
           qrIllustration: const AssetImage('unused.png'),
         ),
       );
@@ -263,6 +288,28 @@ void main() {
           orderSwaps: () => throw StateError('Unexpected swap history read'),
           actions: transactionUiActions,
           scope: (child) => child,
+        ),
+      );
+      final receiveServices = GetIt.asNewInstance()
+        ..registerSingleton<ActiveEnvironmentReader>(preferences);
+      locator.registerSingleton(
+        ReceiveFeature.mount(
+          receiveServices,
+          rootNavigatorKey: AppRouter.rootNavigatorKey,
+          inventory: inventory,
+          loadWallet: (_) => throw StateError('Unexpected receive wallet read'),
+          readSigner: (_) => throw StateError('Unexpected receive signer read'),
+          poll: (_, {required isActive}) async {},
+          refreshAfterLightningPayment: () async {},
+          orderSwaps: () => throw StateError('Unexpected receive order read'),
+          createOrder: ({required wallet, required amountSat, note}) =>
+              throw StateError('Unexpected receive order creation'),
+          setPayjoinEnabled: (_, {required requestConsent}) =>
+              throw StateError('Unexpected Payjoin consent change'),
+          openHome: (_) {},
+          openPayjoinSettings: (_) {},
+          successAnimation: const AssetImage('unused.gif'),
+          orderSwapUnderReview: (_) => const SizedBox(),
         ),
       );
       final router = AppRouter.router;
@@ -294,12 +341,17 @@ void main() {
         await locator.unregister<BitcoinPriceFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
+        await locator.unregister<ReceiveFeature>();
+        await receiveServices.reset();
         await transactionServices.reset();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });
       // Exercise the actual production route configuration, not a test GoRouter.
       expect(router.configuration.findMatch(Uri.parse('/ark')).isError, false);
+      expect(router.namedLocation('receiveBitcoin'), '/receive/bitcoin');
+      expect(router.namedLocation('receiveLightning'), '/receive/lightning');
+      expect(router.namedLocation('receiveLiquid'), '/receive/liquid');
       expect(router.namedLocation('settings'), '/settings');
       expect(router.namedLocation('search'), '/settings/search');
       expect(

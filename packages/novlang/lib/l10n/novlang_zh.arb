@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "测试网账户网页（登录和 KYC）的 HTTP 基本认证。",
   "app__walletDeletionErrorOngoingSwaps_apple": "您无法删除有进行中转账的钱包。",
   "app__onboardingSplashDescription_apple": "主权自托管的 Bitcoin 钱包及仅限 Bitcoin 的服务。",
+  "wizard__onboardingSplashDescription_apple": "主权自托管的 Bitcoin 钱包及仅限 Bitcoin 的服务。",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin 转账需要一些时间才能确认。",
   "app__receiveSwapID_apple": "转账 ID",
   "app__receiveBoltzSwapFee_apple": "Boltz 转账费用",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "转账",
   "label_editor__systemLabelAutoSwap_apple": "自动转账",
   "app__logoutConfirmationDescription_apple": "您确定要退出 Bull Bitcoin 账户吗？您需要重新登录才能使用账户功能。",
-  "app__wizardJourneyTip5_apple": "在 Bitcoin 和 Liquid 之间转账，无需 KYC",
-  "app__wizardJourneyTip6_apple": "自定义您的自动转账设置",
+  "wizard__wizardJourneyTip5_apple": "在 Bitcoin 和 Liquid 之间转账，无需 KYC",
+  "wizard__wizardJourneyTip6_apple": "自定义您的自动转账设置",
   "app__transactionSwapOpenWithin24h_apple": "请在 24 小时内打开应用以完成您的转账。",
   "app__homeActionTransfer_apple": "转账",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "汇率不可用。请稍后重试。",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "转账助记词",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "删除转账助记词？",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。",
+  "receive__receiveTransferFee_apple": "转账费用",
+  "receive__swapErrorAmountBelowMinimum_apple": "金额低于最低转账金额：{min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "金额超过最高转账金额：{max} sats",
+  "receive__swapTransferTitle_apple": "转账",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "汇率不可用。请稍后重试。",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "此转账不可用。"
 }

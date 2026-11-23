@@ -2412,4 +2412,537 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'فروش Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'انتخاب کیف پول';
+
+  @override
+  String get sellWhichWalletQuestion => 'از کدام کیف پول می خواهید بفروشید؟?';
+
+  @override
+  String get sellExternalWallet => 'کیف پول خارجی';
+
+  @override
+  String get sellFromAnotherWallet => 'فروش از کیف پول Bitcoin';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'شما در حال تلاش برای فروش بیش از حداکثر مبلغی هستید که می توانید با این کیف پول به فروش برسانید.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'شما در حال تلاش برای فروش زیر حداقل مبلغی هستید که می توانید با این کیف پول به فروش برسانید.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش فروش.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'شما معتبر نیستید. لطفا برای ادامه وارد شوید.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'سفارش فروش پیدا نشد. لطفا دوباره امتحان کنید.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'این سفارش فروش تاکنون تایید شده است.';
+
+  @override
+  String get sellSelectNetwork => 'انتخاب شبکه';
+
+  @override
+  String get sellHowToPayInvoice =>
+      'چگونه می خواهید این فاکتور را پرداخت کنید؟?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'شبکه Lightning Network';
+
+  @override
+  String get sellLiquidNetwork => 'شبکه نقدینگی';
+
+  @override
+  String get sellConfirmPayment => 'تایید پرداخت';
+
+  @override
+  String get sellPriceWillRefreshIn => 'قیمت در ';
+
+  @override
+  String get sellOrderNumber => 'شماره سفارش';
+
+  @override
+  String get sellPayoutRecipient => 'دریافت کننده پرداخت';
+
+  @override
+  String get sellCadBalance => 'CAD تعادل تعادل تعادل';
+
+  @override
+  String get sellCrcBalance => 'CRC تعادل تعادل تعادل';
+
+  @override
+  String get sellEurBalance => 'یورو یورو تعادل تعادل تعادل';
+
+  @override
+  String get sellUsdBalance => 'دلار آمریکا تعادل تعادل تعادل';
+
+  @override
+  String get sellMxnBalance => 'MXN تعادل تعادل تعادل';
+
+  @override
+  String get sellArsBalance => 'تعادل ARS';
+
+  @override
+  String get sellCopBalance => 'COP تعادل تعادل تعادل';
+
+  @override
+  String get sellPayinAmount => 'پرداخت';
+
+  @override
+  String get sellPayoutAmount => 'پرداخت مبلغ';
+
+  @override
+  String get sellExchangeRate => 'نرخ تبادل';
+
+  @override
+  String get sellPayFromWallet => 'پرداخت از کیف پول';
+
+  @override
+  String get sellInstantPayments => 'پرداخت های فوری';
+
+  @override
+  String get sellSecureBitcoinWallet => 'کیف پول Bitcoin امن';
+
+  @override
+  String get sellFeePriority => 'اولویت هزینه';
+
+  @override
+  String get sellFastest => 'سریع ترین';
+
+  @override
+  String get sellAdvancedSettings => 'تنظیمات پیشرفته';
+
+  @override
+  String get sellAdvancedOptions => 'گزینه های پیشرفته';
+
+  @override
+  String get sellReplaceByFeeActivated => 'فعال شده توسط-fee فعال';
+
+  @override
+  String get sellSelectCoinsManually => 'انتخاب سکه های دستی';
+
+  @override
+  String get sellDone => 'انجام کارها';
+
+  @override
+  String get sellPleasePayInvoice => 'لطفا این فاکتور را پرداخت کنید';
+
+  @override
+  String get sellBitcoinAmount => 'مقدار Bitcoin';
+
+  @override
+  String get sellCopyInvoice => 'کپی رایت';
+
+  @override
+  String get sellShowQrCode => 'کد QR';
+
+  @override
+  String get sellQrCode => 'کد QR';
+
+  @override
+  String get sellNoInvoiceData => 'هیچ اطلاعات صورتحساب در دسترس نیست';
+
+  @override
+  String get sellInProgress => 'فروش در پیشرفت ...';
+
+  @override
+  String get sellGoHome => 'به خانه برو';
+
+  @override
+  String get sellOrderCompleted => 'دستور تکمیل شده!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'تعادل حساب شما پس از معامله شما 1 تایید در زنجیره دریافت خواهد شد.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'پرداخت دستمزد';
+
+  @override
+  String get payDescriptionLabel => 'توضیحات پرداخت (اختیاری)';
+
+  @override
+  String get payDescriptionHint => 'یادداشتی برای این پرداخت اضافه کنید';
+
+  @override
+  String get payPaymentDescription => 'توضیحات پرداخت';
+
+  @override
+  String get payRecipientType => 'نوع Recipient Type';
+
+  @override
+  String get payRecipientName => 'نام اضطراری';
+
+  @override
+  String get payRecipientDetails => 'جزئیات اضطراری';
+
+  @override
+  String get payNoDetailsAvailable => 'جزئیات موجود';
+
+  @override
+  String get paySelectWallet => 'انتخاب کیف پول';
+
+  @override
+  String get payExternalWallet => 'کیف پول خارجی';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'حداکثر مبلغی که با این کیف‌پول می‌توانید پرداخت کنید $amount است.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'حداقل مبلغی که با این کیف‌پول می‌توانید پرداخت کنید $amount است.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'شما معتبر نیستید. لطفا برای ادامه وارد شوید.';
+
+  @override
+  String get paySelectNetwork => 'انتخاب شبکه';
+
+  @override
+  String get payHowToPayInvoice =>
+      'چگونه می خواهید این فاکتور را پرداخت کنید؟?';
+
+  @override
+  String get payLightningNetwork => 'شبکه Lightning Network';
+
+  @override
+  String get payLiquidNetwork => 'شبکه نقدینگی';
+
+  @override
+  String get payConfirmPayment => 'تایید پرداخت';
+
+  @override
+  String get payOrderNumber => 'شماره سفارش';
+
+  @override
+  String get payPayinAmount => 'پرداخت';
+
+  @override
+  String get payPayoutAmount => 'پرداخت مبلغ';
+
+  @override
+  String get payExchangeRate => 'نرخ تبادل';
+
+  @override
+  String get payPayFromWallet => 'پرداخت از کیف پول';
+
+  @override
+  String get payInstantPayments => 'پرداخت های فوری';
+
+  @override
+  String get paySecureBitcoinWallet => 'کیف پول Bitcoin امن';
+
+  @override
+  String get payFeePriority => 'اولویت هزینه';
+
+  @override
+  String get payFastest => 'سریع ترین';
+
+  @override
+  String get payNetworkFees => 'هزینه های شبکه';
+
+  @override
+  String get payAdvancedSettings => 'تنظیمات پیشرفته';
+
+  @override
+  String get payAdvancedOptions => 'گزینه های پیشرفته';
+
+  @override
+  String get paySelectCoinsManually => 'انتخاب سکه های دستی';
+
+  @override
+  String get payDone => 'انجام کارها';
+
+  @override
+  String get payContinue => 'ادامه';
+
+  @override
+  String get payPleasePayInvoice => 'لطفا این فاکتور را پرداخت کنید';
+
+  @override
+  String get payBitcoinAmount => 'مقدار Bitcoin';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin Price';
+
+  @override
+  String get payCopyInvoice => 'کپی رایت Invoice';
+
+  @override
+  String get payShowQrCode => 'کد QR';
+
+  @override
+  String get payQrCode => 'کد QR';
+
+  @override
+  String get payNoInvoiceData => 'هیچ اطلاعات صورتحساب در دسترس نیست';
+
+  @override
+  String get payInvalidState => 'ایالت Invalid';
+
+  @override
+  String get payViewDetails => 'مشاهده جزئیات';
+
+  @override
+  String get paySinpeReceipt => 'رسید SINPE';
+
+  @override
+  String get payCompleted => 'پرداخت کامل!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'جزئیات سفارش';
+
+  @override
+  String get paySinpeMonto => 'مبلغ';
+
+  @override
+  String get paySinpeNumeroOrden => 'شماره سفارش';
+
+  @override
+  String get paySinpeNumeroComprobante => 'شماره مرجع';
+
+  @override
+  String get paySinpeBeneficiario => 'Benefici';
+
+  @override
+  String get paySinpeOrigen => 'منشأ';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'پرداخت در پیشرفت!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'قیمت در ';
+
+  @override
+  String get payWhichWallet => 'از کدام کیف پول می خواهید پرداخت کنید؟?';
+
+  @override
+  String get payExternalWalletDescription => 'پرداخت از کیف پول Bitcoin دیگر';
+
+  @override
+  String get payRbfActivated => 'فعال شده توسط-fee فعال';
+
+  @override
+  String get copyDialogButton => 'کپی رایت';
+
+  @override
+  String get closeDialogButton => 'نزدیک';
+
+  @override
+  String get sellCompleteKYC => 'کامل KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'هزینه های شبکه';
+
+  @override
+  String get sellSendPaymentContinue => 'ادامه';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin Price';
+
+  @override
+  String get sellViewDetailsButton => 'مشاهده جزئیات';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID Verification';
+
+  @override
+  String get sellKycPendingDescription => 'ابتدا باید تایید هویت را تکمیل کنید';
+
+  @override
+  String get sellLoadingGeneric => 'بارگذاری ...';
+
+  @override
+  String get viewerTapToCopy => 'برای کپی ضربه بزنید';
+
+  @override
+  String get invoiceViewerTitle => 'صورتحساب';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'در کلیپ‌بورد کپی شد';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'افزودن به موجودی حساب من';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند';
+
+  @override
+  String get sellPayoutTitle => 'انتخاب گیرنده';
+
+  @override
+  String get sellPayoutNewBadge => 'جدید';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'نسخه های انتخاب شده حاوی مقدار مورد نیاز نیستند';
+
+  @override
+  String get selectAmountTitle => 'انتخاب مقدار';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'درخواست: $amount';
+  }
+
+  @override
+  String get addressLabel => 'آدرس: ';
+
+  @override
+  String get typeLabel => 'نوع: ';
+
+  @override
+  String get coinsKeychainReceive => 'دریافت';
+
+  @override
+  String get coinsKeychainChange => 'باقی‌مانده';
 }

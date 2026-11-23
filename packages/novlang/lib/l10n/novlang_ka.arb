@@ -39,6 +39,7 @@
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth testnet ანგარიშის ვებგვერდებისთვის (შესვლა და KYC).",
   "app__walletDeletionErrorOngoingSwaps_apple": "მიმდინარე გადარიცხვების მქონე საფულის წაშლა შეუძლებელია.",
   "app__onboardingSplashDescription_apple": "სუვერენული თვითდაცვის Bitcoin საფულე და მხოლოდ Bitcoin-ის სერვისები.",
+  "wizard__onboardingSplashDescription_apple": "სუვერენული თვითდაცვის Bitcoin საფულე და მხოლოდ Bitcoin-ის სერვისები.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin გადარიცხვებს დასადასტურებლად დრო დასჭირდება.",
   "app__receiveSwapID_apple": "გადარიცხვის ID",
   "app__receiveBoltzSwapFee_apple": "Boltz-ის გადარიცხვის საკომისიო",
@@ -208,8 +209,8 @@
   "label_editor__systemLabelSwaps_apple": "გადარიცხვები",
   "label_editor__systemLabelAutoSwap_apple": "ავტომატური გადარიცხვა",
   "app__logoutConfirmationDescription_apple": "დარწმუნებული ხართ, რომ გსურთ გახვიდეთ თქვენი Bull Bitcoin ანგარიშიდან? ანგარიშის ფუნქციებზე წვდომისთვის ხელახლა მოგიწევთ სისტემაში შესვლა.",
-  "app__wizardJourneyTip5_apple": "გადარიცხეთ Bitcoin-სა და Liquid-ს შორის KYC-ის გარეშე",
-  "app__wizardJourneyTip6_apple": "მოარგეთ თქვენი ავტომატური გადარიცხვის პარამეტრები",
+  "wizard__wizardJourneyTip5_apple": "გადარიცხეთ Bitcoin-სა და Liquid-ს შორის KYC-ის გარეშე",
+  "wizard__wizardJourneyTip6_apple": "მოარგეთ თქვენი ავტომატური გადარიცხვის პარამეტრები",
   "app__transactionSwapOpenWithin24h_apple": "გახსენით აპლიკაცია 24 საათის განმავლობაში თქვენი გადარიცხვის დასასრულებლად.",
   "app__homeActionTransfer_apple": "გადარიცხვა",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
@@ -232,5 +233,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "გადარიცხვების მნემონიკა",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "წაიშალოს გადარიცხვების მნემონიკა?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება.",
+  "receive__receiveTransferFee_apple": "გადარიცხვის საკომისიო",
+  "receive__swapErrorAmountBelowMinimum_apple": "თანხა ნაკლებია გადარიცხვის მინიმალურ ოდენობაზე: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "თანხა აღემატება გადარიცხვის მაქსიმალურ ოდენობას: {max} sats",
+  "receive__swapTransferTitle_apple": "გადარიცხვა",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "ეს გადარიცხვა ხელმისაწვდომი არ არის."
 }

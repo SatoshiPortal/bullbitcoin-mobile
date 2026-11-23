@@ -120,5 +120,85 @@
   "importColdcardMk4Step9": "Clique no número 3 para iniciar o NFC do Coldcard",
   "importColdcardMk4Step10": "Clique no botão \"Scan NFC\"",
   "importColdcardMk4Step11": "Encoste o NFC do telefone ao NFC do Coldcard",
-  "importColdcardMk4Step12": "É isso!"
+  "importColdcardMk4Step12": "É isso!",
+  "bitboxScreenDefaultWalletLabel": "Carteira de BitBox",
+  "importColdcardButtonInstructions": "Instruções",
+  "importColdcardButtonOpenCamera": "Abra a câmera",
+  "importColdcardConnectDescription": "Importe o descritor da carteira a partir do seu {deviceName}",
+  "importColdcardConnectTitle": "Conecte {deviceName}",
+  "importColdcardInvalidWalletData": "Dados de carteira Coldcard inválidos",
+  "importColdcardScanNfcSheetTitle": "Toque no seu {deviceName} para importar o descritor da carteira via NFC",
+  "importMnemonicBalanceLabel": "Equilíbrio: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Continue",
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
+  "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemónico",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legado",
+  "importMnemonicNestedSegwit": "Segwit aninhado",
+  "importMnemonicSegwit": "Segwitt",
+  "importMnemonicSelectScriptType": "Importação Mnemonic",
+  "importMnemonicSyncMessage": "Todos os três tipos de carteira estão sincronizando e seus saldos e transações aparecerão em breve. Você pode esperar até que a sincronização complete ou prossiga para importar se você tiver certeza de qual tipo de carteira você deseja importar.",
+  "importMnemonicTitle": "Importação Mnemonic",
+  "importMnemonicTransactionsLabel": "Transações: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Cartão de crédito",
+  "importWalletImportMnemonic": "Importação Mnemonic",
+  "importWalletImportWatchOnly": "Importar apenas relógio",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Chaveiro",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Passaporte da Fundação",
+  "importWalletSectionGeneric": "Carteiras genéricas",
+  "importWalletSectionHardware": "Carteiras de hardware",
+  "importWalletSeedSigner": "Sementes",
+  "importWalletSpecter": "Espectro",
+  "importWalletTitle": "Adicionar uma nova carteira",
+  "importWatchOnlyCopiedToClipboard": "Copiado para clipboard",
+  "importWatchOnlyDescriptor": "Descritores",
+  "importWatchOnlyDisclaimerDescription": "Certifique-se de que o caminho de derivação que você escolher combina com o que produziu o xpub dado verificando o primeiro endereço derivado da carteira antes do uso. Usar o caminho errado pode levar à perda de fundos",
+  "importWatchOnlyDisclaimerTitle": "Aviso de Caminho de Derivação",
+  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada.",
+  "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira só de leitura. Verifique os detalhes e tente novamente.",
+  "importWatchOnlyErrorInvalidFormat": "Isto não parece uma chave pública ou um descritor válido. Verifique o que colou.",
+  "importWatchOnlyErrorLabelRequired": "Dê um nome à sua carteira antes de importar.",
+  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está a utilizar uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
+  "importWatchOnlyErrorNoWalletSelected": "Cole ou digitalize primeiro uma chave pública ou um descritor.",
+  "importWatchOnlyExtendedPublicKey": "Público estendido Chaveiro",
+  "importWatchOnlyImport": "Importação",
+  "importWatchOnlyLabel": "Etiqueta",
+  "importWatchOnlyNetworkBitcoinMainnet": "Rede: rede principal do Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Rede: rede de teste do Bitcoin",
+  "importWatchOnlyPasteHint": "Pasta xpub, ypub, zpub ou descritor",
+  "importWatchOnlyRequired": "Requisitos",
+  "importWatchOnlyScanQR": "Digitalização QR",
+  "importWatchOnlySigningDevice": "Dispositivo de assinatura",
+  "importWatchOnlyTitle": "Importar apenas relógio",
+  "importWatchOnlyType": "Tipo",
+  "importWatchOnlyUnknown": "Desconhecido",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Carteira de Ledger",
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Digitalização NFC"
 }

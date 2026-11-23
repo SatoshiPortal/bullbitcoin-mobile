@@ -2435,4 +2435,537 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Bitcoin satmak';
+
+  @override
+  String get sellSelectWallet => 'Cüzdan seçin';
+
+  @override
+  String get sellWhichWalletQuestion => 'Hangi cüzdandan satmak istiyorsunuz?';
+
+  @override
+  String get sellExternalWallet => 'Dış cüzdan cüzdan';
+
+  @override
+  String get sellFromAnotherWallet => 'Başka bir Bitcoin cüzdanından satış';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Bu cüzdanla satılabilecek minimum miktarın altında satmaya çalışıyorsunuz.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Seçilen cüzdanda bu satış siparişini tamamlamak için yeterli bir denge.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Satış siparişi bulunamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Bu satış siparişi zaten doğrulandı.';
+
+  @override
+  String get sellSelectNetwork => 'Network Select Network';
+
+  @override
+  String get sellHowToPayInvoice => 'Bu faturayı nasıl ödemek istiyorsunuz?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Lightning Network';
+
+  @override
+  String get sellLiquidNetwork => 'Sıvı Ağ Ağı';
+
+  @override
+  String get sellConfirmPayment => 'Doğru ödeme';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Fiyat yenilenecek ';
+
+  @override
+  String get sellOrderNumber => 'Sipariş numarası';
+
+  @override
+  String get sellPayoutRecipient => 'Payout alıcı';
+
+  @override
+  String get sellCadBalance => 'CAD CAD CAD Denge dengesi';
+
+  @override
+  String get sellCrcBalance => 'CRC Denge dengesi';
+
+  @override
+  String get sellEurBalance => 'EUR EUR EUR EUR EUR EUR Denge dengesi';
+
+  @override
+  String get sellUsdBalance => 'USD USD USD USD USD USD Denge dengesi';
+
+  @override
+  String get sellMxnBalance => 'MXN Denge dengesi';
+
+  @override
+  String get sellArsBalance => 'ARS Balance';
+
+  @override
+  String get sellCopBalance => 'COP COP COP Denge dengesi';
+
+  @override
+  String get sellPayinAmount => 'Payin miktarı';
+
+  @override
+  String get sellPayoutAmount => 'Payout amount';
+
+  @override
+  String get sellExchangeRate => 'Değişim oranı';
+
+  @override
+  String get sellPayFromWallet => 'Cüzdandan ödeme';
+
+  @override
+  String get sellInstantPayments => 'Anında ödeme';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Güvenli Bitcoin cüzdanı';
+
+  @override
+  String get sellFeePriority => 'Ücret Önceliği';
+
+  @override
+  String get sellFastest => 'En hızlı';
+
+  @override
+  String get sellAdvancedSettings => 'Gelişmiş Ayarlar';
+
+  @override
+  String get sellAdvancedOptions => 'Gelişmiş seçenekler';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Değiştir-by-fee etkinleştirildi';
+
+  @override
+  String get sellSelectCoinsManually => 'Paraları manuel olarak seçin';
+
+  @override
+  String get sellDone => 'Done';
+
+  @override
+  String get sellPleasePayInvoice => 'Lütfen bu faturayı ödeme';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin miktarı';
+
+  @override
+  String get sellCopyInvoice => 'Kopyalama';
+
+  @override
+  String get sellShowQrCode => 'Göster QR kodu';
+
+  @override
+  String get sellQrCode => 'QR Kodu';
+
+  @override
+  String get sellNoInvoiceData => 'Hiçbir fatura verileri mevcut';
+
+  @override
+  String get sellInProgress => 'İlerlemede Sat...';
+
+  @override
+  String get sellGoHome => 'Eve git';
+
+  @override
+  String get sellOrderCompleted => 'Sipariş tamamlandı!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Hesap bakiyeniz işleminiz 1 onaydan sonra kredilenecek.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Pay';
+
+  @override
+  String get payDescriptionLabel => 'Ödeme açıklaması (isteğe bağlı)';
+
+  @override
+  String get payDescriptionHint => 'Bu ödeme için bir not ekleyin';
+
+  @override
+  String get payPaymentDescription => 'Ödeme açıklaması';
+
+  @override
+  String get payRecipientType => 'Recipient type';
+
+  @override
+  String get payRecipientName => 'Recipient name';
+
+  @override
+  String get payRecipientDetails => 'Güvenilir ayrıntılar';
+
+  @override
+  String get payNoDetailsAvailable => 'Mevcut hiçbir detay mevcut değildir';
+
+  @override
+  String get paySelectWallet => 'Cüzdan seçin';
+
+  @override
+  String get payExternalWallet => 'Dış cüzdan cüzdan';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Bu cüzdanla ödeyebileceğiniz en yüksek tutar $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Bu cüzdanla ödeyebileceğiniz en düşük tutar $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.';
+
+  @override
+  String get paySelectNetwork => 'Network Select Network';
+
+  @override
+  String get payHowToPayInvoice => 'Bu faturayı nasıl ödemek istiyorsunuz?';
+
+  @override
+  String get payLightningNetwork => 'Lightning Network';
+
+  @override
+  String get payLiquidNetwork => 'Sıvı Ağ Ağı';
+
+  @override
+  String get payConfirmPayment => 'Ödemeyi Onaylayın';
+
+  @override
+  String get payOrderNumber => 'Sipariş numarası';
+
+  @override
+  String get payPayinAmount => 'Payin miktarı';
+
+  @override
+  String get payPayoutAmount => 'Payout amount';
+
+  @override
+  String get payExchangeRate => 'Değişim oranı';
+
+  @override
+  String get payPayFromWallet => 'Cüzdandan ödeme';
+
+  @override
+  String get payInstantPayments => 'Anında ödeme';
+
+  @override
+  String get paySecureBitcoinWallet => 'Güvenli Bitcoin cüzdanı';
+
+  @override
+  String get payFeePriority => 'Ücret Önceliği';
+
+  @override
+  String get payFastest => 'En hızlı';
+
+  @override
+  String get payNetworkFees => 'Network ücretleri';
+
+  @override
+  String get payAdvancedSettings => 'Gelişmiş Ayarlar';
+
+  @override
+  String get payAdvancedOptions => 'Gelişmiş seçenekler';
+
+  @override
+  String get paySelectCoinsManually => 'Paraları manuel olarak seçin';
+
+  @override
+  String get payDone => 'Done';
+
+  @override
+  String get payContinue => 'Devam etmeye devam et';
+
+  @override
+  String get payPleasePayInvoice => 'Lütfen bu faturayı ödeme';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin miktarı';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin Fiyatı';
+
+  @override
+  String get payCopyInvoice => 'Kopyalama';
+
+  @override
+  String get payShowQrCode => 'Göster QR kodu';
+
+  @override
+  String get payQrCode => 'QR Kodu';
+
+  @override
+  String get payNoInvoiceData => 'Hiçbir fatura verileri mevcut';
+
+  @override
+  String get payInvalidState => 'Invalid state';
+
+  @override
+  String get payViewDetails => 'View details';
+
+  @override
+  String get paySinpeReceipt => 'SINPE Makbuzu';
+
+  @override
+  String get payCompleted => 'Ödeme Tamamlandı!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'Sipariş Detayları';
+
+  @override
+  String get paySinpeMonto => '\$';
+
+  @override
+  String get paySinpeNumeroOrden => 'Sipariş numarası';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Referans numarası';
+
+  @override
+  String get paySinpeBeneficiario => 'Beneficiary';
+
+  @override
+  String get paySinpeOrigen => 'Kökeni';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'İlerlemede Ödeme!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Fiyat yenilenecek ';
+
+  @override
+  String get payWhichWallet => 'Hangi cüzdan ödeme yapmak istiyorsunuz?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'Başka bir Bitcoin cüzdanından ödeme';
+
+  @override
+  String get payRbfActivated => 'Değiştir-by-fee etkinleştirildi';
+
+  @override
+  String get copyDialogButton => 'Kopya kopya';
+
+  @override
+  String get closeDialogButton => 'Close';
+
+  @override
+  String get sellCompleteKYC => 'Tamamlanan KC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Network ücretleri';
+
+  @override
+  String get sellSendPaymentContinue => 'Devam etmeye devam et';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin Fiyatı';
+
+  @override
+  String get sellViewDetailsButton => 'View details';
+
+  @override
+  String get sellKycPendingTitle => 'KİTAP ID Verification Pending';
+
+  @override
+  String get sellKycPendingDescription =>
+      'İlk önce kimlik doğrulamasını tamamlamanız gerekir';
+
+  @override
+  String get sellLoadingGeneric => 'Yükleniyor...';
+
+  @override
+  String get viewerTapToCopy => 'Kopyalamak için dokunun';
+
+  @override
+  String get invoiceViewerTitle => 'Fatura';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Panoya kopyalandı';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Hesap bakiyeme ekle';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Çekimler Leonod tarafından gönderilmiş olarak görünür';
+
+  @override
+  String get sellPayoutTitle => 'Alıcı Seç';
+
+  @override
+  String get sellPayoutNewBadge => 'YENİ';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Seçilmiş utxos gerekli miktarda kapsamaz';
+
+  @override
+  String get selectAmountTitle => 'Sayı miktarı seçin';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Para talep etti: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Adres: ';
+
+  @override
+  String get typeLabel => 'Tipi: ';
+
+  @override
+  String get coinsKeychainReceive => 'Alma';
+
+  @override
+  String get coinsKeychainChange => 'Para üstü';
 }

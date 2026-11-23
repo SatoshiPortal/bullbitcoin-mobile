@@ -2428,6 +2428,539 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Bitcoin बेचें';
+
+  @override
+  String get sellSelectWallet => 'वॉलेट चुनें';
+
+  @override
+  String get sellWhichWalletQuestion => 'आप किस वॉलेट से बेचना चाहते हैं?';
+
+  @override
+  String get sellExternalWallet => 'बाहरी वॉलेट';
+
+  @override
+  String get sellFromAnotherWallet => 'किसी अन्य Bitcoin वॉलेट से बेचें';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'आप इस वॉलेट से बेची जा सकने वाली अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'आप इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि से कम बेचने की कोशिश कर रहे हैं।';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'इस बिक्री ऑर्डर को पूरा करने के लिए चुने गए वॉलेट में अपर्याप्त शेष है।';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'बिक्री ऑर्डर नहीं मिला। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'यह बिक्री ऑर्डर पहले ही पुष्टि हो चुका है।';
+
+  @override
+  String get sellSelectNetwork => 'नेटवर्क चुनें';
+
+  @override
+  String get sellHowToPayInvoice =>
+      'आप इस invoice का भुगतान कैसे करना चाहते हैं?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin ऑन-चेन';
+
+  @override
+  String get sellLightningNetwork => 'Lightning Network';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get sellConfirmPayment => 'भुगतान की पुष्टि करें';
+
+  @override
+  String get sellPriceWillRefreshIn => 'मूल्य रिफ्रेश होगा ';
+
+  @override
+  String get sellOrderNumber => 'ऑर्डर नंबर';
+
+  @override
+  String get sellPayoutRecipient => 'भुगतान प्राप्तकर्ता';
+
+  @override
+  String get sellCadBalance => 'CAD शेष';
+
+  @override
+  String get sellCrcBalance => 'CRC शेष';
+
+  @override
+  String get sellEurBalance => 'EUR शेष';
+
+  @override
+  String get sellUsdBalance => 'USD शेष';
+
+  @override
+  String get sellMxnBalance => 'MXN शेष';
+
+  @override
+  String get sellArsBalance => 'ARS शेष';
+
+  @override
+  String get sellCopBalance => 'COP शेष';
+
+  @override
+  String get sellPayinAmount => 'भुगतान राशि';
+
+  @override
+  String get sellPayoutAmount => 'प्राप्ति राशि';
+
+  @override
+  String get sellExchangeRate => 'विनिमय दर';
+
+  @override
+  String get sellPayFromWallet => 'वॉलेट से भुगतान करें';
+
+  @override
+  String get sellInstantPayments => 'तत्काल भुगतान';
+
+  @override
+  String get sellSecureBitcoinWallet => 'सुरक्षित Bitcoin वॉलेट';
+
+  @override
+  String get sellFeePriority => 'शुल्क प्राथमिकता';
+
+  @override
+  String get sellFastest => 'सबसे तेज़';
+
+  @override
+  String get sellAdvancedSettings => 'उन्नत सेटिंग्स';
+
+  @override
+  String get sellAdvancedOptions => 'उन्नत विकल्प';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee सक्रिय';
+
+  @override
+  String get sellSelectCoinsManually => 'मुद्राएं मैन्युअल रूप से चुनें';
+
+  @override
+  String get sellDone => 'हो गया';
+
+  @override
+  String get sellPleasePayInvoice => 'कृपया यह invoice चुकाएं';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin राशि';
+
+  @override
+  String get sellCopyInvoice => 'invoice कॉपी करें';
+
+  @override
+  String get sellShowQrCode => 'QR code दिखाएं';
+
+  @override
+  String get sellQrCode => 'QR Code';
+
+  @override
+  String get sellNoInvoiceData => 'कोई invoice डेटा उपलब्ध नहीं';
+
+  @override
+  String get sellInProgress => 'बिक्री प्रगति में है...';
+
+  @override
+  String get sellGoHome => 'होम पर जाएं';
+
+  @override
+  String get sellOrderCompleted => 'ऑर्डर पूर्ण!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'आपके लेनदेन को ऑनचेन पर 1 पुष्टि मिलने के बाद आपके खाते का शेष जमा हो जाएगा।';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'भुगतान करें';
+
+  @override
+  String get payDescriptionLabel => 'भुगतान विवरण (वैकल्पिक)';
+
+  @override
+  String get payDescriptionHint => 'इस भुगतान के लिए एक नोट जोड़ें';
+
+  @override
+  String get payPaymentDescription => 'भुगतान विवरण';
+
+  @override
+  String get payRecipientType => 'प्राप्तकर्ता का प्रकार';
+
+  @override
+  String get payRecipientName => 'प्राप्तकर्ता का नाम';
+
+  @override
+  String get payRecipientDetails => 'प्राप्तकर्ता का विवरण';
+
+  @override
+  String get payNoDetailsAvailable => 'कोई विवरण उपलब्ध नहीं';
+
+  @override
+  String get paySelectWallet => 'वॉलेट चुनें';
+
+  @override
+  String get payExternalWallet => 'बाहरी वॉलेट';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'इस वॉलेट से आप अधिकतम $amount का भुगतान कर सकते हैं।';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'इस वॉलेट से आप न्यूनतम $amount का भुगतान कर सकते हैं।';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष राशि नहीं है।';
+
+  @override
+  String get payUnauthenticatedError =>
+      'आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।';
+
+  @override
+  String get paySelectNetwork => 'नेटवर्क चुनें';
+
+  @override
+  String get payHowToPayInvoice => 'आप इस चालान का भुगतान कैसे करना चाहते हैं?';
+
+  @override
+  String get payLightningNetwork => 'Lightning Network';
+
+  @override
+  String get payLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get payConfirmPayment => 'भुगतान की पुष्टि करें';
+
+  @override
+  String get payOrderNumber => 'आदेश संख्या';
+
+  @override
+  String get payPayinAmount => 'भुगतान राशि';
+
+  @override
+  String get payPayoutAmount => 'प्राप्ति राशि';
+
+  @override
+  String get payExchangeRate => 'विनिमय दर';
+
+  @override
+  String get payPayFromWallet => 'वॉलेट से भुगतान करें';
+
+  @override
+  String get payInstantPayments => 'तत्काल भुगतान';
+
+  @override
+  String get paySecureBitcoinWallet => 'सुरक्षित Bitcoin वॉलेट';
+
+  @override
+  String get payFeePriority => 'शुल्क प्राथमिकता';
+
+  @override
+  String get payFastest => 'सबसे तेज़';
+
+  @override
+  String get payNetworkFees => 'नेटवर्क शुल्क';
+
+  @override
+  String get payAdvancedSettings => 'उन्नत सेटिंग';
+
+  @override
+  String get payAdvancedOptions => 'उन्नत विकल्प';
+
+  @override
+  String get paySelectCoinsManually => 'सिक्के मैन्युअल रूप से चुनें';
+
+  @override
+  String get payDone => 'हो गया';
+
+  @override
+  String get payContinue => 'जारी रखें';
+
+  @override
+  String get payPleasePayInvoice => 'कृपया इस चालान का भुगतान करें';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin राशि';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin मूल्य';
+
+  @override
+  String get payCopyInvoice => 'चालान कॉपी करें';
+
+  @override
+  String get payShowQrCode => 'QR code दिखाएं';
+
+  @override
+  String get payQrCode => 'QR Code';
+
+  @override
+  String get payNoInvoiceData => 'कोई चालान डेटा उपलब्ध नहीं';
+
+  @override
+  String get payInvalidState => 'अमान्य स्थिति';
+
+  @override
+  String get payViewDetails => 'विवरण देखें';
+
+  @override
+  String get paySinpeReceipt => 'SINPE Receipt';
+
+  @override
+  String get payCompleted => 'भुगतान पूर्ण हुआ!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'आदेश विवरण';
+
+  @override
+  String get paySinpeMonto => 'राशि';
+
+  @override
+  String get paySinpeNumeroOrden => 'आदेश संख्या';
+
+  @override
+  String get paySinpeNumeroComprobante => 'संदर्भ संख्या';
+
+  @override
+  String get paySinpeBeneficiario => 'लाभार्थी';
+
+  @override
+  String get paySinpeOrigen => 'उद्गम';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin ऑन-चेन';
+
+  @override
+  String get payPaymentInProgress => 'भुगतान प्रगति में है!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'कीमत इस समय में ताज़ा होगी ';
+
+  @override
+  String get payWhichWallet => 'आप किस वॉलेट से भुगतान करना चाहते हैं?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'किसी अन्य Bitcoin वॉलेट से भुगतान करें';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee सक्रिय';
+
+  @override
+  String get copyDialogButton => 'कॉपी';
+
+  @override
+  String get closeDialogButton => 'बंद';
+
+  @override
+  String get sellCompleteKYC => 'पूरा KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'नेटवर्क शुल्क';
+
+  @override
+  String get sellSendPaymentContinue => 'जारी';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'बिटकॉइन मूल्य';
+
+  @override
+  String get sellViewDetailsButton => 'विवरण देखें';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID सत्यापन लंबित';
+
+  @override
+  String get sellKycPendingDescription => 'आपको पहले ID सत्यापन पूरा करना होगा';
+
+  @override
+  String get sellLoadingGeneric => 'लोड ..।';
+
+  @override
+  String get viewerTapToCopy => 'कॉपी करने के लिए टैप करें';
+
+  @override
+  String get invoiceViewerTitle => 'चालान';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'क्लिपबोर्ड पर कॉपी किया गया';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'मेरे खाते की शेष राशि में जोड़ें';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'निकासी Leonod द्वारा भेजी गई दिखाई देती है';
+
+  @override
+  String get sellPayoutTitle => 'प्राप्तकर्ता चुनें';
+
+  @override
+  String get sellPayoutNewBadge => 'नया';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'चुने गए UTXO आवश्यक राशि को कवर नहीं करते';
+
+  @override
+  String get selectAmountTitle => 'राशि चुनें';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'राशि का अनुरोध: $amount';
+  }
+
+  @override
+  String get addressLabel => 'पता: ';
+
+  @override
+  String get typeLabel => 'प्रकार: ';
+
+  @override
+  String get coinsKeychainReceive => 'प्राप्त करें';
+
+  @override
+  String get coinsKeychainChange => 'चेंज';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -4753,4 +5286,439 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get dcaOrderCreationError =>
       'Recurring buy nahi ban saki. Kripya baad mein phir se koshish karein.';
+
+  @override
+  String get sellTitle => 'Bitcoin Becho';
+
+  @override
+  String get sellSelectWallet => 'Wallet Chuniye';
+
+  @override
+  String get sellWhichWalletQuestion => 'Kis wallet se bechna chahte ho?';
+
+  @override
+  String get sellExternalWallet => 'Bahari wallet';
+
+  @override
+  String get sellFromAnotherWallet => 'Doosre Bitcoin wallet se becho';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Aap maximum raashi se zyada bechne ki koshish kar rahe ho is wallet se.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Aap minimum raashi se kam bechne ki koshish kar rahe ho is wallet se.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Chunhe wallet mein itna balance nahi hai yeh sell order poora karne ke liye.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Aap logged in nahi ho. Jaari rakhne ke liye login karo.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Sell order nahi mila. Dobara koshish karo.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Yeh sell order pehle hi confirm ho chuka hai.';
+
+  @override
+  String get sellSelectNetwork => 'Network Chuniye';
+
+  @override
+  String get sellHowToPayInvoice => 'Yeh invoice kaise pay karna chahte ho?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Lightning Network';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get sellConfirmPayment => 'Payment confirm karo';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Kimat refresh hogi ';
+
+  @override
+  String get sellOrderNumber => 'Order number';
+
+  @override
+  String get sellPayoutRecipient => 'Payout praaptakarta';
+
+  @override
+  String get sellCadBalance => 'CAD Balance';
+
+  @override
+  String get sellCrcBalance => 'CRC Balance';
+
+  @override
+  String get sellEurBalance => 'EUR Balance';
+
+  @override
+  String get sellUsdBalance => 'USD Balance';
+
+  @override
+  String get sellMxnBalance => 'MXN Balance';
+
+  @override
+  String get sellArsBalance => 'ARS Balance';
+
+  @override
+  String get sellCopBalance => 'COP Balance';
+
+  @override
+  String get sellPayinAmount => 'Payin raashi';
+
+  @override
+  String get sellPayoutAmount => 'Payout raashi';
+
+  @override
+  String get sellExchangeRate => 'Vinimay dar';
+
+  @override
+  String get sellPayFromWallet => 'Wallet se pay karo';
+
+  @override
+  String get sellInstantPayments => 'Instant payments';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Surakshit Bitcoin wallet';
+
+  @override
+  String get sellFeePriority => 'Fee Priority';
+
+  @override
+  String get sellFastest => 'Sabse tez';
+
+  @override
+  String get sellAdvancedSettings => 'Advanced Settings';
+
+  @override
+  String get sellAdvancedOptions => 'Advanced options';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee chalu hai';
+
+  @override
+  String get sellSelectCoinsManually => 'Coins haath se chuniye';
+
+  @override
+  String get sellDone => 'Ho Gaya';
+
+  @override
+  String get sellPleasePayInvoice => 'Yeh invoice pay karo';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin raashi';
+
+  @override
+  String get sellCopyInvoice => 'Invoice copy karo';
+
+  @override
+  String get sellShowQrCode => 'QR code dikhaao';
+
+  @override
+  String get sellQrCode => 'QR Code';
+
+  @override
+  String get sellNoInvoiceData => 'Koi invoice data nahi hai';
+
+  @override
+  String get sellInProgress => 'Bechna jari hai...';
+
+  @override
+  String get sellGoHome => 'Ghar jao';
+
+  @override
+  String get sellOrderCompleted => 'Order poora hua!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Aapka account balance credit ho jayega jab aapka transaction onchain 1 confirmation le lega.';
+
+  @override
+  String get payTitle => 'Pay Karo';
+
+  @override
+  String get payDescriptionLabel => 'Bhugtan vivaran (vaikalpik)';
+
+  @override
+  String get payDescriptionHint => 'Is bhugtan ke liye ek note jodein';
+
+  @override
+  String get payPaymentDescription => 'Bhugtan vivaran';
+
+  @override
+  String get payRecipientType => 'Recipient type';
+
+  @override
+  String get payRecipientName => 'Recipient name';
+
+  @override
+  String get payRecipientDetails => 'Recipient details';
+
+  @override
+  String get payNoDetailsAvailable => 'Koi details uplabdh nahi';
+
+  @override
+  String get paySelectWallet => 'Wallet Chunein';
+
+  @override
+  String get payExternalWallet => 'External wallet';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Is wallet se aap zyada se zyada $amount pay kar sakte hain.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Is wallet se aap kam se kam $amount pay kar sakte hain.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Is pay order ko poora karne ke liye selected wallet mein balance kam hai.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.';
+
+  @override
+  String get paySelectNetwork => 'Network Chunein';
+
+  @override
+  String get payHowToPayInvoice =>
+      'Aap is invoice ko kaise pay karna chahte hain?';
+
+  @override
+  String get payLightningNetwork => 'Lightning Network';
+
+  @override
+  String get payLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get payConfirmPayment => 'Payment Confirm Karein';
+
+  @override
+  String get payOrderNumber => 'Order number';
+
+  @override
+  String get payPayinAmount => 'Payin amount';
+
+  @override
+  String get payPayoutAmount => 'Payout amount';
+
+  @override
+  String get payExchangeRate => 'Exchange rate';
+
+  @override
+  String get payPayFromWallet => 'Wallet se pay karein';
+
+  @override
+  String get payInstantPayments => 'Instant payments';
+
+  @override
+  String get paySecureBitcoinWallet => 'Surakshit Bitcoin wallet';
+
+  @override
+  String get payFeePriority => 'Fee Priority';
+
+  @override
+  String get payFastest => 'Sabse tez';
+
+  @override
+  String get payNetworkFees => 'Network fees';
+
+  @override
+  String get payAdvancedSettings => 'Advanced Settings';
+
+  @override
+  String get payAdvancedOptions => 'Advanced options';
+
+  @override
+  String get paySelectCoinsManually => 'Coins manually chunein';
+
+  @override
+  String get payDone => 'Ho gaya';
+
+  @override
+  String get payContinue => 'Aage badhein';
+
+  @override
+  String get payPleasePayInvoice => 'Kripya is invoice ko pay karein';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin amount';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin Price';
+
+  @override
+  String get payCopyInvoice => 'Invoice Copy karein';
+
+  @override
+  String get payShowQrCode => 'QR code dikhayein';
+
+  @override
+  String get payQrCode => 'QR Code';
+
+  @override
+  String get payNoInvoiceData => 'Koi invoice data uplabdh nahi';
+
+  @override
+  String get payInvalidState => 'Invalid state';
+
+  @override
+  String get payViewDetails => 'Details dekhein';
+
+  @override
+  String get paySinpeReceipt => 'SINPE Receipt';
+
+  @override
+  String get payCompleted => 'Payment Poora Hua!';
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'Order Details';
+
+  @override
+  String get paySinpeMonto => 'Amount';
+
+  @override
+  String get paySinpeNumeroOrden => 'Order number';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Reference number';
+
+  @override
+  String get paySinpeBeneficiario => 'Beneficiary';
+
+  @override
+  String get paySinpeOrigen => 'Origin';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'Payment Ho Rahi Hai!';
+
+  @override
+  String get payPriceRefreshIn => 'Kimat refresh hogi ';
+
+  @override
+  String get payWhichWallet => 'Kis wallet se pay karna chahte ho?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'Doosre Bitcoin wallet se pay karo';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee chalu hai';
+
+  @override
+  String get copyDialogButton => 'Copy Karo';
+
+  @override
+  String get closeDialogButton => 'Band Karo';
+
+  @override
+  String get sellCompleteKYC => 'KYC Poora Karo';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Network fees';
+
+  @override
+  String get sellSendPaymentContinue => 'Continue';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin Price';
+
+  @override
+  String get sellViewDetailsButton => 'Details dekho';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID Verification Baaki Hai';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Aapko pehle ID verification complete karna hoga';
+
+  @override
+  String get sellLoadingGeneric => 'Load ho raha hai...';
+
+  @override
+  String get viewerTapToCopy => 'Copy karne ke liye tap karo';
+
+  @override
+  String get invoiceViewerTitle => 'Invoice';
+
+  @override
+  String get sellUnexpectedError =>
+      'Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Network fee bahut kam hai. Zyada fee chunein.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.';
+
+  @override
+  String get copiedToClipboard => 'Clipboard par copy kiya gaya';
+
+  @override
+  String get sellPayoutBalance => 'Mere account balance mein jodein';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Nikaasi Leonod dwara bheji gayi dikhai deti hai';
+
+  @override
+  String get sellPayoutTitle => 'Recipient Select Karo';
+
+  @override
+  String get sellPayoutNewBadge => 'NAYA';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Chunne hue UTXOs zaruri rashi ke liye kaafi nahi hain';
+
+  @override
+  String get selectAmountTitle => 'Amount chuniye';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Maanga gaya amount: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Address: ';
+
+  @override
+  String get typeLabel => 'Type: ';
+
+  @override
+  String get coinsKeychainReceive => 'Receive';
+
+  @override
+  String get coinsKeychainChange => 'Change';
 }
