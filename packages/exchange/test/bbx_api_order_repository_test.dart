@@ -284,6 +284,33 @@ void main() {
       );
     });
 
+    test('every transport failure has an explicit answer', () async {
+      for (final (http, matcher) in [
+        (
+          FakeBbxHttp(status: 503, body: const {}),
+          isA<ExchangeOrderLoadFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.badCertificate),
+          isA<ExchangeOrderLoadFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.cancel),
+          isA<ExchangeOrderLoadFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.connectionError),
+          isA<ExchangeNetworkFailure>(),
+        ),
+        (
+          FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+          isA<ExchangeNetworkFailure>(),
+        ),
+      ]) {
+        expect(await _repository(http).getOrder('o-1'), _fails(matcher));
+      }
+    });
+
     test('a JSON-RPC rejection omits its message', () async {
       expect(
         await _repository(FakeBbxHttp(body: _rpcError)).getOrder('o-1'),

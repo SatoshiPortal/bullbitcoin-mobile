@@ -493,7 +493,12 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     bbx.BbxTimeoutFailure() ||
     bbx.BbxConnectionFailure() ||
     bbx.BbxOutcomeUnknownFailure() => const ExchangeNetworkFailure(),
-    _ => const ExchangeOrderLoadFailure(),
+    bbx.BbxHttpFailure() ||
+    bbx.BbxBadCertificateFailure() ||
+    bbx.BbxRequestCancelledFailure() ||
+    bbx.BbxTransformTimeoutFailure() ||
+    bbx.BbxTransportFailure() ||
+    bbx.BbxResponseFormatFailure() => const ExchangeOrderLoadFailure(),
   };
 }
 
