@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Моля, въведете сума",
   "exchangeAmountInputValidationInvalid": "Невалидна сума",
   "exchangeAmountInputValidationZero": "Сумата трябва да бъде по-голяма от нула",
-  "exchangeAmountInputValidationInsufficient": "Недостатъчен баланс"
+  "exchangeAmountInputValidationInsufficient": "Недостатъчен баланс",
+  "exchangeBitcoinWalletsDescription": "Задайте адресите на портфейла по подразбиране за автоматично теглене на биткойни",
+  "exchangeBitcoinWalletsEnterAddressHint": "Въведете адрес",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Адрес на Bitcoin",
+  "exchangeBitcoinWalletsSaveSuccess": "Адресът на портфейла е успешно запазен",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid адрес",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN адрес)",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "exchangeDcaAddressLabelLightning": "Lightning адрес",
+  "exchangeDcaAddressLabelLiquid": "Liquid адрес",
+  "cancel": "Отказ",
+  "delete": "Изтрий",
+  "save": "Запази"
 }

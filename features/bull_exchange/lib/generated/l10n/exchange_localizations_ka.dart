@@ -1053,4 +1053,63 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get exchangeAmountInputValidationInsufficient =>
       'არასაკმარისი ბალანსი';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin მისამართი';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (LN მისამართი)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Liquid მისამართი';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'შეიყვანეთ მისამართი';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'საფულის მისამართი წარმატებით შეინახა';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'დააყენეთ ნაგულისხმევი საფულის მისამართები Bitcoin-ის ავტომატური გატანისთვის.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin მისამართი';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Lightning მისამართი';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Liquid მისამართი';
+
+  @override
+  String get cancel => 'გაუქმება';
+
+  @override
+  String get delete => 'წაშლა';
+
+  @override
+  String get save => 'შენახვა';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

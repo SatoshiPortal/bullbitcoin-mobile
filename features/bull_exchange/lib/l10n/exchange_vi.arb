@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Vui lòng nhập số tiền",
   "exchangeAmountInputValidationInvalid": "Số tiền không hợp lệ",
   "exchangeAmountInputValidationZero": "Số tiền phải lớn hơn không",
-  "exchangeAmountInputValidationInsufficient": "Số dư không đủ"
+  "exchangeAmountInputValidationInsufficient": "Số dư không đủ",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Địa chỉ Bitcoin",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (địa chỉ LN)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Địa chỉ Liquid",
+  "exchangeBitcoinWalletsEnterAddressHint": "Nhập địa chỉ",
+  "exchangeBitcoinWalletsSaveSuccess": "Đã lưu địa chỉ ví thành công",
+  "exchangeBitcoinWalletsDescription": "Đặt địa chỉ ví mặc định để rút Bitcoin tự động.",
+  "exchangeDcaAddressLabelBitcoin": "Địa chỉ Bitcoin",
+  "exchangeDcaAddressLabelLightning": "Địa chỉ Lightning",
+  "exchangeDcaAddressLabelLiquid": "Địa chỉ Liquid",
+  "cancel": "Hủy",
+  "delete": "Xóa",
+  "save": "Lưu"
 }

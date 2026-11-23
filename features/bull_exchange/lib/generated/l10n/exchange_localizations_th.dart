@@ -1021,4 +1021,61 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'สมดุล';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'โทรศัพท์';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel => 'ฟ้าผ่า (LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'กล่องไม้';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'ใส่ที่อยู่';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess => 'ที่อยู่อีเมลที่บันทึกไว้';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'ตั้งค่าข้อความเริ่มต้นสําหรับการถอนเงินอัตโนมัติ.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'โทรศัพท์';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'ที่อยู่';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'กล่องไม้';
+
+  @override
+  String get cancel => 'ยกเลิก';
+
+  @override
+  String get delete => 'ลบ';
+
+  @override
+  String get save => 'บันทึก';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

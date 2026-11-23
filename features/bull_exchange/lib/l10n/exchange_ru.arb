@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Пожалуйста, введите сумму",
   "exchangeCurrencyDropdownValidation": "Пожалуйста, выберите валюту",
   "exchangeAmountInputTitle": "Введите сумму",
-  "exchangeAmountInputValidationZero": "Сумма должна быть больше нуля"
+  "exchangeAmountInputValidationZero": "Сумма должна быть больше нуля",
+  "save": "Сохранить",
+  "exchangeBitcoinWalletsEnterAddressHint": "Введите адрес",
+  "exchangeDcaAddressLabelLiquid": "Жидкий адрес",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Адрес",
+  "delete": "Удалить",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "cancel": "Отмена",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid адрес",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Молния (LN-адрес)",
+  "exchangeDcaAddressLabelLightning": "Адрес освещения",
+  "exchangeBitcoinWalletsSaveSuccess": "Настенный адрес сохранен успешно",
+  "exchangeBitcoinWalletsDescription": "Установить адреса кошелька по умолчанию для автоматического снятия Bitcoin."
 }

@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Anna määrä",
   "exchangeAmountInputValidationInvalid": "Virheellinen määrä",
   "exchangeAmountInputValidationZero": "Määrän on oltava suurempi kuin nolla",
-  "exchangeAmountInputValidationInsufficient": "Saldo ei riitä"
+  "exchangeAmountInputValidationInsufficient": "Saldo ei riitä",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin-osoite",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning-osoite (LN)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid-osoite",
+  "exchangeBitcoinWalletsEnterAddressHint": "Syötä osoite",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin-osoite",
+  "exchangeDcaAddressLabelLightning": "Lightning-osoite",
+  "exchangeDcaAddressLabelLiquid": "Liquid-osoite",
+  "cancel": "Peruuta",
+  "delete": "Poista",
+  "save": "Tallenna",
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet-osoite tallennettu onnistuneesti",
+  "exchangeBitcoinWalletsDescription": "Aseta oletuslompakko-osoitteet automaattisille Bitcoin-poistoille."
 }

@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Lütfen bir miktar girin",
   "exchangeCurrencyDropdownValidation": "Lütfen bir para birimi seçin",
   "exchangeAmountInputTitle": "Girin",
-  "exchangeAmountInputValidationZero": "Miktarı sıfırdan daha büyük olmalıdır"
+  "exchangeAmountInputValidationZero": "Miktarı sıfırdan daha büyük olmalıdır",
+  "save": "Kaydet",
+  "exchangeBitcoinWalletsDescription": "Otomatik Bitcoin geri çekilmeleri için varsayılan cüzdan adreslerini ayarlayın.",
+  "exchangeBitcoinWalletsEnterAddressHint": "Enter address address address",
+  "exchangeDcaAddressLabelLiquid": "Sıvı Adres",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Adres",
+  "delete": "Delete",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin adresi",
+  "cancel": "Cancel",
+  "exchangeBitcoinWalletsSaveSuccess": "Cüzdan adresi başarıyla kurtardı",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Sıvı Adres",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Yıldırım (LN adresi)",
+  "exchangeDcaAddressLabelLightning": "Lightning address"
 }

@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "กรุณาใส่จํานวนเงิน",
   "exchangeCurrencyDropdownValidation": "เลือกสกุลเงิน",
   "exchangeAmountInputTitle": "กรอก",
-  "exchangeAmountInputValidationZero": "จํานวนเงินที่ต้องการมากกว่าศูนย์"
+  "exchangeAmountInputValidationZero": "จํานวนเงินที่ต้องการมากกว่าศูนย์",
+  "save": "บันทึก",
+  "exchangeBitcoinWalletsDescription": "ตั้งค่าข้อความเริ่มต้นสําหรับการถอนเงินอัตโนมัติ.",
+  "exchangeBitcoinWalletsEnterAddressHint": "ใส่ที่อยู่",
+  "exchangeDcaAddressLabelLiquid": "กล่องไม้",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "โทรศัพท์",
+  "delete": "ลบ",
+  "exchangeDcaAddressLabelBitcoin": "โทรศัพท์",
+  "cancel": "ยกเลิก",
+  "exchangeBitcoinWalletsSaveSuccess": "ที่อยู่อีเมลที่บันทึกไว้",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "กล่องไม้",
+  "exchangeBitcoinWalletsLightningAddressLabel": "ฟ้าผ่า (LN)",
+  "exchangeDcaAddressLabelLightning": "ที่อยู่"
 }

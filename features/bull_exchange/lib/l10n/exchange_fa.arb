@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "لطفا یک مقدار را وارد کنید",
   "exchangeAmountInputValidationInvalid": "مقدار Invalid",
   "exchangeAmountInputValidationZero": "مقدار باید بیشتر از صفر باشد",
-  "exchangeAmountInputValidationInsufficient": "عدم تعادل"
+  "exchangeAmountInputValidationInsufficient": "عدم تعادل",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin Address",
+  "exchangeDcaAddressLabelLightning": "آدرس Lightning",
+  "exchangeDcaAddressLabelLiquid": "آدرس مایع",
+  "cancel": "لغو",
+  "delete": "حذف",
+  "save": "Save",
+  "exchangeBitcoinWalletsDescription": "آدرس های کیف پول پیش فرض را برای خروج خودکار بیت کوین تنظیم کنید.",
+  "exchangeBitcoinWalletsEnterAddressHint": "آدرس ورودی",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
+  "exchangeBitcoinWalletsSaveSuccess": "آدرس کیف پول با موفقیت نجات یافت",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "آدرس مایع",
+  "exchangeBitcoinWalletsLightningAddressLabel": "رعد و برق (LN Address)"
 }

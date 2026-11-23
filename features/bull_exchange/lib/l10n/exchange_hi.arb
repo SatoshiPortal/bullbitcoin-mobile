@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "कृपया राशि दर्ज करें",
   "exchangeCurrencyDropdownValidation": "कृपया एक मुद्रा चुनें",
   "exchangeAmountInputTitle": "राशि दर्ज करें",
-  "exchangeAmountInputValidationZero": "राशि शून्य से अधिक होना चाहिए"
+  "exchangeAmountInputValidationZero": "राशि शून्य से अधिक होना चाहिए",
+  "save": "सहेजें",
+  "exchangeBitcoinWalletsDescription": "स्वचालित Bitcoin निकासी के लिए डिफ़ॉल्ट वॉलेट पते सेट करें।",
+  "exchangeBitcoinWalletsEnterAddressHint": "पता दर्ज करें",
+  "exchangeDcaAddressLabelLiquid": "तरल पता",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin पता",
+  "delete": "डिलीट",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin पता",
+  "cancel": "रद्द करना",
+  "exchangeBitcoinWalletsSaveSuccess": "वॉलेट पता सफलतापूर्वक सहेजा गया",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid पता",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN पता)",
+  "exchangeDcaAddressLabelLightning": "बिजली का पता"
 }

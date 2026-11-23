@@ -1054,4 +1054,63 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Недостатній баланс';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin адреса';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (LN адреса)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Контакти';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Вхід';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Адреса гаманця успішно збережена';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Встановити адреси за замовчуванням для автоматичного виведення біткойнів.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin адреса';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Адреса блискавки';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Контакти';
+
+  @override
+  String get cancel => 'Зареєструватися';
+
+  @override
+  String get delete => 'Видалення';
+
+  @override
+  String get save => 'Зберегти';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

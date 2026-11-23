@@ -943,4 +943,60 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => '结余不足';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => '地址';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel => '照明(LN地址)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => '流动资金';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => '出入地址';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess => '钱包地址保存成功';
+
+  @override
+  String get exchangeBitcoinWalletsDescription => '为比特币自动提现设置默认钱包地址';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => '页: 1';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => '照明地址';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => '流动资金';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => '删除';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

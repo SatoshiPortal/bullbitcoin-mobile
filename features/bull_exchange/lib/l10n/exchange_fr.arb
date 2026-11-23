@@ -294,5 +294,22 @@
   "exchangeAmountInputValidationEmpty": "Veuillez entrer un montant",
   "exchangeAmountInputValidationInvalid": "Montant invalide",
   "exchangeAmountInputValidationZero": "Le montant doit être supérieur à zéro",
-  "exchangeAmountInputValidationInsufficient": "Solde insuffisant"
+  "exchangeAmountInputValidationInsufficient": "Solde insuffisant",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Adresse Bitcoin",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (adresse LN)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Adresse Liquid",
+  "exchangeBitcoinWalletsEnterAddressHint": "Entrez l'adresse",
+  "exchangeDcaAddressLabelBitcoin": "Adresse Bitcoin",
+  "exchangeDcaAddressLabelLightning": "Adresse Lightning",
+  "exchangeDcaAddressLabelLiquid": "Adresse Liquid",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "save": "Sauvegarder",
+  "exchangeBitcoinWalletsSaveSuccess": "Adresse de portefeuille enregistré avec succès",
+  "exchangeBitcoinWalletsDescription": "Définir les adresses de portefeuille par défaut pour les retraits automatiques Bitcoin.",
+  "exchangeBitcoinWalletsLoadFailed": "Impossible de charger les portefeuilles par défaut",
+  "exchangeBitcoinWalletsAddressEmpty": "L'adresse ne peut pas être vide",
+  "exchangeBitcoinWalletsSaveFailed": "Impossible d'enregistrer l'adresse du portefeuille",
+  "exchangeBitcoinWalletsDeleteFailed": "Impossible de supprimer l'adresse du portefeuille",
+  "destinationExpectedType": "Saisissez ou scannez une adresse valide : {type}."
 }

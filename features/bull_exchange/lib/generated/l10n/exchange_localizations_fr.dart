@@ -1065,4 +1065,64 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Solde insuffisant';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Adresse Bitcoin';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (adresse LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Adresse Liquid';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Entrez l\'adresse';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Adresse de portefeuille enregistré avec succès';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Définir les adresses de portefeuille par défaut pour les retraits automatiques Bitcoin.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Adresse Bitcoin';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Adresse Lightning';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Adresse Liquid';
+
+  @override
+  String get cancel => 'Annuler';
+
+  @override
+  String get delete => 'Supprimer';
+
+  @override
+  String get save => 'Sauvegarder';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Impossible de charger les portefeuilles par défaut';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty =>
+      'L\'adresse ne peut pas être vide';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Impossible d\'enregistrer l\'adresse du portefeuille';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Impossible de supprimer l\'adresse du portefeuille';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Saisissez ou scannez une adresse valide : $type.';
+  }
 }

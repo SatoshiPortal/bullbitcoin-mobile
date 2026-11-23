@@ -1053,4 +1053,63 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Số dư không đủ';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Địa chỉ Bitcoin';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (địa chỉ LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Địa chỉ Liquid';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Nhập địa chỉ';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Đã lưu địa chỉ ví thành công';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Đặt địa chỉ ví mặc định để rút Bitcoin tự động.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Địa chỉ Bitcoin';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Địa chỉ Lightning';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Địa chỉ Liquid';
+
+  @override
+  String get cancel => 'Hủy';
+
+  @override
+  String get delete => 'Xóa';
+
+  @override
+  String get save => 'Lưu';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

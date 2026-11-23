@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "გთხოვთ, შეიყვანოთ თანხა",
   "exchangeAmountInputValidationInvalid": "არასწორი თანხა",
   "exchangeAmountInputValidationZero": "თანხა უნდა იყოს ნულზე მეტი",
-  "exchangeAmountInputValidationInsufficient": "არასაკმარისი ბალანსი"
+  "exchangeAmountInputValidationInsufficient": "არასაკმარისი ბალანსი",
+  "save": "შენახვა",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin მისამართი",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN მისამართი)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid მისამართი",
+  "exchangeBitcoinWalletsEnterAddressHint": "შეიყვანეთ მისამართი",
+  "exchangeBitcoinWalletsSaveSuccess": "საფულის მისამართი წარმატებით შეინახა",
+  "exchangeBitcoinWalletsDescription": "დააყენეთ ნაგულისხმევი საფულის მისამართები Bitcoin-ის ავტომატური გატანისთვის.",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin მისამართი",
+  "exchangeDcaAddressLabelLightning": "Lightning მისამართი",
+  "exchangeDcaAddressLabelLiquid": "Liquid მისამართი",
+  "cancel": "გაუქმება",
+  "delete": "წაშლა"
 }

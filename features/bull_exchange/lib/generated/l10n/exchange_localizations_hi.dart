@@ -1044,6 +1044,65 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'अपर्याप्त संतुलन';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin पता';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (LN पता)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Liquid पता';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'पता दर्ज करें';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'वॉलेट पता सफलतापूर्वक सहेजा गया';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'स्वचालित Bitcoin निकासी के लिए डिफ़ॉल्ट वॉलेट पते सेट करें।';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin पता';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'बिजली का पता';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'तरल पता';
+
+  @override
+  String get cancel => 'रद्द करना';
+
+  @override
+  String get delete => 'डिलीट';
+
+  @override
+  String get save => 'सहेजें';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2035,4 +2094,43 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get exchangeAmountInputValidationInsufficient =>
       'Insufficient balance';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin Address';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (LN address)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Liquid address';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Address darj karo';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Wallet address safaltapurvak save ho gaya';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Automatic Bitcoin withdrawals ke liye default wallet addresses set karo.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin address';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Lightning address';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Liquid address';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get save => 'Save';
 }

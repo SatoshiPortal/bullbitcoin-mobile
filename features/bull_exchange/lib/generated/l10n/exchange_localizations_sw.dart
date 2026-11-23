@@ -1048,4 +1048,63 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Salio halitoshi';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Anwani ya Bitcoin';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (anwani ya LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Anwani ya Liquid';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Weka anwani';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Anwani ya pochi imehifadhiwa kwa mafanikio';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Weka anwani chaguo-msingi za pochi kwa uondoaji wa Bitcoin kiotomatiki.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Anwani ya Bitcoin';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Anwani ya Lightning';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Anwani ya Liquid';
+
+  @override
+  String get cancel => 'Ghairi';
+
+  @override
+  String get delete => 'Futa';
+
+  @override
+  String get save => 'Hifadhi';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Παρακαλώ εισάγετε ένα ποσό",
   "exchangeCurrencyDropdownValidation": "Επιλέξτε ένα νόμισμα",
   "exchangeAmountInputTitle": "Εισάγετε το ποσό",
-  "exchangeAmountInputValidationZero": "Το ποσό πρέπει να είναι μεγαλύτερο από το μηδέν"
+  "exchangeAmountInputValidationZero": "Το ποσό πρέπει να είναι μεγαλύτερο από το μηδέν",
+  "save": "Εξοικονομήστε",
+  "exchangeBitcoinWalletsDescription": "Ορίστε προεπιλεγμένο πορτοφόλι διευθύνσεις για αυτόματη απόσυρση Bitcoin.",
+  "exchangeBitcoinWalletsEnterAddressHint": "Διεύθυνση Enter",
+  "exchangeDcaAddressLabelLiquid": "Liquid διεύθυνση",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin διεύθυνση Bitcoin",
+  "delete": "Διαγράψτε",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin διεύθυνση",
+  "cancel": "Ακύρωση",
+  "exchangeBitcoinWalletsSaveSuccess": "Η διεύθυνση Wallet έσωσε με επιτυχία",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid διεύθυνση",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN διεύθυνση)",
+  "exchangeDcaAddressLabelLightning": "Lightning διεύθυνση Lightning"
 }

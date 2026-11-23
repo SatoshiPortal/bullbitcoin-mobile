@@ -1062,4 +1062,64 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Saldo insuficiente';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Dirección Bitcoin';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Dirección Lightning';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Dirección Liquid';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Ingrese la dirección';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Dirección de billetera guardada correctamente';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Establecer direcciones de billetera predeterminadas para retiros automáticos de Bitcoin.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Dirección Bitcoin';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Dirección Lightning';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Dirección Liquid';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Eliminar';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'No se pudieron cargar las billeteras predeterminadas';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty =>
+      'La dirección no puede estar vacía';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'No se pudo guardar la dirección de la billetera';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'No se pudo eliminar la dirección de la billetera';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Introduce o escanea un valor válido ($type).';
+  }
 }

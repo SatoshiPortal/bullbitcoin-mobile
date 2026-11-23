@@ -1202,5 +1202,77 @@
   "exchangeAmountInputValidationInsufficient": "Insufficient balance",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
+  },
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
+  "@exchangeBitcoinWalletsBitcoinAddressLabel": {
+    "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN address)",
+  "@exchangeBitcoinWalletsLightningAddressLabel": {
+    "description": "Label for Lightning address field in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid address",
+  "@exchangeBitcoinWalletsLiquidAddressLabel": {
+    "description": "Label for Liquid address field in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsEnterAddressHint": "Enter address",
+  "@exchangeBitcoinWalletsEnterAddressHint": {
+    "description": "Hint text for entering an address in exchange Bitcoin wallets"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet address saved successfully",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Set default wallet addresses for automatic Bitcoin withdrawals.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "exchangeBitcoinWalletsLoadFailed": "Failed to load default wallets",
+  "@exchangeBitcoinWalletsLoadFailed": {
+    "description": "Error shown when the default Bitcoin wallets of the exchange account cannot be loaded"
+  },
+  "exchangeBitcoinWalletsAddressEmpty": "Address cannot be empty",
+  "@exchangeBitcoinWalletsAddressEmpty": {
+    "description": "Error shown when saving an empty default wallet address"
+  },
+  "exchangeBitcoinWalletsSaveFailed": "Failed to save wallet address",
+  "@exchangeBitcoinWalletsSaveFailed": {
+    "description": "Error shown when a default wallet address cannot be saved"
+  },
+  "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
+  "@exchangeBitcoinWalletsDeleteFailed": {
+    "description": "Error shown when a default wallet address cannot be deleted"
+  },
+  "destinationExpectedType": "Enter or scan a valid {type}.",
+  "@destinationExpectedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
   }
 }

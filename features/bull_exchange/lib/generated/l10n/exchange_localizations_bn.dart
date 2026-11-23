@@ -1051,4 +1051,63 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get exchangeAmountInputValidationInsufficient =>
       'পর্যাপ্ত ব্যালেন্স নেই';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin ঠিকানা';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (LN ঠিকানা)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Liquid ঠিকানা';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'ঠিকানা প্রবেশ করুন';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'ওয়ালেট ঠিকানা সফলভাবে সংরক্ষিত হয়েছে';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'স্বয়ংক্রিয় Bitcoin উত্তোলনের জন্য ডিফল্ট ওয়ালেট ঠিকানা নির্ধারণ করুন।';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'বিটকয়েন ঠিকানা';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'লাইটনিং ঠিকানা';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'লিকুইড ঠিকানা';
+
+  @override
+  String get cancel => 'বাতিল';
+
+  @override
+  String get delete => 'মুছে ফেলুন';
+
+  @override
+  String get save => 'সংরক্ষণ করুন';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

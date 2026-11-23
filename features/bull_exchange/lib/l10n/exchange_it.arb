@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Inserisci un importo",
   "exchangeCurrencyDropdownValidation": "Seleziona una valuta",
   "exchangeAmountInputTitle": "Inserire l'importo",
-  "exchangeAmountInputValidationZero": "L'importo deve essere maggiore di zero"
+  "exchangeAmountInputValidationZero": "L'importo deve essere maggiore di zero",
+  "save": "Salva",
+  "exchangeBitcoinWalletsEnterAddressHint": "Inserisci l'indirizzo",
+  "exchangeDcaAddressLabelLiquid": "Indirizzo Liquid",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Indirizzo Bitcoin",
+  "delete": "Elimina",
+  "exchangeDcaAddressLabelBitcoin": "Indirizzo Bitcoin",
+  "cancel": "Annulla",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Indirizzo Liquid",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (indirizzo LN)",
+  "exchangeDcaAddressLabelLightning": "Indirizzo Lightning",
+  "exchangeBitcoinWalletsSaveSuccess": "Indirizzo del portafoglio salvato con successo",
+  "exchangeBitcoinWalletsDescription": "Imposta gli indirizzi predefiniti dei portafogli a cui inviare automaticamente i Bitcoin acquistati."
 }

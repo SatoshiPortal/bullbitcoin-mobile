@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "금액",
   "exchangeCurrencyDropdownValidation": "통화 선택",
   "exchangeAmountInputTitle": "자주 묻는 질문",
-  "exchangeAmountInputValidationZero": "금액은 0 이상이어야합니다"
+  "exchangeAmountInputValidationZero": "금액은 0 이상이어야합니다",
+  "save": "제품 정보",
+  "exchangeBitcoinWalletsDescription": "자동 Bitcoin 인출을위한 기본 지갑 주소를 설정합니다.",
+  "exchangeBitcoinWalletsEnterAddressHint": "자주 묻는 질문",
+  "exchangeDcaAddressLabelLiquid": "액체 주소",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin 주소",
+  "delete": "기타 제품",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin 주소",
+  "cancel": "이름 *",
+  "exchangeBitcoinWalletsSaveSuccess": "지갑 주소 성공적으로 저장",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "액체 주소",
+  "exchangeBitcoinWalletsLightningAddressLabel": "번개 (LN 주소)",
+  "exchangeDcaAddressLabelLightning": "연락처"
 }

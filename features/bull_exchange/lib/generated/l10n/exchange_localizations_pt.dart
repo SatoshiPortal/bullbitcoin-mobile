@@ -1062,6 +1062,65 @@ class ExchangeLocalizationsPt extends ExchangeLocalizations {
   @override
   String get exchangeAmountInputValidationInsufficient =>
       'Balança insuficiente';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Endereço de Bitcoin';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Relâmpago (endereço LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Endereço líquido';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Digite o endereço';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Endereço da carteira salvo com sucesso';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Definir endereços de carteira padrão para retiradas automáticas de Bitcoin.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Endereço de Bitcoin';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Endereço de iluminação';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Endereço líquido';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get save => 'Salvar';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2060,4 +2119,43 @@ class ExchangeLocalizationsPtBr extends ExchangeLocalizationsPt {
   @override
   String get exchangeAmountInputValidationInsufficient =>
       'Balança insuficiente';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Endereço de Bitcoin';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Relâmpago (endereço LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Endereço líquido';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Digite o endereço';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Endereço da carteira salvo com sucesso';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Definir endereços de carteira padrão para retiradas automáticas de Bitcoin.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Endereço de Bitcoin';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Endereço de iluminação';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Endereço líquido';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Excluir';
+
+  @override
+  String get save => 'Salvar';
 }

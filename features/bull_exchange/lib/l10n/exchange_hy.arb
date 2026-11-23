@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationInsufficient": "Անբավարար մնացորդ",
   "exchangeCurrencyDropdownTitle": "Ընտրեք արժույթ",
   "exchangeCurrencyDropdownValidation": "Խնդրում ենք ընտրել արժույթ",
-  "exchangeAmountInputValidationZero": "Գումարը պետք է զրոյից մեծ լինի"
+  "exchangeAmountInputValidationZero": "Գումարը պետք է զրոյից մեծ լինի",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin հասցե",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN հասցե)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid հասցե",
+  "exchangeBitcoinWalletsEnterAddressHint": "Մուտքագրեք հասցեն",
+  "exchangeBitcoinWalletsSaveSuccess": "Դրամապանակի հասցեն հաջողությամբ պահպանվեց",
+  "exchangeBitcoinWalletsDescription": "Սահմանեք լռելյայն դրամապանակի հասցեներ ինքնաշխատ Bitcoin հանումների համար։",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin հասցե",
+  "exchangeDcaAddressLabelLightning": "Lightning հասցե",
+  "exchangeDcaAddressLabelLiquid": "Liquid հասցե",
+  "cancel": "Չեղարկել",
+  "delete": "Ջնջել",
+  "save": "Պահպանել"
 }

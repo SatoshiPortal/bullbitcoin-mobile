@@ -293,5 +293,22 @@
   "exchangeAmountInputValidationEmpty": "Por favor ingresa un monto",
   "exchangeAmountInputValidationInvalid": "Monto inválido",
   "exchangeAmountInputValidationZero": "El monto debe ser mayor que cero",
-  "exchangeAmountInputValidationInsufficient": "Saldo insuficiente"
+  "exchangeAmountInputValidationInsufficient": "Saldo insuficiente",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Dirección Bitcoin",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Dirección Lightning",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Dirección Liquid",
+  "exchangeBitcoinWalletsEnterAddressHint": "Ingrese la dirección",
+  "exchangeDcaAddressLabelBitcoin": "Dirección Bitcoin",
+  "exchangeDcaAddressLabelLightning": "Dirección Lightning",
+  "exchangeDcaAddressLabelLiquid": "Dirección Liquid",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "save": "Guardar",
+  "exchangeBitcoinWalletsSaveSuccess": "Dirección de billetera guardada correctamente",
+  "exchangeBitcoinWalletsDescription": "Establecer direcciones de billetera predeterminadas para retiros automáticos de Bitcoin.",
+  "exchangeBitcoinWalletsLoadFailed": "No se pudieron cargar las billeteras predeterminadas",
+  "exchangeBitcoinWalletsAddressEmpty": "La dirección no puede estar vacía",
+  "exchangeBitcoinWalletsSaveFailed": "No se pudo guardar la dirección de la billetera",
+  "exchangeBitcoinWalletsDeleteFailed": "No se pudo eliminar la dirección de la billetera",
+  "destinationExpectedType": "Introduce o escanea un valor válido ({type})."
 }

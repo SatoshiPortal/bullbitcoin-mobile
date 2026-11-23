@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "رجاءً إدخلْ كميةَ",
   "exchangeCurrencyDropdownValidation": "يرجى اختيار العملة",
   "exchangeAmountInputTitle": "المبلغ",
-  "exchangeAmountInputValidationZero": "يجب أن يكون المبلغ أكبر من الصفر"
+  "exchangeAmountInputValidationZero": "يجب أن يكون المبلغ أكبر من الصفر",
+  "save": "أنقذ",
+  "exchangeBitcoinWalletsDescription": "وضع عناوين المحفظة الافتراضية لسحبات (بيتكوين) التلقائية.",
+  "exchangeBitcoinWalletsEnterAddressHint": "عنوان الدخول",
+  "exchangeDcaAddressLabelLiquid": "العنوان السائل",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
+  "delete": "تحذف",
+  "exchangeDcaAddressLabelBitcoin": "عنوان بيتكوين",
+  "cancel": "إلغاء",
+  "exchangeBitcoinWalletsSaveSuccess": "تم إنقاذ عنوان الجدار بنجاح",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "العنوان السائل",
+  "exchangeBitcoinWalletsLightningAddressLabel": "البرق (عنوان LN)",
+  "exchangeDcaAddressLabelLightning": "عنوان البرق"
 }

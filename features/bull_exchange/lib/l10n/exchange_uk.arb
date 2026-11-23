@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Введіть суму",
   "exchangeCurrencyDropdownValidation": "Оберіть валюту",
   "exchangeAmountInputTitle": "Вхід",
-  "exchangeAmountInputValidationZero": "Кількість повинна бути більшою, ніж нуль"
+  "exchangeAmountInputValidationZero": "Кількість повинна бути більшою, ніж нуль",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin адреса",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN адреса)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Контакти",
+  "exchangeBitcoinWalletsEnterAddressHint": "Вхід",
+  "save": "Зберегти",
+  "exchangeDcaAddressLabelLiquid": "Контакти",
+  "delete": "Видалення",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адреса",
+  "cancel": "Зареєструватися",
+  "exchangeDcaAddressLabelLightning": "Адреса блискавки",
+  "exchangeBitcoinWalletsSaveSuccess": "Адреса гаманця успішно збережена",
+  "exchangeBitcoinWalletsDescription": "Встановити адреси за замовчуванням для автоматичного виведення біткойнів."
 }

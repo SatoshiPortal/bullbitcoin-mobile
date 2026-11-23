@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Kripya ek amount enter karo",
   "exchangeAmountInputValidationInvalid": "Invalid amount",
   "exchangeAmountInputValidationZero": "Amount zero se zyada hona chahiye",
-  "exchangeAmountInputValidationInsufficient": "Insufficient balance"
+  "exchangeAmountInputValidationInsufficient": "Insufficient balance",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Address",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN address)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid address",
+  "exchangeBitcoinWalletsEnterAddressHint": "Address darj karo",
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet address safaltapurvak save ho gaya",
+  "exchangeBitcoinWalletsDescription": "Automatic Bitcoin withdrawals ke liye default wallet addresses set karo.",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "save": "Save"
 }

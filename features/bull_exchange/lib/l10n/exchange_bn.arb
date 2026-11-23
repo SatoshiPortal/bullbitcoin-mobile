@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "অনুগ্রহ করে একটি পরিমাণ লিখুন",
   "exchangeCurrencyDropdownValidation": "অনুগ্রহ করে একটি মুদ্রা নির্বাচন করুন",
   "exchangeAmountInputTitle": "পরিমাণ লিখুন",
-  "exchangeAmountInputValidationZero": "পরিমাণ শূন্যের বেশি হতে হবে"
+  "exchangeAmountInputValidationZero": "পরিমাণ শূন্যের বেশি হতে হবে",
+  "save": "সংরক্ষণ করুন",
+  "exchangeBitcoinWalletsDescription": "স্বয়ংক্রিয় Bitcoin উত্তোলনের জন্য ডিফল্ট ওয়ালেট ঠিকানা নির্ধারণ করুন।",
+  "exchangeBitcoinWalletsEnterAddressHint": "ঠিকানা প্রবেশ করুন",
+  "exchangeDcaAddressLabelLiquid": "লিকুইড ঠিকানা",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin ঠিকানা",
+  "delete": "মুছে ফেলুন",
+  "exchangeDcaAddressLabelBitcoin": "বিটকয়েন ঠিকানা",
+  "cancel": "বাতিল",
+  "exchangeBitcoinWalletsSaveSuccess": "ওয়ালেট ঠিকানা সফলভাবে সংরক্ষিত হয়েছে",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid ঠিকানা",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN ঠিকানা)",
+  "exchangeDcaAddressLabelLightning": "লাইটনিং ঠিকানা"
 }

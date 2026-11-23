@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Bitte geben Sie einen Betrag ein.",
   "exchangeCurrencyDropdownValidation": "Bitte wählen Sie eine Währung.",
   "exchangeAmountInputTitle": "Betrag eingeben",
-  "exchangeAmountInputValidationZero": "Betrag muss größer als Null sein"
+  "exchangeAmountInputValidationZero": "Betrag muss größer als Null sein",
+  "exchangeBitcoinWalletsEnterAddressHint": "Adresse eingeben",
+  "exchangeDcaAddressLabelLiquid": "Liquid-Adresse",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin-Adresse",
+  "delete": "Löschen",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin-Adresse",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid-Adresse",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN-Adresse)",
+  "exchangeDcaAddressLabelLightning": "Lightning-Adresse",
+  "save": "Speichern",
+  "cancel": "Abbrechen",
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet-Adresse erfolgreich gespeichert",
+  "exchangeBitcoinWalletsDescription": "Legen Sie Standard-Wallet-Adressen für automatische Bitcoin-Überweisungen fest."
 }

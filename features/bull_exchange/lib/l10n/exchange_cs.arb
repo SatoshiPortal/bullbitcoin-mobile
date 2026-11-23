@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Zadejte částku",
   "exchangeCurrencyDropdownValidation": "Vyberte měnu",
   "exchangeAmountInputTitle": "Zadejte částku",
-  "exchangeAmountInputValidationZero": "Částka musí být větší než nulová"
+  "exchangeAmountInputValidationZero": "Částka musí být větší než nulová",
+  "save": "Čeština",
+  "exchangeBitcoinWalletsDescription": "Nastavte výchozí peněženky adresy pro automatické výběry Bitcoin.",
+  "exchangeBitcoinWalletsEnterAddressHint": "Zadejte adresu",
+  "exchangeDcaAddressLabelLiquid": "Liquid adresa",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin adresa",
+  "delete": "Čeština",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin adresa",
+  "cancel": "Hledat",
+  "exchangeBitcoinWalletsSaveSuccess": "Peněženka adresa úspěšně zachránila",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid adresa",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Blesk (LN adresa)",
+  "exchangeDcaAddressLabelLightning": "Blesková adresa"
 }

@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "অনুগ্ৰহ কৰি এটা পৰিমাণ দিয়ক",
   "exchangeAmountInputValidationInvalid": "অবৈধ পৰিমাণ",
   "exchangeAmountInputValidationZero": "পৰিমাণ শূন্যতকৈ বেছি হ'ব লাগিব",
-  "exchangeAmountInputValidationInsufficient": "অপৰ্যাপ্ত বেলেঞ্চ"
+  "exchangeAmountInputValidationInsufficient": "অপৰ্যাপ্ত বেলেঞ্চ",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin ঠিকনা",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN ঠিকনা)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid ঠিকনা",
+  "exchangeBitcoinWalletsEnterAddressHint": "ঠিকনা দিয়ক",
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet ঠিকনা সফলভাৱে সংৰক্ষণ হৈছে",
+  "exchangeBitcoinWalletsDescription": "স্বয়ংক্ৰিয় Bitcoin উত্তোলনৰ বাবে ডিফল্ট wallet ঠিকনা ছেট কৰক।",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin ঠিকনা",
+  "exchangeDcaAddressLabelLightning": "Lightning ঠিকনা",
+  "exchangeDcaAddressLabelLiquid": "Liquid ঠিকনা",
+  "cancel": "বাতিল কৰক",
+  "delete": "মচক",
+  "save": "সংৰক্ষণ কৰক"
 }

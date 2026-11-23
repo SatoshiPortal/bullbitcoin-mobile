@@ -1044,4 +1044,64 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Yeterli bakiye';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin Adres';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Yıldırım (LN adresi)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Sıvı Adres';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint =>
+      'Enter address address address';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Cüzdan adresi başarıyla kurtardı';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Otomatik Bitcoin geri çekilmeleri için varsayılan cüzdan adreslerini ayarlayın.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin adresi';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Lightning address';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Sıvı Adres';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get save => 'Kaydet';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

@@ -1918,6 +1918,108 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Insufficient balance'**
   String get exchangeAmountInputValidationInsufficient;
+
+  /// Label for Bitcoin address field in exchange Bitcoin wallets
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin Address'**
+  String get exchangeBitcoinWalletsBitcoinAddressLabel;
+
+  /// Label for Lightning address field in exchange Bitcoin wallets
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning (LN address)'**
+  String get exchangeBitcoinWalletsLightningAddressLabel;
+
+  /// Label for Liquid address field in exchange Bitcoin wallets
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid address'**
+  String get exchangeBitcoinWalletsLiquidAddressLabel;
+
+  /// Hint text for entering an address in exchange Bitcoin wallets
+  ///
+  /// In en, this message translates to:
+  /// **'Enter address'**
+  String get exchangeBitcoinWalletsEnterAddressHint;
+
+  /// Success message when wallet address is saved
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet address saved successfully'**
+  String get exchangeBitcoinWalletsSaveSuccess;
+
+  /// Description text on the default bitcoin wallets screen
+  ///
+  /// In en, this message translates to:
+  /// **'Set default wallet addresses for automatic Bitcoin withdrawals.'**
+  String get exchangeBitcoinWalletsDescription;
+
+  /// Label for Bitcoin address in DCA settings
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin address'**
+  String get exchangeDcaAddressLabelBitcoin;
+
+  /// Label for Lightning address in DCA settings
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning address'**
+  String get exchangeDcaAddressLabelLightning;
+
+  /// Label for Liquid address in DCA settings
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid address'**
+  String get exchangeDcaAddressLabelLiquid;
+
+  /// Generic cancel button label
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Generic delete button label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Generic save button label
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Error shown when the default Bitcoin wallets of the exchange account cannot be loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load default wallets'**
+  String get exchangeBitcoinWalletsLoadFailed;
+
+  /// Error shown when saving an empty default wallet address
+  ///
+  /// In en, this message translates to:
+  /// **'Address cannot be empty'**
+  String get exchangeBitcoinWalletsAddressEmpty;
+
+  /// Error shown when a default wallet address cannot be saved
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save wallet address'**
+  String get exchangeBitcoinWalletsSaveFailed;
+
+  /// Error shown when a default wallet address cannot be deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete wallet address'**
+  String get exchangeBitcoinWalletsDeleteFailed;
+
+  /// No description provided for @destinationExpectedType.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter or scan a valid {type}.'**
+  String destinationExpectedType(String type);
 }
 
 class _ExchangeLocalizationsDelegate

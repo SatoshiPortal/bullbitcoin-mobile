@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Por favor, insira um montante",
   "exchangeCurrencyDropdownValidation": "Por favor, selecione uma moeda",
   "exchangeAmountInputTitle": "Digite o valor",
-  "exchangeAmountInputValidationZero": "O montante deve ser superior a zero"
+  "exchangeAmountInputValidationZero": "O montante deve ser superior a zero",
+  "save": "Salvar",
+  "exchangeBitcoinWalletsEnterAddressHint": "Digite o endereço",
+  "exchangeDcaAddressLabelLiquid": "Endereço líquido",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Endereço de Bitcoin",
+  "delete": "Excluir",
+  "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
+  "cancel": "Cancelar",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Endereço líquido",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Relâmpago (endereço LN)",
+  "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
+  "exchangeBitcoinWalletsSaveSuccess": "Endereço da carteira salvo com sucesso",
+  "exchangeBitcoinWalletsDescription": "Definir endereços de carteira padrão para retiradas automáticas de Bitcoin."
 }

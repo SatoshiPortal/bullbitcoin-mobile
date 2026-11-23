@@ -1044,4 +1044,63 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => 'Saldo ei riitä';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin-osoite';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning-osoite (LN)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Liquid-osoite';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Syötä osoite';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Wallet-osoite tallennettu onnistuneesti';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Aseta oletuslompakko-osoitteet automaattisille Bitcoin-poistoille.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin-osoite';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Lightning-osoite';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Liquid-osoite';
+
+  @override
+  String get cancel => 'Peruuta';
+
+  @override
+  String get delete => 'Poista';
+
+  @override
+  String get save => 'Tallenna';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

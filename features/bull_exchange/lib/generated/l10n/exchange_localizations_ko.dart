@@ -978,4 +978,61 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
 
   @override
   String get exchangeAmountInputValidationInsufficient => '충분한 균형';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin 주소';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel => '번개 (LN 주소)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => '액체 주소';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => '자주 묻는 질문';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess => '지갑 주소 성공적으로 저장';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      '자동 Bitcoin 인출을위한 기본 지갑 주소를 설정합니다.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin 주소';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => '연락처';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => '액체 주소';
+
+  @override
+  String get cancel => '이름 *';
+
+  @override
+  String get delete => '기타 제품';
+
+  @override
+  String get save => '제품 정보';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

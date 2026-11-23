@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "Tafadhali weka kiasi",
   "exchangeAmountInputValidationInvalid": "Kiasi batili",
   "exchangeAmountInputValidationZero": "Kiasi lazima kiwe zaidi ya sifuri",
-  "exchangeAmountInputValidationInsufficient": "Salio halitoshi"
+  "exchangeAmountInputValidationInsufficient": "Salio halitoshi",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Anwani ya Bitcoin",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (anwani ya LN)",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Anwani ya Liquid",
+  "exchangeBitcoinWalletsEnterAddressHint": "Weka anwani",
+  "exchangeBitcoinWalletsSaveSuccess": "Anwani ya pochi imehifadhiwa kwa mafanikio",
+  "exchangeBitcoinWalletsDescription": "Weka anwani chaguo-msingi za pochi kwa uondoaji wa Bitcoin kiotomatiki.",
+  "exchangeDcaAddressLabelBitcoin": "Anwani ya Bitcoin",
+  "exchangeDcaAddressLabelLightning": "Anwani ya Lightning",
+  "exchangeDcaAddressLabelLiquid": "Anwani ya Liquid",
+  "cancel": "Ghairi",
+  "delete": "Futa",
+  "save": "Hifadhi"
 }

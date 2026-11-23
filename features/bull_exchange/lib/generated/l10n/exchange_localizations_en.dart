@@ -1043,4 +1043,63 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
   @override
   String get exchangeAmountInputValidationInsufficient =>
       'Insufficient balance';
+
+  @override
+  String get exchangeBitcoinWalletsBitcoinAddressLabel => 'Bitcoin Address';
+
+  @override
+  String get exchangeBitcoinWalletsLightningAddressLabel =>
+      'Lightning (LN address)';
+
+  @override
+  String get exchangeBitcoinWalletsLiquidAddressLabel => 'Liquid address';
+
+  @override
+  String get exchangeBitcoinWalletsEnterAddressHint => 'Enter address';
+
+  @override
+  String get exchangeBitcoinWalletsSaveSuccess =>
+      'Wallet address saved successfully';
+
+  @override
+  String get exchangeBitcoinWalletsDescription =>
+      'Set default wallet addresses for automatic Bitcoin withdrawals.';
+
+  @override
+  String get exchangeDcaAddressLabelBitcoin => 'Bitcoin address';
+
+  @override
+  String get exchangeDcaAddressLabelLightning => 'Lightning address';
+
+  @override
+  String get exchangeDcaAddressLabelLiquid => 'Liquid address';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get exchangeBitcoinWalletsLoadFailed =>
+      'Failed to load default wallets';
+
+  @override
+  String get exchangeBitcoinWalletsAddressEmpty => 'Address cannot be empty';
+
+  @override
+  String get exchangeBitcoinWalletsSaveFailed =>
+      'Failed to save wallet address';
+
+  @override
+  String get exchangeBitcoinWalletsDeleteFailed =>
+      'Failed to delete wallet address';
+
+  @override
+  String destinationExpectedType(String type) {
+    return 'Enter or scan a valid $type.';
+  }
 }

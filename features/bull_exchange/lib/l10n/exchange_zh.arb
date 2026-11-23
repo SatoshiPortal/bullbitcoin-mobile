@@ -276,5 +276,17 @@
   "exchangeAmountInputValidationEmpty": "请列出数额",
   "exchangeCurrencyDropdownValidation": "请选择货币",
   "exchangeAmountInputTitle": "实际数额",
-  "exchangeAmountInputValidationZero": "数额必须大于零"
+  "exchangeAmountInputValidationZero": "数额必须大于零",
+  "save": "Save",
+  "exchangeBitcoinWalletsEnterAddressHint": "出入地址",
+  "exchangeDcaAddressLabelLiquid": "流动资金",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "地址",
+  "delete": "删除",
+  "exchangeDcaAddressLabelBitcoin": "页: 1",
+  "cancel": "Cancel",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "流动资金",
+  "exchangeBitcoinWalletsLightningAddressLabel": "照明(LN地址)",
+  "exchangeDcaAddressLabelLightning": "照明地址",
+  "exchangeBitcoinWalletsSaveSuccess": "钱包地址保存成功",
+  "exchangeBitcoinWalletsDescription": "为比特币自动提现设置默认钱包地址"
 }
