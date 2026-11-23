@@ -6,7 +6,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/get_startup_pin_status_usecase.dart';
@@ -24,7 +23,6 @@ part 'app_startup_state.dart';
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     with WidgetsBindingObserver {
   AppStartupBloc({
-    required this._resetAppDataUsecase,
     required this._getStartupPinStatusUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
     required this._initializeRequiredTorUsecase,
@@ -32,10 +30,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._startSwapEngineUsecase,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
+    on<AppStartupUnlocked>(_onAppStartupUnlocked);
     WidgetsBinding.instance.addObserver(this);
   }
 
-  final ResetAppDataUsecase _resetAppDataUsecase;
   final GetStartupPinStatusUsecase _getStartupPinStatusUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
@@ -78,6 +76,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   /// Cleared by `didChangeAppLifecycleState(resumed)`, which re-fires
   /// `AppStartupStarted` so init can retry on a now-unlocked keychain.
   bool _awaitingKeychainUnlock = false;
+  bool _authenticated = false;
 
   @override
   Future<void> close() {
@@ -102,6 +101,22 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
 
     await _logAppVersion();
 
+    if (!_authenticated) {
+      switch (await _getStartupPinStatusUsecase.execute()) {
+        case Ok(value: true):
+          emit(const AppStartupState.success(isPinCodeSet: true));
+          return;
+        case Ok(value: false):
+          break;
+        case Err(failure: AppStartupKeychainLockedFailure()):
+          _waitForKeychainUnlock();
+          return;
+        case Err(:final failure):
+          emit(AppStartupState.failure(failure));
+          return;
+      }
+    }
+
     final bool doDefaultWalletsExist;
     switch (await _checkForExistingDefaultWalletsUsecase.execute()) {
       case Ok(:final value):
@@ -114,41 +129,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         return;
     }
 
-    bool isPinCodeSet = false;
-
     if (doDefaultWalletsExist) {
-      switch (await _getStartupPinStatusUsecase.execute()) {
-        case Ok(:final value):
-          isPinCodeSet = value;
-        case Err(failure: AppStartupKeychainLockedFailure()):
-          _waitForKeychainUnlock();
-          return;
-        case Err(:final failure):
-          emit(AppStartupState.failure(failure));
-          return;
-      }
-      // Other startup logic can be added here, e.g. payjoin sessions resume
       await _startSwapEngineUsecase.execute();
-    } else {
-      // This is a fresh install, so reset the app data that might still be
-      //  there from a previous install.
-      //  (e.g. secure storage data on iOS like the pin code)
-      switch (await _resetAppDataUsecase.execute()) {
-        case Ok():
-          break;
-        case Err(failure: AppStartupKeychainLockedFailure()):
-          // Same retry path as every other keychain read. Emitting failure
-          //  here would strand a pre-first-unlock launch on the error screen
-          //  for the sake of a cleanup step that can simply run later.
-          _waitForKeychainUnlock();
-          return;
-        case Err(:final failure):
-          // Not ignored: a stale PIN surviving here is read on the NEXT
-          //  launch once wallets exist, locking the user out with a PIN they
-          //  never set.
-          emit(AppStartupState.failure(failure));
-          return;
-      }
     }
 
     // Warm the embedded client without delaying the startup screen. The
@@ -157,10 +139,18 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
 
     emit(
       AppStartupState.success(
-        isPinCodeSet: isPinCodeSet,
+        isPinCodeSet: false,
         hasDefaultWallets: doDefaultWalletsExist,
       ),
     );
+  }
+
+  Future<void> _onAppStartupUnlocked(
+    AppStartupUnlocked event,
+    Emitter<AppStartupState> emit,
+  ) async {
+    _authenticated = true;
+    await _onAppStartupStarted(const AppStartupStarted(), emit);
   }
 
   /// Holds the splash and arms a retry instead of failing.

@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart' hide Language;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
@@ -11,7 +11,7 @@ import 'package:secrets/secrets.dart';
 class CheckDuplicateMnemonicUsecase {
   final Secrets _secrets;
 
-  final WalletMetadataDatasource _metadata;
+  final WalletRegistrations _metadata;
   final Preferences _settings;
   int _invalidCount = 0;
 

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:electrum/setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
@@ -16,7 +16,7 @@ class ImportMnemonicLocator {
     locator.registerFactory<CheckDuplicateMnemonicUsecase>(
       () => CheckDuplicateMnemonicUsecase(
         secrets: locator<Secrets>(),
-        metadata: locator<WalletMetadataDatasource>(),
+        metadata: locator<WalletRegistrations>(),
         settings: locator<Preferences>(),
       ),
     );

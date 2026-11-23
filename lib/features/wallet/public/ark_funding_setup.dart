@@ -12,7 +12,7 @@ import 'package:fees/fees.dart';
 import '../data/ark_board_funding.dart';
 import '../data/foreground_wallet_sync.dart';
 import '../data/sqlite_ark_funding_reservations.dart';
-import '../data/wallet_metadata_datasource.dart';
+import '../data/wallet_registrations.dart';
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
@@ -25,7 +25,7 @@ export '../data/sqlite_ark_funding_reservations.dart'
 final class WalletArkFundingFactory {
   final SqliteArkFundingReservations _authority;
   final WalletNativeRuntime _runtime;
-  final WalletMetadataDatasource _metadata;
+  final WalletRegistrations _metadata;
   final ForegroundWalletSync _sourceSync;
   final Secrets _secrets;
   final Fees _fees;

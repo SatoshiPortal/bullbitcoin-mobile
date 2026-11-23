@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/app_startup/data/wallet_startup_adapter.dart'
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
@@ -26,11 +25,6 @@ class AppStartupLocator {
     );
 
     // Use cases
-    locator.registerFactory<ResetAppDataUsecase>(
-      () => ResetAppDataUsecase(
-        accessKeychain: locator<Secrets>().accessKeychain,
-      ),
-    );
     locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
       () => CheckForExistingDefaultWalletsUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -62,7 +56,6 @@ class AppStartupLocator {
     // Bloc
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(
-        resetAppDataUsecase: locator<ResetAppDataUsecase>(),
         getStartupPinStatusUsecase: const GetStartupPinStatusUsecase(Access()),
         checkForExistingDefaultWalletsUsecase:
             locator<CheckForExistingDefaultWalletsUsecase>(),

@@ -16,6 +16,10 @@ import 'package:swaps/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/migration.dart' show SecretsImport;
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
+import 'package:signers/storage.dart';
+import 'package:sync/storage.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_inventory_setup.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
@@ -160,6 +164,14 @@ class Bull {
     final preferencesFile = File(
       p.join(support.path, 'databases', 'preferences.sqlite'),
     );
+    final secrets = Secrets(
+      scratchDirectory: () async => (await getTemporaryDirectory()).path,
+    );
+    final signerKeys = secrets.databaseKeys(module: 'signers');
+    final syncKeys = secrets.databaseKeys(module: 'sync');
+    final secretsFile = destination('secrets');
+    final signersFile = destination('signers');
+    final syncFile = destination('sync');
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -177,7 +189,9 @@ class Bull {
         regtestPayjoin.participant,
         recoverBull.participant,
         regtestRecoverBull.participant,
-        SecretsImport(file: destination('secrets')),
+        SecretsImport(file: secretsFile),
+        signersWalletMetadataImport(file: signersFile, keys: signerKeys),
+        syncWalletMetadataImport(file: syncFile, keys: syncKeys),
         PreferencesImport(
           file: preferencesFile,
           defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
@@ -207,6 +221,24 @@ class Bull {
     );
     var initialized = false;
     try {
+      final openedInventory = await openWalletInventory(
+        locator,
+        admission: admission,
+        legacy: legacy.source,
+        inventoryFile: secretsFile,
+        signersFile: signersFile,
+        syncFile: syncFile,
+        signerKeys: signerKeys,
+        syncKeys: syncKeys,
+        recoverBull: recoverBull,
+        regtestRecoverBull: regtestRecoverBull,
+      );
+      if (openedInventory case Err(:final failure)) return Err(failure);
+      final inventory =
+          (openedInventory as Ok<SecretsInventory, Failure>).value;
+      final protection = await inventory.isProtected();
+      if (protection case Err(:final failure)) return Err(failure);
+      final pinProtected = (protection as Ok<bool, SecretFailure>).value;
       locator.registerSingleton(payjoin);
       locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       locator.registerSingleton(recoverBull);
@@ -250,6 +282,7 @@ class Bull {
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),
+        secrets: secrets,
         openLabels: (sync, openWallet) => Labels.open(
           file: labelsFile,
           admission: admission,
@@ -280,7 +313,7 @@ class Bull {
         initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
       );
       if (setup case Err()) return setup;
-      await initializeWalletRuntime(locator);
+      if (!pinProtected) await initializeWalletRuntime(locator);
       // Custody inventory is already installed, independently of this profile.
       await _setupArkRegtestProfile();
       Bloc.observer = AppBlocObserver();
@@ -294,7 +327,9 @@ class Bull {
         locator,
         databasePath: recoverBull.standalone.path,
       );
-      unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+      if (!pinProtected) {
+        unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+      }
       final settings = locator<Preferences>();
       configureLogTorContext(
         () => loadTorDiagnosticContext(settings, locator<Tor>()),

@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+import 'package:secrets/storage.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
@@ -7,7 +11,6 @@ import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Failure;
 import 'package:electrum/setup.dart'
@@ -131,6 +134,7 @@ class AppLocator {
       TorHttpClientFactory http,
     )
     openMempool,
+    Secrets? secrets,
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
@@ -156,9 +160,11 @@ class AppLocator {
     // Liquid signing removes its temporary children after use. Stale caches
     // contain blinding material, so keep them in the OS's non-backed-up cache.
     locator.registerLazySingleton<Secrets>(
-      () => Secrets(
-        scratchDirectory: () async => (await getTemporaryDirectory()).path,
-      ),
+      () =>
+          secrets ??
+          Secrets(
+            scratchDirectory: () async => (await getTemporaryDirectory()).path,
+          ),
     );
 
     // One Ark funding authority for the app, opened before any repository:
@@ -253,12 +259,24 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
+    final inventory = locator<SecretsInventory>();
+    final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(
         services: locator,
-        hasVerifiedBackup: () =>
-            locator<CheckBackupUsecase>().hasVerifiedBackup(),
-        onUnlocked: (context) => context.goNamed(WalletRoute.walletHome.name),
+        inventory: inventory,
+        backupVerification: backupVerification,
+        hasVerifiedBackup: () async =>
+            switch (await inventory.hasVerifiedBackups(backupVerification)) {
+              Ok(:final value) => value,
+              Err() => false,
+            },
+        onUnlocked: (context) {
+          unawaited(initializeWalletRuntime(locator));
+          unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+          completeAppStartupUnlock(context);
+          context.goNamed(WalletRoute.walletHome.name);
+        },
         onBackUp: (context) =>
             context.pushNamed<void>(SettingsRoute.backupSettings.name),
       ),

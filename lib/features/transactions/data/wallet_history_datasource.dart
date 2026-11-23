@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/features/transactions/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/features/transactions/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/features/transactions/data/models/wallet_transaction_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, LiquidNetwork, Outpoint;
@@ -21,8 +21,8 @@ class WalletHistoryDatasource {
   }) async {
     final handle = await _load(key);
     // Both values come from one frame: no await between the two reads.
-    final transactions = WalletCatalogPortImpl.value(handle.history.now.latest);
-    final book = WalletCatalogPortImpl.value(handle.addresses.book.now.latest);
+    final transactions = WalletSyncBinding.value(handle.history.now.latest);
+    final book = WalletSyncBinding.value(handle.addresses.book.now.latest);
     final network = Network.fromEnvironment(
       environment: key.network.env,
       isLiquid: key.network is LiquidNetwork,

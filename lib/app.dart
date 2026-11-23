@@ -130,7 +130,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               listenWhen: (previous, current) =>
                   previous != current &&
                   current is AppStartupSuccess &&
-                  current.hasDefaultWallets,
+                  current.hasDefaultWallets &&
+                  !current.isPinCodeSet,
               listener: (context, settings) async {
                 // If wallets exist and the app has started successfully,
                 // we can start the wallet bloc to fetch the wallets.

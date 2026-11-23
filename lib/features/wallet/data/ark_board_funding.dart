@@ -20,7 +20,7 @@ import '../domain/wallet.dart' as wallet;
 import 'foreground_wallet_sync.dart';
 import 'models/wallet_metadata_model.dart';
 import 'sqlite_ark_funding_reservations.dart';
-import 'wallet_metadata_datasource.dart';
+import 'wallet_registrations.dart';
 
 /// Main-wallet Board funding. No Bark key, raw PSBT or data binding leaves here.
 /// Every ambiguous signer/delivery result retains the original operation/holds.
@@ -28,7 +28,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   final ArkClient _client;
   final WalletNativeRuntime _runtime;
   final SqliteArkFundingReservations _authority;
-  final WalletMetadataDatasource _metadata;
+  final WalletRegistrations _metadata;
   final ForegroundWalletSync _sourceSync;
   final Secrets _secrets;
   final Fees _fees;

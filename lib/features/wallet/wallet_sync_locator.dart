@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:preferences/preferences.dart';
@@ -59,7 +59,7 @@ class SyncLocator {
         syncSwapsOutcome: syncSwapsOutcome,
         syncSp: syncSp,
         syncSpOutcome: syncSpOutcome,
-        refreshRevisions: () async => WalletCatalogPortImpl.value(
+        refreshRevisions: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().refreshAll(),
         ),
       ),

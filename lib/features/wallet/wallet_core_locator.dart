@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
@@ -11,9 +11,8 @@ import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dar
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show BitcoinWalletRepository, LiquidWalletRepository;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -38,13 +37,13 @@ class WalletLocator {
     Future<Wallet> Function(String walletId) openWallet,
   })
   syncAccess(GetIt locator) => (
-    foreground: () async => WalletCatalogPortImpl.value(
+    foreground: () async => WalletSyncBinding.value(
       await locator<WalletNativeRuntime>().foreground(),
     ),
-    openWallet: (walletId) async => WalletCatalogPortImpl.value(
+    openWallet: (walletId) async => WalletSyncBinding.value(
       await locator<WalletNativeRuntime>().wallet(
-        await WalletCatalogPortImpl.keyForId(
-          locator<WalletMetadataDatasource>(),
+        await WalletSyncBinding.keyForId(
+          locator<WalletRegistrations>(),
           walletId,
         ),
       ),
@@ -52,13 +51,9 @@ class WalletLocator {
   );
 
   static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<WalletMetadataDatasource>(
-      () => WalletMetadataDatasource(sqlite: locator<SqliteDatabase>()),
-    );
-
     locator.registerLazySingleton<SyncFreezesDatasource>(
       () => SyncFreezesDatasource(
-        sync: () async => WalletCatalogPortImpl.value(
+        sync: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().foreground(),
         ),
       ),
@@ -69,7 +64,7 @@ class WalletLocator {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
         arkFundingGuard: locator<ArkFundingSigningGuard>(),
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        walletRegistrations: locator<WalletRegistrations>(),
         wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
@@ -78,7 +73,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<LiquidWalletRepository>(
       () => LiquidWalletRepository(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        walletRegistrations: locator<WalletRegistrations>(),
         secrets: locator<Secrets>(),
         wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/address_view/data/wallet_address_repository_impl.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:labels/labels.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -23,7 +23,7 @@ class AddressViewLocator {
     locator.registerLazySingleton<WalletAddressRepository>(
       () => WalletAddressRepositoryImpl(
         native: locator<WalletNativeRuntime>(),
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        walletRegistrations: locator<WalletRegistrations>(),
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
         labelsFacade: locator<Labels>(),
       ),

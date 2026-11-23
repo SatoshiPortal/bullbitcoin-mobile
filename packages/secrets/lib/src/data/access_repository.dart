@@ -82,6 +82,16 @@ final class AccessRepository {
         orElse: StoreSecretFailure.new,
       );
 
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    InventoryBackupVerification verification,
+  ) async {
+    final view = await boundary(_defaultView, orElse: FetchSecretFailure.new);
+    return switch (view) {
+      Ok(:final value) => _checkBackups(value, verification),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
   Future<Result<void, SecretFailure>> replaceCredential(
     String? next, {
     InventoryBackupVerification? backupVerification,
@@ -134,18 +144,22 @@ final class AccessRepository {
     AccessViewRow view,
     InventoryBackupVerification verification,
   ) async {
-    const prefix = 'secret:';
-    final members = await (_database.select(
-      _database.viewMembers,
-    )..where((member) => member.viewId.equals(view.id))).get();
-    final parents = Set<String>.unmodifiable({
-      for (final member in members)
-        if (member.member.startsWith(prefix))
-          member.member.substring(prefix.length),
-    });
-    return parents.isEmpty
-        ? const Ok(true)
-        : verification.hasVerifiedBackups(parents);
+    final parents = await boundary(() async {
+      const prefix = 'secret:';
+      final members = await (_database.select(
+        _database.viewMembers,
+      )..where((member) => member.viewId.equals(view.id))).get();
+      return Set<String>.unmodifiable({
+        for (final member in members)
+          if (member.member.startsWith(prefix))
+            member.member.substring(prefix.length),
+      });
+    }, orElse: FetchSecretFailure.new);
+    return switch (parents) {
+      Ok(value: final ids) when ids.isEmpty => const Ok(true),
+      Ok(:final value) => verification.hasVerifiedBackups(value),
+      Err(:final failure) => Err(failure),
+    };
   }
 
   Future<AccessStateRow> _state() async {
