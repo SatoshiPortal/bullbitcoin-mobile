@@ -87,7 +87,10 @@ void main() {
         .thenAnswer((_) async => Ok(limitOrderRate()));
     when(() => exchangeReads.getDefaultWallets())
         .thenAnswer((_) async => const Ok(_wallets));
-    for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
+    for (final network in <Network>[
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]) {
       when(() => inventory.walletsForNetwork(network))
           .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
     }
