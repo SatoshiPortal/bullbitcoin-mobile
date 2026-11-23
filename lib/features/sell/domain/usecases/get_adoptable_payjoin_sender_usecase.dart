@@ -31,13 +31,16 @@ class GetAdoptablePayjoinSenderUsecase {
     required String sessionId,
     required String walletId,
     required int amountSat,
+    String? expectedOriginalTxId,
   }) async {
     switch (await _sessions.byId(sessionId)) {
       case Ok(:final value):
         if (value is! PayjoinSenderSession ||
             !value.isOngoing ||
             value.walletId != walletId ||
-            value.amountSat != amountSat) {
+            value.amountSat != amountSat ||
+            (expectedOriginalTxId != null &&
+                value.originalTxId != expectedOriginalTxId)) {
           return const Ok(null);
         }
         return Ok(value);

@@ -62,6 +62,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   log: log,
   codec: codec,
   admitInputs: admitInputs,
+  requirePreparedOriginal: true,
   regtestProfile: regtestProfile,
   regtestHostProfile: regtestHostProfile,
   isCurrent: isCurrent,
@@ -83,6 +84,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoinWithStorage({
   required PayjoinLogPort log,
   required PayjoinCodecPort codec,
   PayjoinInputAdmission? admitInputs,
+  bool requirePreparedOriginal = false,
   PayjoinRegtestProfile? regtestProfile,
   RegtestHostProfile? regtestHostProfile,
   Future<bool> Function()? isCurrent,
@@ -193,6 +195,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoinWithStorage({
       codec,
       regtest: regtest,
       isCurrent: current,
+      requirePreparedOriginal: requirePreparedOriginal,
     );
     final blocked = unavailable;
     final unavailableRoles = blocked == null
@@ -318,6 +321,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   final logger.PayjoinLogger _log;
   final PayjoinCodecPort _codec;
   final bool _regtest;
+  final bool _requirePreparedOriginal;
   final Future<bool> Function()? _isCurrent;
   final Lock _policyMutationLock = Lock();
 
@@ -337,6 +341,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     this._log,
     this._codec, {
     this._regtest = false,
+    required this._requirePreparedOriginal,
     this._isCurrent,
   });
 
@@ -352,6 +357,9 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   Future<Result<PayjoinSenderSession, PayjoinFailure>> startSender(
     StartPayjoinSender request,
   ) async {
+    if (_requirePreparedOriginal && request.preparedOriginal == null) {
+      return const Err(PayjoinInvalidInputFailure('Reviewed spend required'));
+    }
     if (_regtest != (request.network == BitcoinNetwork.regtest)) {
       return const Err(
         PayjoinInvalidInputFailure('Payjoin runtime network mismatch'),
@@ -376,7 +384,9 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     }
     late final String signed;
     try {
-      signed = await _engineWalletSign(request);
+      signed =
+          request.preparedOriginal?.signedPsbt ??
+          await _engineWalletSign(request);
     } on PayjoinSpendBlockedException catch (blocked) {
       return Err(PayjoinSpendBlockedFailure(busy: blocked.busy));
     } catch (error, trace) {
@@ -397,6 +407,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         amountSat: request.amount.value.toInt(),
         networkFeesSatPerVb: request.feeRate.satsPerVbyte,
         expireAfterSec: lifetime.inSeconds,
+        admitOriginal: request.preparedOriginal?.admit,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
     } on PayjoinSenderKeptException catch (error, trace) {

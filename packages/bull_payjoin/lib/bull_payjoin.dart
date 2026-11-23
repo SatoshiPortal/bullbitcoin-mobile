@@ -47,7 +47,12 @@ export 'src/domain/payjoin_ports.dart'
         PayjoinLogRole,
         PayjoinLogEvent;
 export 'src/domain/payjoin_requests.dart'
-    show StartPayjoinSender, StartPayjoinReceiver, PayjoinSessionFilter;
+    show
+        PreparedPayjoinOriginal,
+        PayjoinOriginalAdmission,
+        StartPayjoinSender,
+        StartPayjoinReceiver,
+        PayjoinSessionFilter;
 export 'src/domain/payjoin_session.dart'
     show
         PayjoinSession,

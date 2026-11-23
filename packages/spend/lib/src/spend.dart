@@ -175,6 +175,27 @@ abstract interface class Spend {
     SignedLiquidSpend signed,
   );
 
+  /// Replays only the stored PSET for an already-pinned Liquid payment.
+  @useResult
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resumeLiquidPayin({
+    required String signedPset,
+    required String walletId,
+    required LiquidNetwork network,
+    required String address,
+    required Sats amount,
+  });
+
+  /// Replays the signed bytes already pinned to this Bitcoin payment.
+  @useResult
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resumeBitcoinPayin({
+    required String signedPsbt,
+    required String walletId,
+    required BitcoinNetwork network,
+    required String address,
+    required Sats amount,
+    bool isPsbt = true,
+  });
+
   @useResult
   Future<Result<String, SpendFailure>> broadcastImportedBitcoin({
     required String transaction,
@@ -185,6 +206,7 @@ abstract interface class Spend {
   @useResult
   Future<Result<PayjoinSpendHandoff, SpendFailure>> handOffToPayjoin(
     PreparedBitcoinSpend prepared, {
+    required WalletKey wallet,
     required String sessionId,
     required String signedPsbt,
     required Future<void> Function() persist,

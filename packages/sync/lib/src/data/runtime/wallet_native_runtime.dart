@@ -118,13 +118,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Stream<WalletRevisionState> get changes => _changes.stream;
 
   /// Checks the current protocol reservations for selected ordinary inputs.
+  /// An empty selection checks that the reservation authorities are readable.
   /// This is a preview check only; the writer rechecks at the point of use.
   @useResult
   Future<Result<void, SyncFailure>> checkUnreservedInputs(
     Set<Outpoint> selected,
   ) async {
     final inputs = Set.of(selected);
-    if (inputs.isEmpty) return const Ok(null);
     final reservations = CombinedInputReservations(
       _inputReservations,
       _fundingReservations,
@@ -183,7 +183,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   /// Broadcasts a spend that already carries its original wallet generation.
-  /// Observes accepted Bitcoin broadcasts even if recording is not yet durable.
+  /// Refreshes accepted broadcasts even if recording is not yet durable;
+  /// only guarded Bitcoin broadcasts need follow-up observation.
   @useResult
   Future<Result<SpendReceipt, SyncFailure>> broadcastSigned(
     SignedSpend signed,
@@ -193,8 +194,12 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
         return Err(failure);
       case Ok(:final value):
         final result = await value.tx.broadcast(signed);
-        if (result case Ok(value: SpendReceipt(guarded: true))) {
-          _broadcastObservation?.start(signed.key.id);
+        if (result case Ok(value: SpendReceipt(:final guarded))) {
+          _broadcastObservation?.start(
+            signed.key.id,
+            guarded: guarded,
+            pollImmediately: true,
+          );
         }
         return result;
     }

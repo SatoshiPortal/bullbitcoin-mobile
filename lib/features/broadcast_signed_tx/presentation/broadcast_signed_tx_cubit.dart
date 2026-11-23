@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_imported_bitcoin_usecase.dart';
 import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
@@ -22,16 +23,23 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastImportedBitcoinUsecase _broadcastImportedBitcoin;
   final Future<BitcoinNetwork?> capturedNetwork;
   final VerifyBroadcastSignedTxUsecase _verifySignedTxUsecase;
+  final PreparedBitcoinSpend? _prepared;
 
   BroadcastSignedTxCubit({
     required this._broadcastImportedBitcoin,
     required this._verifySignedTxUsecase,
-    String? unsignedPsbt,
+    PreparedBitcoinSpend? prepared,
     BitcoinNetwork? network,
-  }) : capturedNetwork = network != null
+  }) : _prepared = prepared,
+       capturedNetwork = network != null
            ? Future.value(network)
            : _broadcastImportedBitcoin.captureNetwork(),
-       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+       super(
+         BroadcastSignedTxState(
+           bbqr: Bbqr(),
+           unsignedPsbt: prepared?.unsignedPsbt,
+         ),
+       );
 
   Future<void> onQrScanned(String payload) async {
     try {
@@ -293,13 +301,13 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   /// The Send reader never broadcasts. Finalize the signed transaction, then
   /// verify it again before returning it to the owner of the original PSBT.
   Future<String?> signedForSend() async {
-    final original = state.unsignedPsbt;
+    final prepared = _prepared;
     final transaction = state.transaction;
-    if (original == null || transaction == null) return null;
+    if (prepared == null || transaction == null) return null;
     final String signed;
     if (transaction.format == TxFormat.psbt) {
       switch (finalizeBitcoinPsbts(
-        unsignedBase64: original,
+        unsignedBase64: prepared.unsignedPsbt,
         signedBase64: transaction.data,
       )) {
         case Ok(:final value):
@@ -311,10 +319,19 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     } else {
       signed = transaction.data;
     }
-    final matches = await _verifyAgainstOriginal(signed);
-    if (isClosed || !matches || !identical(state.transaction, transaction)) {
+    final verified = await _verifySignedTxUsecase.verifyPrepared(
+      prepared: prepared,
+      signedTransaction: signed,
+    );
+    if (isClosed || !identical(state.transaction, transaction)) {
       return null;
     }
-    return signed;
+    switch (verified) {
+      case Ok():
+        return signed;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return null;
+    }
   }
 }

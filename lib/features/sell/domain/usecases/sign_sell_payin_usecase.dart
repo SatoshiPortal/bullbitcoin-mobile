@@ -1,61 +1,25 @@
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BitcoinWalletRepository, LiquidWalletRepository;
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
 
-/// Signs the sell payin on either network.
 class SignSellPayinUsecase {
-  final BitcoinWalletRepository _bitcoinWalletRepository;
-  final LiquidWalletRepository _liquidWalletRepository;
+  final Spend _spend;
 
-  const SignSellPayinUsecase({
-    required this._bitcoinWalletRepository,
-    required this._liquidWalletRepository,
-  });
-
-  /// Signs [psbt] and reports the signed transaction with its vsize.
-  @useResult
-  Future<Result<({String signedPsbt, int txSize}), SellFailure>> bitcoin({
-    required String psbt,
-    required String walletId,
-  }) async {
-    try {
-      final signedPsbt = await _bitcoinWalletRepository.signPsbt(
-        psbt,
-        walletId: walletId,
-      );
-      final txSize = await _bitcoinWalletRepository.getTxSize(psbt: signedPsbt);
-      return Ok((signedPsbt: signedPsbt, txSize: txSize));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to sign the Bitcoin sell payin',
-        error: e,
-        trace: st,
-      );
-      return Err(SellUnexpectedFailure('$e'));
-    }
-  }
+  const SignSellPayinUsecase(this._spend);
 
   @useResult
-  Future<Result<String, SellFailure>> liquid({
-    required String pset,
-    required String walletId,
-  }) async {
-    try {
-      final signedPset = await _liquidWalletRepository.signPset(
-        pset: pset,
-        walletId: walletId,
-      );
-      return Ok(signedPset);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to sign the Liquid sell payin',
-        error: e,
-        trace: st,
-      );
-      return Err(SellUnexpectedFailure('$e'));
-    }
-  }
+  Future<Result<SignedBitcoinSpend, SellFailure>> bitcoin(
+    PreparedBitcoinSpend prepared,
+  ) async => (await _spend.signBitcoin(prepared: prepared)).mapErr(_failure);
+
+  @useResult
+  Future<Result<SignedLiquidSpend, SellFailure>> liquid(
+    PreparedLiquidSpend prepared,
+  ) async => (await _spend.signLiquid(prepared: prepared)).mapErr(_failure);
+
+  SellFailure _failure(SpendFailure failure) => switch (failure) {
+    SpendUnavailableFailure(:final busy) => SellSpendBlockedFailure(busy: busy),
+    _ => const SellUnexpectedFailure(),
+  };
 }

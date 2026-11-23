@@ -1,7 +1,4 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show LiquidWalletRepository;
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
@@ -53,9 +50,8 @@ class AutoSwapLocator {
       () => ExchangeAutoswapProvider(
         locator<WalletRepository>(),
         locator<Preferences>(),
-        locator<LiquidWalletRepository>(),
+        locator<Spend>(),
         locator<GetReceiveAddressUsecase>(),
-        locator<BroadcastLiquidTransactionUsecase>(),
         locator<SwapFacade>(),
         locator<Labels>(),
       ),

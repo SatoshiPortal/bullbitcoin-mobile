@@ -31,5 +31,7 @@ extension SellFailureL10n on SellFailure {
     // "PrepareBitcoinSendException: ..." — straight to the payment screen.
     SellUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     SellUnexpectedFailure() => context.loc.sellUnexpectedError,
+    SellPayinOutcomeUnknownFailure() =>
+      context.loc.broadcastSignedTxErrorOutcomeUnknown,
   };
 }

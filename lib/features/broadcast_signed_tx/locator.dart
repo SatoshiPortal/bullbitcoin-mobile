@@ -1,6 +1,4 @@
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_imported_bitcoin_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show Network, NetworkX;
 import 'package:electrum/electrum.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
@@ -35,15 +33,16 @@ class BroadcastSignedTxLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<BroadcastSignedTxCubit, String?, Network?>(
-      (unsignedPsbt, network) => BroadcastSignedTxCubit(
+    locator.registerFactoryParam<
+      BroadcastSignedTxCubit,
+      PreparedBitcoinSpend?,
+      BitcoinNetwork?
+    >(
+      (prepared, network) => BroadcastSignedTxCubit(
         broadcastImportedBitcoin: locator<BroadcastImportedBitcoinUsecase>(),
         verifySignedTxUsecase: locator<VerifyBroadcastSignedTxUsecase>(),
-        unsignedPsbt: unsignedPsbt,
-        network: switch (network?.shared) {
-          final BitcoinNetwork bitcoin => bitcoin,
-          _ => null,
-        },
+        prepared: prepared,
+        network: network,
       ),
     );
     locator.registerFactory<TransactionReviewCubit>(

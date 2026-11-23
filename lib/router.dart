@@ -239,10 +239,10 @@ class AppRouter {
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route(
-        openSignedTransactionReader: (context, psbt, wallet) =>
+        openSignedTransactionReader: (context, prepared, network) =>
             context.pushNamed<String>(
               BroadcastSignedTxRoute.broadcastHome.name,
-              extra: (psbt: psbt, wallet: wallet),
+              extra: (prepared: prepared, network: network),
             ),
       ),
       CoinsRouter.route(

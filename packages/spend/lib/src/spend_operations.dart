@@ -56,7 +56,9 @@ final class _Spend extends _SpendPreviews {
     final selected = selectedInputs == null ? null : Set.of(selectedInputs);
     return switch (await _wallet(walletId)) {
       Ok(:final value) when value.key.network is BitcoinNetwork =>
-        _validateSelection(value, selected),
+        selected == null || selected.isEmpty
+            ? (await _sync.checkUnreservedInputs(const {})).mapErr(_syncFailure)
+            : _validateSelection(value, selected),
       Ok() => const Err(SpendNetworkMismatchFailure()),
       Err(:final failure) => Err(failure),
     };
@@ -434,6 +436,117 @@ final class _Spend extends _SpendPreviews {
   ) => _broadcast(signed._native);
 
   @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resumeLiquidPayin({
+    required String signedPset,
+    required String walletId,
+    required LiquidNetwork network,
+    required String address,
+    required Sats amount,
+  }) async {
+    if (amount == Sats.zero) return const Err(SpendInvalidRequestFailure());
+    final wallet = await _wallet(walletId);
+    switch (wallet) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (value.key.network != network) {
+          return const Err(SpendNetworkMismatchFailure());
+        }
+        switch (await liquidAddressNetwork(address)) {
+          case Ok(value: final addressNetwork) when addressNetwork == network:
+            break;
+          case _:
+            return const Err(SpendNetworkMismatchFailure());
+        }
+        switch (await value.tx.liquidAmountToAddress(signedPset, address)) {
+          case Err(:final failure):
+            return Err(_syncFailure(failure));
+          case Ok(value: final sent) when sent != amount.value:
+            return const Err(SpendSignedTransactionMismatchFailure());
+          case Ok():
+            break;
+        }
+        switch (await value.tx.liquidEffect(signedPset)) {
+          case Err(:final failure):
+            return Err(_syncFailure(failure));
+          case Ok(value: final effect)
+              when BigInt.from(-effect.policyBalanceSat - effect.feeSat) !=
+                  amount.value:
+            return const Err(SpendSignedTransactionMismatchFailure());
+          case Ok():
+            return _broadcast(value.tx.signed(SignedPset(signedPset)));
+        }
+    }
+  }
+
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resumeBitcoinPayin({
+    required String signedPsbt,
+    required String walletId,
+    required BitcoinNetwork network,
+    required String address,
+    required Sats amount,
+    bool isPsbt = true,
+  }) async {
+    if (amount == Sats.zero || amount.value > Sats.maxBitcoinSupply) {
+      return const Err(SpendInvalidRequestFailure());
+    }
+    final DecodedBitcoinTransaction tx;
+    if (isPsbt) {
+      switch (_bitcoinEvidence(signedPsbt, signedPsbt, true)) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          tx = value;
+      }
+    } else {
+      try {
+        tx = decodeBitcoinTransaction(_hex(signedPsbt));
+      } on FormatException {
+        return const Err(SpendInvalidTransactionFailure());
+      }
+    }
+    final wallet = await _wallet(walletId);
+    switch (wallet) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (value.key.network != network) {
+          return const Err(SpendNetworkMismatchFailure());
+        }
+        switch (bitcoinAddressScript(address, network)) {
+          case Err(:final failure):
+            return Err(_syncFailure(failure));
+          case Ok(value: final script):
+            final paid = tx.outputs
+                .where((output) => _sameBytes(output.scriptPubkey, script))
+                .fold(
+                  BigInt.zero,
+                  (sum, output) => sum + BigInt.from(output.valueSat),
+                );
+            if (paid != amount.value) {
+              return const Err(SpendSignedTransactionMismatchFailure());
+            }
+            switch (await value.ownership()) {
+              case Err(:final failure):
+                return Err(_syncFailure(failure));
+              case Ok(value: final owned):
+                if (tx.outputs.any(
+                  (output) =>
+                      !_sameBytes(output.scriptPubkey, script) &&
+                      !owned.ownsScript(output.scriptPubkey),
+                )) {
+                  return const Err(SpendSignedTransactionMismatchFailure());
+                }
+            }
+            return _broadcast(
+              value.tx.signed(SignedBitcoinTransaction(tx.bytes)),
+            );
+        }
+    }
+  }
+
+  @override
   Future<Result<String, SpendFailure>> broadcastImportedBitcoin({
     required String transaction,
     required BitcoinNetwork network,
@@ -470,12 +583,14 @@ final class _Spend extends _SpendPreviews {
   @override
   Future<Result<PayjoinSpendHandoff, SpendFailure>> handOffToPayjoin(
     PreparedBitcoinSpend prepared, {
+    required WalletKey wallet,
     required String sessionId,
     required String signedPsbt,
     required Future<void> Function() persist,
   }) async {
     final built = prepared._native;
     if (built == null ||
+        built.key != wallet ||
         built.owner != null ||
         built.replacing != null ||
         sessionId.isEmpty ||
@@ -771,6 +886,11 @@ Uint8List _hex(String value) {
       int.parse(value.substring(index, index + 2), radix: 16),
   ]);
 }
+
+bool _sameBytes(List<int> left, List<int> right) =>
+    left.length == right.length &&
+    Iterable<int>.generate(left.length)
+        .every((index) => left[index] == right[index]);
 
 SpendFailure _syncFailure(SyncFailure failure) => switch (failure) {
   SyncInsufficientFundsFailure() => const SpendInsufficientFundsFailure(),

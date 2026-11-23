@@ -1,6 +1,7 @@
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinRegtestProfile;
 import 'package:primitives/primitives.dart' as primitives;

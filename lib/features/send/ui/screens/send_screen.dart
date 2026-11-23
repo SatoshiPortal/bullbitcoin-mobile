@@ -43,6 +43,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart' show NetworkX;
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
@@ -3085,32 +3086,33 @@ class ShowPsbtButton extends StatelessWidget {
       label: context.loc.sendShowPsbt,
       onPressed: () async {
         // Retain the original wallet and unsigned transaction through handoff.
-        final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
+        final send = context.read<SendCubit>();
+        final prepared = send.preparedBitcoin;
+        final wallet = switch (send.state.selectedWallet) {
           SendWalletBitcoin(:final wallet) => wallet,
           _ => null,
         };
-        if (unsignedPsbt == null) return;
+        if (prepared == null ||
+            wallet == null ||
+            wallet.network.isLiquid ||
+            prepared.unsignedPsbt != unsignedPsbt) {
+          return;
+        }
         final result = await SignersNavigation.showPsbt(
           context,
-          psbt: unsignedPsbt,
+          psbt: prepared.unsignedPsbt,
           signerDevice: signerDevice,
         );
         if (result == PsbtHandoffResult.readyToReadSignedTransaction &&
-            context.mounted) {
+            context.mounted &&
+            identical(send.preparedBitcoin, prepared)) {
           final signed = await SendPsbtHandoff.of(context)(
             context,
-            unsignedPsbt,
-            wallet,
+            prepared,
+            wallet.network.bitcoin,
           );
-          if (signed == null || !context.mounted || wallet == null) return;
-          final send = context.read<SendCubit>();
-          final current = send.state.selectedWallet;
-          if (current is SendWalletBitcoin &&
-              current.wallet.id == wallet.id &&
-              current.wallet.network == wallet.network &&
-              send.state.unsignedPsbt == unsignedPsbt) {
-            await send.updateSignedBitcoinTx(signed);
-          }
+          if (signed == null || !context.mounted) return;
+          await send.updateSignedBitcoinTx(signed, prepared: prepared);
         }
       },
     );
@@ -3141,8 +3143,11 @@ class SignLedgerButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
-        final wallet = context.read<SendCubit>().state.selectedWallet;
-        if (unsignedPsbt == null ||
+        final send = context.read<SendCubit>();
+        final prepared = send.preparedBitcoin;
+        final wallet = send.state.selectedWallet;
+        if (prepared == null ||
+            prepared.unsignedPsbt != unsignedPsbt ||
             wallet == null ||
             derivationPath == null ||
             scriptType == null) {
@@ -3152,16 +3157,17 @@ class SignLedgerButton extends StatelessWidget {
         final result = await SignersNavigation.signLedger(
           context,
           network: wallet.network.environment,
-          psbt: unsignedPsbt,
+          psbt: prepared.unsignedPsbt,
           derivationPath: derivationPath,
           requestedDeviceType: deviceType,
           scriptType: scriptType,
         );
 
         if (result != null && context.mounted) {
-          final accepted = await context
-              .read<SendCubit>()
-              .updateSignedBitcoinTx(result);
+          final accepted = await send.updateSignedBitcoinTx(
+            result,
+            prepared: prepared,
+          );
           if (accepted && context.mounted) {
             BullSnackBar.show(
               context,
@@ -3198,8 +3204,11 @@ class SignBitBoxButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
-        final wallet = context.read<SendCubit>().state.selectedWallet;
-        if (unsignedPsbt == null ||
+        final send = context.read<SendCubit>();
+        final prepared = send.preparedBitcoin;
+        final wallet = send.state.selectedWallet;
+        if (prepared == null ||
+            prepared.unsignedPsbt != unsignedPsbt ||
             wallet == null ||
             derivationPath == null ||
             scriptType == null) {
@@ -3209,7 +3218,7 @@ class SignBitBoxButton extends StatelessWidget {
         final result = await SignersNavigation.signBitBox(
           context,
           network: wallet.network.environment,
-          psbt: unsignedPsbt,
+          psbt: prepared.unsignedPsbt,
           derivationPath: derivationPath,
           requestedDeviceType: deviceType,
           scriptType: scriptType,
@@ -3228,7 +3237,7 @@ class SignBitBoxButton extends StatelessWidget {
             return;
           }
           if (context.mounted) {
-            await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
+            await send.updateSignedBitcoinTx(finalizedTx, prepared: prepared);
           }
         }
       },

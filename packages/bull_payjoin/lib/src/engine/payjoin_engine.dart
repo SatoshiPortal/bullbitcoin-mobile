@@ -417,6 +417,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
+    api.PayjoinOriginalAdmission? admitOriginal,
   }) => _withSessionLock(bip21, () async {
     // A sender id is the payment request itself. Reject a live or resolved
     // duplicate before posting another original proposal to the directory;
@@ -434,6 +435,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final PayjoinSenderModel model;
     PayjoinSenderModel? persistedAttempt;
+    var attemptStored = false;
     var publicationAdmitted = false;
     try {
       model = await _pdkPayjoinDatasource.createSender(
@@ -469,30 +471,67 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         persistBeforePost: (model) async {
           final delivered = model.copyWith(hasNetworkEvidence: true);
           persistedAttempt = delivered;
-          await _publishInputReservation(
-            walletId: walletId,
-            sessionId: delivered.id,
-            network: _networkFor(isTestnet),
-            readInputs: () =>
-                _codec.decodePsbt(delivered.originalPsbt).inputs.toSet(),
-            persist: () async {
-              if (existing == null) {
-                await _localPayjoinDatasource.storeSender(delivered);
-              } else {
-                final replaced = await _localPayjoinDatasource
-                    .replaceExpiredSender(delivered);
-                if (!replaced) {
-                  throw const PayjoinEngineException(
-                    'The expired Payjoin session could not be replaced',
-                  );
-                }
+          Future<void> persist() async {
+            if (existing == null) {
+              await _localPayjoinDatasource.storeSender(delivered);
+            } else {
+              final replaced = await _localPayjoinDatasource
+                  .replaceExpiredSender(delivered);
+              if (!replaced) {
+                throw const PayjoinEngineException(
+                  'The expired Payjoin session could not be replaced',
+                );
               }
-            },
-          );
+            }
+            attemptStored = true;
+          }
+
+          if (admitOriginal case final admit?) {
+            switch (await admit(sessionId: delivered.id, persist: persist)) {
+              case Ok() when attemptStored:
+                break;
+              case primitives.Err(
+                failure: api.PayjoinSpendBlockedFailure(:final busy),
+              ):
+                throw api.PayjoinSpendBlockedException(busy: busy);
+              case _:
+                throw const PayjoinEngineException(
+                  'Prepared original was not admitted',
+                );
+            }
+          } else {
+            await _publishInputReservation(
+              walletId: walletId,
+              sessionId: delivered.id,
+              network: _networkFor(isTestnet),
+              readInputs: () =>
+                  _codec.decodePsbt(delivered.originalPsbt).inputs.toSet(),
+              persist: persist,
+            );
+          }
           publicationAdmitted = true;
         },
       );
     } catch (error) {
+      final attempt = persistedAttempt;
+      if (!publicationAdmitted) {
+        // A row written while checking admission has not reached the relay.
+        // Do not arm any publication or fallback for a refused handoff.
+        if (attemptStored && attempt != null) {
+          try {
+            await _localPayjoinDatasource.markAborted(attempt);
+          } on Exception catch (e, st) {
+            _log.warning(
+              code: api.PayjoinLogCode.storageFailure,
+              role: api.PayjoinLogRole.sender,
+              sessionRef: attempt.toEntity().logRef,
+              error: e,
+              trace: st,
+            );
+          }
+        }
+        rethrow;
+      }
       // Nothing left the device: nobody but this row holds the original, so
       // the evidence set in the write-ahead persist is withdrawn and expiry
       // may release the inputs as before. Any failure whose request may have
@@ -532,9 +571,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } catch (_) {
         stored = null;
       }
-      final attempt = persistedAttempt;
       if (attempt != null &&
-          publicationAdmitted &&
           stored == null &&
           (error is! SendCreationException || error.originalMayBeDelivered)) {
         throw PayjoinSenderKeptException(

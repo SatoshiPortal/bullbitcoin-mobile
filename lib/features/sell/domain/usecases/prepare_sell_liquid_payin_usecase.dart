@@ -1,56 +1,40 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show LiquidWalletRepository;
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
 
-/// Builds the unsigned PSET for a Liquid sell payin.
+import 'package:fees/fees.dart';
+
 class PrepareSellLiquidPayinUsecase {
-  final LiquidWalletRepository _liquidWalletRepository;
+  final Spend _spend;
 
-  const PrepareSellLiquidPayinUsecase({required this._liquidWalletRepository});
+  const PrepareSellLiquidPayinUsecase(this._spend);
 
   @useResult
-  Future<Result<String, SellFailure>> execute({
+  Future<Result<PreparedLiquidSpend, SellFailure>> execute({
     required String walletId,
     required String address,
     required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
-  }) async {
-    if (amountSat == null && !drain) {
-      log.severe(
-        error: 'prepareSellLiquidPayin called without an amount and no drain',
-        trace: StackTrace.current,
-      );
-      return const Err(
-        SellUnexpectedFailure('amount required unless draining'),
-      );
-    }
-
-    try {
-      final result = await _liquidWalletRepository.buildPset(
+  }) async =>
+      (await _spend.prepareLiquid(
         walletId: walletId,
         address: address,
-        amountSat: drain ? null : amountSat,
         feeRate: feeRate,
+        amountSat: drain ? null : amountSat,
         drain: drain,
-      );
-      return result.mapErr(
+      )).mapErr(
         (failure) => switch (failure) {
-          WalletInsufficientFundsFailure() ||
-          WalletNoSpendableInputsFailure() => SellInsufficientBalanceFailure(
+          SpendInsufficientFundsFailure() ||
+          SpendInsufficientFundsForFeesFailure() ||
+          SpendNoSpendableInputsFailure() => SellInsufficientBalanceFailure(
             requiredAmountSat: amountSat ?? 0,
+          ),
+          SpendUnavailableFailure(:final busy) => SellSpendBlockedFailure(
+            busy: busy,
           ),
           _ => const SellUnexpectedFailure(),
         },
       );
-    } on String {
-      // LWK wallet initialization can throw its native error message.
-      return const Err(SellUnexpectedFailure());
-    }
-  }
 }

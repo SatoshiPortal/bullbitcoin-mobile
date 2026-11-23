@@ -9,6 +9,16 @@ class VerifyBroadcastSignedTxUsecase {
   VerifyBroadcastSignedTxUsecase(this._spend);
 
   @useResult
+  Future<Result<void, BroadcastSignedTxFailure>> verifyPrepared({
+    required PreparedBitcoinSpend prepared,
+    required String signedTransaction,
+  }) async => (await _spend.verifySignedBitcoin(
+    prepared: prepared,
+    signedTransaction: signedTransaction,
+    isPsbt: false,
+  )).map((_) {}).mapErr((_) => const InvalidTransactionFailure());
+
+  @useResult
   Future<Result<void, BroadcastSignedTxFailure>> execute({
     required String unsignedPsbt,
     required String signedTransaction,

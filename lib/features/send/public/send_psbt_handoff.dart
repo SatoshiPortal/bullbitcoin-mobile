@@ -1,10 +1,11 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/widgets.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:spend/spend.dart';
 
 typedef OpenSignedTransactionReader = Future<String?> Function(
   BuildContext context,
-  String unsignedPsbt,
-  Wallet? wallet,
+  PreparedBitcoinSpend prepared,
+  BitcoinNetwork network,
 );
 
 /// The reader returns verified bytes without broadcasting them.

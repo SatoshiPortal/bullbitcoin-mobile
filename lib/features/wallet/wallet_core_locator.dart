@@ -4,16 +4,10 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
-import 'package:ark/funding.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
-import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BitcoinWalletRepository, LiquidWalletRepository;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -54,27 +48,6 @@ class WalletLocator {
         sync: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().foreground(),
         ),
-      ),
-    );
-  }
-
-  static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<BitcoinWalletRepository>(
-      () => BitcoinWalletRepository(
-        arkFundingGuard: locator<ArkFundingSigningGuard>(),
-        walletRegistrations: locator<WalletRegistrations>(),
-        wallet: locator<WalletNativeRuntime>().wallet,
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        secrets: locator<Secrets>(),
-      ),
-    );
-
-    locator.registerLazySingleton<LiquidWalletRepository>(
-      () => LiquidWalletRepository(
-        walletRegistrations: locator<WalletRegistrations>(),
-        secrets: locator<Secrets>(),
-        wallet: locator<WalletNativeRuntime>().wallet,
-        freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
   }

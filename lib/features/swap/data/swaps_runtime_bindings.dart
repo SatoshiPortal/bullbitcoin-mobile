@@ -3,8 +3,6 @@ import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -170,12 +168,11 @@ class AppLockupChain implements swaps.LockupChain {
     }
     return switch (result) {
       Ok(:final value) => swaps.LockupAccepted(value),
-      Err(:final failure) => switch (broadcastFailureCategory(failure)) {
-        BroadcastFailureCategory.rejected => const swaps.LockupRejected(),
-        BroadcastFailureCategory.alreadyInChain =>
-          const swaps.LockupAlreadyInChain(),
-        _ => const swaps.LockupOutcomeUnknown(),
-      },
+      Err(failure: SyncBroadcastRejectedFailure()) =>
+        const swaps.LockupRejected(),
+      Err(failure: SyncAlreadyInChainFailure()) =>
+        const swaps.LockupAlreadyInChain(),
+      Err() => const swaps.LockupOutcomeUnknown(),
     };
   }
 
