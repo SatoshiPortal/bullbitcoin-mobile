@@ -224,23 +224,26 @@ void main() {
     );
   }
 
-  Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
-    MaterialApp(
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: [
-        AllSeedViewLocalizations.delegate,
-        ...appLocalizationsDelegates,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: BlocProvider<TestWalletBackupBloc>.value(
-        value: bloc,
-        child: VerifyMnemonicScreen(
-          onTestSucceeded: (_) {},
-          successImage: AssetImage(Assets.animations.successTick.path),
+  Future<void> pumpScreen(WidgetTester tester, {Widget? screen}) =>
+      tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: [
+            AllSeedViewLocalizations.delegate,
+            ...appLocalizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: BlocProvider<TestWalletBackupBloc>.value(
+            value: bloc,
+            child:
+                screen ??
+                VerifyMnemonicScreen(
+                  onTestSucceeded: (_) {},
+                  successImage: AssetImage(Assets.animations.successTick.path),
+                ),
+          ),
         ),
-      ),
-    ),
-  );
+      );
 
   // Secret operations complete off-isolate, so pump frames while letting the
   // real clock run. The challenge has a spinner. Passphrase verification
@@ -277,6 +280,36 @@ void main() {
   }
 
   final spinner = find.byType(CircularProgressIndicator);
+
+  testWidgets('uses the default wallet name in both mnemonic titles', (
+    tester,
+  ) async {
+    final wallet = BackupWallet(
+      id: _walletA.id,
+      network: _walletA.network,
+      isDefault: true,
+      label: null,
+      fingerprint: _walletA.fingerprint,
+    );
+    stubSecret(_secretA);
+    bloc.seed(TestWalletBackupState(wallets: [wallet], selectedWallet: wallet));
+
+    await pumpScreen(
+      tester,
+      screen: ShowMnemonicScreen(
+        onTestSucceeded: (_) {},
+        successImage: AssetImage(Assets.animations.successTick.path),
+      ),
+    );
+    await tester.pump();
+    String? title() =>
+        (tester.widget<AppBar>(find.byType(AppBar)).title as Text).data;
+    expect(title(), 'Test Secure Bitcoin');
+
+    await pumpScreen(tester);
+    await tester.pump();
+    expect(title(), 'Test Secure Bitcoin');
+  });
 
   testWidgets('loads a wallet selected while screen protection is pending', (
     tester,

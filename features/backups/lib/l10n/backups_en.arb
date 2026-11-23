@@ -132,6 +132,7 @@
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
   },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
   "testBackupWalletTitle": "Test {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",

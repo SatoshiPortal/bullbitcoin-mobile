@@ -11,6 +11,7 @@ import 'package:transactions/setup.dart';
 import '../transactions/support/transaction_ui_actions.dart';
 
 import 'package:fees/fees.dart';
+import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
@@ -42,6 +43,8 @@ import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
+import 'package:spend/spend.dart' show Spend;
+import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
 
@@ -76,6 +79,10 @@ class Memory implements QuickActionsStorage {
 class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
+
+class _MockElectrum extends Mock implements Electrum {}
+
+class _MockElectrumTransactions extends Mock implements ElectrumTransactions {}
 
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
@@ -155,7 +162,8 @@ void main() {
         ),
       );
       final networkServices = GetIt.asNewInstance();
-      networkServices.registerSingleton<Fees>(_MockFees());
+      final fees = _MockFees();
+      networkServices.registerSingleton<Fees>(fees);
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
@@ -184,6 +192,12 @@ void main() {
         ),
       );
       final preferences = PricePreferences();
+      final electrum = _MockElectrum();
+      when(() => electrum.transactions).thenReturn(_MockElectrumTransactions());
+      locator.registerSingleton<Spend>(FakeSpend());
+      locator.registerSingleton<Fees>(fees);
+      locator.registerSingleton<Electrum>(electrum);
+      locator.registerSingleton<ActiveEnvironmentReader>(preferences);
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
           environment: preferences,
@@ -318,6 +332,10 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<Spend>();
+        await locator.unregister<Fees>();
+        await locator.unregister<Electrum>();
+        await locator.unregister<ActiveEnvironmentReader>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
         await locator.unregister<BitcoinPriceFeature>();

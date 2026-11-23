@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
   "testBackupDigitalCopy": "Cópia digital",
   "@testBackupDigitalCopy": {
     "description": "Label with X mark warning against making digital copies"

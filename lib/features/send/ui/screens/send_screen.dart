@@ -3,6 +3,7 @@ import 'package:primitives/primitives.dart'
     as chains
     show BitcoinNetwork, LiquidNetwork;
 import 'package:silent/localizations.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';

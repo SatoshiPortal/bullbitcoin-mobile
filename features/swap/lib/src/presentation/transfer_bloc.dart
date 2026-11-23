@@ -2,6 +2,7 @@ import 'package:swaps/order_swaps.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:swap_feature/src/domain/swap_environment.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
+import 'package:swaps/order_swaps.dart';
 import 'package:address_view/address_view.dart';
 import 'package:swap_feature/src/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:spend/fee_preview.dart';

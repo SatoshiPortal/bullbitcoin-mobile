@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "Безопасный биткойн",
   "testBackupWriteDownPhrase": "Запишите свою фразу восстановления\nв правильном порядке",
   "testBackupDigitalCopy": "Цифровая копия",
   "backupWalletEncryptedVaultTag": "Легко и просто (1 минута)",

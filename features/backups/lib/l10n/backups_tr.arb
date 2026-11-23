@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
   "testBackupWriteDownPhrase": "Kurtarma cümlenizi yazın\nDoğru sırayla",
   "@testBackupWriteDownPhrase": {
     "description": "Main instruction header for physical backup screen"

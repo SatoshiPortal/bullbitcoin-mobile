@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:address_view/routes.dart';
-import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
@@ -11,9 +10,8 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show BuyRoute, ExchangeHomeAction, PayRoute, SellRoute;
+    show BuyRoute, ExchangeHomeAction;
 import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -45,13 +43,19 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
     show SwapFeature, SwapNavigation;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:wallet_import/setup.dart';
+import 'package:bb_mobile/features/import_coldcard/router.dart';
+import 'package:bb_mobile/features/import_mnemonic/router.dart';
+import 'package:wallet_import/wallet_import.dart';
+import 'package:bb_mobile/features/import_wallet/router.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:receive/setup.dart' show ReceiveFeature;
+import 'package:bb_mobile/features/pay/public/pay_facade.dart';
+import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
+import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
@@ -108,17 +112,11 @@ class AppRouter {
     homePath: WalletRoute.walletHome.path,
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: SettingsNavigation.open,
-    onAction: (context, action) {
-      switch (action) {
-        case ExchangeHomeAction.buy:
-          context.pushNamed(BuyRoute.buy.name);
-        case ExchangeHomeAction.sell:
-          context.pushNamed(SellRoute.sell.name);
-        case ExchangeHomeAction.pay:
-          context.pushNamed(PayRoute.pay.name);
-        case ExchangeHomeAction.transfer:
-          SwapNavigation.open(context);
-      }
+    onAction: (context, action) => switch (action) {
+      ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
+      ExchangeHomeAction.sell => context.pushNamed<void>(SellRoute.sell.name),
+      ExchangeHomeAction.pay => context.pushNamed<void>(PayRoute.pay.name),
+      ExchangeHomeAction.transfer => SwapNavigation.open(context),
     },
   );
 
@@ -181,7 +179,6 @@ class AppRouter {
     preferences: () => locator<Preferences>(),
     settings: SettingsRouter.exchangeSettingsHost,
     purchases: exchangePurchaseHost(locator),
-    payins: exchangePayinHost(locator),
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
@@ -294,7 +291,6 @@ class AppRouter {
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
           addressRoutes: [locator<AddressViewFeature>().route],
           accessRoutes: locator<AccessFeature>().routes.settings,
-          seedViewRoute: locator<AllSeedViewFeature>().route,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
           appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
           backupRoutes: [
@@ -326,7 +322,7 @@ class AppRouter {
         ),
       ).route,
       ...locator<TransactionsFeature>().routes,
-      locator<ReceiveFeature>().route,
+      ReceiveRouter.route,
       SendRouter.route(
         openSignedTransactionReader: (context, prepared, network) =>
             context.pushNamed<String>(
@@ -348,11 +344,15 @@ class AppRouter {
       ...locator<SwapFeature>().routes,
       ..._exchangeFeature.buyRoutes,
       ..._exchangeFeature.fundingRoutes,
-      ?_exchangeFeature.sellRoute,
+      SellRouter.route,
       ?_exchangeFeature.withdrawalRoute,
-      ?_exchangeFeature.payRoute,
+      PayRouter.route,
+      ImportMnemonicRouter.route,
+      ImportWatchOnlyRouter.route,
       _sendRoutes.broadcastSignedTx,
       ...locator<SignersFeature>().routes,
+      ImportWalletRouter.route,
+      ...ImportColdcardRouter.routes,
       ?_exchangeFeature.dcaRoute,
       ?_exchangeFeature.autoBuy,
       LimitOrdersRouter.create,
