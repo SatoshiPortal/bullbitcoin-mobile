@@ -1,12 +1,11 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 
 final class LimitOrdersState {
   final List<LimitOrder> orders;
   final bool canCreate;
   final bool isLoading;
   final bool isCancellingAll;
-  final LimitOrdersFailure? failure;
+  final ExchangeFailure? failure;
 
   const LimitOrdersState({
     this.orders = const [],
@@ -21,7 +20,7 @@ final class LimitOrdersState {
     bool? canCreate,
     bool? isLoading,
     bool? isCancellingAll,
-    LimitOrdersFailure? failure,
+    ExchangeFailure? failure,
     bool clearFailure = false,
   }) => LimitOrdersState(
     orders: orders ?? this.orders,

@@ -1,11 +1,12 @@
+import '../../limit_order_failure_message.dart';
+
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_cubit.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_state.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
-import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_order_detail_row.dart';
-import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_cubit.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_state.dart';
+import 'package:bull_exchange/src/limit_orders/ui/widgets/limit_order_detail_row.dart';
+import 'package:bull_exchange/src/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +38,7 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
               child: state.isLoading && state.order == null
                   ? const SizedBox.shrink()
                   : state.order == null
-                  ? _error(context, state.failure?.toTranslated(context))
+                  ? _error(context, state.failure?.toLimitOrderMessage(context))
                   : _details(context, state.order!, state.wasCancelled),
             ),
           ],
@@ -146,7 +147,7 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
         if (state.failure case final failure?) ...[
           const Gap(12),
           Text(
-            failure.toTranslated(context),
+            failure.toLimitOrderMessage(context),
             style: TextStyle(color: context.bull.error),
           ),
         ],

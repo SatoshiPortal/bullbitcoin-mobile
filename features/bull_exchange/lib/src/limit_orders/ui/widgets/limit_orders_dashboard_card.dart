@@ -1,9 +1,10 @@
+import '../../limit_order_failure_message.dart';
+import '../../limit_orders_navigation.dart';
+
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_state.dart';
-import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_cubit.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_state.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,13 +44,14 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
         ],
       );
     }
-    if (state.failure != null && state.orders.isEmpty) {
+    final failure = state.failure;
+    if (failure != null && state.orders.isEmpty) {
       return Column(
         key: const ValueKey('error'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            state.failure!.toTranslated(context),
+            failure.toLimitOrderMessage(context),
             style: TextStyle(color: context.bull.error),
           ),
           const Gap(12),
@@ -107,7 +109,7 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
           InkWell(
             onTap: () async {
               final changed = await context.pushNamed<bool>(
-                LimitOrdersRoute.details.name,
+                LimitOrdersNavigation.detailsName,
                 pathParameters: {'orderId': order.id},
               );
               if (changed == true && context.mounted) {
@@ -164,7 +166,7 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
         ),
         if (state.failure case final failure?)
           Text(
-            failure.toTranslated(context),
+            failure.toLimitOrderMessage(context),
             style: TextStyle(color: context.bull.error),
           ),
       ],
@@ -172,7 +174,9 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
   }
 
   Future<void> _openCreate(BuildContext context) async {
-    final changed = await context.pushNamed<bool>(LimitOrdersRoute.create.name);
+    final changed = await context.pushNamed<bool>(
+      LimitOrdersNavigation.createName,
+    );
     if (changed == true && context.mounted) {
       await context.read<LimitOrdersCubit>().load();
     }

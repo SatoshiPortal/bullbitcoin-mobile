@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:preferences/preferences.dart';
 
 import '../exchange_landing_navigation.dart';
+import '../limit_orders/limit_orders_management.dart';
 import 'exchange_home_actions.dart';
 import 'exchange_home_screen.dart';
 
@@ -17,8 +18,6 @@ typedef ExchangeDashboardHost = ({
   ExchangeDashboardState Function(BuildContext) watchDashboard,
   Future<void> Function(BuildContext) refreshAccount,
   Future<void> Function(BuildContext) stopDca,
-  List<Widget> Function() buildHomeCards,
-  VoidCallback onHomeRefresh,
   void Function(BuildContext) onOpenSettings,
   void Function(BuildContext) onOpenDca,
   void Function(BuildContext) onWithdraw,
@@ -36,6 +35,7 @@ GoRoute exchangeDashboardRoute({
   required String homePath,
   required String brandAsset,
   required void Function(BuildContext) onExit,
+  required Exchange Function()? limitOrders,
 }) => GoRoute(
   name: BullExchangeNavigation.dashboardName,
   path: BullExchangeNavigation.dashboardPath,
@@ -52,27 +52,11 @@ GoRoute exchangeDashboardRoute({
     child: _SessionReturn(
       host: host,
       onExit: onExit,
-      child: Builder(
-        builder: (context) {
-          return ExchangeHomeScreen(
-            watchDashboard: host.watchDashboard,
-            exchange: host.exchange,
-            preferences: host.preferences,
-            brandAsset: brandAsset,
-            settingsAsset: host.settingsAsset,
-            refreshAccount: () => host.refreshAccount(context),
-            stopDca: () => host.stopDca(context),
-            homeCards: host.buildHomeCards(),
-            onHomeRefresh: host.onHomeRefresh,
-            onOpenSettings: () => host.onOpenSettings(context),
-            onOpenDca: () => host.onOpenDca(context),
-            onWithdraw: () => host.onWithdraw(context),
-            onHistory: () => host.onHistory(context),
-            onAction: (action) => host.onAction(context, action),
-            onExit: () => onExit(context),
-            failureMessage: host.failureMessage,
-          );
-        },
+      child: _DashboardContent(
+        host: host,
+        brandAsset: brandAsset,
+        onExit: onExit,
+        limitOrders: limitOrders,
       ),
     ),
   ),
@@ -82,6 +66,62 @@ GoRoute exchangeDashboardRoute({
 bool _signedIn(ExchangeAccess access) =>
     access is ExchangeAccessEnabled &&
     access.session == ExchangeAccessSession.signedIn;
+
+class _DashboardContent extends StatefulWidget {
+  final ExchangeDashboardHost host;
+  final String brandAsset;
+  final void Function(BuildContext) onExit;
+  final Exchange Function()? limitOrders;
+
+  const _DashboardContent({
+    required this.host,
+    required this.brandAsset,
+    required this.onExit,
+    required this.limitOrders,
+  });
+
+  @override
+  State<_DashboardContent> createState() => _DashboardContentState();
+}
+
+class _DashboardContentState extends State<_DashboardContent> {
+  final _refreshes = StreamController<void>.broadcast();
+
+  @override
+  void dispose() {
+    unawaited(_refreshes.close());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final host = widget.host;
+    return ExchangeHomeScreen(
+      watchDashboard: host.watchDashboard,
+      exchange: host.exchange,
+      preferences: host.preferences,
+      brandAsset: widget.brandAsset,
+      settingsAsset: host.settingsAsset,
+      refreshAccount: () => host.refreshAccount(context),
+      stopDca: () => host.stopDca(context),
+      homeCards: [
+        if (widget.limitOrders case final exchange?)
+          LimitOrdersManagementCard(
+            exchange: exchange,
+            refreshRequests: _refreshes.stream,
+          ),
+      ],
+      onHomeRefresh: () => _refreshes.add(null),
+      onOpenSettings: () => host.onOpenSettings(context),
+      onOpenDca: () => host.onOpenDca(context),
+      onWithdraw: () => host.onWithdraw(context),
+      onHistory: () => host.onHistory(context),
+      onAction: (action) => host.onAction(context, action),
+      onExit: () => widget.onExit(context),
+      failureMessage: host.failureMessage,
+    );
+  }
+}
 
 class _SessionReturn extends StatefulWidget {
   final ExchangeDashboardHost host;

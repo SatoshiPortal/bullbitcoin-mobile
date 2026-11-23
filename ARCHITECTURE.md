@@ -359,6 +359,8 @@ The Exchange mount contributes `/auto-buy`; the dashboard uses its reusable Auto
 
 The Exchange mount owns the Trade dashboard and its KYC child route. It consumes the host's existing account observation while the shared account state moves, and owns the balance layout, shortcuts, DCA card, account announcements and sign-out navigation. Application-level destinations remain explicit navigation callbacks.
 
+The same mount owns the active limit-order card, details and cancellation. Create still uses the legacy foreground wallet catalog until the authorized wallet inventory is mounted; its route uses the workspace's typed details navigation.
+
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 
 `packages/google_drive` owns Google sign-in and listing, reading, writing and deleting files in the app data folder. `GoogleDrive.open()` creates the transport. Its operations return typed results, `revokeAccess()` revokes the user grant, and synchronous `dispose()` releases local resources. RecoverBull owns the vault format, metadata mapping and account-scoped vault selection.

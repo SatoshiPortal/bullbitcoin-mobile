@@ -35,8 +35,6 @@ class ExchangeRouterConfig {
   final Future<bool> Function() networkUnavailable;
   final bool Function(BuildContext) isSuperuser;
   final String homePath;
-  final List<Widget> Function() buildHomeCards;
-  final VoidCallback onHomeRefresh;
   final void Function(BuildContext) onExit;
   final void Function(BuildContext) onOpenSettings;
   final void Function(BuildContext, ExchangeHomeAction) onAction;
@@ -47,8 +45,6 @@ class ExchangeRouterConfig {
     required this.networkUnavailable,
     required this.isSuperuser,
     required this.homePath,
-    required this.buildHomeCards,
-    required this.onHomeRefresh,
     required this.onExit,
     required this.onOpenSettings,
     required this.onAction,
@@ -98,6 +94,7 @@ class ExchangeRouter {
     onExit: config.onExit,
     settings: settings,
     auth: ExchangeScope.authHost,
+    limitOrders: exchange,
     withdrawal: exchange == null || preferences == null
         ? null
         : (
@@ -118,8 +115,6 @@ class ExchangeRouter {
       watchDashboard: ExchangeScope.watchDashboard,
       refreshAccount: ExchangeScope.refreshSession,
       stopDca: ExchangeScope.stopDca,
-      buildHomeCards: config.buildHomeCards,
-      onHomeRefresh: config.onHomeRefresh,
       onOpenSettings: config.onOpenSettings,
       onOpenDca: (context) => context.pushNamed(DcaRoute.dca.name),
       onWithdraw: (context) => context.pushNamed(WithdrawRoute.withdraw.name),

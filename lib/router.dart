@@ -71,8 +71,6 @@ class AppRouter {
     isSuperuser: (context) =>
         context.read<SettingsCubit>().state.isSuperuser ?? false,
     homePath: WalletRoute.walletHome.path,
-    buildHomeCards: () => [locator<LimitOrdersFacade>().buildDashboardCard()],
-    onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
     onAction: (context, action) => _openQuickAction(context, switch (action) {
@@ -270,7 +268,8 @@ class AppRouter {
       ...ImportColdcardRouter.routes,
       DcaRouter.route,
       ?_exchangeFeature.autoBuy,
-      ...LimitOrdersRouter.routes,
+      LimitOrdersRouter.create,
+      ?_exchangeFeature.limitOrderDetails,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
       ...locator<NetworkFeature>().routes.root,

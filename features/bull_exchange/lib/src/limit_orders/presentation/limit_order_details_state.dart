@@ -1,12 +1,11 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 
 final class LimitOrderDetailsState {
   final LimitOrder? order;
   final bool isLoading;
   final bool isCancelling;
   final bool wasCancelled;
-  final LimitOrdersFailure? failure;
+  final ExchangeFailure? failure;
 
   const LimitOrderDetailsState({
     this.order,
@@ -21,7 +20,7 @@ final class LimitOrderDetailsState {
     bool? isLoading,
     bool? isCancelling,
     bool? wasCancelled,
-    LimitOrdersFailure? failure,
+    ExchangeFailure? failure,
     bool clearFailure = false,
   }) => LimitOrderDetailsState(
     order: order ?? this.order,

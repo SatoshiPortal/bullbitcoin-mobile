@@ -1,20 +1,18 @@
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_state.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class LimitOrderDetailsCubit extends Cubit<LimitOrderDetailsState> {
   final String _id;
-  final GetLimitOrderUsecase _getOrder;
-  final CancelLimitOrderUsecase _cancelOrder;
+  final ExchangeLimitOrders _orders;
 
-  LimitOrderDetailsCubit(this._id, this._getOrder, this._cancelOrder)
+  LimitOrderDetailsCubit(this._id, this._orders)
     : super(const LimitOrderDetailsState());
 
   Future<void> load() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
-    final result = await _getOrder.execute(_id);
+    final result = await _orders.get(_id);
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
@@ -26,7 +24,7 @@ final class LimitOrderDetailsCubit extends Cubit<LimitOrderDetailsState> {
 
   Future<void> cancel() async {
     emit(state.copyWith(isCancelling: true, clearFailure: true));
-    final result = await _cancelOrder.execute(_id);
+    final result = await _orders.cancel(_id);
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):

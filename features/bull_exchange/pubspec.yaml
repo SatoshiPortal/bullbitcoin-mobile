@@ -30,6 +30,7 @@ dependencies:
   preferences:
   primitives:
   share_plus: ^13.3.1
+  shimmer: ^4.0.0
   url_launcher: ^6.3.2
   webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10

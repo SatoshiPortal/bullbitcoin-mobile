@@ -2,15 +2,12 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/list_active_limit_orders_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
-  final ListActiveLimitOrdersUsecase _listActive;
-  final CancelAllLimitOrdersUsecase _cancelAll;
+  final ExchangeLimitOrders _orders;
   final CanCreateLimitOrderUsecase _canCreate;
   final Stream<Result<NotificationMessage, ExchangeFailure>> _notifications;
 
@@ -19,8 +16,7 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
   StreamSubscription<void>? _refreshSubscription;
 
   LimitOrdersCubit(
-    this._listActive,
-    this._cancelAll,
+    this._orders,
     this._canCreate,
     this._notifications, {
     Stream<void>? refreshRequests,
@@ -37,7 +33,7 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
 
   Future<void> load() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
-    final result = await _listActive.execute();
+    final result = await _orders.listActive();
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
@@ -55,7 +51,7 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
 
   Future<void> cancelAll() async {
     emit(state.copyWith(isCancellingAll: true, clearFailure: true));
-    final result = await _cancelAll.execute();
+    final result = await _orders.cancelAll();
     if (isClosed) return;
     switch (result) {
       case Ok():
