@@ -16,5 +16,8 @@ dependencies:
   google_drive:
 
 dev_dependencies:
+  google_sign_in: ^6.3.0
+  google_sign_in_platform_interface: ^2.5.0
+  http: ^1.2.2
   flutter_test:
     sdk: flutter
