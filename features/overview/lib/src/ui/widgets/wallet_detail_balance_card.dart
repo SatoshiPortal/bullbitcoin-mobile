@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
@@ -9,6 +8,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
     super.key,
     required this.isLiquid,
     required this.signer,
+    required this.background,
     required this.balanceText,
     required this.fiatBalance,
     this.eyeToggle,
@@ -17,6 +17,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
 
   const WalletDetailBalanceCard.localBitcoin({
     super.key,
+    required this.background,
     required this.balanceText,
     required this.fiatBalance,
     this.eyeToggle,
@@ -24,6 +25,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
   }) : isLiquid = false,
        signer = SignerEntity.local;
 
+  final ImageProvider<Object> background;
   final bool isLiquid;
   final SignerEntity signer;
   final Widget balanceText;
@@ -37,11 +39,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
       height: 185,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(
-            isLiquid
-                ? Assets.backgrounds.bgInstantWallet.path
-                : Assets.backgrounds.bgSecureWallet.path,
-          ),
+          image: background,
           fit: .cover,
           colorFilter: signer == SignerEntity.none
               ? ColorFilter.mode(context.theme.secondaryHeaderColor, .color)
