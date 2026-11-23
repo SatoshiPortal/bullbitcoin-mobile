@@ -11,14 +11,17 @@ import '../domain/usecases/get_send_exchange_rate_usecase.dart';
 abstract interface class Send {
   factory Send.open({
     required Preferences preferences,
-    IndexPriceReader readPrice = Pricer.getIndexPrice,
-    IndexPricesReader readPrices = Pricer.getIndexPrices,
+    IndexPriceReader? readPrice,
+    IndexPricesReader? readPrices,
   }) => _Send(
     GetSendExchangeRateUsecase(
       getSettingsUsecase: preferences,
-      getIndexPrice: readPrice,
+      getIndexPrice: readPrice ?? Pricer.getIndexPrice,
     ),
-    GetSendAmountQuotesUsecase(settings: preferences, read: readPrices),
+    GetSendAmountQuotesUsecase(
+      settings: preferences,
+      read: readPrices ?? Pricer.getIndexPrices,
+    ),
   );
 
   @useResult
