@@ -407,6 +407,26 @@ void main() {
       ),
     );
   });
+
+  test('an unexpected error ends on the startup error screen', () async {
+    // Without a result the splash would wait forever.
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: any(named: 'onlyDefaults'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenThrow(StateError('unexpected'));
+    final usecase = usecaseOn(FakeSecureStoragePlatform());
+
+    expect(
+      await usecase.execute(),
+      isA<Err<bool, AppStartupFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<AppStartupWalletCheckFailure>(),
+      ),
+    );
+  });
 }
 
 class _StartupPreferences implements ActiveEnvironmentReader {
