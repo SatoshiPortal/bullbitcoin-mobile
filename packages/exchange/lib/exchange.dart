@@ -3,6 +3,9 @@ library;
 
 export 'src/domain/exchange_defaults.dart' show ExchangeDefaults;
 
+export 'src/domain/catalog/exchange_catalog.dart';
+export 'src/domain/catalog/jurisdiction.dart';
+export 'src/domain/catalog/market.dart';
 export 'src/domain/entities/announcement.dart';
 export 'src/domain/entities/confidential_sepa_availability.dart';
 export 'src/domain/entities/dca.dart';
