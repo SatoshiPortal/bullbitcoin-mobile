@@ -30,6 +30,7 @@ final class BoltzCutover {
   final File file;
   final File standalone;
   final bool regtest;
+  final void Function(String message)? warning;
   final Future<Result<QueryExecutor, LegacyImportFailure>> Function() Function(
     bool existing,
   )
@@ -40,6 +41,7 @@ final class BoltzCutover {
     required this.standalone,
     required this.regtest,
     required this.executor,
+    this.warning,
   });
 
   String get ownerId => regtest ? 'swaps_regtest' : 'swaps';
@@ -50,6 +52,7 @@ final class BoltzCutover {
     tables: regtest ? const [] : const [_autoSwap],
     open: _open,
     standalone: true,
+    onRejected: _warnRejected,
     complete: (root, destination) => importStandaloneSource(
       standalone,
       destination,
@@ -59,9 +62,19 @@ final class BoltzCutover {
         source,
         destination,
         seedAutoSwap: !regtest && root == null,
+        reject: _reject,
       ),
+      onRejected: _warnRejected,
     ),
   );
+
+  void _warnRejected(String reason) =>
+      warning?.call('storage.cutover.rejected owner=$ownerId reason=$reason');
+
+  bool _reject(String reason) {
+    _warnRejected(reason);
+    return false;
+  }
 
   Future<Result<OwnerDatabase<BoltzSwapsDatabase>, LegacyImportFailure>> open(
     RuntimeAdmission admission,
@@ -100,10 +113,13 @@ Future<bool> _complete(
   Database? standalone,
   BoltzSwapsDatabase destination, {
   required bool seedAutoSwap,
+  required bool Function(String) reject,
 }) async {
   if (standalone != null) {
     final version = standalone.userVersion;
-    if (version != 1 && version != 2) return false;
+    if (version != 1 && version != 2) {
+      return reject('standalone_schema_unsupported');
+    }
     final projection = version == 1
         ? "$_columns,NULL,NULL,'boltz'"
         : _standaloneColumns;
@@ -120,7 +136,7 @@ Future<bool> _complete(
     );
     if (!await swaps.copyAndVerify(standalone, destination) ||
         !await markers.copyAndVerify(standalone, destination)) {
-      return false;
+      return reject('standalone_projection_mismatch');
     }
   }
   if (root == null) {
@@ -140,9 +156,10 @@ Future<bool> _complete(
     }
     return true;
   }
-  if (!await copySequence(root, destination, 'auto_swap')) return false;
+  if (!await copySequence(root, destination, 'auto_swap')) {
+    return reject('root_auto_swap_sequence_mismatch');
+  }
 
-  final prior = await destination.dataMigrationDone('app-db-swaps-v1');
   final historical = root.select('SELECT $_columns FROM swaps ORDER BY id');
   for (final row in historical) {
     final id = row['id'];
@@ -165,12 +182,12 @@ Future<bool> _complete(
         'creation_time',
       ];
       if (identity.any((column) => row[column] != existing.data[column])) {
-        return false;
+        return reject('root_swap_identity_mismatch');
       }
     } else {
-      // The old importer could skip rows and runtime can trash them. Its
-      // receipt cannot distinguish a skipped row from an intentional delete.
-      if (prior) return false;
+      // The old receipt did not certify coverage: its importer could skip
+      // incomplete rows, and older runtimes deleted expired recovery data.
+      // Preserve the raw row without marking it usable or replacing live data.
       final values = row.values;
       final placeholders = List.filled(values.length, '?').join(',');
       await destination.customStatement(
@@ -180,7 +197,7 @@ Future<bool> _complete(
       final copied = await current();
       if (copied == null ||
           !sameSqliteValues(values, copied.data.values.toList())) {
-        return false;
+        return reject('root_swap_copy_mismatch');
       }
     }
   }

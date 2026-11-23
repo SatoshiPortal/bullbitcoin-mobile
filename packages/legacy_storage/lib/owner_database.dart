@@ -144,16 +144,18 @@ final class OwnerTableCopy {
 
   Future<bool> copyAndVerify(
     Database source,
-    GeneratedDatabase destination,
-  ) async {
+    GeneratedDatabase destination, {
+    List<Row> Function(ResultSet)? filter,
+  }) async {
     final selection = 'SELECT $columns FROM $table ORDER BY $orderBy';
     final original = source.select(sourceQuery ?? selection);
     final columnNames = columns.split(',');
     if (original.columnNames.length != columnNames.length) return false;
+    final rows = filter?.call(original) ?? original.toList();
     final placeholders = List.filled(columnNames.length, '?').join(',');
     final key = mergeBy;
     final conflictClause = key == null ? '' : ' ON CONFLICT ($key) DO NOTHING';
-    for (final row in original) {
+    for (final row in rows) {
       await destination.customStatement(
         'INSERT INTO $table ($columns) VALUES ($placeholders)$conflictClause',
         row.values.toList(),
@@ -164,17 +166,18 @@ final class OwnerTableCopy {
       final keyPosition = columnNames.indexOf(key);
       if (keyPosition < 0) throw ArgumentError('Missing merge key');
       final byKey = {for (final row in copied) row.data[key]: row.data.values};
-      for (final row in original.rows) {
-        final target = byKey[row[keyPosition]];
-        if (target == null || !sameSqliteValues(row, target.toList())) {
+      for (final row in rows) {
+        final values = row.values.toList();
+        final target = byKey[values[keyPosition]];
+        if (target == null || !sameSqliteValues(values, target.toList())) {
           return false;
         }
       }
       return true;
     }
-    if (copied.length != original.length) return false;
-    for (var index = 0; index < original.length; index++) {
-      final before = original[index].values.toList();
+    if (copied.length != rows.length) return false;
+    for (var index = 0; index < rows.length; index++) {
+      final before = rows[index].values.toList();
       final after = copied[index].data.values.toList();
       if (!sameSqliteValues(before, after)) return false;
     }
@@ -237,13 +240,24 @@ Future<bool> copySequence(
 /// surviving sidecars or quarantine entries is not an empty source.
 Future<bool> readStandaloneSource(
   File file,
-  Future<bool> Function(Database? source) read,
-) async {
+  Future<bool> Function(Database? source) read, {
+  void Function()? onQuarantinePresent,
+  void Function(String reason)? onRejected,
+}) async {
+  bool reject(String reason) {
+    onRejected?.call(reason);
+    return false;
+  }
+
   final present = _familyMemberPresent(file);
-  if (_familyMemberPresent(File('${file.path}.retire-pending'))) return false;
+  if (_familyMemberPresent(File('${file.path}.retire-pending'))) {
+    return reject('standalone_retirement_pending');
+  }
   if (!present) {
     for (final suffix in ['-wal', '-shm', '-journal']) {
-      if (_familyMemberPresent(File('${file.path}$suffix'))) return false;
+      if (_familyMemberPresent(File('${file.path}$suffix'))) {
+        return reject('standalone_orphaned_sidecar');
+      }
     }
   }
   if (file.parent.existsSync()) {
@@ -257,7 +271,8 @@ Future<bool> readStandaloneSource(
         '$basename-journal',
       ].any((member) => name.startsWith('$member.unreadable-'));
     })) {
-      return false;
+      if (!present) return reject('standalone_orphaned_quarantine');
+      onQuarantinePresent?.call();
     }
   }
   if (!present) return read(null);
@@ -286,15 +301,30 @@ Future<bool> importStandaloneSource(
   File file,
   GeneratedDatabase destination,
   String owner,
-  Future<bool> Function(Database? source) copyAndVerify,
-) => readStandaloneSource(file, (source) async {
-  if (!await copyAndVerify(source)) return false;
-  await destination.customStatement(
-    'INSERT INTO legacy_import_receipts (id) VALUES (?)',
-    [_standaloneReceipt(owner, present: source != null)],
+  Future<bool> Function(Database? source) copyAndVerify, {
+  void Function(String reason)? onRejected,
+}) {
+  var quarantinePresent = false;
+  return readStandaloneSource(
+    file,
+    (source) async {
+      if (!await copyAndVerify(source)) return false;
+      await destination.customStatement(
+        'INSERT INTO legacy_import_receipts (id) VALUES (?)',
+        [_standaloneReceipt(owner, present: source != null)],
+      );
+      if (quarantinePresent) {
+        await destination.customStatement(
+          'INSERT INTO legacy_import_receipts (id) VALUES (?)',
+          ['standalone-v1/$owner/quarantine-present'],
+        );
+      }
+      return true;
+    },
+    onQuarantinePresent: () => quarantinePresent = true,
+    onRejected: onRejected,
   );
-  return true;
-});
+}
 
 String _standaloneReceipt(String owner, {required bool present}) =>
     'standalone-v1/$owner/${present ? 'imported' : 'absent'}';
@@ -367,6 +397,7 @@ final class ProjectedOwner<T extends GeneratedDatabase>
   open;
   final Future<bool> Function(Database? root, T destination)? complete;
   final bool standalone;
+  final void Function(String reason)? onRejected;
 
   const ProjectedOwner({
     required this.ownerId,
@@ -375,6 +406,7 @@ final class ProjectedOwner<T extends GeneratedDatabase>
     required this.open,
     this.complete,
     this.standalone = false,
+    this.onRejected,
   });
 
   @override
@@ -421,6 +453,11 @@ final class _PreparedProjection<T extends GeneratedDatabase>
 
   const _PreparedProjection(this.owner, this.store);
 
+  bool _reject(String reason) {
+    owner.onRejected?.call(reason);
+    return false;
+  }
+
   @override
   Future<Result<void, LegacyImportFailure>> importLegacy(LegacySource source) =>
       importLegacyDatabase(
@@ -434,12 +471,12 @@ final class _PreparedProjection<T extends GeneratedDatabase>
             'fresh-v1/${owner.ownerId}',
           );
           if (fresh is! Ok<bool, LegacyImportFailure> || fresh.value) {
-            return false;
+            return _reject('root_fresh_receipt_conflict');
           }
-          if (!await _empty()) return false;
+          if (!await _empty()) return _reject('destination_not_empty');
           for (final table in owner.tables) {
             if (!await table.copyAndVerify(source, store.database)) {
-              return false;
+              return _reject('root_projection_mismatch');
             }
           }
           return await owner.complete?.call(source, store.database) ?? true;
@@ -456,9 +493,13 @@ final class _PreparedProjection<T extends GeneratedDatabase>
         }
         if (readiness is! Ok<OwnerReadiness, LegacyImportFailure> ||
             readiness.value != OwnerReadiness.pending) {
+          _reject('fresh_readiness_conflict');
           return const Err(LegacyImportVerificationFailed());
         }
-        if (!await _empty()) return const Err(LegacyImportVerificationFailed());
+        if (!await _empty()) {
+          _reject('destination_not_empty');
+          return const Err(LegacyImportVerificationFailed());
+        }
         await store.database.customStatement('''
           CREATE TABLE IF NOT EXISTS legacy_import_receipts (
             id TEXT PRIMARY KEY NOT NULL

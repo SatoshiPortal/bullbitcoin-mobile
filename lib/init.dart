@@ -113,6 +113,7 @@ class Bull {
           regtest ? 'boltz_swaps_regtest.sqlite' : 'boltz_swaps.sqlite',
         ),
         regtest: regtest,
+        warning: log.warning,
         executor: Secrets.databaseOpener<LegacyImportFailure>(
           file: destination(owner),
           module: owner,
@@ -132,6 +133,7 @@ class Bull {
           regtest ? 'payjoin-regtest.sqlite' : payjoinDatabaseFilename,
         ),
         regtest: regtest,
+        warning: log.warning,
         executor: Secrets.databaseOpener<LegacyImportFailure>(
           file: destination(owner),
           module: owner,

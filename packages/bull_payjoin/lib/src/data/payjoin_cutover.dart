@@ -5,7 +5,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:legacy_storage/owner_database.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart' show Database;
+import 'package:sqlite3/sqlite3.dart' show Database, ResultSet, Row;
 
 import 'payjoin_database.dart';
 import 'payjoin_migration.dart';
@@ -32,6 +32,7 @@ final class PayjoinCutover {
   final File file;
   final File standalone;
   final bool regtest;
+  final void Function(String message)? warning;
   final Future<Result<QueryExecutor, LegacyImportFailure>> Function() Function(
     bool existing,
   )
@@ -42,6 +43,7 @@ final class PayjoinCutover {
     required this.standalone,
     required this.regtest,
     required this.executor,
+    this.warning,
   });
 
   String get ownerId => regtest ? 'payjoin_regtest' : 'payjoin';
@@ -54,13 +56,23 @@ final class PayjoinCutover {
     tables: const <OwnerTableCopy>[],
     open: _open,
     standalone: true,
+    onRejected: _warnRejected,
     complete: (root, destination) => importStandaloneSource(
       standalone,
       destination,
       ownerId,
-      (source) => _complete(regtest ? null : root, source, destination),
+      (source) => _complete(regtest ? null : root, source, destination, this),
+      onRejected: _warnRejected,
     ),
   );
+
+  void _warnRejected(String reason) =>
+      warning?.call('storage.cutover.rejected owner=$ownerId reason=$reason');
+
+  bool _reject(String reason) {
+    _warnRejected(reason);
+    return false;
+  }
 
   Future<Result<OwnerDatabase<PayjoinDatabase>, LegacyImportFailure>> open(
     RuntimeAdmission admission,
@@ -98,10 +110,13 @@ Future<bool> _complete(
   Database? root,
   Database? standalone,
   PayjoinDatabase destination,
+  PayjoinCutover cutover,
 ) async {
   final version = standalone?.userVersion;
   if (standalone != null) {
-    if (version != 1 && version != 2 && version != 3) return false;
+    if (version != 1 && version != 2 && version != 3) {
+      return cutover._reject('standalone_schema_unsupported');
+    }
     final networkEvidence = version == 3
         ? 'has_network_evidence'
         : _version3Sender;
@@ -137,20 +152,29 @@ Future<bool> _complete(
         orderBy: 'name',
       ),
     ]) {
-      if (!await table.copyAndVerify(standalone, destination)) return false;
+      if (!await table.copyAndVerify(standalone, destination)) {
+        return cutover._reject('standalone_projection_mismatch');
+      }
     }
   }
 
-  if (root != null && !await _reconcileRoot(root, destination)) return false;
+  if (root != null && !await _reconcileRoot(root, destination, cutover)) {
+    return false;
+  }
   final policies = await destination.select(destination.payjoinPolicies).get();
   if (policies.isEmpty) {
     await PayjoinPolicyStore(destination).ensureDefaults();
   }
   final policy = await destination.select(destination.payjoinPolicies).get();
-  return policy.length == 1 && policy.single.id == 1;
+  return (policy.length == 1 && policy.single.id == 1) ||
+      cutover._reject('invalid_policy');
 }
 
-Future<bool> _reconcileRoot(Database root, PayjoinDatabase destination) async {
+Future<bool> _reconcileRoot(
+  Database root,
+  PayjoinDatabase destination,
+  PayjoinCutover cutover,
+) async {
   final marker = await (destination.select(
     destination.payjoinMigrations,
   )..where((row) => row.name.equals('root-payjoin-v1'))).getSingleOrNull();
@@ -173,21 +197,56 @@ Future<bool> _reconcileRoot(Database root, PayjoinDatabase destination) async {
       mergeBy: 'id',
       sourceQuery: 'SELECT $_receivers,0,0 FROM payjoin_receivers ORDER BY id',
     );
-    if (!_validRootSessions(root)) return false;
-    return await senderCopy.copyAndVerify(root, destination) &&
-        await receiverCopy.copyAndVerify(root, destination);
+    var skippedSenders = 0;
+    var skippedReceivers = 0;
+    if (!await senderCopy.copyAndVerify(
+      root,
+      destination,
+      filter: (rows) {
+        final accepted = _validRootRows(rows, 'uri');
+        skippedSenders = rows.length - accepted.length;
+        return accepted;
+      },
+    )) {
+      return cutover._reject('root_sender_conflict');
+    }
+    if (!await receiverCopy.copyAndVerify(
+      root,
+      destination,
+      filter: (rows) {
+        final accepted = _validRootRows(rows, 'id');
+        skippedReceivers = rows.length - accepted.length;
+        return accepted;
+      },
+    )) {
+      return cutover._reject('root_receiver_conflict');
+    }
+    if (skippedSenders != 0 || skippedReceivers != 0) {
+      await destination.customStatement(
+        'INSERT INTO legacy_import_receipts (id) VALUES (?)',
+        ['root-payjoin-quarantine/${skippedSenders}s/${skippedReceivers}r'],
+      );
+      cutover.warning?.call(
+        'storage.cutover.root_payjoin_quarantined '
+        'senders=$skippedSenders receivers=$skippedReceivers',
+      );
+    }
+    return true;
   }
 
-  // The old receipt was computed AFTER filtering. Counts alone cannot certify
-  // that the root was fully imported. Also, blindly reinserting a receiver
-  // can resurrect an intentionally deleted session. Preserve both sources
-  // and refuse admission if a historical row cannot be accounted for.
-  if (!_validRootSessions(root)) return false;
-  final senders = root.select('SELECT $_senders FROM payjoin_senders');
-  final receivers = root.select('SELECT $_receivers FROM payjoin_receivers');
+  // The published receipt was computed after quarantine. Verify exactly that
+  // subset before trusting the standalone file as the runtime's authority.
+  final senders = _validRootRows(
+    root.select('SELECT $_senders FROM payjoin_senders ORDER BY uri'),
+    'uri',
+  );
+  final receivers = _validRootRows(
+    root.select('SELECT $_receivers FROM payjoin_receivers ORDER BY id'),
+    'id',
+  );
   if (senders.length != marker.senderCount ||
       receivers.length != marker.receiverCount) {
-    return false;
+    return cutover._reject('root_receipt_count_mismatch');
   }
   final snapshot = PayjoinLegacySnapshot(
     sourceSchemaVersion: root.userVersion,
@@ -234,19 +293,19 @@ Future<bool> _reconcileRoot(Database root, PayjoinDatabase destination) async {
     ],
   );
   if (legacyPayjoinSnapshotDigest(snapshot) != marker.verificationDigest) {
-    return false;
+    return cutover._reject('root_receipt_digest_mismatch');
   }
   for (final row in senders) {
     final current =
         await (destination.select(destination.payjoinSenders)
               ..where((table) => table.uri.equals(row['uri'] as String)))
             .getSingleOrNull();
-    if (current == null ||
-        current.isTestnet != (row['is_testnet'] == 1) ||
+    if (current == null) return cutover._reject('root_sender_missing');
+    if (current.isTestnet != (row['is_testnet'] == 1) ||
         current.walletId != row['wallet_id'] ||
         current.originalTxId != row['original_tx_id'] ||
         current.createdAt != row['created_at']) {
-      return false;
+      return cutover._reject('root_sender_identity_mismatch');
     }
   }
   for (final row in receivers) {
@@ -254,25 +313,36 @@ Future<bool> _reconcileRoot(Database root, PayjoinDatabase destination) async {
         await (destination.select(destination.payjoinReceivers)
               ..where((table) => table.id.equals(row['id'] as String)))
             .getSingleOrNull();
-    if (current == null ||
-        current.isTestnet != (row['is_testnet'] == 1) ||
+    if (current == null) {
+      // Match deleteIdleReceiver. Historical root rows had no is_aborted
+      // column and were imported as un-aborted. Never resurrect this session.
+      if (row['original_tx_bytes'] == null &&
+          row['proposal_psbt'] == null &&
+          row['is_completed'] == 0) {
+        continue;
+      }
+      return cutover._reject('root_receiver_missing');
+    }
+    if (current.isTestnet != (row['is_testnet'] == 1) ||
         current.walletId != row['wallet_id'] ||
         current.address != row['address'] ||
         current.createdAt != row['created_at']) {
-      return false;
+      return cutover._reject('root_receiver_identity_mismatch');
     }
   }
   return true;
 }
 
-bool _validRootSessions(Database source) =>
-    source.select('''
-      SELECT 1 FROM payjoin_senders
-      WHERE trim(uri) = '' OR trim(wallet_id) = '' OR expire_after_sec <= 0
-      LIMIT 1
-    ''').isEmpty &&
-    source.select('''
-      SELECT 1 FROM payjoin_receivers
-      WHERE trim(id) = '' OR trim(wallet_id) = '' OR expire_after_sec <= 0
-      LIMIT 1
-    ''').isEmpty;
+List<Row> _validRootRows(ResultSet rows, String idColumn) {
+  final seen = <String>{};
+  return [
+    for (final row in rows)
+      if (isValidLegacyPayjoinSession(
+        row[idColumn] as String,
+        row['wallet_id'] as String,
+        row['expire_after_sec'] as int,
+        seen,
+      ))
+        row,
+  ];
+}
