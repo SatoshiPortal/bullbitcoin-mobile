@@ -20,6 +20,10 @@ final class PreferencesInvalidFailure extends PreferencesFailure {
   const PreferencesInvalidFailure();
 }
 
+final class PreferencesContextChangedFailure extends PreferencesFailure {
+  const PreferencesContextChangedFailure();
+}
+
 final class PreferencesStorageFailure extends PreferencesFailure {
   final bool deferred;
   const PreferencesStorageFailure({this.deferred = false});

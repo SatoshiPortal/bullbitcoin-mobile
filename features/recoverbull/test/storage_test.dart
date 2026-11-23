@@ -5,6 +5,8 @@ import 'package:bull_recoverbull/testing.dart';
 import 'package:bull_recoverbull/src/data/backup_metadata_repository_impl.dart';
 import 'package:bull_recoverbull/src/data/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/data/database/recoverbull_storage.dart';
+import 'package:bull_recoverbull/src/domain/entities/backup_settings.dart'
+    show LegacyBackupSettings;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart' show NativeDatabase;
 import 'package:primitives/primitives.dart';

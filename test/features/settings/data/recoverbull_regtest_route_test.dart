@@ -3,7 +3,6 @@ import 'package:preferences/testing.dart';
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/data/recoverbull_settings_adapter.dart';
 import 'package:bb_mobile/features/settings/domain/regtest_recoverbull_profile.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
@@ -151,8 +150,17 @@ void main() {
             ),
           );
           expect(
-            await services<RecoverBullLegacySettingsPort>().read(),
-            isA<Err<LegacyBackupSettings, RecoverBullFailure>>().having(
+            await services<RecoverBullPermissionPort>().readPermission(),
+            isA<Err<({bool granted, int revision}), RecoverBullFailure>>()
+                .having(
+                  (result) => result.failure,
+                  'failure',
+                  isA<VaultContextChangedFailure>(),
+                ),
+          );
+          expect(
+            await services<RecoverBullPermissionPort>().savePermission(true),
+            isA<Err<void, RecoverBullFailure>>().having(
               (result) => result.failure,
               'failure',
               isA<VaultContextChangedFailure>(),
@@ -268,21 +276,23 @@ void main() {
     verifyZeroInteractions(embedded);
   });
   test(
-    'regtest uses the fixture URL and its isolated imported permission',
+    'regtest uses the fixture URL and its isolated live permission',
     () async {
       await database.customStatement(
         "INSERT INTO recoverbull_permission_overrides (family, is_permission_granted) VALUES ('regtest', 1)",
       );
-      final result = await adapter().read();
+      final value = adapter();
       expect(
-        result,
-        isA<Ok<LegacyBackupSettings, RecoverBullFailure>>()
-            .having(
-              (r) => r.value.server.toString(),
-              'server',
-              'http://regtest.recoverbull.onion:3000',
-            )
-            .having((r) => r.value.permissionGranted, 'consent', true),
+        value.configuredServer.toString(),
+        'http://regtest.recoverbull.onion:3000',
+      );
+      expect(
+        await value.readPermission(),
+        isA<Ok<({bool granted, int revision}), RecoverBullFailure>>().having(
+          (r) => r.value.granted,
+          'consent',
+          true,
+        ),
       );
     },
   );
@@ -355,14 +365,12 @@ void main() {
           ),
         );
         expect(
-          await value.read(),
-          isA<Ok<LegacyBackupSettings, RecoverBullFailure>>()
-              .having(
-                (r) => r.value.server.toString(),
-                'server',
-                SettingsConstants.recoverbullUrl,
-              )
-              .having((r) => r.value.permissionGranted, 'permission', true),
+          await value.readPermission(),
+          isA<Ok<({bool granted, int revision}), RecoverBullFailure>>().having(
+            (r) => r.value.granted,
+            'permission',
+            true,
+          ),
         );
         expect(
           await value.open(),

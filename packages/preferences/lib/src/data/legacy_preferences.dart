@@ -19,14 +19,20 @@ final class RecoverBullPreferences {
     }
   }
 
+  /// Persist consent only while the captured runtime family is still active.
   @useResult
   Future<Result<void, PreferencesFailure>> setPermission(
     bool permission, {
     bool regtest = false,
   }) async {
     try {
-      await _dao.setRecoverBullPermission(permission, regtest: regtest);
-      return const Ok(null);
+      final written = await _dao.setRecoverBullPermission(
+        permission,
+        regtest: regtest,
+      );
+      return written
+          ? const Ok(null)
+          : const Err(PreferencesContextChangedFailure());
     } on Exception catch (error) {
       return Err(PreferencesWriteFailure(error.runtimeType.toString()));
     }

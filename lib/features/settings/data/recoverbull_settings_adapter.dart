@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -9,13 +8,12 @@ import 'package:bull_tor/tor.dart';
 
 import '../domain/regtest_recoverbull_profile.dart';
 
-/// Settings owns environment selection, proxy preference and the legacy row.
+/// Settings owns environment selection, proxy preference and live consent.
 final class RecoverBullSettingsAdapter
     implements
         RecoverBullRoutePort,
         RecoverBullEnvironmentPort,
-        RecoverBullPermissionPort,
-        RecoverBullLegacySettingsPort {
+        RecoverBullPermissionPort {
   final Preferences _settings;
   final RecoverBullPreferences _preferences;
   final EmbeddedTor _embedded;
@@ -42,7 +40,7 @@ final class RecoverBullSettingsAdapter
   }
 
   Uri get configuredServer =>
-      regtestProfile?.server ?? Uri.parse(SettingsConstants.recoverbullUrl);
+      regtestProfile?.server ?? Uri.parse(recoverBullDefaultServerUrl);
 
   @override
   Future<Result<({bool granted, int revision}), RecoverBullFailure>>
@@ -71,7 +69,11 @@ final class RecoverBullSettingsAdapter
       granted,
       regtest: regtestProfile != null,
     );
-    return saved.mapErr((_) => const VaultStorageFailure());
+    return saved.mapErr(
+      (failure) => failure is PreferencesContextChangedFailure
+          ? const VaultContextChangedFailure()
+          : const VaultStorageFailure(),
+    );
   }
 
   Future<bool> _runtimeIsCurrent() async {
@@ -100,42 +102,6 @@ final class RecoverBullSettingsAdapter
       return Ok(BitcoinNetwork.fromName(settings.environment.name));
     } on Exception {
       log.warning('recoverbull.environment.read.failed');
-      return const Err(VaultStorageFailure());
-    }
-  }
-
-  @override
-  Future<Result<LegacyBackupSettings, RecoverBullFailure>> read() async {
-    try {
-      final settings = (await _settings.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      if (!_matchesRuntime(settings)) {
-        return const Err(VaultContextChangedFailure());
-      }
-      final profile = regtestProfile;
-      final stored = await _preferences.read(regtest: profile != null);
-      final bool? permission;
-      switch (stored) {
-        case Ok(:final value):
-          permission = value;
-        case Err():
-          return const Err(VaultStorageFailure());
-      }
-      if (permission == null) return const Err(VaultStorageFailure());
-      return Ok(
-        LegacyBackupSettings(
-          server: configuredServer,
-          permissionGranted: permission,
-        ),
-      );
-    } on FormatException {
-      return const Err(VaultInvalidFailure());
-    } on ArgumentError {
-      return const Err(VaultInvalidFailure());
-    } on Exception {
-      log.warning('recoverbull.legacy.read.failed');
       return const Err(VaultStorageFailure());
     }
   }

@@ -35,7 +35,6 @@ final class SettingsRecoverBullBindings {
       dispose: (_) => adapter.close(),
     );
     locator.registerSingleton<RecoverBullEnvironmentPort>(adapter);
-    locator.registerSingleton<RecoverBullLegacySettingsPort>(adapter);
     locator.registerSingleton<RecoverBullPermissionPort>(adapter);
     return (
       path: host == null

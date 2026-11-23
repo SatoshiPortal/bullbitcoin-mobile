@@ -44,18 +44,33 @@ class PreferencesDao extends DatabaseAccessor<GeneratedDatabase>
     return (granted: legacy.isPermissionGranted, revision: 0);
   }
 
-  Future<void> setRecoverBullPermission(
+  Future<bool> setRecoverBullPermission(
     bool permission, {
     required bool regtest,
   }) async {
-    await customStatement(
+    final active = regtest
+        ? 'environment = ? AND is_superuser = 1 AND is_dev_mode_enabled = 1'
+        : 'environment IN (?, ?)';
+    final updated = await customUpdate(
       'INSERT INTO recoverbull_permission_overrides '
-      '(family, is_permission_granted, revision) VALUES (?, ?, 1) '
+      '(family, is_permission_granted, revision) SELECT ?, ?, 1 '
+      'WHERE EXISTS (SELECT 1 FROM settings WHERE id = 1 AND $active) '
       'ON CONFLICT (family) DO UPDATE SET '
       'is_permission_granted = excluded.is_permission_granted, '
       'revision = recoverbull_permission_overrides.revision + 1',
-      [regtest ? 'regtest' : 'default', permission ? 1 : 0],
+      variables: [
+        Variable(regtest ? 'regtest' : 'default'),
+        Variable(permission ? 1 : 0),
+        if (regtest)
+          Variable(Environment.regtest.name)
+        else ...[
+          Variable(Environment.mainnet.name),
+          Variable(Environment.testnet.name),
+        ],
+      ],
+      updates: {recoverbullPermissionOverrides},
     );
+    return updated == 1;
   }
 
   /// Repair persisted developer authorization before exposing the active network.

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_server_url.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
