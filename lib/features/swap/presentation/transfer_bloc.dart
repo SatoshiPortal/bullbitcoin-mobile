@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
-import 'package:swaps/order_swaps.dart';
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
@@ -13,7 +12,6 @@ import 'package:bb_mobile/features/send/domain/send_exceptions.dart'
         ConfirmTransactionException,
         InsufficientFundsSwapException,
         SwapCreationException;
-import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import '../domain/swap_amount_conversion.dart';

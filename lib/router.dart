@@ -1,4 +1,3 @@
-import 'package:all_seed_view/setup.dart';
 import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';

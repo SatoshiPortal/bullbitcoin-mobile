@@ -1,4 +1,3 @@
-import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
 import 'package:primitives/primitives.dart';

@@ -66,6 +66,8 @@ ExchangePurchaseHost exchangePurchaseHost(GetIt locator) => (
       ),
   bitcoinAsset: Assets.icons.btc.path,
   onClose: (context) => context.goNamed(WalletRoute.walletHome.name),
-  openOrder: (context, id) =>
-      TransactionsNavigation.openDetails(context, TransactionDetailsTarget.order(id)),
+  openOrder: (context, id) => TransactionsNavigation.openDetails(
+    context,
+    TransactionDetailsTarget.order(id),
+  ),
 );
