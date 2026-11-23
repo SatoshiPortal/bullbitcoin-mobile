@@ -14,7 +14,7 @@ import 'package:bull_ark/bull_ark.dart'
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 
 /// Every route path the Ark feature composes; the host serves these only.
@@ -61,8 +61,6 @@ final class ArkForegroundHost {
     required Uri arkUrl,
     required Uri primaryEsploraUrl,
     required bool initializeNew,
-    required WalletInventory inventory,
-    required ArkBoardFundingBinding Function() boardFunding,
     required this._boardFunding,
     required this._inventory,
     this._preferences,

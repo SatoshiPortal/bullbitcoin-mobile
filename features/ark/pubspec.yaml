@@ -26,6 +26,7 @@ dependencies:
   get_it: ^9.1.1
   scanning:
   go_router: ^18.1.4
+  material_ui: ^1.11.0
   background_tasks:
   notifications:
   shared_preferences: ^2.3.0
@@ -35,7 +36,6 @@ dependencies:
   sqlite3: ^3.5.2
   crypto: ^3.0.7
 dev_dependencies:
-  material_ui: ^1.11.0
   test: ^1.32.0
   flutter_test:
     sdk: flutter
