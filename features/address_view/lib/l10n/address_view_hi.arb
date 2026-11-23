@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "भुगतान URI",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
   "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
-  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+  "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin भुगतान पता या चालान",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin पता",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "तरल पता",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "बिजली का पता",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

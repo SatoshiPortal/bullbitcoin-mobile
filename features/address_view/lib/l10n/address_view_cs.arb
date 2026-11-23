@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "Platební URI",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
   "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
-  "copiedToClipboard": "Zkopírováno do schránky"
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "sendErrorInvalidAddressOrInvoice": "Neplatný Bitcoin Platební adresa nebo faktura",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin adresa",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid adresa",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Blesková adresa",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:all_seed_view/setup.dart';
 import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
@@ -16,8 +15,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
     show RouteErrorScreen;
 import 'package:announcements/setup.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart'
-    show SwapFacade;
+import 'package:swaps/order_swaps.dart' show OrderSwaps;
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
@@ -30,7 +28,8 @@ import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart'
 import 'package:network/network.dart';
 import 'package:settings/settings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
-import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swap_feature/swap_feature.dart'
+    show SwapFeature, SwapNavigation;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
@@ -51,7 +50,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
-import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -117,7 +115,7 @@ class AppRouter {
       case QuickAction.map:
         context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
-        context.pushNamed(SwapRoute.swap.name);
+        SwapNavigation.open(context);
       case QuickAction.history:
         TransactionsNavigation.openHistory(context);
       case QuickAction.support:
@@ -150,9 +148,9 @@ class AppRouter {
 
   static final _announcements = AnnouncementsFeature.mount(
     dismissals: locator<AnnouncementDismissals>(),
-    isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
+    isAppUpdateRequired: () => locator<OrderSwaps>().isAppUpdateRequired,
     watchAppUpdateRequired: () =>
-        locator<SwapFacade>().watchAppUpdateRequired(),
+        locator<OrderSwaps>().watchAppUpdateRequired(),
     openPayjoinSettings: (context) =>
         context.pushNamed(SettingsRoute.payjoinSettings.name),
   );
@@ -241,6 +239,7 @@ class AppRouter {
         menuScope: SettingsHubBindings.menuScope,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
+          autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
           addressRoutes: [locator<AddressViewFeature>().route],
           accessRoutes: locator<AccessFeature>().routes.settings,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
@@ -269,7 +268,6 @@ class AppRouter {
           extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
         ),
       ),
-      SwapRouter.route,
       ...locator<SwapFeature>().routes,
       ..._exchangeFeature.buyRoutes,
       ..._exchangeFeature.fundingRoutes,

@@ -25,5 +25,11 @@
   "viewerPaymentUriTab": "URI de paiement",
   "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
   "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
-  "copiedToClipboard": "Copié dans le presse-papiers"
+  "copiedToClipboard": "Copié dans le presse-papiers",
+  "destinationExpectedType": "Saisissez ou scannez une adresse valide : {type}.",
+  "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
+  "exchangeDcaAddressLabelBitcoin": "Adresse Bitcoin",
+  "exchangeDcaAddressLabelLiquid": "Adresse Liquid",
+  "exchangeDcaAddressLabelLightning": "Adresse Lightning",
+  "destinationAmountFromQr": "{type} · {amount} sats depuis le QR"
 }

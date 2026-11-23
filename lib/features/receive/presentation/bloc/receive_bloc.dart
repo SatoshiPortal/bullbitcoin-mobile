@@ -40,7 +40,6 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:transactions/transactions.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

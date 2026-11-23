@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "Payment URI",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
   "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
-  "copiedToClipboard": "Clipboard par copy kiya gaya"
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "sendErrorInvalidAddressOrInvoice": "Bitcoin Payment Address ya Invoice galat hai",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

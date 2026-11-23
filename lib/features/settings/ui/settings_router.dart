@@ -4,7 +4,6 @@ import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_options_bindings.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -110,6 +109,7 @@ class SettingsRouter {
   );
 
   static List<RouteBase> childRoutes({
+    RouteBase? autoswapSettingsRoute,
     required List<RouteBase> priceRoutes,
     required void Function(BuildContext) onBackupTestSucceeded,
     required List<RouteBase> appSettingsRoutes,
@@ -168,11 +168,7 @@ class SettingsRouter {
           _ => const SizedBox.shrink(),
         },
       ),
-      GoRoute(
-        name: SettingsRoute.autoswapSettings.name,
-        path: SettingsRoute.autoswapSettings.path,
-        builder: (context, state) => const AutoSwapSettingsScreen(),
-      ),
+      ?autoswapSettingsRoute,
       GoRoute(
         name: SettingsRoute.appSettings.name,
         path: SettingsRoute.appSettings.path,

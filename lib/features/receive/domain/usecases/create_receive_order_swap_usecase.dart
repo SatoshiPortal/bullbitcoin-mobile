@@ -7,10 +7,9 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:address_view/address_view.dart';
 import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class CreateReceiveOrderSwapUsecase {
-  final SwapFacade _swapFacade;
+  final OrderSwaps _swapFacade;
   final AddressView _addresses;
   final DateTime Function() _now;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;

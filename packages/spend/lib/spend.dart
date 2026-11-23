@@ -11,5 +11,6 @@ export 'src/spend.dart'
         SignedBitcoinSpend,
         SignedLiquidSpend,
         Spend,
-        SpendBroadcastReceipt;
+        SpendBroadcastReceipt,
+        liquidConsolidationThreshold;
 export 'src/domain/spend_failure.dart';

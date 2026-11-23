@@ -1,6 +1,6 @@
 import 'package:transactions/transactions.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -31,7 +31,7 @@ ExchangePurchaseHost exchangePurchaseHost(GetIt locator) => (
   labelOrders: (orders) =>
       locator<Transactions>().labelCompletedExchangeOrders(orders),
   validateBitcoinAddress: (raw) async =>
-      (await const WalletPaymentDestinationFacade().validate(
+      (await const PaymentDestinations().validate(
         raw,
         acceptedTypes: const {PaymentDestinationType.bitcoin},
       ))?.address,
@@ -66,6 +66,8 @@ ExchangePurchaseHost exchangePurchaseHost(GetIt locator) => (
       ),
   bitcoinAsset: Assets.icons.btc.path,
   onClose: (context) => context.goNamed(WalletRoute.walletHome.name),
-  openOrder: (context, id) =>
-      TransactionsNavigation.openDetails(context, TransactionDetailsTarget.order(id)),
+  openOrder: (context, id) => TransactionsNavigation.openDetails(
+    context,
+    TransactionDetailsTarget.order(id),
+  ),
 );

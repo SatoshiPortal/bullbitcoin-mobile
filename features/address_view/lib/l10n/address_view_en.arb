@@ -110,5 +110,41 @@
   "comingSoonTitle": "Feature Coming Soon",
   "@comingSoonTitle": {
     "description": "Title for the coming soon bottom sheet"
+  },
+  "destinationExpectedType": "Enter or scan a valid {type}.",
+  "@destinationExpectedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorInvalidAddressOrInvoice": "Invalid Bitcoin Payment Address or Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "destinationAmountFromQr": "{type} · {amount} sats from the QR",
+  "@destinationAmountFromQr": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
   }
 }

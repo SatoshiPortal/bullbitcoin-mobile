@@ -25,5 +25,9 @@
   "viewerPaymentUriTab": "URI de pagamento",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
   "addressViewErrorLoadFailed": "Não foi possível carregar os seus endereços. Tente novamente.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "sendErrorInvalidAddressOrInvoice": "Endereço de pagamento Bitcoin inválido ou fatura",
+  "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
+  "exchangeDcaAddressLabelLiquid": "Endereço líquido",
+  "exchangeDcaAddressLabelLightning": "Endereço de iluminação"
 }

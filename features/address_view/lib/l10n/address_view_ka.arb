@@ -25,5 +25,9 @@
   "viewerPaymentUriTab": "გადახდის URI",
   "addressViewErrorWalletNotFound": "ეს საფულე ვერ მოიძებნა.",
   "addressViewErrorLoadFailed": "თქვენი მისამართების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
-  "copiedToClipboard": "დაკოპირდა ბუფერში"
+  "copiedToClipboard": "დაკოპირდა ბუფერში",
+  "sendErrorInvalidAddressOrInvoice": "არასწორი Bitcoin გადახდის მისამართი ან ინვოისი",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin მისამართი",
+  "exchangeDcaAddressLabelLiquid": "Liquid მისამართი",
+  "exchangeDcaAddressLabelLightning": "Lightning მისამართი"
 }

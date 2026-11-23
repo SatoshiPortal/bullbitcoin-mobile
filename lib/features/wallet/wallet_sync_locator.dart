@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/sync_sp_for_wallet_use
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:silent/silent.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:get_it/get_it.dart';
@@ -18,7 +18,7 @@ import 'package:primitives/primitives.dart';
 class SyncLocator {
   static void setupForeground(GetIt locator) {
     locator.registerFactory<SyncOrderSwapsUsecase>(
-      () => SyncOrderSwapsUsecase(locator<SwapFacade>()),
+      () => SyncOrderSwapsUsecase(locator<SwapActivity>()),
     );
     locator.registerFactory<SyncSpForWalletUsecase>(
       () => SyncSpForWalletUsecase(locator<Silent>()),

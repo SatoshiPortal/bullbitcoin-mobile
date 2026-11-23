@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dar
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_advanced_settings.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' show EdgeInsetsDirectional;

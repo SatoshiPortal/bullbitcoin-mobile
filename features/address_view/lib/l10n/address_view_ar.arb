@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "رابط الدفع (URI)",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
   "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
-  "copiedToClipboard": "تم النسخ إلى الحافظة"
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "sendErrorInvalidAddressOrInvoice": "عنوان أو فواتير غير رسمي",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "عنوان بيتكوين",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "العنوان السائل",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "عنوان البرق",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

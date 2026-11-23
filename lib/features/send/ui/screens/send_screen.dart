@@ -31,14 +31,14 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';
 
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
+import 'package:address_view/payment_destination.dart'
     show FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
 import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/localizations.dart' show OnchainSendLabelsL10n;
+import 'package:bb_mobile/localization/onchain_send_labels_l10n.dart';
 import 'package:satoshifier/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
@@ -54,7 +54,7 @@ import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_info_row.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swap_feature/swap_feature.dart';
 import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';

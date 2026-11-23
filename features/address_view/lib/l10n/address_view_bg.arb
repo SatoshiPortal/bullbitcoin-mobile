@@ -49,5 +49,12 @@
   "viewerPaymentUriTab": "URI за плащане",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
-  "copiedToClipboard": "Копирано в клипборда"
+  "copiedToClipboard": "Копирано в клипборда",
+  "sendErrorInvalidAddressOrInvoice": "Невалиден адрес за плащане на Биткойн или фактура",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "exchangeDcaAddressLabelLiquid": "Liquid адрес",
+  "exchangeDcaAddressLabelLightning": "Lightning адрес"
 }
