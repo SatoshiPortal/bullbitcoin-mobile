@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bip85/bip85.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
@@ -272,7 +272,7 @@ class AppRouter {
       AutoBuyRouter.route,
       ...LimitOrdersRouter.routes,
       ReplaceByFeeRouter.route,
-      Bip85EntropyRouter.route,
+      locator<Bip85Feature>().route,
       ...locator<NetworkFeature>().routes.root,
       ...locator<FeesFeature>().routes,
       SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),

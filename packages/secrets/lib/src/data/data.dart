@@ -11,7 +11,9 @@ export 'boundary.dart'
         boundary,
         inventorySessionChangedFailure,
         inventoryCredentialRequiredFailure,
-        inventoryLockedFailure;
+        inventoryLockedFailure,
+        invalidBip85HexLengthFailure,
+        unreadableBip85RecordFailure;
 export 'database_key_repository.dart' show DatabaseKeyRepository;
 export 'database_worker.dart' show captureDatabaseWorkerOpener;
 export 'encrypted_database.dart' show openEncryptedDatabase;

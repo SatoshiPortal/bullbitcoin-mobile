@@ -8,7 +8,7 @@ import 'dart:ui';
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+import 'package:secrets/bip85.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
@@ -284,7 +284,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           locator<ParentCustodyAdmissionPort>(),
           SecretsArkParentPresence(secrets),
           managedRegistry,
-          ArkDerivationCollision(locator<Bip85Registry>()),
+          ArkDerivationCollision(locator<Bip85Derivations>()),
         ),
         registry: managedRegistry,
         boardFunding: board,
@@ -483,53 +483,6 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
       ));
     } on Exception {
       return const Err(ArkFeatureStorageFailure());
-    }
-  }
-}
-
-/// Reads every historical BIP85 record, including revoked derivations.
-final class ArkDerivationCollision implements ArkChildCollisionPort {
-  final Bip85Registry _registry;
-  const ArkDerivationCollision(this._registry);
-
-  @override
-  Future<Result<bool, ArkFailure>> hasCollision(Fingerprint parent) async {
-    switch (await _registry.fetchAll()) {
-      case Err():
-        return const Err(ArkFeatureStorageFailure());
-      case Ok(:final value):
-        for (final record in value) {
-          final owner = Fingerprint.tryParse(
-            record.xprvFingerprint.toLowerCase(),
-          );
-          if (owner == null) return const Err(ArkFeatureStorageFailure());
-          if (owner == parent && record.application == Bip85Application.bip39) {
-            // The existing datasource stores the four hardened application
-            // components without the common BIP85 root prefix. An unknown
-            // representation cannot certify that this child is unused.
-            if (record.path.length > 128) {
-              return const Err(ArkFeatureStorageFailure());
-            }
-            final path = RegExp(r"^39'/([0-9]+)'/([0-9]+)'/([0-9]+)'$")
-                .firstMatch(record.path);
-            if (path == null) return const Err(ArkFeatureStorageFailure());
-            final language = int.tryParse(path.group(1) ?? '');
-            final words = int.tryParse(path.group(2) ?? '');
-            final index = int.tryParse(path.group(3) ?? '');
-            if (language == null ||
-                words == null ||
-                index == null ||
-                language > 0x7fffffff ||
-                index > 0x7fffffff ||
-                !const {12, 15, 18, 21, 24}.contains(words)) {
-              return const Err(ArkFeatureStorageFailure());
-            }
-            if (language == 0 && words == 12 && index == 11811) {
-              return const Ok(true);
-            }
-          }
-        }
-        return const Ok(false);
     }
   }
 }

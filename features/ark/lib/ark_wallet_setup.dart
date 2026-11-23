@@ -2,6 +2,7 @@
 library;
 
 export 'src/data/ark_board_abandonment.dart';
+export 'src/data/ark_derivation_collision.dart';
 export 'src/data/ark_display_data.dart';
 export 'src/data/ark_funding_signing_guard.dart';
 export 'src/data/ark_installation_state.dart';

@@ -189,7 +189,7 @@ graph TB
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price<br/>Workspace Feature]
-    BIP85[BIP85]
+    BIP85[BIP85<br/>Workspace Feature]
     FEES_PACKAGE[Fees Package]
     FEES_PACKAGE -->|receiver fee estimation port| BULL_PAYJOIN
     FEES_UI[Fees Feature]
@@ -319,7 +319,9 @@ graph TB
     AUTOSWAP --> TRANSFER
     AUTOBUY --> DEFAULT_WALLETS
     BIP85 --> SECRETS
-    BACKUPS --> BIP85
+    BIP85 --> PREFERENCES
+    BIP85 --> BULL_UI
+    SETTINGS -->|derivation history route| BIP85
     APP_STARTUP --> RECOVERBULL
     WALLETS -->|signer device properties| SIGNERS
     WALLETS --> RECOVERBULL
@@ -445,7 +447,6 @@ graph TB
     TX_HISTORY -->|public revisions, raw sync finishes and pass activity| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
-    WALLETS --> BIP85
     WALLETS --> CONSOLIDATION
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
@@ -610,7 +611,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **Backups**: Depends on BIP85, Tor, Wallets
+- **Backups**: Depends on Tor and Wallets
 
 ### Exchange-Related Features
 
@@ -684,7 +685,7 @@ The architecture test records source dependencies, including internal imports an
 
 The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
 
-Develop also removes the price chart’s shell locator import; its obsolete entry is removed from `shell_imports_test.dart`. The BIP85 integration now removes `bip85_entropy → wallet`: Wallet selects the active-environment default Bitcoin fingerprint and passes it into BIP85 operations. The reviewed `wallet → bip85_entropy` edge supplies that binding and the read-only historical registry used by Ark collision checks. BIP85 owns the relocated domain, data and locator until Secrets absorbs the derivation registry (D58); no reverse feature edge is retained.
+Develop also removes the price chart’s shell locator import and its obsolete exception from `shell_imports_test.dart`. Secrets owns BIP85 allocations, historical records and re-derivation. The BIP85 workspace feature uses the active Preferences environment and the Bitcoin default from the authorized inventory. Ark reads historical derivation metadata, including revoked rows, directly through the same Secrets registry.
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 

@@ -4,10 +4,11 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:secrets/bip85.dart';
+import 'package:bip85/bip85.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
-import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
@@ -40,7 +41,6 @@ import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
-import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -288,9 +288,14 @@ class AppLocator {
     AppStartupLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
-    Bip85EntropyLocator.setup(
-      locator,
-      readParent: WalletBip85Bindings.reader(locator),
+    final bip85 = inventory.bip85(locator<Secrets>());
+    locator.registerSingleton<Bip85Derivations>(bip85);
+    locator.registerSingleton(
+      Bip85Feature.mount(
+        derivations: bip85,
+        inventory: inventory,
+        preferences: locator<ActiveEnvironmentReader>(),
+      ),
     );
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(

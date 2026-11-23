@@ -1,0 +1,14 @@
+{
+  "@@locale": "fi",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "bip85NoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
+  "bip85Title": "BIP85-deterministiset entropiat",
+  "bip85ExperimentalWarning": "Kokeellinen\nVarmuuskopioi derivointipolut käsin",
+  "bip85NextMnemonic": "Seuraava siemenlause",
+  "bip85NextHex": "Seuraava HEX",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "Kopioitu leikepöydälle"
+}

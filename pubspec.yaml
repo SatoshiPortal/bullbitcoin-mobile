@@ -18,6 +18,7 @@ workspace:
   - features/network
   - features/signers
   - features/access
+  - features/bip85
   - features/ark
   - features/fees
   - packages/fees
@@ -58,6 +59,7 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  bip85:
   access:
   announcements:
   bitcoin_price:

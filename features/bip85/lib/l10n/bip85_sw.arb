@@ -1,0 +1,11 @@
+{
+  "@@locale": "sw",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "bip85NoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
+  "retry": "Jaribu Tena",
+  "bip85Title": "Entropia za Kiyakinifu za BIP85",
+  "bip85ExperimentalWarning": "Ya Kijaribio \nHifadhi njia zako za derivation wewe mwenyewe",
+  "bip85NextMnemonic": "Msemo Unaofuata",
+  "bip85NextHex": "HEX Inayofuata",
+  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili"
+}

@@ -238,3 +238,8 @@ The storage library opens an existing admitted inventory. Its foreground capabil
 The host gives features the read-only `WalletInventory` from `package:secrets/secrets.dart`, implemented by the admitted `SecretsInventory`. A targeted lookup distinguishes a wallet not visible to this view, unreadable metadata and a storage read failure. The concrete chain and network come from storage, not from the derivation path or the app's current environment. Network selection returns readable wallets in wallet ID order and their explicit defaults; it neither chooses a fallback nor resolves competing defaults. These reads never expose descriptors. The descriptor catalog for native Sync remains a separate projection, not a metadata lookup for features.
 
 Reserve BIP85 indices per parent and application before deriving the child. Keep every reservation, including revoked entries, so a retry cannot return the same child. Historical paths retain their original spelling.
+
+
+### Recorded BIP85 derivations
+
+The authorized inventory opens a `Bip85Derivations` capability via `inventory.bip85(secrets)`. Its `list()` returns metadata for all recorded children in the active view, including revoked entries. Deriving a new child reserves a distinct index in the encrypted inventory before deriving it. `reveal(parent)` checks stored paths and returns only the derived children of that parent. The BIP85 root stays in Secrets and an inventory lock invalidates in-flight results.

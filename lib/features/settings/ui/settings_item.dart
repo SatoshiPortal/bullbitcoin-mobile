@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bip85/bip85.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
@@ -608,7 +608,7 @@ List<SettingsItem> buildSettingsItems({
           localization.bitcoinSettingsBip85EntropiesTitle,
         ),
         icon: Icons.science,
-        open: (context) => context.pushNamed(Bip85EntropyRoute.bip85Home.name),
+        open: const Bip85Route().push,
         keywords: _keywords(
           localization.settingsSearchBip85Keywords,
           english.settingsSearchBip85Keywords,

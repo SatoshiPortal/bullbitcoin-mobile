@@ -10,6 +10,9 @@ final class WalletRegistration {
   final ScriptType scriptType;
   final WalletSigner signer;
 
+  /// Validated public key origin, for every signer type.
+  final Fingerprint? masterFingerprint;
+
   /// The expected local seed reference, not proof of seed availability or authority.
   final Fingerprint? secretFingerprint;
 
@@ -25,6 +28,7 @@ final class WalletRegistration {
     required this.network,
     required this.scriptType,
     required this.signer,
+    required this.masterFingerprint,
     required this.secretFingerprint,
     required this.derivationPath,
     required this.label,
