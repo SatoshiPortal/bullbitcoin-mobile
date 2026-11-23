@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
-import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_options_bindings.dart';
@@ -118,6 +116,7 @@ class SettingsRouter {
     required List<RouteBase> accessRoutes,
     RouteBase? seedViewRoute,
     required List<RouteBase> exchangeSettingsRoutes,
+    List<RouteBase> addressRoutes = const [],
   }) {
     return [
       ...priceRoutes,
@@ -239,18 +238,7 @@ class SettingsRouter {
           );
         },
       ),
-      GoRoute(
-        path: SettingsRoute.walletAddresses.path,
-        name: SettingsRoute.walletAddresses.name,
-        builder: (context, state) {
-          final walletId = state.pathParameters['walletId']!;
-          return BlocProvider(
-            create: (_) =>
-                locator<AddressViewBloc>(param1: walletId, param2: 10),
-            child: AddressesScreen(walletId: walletId),
-          );
-        },
-      ),
+      ...addressRoutes,
       const LogsFeature().route,
       ?seedViewRoute,
     ];

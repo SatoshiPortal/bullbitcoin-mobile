@@ -1,4 +1,5 @@
 import 'package:all_seed_view/setup.dart';
+import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
@@ -240,6 +241,7 @@ class AppRouter {
         menuScope: SettingsHubBindings.menuScope,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
+          addressRoutes: [locator<AddressViewFeature>().route],
           accessRoutes: locator<AccessFeature>().routes.settings,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
           appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,

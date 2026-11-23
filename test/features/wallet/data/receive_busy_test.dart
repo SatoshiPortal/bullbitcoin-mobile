@@ -1,7 +1,6 @@
-import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:primitives/primitives.dart';
 
 import 'dart:io';
 
@@ -9,18 +8,14 @@ import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/address_view/data/wallet_address_repository_impl.dart';
+import 'package:secrets/testing.dart' show FakeSecureStoragePlatform;
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sync/sync.dart';
 
-class _Metadata extends Mock implements WalletRegistrations {}
+import '../../../support/inventory_fixture.dart';
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -31,6 +26,7 @@ class _Reporter extends Mock implements LoggerReporter {}
 class _SdkApi extends Mock implements BullSdkApi {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   final sdk = _SdkApi();
   // Liquid validation uses FRB; busy/recovery behavior does not need its FFI.
   setUpAll(() => BullSdk.initMock(api: sdk));
@@ -46,48 +42,41 @@ void main() {
           : '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
       late _Native native;
       late _Labels labels;
-      late WalletAddressRepository repository;
-      final row = WalletMetadataModel(
+      late AddressView repository;
+      final liquid = origin.startsWith('el');
+      final key = WalletKey(
         id: origin,
-        networkCode: origin.startsWith('el')
-            ? 'liquidMainnet'
-            : 'bitcoinMainnet',
-        masterFingerprint: 'aabbccdd',
-        xpubFingerprint: 'aabbccdd',
-        isEncryptedVaultTested: false,
-        isPhysicalBackupTested: false,
-        xpub: 'public',
-        externalPublicDescriptor: origin.startsWith('el')
-            ? 'ct(slip77(public),elwpkh(public))'
-            : 'wpkh(public)',
-        internalPublicDescriptor: origin.startsWith('el') ? '' : 'wpkh(change)',
-        signer: Signer.none,
-        isDefault: false,
+        network: liquid ? LiquidNetwork.mainnet : BitcoinNetwork.mainnet,
       );
       late _Reporter reporter;
       setUp(() async {
+        FakeSecureStoragePlatform().install();
         final directory = await Directory.systemTemp.createTemp(
           'receive-busy-',
+        );
+        final fixture = await InventoryFixture.open(directory);
+        await fixture.addPublicWallet(
+          id: origin,
+          network: liquid ? 'liquidMainnet' : 'bitcoinMainnet',
         );
         reporter = _Reporter();
         await initializeLogging(directory: directory, reporter: reporter);
         addTearDown(() async {
           await log.flush();
+          await fixture.close();
           await directory.delete(recursive: true);
         });
         when(() => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress))
             .thenAnswer((_) async => lwk.LiquidNetwork.mainnet);
         native = _Native();
         labels = _Labels();
-        final metadata = _Metadata();
-        when(() => metadata.fetch(origin)).thenAnswer((_) async => row);
         when(() => labels.fetch(reference: any(named: 'reference')))
             .thenAnswer((_) async => Ok([]));
-        repository = WalletAddressRepositoryImpl(
+        repository = AddressView.open(
           native: native,
-          walletRegistrations: metadata,
+          labels: labels,
+          inventory: fixture.inventory,
           loadWallet: (_) async => throw StateError('Unexpected address read'),
-          labelsFacade: labels,
         );
       });
 
@@ -95,22 +84,23 @@ void main() {
         'receive waits for a busy writer then returns the issued address',
         () async {
           var attempts = 0;
-          when(
-            () => native.receive(
-              WalletSyncBinding.keyFromMetadata(row),
-              advance: false,
-            ),
-          ).thenAnswer((_) async {
+          when(() => native.receive(key, advance: false)).thenAnswer((_) async {
             if (++attempts < 3) {
               return const Err(SyncBusyFailure());
             }
             return Ok((address: issuedAddress, index: 7));
           });
-          final address = await repository.getLastRevealedReceiveAddress(
-            walletId: origin,
+          final address = await repository.receiveAddress(walletId: origin);
+          expect(
+            address,
+            isA<Ok<WalletAddress, AddressViewFailure>>()
+                .having(
+                  (result) => result.value.address,
+                  'address',
+                  issuedAddress,
+                )
+                .having((result) => result.value.index, 'index', 7),
           );
-          expect(address.address, issuedAddress);
-          expect(address.index, 7);
           expect(attempts, 3);
           if (origin.startsWith('el')) {
             verify(
@@ -134,22 +124,11 @@ void main() {
       );
 
       test('persistent busy is bounded', () async {
-        when(
-          () => native.receive(
-            WalletSyncBinding.keyFromMetadata(row),
-            advance: false,
-          ),
-        ).thenAnswer((_) async => const Err(SyncBusyFailure()));
-        final prepare = PrepareReceiveAddressUsecase(
-          GetReceiveAddressUsecase(walletAddressRepository: repository),
-        );
+        when(() => native.receive(key, advance: false))
+            .thenAnswer((_) async => const Err(SyncBusyFailure()));
+        final prepare = PrepareReceiveAddressUsecase(repository);
         expect(await prepare.execute(walletId: origin), isA<Err>());
-        verify(
-          () => native.receive(
-            WalletSyncBinding.keyFromMetadata(row),
-            advance: false,
-          ),
-        ).called(5);
+        verify(() => native.receive(key, advance: false)).called(5);
         verifyNever(() => labels.fetch(reference: any(named: 'reference')));
         verifyZeroInteractions(sdk);
         expect(
@@ -165,57 +144,63 @@ void main() {
 
       test('other failures are not retried', () async {
         const error = WalletSnapshotException(SyncNeedsRepairFailure());
-        when(
-          () => native.receive(
-            WalletSyncBinding.keyFromMetadata(row),
-            advance: false,
-          ),
-        ).thenAnswer((_) async => Err(error.failure));
-        await expectLater(
-          repository.getLastRevealedReceiveAddress(walletId: origin),
-          throwsA(
-            isA<WalletSnapshotException>().having(
-              (e) => e.failure,
-              'failure',
-              isA<SyncNeedsRepairFailure>(),
-            ),
+        when(() => native.receive(key, advance: false))
+            .thenAnswer((_) async => Err(error.failure));
+        expect(
+          await repository.receiveAddress(walletId: origin),
+          isA<Err<WalletAddress, AddressViewFailure>>().having(
+            (result) => result.failure.logMessage,
+            'failure',
+            error.failure.logCode,
           ),
         );
-        verify(
-          () => native.receive(
-            WalletSyncBinding.keyFromMetadata(row),
-            advance: false,
-          ),
-        ).called(1);
+        verify(() => native.receive(key, advance: false)).called(1);
         verifyZeroInteractions(sdk);
       });
 
       test('label failure after issuance never replays an advance', () async {
-        when(
-          () => native.receive(
-            WalletSyncBinding.keyFromMetadata(row),
-            advance: true,
-          ),
-        ).thenAnswer((_) async => Ok((address: issuedAddress, index: 8)));
+        when(() => native.receive(key, advance: true))
+            .thenAnswer((_) async => Ok((address: issuedAddress, index: 8)));
         const error = WalletSnapshotException(SyncBusyFailure());
         when(() => labels.fetch(reference: any(named: 'reference')))
             .thenThrow(error);
-        await expectLater(
-          repository.generateNewReceiveAddress(walletId: origin),
-          throwsA(same(error)),
+        expect(
+          await repository.receiveAddress(walletId: origin, advance: true),
+          isA<Err<WalletAddress, AddressViewFailure>>(),
         );
-        verify(
-          () => native.receive(
-            WalletSyncBinding.keyFromMetadata(row),
-            advance: true,
-          ),
-        ).called(1);
+        verify(() => native.receive(key, advance: true)).called(1);
         if (origin.startsWith('el')) {
           verify(
             () => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress),
           ).called(1);
         }
         verifyNoMoreInteractions(sdk);
+      });
+
+      test('typed label unavailability preserves the issued address', () async {
+        when(() => native.receive(key, advance: true))
+            .thenAnswer((_) async => Ok((address: issuedAddress, index: 9)));
+        when(() => labels.fetch(reference: issuedAddress))
+            .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+
+        final result = await repository.receiveAddress(
+          walletId: origin,
+          advance: true,
+        );
+
+        expect(
+          result,
+          isA<Ok<WalletAddress, AddressViewFailure>>()
+              .having(
+                (result) => result.value.address,
+                'address',
+                issuedAddress,
+              )
+              .having((result) => result.value.index, 'index', 9)
+              .having((result) => result.value.labels, 'labels', isEmpty),
+        );
+        verify(() => native.receive(key, advance: true)).called(1);
+        verify(() => labels.fetch(reference: issuedAddress)).called(1);
       });
     });
   }

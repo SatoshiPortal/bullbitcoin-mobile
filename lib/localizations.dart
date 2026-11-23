@@ -1,6 +1,7 @@
 import 'package:transactions/setup.dart' show TransactionsLocalizations;
 import 'package:access/setup.dart' show AccessLocalizations;
 import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
+import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:announcements/announcements.dart'
@@ -38,6 +39,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   TransactionsLocalizations.delegate,
   AccessLocalizations.delegate,
   ImportLocalizations.delegate,
+  AddressViewLocalizations.delegate,
   AnnouncementsLocalizations.delegate,
   BitcoinPriceLocalizations.delegate,
   ExchangeLocalizations.delegate,

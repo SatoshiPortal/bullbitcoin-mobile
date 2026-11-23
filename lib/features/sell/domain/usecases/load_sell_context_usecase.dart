@@ -6,8 +6,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     as wallet
     show Network, NetworkX;
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -19,7 +18,7 @@ class LoadSellContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final Preferences _getSettingsUsecase;
   final Fees _fees;
-  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
+  final AddressView _addresses;
   final IndexPriceReader _getIndexPrice;
   final GetOrderUsecase _getOrderUsecase;
 
@@ -27,7 +26,7 @@ class LoadSellContextUsecase {
     required this._getExchangeUserSummaryUsecase,
     required this._getSettingsUsecase,
     required this._fees,
-    required this._getAddressAtIndexUsecase,
+    required this._addresses,
     required this._getIndexPrice,
     required this._getOrderUsecase,
   });
@@ -99,23 +98,10 @@ class LoadSellContextUsecase {
   Future<Result<WalletAddress, SellFailure>> addressAtIndex({
     required String walletId,
     required int index,
-  }) async {
-    try {
-      return Ok(
-        await _getAddressAtIndexUsecase.execute(
-          walletId: walletId,
-          index: index,
-        ),
-      );
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to derive a wallet address for the fee estimate',
-        error: e,
-        trace: st,
-      );
-      return Err(SellUnexpectedFailure('$e'));
-    }
-  }
+  }) async => (await _addresses.at(
+    walletId: walletId,
+    index: index,
+  )).mapErr((failure) => SellUnexpectedFailure(failure.runtimeType.toString()));
 
   /// [amountSat] in [currencyCode], or in the settings currency when none is
   /// given. Without an amount, the price of one bitcoin.

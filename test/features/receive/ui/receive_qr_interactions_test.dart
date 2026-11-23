@@ -4,13 +4,12 @@ import 'dart:async';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';

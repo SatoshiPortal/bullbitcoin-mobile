@@ -1,6 +1,7 @@
+import 'package:address_view/address_view.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
@@ -45,7 +46,7 @@ class AutoSwapLocator {
         locator<WalletRepository>(),
         locator<Preferences>(),
         locator<Spend>(),
-        locator<GetReceiveAddressUsecase>(),
+        locator<AddressView>(),
         locator<Labels>(),
       ),
     );
@@ -54,7 +55,7 @@ class AutoSwapLocator {
         locator<WalletRepository>(),
         locator<Preferences>(),
         locator<Spend>(),
-        locator<GetReceiveAddressUsecase>(),
+        locator<AddressView>(),
         locator<SwapFacade>(),
         locator<Labels>(),
       ),

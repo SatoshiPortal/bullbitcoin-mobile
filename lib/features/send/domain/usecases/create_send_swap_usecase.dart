@@ -2,8 +2,8 @@ import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart';
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -13,13 +13,13 @@ import 'package:meta/meta.dart';
 class CreateSendSwapUsecase {
   final SwapFacade _swapFacade;
   final GetWalletUsecase _getWallet;
-  final GetReceiveAddressUsecase _getReceiveAddress;
+  final AddressView _getReceiveAddress;
   final DateTime Function() _now;
 
   CreateSendSwapUsecase(
     this._swapFacade, {
     required GetWalletUsecase getWalletUsecase,
-    required GetReceiveAddressUsecase getReceiveAddressUsecase,
+    required AddressView getReceiveAddressUsecase,
     DateTime Function()? now,
   }) : _getWallet = getWalletUsecase,
        _getReceiveAddress = getReceiveAddressUsecase,
@@ -76,7 +76,13 @@ class CreateSendSwapUsecase {
         return const Err(SendHardwareWalletFailure());
       }
 
-      final fallback = await _getReceiveAddress.execute(walletId: walletId);
+      final WalletAddress fallback;
+      switch (await _getReceiveAddress.receiveAddress(walletId: walletId)) {
+        case Ok(:final value):
+          fallback = value;
+        case Err(:final failure):
+          return Err(SendSwapCreationFailure(failure.runtimeType.toString()));
+      }
       final result = await _swapFacade.createOrder(
         amountSat: BigInt.from(amountSat),
         isInAmountFixed: false,

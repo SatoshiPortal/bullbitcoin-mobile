@@ -23,7 +23,9 @@ import 'package:swaps/src/log.dart';
 import 'package:rust_bindings/boltz.dart' as boltz;
 
 /// Fresh receive address on [walletId], for claim/refund destinations.
-typedef NewAddressFor = Future<String> Function(String walletId);
+typedef NewAddressFor = Future<Result<String, SwapsFailure>> Function(
+  String walletId,
+);
 
 /// Look up one wallet transaction (null when absent) from the wallet's
 /// current view — the caller is responsible for any freshening it needs
@@ -1758,6 +1760,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     }
   }
 
+  Future<Result<T, SwapsFailure>> _guardResult<T>(
+    Future<Result<T, SwapsFailure>> Function() action, {
+    SwapsFailure Function(Object error) classify = classifySwapsFailure,
+  }) async {
+    return (await _guard(
+      action,
+      classify: classify,
+    )).fold((result) => result, (failure) => Err(failure));
+  }
+
   @override
   NetworkEnv get environment => _environment;
 
@@ -1775,40 +1787,53 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       _guard(() => reconcileSwaps(swapIds));
 
   @override
-  Future<Result<Swap, SwapsFailure>> resolve(Swap swap) => _guard(() async {
+  Future<Result<Swap, SwapsFailure>> resolve(
+    Swap swap,
+  ) => _guardResult(() async {
     _requireEffectAdmission();
     var current = await getSwap(swapId: swap.id);
     current = await resolvePendingLockup(current);
     current = await reconcileLockupTxid(current);
-    switch (current.nextAction) {
-      case SwapAction.claim:
-        await _orTimeoutRefund(current, () => claim(current));
-      case SwapAction.refund:
-        await refund(current);
-      case SwapAction.coopSign:
-        await _orTimeoutRefund(current, () => coopSign(current));
-      case SwapAction.none:
-        if (await _settleOnEvidence(current)) break;
-        if (!current.awaitsTimeoutRefund(DateTime.now())) return current;
-        await refund(current, scriptPathOnly: true);
-    }
-    return getSwap(swapId: current.id);
+    final Result<Object?, SwapsFailure>? action = switch (current.nextAction) {
+      SwapAction.claim => await _orTimeoutRefund(current, () => claim(current)),
+      SwapAction.refund => await refund(current),
+      SwapAction.coopSign => await _orTimeoutRefund(current, () async {
+        await coopSign(current);
+        return const Ok(null);
+      }),
+      SwapAction.none when await _settleOnEvidence(current) => const Ok(null),
+      SwapAction.none when current.awaitsTimeoutRefund(DateTime.now()) =>
+        await refund(current, scriptPathOnly: true),
+      SwapAction.none => null,
+    };
+    return switch (action) {
+      Err(:final failure) => Err(failure),
+      Ok() => Ok(await getSwap(swapId: current.id)),
+      null => Ok(current),
+    };
   });
 
   /// Runs [action]; when it fails on a swap still holding our lockup a day
   /// later, falls back to the script-path refund, which the chain refuses
   /// until our timelock passes.
-  Future<void> _orTimeoutRefund(
+  Future<Result<Object?, SwapsFailure>> _orTimeoutRefund(
     Swap swap,
-    Future<Object?> Function() action,
+    Future<Result<Object?, SwapsFailure>> Function() action,
   ) async {
+    final Result<Object?, SwapsFailure> result;
     try {
-      await action();
+      result = await action();
     } catch (error) {
       if (error is SwapsFailure) rethrow;
       if (!swap.awaitsTimeoutRefund(DateTime.now())) rethrow;
-      await refund(swap, scriptPathOnly: true);
+      return refund(swap, scriptPathOnly: true);
     }
+    // Address lookup failures used to enter the same timeout fallback as
+    // the legacy exception path. Keep that decision when they are typed.
+    if (result is Err && swap.awaitsTimeoutRefund(DateTime.now())) {
+      return refund(swap, scriptPathOnly: true);
+    }
+    return result;
   }
 
   /// The id of another stored swap that already records [txid], if any.
@@ -1905,20 +1930,21 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   @override
   Future<Result<Swap, SwapsFailure>> resolveScriptPath(Swap swap) =>
-      _guard(() async {
+      _guardResult(() async {
         _requireEffectAdmission();
         final current = await getSwap(swapId: swap.id);
-        switch (current.nextAction) {
-          case SwapAction.claim:
-            await claim(current, scriptPathOnly: true);
-          case SwapAction.refund:
-            await refund(current, scriptPathOnly: true);
-          case SwapAction.none when current.awaitsTimeoutRefund(DateTime.now()):
-            await refund(current, scriptPathOnly: true);
-          case SwapAction.coopSign || SwapAction.none:
-            return current;
-        }
-        return getSwap(swapId: current.id);
+        final action = switch (current.nextAction) {
+          SwapAction.claim => await claim(current, scriptPathOnly: true),
+          SwapAction.refund => await refund(current, scriptPathOnly: true),
+          SwapAction.none when current.awaitsTimeoutRefund(DateTime.now()) =>
+            await refund(current, scriptPathOnly: true),
+          SwapAction.coopSign || SwapAction.none => null,
+        };
+        return switch (action) {
+          Err(:final failure) => Err(failure),
+          Ok() => Ok(await getSwap(swapId: current.id)),
+          null => Ok(current),
+        };
       });
 
   @override
@@ -2024,29 +2050,37 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     required String walletId,
     required int amountSat,
     String? description,
-  }) => _guard(() async {
+  }) => _guardResult(() async {
     final toLiquid = type == SwapType.lightningToLiquid;
     await _requireWallet(walletId, isLiquid: toLiquid);
     await _requireWithinLimits(type, amountSat);
     await _ensureMasterKey();
     final electrumUrl = await _electrumUrl(isLiquid: toLiquid);
-    final claimAddress = await _newAddressFor(walletId);
-    return _created(
-      toLiquid
-          ? _boltzCreateLightningToLiquidSwap(
-              walletId: walletId,
-              amountSat: amountSat,
-              electrumUrl: electrumUrl,
-              claimAddress: claimAddress,
-              description: description,
-            )
-          : _boltzCreateLightningToBitcoinSwap(
-              walletId: walletId,
-              amountSat: amountSat,
-              electrumUrl: electrumUrl,
-              claimAddress: claimAddress,
-              description: description,
-            ),
+    final String claimAddress;
+    switch (await _newAddressFor(walletId)) {
+      case Ok(:final value):
+        claimAddress = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    return Ok(
+      await _created(
+        toLiquid
+            ? _boltzCreateLightningToLiquidSwap(
+                walletId: walletId,
+                amountSat: amountSat,
+                electrumUrl: electrumUrl,
+                claimAddress: claimAddress,
+                description: description,
+              )
+            : _boltzCreateLightningToBitcoinSwap(
+                walletId: walletId,
+                amountSat: amountSat,
+                electrumUrl: electrumUrl,
+                claimAddress: claimAddress,
+                description: description,
+              ),
+      ),
     );
   }, classify: classifySwapCreationFailure);
 
@@ -2253,7 +2287,10 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   // swap amount), tries the cooperative path first and falls back to the
   // script path, walks the app's electrum servers, and records the outcome.
 
-  Future<String> claim(Swap swap, {bool scriptPathOnly = false}) async {
+  Future<Result<String, SwapsFailure>> claim(
+    Swap swap, {
+    bool scriptPathOnly = false,
+  }) async {
     final stored = await getSwap(swapId: swap.id);
     final existing = switch (stored) {
       LnReceiveSwap(:final receiveTxid) => receiveTxid,
@@ -2262,7 +2299,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         'submarine swap ${swap.id} is refunded or coop-signed, never claimed',
       ),
     };
-    if (existing != null) return existing;
+    if (existing != null) return Ok(existing);
     if (swap is LnReceiveSwap && swap.wasDirectPayment) {
       // Paid directly on-chain via MRH — there is nothing to claim and no
       // claim txid to report; an empty-string "txid" would only mislead.
@@ -2271,7 +2308,13 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       );
     }
 
-    final claimAddress = await _resolveClaimAddress(swap);
+    final String claimAddress;
+    switch (await _resolveClaimAddress(swap)) {
+      case Ok(:final value):
+        claimAddress = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
     final claimOnLiquid = switch (swap) {
       LnReceiveSwap() => swap.type == SwapType.lightningToLiquid,
       ChainSwap() => swap.type == SwapType.bitcoinToLiquid,
@@ -2279,7 +2322,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     };
 
     try {
-      return await _electrum.run(
+      final txid = await _electrum.run(
         isLiquid: claimOnLiquid,
         environment: _environment,
         isTransient: _isServerFailure,
@@ -2400,6 +2443,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           return txid;
         },
       );
+      return Ok(txid);
     } catch (e) {
       if (e is SwapsFailure) rethrow;
       if (_isLockupNotVisible(e)) {
@@ -2418,13 +2462,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       }
       final recovered = await _recoverFromVerifiedOutspend(swap, isClaim: true);
       await swapsLog.flush();
-      if (recovered != null) return recovered;
+      if (recovered != null) return Ok(recovered);
       listen([swap.id]);
       throw SwapsException('claim failed for ${swap.id}: ${_errorMessage(e)}');
     }
   }
 
-  Future<String> refund(Swap swap, {bool scriptPathOnly = false}) async {
+  Future<Result<String, SwapsFailure>> refund(
+    Swap swap, {
+    bool scriptPathOnly = false,
+  }) async {
     final stored = await getSwap(swapId: swap.id);
     final existing = switch (stored) {
       ChainSwap(:final refundTxid) => refundTxid,
@@ -2433,7 +2480,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         'reverse swap ${swap.id} is claimed, never refunded',
       ),
     };
-    if (existing != null) return existing;
+    if (existing != null) return Ok(existing);
 
     final refundOnLiquid = switch (swap.type) {
       SwapType.liquidToBitcoin || SwapType.liquidToLightning => true,
@@ -2447,13 +2494,23 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     if (sendWalletId == null) {
       throw SwapsException('swap ${swap.id} has no wallet to refund into');
     }
-    final refundAddress =
-        switch (swap) {
-          ChainSwap() => swap.refundAddress,
-          LnSendSwap() => swap.refundAddress,
-          LnReceiveSwap() => null,
-        } ??
-        await _persistRefundAddress(swap.id, sendWalletId);
+    final knownAddress = switch (swap) {
+      ChainSwap() => swap.refundAddress,
+      LnSendSwap() => swap.refundAddress,
+      LnReceiveSwap() => null,
+    };
+    final String refundAddress;
+    if (knownAddress != null) {
+      refundAddress = knownAddress;
+    } else {
+      switch (await _newAddressFor(sendWalletId)) {
+        case Ok(:final value):
+          refundAddress = value;
+          await updateSwapFields(swap.id, refundAddress: value);
+        case Err(:final failure):
+          return Err(failure);
+      }
+    }
 
     try {
       final (txid, _) = await _electrum.run(
@@ -2468,7 +2525,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           scriptPathOnly: scriptPathOnly,
         ),
       );
-      return txid;
+      return Ok(txid);
     } catch (e) {
       if (e is SwapsFailure) rethrow;
       // A non-final rejection means the timelock has not passed — nothing of
@@ -2504,7 +2561,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         isClaim: false,
       );
       await swapsLog.flush();
-      if (recovered != null) return recovered;
+      if (recovered != null) return Ok(recovered);
       throw SwapsException('refund failed for ${swap.id}: ${_errorMessage(e)}');
     }
   }
@@ -2655,23 +2712,22 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     return (txid, fees);
   }
 
-  Future<String> _resolveClaimAddress(Swap swap) async {
+  Future<Result<String, SwapsFailure>> _resolveClaimAddress(Swap swap) async {
+    final String walletId;
     switch (swap) {
       case LnReceiveSwap():
         final existing = swap.receiveAddress;
-        if (existing != null) return existing;
-        final address = await _newAddressFor(swap.receiveWalletId);
-        await updateSwapFields(swap.id, receiveAddress: address);
-        return address;
+        if (existing != null) return Ok(existing);
+        walletId = swap.receiveWalletId;
       case ChainSwap():
         final existing = swap.receiveAddress;
         if (existing != null) {
           final uri = Uri.tryParse(existing);
           if (uri != null && uri.scheme.isNotEmpty && uri.path.isNotEmpty) {
             // bip21-style stored destination (bitcoin:/liquidnetwork:...).
-            return uri.path;
+            return Ok(uri.path);
           }
-          return existing;
+          return Ok(existing);
         }
         final receiveWalletId = swap.receiveWalletId;
         if (receiveWalletId == null) {
@@ -2680,18 +2736,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
             'receive address',
           );
         }
-        final address = await _newAddressFor(receiveWalletId);
-        await updateSwapFields(swap.id, receiveAddress: address);
-        return address;
+        walletId = receiveWalletId;
       case LnSendSwap():
         throw SwapsException('submarine swaps have no claim address');
     }
-  }
-
-  Future<String> _persistRefundAddress(String swapId, String walletId) async {
-    final address = await _newAddressFor(walletId);
-    await updateSwapFields(swapId, refundAddress: address);
-    return address;
+    final result = await _newAddressFor(walletId);
+    if (result case Ok(:final value)) {
+      await updateSwapFields(swap.id, receiveAddress: value);
+    }
+    return result;
   }
 
   /// Live fee, floored at the relay minimum (a lower fee cannot broadcast)

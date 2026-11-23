@@ -1,5 +1,6 @@
 import 'package:secrets/custody.dart';
 import 'package:preferences/preferences.dart';
+import 'package:receive/receive.dart' show Receive;
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:primitives/primitives.dart';
 
@@ -66,16 +67,7 @@ import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 
 class WalletLocator {
-  static void setup(
-    GetIt locator, {
-    Future<Result<String, WalletDiscoveryFailure>> Function(String)?
-    receiveAddress,
-    Future<Result<String, WalletFailure>> Function(
-      String, {
-      Set<String> excludedAddresses,
-    })?
-    nextReceiveAddress,
-  }) {
+  static void setup(GetIt locator, {Receive Function()? receive}) {
     Future<WalletKey> keyFor(String id) =>
         WalletSyncBinding.keyForId(locator<WalletRegistrations>(), id);
     Future<BitcoinSpendStatus> spendStatus(
@@ -134,9 +126,21 @@ class WalletLocator {
         readDefaultWalletNetwork: () =>
             locator<GetDefaultWalletNetworkUsecase>().execute(),
         readTorRequirement: () => locator<IsTorRequiredUsecase>().execute(),
-        nextReceiveAddress: nextReceiveAddress,
+        nextReceiveAddress: receive == null
+            ? null
+            : (id, {excludedAddresses = const {}}) async =>
+                  (await receive().nextUnusedAddress(
+                    id,
+                    excludedAddresses: excludedAddresses,
+                  )).mapErr(
+                    (failure) => WalletStorageFailure(failure.logMessage),
+                  ),
         spendStatus: spendStatus,
-        receiveAddress: receiveAddress,
+        receiveAddress: receive == null
+            ? null
+            : (id) async =>
+                  (await receive().transferAddress(id))
+                      .mapErr((_) => const WalletDiscoveryUnavailableFailure()),
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap((
           id,
           transaction, {

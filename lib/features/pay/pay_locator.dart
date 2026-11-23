@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.da
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
@@ -106,9 +106,7 @@ class PayLocator {
       ),
     );
     locator.registerFactory<GetPayPayinAddressUsecase>(
-      () => GetPayPayinAddressUsecase(
-        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
-      ),
+      () => GetPayPayinAddressUsecase(addresses: locator<AddressView>()),
     );
     locator.registerFactory<GetPayExchangeRateUsecase>(
       () => GetPayExchangeRateUsecase(

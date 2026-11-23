@@ -1,3 +1,4 @@
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 
 import 'domain/usecases/get_send_amount_quotes_usecase.dart';
@@ -26,9 +27,9 @@ import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_co
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:transactions/transactions.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
@@ -132,7 +133,7 @@ class SendLocator {
       () => CreateSendSwapUsecase(
         locator<SwapFacade>(),
         getWalletUsecase: locator<GetWalletUsecase>(),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        getReceiveAddressUsecase: locator<AddressView>(),
       ),
     );
     locator.registerFactory<GetSendSwapQuoteUsecase>(
@@ -151,7 +152,7 @@ class SendLocator {
       () => CreateSendCrossChainSwapUsecase(
         locator<SwapFacade>(),
         getWalletUsecase: locator<GetWalletUsecase>(),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        getReceiveAddressUsecase: locator<AddressView>(),
       ),
     );
     locator.registerFactory<GetSendCrossChainQuoteUsecase>(

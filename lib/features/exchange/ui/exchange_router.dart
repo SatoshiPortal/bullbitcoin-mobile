@@ -4,7 +4,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:address_view/address_view.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 

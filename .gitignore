@@ -135,5 +135,6 @@ bull_logs.tsv
 /features/all_seed_view/lib/generated/l10n/
 /features/bip85/lib/generated/l10n/
 /features/transactions/lib/generated/l10n/
+/features/address_view/lib/generated/l10n/
 /features/fees/untranslated-messages.txt
 /features/silent/lib/generated/l10n/

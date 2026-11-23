@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:address_view/address_view.dart';
 import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:electrum/setup.dart';
@@ -57,9 +57,15 @@ class BoltzSwapsSetup {
             : Fingerprint(fingerprint);
       },
       newAddressFor: (id) async =>
-          (await locator<WalletAddressRepository>().generateNewReceiveAddress(
+          switch (await locator<AddressView>().receiveAddress(
             walletId: id,
-          )).address,
+            advance: true,
+          )) {
+            Ok(:final value) => value.address,
+            Err(:final failure) => throw SwapsException(
+              'receive address unavailable: ${failure.runtimeType}',
+            ),
+          },
       walletTx: (txid, {required walletId}) async {
         final result = await locator<Transactions>()
             .getWalletTransaction(txid, walletId: walletId);

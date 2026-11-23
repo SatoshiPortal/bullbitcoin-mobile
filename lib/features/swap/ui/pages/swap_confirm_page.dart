@@ -1,7 +1,6 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_confirmation_details.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';

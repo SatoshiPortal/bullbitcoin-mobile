@@ -8,11 +8,13 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/address_view
   - features/announcements
   - features/backups
   - features/coins
   - features/bitcoin_price
   - features/bull_exchange
+  - features/receive
   - packages/labels
   - packages/legacy_storage
   - packages/exchange
@@ -75,10 +77,12 @@ dependencies:
   bip85:
   access:
   wallet_import:
+  address_view:
   announcements:
   backups:
   coins:
   bitcoin_price:
+  receive:
   labels:
   label_editor:
   network:

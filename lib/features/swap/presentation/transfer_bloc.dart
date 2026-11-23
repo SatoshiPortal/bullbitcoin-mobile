@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:swaps/order_swaps.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart' show NetworkX;
@@ -47,7 +48,6 @@ import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/swaps_failure_mapping.dart';
@@ -204,7 +204,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   StreamSubscription<Result<OrderSwapRecord, SwapFailure>>?
   _orderSwapSubscription;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
-  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
+  final AddressView _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetSwapExchangeRateUsecase _getSwapExchangeRateUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
@@ -815,21 +815,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           return;
         }
         final String receiveAddress;
-        try {
-          final address = await _getReceiveAddressUsecase.execute(
-            walletId: toWallet.id,
-          );
-          if (generation != _transactionGeneration) return;
-          receiveAddress = address.address;
-        } catch (e) {
-          emit(
-            state.copyWith(
-              swapCreationException: SwapCreationException(
-                'receive_address_lookup_failed',
+        final result = await _getReceiveAddressUsecase.receiveAddress(
+          walletId: toWallet.id,
+        );
+        if (generation != _transactionGeneration) return;
+        switch (result) {
+          case Ok(:final value):
+            receiveAddress = value.address;
+          case Err():
+            emit(
+              state.copyWith(
+                swapCreationException: SwapCreationException(
+                  'receive_address_lookup_failed',
+                ),
               ),
-            ),
-          );
-          return;
+            );
+            return;
         }
         if (receiveAddress.isEmpty) {
           emit(
@@ -1248,19 +1249,37 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final outNetwork = fromWallet.isLiquid
         ? OrderSwapNetwork.bitcoin
         : OrderSwapNetwork.liquid;
-    final destinationAddress = state.sendToExternal
-        ? state.externalAddress
-        : (await _getReceiveAddressUsecase.execute(
-            walletId: destinationWallet!.id,
-          )).address;
-    if (generation != _transactionGeneration) return;
+    final String destinationAddress;
+    if (destinationWallet != null) {
+      final result = await _getReceiveAddressUsecase.receiveAddress(
+        walletId: destinationWallet.id,
+      );
+      if (generation != _transactionGeneration) return;
+      switch (result) {
+        case Ok(:final value):
+          destinationAddress = value.address;
+        case Err():
+          emit(state.copyWith(swapFailure: const SwapUnexpectedFailure()));
+          return;
+      }
+    } else {
+      destinationAddress = state.externalAddress;
+    }
     if (destinationAddress.isEmpty) {
       throw SwapCreationException('destination_address_required');
     }
-    final fallbackAddress = (await _getReceiveAddressUsecase.execute(
+    final fallback = await _getReceiveAddressUsecase.receiveAddress(
       walletId: fromWallet.id,
-    )).address;
+    );
     if (generation != _transactionGeneration) return;
+    final String fallbackAddress;
+    switch (fallback) {
+      case Ok(:final value):
+        fallbackAddress = value.address;
+      case Err():
+        emit(state.copyWith(swapFailure: const SwapUnexpectedFailure()));
+        return;
+    }
     final isInAmountFixed = isMaxSend || !state.receiveExactAmount;
 
     final quoteResult = await _getOrderSwapQuoteUsecase.execute(
@@ -2698,14 +2717,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final networkFee = fromWallet.isLiquid
           ? state.liquidNetworkFees!.fastest
           : state.bitcoinNetworkFees!.fastest;
-      final receiveAddress = await _getReceiveAddressUsecase.execute(
+      final receiveAddress = await _getReceiveAddressUsecase.receiveAddress(
         walletId: fromWallet.id,
       );
-      return await _drainableAmountSat(
-        fromWallet,
-        address: receiveAddress.address,
-        networkFee: networkFee,
-      );
+      return switch (receiveAddress) {
+        Err() => null,
+        Ok(:final value) => await _drainableAmountSat(
+          fromWallet,
+          address: value.address,
+          networkFee: networkFee,
+        ),
+      };
     } catch (e) {
       log.severe(
         message: 'Error getting max amount sat in transfer bloc',

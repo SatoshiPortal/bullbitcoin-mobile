@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:swaps/swaps.dart';
 
 extension BoltzSwapFailureToReceiveFailure on SwapsFailure {

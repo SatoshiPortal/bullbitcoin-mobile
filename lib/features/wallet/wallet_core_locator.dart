@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/send/public/send_setup.dart' show LiquidWalletRepository;
+import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';

@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
@@ -74,7 +74,7 @@ class SellLocator {
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<Preferences>(),
         fees: locator<Fees>(),
-        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
+        addresses: locator<AddressView>(),
         getIndexPrice: Pricer.getIndexPrice,
         getOrderUsecase: locator<GetOrderUsecase>(),
       ),
@@ -111,10 +111,6 @@ class SellLocator {
       () => LabelCompletedSellOrderUsecase(
         transactionsFacade: locator<Transactions>(),
       ),
-    );
-
-    locator.registerFactory<GetAddressAtIndexUsecase>(
-      () => GetAddressAtIndexUsecase(walletAddressRepository: locator()),
     );
   }
 

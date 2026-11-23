@@ -1,4 +1,5 @@
 import 'package:swaps/order_swaps.dart';
+import 'package:address_view/address_view.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
@@ -7,7 +8,6 @@ import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart' show NetworkX;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -26,7 +26,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   final WalletRepository _walletRepository;
   final Preferences _settingsRepository;
   final Spend _spend;
-  final GetReceiveAddressUsecase _getReceiveAddress;
+  final AddressView _getReceiveAddress;
   final SwapFacade _swapFacade;
   final Labels _labelsFacade;
   final Future<void> Function(Duration) _delay;
@@ -101,12 +101,28 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         );
       }
 
-      final destination = await _getReceiveAddress.execute(
+      final WalletAddress destination;
+      switch (await _getReceiveAddress.receiveAddress(
         walletId: recipientWallet.id,
-      );
-      final fallback = await _getReceiveAddress.execute(
+      )) {
+        case Ok(:final value):
+          destination = value;
+        case Err():
+          return const Err(
+            AutoswapExecutionFailure('Receive address unavailable'),
+          );
+      }
+      final WalletAddress fallback;
+      switch (await _getReceiveAddress.receiveAddress(
         walletId: liquidWallet.id,
-      );
+      )) {
+        case Ok(:final value):
+          fallback = value;
+        case Err():
+          return const Err(
+            AutoswapExecutionFailure('Receive address unavailable'),
+          );
+      }
       final feeResult = await _estimateNetworkFee(
         balanceSat: balanceSat,
         wallet: liquidWallet,

@@ -17,7 +17,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -179,13 +179,13 @@ Future<void> main({bool isInitialized = false}) async {
       // all_test.dart when this group is skipped (no TEST_ALICE_MNEMONIC).
       // setUpAll only runs when the group actually runs.
       late final WalletRepository walletRepository;
-      late final WalletAddressRepository addressRepository;
+      late final AddressView addressRepository;
       late final PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
       late Wallet wallet;
 
       setUpAll(() async {
         walletRepository = locator<WalletRepository>();
-        addressRepository = locator<WalletAddressRepository>();
+        addressRepository = locator<AddressView>();
         prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
         // Testnet is a developer network: enable it as a user would.
@@ -237,9 +237,14 @@ Future<void> main({bool isInitialized = false}) async {
           (largest, candidate) =>
               candidate.amountSat > largest.amountSat ? candidate : largest,
         );
-        final receive = await addressRepository.generateNewReceiveAddress(
+        final receiveResult = await addressRepository.receiveAddress(
           walletId: wallet.id,
+          advance: true,
         );
+        final receive = switch (receiveResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(failure.runtimeType.toString()),
+        };
 
         final preparationResult = await prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -286,9 +291,14 @@ Future<void> main({bool isInitialized = false}) async {
             outpoints: [frozenOutpoint],
           ),
         );
-        final receive = await addressRepository.generateNewReceiveAddress(
+        final receiveResult = await addressRepository.receiveAddress(
           walletId: wallet.id,
+          advance: true,
         );
+        final receive = switch (receiveResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(failure.runtimeType.toString()),
+        };
 
         await expectLater(
           prepareBitcoinSendUsecase.execute(
@@ -336,9 +346,14 @@ Future<void> main({bool isInitialized = false}) async {
           ),
         );
 
-        final receive = await addressRepository.generateNewReceiveAddress(
+        final receiveResult = await addressRepository.receiveAddress(
           walletId: wallet.id,
+          advance: true,
         );
+        final receive = switch (receiveResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(failure.runtimeType.toString()),
+        };
 
         // Drain to self: selection would otherwise sweep every coin. With all
         // frozen, the prepare must return WalletNoSpendableInputsFailure.

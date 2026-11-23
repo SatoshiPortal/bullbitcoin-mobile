@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/receive/domain/boltz_swap_failure_to_receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:primitives/primitives.dart';
 import 'package:swaps/swaps.dart';
 

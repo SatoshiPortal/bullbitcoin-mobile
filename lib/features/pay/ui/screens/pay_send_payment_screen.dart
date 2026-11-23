@@ -1,6 +1,5 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
 import 'package:fees/fees.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;

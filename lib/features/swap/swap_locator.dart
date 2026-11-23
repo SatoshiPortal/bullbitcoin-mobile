@@ -1,4 +1,5 @@
 import 'package:spend/spend.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 
 import 'domain/usecases/get_swap_amount_quotes_usecase.dart';
@@ -23,7 +24,6 @@ import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_co
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -279,7 +279,7 @@ class SwapLocator {
             locator<MarkOrderSwapPayinBroadcastUsecase>(),
         watchOrderSwapUsecase: locator<WatchOrderSwapUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        getReceiveAddressUsecase: locator<AddressView>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         getSwapExchangeRateUsecase: locator<GetSwapExchangeRateUsecase>(),
         checkLiquidConsolidationUsecase:

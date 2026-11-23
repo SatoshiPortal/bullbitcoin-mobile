@@ -21,6 +21,33 @@ final class InventoryFixture {
 
   InventoryFixture._(this.admission, this.inventory);
 
+  Future<void> addPublicWallet({
+    required String id,
+    required String network,
+  }) async {
+    final liquid = network.startsWith('liquid');
+    expect(
+      await inventory.registerWallet(
+        RegisteredWallet(
+          id: id,
+          network: network,
+          masterFingerprint: '',
+          secretFingerprint: null,
+          signer: 'none',
+          xpub: 'public-key-marker',
+          externalDescriptor: liquid
+              ? "ct(slip77(public),elwpkh([01234567/84'/1776'/7']public-key-marker/0/*))"
+              : "wpkh([01234567/84'/1'/7']public-key-marker/0/*)",
+          internalDescriptor: liquid ? '' : 'wpkh(public-key-marker/1/*)',
+          label: '',
+          birthday: null,
+          isDefault: false,
+        ),
+      ),
+      isA<Ok<void, SecretFailure>>(),
+    );
+  }
+
   static Future<InventoryFixture> open(Directory directory) async {
     final file = File('${directory.path}/test-secrets.sqlite');
     final gate = NativeFileGate(File('${directory.path}/test-secrets.gate'));

@@ -240,7 +240,6 @@ graph TB
     SUPPORT[Support]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
-    ADDRESS_MGMT[Address Management]
     BACKUPS[Backups]
     BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
     SWAPS[Swaps]
@@ -271,8 +270,32 @@ graph TB
     WALLETS -->|public QR scanning| SCANNING
     SCANNING --> BULL_UI
     RECEIVE[Receive]
+    RECEIVE_REQUEST[Receive requests, address selection and notes<br/>Workspace Member]
     TRANSFER[Transfer]
     TX_HISTORY[Transactions<br/>Workspace Feature]
+
+    ADDRESS_LABELS[Address View<br/>Workspace Member]
+    SETTINGS -->|typed navigation| ADDRESS_LABELS
+    ADDRESS_LABELS --> BULL_UI
+    ADDRESS_LABELS --> LABEL_EDITOR
+    ADDRESS_LABELS --> MEMPOOL
+    ADDRESS_LABELS --> BULL_LOGGER
+    ADDRESS_LABELS --> LABELS
+    ADDRESS_LABELS --> PRIMITIVES
+    ADDRESS_LABELS -->|typed wallet inventory| SECRETS
+    ADDRESS_LABELS --> SYNC
+    ADDRESS_LABELS --> SATOSHIFIER[Satoshifier Package]
+    PAY -->|indexed address| ADDRESS_LABELS
+    RECEIVE -->|indexed address| ADDRESS_LABELS
+    SELL -->|indexed address| ADDRESS_LABELS
+    RECEIVE --> RECEIVE_REQUEST
+    WALLETS -->|transfer address selection| RECEIVE_REQUEST
+    RECEIVE_REQUEST --> ADDRESS_LABELS
+    RECEIVE_REQUEST --> LABELS
+    RECEIVE_REQUEST --> PRIMITIVES
+    RECEIVE_REQUEST --> BULL_LOGGER
+    RECEIVE_REQUEST --> BULL_PRICER
+    RECEIVE_REQUEST --> PREFERENCES
     REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
     LIMIT_ORDERS[Limit Orders]
@@ -369,8 +392,6 @@ graph TB
     %% Legacy Core-to-feature dependencies, pending extraction
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
-    ADDRESS_MGMT --> LABELS
-    ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> ACCESS
     ALL_SEED_VIEW --> SECRETS
     ALL_SEED_VIEW --> PREFERENCES
@@ -554,17 +575,16 @@ graph TB
 
 
     %% Wallet readers and spend preparation assigned to their app owners
-    ADDRESS_MGMT --> SYNC
     UTXO_MGMT --> SYNC
-    RECEIVE --> ADDRESS_MGMT
-    AUTOSWAP --> ADDRESS_MGMT
-    LIMIT_ORDERS --> ADDRESS_MGMT
-    PAY --> ADDRESS_MGMT
+    AUTOSWAP --> ADDRESS_LABELS
     PAY --> UTXO_MGMT
-    SELL --> ADDRESS_MGMT
     SELL --> UTXO_MGMT
-    SEND --> ADDRESS_MGMT
-    SWAPS --> ADDRESS_MGMT
+    SEND --> ADDRESS_LABELS
+    SWAPS --> ADDRESS_LABELS
+    WALLETS -->|address viewer| ADDRESS_LABELS
+    TX_HISTORY -->|address viewer| ADDRESS_LABELS
+    BROADCAST_SIGNED_TX -->|address viewer| ADDRESS_LABELS
+    IMPORT_MNEMONIC --> SYNC
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
@@ -573,7 +593,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -658,6 +678,8 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Send**: Depends on Spend, Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
 - **Backups**: Depends on Tor and Wallets
+- **Receive and Address View capabilities**: `features/receive` owns request admission, pricing, address notes and transfer/next-unused selection. `features/address_view` mounts the Settings address history and uses the active Secrets inventory, Sync and Labels for indexed reads, address issuance and label enrichment. The app still owns the Receive routes, Lightning fallback, shared polling and incoming-payment observation.
+- **Backups**: Depends on BIP85, Tor, Wallets
 
 ### Exchange-Related Features
 

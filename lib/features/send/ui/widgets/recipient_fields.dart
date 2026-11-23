@@ -1,8 +1,9 @@
 import 'package:silent/localizations.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer, FullScreenScannerPage;
+    show FullScreenScannerPage;
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards;

@@ -1,0 +1,83 @@
+{
+  "addressViewTransactions": "लेनदेन",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewNoAddressesFound": "कोई पता नहीं मिला",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "okButton": "ठीक",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewBalance": "शेष",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewAddress": "पता",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewShowQR": "QR कोड",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewAddressesTitle": "पते",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressCardUsedLabel": "उपयोग किया गया",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressViewChangeAddressesComingSoon": "जल्द ही आने वाले पते बदलें",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressCardBalanceLabel": "शेष: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "addressCardUnusedLabel": "अप्रयुक्त",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardIndexLabel": "इंडेक्स: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressViewCopyAddress": "पता कॉपी करें",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressViewChangeType": "परिवर्तन",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressViewReceiveType": "प्राप्त करना",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeAddressesDescription": "वॉलेट प्रदर्शित करें पते बदलें",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewTitle": "पता विवरण",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "addressViewerTitle": "पता",
+  "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "viewerViewInExplorer": "एक्सप्लोरर में देखें",
+  "viewerCopyLink": "प्रतिरूप जोड़ना",
+  "viewerAddressTab": "पता",
+  "viewerPaymentUriTab": "भुगतान URI",
+  "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
+  "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
+}

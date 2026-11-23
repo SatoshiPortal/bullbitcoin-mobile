@@ -9,7 +9,7 @@ import 'package:swaps/src/switchable_swap_engine.dart';
 import 'package:rust_bindings/rust_bindings.dart';
 import 'package:rust_bindings/boltz.dart' as native;
 import 'package:drift/native.dart';
-import 'package:primitives/primitives.dart' show Err;
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:swaps/swaps.dart';
 import 'package:test/test.dart';
 
@@ -129,7 +129,7 @@ void main() {
           electrum: ReproElectrumBackend(),
           lockupChain: ReproChainBackend(),
           newAddressFor: (_) async =>
-              'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+              Ok('tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx'),
           walletTx: (_, {required walletId}) async => null,
           walletTxs: (_, {bool sync = false}) async => const [],
           fastestFee: ({
