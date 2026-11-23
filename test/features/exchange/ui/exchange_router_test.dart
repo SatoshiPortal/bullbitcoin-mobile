@@ -4,13 +4,12 @@ import 'package:exchange/testing.dart';
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/novlang/novlang_bull_exchange_localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,20 +21,30 @@ import 'package:novlang/novlang.dart';
 
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
+class _Preferences extends Mock implements Preferences {}
+
 class _ExchangeCubit extends MockCubit<ExchangeState>
     implements ExchangeCubit {}
 
-ExchangeRouterConfig _config({
-  required Future<bool> Function() unavailable,
+BullExchangeFeature _mount({
+  required Exchange Function() exchange,
   void Function(BuildContext)? onExit,
-}) => ExchangeRouterConfig(
-  networkUnavailable: unavailable,
+}) => BullExchangeFeature.mount(
+  exchange: exchange,
+  preferences: () => throw StateError('Unexpected preferences'),
   isSuperuser: (_) => false,
   homePath: '/home',
   onExit: onExit ?? (_) {},
   onOpenSettings: (_) {},
   onAction: (_, _) {},
+  brandAssetPath: 'unused',
+  settingsAssetPath: 'unused',
 );
+
+List<RouteBase> _routes(BullExchangeFeature feature) => [
+  ?feature.dashboardRoute,
+  ...feature.routes,
+];
 
 void main() {
   test('landing copy retains the App Store vocabulary override', () async {
@@ -63,20 +72,14 @@ void main() {
   testWidgets('support login preserves the authentication source and draft', (
     tester,
   ) async {
-    final exchange = _Access();
-    when(
-      () => exchange.current,
-    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
-    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
-    addTearDown(() => locator.unregister<Exchange>());
     final lifecycle = _Access();
+    when(
+      () => lifecycle.current,
+    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
     when(() => lifecycle.enable(forSupport: true))
         .thenAnswer((_) async => const Ok(null));
     final capability = exchangeForTesting(access: lifecycle);
-    final feature = ExchangeRouter.mount(
-      _config(unavailable: () async => false),
-      exchange: () => capability,
-    );
+    final feature = _mount(exchange: () => capability);
     GoRouterState? authentication;
     final router = GoRouter(
       initialLocation: '/home',
@@ -85,7 +88,7 @@ void main() {
         ?feature.supportChatRoute,
         GoRoute(
           path: '/auth',
-          name: ExchangeRoute.exchangeAuth.name,
+          name: BullExchangeNavigation.authName,
           builder: (_, state) {
             authentication = state;
             return const Scaffold(body: Text('Authentication'));
@@ -124,26 +127,27 @@ void main() {
   testWidgets(
     'injected network refusal redirects before exchange presentation',
     (tester) async {
-      var checks = 0;
+      final preferences = _Preferences();
+      when(preferences.readExchangeWebPreferences).thenAnswer(
+        (_) async => const Ok((
+          environment: Environment.regtest,
+          exchangeTestnetBasicAuthUsername: null,
+          exchangeTestnetBasicAuthPassword: null,
+        )),
+      );
+      final capability = exchangeForTesting(sessionPreferences: preferences);
       final router = GoRouter(
         initialLocation: BullExchangeNavigation.landingPath,
         routes: [
           GoRoute(path: '/home', builder: (_, _) => const Text('home')),
-          ...ExchangeRouter.routes(
-            _config(
-              unavailable: () async {
-                checks++;
-                return true;
-              },
-            ),
-          ),
+          ..._routes(_mount(exchange: () => capability)),
         ],
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(MaterialApp.router(routerConfig: router));
       await tester.pumpAndSettle();
       expect(find.text('home'), findsOneWidget);
-      expect(checks, 1);
+      verify(preferences.readExchangeWebPreferences).called(1);
     },
   );
 
@@ -161,17 +165,14 @@ void main() {
     );
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
-    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
-    addTearDown(() => locator.unregister<Exchange>());
+    final capability = exchangeForTesting(access: exchange);
     final cubit = _ExchangeCubit();
     when(() => cubit.state).thenReturn(const ExchangeState());
     final router = GoRouter(
-      initialLocation: ExchangeRoute.exchangeHome.path,
+      initialLocation: BullExchangeNavigation.dashboardPath,
       routes: [
         GoRoute(path: '/home', builder: (_, _) => const Text('home')),
-        ...ExchangeRouter.routes(
-          _config(unavailable: () async => false, onExit: onExit),
-        ),
+        ..._routes(_mount(exchange: () => capability, onExit: onExit)),
       ],
     );
     addTearDown(router.dispose);
@@ -241,16 +242,15 @@ void main() {
     ExchangeAccess current = signedIn;
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
-    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
-    addTearDown(() => locator.unregister<Exchange>());
+    final capability = exchangeForTesting(access: exchange);
     final cubit = _ExchangeCubit();
     // The cubit resets to its empty state when the session ends.
     when(() => cubit.state).thenReturn(const ExchangeState());
     final router = GoRouter(
-      initialLocation: ExchangeRoute.exchangeHome.path,
+      initialLocation: BullExchangeNavigation.dashboardPath,
       routes: [
         GoRoute(path: '/home', builder: (_, _) => const Text('home')),
-        ...ExchangeRouter.routes(_config(unavailable: () async => false)),
+        ..._routes(_mount(exchange: () => capability)),
       ],
     );
     addTearDown(router.dispose);

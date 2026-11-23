@@ -21,7 +21,9 @@ import 'package:path/path.dart' as p;
 // Label Editor publishes the existing note, label and import/export UI. Its
 // consumers use that surface while data-only consumers depend on the package.
 // Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
-// Exchange workspace UI consumers use the published routes.
+// Exchange workspace UI consumers use the published routes. Bull Exchange
+// builds its destination fields with Address View and opens order details
+// through Transactions; the app keeps only the wallet-card payin binding.
 // Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
 // Settings consumes Receive's disclaimer and typed Wallet Import navigation.
 // Wallet Import owns mnemonic input and scanning; Wallet uses its data types.
@@ -30,9 +32,9 @@ const _allowedTargets = <String, String>{
   'ark': 'scanning',
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
-  'bull_exchange': 'bitcoin_price coins fees',
+  'bull_exchange': 'address_view bitcoin_price coins fees transactions',
   'coins': 'address_view bitcoin_price',
-  'exchange': 'address_view bull_exchange overview transactions wallet',
+  'exchange': 'address_view bull_exchange transactions wallet',
   'network': 'recoverbull',
   'onboarding':
       'mnemonic_entry network recoverbull settings wallet wallet_import',

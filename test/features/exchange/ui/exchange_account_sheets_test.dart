@@ -1,5 +1,4 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
@@ -70,7 +69,7 @@ void main() {
                         message: AppLocalizations.of(context)
                             .notLoggedInMessage,
                         onSignIn: () =>
-                            context.goNamed(ExchangeRoute.exchangeHome.name),
+                            context.goNamed(BullExchangeNavigation.dashboardName),
                       ),
                     },
                   ),
@@ -78,8 +77,8 @@ void main() {
               ),
             ),
             GoRoute(
-              path: ExchangeRoute.exchangeHome.path,
-              name: ExchangeRoute.exchangeHome.name,
+              path: BullExchangeNavigation.dashboardPath,
+              name: BullExchangeNavigation.dashboardName,
               builder: (_, _) =>
                   const Scaffold(body: Text('Exchange destination')),
             ),

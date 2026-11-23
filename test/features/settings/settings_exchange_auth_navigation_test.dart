@@ -44,12 +44,16 @@ void main() {
     addTearDown(() => locator.unregister<Exchange>());
     final manage =
         BullExchangeFeature.mount(
-          settings: SettingsRouter.exchangeSettingsHost,
-          networkUnavailable: () async => false,
-          showWebsiteOnly: (_) => false,
-          unavailableRedirectPath: '/home',
-          brandAssetPath: 'unused',
+          exchange: () => locator<Exchange>(),
+          preferences: () => throw StateError('Unexpected preferences'),
+          isSuperuser: (_) => false,
+          homePath: '/home',
           onExit: (_) {},
+          onOpenSettings: (_) {},
+          onAction: (_, _) {},
+          brandAssetPath: 'unused',
+          settingsAssetPath: 'unused',
+          settings: SettingsRouter.exchangeSettingsHost,
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,
         );
@@ -59,7 +63,7 @@ void main() {
         GoRoute(path: '/manage', builder: manage.builder),
         GoRoute(
           path: '/auth',
-          name: ExchangeRoute.exchangeAuth.name,
+          name: BullExchangeNavigation.authName,
           builder: (context, state) {
             expect(state.uri.queryParameters['from'], 'settings');
             return Scaffold(
@@ -127,12 +131,16 @@ void main() {
       accessRoutes: const [],
       addressRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
-        settings: SettingsRouter.exchangeSettingsHost,
-        networkUnavailable: () async => false,
-        showWebsiteOnly: (_) => false,
-        unavailableRedirectPath: '/home',
-        brandAssetPath: 'unused',
+        exchange: () => locator<Exchange>(),
+        preferences: () => throw StateError('Unexpected preferences'),
+        isSuperuser: (_) => false,
+        homePath: '/home',
         onExit: (_) {},
+        onOpenSettings: (_) {},
+        onAction: (_, _) {},
+        brandAssetPath: 'unused',
+        settingsAssetPath: 'unused',
+        settings: SettingsRouter.exchangeSettingsHost,
       ).settingsRoutes,
       backupRoutes: const [],
       priceRoutes: const [],
@@ -158,7 +166,7 @@ void main() {
         ),
         GoRoute(
           path: '/exchange',
-          name: ExchangeRoute.exchangeHome.name,
+          name: BullExchangeNavigation.dashboardName,
           builder: (_, _) => const Scaffold(body: Text('Exchange dashboard')),
         ),
         GoRoute(
@@ -226,12 +234,16 @@ void main() {
     addTearDown(() => locator.unregister<Exchange>());
     final route =
         BullExchangeFeature.mount(
-          settings: SettingsRouter.exchangeSettingsHost,
-          networkUnavailable: () async => false,
-          showWebsiteOnly: (_) => false,
-          unavailableRedirectPath: '/home',
-          brandAssetPath: 'unused',
+          exchange: () => locator<Exchange>(),
+          preferences: () => throw StateError('Unexpected preferences'),
+          isSuperuser: (_) => false,
+          homePath: '/home',
           onExit: (_) {},
+          onOpenSettings: (_) {},
+          onAction: (_, _) {},
+          brandAssetPath: 'unused',
+          settingsAssetPath: 'unused',
+          settings: SettingsRouter.exchangeSettingsHost,
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,
         );

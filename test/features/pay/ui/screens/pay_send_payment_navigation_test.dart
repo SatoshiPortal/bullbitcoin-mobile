@@ -8,7 +8,6 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,8 +91,8 @@ void main() {
       initialLocation: '/flow/payment',
       routes: [
         GoRoute(
-          name: ExchangeRoute.exchangeHome.name,
-          path: ExchangeRoute.exchangeHome.path,
+          name: BullExchangeNavigation.dashboardName,
+          path: BullExchangeNavigation.dashboardPath,
           builder: (_, _) => const Scaffold(body: Text('destination home')),
         ),
         GoRoute(
@@ -170,7 +169,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 350));
         expect(
           screen.router.routerDelegate.currentConfiguration.uri.path,
-          ExchangeRoute.exchangeHome.path,
+          BullExchangeNavigation.dashboardPath,
         );
         expect(find.text('destination home'), findsOneWidget);
         verifyNever(

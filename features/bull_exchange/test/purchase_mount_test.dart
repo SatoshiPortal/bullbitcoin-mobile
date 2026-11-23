@@ -3,21 +3,21 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'purchase_test_support.dart';
-
 Never _unexpected() => throw StateError('Mount must not open services');
 
 void main() {
   test('mount preserves Buy, DCA and limit-order creation locations', () {
     final feature = BullExchangeFeature.mount(
-      networkUnavailable: () async => false,
-      showWebsiteOnly: (_) => false,
-      unavailableRedirectPath: '/',
-      brandAssetPath: '',
+      exchange: _unexpected,
+      preferences: _unexpected,
+      isSuperuser: (_) => false,
+      homePath: '/',
       onExit: (_) {},
+      onOpenSettings: (_) {},
+      onAction: (_, _) {},
+      brandAssetPath: '',
+      settingsAssetPath: '',
       purchases: (
-        exchange: _unexpected,
-        preferences: _unexpected,
         displayPreferences: _unexpected,
         inventory: _unexpected,
         native: _unexpected,
@@ -26,12 +26,9 @@ void main() {
         payjoinReceiver: _unexpected,
         payjoinPolicy: _unexpected,
         pollWallet: (_) => _unexpected(),
-        labelOrders: (_) => _unexpected(),
-        validateBitcoinAddress: (_) => _unexpected(),
-        payoutField: emptyPurchaseField,
+        transactions: _unexpected,
         bitcoinAsset: '',
         onClose: (_) {},
-        openOrder: (_, _) {},
       ),
     );
     final router = GoRouter(

@@ -1,9 +1,7 @@
-import 'package:bull_ui/app_theme.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
-import 'package:bb_mobile/localizations.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The legacy `BullException` chain interpolates the raw `'$e'`, so this is the
 /// kind of string that historically reached `logMessage`.
@@ -30,9 +28,11 @@ Future<String> _translate(WidgetTester tester, ExchangeFailure failure) async {
 
   await tester.pumpWidget(
     MaterialApp(
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        ExchangeLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: ExchangeLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
           translated = failure.toTranslated(context);
