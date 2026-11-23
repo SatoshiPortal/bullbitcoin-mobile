@@ -10,6 +10,7 @@ import 'package:transactions/setup.dart';
 
 import '../transactions/support/transaction_ui_actions.dart';
 
+import 'package:coins/setup.dart' show CoinsFeature;
 import 'package:fees/fees.dart';
 import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
@@ -205,6 +206,25 @@ void main() {
           display: preferences,
         ),
       );
+      locator.registerSingleton(
+        CoinsFeature.mount<String>(
+          resolveWalletKey: (_) async =>
+              throw StateError('Unexpected coins wallet lookup'),
+          loadWallet: (_) async =>
+              throw StateError('Unexpected coins wallet read'),
+          foreground: () async => throw StateError('Unexpected coins sync'),
+          labels: _UnusedLabels(),
+          preferences: preferences,
+          poll: (_) async {},
+          watchRevisions: (_) => const Stream.empty(),
+          watchStartedSyncs: (_) => const Stream.empty(),
+          watchFinishedSyncs: (_) => const Stream.empty(),
+          walletId: (id) => id,
+          missingWalletRedirect: '/wallet-home',
+          onSend: (_, _, _) async {},
+          onSweep: (_, _, _) async {},
+        ),
+      );
       final secrets = Secrets(scratchDirectory: () async => directory.path);
       final inventory = inventoryFixture.inventory;
       locator.registerSingleton(
@@ -339,6 +359,7 @@ void main() {
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<CoinsFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
         await locator.unregister<ReceiveFeature>();
