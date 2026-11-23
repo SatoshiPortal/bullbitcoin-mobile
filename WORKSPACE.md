@@ -94,6 +94,8 @@ graph TD
   style preferences stroke:#f493f6
   primitives["primitives"]
   style primitives stroke:#5ced91
+  provisioning["provisioning"]
+  style provisioning stroke:#e5eb7c
   receive["receive"]
   style receive stroke:#85609b
   rust_bindings["rust_bindings"]
@@ -116,6 +118,8 @@ graph TD
   style silent stroke:#11c03a
   spend["spend"]
   style spend stroke:#8989d3
+  startup["startup"]
+  style startup stroke:#97212b
   swap_feature["swap_feature"]
   style swap_feature stroke:#7988a5
   swaps["swaps"]
@@ -154,6 +158,11 @@ graph TD
   announcements --> secrets
   ark --> primitives
   background_tasks --> legacy_storage
+  background_tasks --> bull_tor
+  background_tasks --> electrum
+  background_tasks --> notifications
+  background_tasks --> preferences
+  background_tasks --> secrets
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
@@ -178,6 +187,8 @@ graph TD
   bull_ark --> ark
   bull_ark --> secrets
   bull_ark --> primitives
+  bull_ark --> legacy_storage
+  bull_ark --> preferences
   bull_ark --> bull_ui
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
@@ -200,6 +211,8 @@ graph TD
   bull_logs --> primitives
   bull_payjoin --> legacy_storage
   bull_payjoin --> primitives
+  bull_payjoin --> bull_logger
+  bull_payjoin --> sync
   bull_pricer --> primitives
   bull_quick_actions --> bull_ui
   bull_quick_actions --> primitives
@@ -287,6 +300,9 @@ graph TD
   preferences --> primitives
   preferences --> legacy_storage
   preferences --> secrets
+  provisioning --> bull_logger
+  provisioning --> primitives
+  provisioning --> secrets
   receive --> address_view
   receive --> bull_logger
   receive --> bull_pricer
@@ -331,6 +347,20 @@ graph TD
   spend --> primitives
   spend --> secrets
   spend --> sync
+  startup --> access
+  startup --> bull_logger
+  startup --> bull_payjoin
+  startup --> bull_logs
+  startup --> bull_recoverbull
+  startup --> bull_tor
+  startup --> bull_ui
+  startup --> mnemonic_entry
+  startup --> preferences
+  startup --> primitives
+  startup --> provisioning
+  startup --> screen_privacy
+  startup --> secrets
+  startup --> swaps
   swap_feature --> bull_ui
   swap_feature --> primitives
   swap_feature --> swaps
@@ -397,6 +427,7 @@ graph TD
     settings
     signers
     silent
+    startup
     swap_feature
     transactions
     wallet_import
@@ -427,6 +458,7 @@ graph TD
     onion
     preferences
     primitives
+    provisioning
     rust_bindings
     satoshifier
     screen_awake
