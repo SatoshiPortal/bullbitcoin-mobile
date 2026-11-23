@@ -88,7 +88,6 @@ import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/swap/boltz_swaps_setup.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
-import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -322,7 +321,6 @@ class AppLocator {
             context.pushNamed<void>(SettingsRoute.backupSettings.name),
       ),
     );
-    WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     OnboardingLocator.setup(locator);
     final bip85 = inventory.bip85(locator<Secrets>());

@@ -6,9 +6,6 @@
   "backupWarningLoseReasonKeystore": "Устройство аннулирует keystore при смене блокировки экрана или способа аутентификации устройства",
   "backupWarningLoseReasonCloudRestore": "Восстановление устройства из облачной резервной копии",
   "backupWarningNoRecovery": "Без резервной копии восстановить кошелёк невозможно.",
-  "translationWarningTitle": "Переводы, созданные ИИ",
-  "translationWarningDescription": "Большинство переводов в этом приложении были созданы с помощью ИИ и могут содержать неточности. Если вы заметили ошибки или хотите помочь улучшить переводы, вы можете отправить исправление в наш репозиторий на GitHub.",
-  "translationWarningContributeButton": "Помочь улучшить переводы",
   "translationWarningDismissButton": "Понятно",
   "payTransactionBroadcast": "Трансляция",
   "fundExchangeSepaDescriptionExactly": "точно.",
@@ -2754,39 +2751,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Пропустить",
-  "wizardPageIndicator": "СТРАНИЦА {current} / {total}",
-  "wizardNextButton": "Далее",
-  "wizardCustomizeTitle": "Настройте под себя",
-  "wizardCustomizeBody": "Используйте BULL так, как удобно вам, с этими настройками.",
-  "wizardCustomizeDefaultCurrency": "Валюта по умолчанию",
-  "wizardMissionTitle": "Поддержите миссию Bull",
-  "wizardMissionBody1": "Чтобы помочь нам улучшать программу и обеспечивать высочайший уровень безопасности, конфиденциальности и удобства, ваше приложение может отправлять нам журналы ошибок, которые позволяют нам быстро находить и устранять проблемы в следующих обновлениях.",
-  "wizardMissionBody2": "Эти журналы анонимны, не связаны с вашим IP-адресом и никогда не передают информацию о ваших транзакциях или личности. Они носят чисто технический характер и не подвергают вас риску. Это очень помогает нам и ничего не стоит вам.",
-  "wizardMissionQuestion": "Согласны ли вы участвовать в нашей автоматической программе отчётов о проблемах?",
-  "wizardMissionYes": "Да",
-  "wizardMissionNo": "Нет",
-  "wizardMissionRequired": "Пожалуйста, выберите Да или Нет, прежде чем продолжить.",
-  "wizardJourneyTitle": "Развивайтесь на своём пути",
-  "wizardJourneyBody": "Если вы новичок в кошельке BULL, вот несколько функций, которыми вы можете воспользоваться для повышения конфиденциальности, безопасности и удобства использования.",
-  "wizardJourneyTip1": "Добавьте PIN-код для разблокировки кошелька",
-  "wizardJourneyTip2": "Попробуйте зашифрованную резервную копию хранилища",
-  "wizardJourneyTip3": "Подключитесь к собственному узлу Bitcoin",
-  "wizardJourneyTip4": "Подключитесь к собственному обозревателю Mempool",
-  "wizardJourneyTip5": "Выполняйте своп между Bitcoin и Liquid без KYC",
-  "wizardJourneyTip6": "Настройте параметры автообмена",
-  "wizardJourneyTip7": "Переключайтесь между Bitcoin (BTC) и Satoshis (sats)",
-  "wizardJourneyTip8": "Создавайте air-gap транзакции для аппаратного кошелька",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Что-то пошло не так при настройке кошелька. Пожалуйста, попробуйте снова.",
   "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
   "coreScreensResolvingInputs": "Разрешение входов транзакции...",
@@ -3541,7 +3505,5 @@
   "openSystemSettings": "Открыть настройки системы",
   "permissionsTitle": "Разрешения",
   "settingsSearchPermissionsKeywords": "уведомления|фоновые задачи|батарея|оповещения",
-  "wizardBackgroundTasksDescription": "Проверяет платежи, когда приложение закрыто.",
-  "wizardNotificationsDescription": "Узнавайте о поступлении платежей.",
   "sendErrorInvoiceExpiryTooShort": "Срок действия этого счета-фактуры истекает слишком скоро. Попросите получателя выставить новый."
 }

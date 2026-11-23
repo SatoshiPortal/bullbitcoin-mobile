@@ -7,9 +7,6 @@
   "backupWarningLoseReasonCloudRestore": "Restaurer votre appareil à partir d'une sauvegarde dans le cloud",
   "backupWarningNoRecovery": "Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
   "@@locale": "fr",
-  "translationWarningTitle": "Traductions générées par IA",
-  "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez soumettre une correction sur notre dépôt GitHub.",
-  "translationWarningContributeButton": "Aider à améliorer les traductions",
   "translationWarningDismissButton": "Compris",
   "durationSeconds": "{seconds} secondes",
   "@durationSeconds": {
@@ -2720,39 +2717,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Passer",
-  "wizardPageIndicator": "PAGE {current} / {total}",
-  "wizardNextButton": "Suivant",
-  "wizardCustomizeTitle": "Personnalisez votre expérience",
-  "wizardCustomizeBody": "Utilisez BULL selon vos préférences avec ces paramètres.",
-  "wizardCustomizeDefaultCurrency": "Devise par défaut",
-  "wizardMissionTitle": "Aidez la mission Bull",
-  "wizardMissionBody1": "Pour nous aider à améliorer notre logiciel et garantir le meilleur niveau de sécurité, de confidentialité et d'utilisabilité, votre application peut nous envoyer des journaux d'erreurs qui nous permettent de détecter et corriger les problèmes rapidement dans nos prochaines mises à jour.",
-  "wizardMissionBody2": "Ces journaux sont anonymisés, ne sont pas liés à votre adresse IP, et ne partagent jamais d'informations sur vos transactions ou votre identité. Ils sont purement techniques et ne vous exposent à aucun risque. Cela nous aide énormément, et ne vous coûte rien.",
-  "wizardMissionQuestion": "Acceptez-vous de participer à notre programme de signalement automatique des problèmes ?",
-  "wizardMissionYes": "Oui",
-  "wizardMissionNo": "Non",
-  "wizardMissionRequired": "Veuillez choisir Oui ou Non avant de continuer.",
-  "wizardJourneyTitle": "Progressez dans votre parcours",
-  "wizardJourneyBody": "Si vous découvrez le portefeuille BULL, voici quelques fonctionnalités dont vous pouvez profiter pour améliorer votre confidentialité, votre sécurité et votre expérience utilisateur.",
-  "wizardJourneyTip1": "Ajoutez un PIN de sécurité pour déverrouiller votre portefeuille",
-  "wizardJourneyTip2": "Essayez la sauvegarde chiffrée du coffre",
-  "wizardJourneyTip3": "Connectez-vous à votre propre nœud Bitcoin",
-  "wizardJourneyTip4": "Connectez-vous à votre propre explorateur Mempool",
-  "wizardJourneyTip5": "Échangez entre Bitcoin et Liquid sans KYC",
-  "wizardJourneyTip6": "Personnalisez vos paramètres d'autoswap",
-  "wizardJourneyTip7": "Basculez entre Bitcoin (BTC) et Satoshis (sats)",
-  "wizardJourneyTip8": "Créez des transactions air-gap pour votre portefeuille matériel",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Une erreur s'est produite lors de la configuration de votre portefeuille. Veuillez réessayer.",
   "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
   "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
@@ -3594,8 +3558,6 @@
   "exchangeAccessPendingOperations": "Des opérations existantes peuvent continuer. Ouvrez votre compte pour les vérifier avant de vous déconnecter.",
   "exchangeAccessEnableToContinue": "Activez les fonctionnalités de l’exchange dans les réglages pour continuer.",
   "exchangeAccessDisableIncomplete": "La déconnexion est incomplète. Réessayez avant d’utiliser les fonctionnalités de l’exchange.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Achetez, vendez et payez avec Bull Bitcoin directement depuis votre portefeuille.",
   "quickActionsSettingsTitle": "Actions rapides",
   "exchangeTradingUnavailable": "Les opérations sont indisponibles.",
   "exchangeTradingRetry": "Réessayer",
@@ -3679,8 +3641,6 @@
   "openSystemSettings": "Ouvrir les réglages du système",
   "permissionsTitle": "Autorisations",
   "settingsSearchPermissionsKeywords": "notifications|tâches en arrière-plan|batterie|alertes",
-  "wizardBackgroundTasksDescription": "Vérifie les paiements app fermée.",
-  "wizardNotificationsDescription": "Sachez quand un paiement arrive.",
   "amountInputBitcoin": "Bitcoin",
   "amountInputTitle": "Saisir les montants en",
   "amountInputSettingsHint": "Également disponible dans la liste des devises de chaque champ de montant.",

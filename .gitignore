@@ -138,3 +138,5 @@ bull_logs.tsv
 /features/address_view/lib/generated/l10n/
 /features/fees/untranslated-messages.txt
 /features/silent/lib/generated/l10n/
+/features/wizard/lib/generated/
+/features/settings/lib/generated/l10n/

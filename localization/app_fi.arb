@@ -7,9 +7,6 @@
   "backupWarningLoseReasonCloudRestore": "palautat laitteen pilvivarmuuskopiosta",
   "backupWarningNoRecovery": "Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
   "@@locale": "fi",
-  "translationWarningTitle": "Tekoälyn luomat käännökset",
-  "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit lähettää korjauksen GitHub-tietovarastoomme.",
-  "translationWarningContributeButton": "Auta parantamaan käännöksiä",
   "translationWarningDismissButton": "Selvä",
   "durationSeconds": "{seconds} sekuntia",
   "@durationSeconds": {
@@ -2714,39 +2711,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Ohita",
-  "wizardPageIndicator": "SIVU {current} / {total}",
-  "wizardNextButton": "Seuraava",
-  "wizardCustomizeTitle": "Mukauta kokemustasi",
-  "wizardCustomizeBody": "Käytä BULL-sovellusta omilla ehdoillasi näillä asetuksilla.",
-  "wizardCustomizeDefaultCurrency": "Oletusvaluutta",
-  "wizardMissionTitle": "Tue Bullin missiota",
-  "wizardMissionBody1": "Auttaaksesi meitä parantamaan ohjelmistoamme ja varmistamaan korkeimman turvallisuuden, yksityisyyden ja käytettävyyden tason, sovelluksesi voi lähettää meille virhelokeja, joiden avulla voimme havaita ongelmia ja korjata ne nopeasti seuraavissa päivityksissä.",
-  "wizardMissionBody2": "Nämä lokit on anonymisoitu, niitä ei ole liitetty IP-osoitteeseesi eivätkä ne koskaan jaa tietoja tapahtumistasi tai henkilöllisyydestäsi. Ne ovat puhtaasti teknisiä eivätkä aseta sinua mihinkään riskiin. Se on meille erittäin hyödyllistä eikä maksa sinulle mitään.",
-  "wizardMissionQuestion": "Hyväksytkö osallistumisen automaattiseen ongelmaraportointiohjelmaamme?",
-  "wizardMissionYes": "Kyllä",
-  "wizardMissionNo": "Ei",
-  "wizardMissionRequired": "Valitse Kyllä tai Ei ennen jatkamista.",
-  "wizardJourneyTitle": "Etene matkallasi",
-  "wizardJourneyBody": "Jos olet uusi BULL-lompakon käyttäjä, tässä on muutamia ominaisuuksia, joita voit hyödyntää parantaaksesi yksityisyyttäsi, turvallisuuttasi ja käyttökokemustasi.",
-  "wizardJourneyTip1": "Lisää suojaus-PIN-koodi lompakon avaamiseksi",
-  "wizardJourneyTip2": "Kokeile salattua holvivarmuuskopiota",
-  "wizardJourneyTip3": "Yhdistä omaan Bitcoin-solmuusi",
-  "wizardJourneyTip4": "Yhdistä omaan Mempool-selaimeesi",
-  "wizardJourneyTip5": "Swappaa Bitcoinin ja Liquidin välillä ilman KYC:tä",
-  "wizardJourneyTip6": "Mukauta autoswap-asetuksiasi",
-  "wizardJourneyTip7": "Vaihda Bitcoinin (BTC) ja Satoshien (sats) välillä",
-  "wizardJourneyTip8": "Luo air-gap-tapahtumia laitteistolompakollesi",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Jotain meni pieleen lompakkoasi määritettäessä. Yritä uudelleen.",
   "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
   "coreScreensResolvingInputs": "Selvitetään tapahtuman syötteitä...",
@@ -3501,7 +3465,5 @@
   "openSystemSettings": "Avaa järjestelmäasetukset",
   "permissionsTitle": "Käyttöoikeudet",
   "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
-  "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
-  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu.",
   "sendErrorInvoiceExpiryTooShort": "Tämä lasku vanhenee liian pian. Pyydä vastaanottajalta uusi lasku."
 }

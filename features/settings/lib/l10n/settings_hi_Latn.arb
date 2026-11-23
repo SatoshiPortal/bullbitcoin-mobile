@@ -1,0 +1,15 @@
+{
+  "@@locale": "hi_Latn",
+  "translationWarningTitle": "AI-Generated Anuvad",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "translationWarningDescription": "Is app ke zyaadatar anuvad AI ke zariye banaye gaye hain aur inme galtiyan ho sakti hain. Agar aapko koi galti mile ya anuvad sudharne mein madad karna ho, toh aap hamare community translation platform ke zariye yogdan de sakte hain.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningContributeButton": "Anuvad Sudharne Mein Madad Karein",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  }
+}

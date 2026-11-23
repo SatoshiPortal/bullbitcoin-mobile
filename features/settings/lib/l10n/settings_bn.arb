@@ -1,0 +1,15 @@
+{
+  "@@locale": "bn",
+  "translationWarningContributeButton": "অনুবাদ উন্নত করতে সাহায্য করুন",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  },
+  "translationWarningDescription": "এই অ্যাপের বেশিরভাগ অনুবাদ AI দ্বারা তৈরি এবং এতে ভুল থাকতে পারে। আপনি যদি কোনো ভুল লক্ষ্য করেন বা অনুবাদ উন্নত করতে চান, তাহলে আমাদের কমিউনিটি অনুবাদ প্ল্যাটফর্মে অবদান রাখতে পারেন।",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-জেনারেটেড অনুবাদ",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  }
+}

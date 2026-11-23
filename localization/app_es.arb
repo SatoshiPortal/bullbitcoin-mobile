@@ -7,9 +7,6 @@
   "backupWarningLoseReasonCloudRestore": "Restaurar tu dispositivo desde una copia de seguridad en la nube",
   "backupWarningNoRecovery": "No hay forma de recuperar tu billetera sin una copia de seguridad.",
   "@@locale": "es",
-  "translationWarningTitle": "Traducciones generadas por IA",
-  "translationWarningDescription": "La mayoría de las traducciones en esta aplicación fueron generadas usando IA y pueden contener inexactitudes. Si notas algún error o deseas ayudar a mejorar las traducciones, puedes enviar una corrección en nuestro repositorio de GitHub.",
-  "translationWarningContributeButton": "Ayudar a mejorar traducciones",
   "translationWarningDismissButton": "Entendido",
   "durationSeconds": "{seconds} segundos",
   "@durationSeconds": {
@@ -2709,39 +2706,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Omitir",
-  "wizardPageIndicator": "PÁGINA {current} / {total}",
-  "wizardNextButton": "Siguiente",
-  "wizardCustomizeTitle": "Personaliza tu experiencia",
-  "wizardCustomizeBody": "Usa BULL a tu manera con estos ajustes.",
-  "wizardCustomizeDefaultCurrency": "Moneda predeterminada",
-  "wizardMissionTitle": "Apoya la misión de Bull",
-  "wizardMissionBody1": "Para ayudarnos a mejorar nuestro software y garantizar el más alto nivel de seguridad, privacidad y usabilidad, tu aplicación puede enviarnos registros de errores que nos permiten detectar problemas y solucionarlos rápidamente en nuestras próximas actualizaciones.",
-  "wizardMissionBody2": "Estos registros son anónimos, no están vinculados a tu dirección IP y nunca comparten información sobre tus transacciones o tu identidad. Son puramente técnicos y no te ponen en riesgo. Nos resulta muy útil y no te cuesta nada.",
-  "wizardMissionQuestion": "¿Aceptas formar parte de nuestro programa automatizado de reporte de problemas?",
-  "wizardMissionYes": "Sí",
-  "wizardMissionNo": "No",
-  "wizardMissionRequired": "Por favor, elige Sí o No antes de continuar.",
-  "wizardJourneyTitle": "Avanza en tu camino",
-  "wizardJourneyBody": "Si eres nuevo en la billetera BULL, aquí tienes algunas funciones que puedes aprovechar para mejorar tu privacidad, seguridad y experiencia de usuario.",
-  "wizardJourneyTip1": "Añade un PIN de seguridad para desbloquear tu billetera",
-  "wizardJourneyTip2": "Prueba la copia de seguridad cifrada del cofre",
-  "wizardJourneyTip3": "Conéctate a tu propio nodo Bitcoin",
-  "wizardJourneyTip4": "Conéctate a tu propio explorador Mempool",
-  "wizardJourneyTip5": "Intercambia entre Bitcoin y Liquid sin KYC",
-  "wizardJourneyTip6": "Personaliza tus ajustes de autoswap",
-  "wizardJourneyTip7": "Cambia entre Bitcoin (BTC) y Satoshis (sats)",
-  "wizardJourneyTip8": "Crea transacciones air-gap para tu billetera hardware",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Algo salió mal al configurar tu billetera. Inténtalo de nuevo.",
   "importMnemonicDuplicateError": "Esta frase mnemónica ya existe",
   "coreScreensResolvingInputs": "Resolviendo entradas de la transacción...",
@@ -3628,8 +3592,6 @@
   "exchangeAccessPendingOperations": "Es posible que las operaciones existentes continúen. Abre tu cuenta para revisarlas antes de cerrar sesión.",
   "exchangeAccessEnableToContinue": "Activa las funciones del exchange en Ajustes para continuar.",
   "exchangeAccessDisableIncomplete": "El cierre de sesión no se completó. Inténtalo de nuevo antes de usar las funciones del exchange.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Compra, vende y paga con Bull Bitcoin directamente desde tu billetera.",
   "quickActionsSettingsTitle": "Acciones rápidas",
   "exchangeTradingUnavailable": "Las operaciones no están disponibles.",
   "exchangeTradingRetry": "Reintentar",
@@ -3744,8 +3706,6 @@
   "openSystemSettings": "Abrir ajustes del sistema",
   "permissionsTitle": "Permisos",
   "settingsSearchPermissionsKeywords": "notificaciones|tareas en segundo plano|batería|alertas",
-  "wizardBackgroundTasksDescription": "Comprueba pagos con la app cerrada.",
-  "wizardNotificationsDescription": "Entérate cuando llega un pago.",
   "amountInputBitcoin": "Bitcoin",
   "amountInputTitle": "Introducir importes en",
   "amountInputSettingsHint": "También disponible en la lista de monedas de cualquier campo de importe.",

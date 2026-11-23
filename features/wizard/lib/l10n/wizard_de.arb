@@ -1,0 +1,49 @@
+{
+  "onboardingSplashDescription": "Souveräne, selbstverwahrte reine Bitcoin-Wallet und Bitcoin-Börse.",
+  "settingsLanguageTitle": "Sprache",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "Übernehmen Sie die Kontrolle über Ihr Geld",
+  "getStartedButton": "Loslegen",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "wizardSkipButton": "Überspringen",
+  "wizardPageIndicator": "SEITE {current} / {total}",
+  "wizardNextButton": "Weiter",
+  "wizardCustomizeTitle": "Passen Sie Ihr Erlebnis an",
+  "wizardCustomizeBody": "Nutzen Sie BULL mit diesen Einstellungen nach Ihren Vorstellungen.",
+  "wizardCustomizeDefaultCurrency": "Standardwährung",
+  "wizardMissionTitle": "Unterstütze die Bull-Mission",
+  "wizardMissionBody1": "Um uns zu helfen, unsere Software zu verbessern und das höchste Maß an Sicherheit, Datenschutz und Benutzerfreundlichkeit zu gewährleisten, kann Ihre App uns Fehlerprotokolle senden, mit denen wir Probleme erkennen und in unseren nächsten Updates schnell beheben können.",
+  "wizardMissionBody2": "Diese Protokolle sind anonymisiert, nicht mit Ihrer IP-Adresse verknüpft und enthalten niemals Informationen über Ihre Transaktionen oder Ihre Identität. Sie sind rein technischer Natur und stellen kein Risiko für Sie dar. Es hilft uns sehr und kostet Sie nichts.",
+  "wizardMissionQuestion": "Sind Sie damit einverstanden, an unserem automatischen Fehlermeldeprogramm teilzunehmen?",
+  "wizardMissionYes": "Ja",
+  "wizardMissionNo": "Nein",
+  "wizardMissionRequired": "Bitte wählen Sie Ja oder Nein, bevor Sie fortfahren.",
+  "wizardJourneyTitle": "Fortschritte auf Ihrem Weg",
+  "wizardJourneyBody": "Wenn Sie BULL Wallet neu nutzen, finden Sie hier einige Funktionen, mit denen Sie Ihre Privatsphäre, Sicherheit und Benutzererfahrung verbessern können.",
+  "wizardJourneyTip1": "Fügen Sie eine Sicherheits-PIN hinzu, um Ihre Wallet zu entsperren.",
+  "wizardJourneyTip2": "Probieren Sie die verschlüsselte Tresor-Sicherung aus.",
+  "wizardJourneyTip3": "Verbinden Sie sich mit Ihrem eigenen Bitcoin-Node.",
+  "wizardJourneyTip4": "Verbinden Sie sich mit Ihrem eigenen Mempool-Explorer.",
+  "wizardJourneyTip5": "Swappen Sie zwischen Bitcoin und Liquid ohne KYC.",
+  "wizardJourneyTip6": "Passen Sie Ihre Autoswap-Einstellungen an.",
+  "wizardJourneyTip7": "Wechseln Sie zwischen Bitcoin (BTC) und Satoshis (sats).",
+  "wizardJourneyTip8": "Erstellen Sie Air-Gap-Transaktionen für Ihre Hardware-Wallet.",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDarkModeTitle": "Dunkelmodus",
+  "backgroundTasksTitle": "Hintergrundaufgaben",
+  "blockedInSystemSettings": "In den Systemeinstellungen blockiert",
+  "notificationsTitle": "Benachrichtigungen",
+  "wizardBackgroundTasksDescription": "Prüft Zahlungen bei geschlossener App.",
+  "wizardNotificationsDescription": "Erfahren Sie, wann eine Zahlung eingeht."
+}

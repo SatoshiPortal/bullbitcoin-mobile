@@ -2,8 +2,8 @@ import 'package:preferences/preferences.dart' show Language;
 
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show TranslationWarningBottomSheet;
+import 'package:settings/settings.dart'
+    show SettingsLocalizations, TranslationWarningBottomSheet;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/settings/public/language_locale.dart'
@@ -113,6 +113,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       locale: _language.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
+        SettingsLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,
       ],
       supportedLocales: AppLocalizations.supportedLocales,

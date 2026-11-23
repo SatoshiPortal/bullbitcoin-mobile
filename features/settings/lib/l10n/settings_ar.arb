@@ -1,0 +1,14 @@
+{
+  "translationWarningContributeButton": "تحسين الترجمة التحريرية",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "تم إنشاء معظم الترجمات في هذا التطبيق باستخدام الذكاء الاصطناعي وقد تحتوي على أخطاء. إذا لاحظت أي أخطاء أو ترغب في المساعدة في تحسين الترجمات، يمكنك تقديم إصلاح على مستودعنا في GitHub.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  }
+}

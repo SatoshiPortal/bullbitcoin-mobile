@@ -34,10 +34,6 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "translationWarningContributeButton": "تحسين الترجمة التحريرية",
-  "@translationWarningContributeButton": {
-    "description": "Button to open GitHub repository for translations"
-  },
   "sellSendPaymentAboveMax": "أنت تحاول بيع أعلى من المبلغ الأقصى الذي يمكن بيعه بهذه المحفظة.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -529,10 +525,6 @@
   "payBroadcastFailed": "فشل البث",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "translationWarningDescription": "تم إنشاء معظم الترجمات في هذا التطبيق باستخدام الذكاء الاصطناعي وقد تحتوي على أخطاء. إذا لاحظت أي أخطاء أو ترغب في المساعدة في تحسين الترجمات، يمكنك تقديم إصلاح على مستودعنا في GitHub.",
-  "@translationWarningDescription": {
-    "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "languageSettingsScreenTitle": "اللغة",
   "@languageSettingsScreenTitle": {
@@ -2791,10 +2783,6 @@
   "transactionListOngoingTransfersTitle": "المبادلات الجارية",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "translationWarningTitle": "AI-Generated Translations",
-  "@translationWarningTitle": {
-    "description": "Title for the AI translation warning bottom sheet"
   },
   "addressViewAddress": "العنوان",
   "@addressViewAddress": {
@@ -7648,39 +7636,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "تخطي",
-  "wizardPageIndicator": "صفحة {current} / {total}",
-  "wizardNextButton": "التالي",
-  "wizardCustomizeTitle": "خصص تجربتك",
-  "wizardCustomizeBody": "استخدم BULL بطريقتك مع هذه الإعدادات.",
-  "wizardCustomizeDefaultCurrency": "العملة الافتراضية",
-  "wizardMissionTitle": "ادعم مهمة Bull",
-  "wizardMissionBody1": "لمساعدتنا في تحسين برامجنا وضمان أعلى مستوى من الأمان والخصوصية وسهولة الاستخدام، يمكن لتطبيقك أن يرسل إلينا سجلات الأخطاء التي تتيح لنا اكتشاف المشكلات وإصلاحها بسرعة في التحديثات القادمة.",
-  "wizardMissionBody2": "هذه السجلات مجهولة الهوية، وغير مرتبطة بعنوان IP الخاص بك، ولا تشارك أبدًا أي معلومات عن معاملاتك أو هويتك. إنها تقنية بحتة ولا تعرضك لأي مخاطر. هذا مفيد جدًا لنا ولا يكلفك شيئًا.",
-  "wizardMissionQuestion": "هل توافق على الانضمام إلى برنامج الإبلاغ التلقائي عن المشكلات؟",
-  "wizardMissionYes": "نعم",
-  "wizardMissionNo": "لا",
-  "wizardMissionRequired": "يرجى اختيار نعم أو لا قبل المتابعة.",
-  "wizardJourneyTitle": "تقدم في رحلتك",
-  "wizardJourneyBody": "إذا كنت جديدًا على محفظة BULL، فإليك بعض الميزات التي يمكنك الاستفادة منها لتحسين خصوصيتك وأمانك وتجربة الاستخدام.",
-  "wizardJourneyTip1": "أضف رمز PIN للأمان لفتح محفظتك",
-  "wizardJourneyTip2": "جرب النسخة الاحتياطية المشفرة للخزنة",
-  "wizardJourneyTip3": "اتصل بعقدة Bitcoin الخاصة بك",
-  "wizardJourneyTip4": "اتصل بمستكشف Mempool الخاص بك",
-  "wizardJourneyTip5": "بادل بين Bitcoin وLiquid بدون KYC",
-  "wizardJourneyTip6": "خصص إعدادات autoswap",
-  "wizardJourneyTip7": "بدّل بين Bitcoin (BTC) و Satoshis (sats)",
-  "wizardJourneyTip8": "أنشئ معاملات air-gap لمحفظتك المادية",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
   "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
@@ -8455,7 +8410,5 @@
   "openSystemSettings": "فتح إعدادات النظام",
   "permissionsTitle": "الأذونات",
   "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
-  "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
-  "wizardNotificationsDescription": "اعرف عند وصول دفعة.",
   "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة."
 }

@@ -31,10 +31,6 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "translationWarningContributeButton": "अनुवाद सुधारने में सहायता करें",
-  "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
-  },
   "sellSendPaymentAboveMax": "आप इस वॉलेट के साथ बेचे जा सकते हैं कि अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।।",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -571,10 +567,6 @@
   "payBroadcastFailed": "प्रसारण विफल",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "translationWarningDescription": "इस ऐप में अधिकांश अनुवाद AI द्वारा उत्पन्न किए गए हैं और इनमें अशुद्धियाँ हो सकती हैं। यदि आप कोई त्रुटि देखते हैं या अनुवादों को बेहतर बनाने में सहायता करना चाहते हैं, तो आप हमारे सामुदायिक अनुवाद प्लेटफ़ॉर्म के माध्यम से योगदान दे सकते हैं।",
-  "@translationWarningDescription": {
-    "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "languageSettingsScreenTitle": "भाषा",
   "@languageSettingsScreenTitle": {
@@ -3014,10 +3006,6 @@
   "transactionListOngoingTransfersTitle": "जारी स्वैप",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "translationWarningTitle": "AI-जनित अनुवाद",
-  "@translationWarningTitle": {
-    "description": "Title for the AI translation warning bottom sheet"
   },
   "addressViewAddress": "पता",
   "@addressViewAddress": {
@@ -7657,39 +7645,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "छोड़ें",
-  "wizardPageIndicator": "पृष्ठ {current} / {total}",
-  "wizardNextButton": "अगला",
-  "wizardCustomizeTitle": "अपने अनुभव को कस्टमाइज़ करें",
-  "wizardCustomizeBody": "इन सेटिंग्स के साथ BULL को अपनी शर्तों पर उपयोग करें।",
-  "wizardCustomizeDefaultCurrency": "डिफ़ॉल्ट मुद्रा",
-  "wizardMissionTitle": "Bull मिशन का समर्थन करें",
-  "wizardMissionBody1": "हमें अपने सॉफ़्टवेयर को बेहतर बनाने और उच्चतम स्तर की सुरक्षा, गोपनीयता और उपयोगिता प्रदान करने में मदद करने के लिए, आपका ऐप हमें त्रुटि लॉग भेज सकता है जो हमें समस्याओं का पता लगाने और अगले अपडेट में जल्दी से ठीक करने की अनुमति देता है।",
-  "wizardMissionBody2": "ये लॉग गुमनाम हैं, आपके IP पते से जुड़े नहीं हैं, और कभी भी आपके लेनदेन या पहचान के बारे में जानकारी साझा नहीं करते। ये पूरी तरह से तकनीकी हैं और आपको किसी भी जोखिम में नहीं डालते। यह हमारे लिए बहुत मददगार है और आपको कुछ भी खर्च नहीं होता।",
-  "wizardMissionQuestion": "क्या आप हमारे स्वचालित समस्या रिपोर्टिंग कार्यक्रम में भाग लेने के लिए सहमत हैं?",
-  "wizardMissionYes": "हाँ",
-  "wizardMissionNo": "नहीं",
-  "wizardMissionRequired": "कृपया जारी रखने से पहले हाँ या नहीं चुनें।",
-  "wizardJourneyTitle": "अपनी यात्रा में आगे बढ़ें",
-  "wizardJourneyBody": "अगर आप BULL वॉलेट में नए हैं, तो यहां कुछ सुविधाएं दी गई हैं जिनका लाभ आप अपनी गोपनीयता, सुरक्षा और उपयोगकर्ता अनुभव को बेहतर बनाने के लिए उठा सकते हैं।",
-  "wizardJourneyTip1": "अपने वॉलेट को अनलॉक करने के लिए सुरक्षा PIN जोड़ें",
-  "wizardJourneyTip2": "एन्क्रिप्टेड वॉल्ट बैकअप आज़माएं",
-  "wizardJourneyTip3": "अपने स्वयं के Bitcoin नोड से कनेक्ट करें",
-  "wizardJourneyTip4": "अपने स्वयं के Mempool एक्सप्लोरर से कनेक्ट करें",
-  "wizardJourneyTip5": "बिना KYC के Bitcoin और Liquid के बीच स्वैप करें",
-  "wizardJourneyTip6": "अपनी autoswap सेटिंग्स कस्टमाइज़ करें",
-  "wizardJourneyTip7": "Bitcoin (BTC) और Satoshis (sats) के बीच स्विच करें",
-  "wizardJourneyTip8": "अपने हार्डवेयर वॉलेट के लिए air-gap लेनदेन बनाएं",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "आपका वॉलेट सेटअप करते समय कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
   "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
   "recoverbullBalance": "शेष: {balance}",
@@ -8630,7 +8585,5 @@
   "openSystemSettings": "सिस्टम सेटिंग्स खोलें",
   "permissionsTitle": "अनुमतियाँ",
   "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
-  "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
-  "wizardNotificationsDescription": "भुगतान आने पर जानें।",
   "sendErrorInvoiceExpiryTooShort": "इस चालान की वैधता बहुत जल्द समाप्त हो जाएगी। प्राप्तकर्ता से नया चालान मांगें।"
 }

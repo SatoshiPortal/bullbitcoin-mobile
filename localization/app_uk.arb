@@ -6,9 +6,6 @@
   "backupWarningLoseReasonKeystore": "Пристрій анулює keystore під час зміни блокування екрана або способу автентифікації пристрою",
   "backupWarningLoseReasonCloudRestore": "Відновлення пристрою з резервної копії у хмарі",
   "backupWarningNoRecovery": "Відновити гаманець без резервної копії неможливо.",
-  "translationWarningTitle": "Переклади, створені ШІ",
-  "translationWarningDescription": "Більшість перекладів у цьому додатку були створені за допомогою ШІ і можуть містити неточності. Якщо ви помітили помилки або хочете допомогти покращити переклади, ви можете надіслати виправлення в наш репозиторій на GitHub.",
-  "translationWarningContributeButton": "Допомогти покращити переклади",
   "translationWarningDismissButton": "Зрозуміло",
   "durationSeconds": "{seconds} секунд",
   "@durationSeconds": {
@@ -2731,39 +2728,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "wizardSkipButton": "Пропустити",
-  "wizardPageIndicator": "СТОРІНКА {current} / {total}",
-  "wizardNextButton": "Далі",
-  "wizardCustomizeTitle": "Налаштуйте під себе",
-  "wizardCustomizeBody": "Користуйтеся BULL так, як вам зручно, з цими налаштуваннями.",
-  "wizardCustomizeDefaultCurrency": "Валюта за замовчуванням",
-  "wizardMissionTitle": "Підтримайте місію Bull",
-  "wizardMissionBody1": "Щоб допомогти нам покращити програму та забезпечити найвищий рівень безпеки, конфіденційності та зручності, ваш застосунок може надсилати нам журнали помилок, що дозволяє швидко виявляти та виправляти проблеми в наступних оновленнях.",
-  "wizardMissionBody2": "Ці журнали анонімні, не пов'язані з вашою IP-адресою і ніколи не передають інформацію про ваші транзакції чи особу. Вони суто технічні і не піддають вас ризику. Це дуже допомагає нам і нічого не коштує вам.",
-  "wizardMissionQuestion": "Чи згодні ви брати участь у нашій автоматизованій програмі звітування про проблеми?",
-  "wizardMissionYes": "Так",
-  "wizardMissionNo": "Ні",
-  "wizardMissionRequired": "Будь ласка, оберіть Так або Ні, перш ніж продовжити.",
-  "wizardJourneyTitle": "Просувайтеся на своєму шляху",
-  "wizardJourneyBody": "Якщо ви новачок у гаманці BULL, ось кілька функцій, які ви можете використати для покращення конфіденційності, безпеки та зручності.",
-  "wizardJourneyTip1": "Додайте PIN-код безпеки для розблокування гаманця",
-  "wizardJourneyTip2": "Спробуйте зашифровану резервну копію сховища",
-  "wizardJourneyTip3": "Підключіться до власного вузла Bitcoin",
-  "wizardJourneyTip4": "Підключіться до власного оглядача Mempool",
-  "wizardJourneyTip5": "Обмінюйте між Bitcoin та Liquid без KYC",
-  "wizardJourneyTip6": "Налаштуйте параметри автообміну",
-  "wizardJourneyTip7": "Перемикайтеся між Bitcoin (BTC) та Satoshis (sats)",
-  "wizardJourneyTip8": "Створюйте air-gap транзакції для апаратного гаманця",
-  "@wizardPageIndicator": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "walletSetupErrorTryAgain": "Щось пішло не так під час налаштування вашого гаманця. Будь ласка, спробуйте ще раз.",
   "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
   "coreScreensResolvingInputs": "Розв'язання входів транзакції...",
@@ -3518,7 +3482,5 @@
   "openSystemSettings": "Відкрити налаштування системи",
   "permissionsTitle": "Дозволи",
   "settingsSearchPermissionsKeywords": "сповіщення|фонові завдання|батарея|оповіщення",
-  "wizardBackgroundTasksDescription": "Перевіряє платежі, коли застосунок закрито.",
-  "wizardNotificationsDescription": "Дізнавайтеся про надходження платежів.",
   "sendErrorInvoiceExpiryTooShort": "Термін дії цього рахунка спливає надто скоро. Попросіть отримувача надати новий рахунок."
 }
