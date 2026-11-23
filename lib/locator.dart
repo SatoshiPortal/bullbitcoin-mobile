@@ -1,6 +1,7 @@
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
-import 'package:sync/write.dart' show ElectrumSync;
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization;
 import 'package:sync/storage.dart' show SyncFreshness;
 
 import 'dart:async';
@@ -58,7 +59,6 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:send/send.dart';
@@ -305,7 +305,7 @@ class AppLocator {
         inventory: inventory,
         environment: locator<ActiveEnvironmentReader>(),
         catalog: () => locator<WalletCatalogPort>(),
-        synchronize: locator<ForegroundWalletSync>().synchronizeDescriptor,
+        synchronize: locator<ForegroundWalletSynchronization>().execute,
         refreshRevisions: locator<WalletNativeRuntime>().refreshAll,
         swaps: () => locator<SwapActivity>(),
         silent: () => locator<Silent>(),
@@ -423,7 +423,7 @@ class AppLocator {
         loadWallet: (key) => locator<WalletNativeRuntime>().loadWallet(key),
         findDescriptor: (key) => locator<WalletCatalogPort>().find(key),
         synchronize: (descriptor) =>
-            locator<ForegroundWalletSync>().synchronizeDescriptor(descriptor),
+            locator<ForegroundWalletSynchronization>().execute(descriptor),
         events: WalletHistoryEvents.foreground(
           revisions: native.changes,
           finished: electrumSync.finished,
@@ -431,8 +431,8 @@ class AppLocator {
               overviewSync().coordinator.syncPassActivity,
           isSyncPassActive: () => overviewSync().coordinator.isSyncPassActive,
         ),
-        syncStarted: () => locator<ForegroundWalletSync>().started,
-        syncFinished: () => locator<ForegroundWalletSync>().finished,
+        syncStarted: () => electrumSync.started.map((key) => key.id),
+        syncFinished: () => electrumSync.finished.map((event) => event.key.id),
         orderSwaps: () => locator<OrderSwaps>(),
         actions: TransactionUiActions(
           openExchange: (context) =>
@@ -504,7 +504,7 @@ class AppLocator {
         orders: locator<OrderSwaps>(),
         inventory: inventory,
         sync: locator<WalletNativeRuntime>(),
-        synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+        synchronize: (key) => locator<ForegroundWalletSynchronization>().executeKey(
           key,
           locator<WalletCatalogPort>(),
         ),

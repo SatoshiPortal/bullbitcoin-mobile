@@ -1,8 +1,7 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
-import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
 
 import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
@@ -63,7 +62,7 @@ class WalletLocator {
     );
     locator.registerFactory<CheckWalletSyncingUsecase>(
       () =>
-          CheckWalletSyncingUsecase(locator<ForegroundWalletSync>().isSyncing),
+          CheckWalletSyncingUsecase(locator<ElectrumSync>().isSyncing),
     );
   }
 }

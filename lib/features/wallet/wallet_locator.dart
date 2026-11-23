@@ -12,6 +12,7 @@ import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
 
 import 'package:background_tasks/background_tasks.dart';
+import 'package:electrum/electrum.dart' show ElectrumSyncResult;
 import 'package:flutter/widgets.dart';
 
 import 'package:bb_mobile/features/settings/public/language_locale.dart';
@@ -27,7 +28,6 @@ import 'package:signers/storage.dart' show SignerDevices;
 import 'package:sync/storage.dart' show SyncFreshness;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
@@ -214,21 +214,21 @@ class WalletLocator {
         ),
       );
     }
-    locator.registerLazySingleton<ForegroundWalletSync>(
-      () => ForegroundWalletSync(
+    locator.registerLazySingleton<ForegroundWalletSynchronization>(
+      () => ForegroundWalletSynchronization(
         locator<ElectrumSync>(),
         native: locator<WalletNativeRuntime>(),
       ),
     );
     locator.registerLazySingleton<WalletRepository>(() {
-      final sync = locator<ForegroundWalletSync>();
+      final electrum = locator<ElectrumSync>();
       return WalletRepository(
         native: locator<WalletNativeRuntime>(),
         walletRegistrations: locator<WalletRegistrations>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        synchronize: sync.synchronize,
-        syncStarted: sync.started,
-        syncFinished: sync.finished,
+        synchronization: locator<ForegroundWalletSynchronization>(),
+        syncStarted: electrum.started.map((key) => key.id),
+        syncFinished: electrum.finished.map((event) => event.key.id),
       );
     });
     locator.registerFactory<CheckBackupNeededUsecase>(
@@ -307,7 +307,8 @@ class WalletLocator {
       () => WatchWalletSyncEventsUsecase(
         watchStarted: locator<WatchStartedWalletSyncsUsecase>(),
         watchFinished: locator<WatchFinishedWalletSyncsUsecase>(),
-        watchElectrum: () => locator<ForegroundWalletSync>().results,
+        watchElectrum: () =>
+            ElectrumSyncResult.watch(locator<ElectrumSync>().finished),
       ),
     );
     // Bloc

@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 
 import 'dart:async';
 
-import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:sync/write.dart'
+    show ForegroundWalletSynchronization, WalletNativeLifecycle;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show
@@ -40,13 +41,7 @@ class WalletRepository implements WalletReaderRepository {
   int _invalidCatalogCount = 0;
   final WalletRegistrations _walletRegistrations;
   final SyncWalletValuesDatasource _values;
-  final Future<void> Function(
-    WalletMetadataModel, {
-    bool discover,
-    bool allowInitialScan,
-    SyncReason reason,
-  })
-  _syncWallet;
+  final ForegroundWalletSynchronization _synchronization;
   final Stream<String> _walletSyncStartedStream;
   final Stream<String> _walletSyncFinishedStream;
 
@@ -54,17 +49,11 @@ class WalletRepository implements WalletReaderRepository {
     this._native,
     required this._walletRegistrations,
     required SyncWalletValuesDatasource walletValuesDatasource,
-    required Future<void> Function(
-      WalletMetadataModel, {
-      bool discover,
-      bool allowInitialScan,
-      SyncReason reason,
-    })
-    synchronize,
+    required ForegroundWalletSynchronization synchronization,
     required Stream<String> syncStarted,
     required Stream<String> syncFinished,
   }) : _values = walletValuesDatasource,
-       _syncWallet = synchronize,
+       _synchronization = synchronization,
        _walletSyncStartedStream = syncStarted,
        _walletSyncFinishedStream = syncFinished {
   }
@@ -316,6 +305,28 @@ class WalletRepository implements WalletReaderRepository {
         );
       }
       return Err(_classify(e, 'deleteWallet'));
+    }
+  }
+
+  /// Synchronizes the native wallet [metadata] describes.
+  Future<void> _syncWallet(
+    WalletMetadataModel metadata, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
+  }) async {
+    switch (WalletSyncBinding.descriptorFromMetadata(metadata)) {
+      case Err():
+        throw const WalletStorageFailure('Invalid sync descriptor');
+      case Ok(:final value):
+        WalletSyncBinding.value(
+          await _synchronization.execute(
+            value,
+            discover: discover,
+            allowInitialScan: allowInitialScan,
+            reason: reason,
+          ),
+        );
     }
   }
 

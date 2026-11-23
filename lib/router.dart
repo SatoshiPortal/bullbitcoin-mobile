@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:address_view/address_view.dart' show AddressView;
 import 'package:address_view/routes.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkFacade;
 import 'package:bull_payjoin/bull_payjoin.dart' show Payjoin;
@@ -14,7 +13,8 @@ import 'package:signers/storage.dart' show SignerDevices;
 import 'package:silent/silent.dart' show Silent;
 import 'package:swaps/swaps.dart' show Swaps;
 import 'package:sync/sync.dart' show WalletKey, WalletCatalogPort;
-import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:secrets/storage.dart';
@@ -213,7 +213,7 @@ class AppRouter {
     payment: () => (
       inventory: locator<SecretsInventory>(),
       native: locator<WalletNativeRuntime>(),
-      synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+      synchronize: (key) => locator<ForegroundWalletSynchronization>().executeKey(
         key,
         locator<WalletCatalogPort>(),
       ),
