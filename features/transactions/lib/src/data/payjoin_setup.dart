@@ -16,6 +16,7 @@ import 'package:sync/write.dart';
 
 import '../../transactions.dart';
 import 'payjoin_blockchain_adapter.dart';
+import 'payjoin_broadcast_wallet.dart';
 import 'payjoin_transaction_adapter.dart';
 import 'payjoin_wallet_adapter.dart';
 
@@ -76,19 +77,18 @@ void mountPayjoin(GetIt locator, {bool startRecovery = true}) {
             owner,
             replacing,
           }) async =>
-              switch (await locator<SecretsInventory>().readWallet(id)) {
+              switch (payjoinBroadcastWallet(
+                await locator<SecretsInventory>().readWallet(id),
+              )) {
                 Ok(:final value) => locator<WalletNativeRuntime>().broadcast(
-                  WalletKey(id: value.id, network: value.network),
+                  value,
                   transaction,
                   network: network,
                   built: built,
                   owner: owner,
                   replacing: replacing,
                 ),
-                Err(failure: WalletRegistrationNotFoundFailure()) => const Err(
-                  SyncNotFoundFailure(),
-                ),
-                Err() => const Err(SyncStorageFailure()),
+                Err(:final failure) => Err(failure),
               },
         ),
       ),
