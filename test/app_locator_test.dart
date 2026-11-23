@@ -10,12 +10,14 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade, WalletFailure;
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
 import 'package:sync/sync.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
 import 'features/wallet/data/ark_funding_test_fixture.dart';
 import 'support/owner_databases.dart';
+import 'support/inventory_fixture.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
@@ -95,6 +97,7 @@ void main() {
     late Directory directory;
     late GetIt locator;
     late SqliteDatabase database;
+    late InventoryFixture inventoryFixture;
     late PathProviderPlatform previousPaths;
     SharedPreferencesAsyncPlatform? previousPreferences;
     var composed = false;
@@ -112,6 +115,8 @@ void main() {
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
+      inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture.register(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
@@ -121,6 +126,7 @@ void main() {
         locator<SyncCoordinator>().dispose();
       }
       await locator.reset();
+      await inventoryFixture.close();
       await database.close();
       PathProviderPlatform.instance = previousPaths;
       SharedPreferencesAsyncPlatform.instance = previousPreferences;
@@ -366,6 +372,8 @@ void main() {
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
+      final inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
       var composed = false;
@@ -376,6 +384,7 @@ void main() {
           locator<SyncCoordinator>().dispose();
         }
         await locator.reset();
+        await inventoryFixture.close();
         await database.close();
         PathProviderPlatform.instance = previousPaths;
         SharedPreferencesAsyncPlatform.instance = previousPreferences;
@@ -428,6 +437,41 @@ void main() {
           isFalse,
         ),
       );
+
+      const id = 'wpkh([01234567/84h/0h/0h])';
+      final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
+      final catalog = locator<WalletCatalogPort>();
+      expect(await catalog.find(key), isA<Err>());
+      expect(
+        await inventoryFixture.inventory.registerWallet(
+          const RegisteredWallet(
+            id: id,
+            secretFingerprint: null,
+            masterFingerprint: '01234567',
+            signer: 'none',
+            network: 'bitcoinMainnet',
+            xpub: 'xpub',
+            externalDescriptor: 'wpkh([01234567/84h/0h/0h]xpub/0/*)',
+            internalDescriptor: 'wpkh([01234567/84h/0h/0h]xpub/1/*)',
+            label: null,
+            birthday: null,
+            isDefault: false,
+          ),
+        ),
+        isA<Ok>(),
+      );
+      expect(await catalog.find(key), isA<Ok>());
+      expect(
+        await inventoryFixture.inventory.setCredential(
+          '1234',
+          backupVerification: inventoryFixture.backup,
+        ),
+        isA<Ok>(),
+      );
+      inventoryFixture.inventory.lock();
+      expect(await catalog.list(), isA<Err>());
+      expect(await inventoryFixture.inventory.unlock('1234'), isA<Ok>());
+      expect(await catalog.find(key), isA<Ok>());
     },
   );
   test('regtest provisioning failure returns a typed Err before wallet runtime registration', () async {
@@ -441,9 +485,12 @@ void main() {
     final database = SqliteDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
+    final inventoryFixture = await InventoryFixture.open(directory);
+    inventoryFixture.register(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
       await locator.reset();
+      await inventoryFixture.close();
       await database.close();
       PathProviderPlatform.instance = previousPaths;
       await directory.delete(recursive: true);

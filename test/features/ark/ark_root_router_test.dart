@@ -23,6 +23,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+
+import '../../support/inventory_fixture.dart';
 
 class PricePreferences extends Mock
     implements
@@ -66,10 +69,17 @@ void main() {
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       locator.registerSingleton<RecoverBullFeature>(recovery);
+      FakeSecureStoragePlatform().install();
+      final inventoryFixture = await tester.runAsync(
+        () => InventoryFixture.open(directory),
+      );
+      if (inventoryFixture == null) throw StateError('Inventory unavailable');
       final accessServices = GetIt.asNewInstance();
       locator.registerSingleton(
         AccessFeature.mount(
           services: accessServices,
+          inventory: inventoryFixture.inventory,
+          backupVerification: inventoryFixture.backup,
           hasVerifiedBackup: () async => false,
           onUnlocked: (_) {},
           onBackUp: (_) async {},
@@ -112,6 +122,7 @@ void main() {
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
         await accessServices.reset();
+        await inventoryFixture.close();
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
         await locator.unregister<ExchangeFacade>();

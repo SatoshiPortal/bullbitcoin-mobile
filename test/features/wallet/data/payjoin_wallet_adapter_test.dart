@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
 import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +12,7 @@ import 'package:secrets/secrets.dart';
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 void main() {
   late _Metadata metadata;

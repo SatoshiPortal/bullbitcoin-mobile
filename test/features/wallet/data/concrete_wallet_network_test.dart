@@ -7,13 +7,13 @@ import 'package:primitives/primitives.dart'
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -55,7 +55,7 @@ void main() {
       when(() => values.getBalance(key: any(named: 'key')))
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
-        walletMetadataDatasource: metadata,
+        walletRegistrations: metadata,
         wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize: (
@@ -93,7 +93,7 @@ void main() {
         final row = _row(Network.bitcoinRegtest).copyWith(networkCode: code);
         when(metadata.fetchAll).thenAnswer((_) async => [row]);
         final repository = WalletRepository(
-          walletMetadataDatasource: metadata,
+          walletRegistrations: metadata,
           wallet: (_) async => throw StateError('no native access expected'),
           walletValuesDatasource: values,
           synchronize: (

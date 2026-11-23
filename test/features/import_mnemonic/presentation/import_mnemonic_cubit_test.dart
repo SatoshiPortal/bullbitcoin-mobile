@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 
 import 'dart:async';
 
@@ -20,7 +20,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
 
 class MockWallet extends Mock implements Wallet {}
 
-class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+class _MockMetadata extends Mock implements WalletRegistrations {}
 
 class _MockSettings extends Mock implements Preferences {}
 
@@ -33,7 +33,7 @@ typedef _Scan = Future<Result<MnemonicScan, ImportMnemonicScanFailure>>;
 class MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
-class MockMetadata extends Mock implements WalletMetadataDatasource {}
+class MockMetadata extends Mock implements WalletRegistrations {}
 
 class MockSettings extends Mock implements Preferences {}
 

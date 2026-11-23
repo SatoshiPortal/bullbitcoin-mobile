@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart'
     show ArkBoardFundingPort, ArkPreferencesRepository;
@@ -32,7 +32,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Wallets extends Mock implements WalletMetadataDatasource {}
+class _Wallets extends Mock implements WalletRegistrations {}
 
 class _Wallet extends Mock implements WalletMetadataModel {}
 
@@ -116,7 +116,7 @@ void main() {
       locator
         ..registerSingleton<ActiveEnvironmentReader>(settings)
         ..registerSingleton<RuntimeDisplayPreferencesReader>(settings)
-        ..registerSingleton<WalletMetadataDatasource>(wallets)
+        ..registerSingleton<WalletRegistrations>(wallets)
         ..registerSingleton<Bip85Registry>(Bip85Registry(bip85.fetchAll))
         ..registerSingleton<Secrets>(secrets)
         ..registerSingleton<ParentCustodyAdmissionPort>(admission)

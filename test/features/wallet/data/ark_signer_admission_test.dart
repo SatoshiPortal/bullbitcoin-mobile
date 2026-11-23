@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +17,7 @@ import 'package:sync/sync.dart';
 
 import 'ark_funding_test_fixture.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -48,7 +48,7 @@ void main() {
   int nativeAccesses = 0;
 
   BitcoinWalletRepository generic() => BitcoinWalletRepository(
-    walletMetadataDatasource: metadata,
+    walletRegistrations: metadata,
     secrets: Secrets(scratchDirectory: () async => fixture.directory.path),
     wallet: (_) async => throw StateError('no native access expected'),
     walletValuesDatasource: _Values(),

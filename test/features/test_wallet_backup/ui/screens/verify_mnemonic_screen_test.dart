@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'dart:io';
+
+import '../../../../support/inventory_fixture.dart';
+
+import 'package:bull_ui/bull_ui.dart' show BullPinPad;
 
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
@@ -30,33 +35,6 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _AllCubit extends Mock implements AllSeedViewCubit {}
-
-// Hold the real no-PIN gate open so the test can change app state mid-request.
-final class _PendingPinStorage extends FakeSecureStoragePlatform {
-  Completer<void>? _pinRead;
-
-  @override
-  Future<String?> read({
-    required String key,
-    required Map<String, String> options,
-  }) async {
-    if (_pinRead case final pending? when key == 'securityKey') {
-      await pending.future;
-    }
-    return super.read(key: key, options: options);
-  }
-
-  void finishPinRead() {
-    final pending = _pinRead;
-    if (pending == null) throw StateError('No PIN read is held');
-    _pinRead = null;
-    pending.complete();
-  }
-
-  void holdNextPinRead() {
-    _pinRead = Completer<void>();
-  }
-}
 
 class _MockCompleteBackupVerificationUsecase extends Mock
     implements CompleteBackupVerificationUsecase {}
@@ -147,10 +125,15 @@ void main() {
   late _MockGetSecretFromFingerprintUsecase getSecretUsecase;
   late _SeedableTestWalletBackupBloc bloc;
   late _MockCompleteBackupVerificationUsecase completeUsecase;
-  late _PendingPinStorage storage;
+  late Directory inventoryDirectory;
+  late InventoryFixture inventoryFixture;
 
   setUp(() async {
-    storage = _PendingPinStorage()..install();
+    FakeSecureStoragePlatform().install();
+    inventoryDirectory = await Directory.systemTemp.createTemp(
+      'backup-access-',
+    );
+    inventoryFixture = await InventoryFixture.open(inventoryDirectory);
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     _secretA = ((await secrets.import(
       words: _wordsA,
@@ -179,6 +162,8 @@ void main() {
 
   tearDown(() async {
     await bloc.close();
+    await inventoryFixture.close();
+    await inventoryDirectory.delete(recursive: true);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_noScreenshotChannel, null);
   });
@@ -188,11 +173,20 @@ void main() {
         .thenAnswer((_) async => Ok(secret));
   }
 
-  void mountAccess(Secrets secrets) {
+  Future<void> mountAccess(Secrets secrets) async {
+    expect(
+      await inventoryFixture.inventory.setCredential(
+        '1234',
+        backupVerification: inventoryFixture.backup,
+      ),
+      isA<Ok>(),
+    );
     final services = GetIt.asNewInstance()..registerSingleton(secrets);
     addTearDown(services.reset);
     AccessFeature.mount(
       services: services,
+      inventory: inventoryFixture.inventory,
+      backupVerification: inventoryFixture.backup,
       hasVerifiedBackup: () async => false,
       onUnlocked: (_) {},
       onBackUp: (_) async {},
@@ -205,11 +199,25 @@ void main() {
   );
 
   Future<void> openRevealGate(WidgetTester tester, Finder title) async {
-    storage.holdNextPinRead();
     await tester.ensureVisible(find.text('Show passphrase'));
     await tester.tap(find.text('Show passphrase'));
     await tester.pumpAndSettle();
     expect(title, findsOneWidget);
+  }
+
+  Future<void> authorize(WidgetTester tester) async {
+    for (final digit in [1, 2, 3, 4]) {
+      tester.widget<BullPinPad>(find.byType(BullPinPad)).onDigit(digit);
+      await tester.pump();
+    }
+    final context = tester.element(find.byType(BullPinPad));
+    await tester.tap(
+      find.text(AccessLocalizations.of(context).appUnlockButton),
+    );
+    await pumpUntilInventoryReady(
+      tester,
+      () => find.byType(BullPinPad).evaluate().isEmpty,
+    );
   }
 
   Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
@@ -337,7 +345,7 @@ void main() {
   ) async {
     Device.screen = const Size(800, 600);
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
-    mountAccess(secrets);
+    await tester.runAsync(() => mountAccess(secrets));
     final result = await tester.runAsync(
       () => secrets.import(
         words: _wordsA,
@@ -377,7 +385,6 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(pinTitle, findsNothing);
-    storage.finishPinRead();
     await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
@@ -386,7 +393,6 @@ void main() {
     await openRevealGate(tester, pinTitle);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    storage.finishPinRead();
     await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
@@ -395,7 +401,7 @@ void main() {
     await openRevealGate(tester, pinTitle);
     stubSecret(_secretB);
     bloc.seed(_selected(_walletB));
-    storage.finishPinRead();
+    await authorize(tester);
     await tester.pump();
     await flush(tester);
     expect(
@@ -405,7 +411,7 @@ void main() {
     bloc.seed(_selected(wallet));
     await flush(tester);
     await openRevealGate(tester, pinTitle);
-    storage.finishPinRead();
+    await authorize(tester);
     await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
@@ -424,7 +430,7 @@ void main() {
     'all seeds offers explicit passphrase reveal and hides it on pause',
     (tester) async {
       final secrets = Secrets(scratchDirectory: () async => '/tmp');
-      mountAccess(secrets);
+      await tester.runAsync(() => mountAccess(secrets));
       final result = await tester.runAsync(
         () => secrets.import(
           words: _wordsA,
@@ -470,7 +476,6 @@ void main() {
       await openRevealGate(tester, pinTitle);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-      storage.finishPinRead();
       await tester.pumpAndSettle();
       expect(pinTitle, findsNothing);
       await flush(tester);
@@ -479,7 +484,7 @@ void main() {
         isFalse,
       );
       await openRevealGate(tester, pinTitle);
-      storage.finishPinRead();
+      await authorize(tester);
       await tester.pumpAndSettle();
       expect(pinTitle, findsNothing);
       await flush(tester);

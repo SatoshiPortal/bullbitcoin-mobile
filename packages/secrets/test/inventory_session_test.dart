@@ -54,6 +54,44 @@ void main() {
     await directory.delete(recursive: true);
   });
 
+  test(
+    'publishes catalog and membership only after properties are ready',
+    () async {
+      const id = 'wpkh([01234567/84h/1h/0h]):regtest';
+      final wallet = _registration(
+        id,
+        network: 'bitcoinRegtest',
+        signer: 'local',
+      );
+      final attempt = await inventory.registerWallet(
+        wallet,
+        prepareProperties: () async => const Err(StoreSecretFailure()),
+      );
+      expect(attempt, isA<Err<void, SecretFailure>>());
+      expect(_value(await inventory.findWallet(id)), isNull);
+      expect(_value(await background.list()), isEmpty);
+
+      var preparations = 0;
+      final results = await Future.wait([
+        for (var attempt = 0; attempt < 2; attempt++)
+          inventory.registerWallet(
+            wallet,
+            prepareProperties: () async {
+              preparations++;
+              return const Ok(null);
+            },
+          ),
+      ]);
+      expect(preparations, 1);
+      expect(results.whereType<Ok<void, SecretFailure>>(), hasLength(1));
+      expect(
+        results.whereType<Err<void, SecretFailure>>().single.failure,
+        isA<WalletAlreadyRegisteredFailure>(),
+      );
+      expect(_value(await background.list()).single.id, id);
+    },
+  );
+
   test('targeted lookup keeps testnet and regtest distinct', () async {
     const testId = 'wpkh([01234567/84h/1h/0h])';
     const regtestId = '$testId:regtest';
