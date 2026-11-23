@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
+import 'package:send/src/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
+import 'package:send/src/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';

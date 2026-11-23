@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
+import 'package:send/src/consolidation/domain/consolidation.dart';
+import 'package:send/src/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:spend/spend.dart';
@@ -17,16 +17,20 @@ void main() {
   });
 
   test('checks the wallet above, at and below the threshold', () async {
-    final check = CheckLiquidConsolidationUsecase(spend);
+    final check = Consolidation.open(spend);
     for (final offset in [-1, 0, 1]) {
       final count = kLiquidConsolidationThreshold + offset;
       spend.count = Ok(count);
-      expect(await check.count(walletId: walletId), count);
-      expect(await check.execute(walletId: walletId), offset > 0);
+      expect(
+        await check.isRequired(walletId),
+        Ok<bool, ConsolidationStatusFailure>(offset > 0),
+      );
     }
     spend.count = const Err(SpendUnavailableFailure());
-    expect(await check.count(walletId: walletId), isNull);
-    expect(await check.execute(walletId: walletId), isFalse);
+    expect(
+      await check.isRequired(walletId),
+      isA<Err<bool, ConsolidationStatusFailure>>(),
+    );
   });
 
   test('reviews the fee and submits that exact prepared value', () async {

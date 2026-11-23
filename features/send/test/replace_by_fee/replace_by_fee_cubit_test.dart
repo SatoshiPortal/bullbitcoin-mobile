@@ -1,12 +1,10 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:fees/fees.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/replace_by_fee/domain/replacement_target.dart';
-import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
-import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
-import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
-import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:send/src/replace_by_fee/domain/replacement_target.dart';
+import 'package:send/src/replace_by_fee/domain/bump_fee_usecase.dart';
+import 'package:send/src/replace_by_fee/domain/fee_entity.dart';
+import 'package:send/src/replace_by_fee/domain/replace_by_fee_failure.dart';
+import 'package:send/src/replace_by_fee/presentation/cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -14,7 +12,7 @@ class _MockBumpFeeUsecase extends Mock implements BumpFeeUsecase {}
 
 ReplacementTarget _tx() => (
   walletId: 'w1',
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   txId: 'abc',
   feeSat: 200,
   vsize: 140,
@@ -151,7 +149,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
-          network: app.Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
         ),
       );
     });
@@ -170,7 +168,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
-          network: app.Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
         ),
       ).thenAnswer((_) async => const Ok('txid-1'));
 

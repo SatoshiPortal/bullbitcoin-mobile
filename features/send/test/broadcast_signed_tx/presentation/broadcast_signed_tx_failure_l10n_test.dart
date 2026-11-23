@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:send/src/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
+import 'package:send/src/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
+import 'package:send/setup.dart' show SendLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,8 +11,8 @@ void main() {
     late String message;
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: SendLocalizations.localizationsDelegates,
+        supportedLocales: SendLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
             message = const PsbtFinalizationFailure().toTranslated(context);
@@ -21,7 +21,7 @@ void main() {
         ),
       ),
     );
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    final l10n = await SendLocalizations.delegate.load(const Locale('en'));
 
     expect(message, l10n.broadcastSignedTxErrorPsbtFinalization);
     expect(message, isNot(l10n.broadcastSignedTxErrorInvalidTransaction));
@@ -40,8 +40,8 @@ void main() {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: SendLocalizations.localizationsDelegates,
+        supportedLocales: SendLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
             messages = [
@@ -52,7 +52,7 @@ void main() {
         ),
       ),
     );
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    final l10n = await SendLocalizations.delegate.load(const Locale('en'));
 
     expect(messages, [
       l10n.broadcastSignedTxBroadcastError,

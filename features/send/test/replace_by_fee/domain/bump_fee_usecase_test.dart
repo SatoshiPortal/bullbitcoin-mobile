@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
-import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
+import 'package:send/src/replace_by_fee/domain/bump_fee_usecase.dart';
+import 'package:send/src/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -55,7 +54,7 @@ void main() {
     usecase = BumpFeeUsecase(spend: spend, fees: fees);
   });
 
-  const network = app.Network.bitcoinMainnet;
+  const network = BitcoinNetwork.mainnet;
   const target = (
     walletId: 'w1',
     txid: 'original',

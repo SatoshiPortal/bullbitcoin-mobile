@@ -1,5 +1,5 @@
 import 'package:sync/transactions.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
+import 'package:send/src/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../reviewable_transaction_fixture.dart';

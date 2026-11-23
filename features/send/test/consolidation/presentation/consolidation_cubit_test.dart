@@ -1,7 +1,6 @@
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
-import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';
-import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
+import 'package:send/src/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
+import 'package:send/src/consolidation/presentation/consolidation_cubit.dart';
+import 'package:send/src/consolidation/presentation/consolidation_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:spend/spend.dart';
@@ -18,7 +17,7 @@ void main() {
     cubit = ConsolidationCubit(
       walletId: walletId,
       consolidateLiquidWalletUsecase: ConsolidateLiquidWalletUsecase(spend),
-      checkLiquidConsolidationUsecase: CheckLiquidConsolidationUsecase(spend),
+      spend: spend,
     );
     addTearDown(cubit.close);
   });

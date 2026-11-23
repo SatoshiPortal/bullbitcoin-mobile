@@ -1,5 +1,5 @@
 import 'package:sync/sync.dart' show BitcoinTx, TxVout, TxScriptSig;
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_mapper.dart';
+import 'package:send/src/broadcast_signed_tx/domain/transaction_review_mapper.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:flutter_test/flutter_test.dart';
 

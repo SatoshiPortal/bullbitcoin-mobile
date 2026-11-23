@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/consolidation/domain/consolidation_config.dart';
+import 'package:send/src/consolidation/domain/consolidation_config.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

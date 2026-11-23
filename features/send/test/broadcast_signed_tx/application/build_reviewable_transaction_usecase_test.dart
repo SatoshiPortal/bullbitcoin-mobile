@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
+import 'package:send/src/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
+import 'package:send/src/broadcast_signed_tx/domain/reviewable_transaction.dart';
+import 'package:send/src/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:electrum/electrum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

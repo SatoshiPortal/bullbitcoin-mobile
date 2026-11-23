@@ -40,7 +40,7 @@ import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -139,8 +139,7 @@ class _MockGetUtxos extends Mock implements GetWalletUtxosUsecase {}
 
 class _MockGetExchangeRate extends Mock implements GetSwapExchangeRateUsecase {}
 
-class _MockCheckConsolidation extends Mock
-    implements CheckLiquidConsolidationUsecase {}
+class _MockCheckConsolidation extends Mock implements Consolidation {}
 
 class _MockGetSwapRoute extends Mock implements GetSwapRouteUsecase {}
 
@@ -278,7 +277,7 @@ void main() {
       getReceiveAddressUsecase: getReceiveAddress,
       getWalletUtxosUsecase: getUtxos,
       getSwapExchangeRateUsecase: getExchangeRate,
-      checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
+      consolidation: _MockCheckConsolidation(),
       getSwapRouteUsecase: getSwapRoute,
       getSwapLimitsAndFeesUsecase: getLimitsAndFees,
       createBitcoinToLiquidSwapUsecase: createBitcoinToLiquid,

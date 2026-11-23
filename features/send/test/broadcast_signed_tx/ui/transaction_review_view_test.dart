@@ -1,8 +1,8 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:send/src/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
+import 'package:send/src/broadcast_signed_tx/presentation/transaction_review_state.dart';
+import 'package:send/src/broadcast_signed_tx/ui/transaction_review_view.dart';
+import 'package:send/setup.dart' show SendLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +13,7 @@ import '../reviewable_transaction_fixture.dart';
 class _MockReviewCubit extends Mock implements TransactionReviewCubit {}
 
 void main() {
-  Future<AppLocalizations> pumpReview(
+  Future<SendLocalizations> pumpReview(
     WidgetTester tester, {
     required int inputSat,
     required int outputSat,
@@ -31,8 +31,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: SendLocalizations.localizationsDelegates,
+        supportedLocales: SendLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
             child: BlocProvider<TransactionReviewCubit>.value(
@@ -43,7 +43,7 @@ void main() {
         ),
       ),
     );
-    return AppLocalizations.delegate.load(const Locale('en'));
+    return SendLocalizations.delegate.load(const Locale('en'));
   }
 
   // Regression (Pixel 6a): a signed transaction edited to pay out more than

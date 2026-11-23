@@ -1,12 +1,12 @@
 import 'package:satoshifier/bbqr.dart';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_imported_bitcoin_usecase.dart';
+import 'package:send/src/broadcast_signed_tx/domain/broadcast_imported_bitcoin_usecase.dart';
 import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
+import 'package:send/src/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
+import 'package:send/src/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
+import 'package:send/src/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -40,7 +40,7 @@ import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -227,8 +227,7 @@ class _MockPreviewBitcoinFeeUsecase extends Mock
 class _MockPreviewBitcoinFeePresetsUsecase extends Mock
     implements PreviewBitcoinFeePresetsUsecase {}
 
-class _MockCheckLiquidConsolidationUsecase extends Mock
-    implements CheckLiquidConsolidationUsecase {}
+class _MockConsolidation extends Mock implements Consolidation {}
 
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
@@ -336,7 +335,7 @@ class _TestableSendCubit extends SendCubit {
     required super.transactions,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
-    required super.checkLiquidConsolidationUsecase,
+    required super.consolidation,
     required super.getSendPayjoinEnabledUsecase,
     required super.validateSpRecipientForSendUsecase,
     required super.validateSpAmountForSendUsecase,
@@ -558,7 +557,7 @@ void main() {
   late _MockVerifyExchangePayinUsecase verifyExchangePayinUsecase;
   late _MockPreviewBitcoinFeeUsecase previewBitcoinFeeUsecase;
   late _MockPreviewBitcoinFeePresetsUsecase previewBitcoinFeePresetsUsecase;
-  late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
+  late _MockConsolidation consolidation;
   late _MockGetSendPayjoinEnabledUsecase getSendPayjoinEnabledUsecase;
   late _MockVerifySignedTxUsecase verifySignedTxUsecase;
   late _MockGetSendSwapRouteUsecase getSendSwapRouteUsecase;
@@ -644,7 +643,7 @@ void main() {
       transactions: watchWalletTransactionByTxIdUsecase,
       verifyChainSwapAmountSendUsecase: verifyChainSwapAmountSendUsecase,
       verifyExchangePayinUsecase: verifyExchangePayinUsecase,
-      checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
+      consolidation: consolidation,
       getSendPayjoinEnabledUsecase: getSendPayjoinEnabledUsecase,
       validateSpRecipientForSendUsecase:
           validateSpRecipientForSendUsecase ??
@@ -817,7 +816,7 @@ void main() {
     verifyExchangePayinUsecase = _MockVerifyExchangePayinUsecase();
     previewBitcoinFeeUsecase = _MockPreviewBitcoinFeeUsecase();
     previewBitcoinFeePresetsUsecase = _MockPreviewBitcoinFeePresetsUsecase();
-    checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
+    consolidation = _MockConsolidation();
     getSendPayjoinEnabledUsecase = _MockGetSendPayjoinEnabledUsecase();
     verifySignedTxUsecase = _MockVerifySignedTxUsecase();
     getSendSwapRouteUsecase = _MockGetSendSwapRouteUsecase();
@@ -1413,8 +1412,8 @@ void main() {
           .thenAnswer((_) => const Stream.empty());
       when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => []);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(
         () => prepareLiquidSendUsecase.execute(
           walletId: wallet.id,
@@ -1499,8 +1498,8 @@ void main() {
         .thenAnswer((_) => const Stream.empty());
     when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) async => []);
-    when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-        .thenAnswer((_) async => false);
+    when(() => consolidation.isRequired(wallet.id))
+        .thenAnswer((_) async => const Ok(false));
     when(
       () => prepareLiquidSendUsecase.execute(
         walletId: wallet.id,
@@ -1712,8 +1711,8 @@ void main() {
         confidentialAddress: 'lq1own',
       );
       stubSweepLoad(wallet: wallet, utxos: [selected]);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(
         () => prepareLiquidSendUsecase.execute(
           walletId: wallet.id,
@@ -3894,10 +3893,8 @@ void main() {
           .thenAnswer((_) async => const []);
       when(() => getWalletUtxosUsecase.execute(walletId: bitcoinWallet.id))
           .thenAnswer((_) => bitcoinUtxos.future);
-      when(
-        () =>
-            checkLiquidConsolidationUsecase.execute(walletId: liquidWallet.id),
-      ).thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(liquidWallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(
         () =>
             watchFinishedWalletSyncsUsecase.execute(walletId: liquidWallet.id),
@@ -5475,8 +5472,8 @@ void main() {
       ).thenReturn(Ok(wallet));
       when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => const []);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(() => feeEstimates.estimate(any()))
@@ -7012,8 +7009,8 @@ void main() {
       ).thenReturn(Ok<Wallet, SendFailure>(wallet));
       when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => oldUtxosLoaded.future);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(() => feeEstimates.estimate(any()))
           .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
@@ -7066,8 +7063,8 @@ void main() {
       ).thenReturn(Ok<Wallet, SendFailure>(wallet));
       when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => const <WalletUtxo>[]);
-      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
-          .thenAnswer((_) async => false);
+      when(() => consolidation.isRequired(wallet.id))
+          .thenAnswer((_) async => const Ok(false));
       when(() => feeEstimates.estimate(BitcoinNetwork.mainnet))
           .thenAnswer((_) => oldBitcoinFeesLoaded.future);
       when(() => feeEstimates.estimate(LiquidNetwork.mainnet))
@@ -7360,11 +7357,8 @@ void main() {
         when(
           () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
         ).thenAnswer((_) async => [selected]);
-        when(
-          () => checkLiquidConsolidationUsecase.execute(
-            walletId: any(named: 'walletId'),
-          ),
-        ).thenAnswer((_) async => false);
+        when(() => consolidation.isRequired(any()))
+            .thenAnswer((_) async => const Ok(false));
 
         await cubit.createTransaction();
 
@@ -7412,11 +7406,8 @@ void main() {
           ),
         );
 
-        when(
-          () => checkLiquidConsolidationUsecase.execute(
-            walletId: any(named: 'walletId'),
-          ),
-        ).thenAnswer((_) async => false);
+        when(() => consolidation.isRequired(any()))
+            .thenAnswer((_) async => const Ok(false));
 
         await cubit.createTransaction();
 
