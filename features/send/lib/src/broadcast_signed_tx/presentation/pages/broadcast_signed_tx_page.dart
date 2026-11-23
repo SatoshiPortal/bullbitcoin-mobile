@@ -120,8 +120,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                 ],
 
                 // Transaction review using TransactionReviewView
-                if (!state.isBroadcasted && state.transaction
-                    case final transaction?) ...[
+                if (state.transaction case final transaction?
+                    when !state.isBroadcasted) ...[
                   BlocProvider(
                     create: (_) => createReview(),
                     child: _TransactionReviewSection(bitcoinTx: transaction.tx),
