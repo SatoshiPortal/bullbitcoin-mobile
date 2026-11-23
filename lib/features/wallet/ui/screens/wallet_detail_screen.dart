@@ -1,3 +1,4 @@
+import 'package:coins/coins.dart';
 import 'package:transactions/transactions.dart';
 
 import 'dart:async';

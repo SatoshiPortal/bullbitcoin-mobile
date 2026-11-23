@@ -62,5 +62,159 @@
   "broadcastSignedTxErrorAlreadyInChain": "此交易已在区块链中，无需再次广播。",
   "broadcastSignedTxErrorRejected": "网络拒绝了此交易。它可能未完全签名、无效，或与另一笔付款冲突。",
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
-  "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。"
+  "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
+  "swapMax": "最大",
+  "sendSendNetworkFee": "Send Network Fee",
+  "transactionNoteHint": "说明",
+  "transactionNetworkLightning": "照明",
+  "sendBroadcastingTransaction": "播放交易.",
+  "globalDefaultBitcoinWalletLabel": "安保",
+  "sendAddress": "地址: ",
+  "sendAmountRequested": "要求的数额: ",
+  "sendTransferFeeDescription": "这是从发出的款项中扣除的总费用",
+  "sendShowPsbt": "显示PSBT",
+  "sendSelectAmount": "选择性数额",
+  "sendSendAmount": "数额",
+  "sendSelectedUtxosInsufficient": "部分税项不包括所需数额",
+  "sendErrorInsufficientFundsForFees": "资金不足以支付数额和费用",
+  "sendChange": "变化",
+  "sendSwapWillTakeTime": "待确认",
+  "appStartupErrorMessage": "应用启动失败。请尝试完全关闭应用并重新启动。如果错误仍然存在，请联系支持并提供日志。",
+  "sendOpenTheCamera": "开放照相机",
+  "sendSwapId": "Swap ID",
+  "receiveNote": "说明",
+  "sendFrom": "摘自",
+  "sendErrorAmountBelowMinimum": "低于最低互换限额的数额: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "接收人的讲话",
+  "sendServerNetworkFees": "服务器网",
+  "sendErrorInvalidAddressOrInvoice": "Invalid Pay Address or Invoice",
+  "sendErrorUnsupportedQrCodeFormat": "不支持的二维码格式",
+  "sendSignWithBitBox": "与BitBox的签名",
+  "sendSwapRefundInProgress": "增 编",
+  "sendInsufficientBalance": "结余不足",
+  "sendNetworkFees": "网络费",
+  "sendSwapInitiated": "启动",
+  "transactionNoteAddTitle": "附加说明",
+  "sendHighFeeWarning": "2. 高额费用警告",
+  "receiveEnterHere": "......",
+  "sendDone": "Done",
+  "exchangeDcaAddressLabelLiquid": "流动资金",
+  "sendErrorAmountAboveMaximum": "高于最高互换限额的数额: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "你的退款已经处理完毕.",
+  "sendUnconfirmed": "未确认",
+  "sendTransferFee": "Swap 费用",
+  "sendContinue": "继续",
+  "sendErrorSwapCreationFailed": "未能制造 s.",
+  "sendErrorHardwareWalletCannotSwap": "硬件钱包不能用于兑换。",
+  "sendErrorInvoiceMustContainAmount": "发票必须包含金额",
+  "addressViewBalance": "结余",
+  "sendReplaceByFeeActivated": "替换",
+  "sendType": "类型: ",
+  "settingsCurrencyTitle": "货币",
+  "sendSats": "ats",
+  "sendPaymentWillTakeTime": "支付时间",
+  "sendPasteAddressOrInvoice": "扣押付款地址或发票",
+  "sendHighFeeWarningDescription": "收费总额是{feePercent}%",
+  "@sendHighFeeWarningDescription": {
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} 确认",
+  "@sendCoinConfirmations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "致",
+  "sendSelectCoinsManually": "手工选编",
+  "sendReceiveNetworkFee": "接待网",
+  "transactionNetworkBitcoin": "页: 1",
+  "sendBroadcastTransaction": "广播交易",
+  "sendSwapInProgressBitcoin": "交易正在进行中。比特币交易需要一些时间才能确认。你可以回到主页稍候片刻",
+  "sendTransactionSignedLedger": "与Ledger成功签署的交易",
+  "sendEconomyFee": "经济",
+  "sendEstimatedDelivery10to30Minutes": "10-30分钟",
+  "sendReceive": "收 款",
+  "sendSatsPerVB": "注",
+  "sendTitle": "修正",
+  "sendSlowPaymentWarningDescription": "交换台需要时间才能确认.",
+  "globalDefaultLiquidWalletLabel": "经常付款",
+  "sendFastFee": "快速",
+  "sendAdvancedSettings": "先进环境",
+  "exchangeDcaAddressLabelBitcoin": "页: 1",
+  "cancel": "Cancel",
+  "sendPaymentProcessing": "付款正在处理之中。 最多不超过一分钟",
+  "sendErrorBroadcastFailed": "未能播放交易。 检查你的网络联系并再次尝试.",
+  "sendCustomFee": "习俗税",
+  "sendAmount": "数额",
+  "sendSwapRefundCompleted": "周转基金",
+  "sendSending": "贷款",
+  "sendErrorConfirmationFailed": "证明",
+  "coreScreensFeePriorityLabel": "妇女优先",
+  "sendInvoicePaid": "Invoice Paid",
+  "sendSignWithLedger": "签字人",
+  "sendSlowPaymentWarning": "低付款警告",
+  "sendErrorAmountBelowSwapLimits": "数额低于互换限额",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "考虑为即时支付充值以进行小额支付。",
+  "sendCoinControl": "平行控制",
+  "sendAdvancedOptions": "A. 先进选择",
+  "sendViewDetails": "观点细节",
+  "transactionNetworkLiquid": "流动资金",
+  "coreWalletTransactionStatusConfirmed": "1. 确认",
+  "sendErrorBuildFailed": "无法准备此支付。请重试。",
+  "sendConfirmSend": "Confirm Send",
+  "sendSwapInProgressInvoice": "该轮车正在铺设。 发票将分几秒支付.",
+  "sendScanBitcoinQRCode": "页: 1.",
+  "sendConfirm": "执 行",
+  "sendSuccessfullySent": "成功",
+  "sendSwapFailed": "s湖失败。 你的退款将很快处理.",
+  "exchangeDcaAddressLabelLightning": "照明地址",
+  "sendErrorInsufficientBalanceForPayment": "支付这一款项的结余不够",
+  "sendReceiveAmount": "收款情况",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendSelfTransfer": "自转账",
+  "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
+  "sendEstimatedDeliveryHours": "小时",
+  "coinsSelectedCount": "{count, plural, =1{已选择 1 个} other{已选择 {count} 个}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendCoordinatingPayjoinTransaction": "正在协调 Payjoin 交易。",
+  "sendErrorInvoiceExpired": "该发票已过期，请向收款人索取新的发票。",
+  "sendErrorInsufficientBalanceFrozenHint": "可用余额不足 — {amount} 已被冻结。请在“管理币”中解冻后使用。",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "订单已过期",
+  "sendSwapExpiredMessage": "此订单在发送任何资金前已过期。您的钱包未发送任何资金。",
+  "sendErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
+  "sendErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
+  "sendErrorInvoiceExpiryTooShort": "该发票即将过期，剩余时间不足。请向收款人索取新的发票。",
+  "closeDialogButton": "近距离"
 }

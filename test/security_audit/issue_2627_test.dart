@@ -11,7 +11,7 @@ void main() {
       'broadcast continuation emits and performs bookkeeping after await',
       () {
         final source = File(
-          'lib/features/send/presentation/bloc/send_cubit.dart',
+          'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
         ).readAsStringSync();
         final broadcast = source.substring(
           source.indexOf('Future<void> broadcastTransaction'),

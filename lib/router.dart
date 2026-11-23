@@ -1,7 +1,19 @@
 import 'dart:async';
 
+import 'package:address_view/address_view.dart' show AddressView;
 import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bull_ark/bull_ark.dart' show ArkFacade;
+import 'package:bull_payjoin/bull_payjoin.dart' show Payjoin;
+import 'package:receive/receive.dart' show Receive;
+import 'package:signers/storage.dart' show SignerDevices;
+import 'package:silent/silent.dart' show Silent;
+import 'package:swaps/swaps.dart' show Swaps;
+import 'package:sync/sync.dart' show WalletKey, WalletCatalogPort;
+import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
+import 'package:transactions/transactions.dart' show Transactions;
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
@@ -40,15 +52,13 @@ import 'package:coins/setup.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
-    show SwapFeature, SwapNavigation;
+    show OrderSwapUnderReviewCard, SwapFeature, SwapNavigation;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
-import 'package:bb_mobile/features/send/public/send_route_args.dart';
-import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
@@ -85,8 +95,7 @@ class AppRouter {
       );
     },
     walletHomePath: WalletRoute.walletHome.path,
-    openSend: (context) =>
-        context.pushNamed(SendRoute.send.name, extra: const SendRouteArgs.sp()),
+    openSend: SendNavigation.openSilent,
     balanceBuilder: SilentWalletPresentation.balance,
     settingsIconBuilder: SilentWalletPresentation.settingsIcon,
   );
@@ -193,6 +202,30 @@ class AppRouter {
     broadcastSuccessImage: AssetImage(Assets.animations.successTick.path),
     missingWalletRedirect: WalletRoute.walletHome.path,
     selectBalanceSat: WalletConsolidation.selectBalanceSat,
+    payment: () => (
+      inventory: locator<SecretsInventory>(),
+      native: locator<WalletNativeRuntime>(),
+      synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+        key,
+        locator<WalletCatalogPort>(),
+      ),
+      finishedSyncs: locator<ElectrumSync>().finished.map((event) => event.key),
+      readSignerDevice: (walletId) => locator<SignerDevices>().read(walletId),
+      preferences: locator<Preferences>(),
+      coins: locator<Coins>(),
+      addresses: locator<AddressView>(),
+      receive: locator<Receive>(),
+      swaps: locator<Swaps>(),
+      orders: locator<OrderSwaps>(),
+      payjoin: locator<Payjoin>(),
+      transactions: locator<Transactions>(),
+      labels: locator<Labels>(),
+      silent: locator<Silent>(),
+      ark: locator.isRegistered<ArkFacade>() ? locator<ArkFacade>() : null,
+    ),
+    openCoins: CoinsNavigation.replace,
+    orderUnderReview: (order) => OrderSwapUnderReviewCard(orderSwap: order),
+    paymentArrowImage: AssetImage(Assets.icons.rightArrow.path),
   );
 
   static final GoRouter router = GoRouter(
@@ -268,7 +301,10 @@ class AppRouter {
       WalletRouter.walletDetailRoute(
         scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,
         loadCoinSummary: (id) => locator<Coins>().summary(id),
-        onOpenCoins: CoinsNavigation.open,
+        onOpenCoins: (context, wallet) => CoinsNavigation.open(
+          context,
+          WalletKey(id: wallet.id, network: wallet.network.shared),
+        ),
       ),
       _sendRoutes.consolidation,
       SettingsFeature.mount(
@@ -312,9 +348,7 @@ class AppRouter {
       ).route,
       ...locator<TransactionsFeature>().routes,
       locator<ReceiveFeature>().route,
-      SendRouter.route(
-        locator: locator,
-        openSignedTransactionReader: BroadcastSignedTxRoute.readForSend,
+      _sendRoutes.payment,
       ),
       locator<CoinsFeature>().route,
       ...locator<SwapFeature>().routes,

@@ -17,7 +17,7 @@ void main() {
   final at = DateTime.utc(2026, 11, 19, 14, 32);
   for (final environment in Environment.values) {
     test(
-      'amount quote boundaries capture $environment and preserve the quote time',
+      'Receive and Swap capture $environment and preserve the quote time',
       () async {
         final settings = _Settings();
         when(settings.fetch).thenAnswer(
@@ -63,7 +63,7 @@ void main() {
         }
         expect(
           networks,
-          List.filled(3, switch (environment) {
+          List.filled(2, switch (environment) {
             Environment.mainnet => BitcoinNetwork.mainnet,
             Environment.testnet => BitcoinNetwork.testnet,
             Environment.regtest => BitcoinNetwork.regtest,

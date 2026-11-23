@@ -79,15 +79,13 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app_wallet;
-import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/onboarding/wallet_bindings.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/send/legacy_send_flow.dart';
-import 'package:send/send.dart' show ReplaceByFee, SendRoute;
+import 'package:send/send.dart' show ReplaceByFee, SendNavigation;
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
@@ -534,7 +532,7 @@ class AppLocator {
       ),
     );
     locator.registerLazySingleton(
-      () => CoinsFeature.mount<app_wallet.Wallet>(
+      () => CoinsFeature.mount<WalletKey>(
         resolveWalletKey: (id) async => switch (await inventory.readWallet(id)) {
           Ok(:final value) => WalletKey(id: value.id, network: value.network),
           Err(failure: WalletRegistrationNotFoundFailure()) =>
@@ -558,18 +556,11 @@ class AppLocator {
             .where((walletId) => walletId == id),
         walletId: (wallet) => wallet.id,
         missingWalletRedirect: WalletRoute.walletHome.path,
-        onSend: (context, wallet, outpoints) => context.pushNamed<void>(
-          SendRoute.send.name,
-          extra: SendRouteArgs.selected(wallet: wallet, outpoints: outpoints),
-        ),
-        onSweep: (context, wallet, outpoints) => context.pushNamed<void>(
-          SendRoute.send.name,
-          extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
-        ),
+        onSend: SendNavigation.openSelected,
+        onSweep: SendNavigation.openSweep,
       ),
     );
     locator.registerLazySingleton<Coins>(() => locator<CoinsFeature>().coins);
-    LegacySendFlow.mount(locator);
     locator.registerSingleton(
       SwapFeature.mount(
         swaps: locator<Swaps>(),

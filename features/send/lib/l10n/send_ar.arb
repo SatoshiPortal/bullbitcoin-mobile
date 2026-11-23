@@ -126,5 +126,448 @@
   "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه.",
   "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
   "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية."
+  "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
+  "swapMax": "MAX",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "sendSendNetworkFee": "إرسال شبكة Fee",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "transactionNoteHint": "ملاحظة",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNetworkLightning": "البرق",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "sendBroadcastingTransaction": "بث الصفقة.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "sendAddress": "العنوان: ",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "sendAmountRequested": "المبلغ المطلوب: ",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "sendTransferFeeDescription": "هذا هو مجموع الرسوم المخصومة من المبلغ المرسل",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendShowPsbt": "Show PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSelectAmount": "الكمية المختارة",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendSendAmount": "إرسال",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendSelectedUtxosInsufficient": "لا يغطي المبلغ المطلوب",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendErrorInsufficientFundsForFees": "أموال غير كافية لتغطية المبلغ والرسوم",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendChange": "التغيير",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "sendSwapWillTakeTime": "سيستغرق الأمر بعض الوقت لتأكيد",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendOpenTheCamera": "افتح الكاميرا",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "sendSwapId": "بطاقة الهوية",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "receiveNote": "ملاحظة",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "sendFrom": "من",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "عنوان المتلقي",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "sendServerNetworkFees": "شبكة السيرفر",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendErrorInvalidAddressOrInvoice": "عنوان أو فواتير غير رسمي",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "تنسيق رمز QR غير مدعوم",
+  "appStartupErrorMessage": "فشل تشغيل التطبيق. حاول إيقاف التطبيق بالكامل وإعادة تشغيله. إذا استمر الخطأ، تواصل مع الدعم وشارك السجلات.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "sendSignWithBitBox": "وقع مع (بيتبوكس)",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendSwapRefundInProgress": "المبلغ المسترد",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendInsufficientBalance": "الرصيد غير الكافي",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendNetworkFees": "رسوم الشبكة",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "sendSwapInitiated": "Swap Initiated",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "transactionNoteAddTitle": "إضافة",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "sendHighFeeWarning": "إنذار برسوم عالية",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "receiveEnterHere": "ادخل هنا.",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "sendDone": "تم",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "exchangeDcaAddressLabelLiquid": "العنوان السائل",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "sendErrorAmountAboveMaximum": "المبلغ فوق الحد الأقصى للمبادلات: {maxLimit}",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "ردك تم تجهيزه.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendUnconfirmed": "غير مؤكد",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendTransferFee": "رسوم المبادلة",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendContinue": "استمر",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "sendErrorSwapCreationFailed": "فشل في إحداث تبادل.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorHardwareWalletCannotSwap": "لا يمكن استخدام المحافظ الأجهزة للمبادلات.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
+  "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "addressViewBalance": "الرصيد",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "sendReplaceByFeeActivated": "الاستبدال بالتفريغ",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendType": "النوع: ",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "settingsCurrencyTitle": "العملة",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "sendSats": "الجلسات",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendPaymentWillTakeTime": "الدفع",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendPasteAddressOrInvoice": "تقديم عنوان دفع أو فاتورة",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "sendHighFeeWarningDescription": "مجموع الرسوم هو {feePercent}٪ من المبلغ الذي ترسله",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} confirmations",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "إلى",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "sendSelectCoinsManually": "بيع العملات اليدوية",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendReceiveNetworkFee": "شبكة الاستقبال",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "sendBroadcastTransaction": "المعاملات الإذاعية",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "sendSwapInProgressBitcoin": "المبادلة جارية صفقات (بيتكوين) قد تستغرق وقتاً لتأكيدها يمكنك العودة للمنزل والانتظار.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendTransactionSignedLedger": "المعاملات الموقعة بنجاح مع ليدجر",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendEconomyFee": "الاقتصاد",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 دقيقة",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendReceive": "الاستلام",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "sendSatsPerVB": "الجلستان/المكتب",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "sendTitle": "إرسال",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "sendSlowPaymentWarningDescription": "المبادلات ستستغرق وقتاً للتأكيد.",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "sendFastFee": "بسرعة",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendAdvancedSettings": "المراحل المتقدمة",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "exchangeDcaAddressLabelBitcoin": "عنوان بيتكوين",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "cancel": "إلغاء",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "sendPaymentProcessing": "ويجري تجهيز المبلغ. قد يستغرق الأمر دقيقة",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendErrorBroadcastFailed": "فشل في بث المعاملات تحقق من اتصالك بالشبكة وحاول مرة أخرى.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendCustomFee": "الرسوم الجمركية",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendAmount": "المبلغ",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "sendSwapRefundCompleted": "المبلغ المسترد",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendSending": "إرسال",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendErrorConfirmationFailed": "الفشل",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "coreScreensFeePriorityLabel": "الأولوية",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "sendInvoicePaid": "فاتورة",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendSignWithLedger": "وقع مع ليدجر",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSlowPaymentWarning": "بطء الإنذار بالمدفوعات",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendErrorAmountBelowSwapLimits": "المبلغ أقل من حدود التبديل",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendCoinControl": "مراقبة العملات",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendAdvancedOptions": "الخيارات المتقدمة",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendViewDetails": "التفاصيل",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "transactionNetworkLiquid": "سائل",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreWalletTransactionStatusConfirmed": "تم تأكيدها",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "sendErrorBuildFailed": "لم يتم تحضير هذا الدفع. يرجى المحاولة مرة أخرى.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendConfirmSend": "إرسال",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSwapInProgressInvoice": "المبادلة جارية الفاتورة ستدفع خلال ثواني.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendScanBitcoinQRCode": "إفحص أيّ شفرة (بيتكوين) أو (لايتنغ كي آر) لتدفع مع (بيتكوين).",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "sendConfirm": "Confirm",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "sendSuccessfullySent": "بنجاح Sent",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendSwapFailed": "لقد فشل المبادلة ردك سيتم تجهيزه قريباً.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "exchangeDcaAddressLabelLightning": "عنوان البرق",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "sendErrorInsufficientBalanceForPayment": "رصيد غير كاف لتغطية هذا المبلغ",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendReceiveAmount": "المبلغ المستلم",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
+  "sendEstimatedDeliveryHours": "ساعات",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coinsSelectedCount": "{count, plural, zero{لم يتم التحديد} one{تم تحديد عنصر واحد} two{تم تحديد عنصرين} few{تم تحديد {count} عناصر} many{تم تحديد {count} عنصرًا} other{تم تحديد {count} عنصر}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSelfTransfer": "تحويل ذاتي",
+  "sendCoordinatingPayjoinTransaction": "جارٍ تنسيق معاملة Payjoin.",
+  "sendErrorInvoiceExpired": "انتهت صلاحية هذه الفاتورة. اطلب من المستلم فاتورة جديدة.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "فكّر في تمويل محفظة المدفوعات الفورية لإجراء مدفوعات أصغر.",
+  "sendErrorInsufficientBalanceFrozenHint": "الرصيد القابل للإنفاق غير كافٍ — {amount} مجمّد. أزِل التجميد عن العملات من إدارة العملات لاستخدامها.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
+  "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك.",
+  "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
+  "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
+  "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة.",
+  "closeDialogButton": "اقترب",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
 }

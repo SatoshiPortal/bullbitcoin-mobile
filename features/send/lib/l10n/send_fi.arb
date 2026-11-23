@@ -63,5 +63,159 @@
   "broadcastSignedTxErrorAlreadyInChain": "Tämä transaktio on jo lohkoketjussa. Lähetettävää ei ole enää.",
   "broadcastSignedTxErrorRejected": "Verkko hylkäsi tämän transaktion. Se voi olla puutteellisesti allekirjoitettu, virheellinen tai ristiriidassa toisen maksun kanssa.",
   "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa.",
+  "settingsCurrencyTitle": "Valuutta",
+  "sendTitle": "Lähetä",
+  "sendPasteAddressOrInvoice": "Liitä maksun osoite tai lasku",
+  "sendContinue": "Jatka",
+  "sendSelectAmount": "Valitse määrä",
+  "sendAmountRequested": "Pyydetty määrä: ",
+  "sendDone": "Valmis",
+  "sendSelectedUtxosInsufficient": "Valitut UTXO:t eivät kata vaadittua määrää",
+  "sendAdvancedOptions": "Lisäasetukset",
+  "sendReplaceByFeeActivated": "Replace-by-fee aktivoitu",
+  "sendSelectCoinsManually": "Valitse kolikot manuaalisesti",
+  "sendRecipientAddress": "Vastaanottajan osoite",
+  "sendInsufficientBalance": "Riittämätön saldo",
+  "sendScanBitcoinQRCode": "Lähetä Bitcoin- tai Lightning-varoja scannaamalla QR-koodi.",
+  "sendOpenTheCamera": "Avaa kamera",
+  "sendCustomFee": "Mukautettu kulutaso",
+  "sendSats": "sat",
+  "sendSatsPerVB": "sat/vB",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minuuttia",
+  "sendAddress": "Osoite: ",
+  "sendType": "Tyyppi: ",
+  "sendReceive": "Vastaanotto",
+  "sendChange": "Vaihtoraha",
+  "sendHighFeeWarning": "Varoitus - Korkeat kulut",
+  "sendSlowPaymentWarning": "Varoitus - pitkä viive",
+  "sendSlowPaymentWarningDescription": "Bitcoin-swapit kestävät hetken vahvistua.",
+  "sendAdvancedSettings": "Lisäasetukset",
+  "sendConfirm": "Vahvista",
+  "sendBroadcastTransaction": "Lähetä transaktio",
+  "sendFrom": "Lähettäjä",
+  "sendTo": "Vastaanottaja",
+  "sendAmount": "Määrä",
+  "sendNetworkFees": "Verkkokulut",
+  "receiveNote": "Kuvaus",
+  "receiveEnterHere": "(on antamatta)",
+  "transactionNetworkLightning": "Lightning",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "transactionNetworkLiquid": "Liquid",
+  "transactionNoteAddTitle": "Lisää kuvaus",
+  "transactionNoteHint": "Muistiinpano",
+  "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
+  "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
+  "sendCoinControl": "Kolikkohallinta",
+  "sendCoinConfirmations": "{count} vahvistusta",
+  "@sendCoinConfirmations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendUnconfirmed": "Vahvistamaton",
+  "sendEconomyFee": "Taloudinen",
+  "sendFastFee": "Nopea",
+  "sendSwapId": "Swap-ID",
+  "sendSendAmount": "Lähetettävä määrä",
+  "sendReceiveAmount": "Vastaanotettava määrä",
+  "sendSendNetworkFee": "Lähetyksen verkkokulu",
+  "sendTransferFee": "Swap-kulu",
+  "sendTransferFeeDescription": "Tämä on lähetetystä summasta vähennetty kokonaiskulu",
+  "sendReceiveNetworkFee": "Vastaanoton verkkokulu",
+  "sendServerNetworkFees": "Palvelimen verkkokulut",
+  "sendConfirmSend": "Vahvista lähetys",
+  "sendSending": "Lähetetään",
+  "sendBroadcastingTransaction": "Lähetetään transaktiota.",
+  "sendSwapInProgressInvoice": "Swap on käynnissä. Lasku maksetaan muutamassa sekunnissa.",
+  "sendSwapInProgressBitcoin": "Swap on käynnissä. Bitcoin-transaktion vahvistuminen voi kestää hetken. Voit palata kotiin ja odottaa.",
+  "sendSwapRefundInProgress": "Swapin hyvitys on käynnissä",
+  "sendSwapFailed": "Swap epäonnistui. Hyvityksesi käsitellään pian.",
+  "sendSwapRefundCompleted": "Swap hyvitys on suoritettu",
+  "sendRefundProcessed": "Hyvityksesi on käsitelty.",
+  "sendInvoicePaid": "Lasku maksettu",
+  "sendPaymentProcessing": "Maksu käsitellään. Se voi kestää jopa minuutin",
+  "sendPaymentWillTakeTime": "Maksu vie aikaa",
+  "sendSwapInitiated": "Swap on aloitettu",
+  "sendSwapWillTakeTime": "Vahvistuminen vie jonkin aikaa",
+  "sendSuccessfullySent": "Lähetys onnistui",
+  "sendViewDetails": "Näytä tiedot",
+  "sendShowPsbt": "Näytä PSBT",
+  "sendSignWithLedger": "Allekirjoita Ledgerillä",
+  "sendSignWithBitBox": "Allekirjoita BitBoxilla",
+  "sendTransactionSignedLedger": "Transaktio allekirjoitettu onnistuneesti Ledgerillä",
+  "sendHighFeeWarningDescription": "Kokonaiskulu on {feePercent}% lähettämästäsi määrästä",
+  "@sendHighFeeWarningDescription": {
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
+  "sendErrorHardwareWalletCannotSwap": "Laitelompakoita ei voi käyttää vaihtoihin.",
+  "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
+  "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
+  "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
+  "sendErrorUnsupportedQrCodeFormat": "Ei-tuettu QR-koodimuoto",
+  "sendErrorBuildFailed": "Tätä maksua ei voitu valmistella. Yritä uudelleen.",
+  "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
+  "sendErrorAmountBelowSwapLimits": "Määrä on swap-rajojen alapuolella",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Harkitse Pikamaksun rahoittamista pienempiä maksuja varten.",
+  "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sat",
+  "@sendErrorAmountBelowMinimum": {
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "Määrä ylittää suurimman swap-rajan: {maxLimit} sat",
+  "@sendErrorAmountAboveMaximum": {
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorInsufficientFundsForFees": "Ei riittävästi varoja summan ja kulujen kattamiseen",
+  "sendErrorBroadcastFailed": "Transaktion lähetys epäonnistui. Tarkista verkkoyhteytesi ja yritä uudelleen.",
+  "addressViewBalance": "Saldo",
+  "swapMax": "MAX",
+  "appStartupErrorMessage": "Sovelluksen käynnistys epäonnistui. Yritä sulkea sovellus kokonaan ja käynnistää se uudelleen. Jos ongelma jatkuu, ota yhteyttä tukeen ja jaa lokisi.",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin-osoite",
+  "exchangeDcaAddressLabelLightning": "Lightning-osoite",
+  "exchangeDcaAddressLabelLiquid": "Liquid-osoite",
+  "cancel": "Peruuta",
+  "coreScreensFeePriorityLabel": "Maksun prioriteetti",
+  "coreWalletTransactionStatusConfirmed": "Vahvistettu",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendSelfTransfer": "Siirto itselle",
+  "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "sendEstimatedDeliveryHours": "tuntia",
+  "coinsSelectedCount": "{count, plural, =1{1 valittu} other{{count} valittua}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendCoordinatingPayjoinTransaction": "Koordinoidaan Payjoin-transaktiota.",
+  "sendErrorInvoiceExpired": "Tämä lasku on vanhentunut. Pyydä vastaanottajalta uusi lasku.",
+  "sendErrorInsufficientBalanceFrozenHint": "Käytettävissä oleva saldo ei riitä — {amount} on jäädytetty. Vapauta kolikot kohdassa Hallinnoi kolikoita käyttääksesi niitä.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Tilaus vanheni",
+  "sendSwapExpiredMessage": "Tämä tilaus vanheni ennen kuin varoja lähetettiin. Lompakostasi ei lähetetty mitään.",
+  "sendErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
+  "sendErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
+  "sendErrorInvoiceExpiryTooShort": "Tämä lasku vanhenee liian pian. Pyydä vastaanottajalta uusi lasku.",
+  "closeDialogButton": "Sulje"
 }

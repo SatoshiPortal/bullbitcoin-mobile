@@ -9,8 +9,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2602 provider outage handling', () {
     test('quote failure is surfaced and stops swap creation', () {
-      final source = File('lib/features/send/presentation/bloc/send_cubit.dart')
-          .readAsStringSync();
+      final source = File(
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
+      ).readAsStringSync();
       final start = source.indexOf('Future<bool> loadSendSwapQuote({');
       final end = source.indexOf('\n  Future<bool> hasBalance()', start);
       final method = source.substring(start, end);
@@ -22,8 +23,9 @@ void main() {
     });
 
     test('the Lightning send path stops when quote loading fails', () {
-      final source = File('lib/features/send/presentation/bloc/send_cubit.dart')
-          .readAsStringSync();
+      final source = File(
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
+      ).readAsStringSync();
       final start = source.indexOf(
         'if (paymentRequest is Bolt11PaymentRequest) {',
       );

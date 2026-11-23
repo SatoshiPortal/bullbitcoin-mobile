@@ -3,10 +3,10 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:receive/routes.dart';
-import 'package:send/send.dart';
+import 'package:send/send.dart' show SendNavigation;
 import 'package:bull_ui/bull_ui.dart'
     show BullReceiveSendButtons, BuildContext, StatelessWidget, Widget;
-import 'package:go_router/go_router.dart';
+import 'package:sync/sync.dart' show WalletKey;
 
 class WalletBottomButtons extends StatelessWidget {
   const WalletBottomButtons({super.key, this.wallet});
@@ -34,7 +34,18 @@ class WalletBottomButtons extends StatelessWidget {
       },
       onSend: wallet?.isWatchOnly == true
           ? null
-          : () => context.pushNamed(SendRoute.send.name, extra: wallet),
+          : () {
+              final selected = wallet;
+              SendNavigation.open(
+                context,
+                wallet: selected == null
+                    ? null
+                    : WalletKey(
+                        id: selected.id,
+                        network: selected.network.shared,
+                      ),
+              );
+            },
     );
   }
 }
