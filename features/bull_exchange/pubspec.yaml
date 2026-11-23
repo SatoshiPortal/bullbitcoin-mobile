@@ -41,6 +41,7 @@ dependencies:
   satoshifier:
   secrets:
   share_plus: ^13.3.1
+  shared_preferences: ^2.3.0
   shimmer: ^4.0.0
   spend:
   sync:

@@ -80,7 +80,6 @@ import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app_wallet;
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
-import 'package:bb_mobile/features/exchange/exchange_locator.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
@@ -609,7 +608,6 @@ class AppLocator {
       ),
     );
 
-    ExchangeLocator.setup(locator);
     locator.registerSingleton(
       NetworkFeature.mount(
         services: locator,
