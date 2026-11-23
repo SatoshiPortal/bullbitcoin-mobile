@@ -100,6 +100,15 @@ fn prepare_mainnet_scan_floor(config: &SpConfig) -> Result<(), String> {
     Ok(())
 }
 
+// The floor only narrows the range a scan reads. Failing to apply it must not
+// keep the user from opening the account, so a failure is logged and the
+// account opens with its saved state.
+fn clamp_mainnet_scan_floor(config: &SpConfig) {
+    if let Err(e) = prepare_mainnet_scan_floor(config) {
+        log::warn!("SpAccount: mainnet scan floor not applied: {e}");
+    }
+}
+
 #[frb(opaque)]
 pub struct SpAccount {
     inner: Arc<Mutex<SpAccountInner>>,
@@ -436,7 +445,7 @@ impl SpAccount {
         }
 
         let config = config.with_persistence(Some(bwk::persist::PersistenceKind::Sqlite));
-        prepare_mainnet_scan_floor(&config)?;
+        clamp_mainnet_scan_floor(&config);
         let account =
             SpAccountInner::with_runtime_config(config, scan_runtime).map_err(|e| e.to_string())?;
         let scan_cancel = account.cancel_flag();
@@ -643,7 +652,7 @@ impl SpAccount {
                 .unwrap_or(MAINNET_SCAN_MINIMUM)
                 .max(MAINNET_SCAN_MINIMUM)
         });
-        prepare_mainnet_scan_floor(&config)?;
+        clamp_mainnet_scan_floor(&config);
         let account = SpAccountInner::new(config).map_err(|e| e.to_string())?;
 
         let scan_cancel = account.cancel_flag();
