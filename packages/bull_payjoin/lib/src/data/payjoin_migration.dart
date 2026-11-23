@@ -20,7 +20,7 @@ Future<void> importLegacyPayjoinData(
   if (completed != null) return;
 
   final snapshot = _quarantineSnapshot(await source.readSnapshot(), log: log);
-  final sourceDigest = _snapshotDigest(snapshot);
+  final sourceDigest = legacyPayjoinSnapshotDigest(snapshot);
 
   await database.transaction(() async {
     final marker = await (database.select(
@@ -108,7 +108,7 @@ Future<void> importLegacyPayjoinData(
       database,
       sourceSchemaVersion: snapshot.sourceSchemaVersion,
     );
-    final importedDigest = _snapshotDigest(imported);
+    final importedDigest = legacyPayjoinSnapshotDigest(imported);
     if (importedDigest != sourceDigest ||
         imported.senders.length != snapshot.senders.length ||
         imported.receivers.length != snapshot.receivers.length) {
@@ -240,7 +240,7 @@ Future<PayjoinLegacySnapshot> _readSnapshot(
   );
 }
 
-String _snapshotDigest(PayjoinLegacySnapshot snapshot) {
+String legacyPayjoinSnapshotDigest(PayjoinLegacySnapshot snapshot) {
   final sink = BytesBuilder(copy: false);
   final senders = [...snapshot.senders]..sort((a, b) => a.uri.compareTo(b.uri));
   final receivers = [...snapshot.receivers]

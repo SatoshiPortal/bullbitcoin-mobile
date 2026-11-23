@@ -11,6 +11,7 @@ import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/swap/data/order_swaps_store.dart';
 import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:swaps/migration.dart';
+import 'package:bull_payjoin/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -124,6 +125,27 @@ class Bull {
 
     final boltz = boltzStore(regtest: false);
     final regtestBoltz = boltzStore(regtest: true);
+    PayjoinCutover payjoinStore({required bool regtest}) {
+      final owner = regtest ? 'payjoin_regtest' : 'payjoin';
+      return PayjoinCutover(
+        file: destination(owner),
+        standalone: standalone(
+          regtest ? 'payjoin-regtest.sqlite' : payjoinDatabaseFilename,
+        ),
+        regtest: regtest,
+        executor: Secrets.databaseOpener<LegacyImportFailure>(
+          file: destination(owner),
+          module: owner,
+          name: 'main',
+          schema: PayjoinCutover.schema,
+          deferred: const LegacyImportDeferred(),
+          unavailable: const LegacyImportUnavailable(),
+        ),
+      );
+    }
+
+    final payjoin = payjoinStore(regtest: false);
+    final regtestPayjoin = payjoinStore(regtest: true);
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -137,6 +159,8 @@ class Bull {
         OrderSwapsStore.participant(orderSwapsFile),
         boltz.participant,
         regtestBoltz.participant,
+        payjoin.participant,
+        regtestPayjoin.participant,
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
@@ -195,6 +219,8 @@ class Bull {
           dispose: (_) => value.handle.close(),
         );
       }
+      locator.registerSingleton(payjoin);
+      locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),

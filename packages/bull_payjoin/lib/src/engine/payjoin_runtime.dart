@@ -4,6 +4,7 @@ import 'package:bull_payjoin/src/domain/payjoin_regtest_profile.dart';
 import 'package:bull_payjoin/src/engine/payjoin_regtest_transport.dart';
 
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
+import 'package:bull_payjoin/src/data/payjoin_cutover.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_migration.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
@@ -23,6 +24,7 @@ import 'package:bull_payjoin/src/public/payjoin.dart';
 import 'package:bull_payjoin/src/public/payjoin_lifecycle.dart';
 import 'package:bull_payjoin/src/public/payjoin_roles.dart';
 import 'package:dio/dio.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:payjoin/http.dart' show fetchOhttpKeys;
 import 'package:primitives/primitives.dart';
 import 'package:synchronized/synchronized.dart';
@@ -40,6 +42,9 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   PayjoinRegtestProfile? regtestProfile,
   RegtestHostProfile? regtestHostProfile,
   Future<bool> Function()? isCurrent,
+  RuntimeAdmission? admission,
+  PayjoinCutover? productionCutover,
+  PayjoinCutover? regtestCutover,
 }) async {
   // Scoped to this runtime rather than held in a library global: two runtimes
   // in one isolate (a retried open, a test) would otherwise overwrite each
@@ -60,37 +65,44 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       );
     }
   }
-  if (regtest) {
-    databasePath =
-        '${File(databasePath).parent.path}${Platform.pathSeparator}payjoin-regtest.sqlite';
-  }
   PayjoinRegtestTransport? fixtureTransport;
-  var database = await _tryOpenDatabase(databasePath, payjoinLog);
-  if (database == null && regtest) {
-    return const Err(
-      PayjoinStorageFailure('Could not open regtest Payjoin storage'),
-    );
-  }
-  if (database == null) {
-    // Self-heal: a corrupt database file or a schema downgrade would
-    // otherwise fail every open retry identically — and because
-    // reservedOutpoints() gates coin selection, that bricks every bitcoin
-    // send in the app until reinstall. Move the unreadable file aside (kept
-    // for forensics) and retry once with a fresh database; the legacy import
-    // below re-populates it from the root database's legacy tables. Sessions
-    // created after that import are lost, but their funds are not: a
-    // sender's counterparty still holds the original and can broadcast it,
-    // and a receiver's sender owns their own fallback.
-    database = await _quarantineAndReopenDatabase(databasePath, payjoinLog);
-    if (database == null) {
+  final cutover = regtest ? regtestCutover : productionCutover;
+  final PayjoinDatabase database;
+  final Future<void> Function() closeDatabase;
+  if (admission != null ||
+      productionCutover != null ||
+      regtestCutover != null) {
+    if (admission == null || cutover == null) {
       return const Err(
-        PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
+        PayjoinStorageFailure('Payjoin storage admission unavailable'),
       );
     }
+    final opened = await cutover.open(admission);
+    if (opened case Ok(:final value)) {
+      database = value.database;
+      closeDatabase = value.handle.close;
+    } else {
+      return const Err(
+        PayjoinStorageFailure('Could not open admitted Payjoin storage'),
+      );
+    }
+  } else {
+    if (regtest) {
+      databasePath =
+          '${File(databasePath).parent.path}${Platform.pathSeparator}payjoin-regtest.sqlite';
+    }
+    final opened = await _tryOpenDatabase(databasePath, payjoinLog);
+    if (opened == null) {
+      return const Err(PayjoinStorageFailure('Could not open Payjoin storage'));
+    }
+    database = opened;
+    closeDatabase = database.close;
   }
 
   try {
-    if (!regtest) await importLegacyPayjoinData(database, legacyData, log: log);
+    if (!regtest && cutover == null) {
+      await importLegacyPayjoinData(database, legacyData, log: log);
+    }
     if (regtestProfile != null) {
       try {
         fixtureTransport = PayjoinRegtestTransport(
@@ -108,7 +120,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     final current = unavailable == null ? isCurrent : () async => false;
     final local = LocalPayjoinDatasource(db: database);
     final policy = PayjoinPolicyStore(database);
-    if (regtest) await policy.ensureDefaults();
+    if (regtest && cutover == null) await policy.ensureDefaults();
     await policy.load();
     final dio =
         transport?.createDio() ??
@@ -186,7 +198,13 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
             diagnostics: unavailableRoles.diagnostics,
           );
     return Ok(
-      _PayjoinLifecycle(database, engine, publicPayjoin, transport, blocked),
+      _PayjoinLifecycle(
+        closeDatabase,
+        engine,
+        publicPayjoin,
+        transport,
+        blocked,
+      ),
     );
   } catch (error, trace) {
     // No quarantine-and-retry here: with the import's row-level quarantine,
@@ -198,7 +216,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       trace: trace,
     );
     await fixtureTransport?.close();
-    await database.close();
+    await closeDatabase();
     return const Err(
       PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
     );
@@ -209,8 +227,8 @@ Future<PayjoinDatabase?> _tryOpenDatabase(
   String databasePath,
   logger.PayjoinLogger payjoinLog,
 ) async {
+  final database = PayjoinDatabase.open(databasePath);
   try {
-    final database = PayjoinDatabase.open(databasePath);
     // Force the lazy open NOW: drift spawns the background isolate, opens
     // the file and runs schema migrations on the first statement, so a
     // corrupt file or a schema downgrade surfaces here rather than
@@ -218,6 +236,7 @@ Future<PayjoinDatabase?> _tryOpenDatabase(
     await database.customSelect('SELECT 1').getSingle();
     return database;
   } catch (error, trace) {
+    await database.close();
     payjoinLog.severe(
       code: PayjoinLogCode.migrationFailure,
       error: error,
@@ -225,46 +244,10 @@ Future<PayjoinDatabase?> _tryOpenDatabase(
     );
     return null;
   }
-}
-
-Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
-  String databasePath,
-  logger.PayjoinLogger payjoinLog,
-) async {
-  try {
-    final suffix =
-        '.unreadable-${DateTime.now().toUtc().millisecondsSinceEpoch}';
-    // The WAL and SHM siblings belong to the unreadable database: leaving
-    // them in place would let SQLite replay them into the FRESH database
-    // created at the same path. Rename all three together.
-    for (final path in [
-      databasePath,
-      '$databasePath-wal',
-      '$databasePath-shm',
-    ]) {
-      final file = File(path);
-      if (file.existsSync()) await file.rename('$path$suffix');
-    }
-  } catch (error, trace) {
-    payjoinLog.severe(
-      code: PayjoinLogCode.migrationFailure,
-      error: error,
-      trace: trace,
-    );
-    return null;
-  }
-  payjoinLog.warning(
-    code: PayjoinLogCode.migrationFailure,
-    error: StateError(
-      'Moved unreadable Payjoin database aside and reopened a fresh one; '
-      'sessions created after the legacy import were lost',
-    ),
-  );
-  return _tryOpenDatabase(databasePath, payjoinLog);
 }
 
 final class _PayjoinLifecycle implements PayjoinLifecycle {
-  final PayjoinDatabase _database;
+  final Future<void> Function() _closeDatabase;
   final PayjoinRepositoryImpl _engine;
   final PayjoinRegtestTransport? _transport;
   final PayjoinFailure? _unavailable;
@@ -273,7 +256,7 @@ final class _PayjoinLifecycle implements PayjoinLifecycle {
   final Payjoin payjoin;
 
   _PayjoinLifecycle(
-    this._database,
+    this._closeDatabase,
     this._engine,
     this.payjoin,
     this._transport,
@@ -297,7 +280,7 @@ final class _PayjoinLifecycle implements PayjoinLifecycle {
   Future<void> dispose() async {
     await _engine.dispose();
     await _transport?.close();
-    await _database.close();
+    await _closeDatabase();
   }
 }
 

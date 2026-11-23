@@ -23,7 +23,9 @@ import 'package:bb_mobile/features/transactions/data/payjoin_input_reservation_a
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_payjoin/migration.dart';
 import 'package:get_it/get_it.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
     show InputReservationPort, WalletConnectionPort, BitcoinSpendStatus;
@@ -70,6 +72,16 @@ abstract final class PayjoinSetup {
         regtestHostProfile: profile,
         isCurrent: isCurrent,
         databasePath: databasePath,
+        admission: locator.isRegistered<RuntimeAdmission>()
+            ? locator<RuntimeAdmission>()
+            : null,
+        productionCutover: locator.isRegistered<PayjoinCutover>()
+            ? locator<PayjoinCutover>()
+            : null,
+        regtestCutover:
+            locator.isRegistered<PayjoinCutover>(instanceName: 'regtest')
+            ? locator<PayjoinCutover>(instanceName: 'regtest')
+            : null,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
           locator<WalletNativeRuntime>().wallet,
@@ -109,7 +121,10 @@ abstract final class PayjoinSetup {
       );
     }, isCurrent: isCurrent);
     _registerRoles(locator, runtime.payjoin);
-    locator.registerSingleton<PayjoinLifecycle>(runtime);
+    locator.registerSingleton<PayjoinLifecycle>(
+      runtime,
+      dispose: (value) => value.dispose(),
+    );
 
     // Opening the package database and resuming sessions must not delay
     // runApp. Background isolates (workmanager handler) register the roles
