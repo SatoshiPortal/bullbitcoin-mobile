@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:bull_ui/app_theme.dart';
 import 'package:settings/testing.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/services.dart' show FontLoader, rootBundle;
+import 'package:flutter/services.dart' show ByteData, FontLoader;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,9 +13,14 @@ class _Settings extends Mock implements SettingsCubit {}
 
 void main() {
   setUpAll(() async {
-    await (FontLoader(
-      'Golos Text',
-    )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
+    await (FontLoader('Golos Text')..addFont(
+          Future.value(
+            ByteData.sublistView(
+              await File('../../assets/fonts/GolosText.ttf').readAsBytes(),
+            ),
+          ),
+        ))
+        .load();
   });
 
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {

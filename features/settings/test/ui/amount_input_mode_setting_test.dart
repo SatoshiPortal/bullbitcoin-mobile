@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:settings/testing.dart';
 import 'package:bull_ui/app_theme.dart';
@@ -17,9 +19,14 @@ void main() {
     await (FontLoader(
       'MaterialIcons',
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-    await (FontLoader(
-      'Golos Text',
-    )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
+    await (FontLoader('Golos Text')..addFont(
+          Future.value(
+            ByteData.sublistView(
+              await File('../../assets/fonts/GolosText.ttf').readAsBytes(),
+            ),
+          ),
+        ))
+        .load();
   });
 
   testWidgets('a failed write keeps the persisted choice', (tester) async {

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:bull_ui/app_theme.dart';
 import 'package:receive/receive.dart';
+import 'package:receive/setup.dart' show ReceiveLocalizations;
 import 'package:settings/testing.dart';
-import 'package:flutter/services.dart' show FontLoader, rootBundle;
+import 'package:flutter/services.dart' show ByteData, FontLoader;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -11,7 +14,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: settingsTestLocalizationsDelegates,
+        localizationsDelegates: const [
+          ReceiveLocalizations.delegate,
+          ...settingsTestLocalizationsDelegates,
+        ],
         supportedLocales: SettingsLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => TextButton(
@@ -43,9 +49,14 @@ void main() {
   });
 
   setUpAll(() async {
-    await (FontLoader(
-      'Golos Text',
-    )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
+    await (FontLoader('Golos Text')..addFont(
+          Future.value(
+            ByteData.sublistView(
+              await File('../../assets/fonts/GolosText.ttf').readAsBytes(),
+            ),
+          ),
+        ))
+        .load();
   });
 
   testWidgets('Payjoin disclaimer can be read and accepted on the S10e', (
@@ -64,7 +75,10 @@ void main() {
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.dark),
         locale: const Locale('en'),
-        localizationsDelegates: settingsTestLocalizationsDelegates,
+        localizationsDelegates: const [
+          ReceiveLocalizations.delegate,
+          ...settingsTestLocalizationsDelegates,
+        ],
         supportedLocales: SettingsLocalizations.supportedLocales,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context)
