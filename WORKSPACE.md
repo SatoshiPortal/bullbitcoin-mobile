@@ -381,6 +381,10 @@ graph TD
   spend --> primitives
   spend --> secrets
   spend --> sync
+  swap_feature --> address_view
+  swap_feature --> bull_ark
+  swap_feature --> bull_logger
+  swap_feature --> bull_pricer
   startup --> access
   startup --> bull_logger
   startup --> bull_payjoin
@@ -395,3 +399,136 @@ graph TD
   startup --> screen_privacy
   startup --> secrets
   startup --> swaps
+  swap_feature --> bull_ui
+  swap_feature --> coins
+  swap_feature --> fees
+  swap_feature --> fees_feature
+  swap_feature --> labels
+  swap_feature --> preferences
+  swap_feature --> receive
+  swap_feature --> satoshifier
+  swap_feature --> secrets
+  swap_feature --> signers
+  swap_feature --> spend
+  swap_feature --> sync
+  swap_feature --> transactions
+  swap_feature --> primitives
+  swap_feature --> swaps
+  swaps --> rust_bindings
+  swaps --> boltz_stream
+  swaps --> bull_logger
+  swaps --> electrum
+  swaps --> fees
+  swaps --> legacy_storage
+  swaps --> preferences
+  swaps --> primitives
+  swaps --> secrets
+  swaps --> sync
+  sync --> legacy_storage
+  sync --> rust_bindings
+  sync --> bull_logger
+  sync --> primitives
+  sync --> secrets
+  transactions --> bitcoin_price
+  transactions --> bull_logger
+  transactions --> bull_payjoin
+  transactions --> bull_ui
+  transactions --> exchange
+  transactions --> file_system
+  transactions --> label_editor
+  transactions --> labels
+  transactions --> mempool
+  transactions --> preferences
+  transactions --> primitives
+  transactions --> secrets
+  transactions --> swaps
+  transactions --> sync
+  wallet_import --> bull_logger
+  wallet_import --> bull_ui
+  wallet_import --> electrum
+  wallet_import --> preferences
+  wallet_import --> primitives
+  wallet_import --> satoshifier
+  wallet_import --> secrets
+  wallet_import --> signers
+  wallet_import --> sync
+  wizard --> background_tasks
+  wizard --> bull_exchange
+  wizard --> bull_logger
+  wizard --> bull_pricer
+  wizard --> bull_ui
+  wizard --> exchange
+  wizard --> notifications
+  wizard --> novlang
+  wizard --> preferences
+  wizard --> primitives
+  wizard --> settings
+  subgraph features0 ["features"]
+    access
+    address_view
+    all_seed_view
+    announcements
+    backups
+    bip85
+    bitcoin_price
+    btc_map
+    bull_ark
+    bull_exchange
+    bull_logs
+    bull_quick_actions
+    bull_recoverbull
+    coins
+    fees_feature
+    label_editor
+    mnemonic_entry
+    network
+    physical_backup_verification
+    receive
+    scanning
+    send
+    settings
+    signers
+    silent
+    startup
+    swap_feature
+    transactions
+    wallet_import
+    wizard
+  end
+  subgraph packages1 ["packages"]
+    ark
+    background_tasks
+    bbx_api
+    bitbox_transport
+    boltz_stream
+    bull_logger
+    bull_payjoin
+    bull_pricer
+    bull_reporting
+    bull_tor
+    bull_ui
+    bull_ui_catalogue
+    electrum
+    exchange
+    fees
+    file_system
+    google_drive
+    labels
+    legacy_storage
+    mempool
+    notifications
+    novlang
+    onion
+    preferences
+    primitives
+    provisioning
+    rust_bindings
+    satoshifier
+    screen_awake
+    screen_privacy
+    secrets
+    spend
+    swaps
+    sync
+  end
+```

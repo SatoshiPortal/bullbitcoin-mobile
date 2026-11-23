@@ -106,3 +106,41 @@ void main() {
         expect(source, isNot(contains('SqliteDatabase();')));
       },
     );
+
+    for (final (role, path) in [('foreground', 'lib/init.dart')]) {
+      test(
+        '$role Payjoin retains the Documents source and opens its owner',
+        () {
+          final source = File(path).readAsStringSync();
+          expect(
+            source,
+            matches(
+              RegExp(
+                r'final\s+bullDirectory\s*=\s*await\s+getApplicationDocumentsDirectory\(\)',
+              ),
+            ),
+          );
+          expect(
+            source,
+            matches(
+              RegExp(
+                r'File standalone\(String name\) => File\(p\.join\(bullDirectory\.path, name\)\);',
+              ),
+            ),
+          );
+          expect(
+            source,
+            allOf(
+              contains("p.join(support.path, 'databases',"),
+              matches(
+                RegExp(
+                  r'PayjoinCutover\(\s*file: destination\(owner\),\s*standalone: standalone\(',
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+  });
+}
