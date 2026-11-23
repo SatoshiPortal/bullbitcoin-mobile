@@ -94,6 +94,8 @@ graph TD
   style preferences stroke:#f493f6
   primitives["primitives"]
   style primitives stroke:#5ced91
+  provisioning["provisioning"]
+  style provisioning stroke:#e5eb7c
   receive["receive"]
   style receive stroke:#85609b
   rust_bindings["rust_bindings"]
@@ -118,6 +120,8 @@ graph TD
   style silent stroke:#11c03a
   spend["spend"]
   style spend stroke:#8989d3
+  startup["startup"]
+  style startup stroke:#97212b
   swap_feature["swap_feature"]
   style swap_feature stroke:#7988a5
   swaps["swaps"]
@@ -158,6 +162,11 @@ graph TD
   announcements --> secrets
   ark --> primitives
   background_tasks --> legacy_storage
+  background_tasks --> bull_tor
+  background_tasks --> electrum
+  background_tasks --> notifications
+  background_tasks --> preferences
+  background_tasks --> secrets
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
@@ -190,6 +199,8 @@ graph TD
   bull_ark --> ark
   bull_ark --> secrets
   bull_ark --> primitives
+  bull_ark --> legacy_storage
+  bull_ark --> preferences
   bull_ark --> bull_ui
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
@@ -212,6 +223,8 @@ graph TD
   bull_logs --> primitives
   bull_payjoin --> legacy_storage
   bull_payjoin --> primitives
+  bull_payjoin --> bull_logger
+  bull_payjoin --> sync
   bull_pricer --> primitives
   bull_quick_actions --> bull_ui
   bull_quick_actions --> primitives
@@ -299,6 +312,9 @@ graph TD
   preferences --> primitives
   preferences --> legacy_storage
   preferences --> secrets
+  provisioning --> bull_logger
+  provisioning --> primitives
+  provisioning --> secrets
   receive --> address_view
   receive --> bull_payjoin
   receive --> bull_ui
@@ -365,138 +381,17 @@ graph TD
   spend --> primitives
   spend --> secrets
   spend --> sync
-  swap_feature --> address_view
-  swap_feature --> bull_ark
-  swap_feature --> bull_logger
-  swap_feature --> bull_pricer
-  swap_feature --> bull_ui
-  swap_feature --> coins
-  swap_feature --> fees
-  swap_feature --> fees_feature
-  swap_feature --> labels
-  swap_feature --> preferences
-  swap_feature --> receive
-  swap_feature --> satoshifier
-  swap_feature --> secrets
-  swap_feature --> signers
-  swap_feature --> spend
-  swap_feature --> sync
-  swap_feature --> transactions
-  swap_feature --> primitives
-  swap_feature --> swaps
-  swaps --> rust_bindings
-  swaps --> boltz_stream
-  swaps --> bull_logger
-  swaps --> electrum
-  swaps --> fees
-  swaps --> legacy_storage
-  swaps --> preferences
-  swaps --> primitives
-  swaps --> secrets
-  swaps --> sync
-  sync --> legacy_storage
-  sync --> rust_bindings
-  sync --> bull_logger
-  sync --> primitives
-  sync --> secrets
-  transactions --> bitcoin_price
-  transactions --> bull_logger
-  transactions --> bull_payjoin
-  transactions --> bull_ui
-  transactions --> exchange
-  transactions --> file_system
-  transactions --> label_editor
-  transactions --> labels
-  transactions --> mempool
-  transactions --> preferences
-  transactions --> primitives
-  transactions --> secrets
-  transactions --> swaps
-  transactions --> sync
-  wallet_import --> bull_logger
-  wallet_import --> bull_ui
-  wallet_import --> electrum
-  wallet_import --> preferences
-  wallet_import --> primitives
-  wallet_import --> satoshifier
-  wallet_import --> secrets
-  wallet_import --> signers
-  wallet_import --> sync
-  wizard --> background_tasks
-  wizard --> bull_exchange
-  wizard --> bull_logger
-  wizard --> bull_pricer
-  wizard --> bull_ui
-  wizard --> exchange
-  wizard --> notifications
-  wizard --> novlang
-  wizard --> preferences
-  wizard --> primitives
-  wizard --> settings
-  subgraph features0 ["features"]
-    access
-    address_view
-    all_seed_view
-    announcements
-    backups
-    bip85
-    bitcoin_price
-    btc_map
-    bull_ark
-    bull_exchange
-    bull_logs
-    bull_quick_actions
-    bull_recoverbull
-    coins
-    fees_feature
-    label_editor
-    mnemonic_entry
-    network
-    physical_backup_verification
-    receive
-    scanning
-    send
-    settings
-    signers
-    silent
-    swap_feature
-    transactions
-    wallet_import
-    wizard
-  end
-  subgraph packages1 ["packages"]
-    ark
-    background_tasks
-    bbx_api
-    bitbox_transport
-    boltz_stream
-    bull_logger
-    bull_payjoin
-    bull_pricer
-    bull_reporting
-    bull_tor
-    bull_ui
-    bull_ui_catalogue
-    electrum
-    exchange
-    fees
-    file_system
-    google_drive
-    labels
-    legacy_storage
-    mempool
-    notifications
-    novlang
-    onion
-    preferences
-    primitives
-    rust_bindings
-    satoshifier
-    screen_awake
-    screen_privacy
-    secrets
-    spend
-    swaps
-    sync
-  end
-```
+  startup --> access
+  startup --> bull_logger
+  startup --> bull_payjoin
+  startup --> bull_logs
+  startup --> bull_recoverbull
+  startup --> bull_tor
+  startup --> bull_ui
+  startup --> mnemonic_entry
+  startup --> preferences
+  startup --> primitives
+  startup --> provisioning
+  startup --> screen_privacy
+  startup --> secrets
+  startup --> swaps

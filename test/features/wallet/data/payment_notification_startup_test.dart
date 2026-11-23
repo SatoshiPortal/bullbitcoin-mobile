@@ -1,3 +1,5 @@
+import 'package:notifications/payment_store.dart';
+
 import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,7 +41,7 @@ void main() {
         } else {
           // The foreground created the store; the plugin fails to start.
           switch (openForegroundNotificationStore(
-            '$documents/${PaymentNotifications.outboxFilename}',
+            '$documents/$paymentNotificationOutboxFilename',
           )) {
             case Ok(:final value):
               await value.close();

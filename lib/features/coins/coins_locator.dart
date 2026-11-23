@@ -1,7 +1,7 @@
 import 'public/coins.dart';
 
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:preferences/preferences.dart'
@@ -31,7 +31,7 @@ class CoinsLocator {
       () => WalletUtxoRepositoryImpl(
         walletRegistrations: locator<WalletRegistrations>(),
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
-        freezesDatasource: locator<SyncFreezesDatasource>(),
+        freezesDatasource: locator<CoinFreezes>(),
         labelsFacade: locator<Labels>(),
       ),
     );

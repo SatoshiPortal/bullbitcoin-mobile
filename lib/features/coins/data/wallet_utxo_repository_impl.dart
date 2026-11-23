@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
@@ -14,13 +13,13 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletRegistrations _walletRegistrations;
   final Labels _labelsFacade;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
-  final SyncFreezesDatasource _freezes;
+  final CoinFreezes _freezes;
 
   WalletUtxoRepositoryImpl({
     required this._walletRegistrations,
     required this._labelsFacade,
     required this._loadWallet,
-    required SyncFreezesDatasource freezesDatasource,
+    required CoinFreezes freezesDatasource,
   }) : _freezes = freezesDatasource;
 
   Future<List<Label>> _fetchLabels(String reference) async =>

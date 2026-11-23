@@ -31,6 +31,47 @@ final class InventoryRepository {
     ]);
   }, orElse: FetchSecretFailure.new);
 
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>> recoveryWallets(
+    String view,
+  ) async {
+    final rows = await boundary(
+      () => _listRows(view),
+      orElse: FetchSecretFailure.new,
+    );
+    if (rows case Err(:final failure)) return Err(failure);
+    final wallets = <BitcoinRecoveryWallet>[];
+    for (final row in (rows as Ok<List<QueryRow>, SecretFailure>).value) {
+      if (row.data case {'signer': 'local', 'network': final String code}
+          when code.startsWith('bitcoin')) {
+        final registration = decodeWalletRegistration(row.data);
+        if (registration case WalletRegistration(
+          network: final BitcoinNetwork network,
+          secretFingerprint: final Fingerprint fingerprint,
+        )) {
+          final data = row.data;
+          if (data case {
+            'external_descriptor': final String external,
+            'internal_descriptor': final String internal,
+          }) {
+            wallets.add(
+              BitcoinRecoveryWallet(
+                id: registration.id,
+                network: network,
+                fingerprint: fingerprint,
+                scriptType: registration.scriptType,
+                isDefault: registration.isDefault,
+                descriptors: (external: external, internal: internal),
+              ),
+            );
+            continue;
+          }
+        }
+        return const Err(UnreadableWalletFailure());
+      }
+    }
+    return Ok(List.unmodifiable(wallets));
+  }
+
   Future<Result<WalletSelection, SecretFailure>> listForNetwork(
     String view,
     Network network,

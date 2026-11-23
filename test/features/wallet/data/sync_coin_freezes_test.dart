@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
@@ -63,7 +63,7 @@ void main() {
         walletRegistrations: metadata,
         labelsFacade: labels,
         loadWallet: (_) async => Ok(wallet),
-        freezesDatasource: SyncFreezesDatasource(sync: () async => owner),
+        freezesDatasource: CoinFreezes(sync: () async => owner),
       );
 
   test('coins carry the frozen state sync publishes', () async {
@@ -82,7 +82,7 @@ void main() {
   });
 
   test('unfreeze lifts a freeze attributed to another origin', () async {
-    final freezes = SyncFreezesDatasource(sync: () async => owner);
+    final freezes = CoinFreezes(sync: () async => owner);
     await freezes.freezeAttributed([
       sync.FrozenOutpoint(frozen, origin: ''),
       sync.FrozenOutpoint(frozen, origin: 'tr([73c5da0a/86h/1h/0h])'),
@@ -101,7 +101,7 @@ void main() {
       freezes: MemoryFreezeStore()..failure = const sync.SyncStorageFailure(),
     );
     addTearDown(broken.close);
-    final freezes = SyncFreezesDatasource(sync: () async => broken);
+    final freezes = CoinFreezes(sync: () async => broken);
 
     await expectLater(
       freezes.getFrozenOutpoints(),

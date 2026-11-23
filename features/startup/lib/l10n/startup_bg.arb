@@ -1,0 +1,61 @@
+{
+  "errorSharingLogsMessage": "Грешка при споделянето на логовете: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Възстанови",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appInitErrorTitle": "Приложението не успя да стартира",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Споделяне на логове",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Използвайте резервното си копие",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Благодарение на резервното копие, средствата ви са в безопасност.\nПърво опитайте да рестартирате приложението; ако все още не работи, преинсталирайте го и възстановете с резервното копие.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Няма резервно копие?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не изтривайте приложението.\nСвържете се с нашия екип за поддръжка за опит за спасяване.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Свържете се с поддръжката",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Покажи подробности за грешката",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си.",
+  "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Експортиране",
+  "logsExportedMessage": "Журналите са експортирани успешно",
+  "logsExportFailedMessage": "Неуспешно експортиране на журналите",
+  "deleteLogsTitle": "Изтрий логовете",
+  "logsDeletedMessage": "Логовете са изтрити",
+  "appStartupErrorTitle": "Грешка при стартиране",
+  "appStartupContactSupportButton": "Свържи се с поддръжката",
+  "coreScreensPageNotFound": "Страницата не е намерена"
+}

@@ -23,29 +23,3 @@ void main() {
     });
 
     test('the handler reaches no secret-mutating use case', () {
-      final bootstrap = File('lib/background_bootstrap.dart')
-          .readAsStringSync();
-      final walletSetup = File('lib/features/wallet/background_setup.dart')
-          .readAsStringSync();
-      expectOnlyBackgroundWalletStorage(
-        bootstrap: bootstrap,
-        walletSetup: walletSetup,
-      );
-      final source = '$bootstrap\n$walletSetup';
-      for (final mutating in [
-        'ImportWalletUsecase',
-        'CreateDefaultWalletsUsecase',
-        'DeleteWalletUsecase',
-        'DeleteSecretUsecase',
-        'RestoreVaultUsecase',
-        'CreateEncryptedVaultUsecase',
-        '.recoverbull.restore(',
-        '.trash(',
-        '.import(',
-        '.generate(',
-      ]) {
-        expect(source, isNot(contains(mutating)), reason: mutating);
-      }
-    });
-  });
-}

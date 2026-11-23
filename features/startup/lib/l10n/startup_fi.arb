@@ -1,0 +1,58 @@
+{
+  "@@locale": "fi",
+  "onboardingRecover": "Palauta",
+  "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
+  "@errorSharingLogsMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appStartupErrorTitle": "Käynnistysvirhe",
+  "appStartupErrorMessage": "Sovelluksen käynnistys epäonnistui. Yritä sulkea sovellus kokonaan ja käynnistää se uudelleen. Jos ongelma jatkuu, ota yhteyttä tukeen ja jaa lokisi.",
+  "appStartupContactSupportButton": "Ota yhteyttä tukeen",
+  "coreScreensPageNotFound": "Sivua ei löytynyt",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "deleteLogsTitle": "Poista lokit",
+  "logsDeletedMessage": "Lokit poistettu",
+  "appInitErrorTitle": "Sovelluksen käynnistys epäonnistui",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Jaa lokit",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Käytä varmuuskopiotasi",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Varmuuskopiosi ansiosta varasi ovat turvassa.\nYritä ensin käynnistää sovellus uudelleen; jos se ei vieläkään toimi, asenna se uudelleen ja palauta varmuuskopion avulla.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Ei varmuuskopiota?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Älä poista sovellusta.\nOta yhteyttä tukitiimiimme pelastusyritystä varten.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Ota yhteyttä tukeen",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Näytä virheen tiedot",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Vie",
+  "logsExportedMessage": "Lokit viety onnistuneesti",
+  "logsExportFailedMessage": "Lokien vienti epäonnistui"
+}

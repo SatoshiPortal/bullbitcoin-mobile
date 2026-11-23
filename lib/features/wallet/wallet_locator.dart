@@ -1,8 +1,10 @@
+import 'package:notifications/payment_store.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:secrets/custody.dart';
 import 'package:preferences/preferences.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 import 'package:bull_ark/ark_wallet_setup.dart';
 
@@ -19,7 +21,8 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 
 import 'data/payment_notifications.dart';
-import 'data/wallet_payment_observer.dart';
+
+import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
 
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -201,6 +204,19 @@ class WalletLocator {
         isSyncPassActive: () => locator<SyncCoordinator>().isSyncPassActive,
       ),
     );
+    locator.registerLazySingleton<DefaultWalletRepair>(
+      () => DefaultWalletRepair(locator<Secrets>(), (secret, network) async {
+        await locator<WalletRepository>().createWallet(
+          secret: secret,
+          network: Network.fromEnvironment(
+            environment: network.env,
+            isLiquid: network is LiquidNetwork,
+          ),
+          scriptType: ScriptType.bip84,
+          isDefault: true,
+        );
+      }),
+    );
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(
         secrets: locator<Secrets>(),
@@ -265,10 +281,13 @@ class WalletLocator {
       locator.registerLazySingleton<PaymentNotificationStore>(
         () => PaymentNotificationStore(
           () async => (await getApplicationDocumentsDirectory()).path,
-          () async => ((await locator<Preferences>().fetch()).fold(
-            (value) => value,
-            (failure) => throw Exception('Preferences read failed'),
-          )).language,
+          () async {
+            final settings = (await locator<Preferences>().fetch()).fold(
+              (value) => value,
+              (_) => throw Exception('Preferences read failed'),
+            );
+            return PaymentNotifications.gateway(settings.language);
+          },
         ),
         dispose: (store) => store.close(),
       );

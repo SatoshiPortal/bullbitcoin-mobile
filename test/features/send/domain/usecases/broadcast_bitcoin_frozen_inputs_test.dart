@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Result;
 import 'package:spend/legacy_exceptions.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
@@ -84,12 +84,12 @@ void main() {
           walletRegistrations: _MockWalletRegistrations(),
           labelsFacade: _MockLabels(),
           loadWallet: (_) async => throw StateError('Unexpected coin read'),
-          freezesDatasource: SyncFreezesDatasource(sync: () async => sync),
+          freezesDatasource: CoinFreezes(sync: () async => sync),
         ),
   );
 
   Future<void> freeze(String txId, int vout) =>
-      SyncFreezesDatasource(sync: () async => sync).freezeAttributed([
+      CoinFreezes(sync: () async => sync).freezeAttributed([
         FrozenOutpoint((txId: txId, vout: vout), origin: 'wallet'),
       ]);
 

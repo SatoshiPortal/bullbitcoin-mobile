@@ -15,6 +15,9 @@ dependencies:
   ark:
   secrets:
   primitives:
+  legacy_storage:
+  path_provider: ^2.1.5
+  preferences:
   meta: ^1.17.0
   bloc: ^9.2.1
   bull_ui:

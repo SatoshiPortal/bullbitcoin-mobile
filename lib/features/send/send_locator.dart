@@ -69,7 +69,7 @@ import 'package:silent/silent.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spend/spend.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
@@ -83,7 +83,7 @@ class SendLocator {
         walletRegistrations: locator<WalletRegistrations>(),
         secrets: locator<Secrets>(),
         wallet: locator<WalletNativeRuntime>().wallet,
-        freezesDatasource: locator<SyncFreezesDatasource>(),
+        freezesDatasource: locator<CoinFreezes>(),
       ),
     );
     registerUsecases(locator);

@@ -195,6 +195,10 @@ class BoltzSwapsSetup {
     locator.registerFactory<DropPendingSwapLockupUsecase>(
       () => DropPendingSwapLockupUsecase(locator<SwapResolver>()),
     );
+    locator.registerFactory<SwapStartup>(
+      () =>
+          SwapStartup(locator<LogSwapCensusUsecase>(), locator<SwapWatcher>()),
+    );
     locator.registerFactory<LogSwapCensusUsecase>(
       () => LogSwapCensusUsecase(locator<SwapStore>()),
     );

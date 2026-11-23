@@ -150,6 +150,17 @@ final class SecretsInventory implements WalletInventory {
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
       _inSession((_) => _wallets.list(defaultViewId));
 
+  /// Whether the authorized view has any wallet, including on other networks.
+  @useResult
+  Future<Result<bool, SecretFailure>> hasWallets() async =>
+      (await listWallets()).map((wallets) => wallets.isNotEmpty);
+
+  /// Locally signing Bitcoin wallets and their public recovery evidence.
+  @useResult
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>>
+  recoveryWallets() =>
+      _inSession((_) => _wallets.recoveryWallets(defaultViewId));
+
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
   listDescriptors() =>
