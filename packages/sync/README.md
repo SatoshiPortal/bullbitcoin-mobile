@@ -205,3 +205,7 @@ Spend preparation consumers resolve a `WalletKey` and call the Result-returning 
 ## Persisted wallet sync times
 
 The storage library imports the historical sync time for each wallet id into Sync's encrypted metadata store. It preserves the original nullable value through the migration. The native revision and writer lease stores continue to coordinate wallet operations.
+
+## Dependencies
+
+- `secrets` supplies authorized wallet descriptors to the foreground inventory projection; Sync turns them into native catalog entries.
