@@ -1,6 +1,6 @@
 import 'package:swaps/order_swaps.dart';
-import 'package:bb_mobile/features/swap/data/mappers/order_swap_mapper.dart';
-import 'package:bb_mobile/features/swap/data/models/order_swap_model.dart';
+import 'package:swaps/src/orders/data/mappers/order_swap_mapper.dart';
+import 'package:swaps/src/orders/data/models/order_swap_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

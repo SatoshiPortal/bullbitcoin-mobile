@@ -1,15 +1,14 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
-import 'package:bb_mobile/features/swap/data/order_swaps_table.drift.dart';
+import 'package:swaps/src/orders/data/order_swaps_database.dart';
+import 'package:swaps/src/orders/data/order_swaps_table.drift.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
-import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
-import 'package:bb_mobile/features/swap/data/models/order_swap_model.dart';
-import 'package:bb_mobile/features/swap/data/models/order_swap_quote_model.dart';
-import 'package:bb_mobile/features/swap/data/order_swap_repository_impl.dart';
+import 'package:swaps/src/orders/data/datasources/exchange_public_api_datasource.dart';
+import 'package:swaps/src/orders/data/datasources/order_swap_local_datasource.dart';
+import 'package:swaps/src/orders/data/models/order_swap_model.dart';
+import 'package:swaps/src/orders/data/models/order_swap_quote_model.dart';
+import 'package:swaps/src/orders/data/order_swap_repository_impl.dart';
 import 'package:swaps/order_swaps.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

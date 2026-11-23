@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
-import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
+import 'package:spend/legacy_exceptions.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

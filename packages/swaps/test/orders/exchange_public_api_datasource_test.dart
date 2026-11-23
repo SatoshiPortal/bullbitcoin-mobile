@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
+import 'package:swaps/src/orders/data/datasources/exchange_public_api_datasource.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';

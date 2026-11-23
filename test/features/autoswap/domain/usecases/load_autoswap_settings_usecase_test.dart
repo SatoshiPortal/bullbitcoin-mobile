@@ -1,10 +1,9 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:secrets/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -12,22 +11,21 @@ class MockGetAutoSwapSettingsUsecase extends Mock implements AutoSwapSettings {}
 
 class MockGetSettingsUsecase extends Mock implements Preferences {}
 
-class MockWalletRepository extends Mock implements WalletRepository {}
+class MockWalletRepository extends Mock implements LoadSwapWalletsUsecase {}
 
-class FakeWallet extends Fake implements Wallet {
-  FakeWallet({
-    required this.id,
-    required this.isLiquid,
-    required this.isDefault,
-  });
-
-  @override
-  final String id;
-  @override
-  final bool isLiquid;
-  @override
-  final bool isDefault;
-}
+SwapWallet fakeWallet({
+  required String id,
+  required bool isLiquid,
+  required bool isDefault,
+}) => SwapWallet(
+  walletRegistrationForTesting(
+    id: id,
+    network: isLiquid ? LiquidNetwork.mainnet : BitcoinNetwork.mainnet,
+    isDefault: isDefault,
+  ),
+  null,
+  false,
+);
 
 /// A wallet id is the descriptor origin, so it embeds the master key
 /// fingerprint. It must never reach [Failure.logMessage].
@@ -73,22 +71,19 @@ void main() {
         failureOf(await usecase.execute()),
         isA<AutoswapUnsupportedNetworkFailure>(),
       );
-      verifyNever(
-        () => wallets.getWallets(environment: any(named: 'environment')),
-      );
+      verifyNever(() => wallets.execute(NetworkEnv.mainnet));
     });
 
     test('returns only bitcoin wallets and the stored recipient', () async {
       when(() => getAutoSwap.readAutoSwap()).thenAnswer(
         (_) async => const Ok(AutoSwap(recipientWalletId: 'stored')),
       );
-      when(() => wallets.getWallets(environment: any(named: 'environment')))
-          .thenAnswer(
-            (_) async => Ok<List<Wallet>, WalletFailure>([
-              FakeWallet(id: 'btc', isLiquid: false, isDefault: true),
-              FakeWallet(id: 'lbtc', isLiquid: true, isDefault: true),
-            ]),
-          );
+      when(() => wallets.execute(NetworkEnv.mainnet)).thenAnswer(
+        (_) async => Ok<List<SwapWallet>, SwapFailure>([
+          fakeWallet(id: 'btc', isLiquid: false, isDefault: true),
+          fakeWallet(id: 'lbtc', isLiquid: true, isDefault: true),
+        ]),
+      );
 
       final result = await usecase.execute();
 
@@ -104,13 +99,12 @@ void main() {
       () async {
         when(() => getAutoSwap.readAutoSwap())
             .thenAnswer((_) async => const Ok(AutoSwap()));
-        when(() => wallets.getWallets(environment: any(named: 'environment')))
-            .thenAnswer(
-              (_) async => Ok<List<Wallet>, WalletFailure>([
-                FakeWallet(id: 'other', isLiquid: false, isDefault: false),
-                FakeWallet(id: 'default-btc', isLiquid: false, isDefault: true),
-              ]),
-            );
+        when(() => wallets.execute(NetworkEnv.mainnet)).thenAnswer(
+          (_) async => Ok<List<SwapWallet>, SwapFailure>([
+            fakeWallet(id: 'other', isLiquid: false, isDefault: false),
+            fakeWallet(id: 'default-btc', isLiquid: false, isDefault: true),
+          ]),
+        );
 
         final result = await usecase.execute();
 
@@ -137,7 +131,7 @@ void main() {
     test('maps a failing wallet lookup to SettingsUnavailable', () async {
       when(() => getAutoSwap.readAutoSwap())
           .thenAnswer((_) async => const Ok(AutoSwap()));
-      when(() => wallets.getWallets(environment: any(named: 'environment')))
+      when(() => wallets.execute(NetworkEnv.mainnet))
           .thenAnswer((_) async => throw Exception('bdk exploded'));
 
       expect(

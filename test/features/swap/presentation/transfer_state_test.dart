@@ -1,6 +1,6 @@
 import 'package:swaps/order_swaps.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

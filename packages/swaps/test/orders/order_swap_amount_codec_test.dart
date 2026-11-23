@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/data/order_swap_amount_codec.dart';
+import 'package:swaps/src/orders/data/order_swap_amount_codec.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

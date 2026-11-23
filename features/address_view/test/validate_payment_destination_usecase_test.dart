@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/wallet/domain/validate_payment_destination_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/payment_destination.dart';
+import 'package:address_view/src/domain/validate_payment_destination_usecase.dart';
+import 'package:address_view/src/domain/payment_destination.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

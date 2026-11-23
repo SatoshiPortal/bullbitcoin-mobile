@@ -1,3 +1,4 @@
+import 'package:bb_mobile/localization/onchain_send_labels_l10n.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bb_mobile/localizations.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
+import 'package:swaps/src/orders/data/order_swaps_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 

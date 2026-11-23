@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
+import 'package:spend/fee_preview.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

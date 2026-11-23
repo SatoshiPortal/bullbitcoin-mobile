@@ -8,25 +8,24 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dar
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
 class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
 void main() {
-  late _MockSwapFacade swapFacade;
+  late _MockOrderSwaps swapFacade;
   late _MockGetWalletUsecase getWallet;
   late _MockGetReceiveAddressUsecase getReceiveAddress;
   late CreateSendSwapUsecase usecase;
   final now = DateTime.utc(2026, 8, 5, 12);
 
   setUp(() {
-    swapFacade = _MockSwapFacade();
+    swapFacade = _MockOrderSwaps();
     getWallet = _MockGetWalletUsecase();
     getReceiveAddress = _MockGetReceiveAddressUsecase();
     usecase = CreateSendSwapUsecase(

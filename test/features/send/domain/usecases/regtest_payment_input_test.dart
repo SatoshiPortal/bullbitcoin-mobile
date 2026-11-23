@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart' as app;
+import 'package:address_view/payment_destination.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

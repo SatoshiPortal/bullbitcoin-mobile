@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:bull_ui/app_theme.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:cbor/cbor.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

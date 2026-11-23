@@ -37,7 +37,6 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:swaps/swaps.dart' show SwapRoute;
 import 'package:clock/clock.dart';
