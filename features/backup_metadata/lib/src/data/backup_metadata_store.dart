@@ -22,6 +22,7 @@ typedef BackupIntent = ({
 typedef BackupGeneration = ({
   String objectId,
   String digest,
+  String? envelopeDigest,
   DateTime verifiedAt,
 });
 
@@ -89,11 +90,27 @@ final class BackupMetadataStore {
   }
 
   void _initialize(Database state) {
-    if (state.userVersion == 1) return;
-    if (state.userVersion != 0) {
+    final version = state.userVersion;
+    if (version == 2) return;
+    if (version != 0 && version != 1) {
       throw const FormatException('Unknown backup metadata store version');
     }
     state.execute('BEGIN IMMEDIATE');
+    try {
+      if (version == 0) {
+        _createSchema(state);
+      } else {
+        // Old acknowledged rows have no known ciphertext digest.
+        state.execute('ALTER TABLE verified ADD COLUMN envelope_digest TEXT');
+      }
+      state.userVersion = 2;
+      state.execute('COMMIT');
+    } finally {
+      if (state.autocommit == false) state.execute('ROLLBACK');
+    }
+  }
+
+  void _createSchema(Database state) {
     state.execute('''
       CREATE TABLE selection (
         id INTEGER PRIMARY KEY CHECK (id = 1), destination TEXT, account TEXT,
@@ -110,15 +127,13 @@ final class BackupMetadataStore {
         sequence INTEGER PRIMARY KEY, destination TEXT NOT NULL,
         account TEXT NOT NULL, group_id TEXT NOT NULL, lineage TEXT NOT NULL,
         generation INTEGER NOT NULL, object_id TEXT NOT NULL, digest TEXT NOT NULL,
-        verified_at INTEGER NOT NULL,
+        verified_at INTEGER NOT NULL, envelope_digest TEXT,
         UNIQUE (destination, account, lineage, object_id)
       );
     ''');
     state.execute('INSERT INTO selection VALUES (1, NULL, NULL, 0, ?)', [
       randomHex(16),
     ]);
-    state.userVersion = 1;
-    state.execute('COMMIT');
   }
 }
 
@@ -198,16 +213,22 @@ final class BackupMetadataState {
     [objectId, ..._parameters(scope)],
   );
 
-  void acknowledge(BackupScope scope, BackupGeneration backup) => _atomic(() {
+  void acknowledge(
+    BackupScope scope,
+    BackupIntent intent, {
+    required String objectId,
+    required DateTime verifiedAt,
+  }) => _atomic(() {
     _db.execute(
       '''INSERT INTO verified
-        (destination, account, group_id, lineage, generation, object_id, digest, verified_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+        (destination, account, group_id, lineage, generation, object_id, digest, verified_at, envelope_digest)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
       [
         ..._parameters(scope),
-        backup.objectId,
-        backup.digest,
-        backup.verifiedAt.millisecondsSinceEpoch,
+        objectId,
+        intent.digest,
+        verifiedAt.millisecondsSinceEpoch,
+        intent.envelopeDigest,
       ],
     );
     discardIntent(scope);
@@ -224,6 +245,7 @@ final class BackupMetadataState {
       (
         objectId: row['object_id'] as String,
         digest: row['digest'] as String,
+        envelopeDigest: row['envelope_digest'] as String?,
         verifiedAt: DateTime.fromMillisecondsSinceEpoch(
           row['verified_at'] as int,
           isUtc: true,

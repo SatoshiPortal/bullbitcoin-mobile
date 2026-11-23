@@ -98,6 +98,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         BackupMetadataFailure? failure;
         BackupActionReason? reason;
         String? digest;
+        List<BackupGeneration>? durable;
         try {
           if (write) {
             await _reconcile(state, scope, session, listed);
@@ -119,25 +120,35 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
             final latest = state.verified(scope).firstOrNull;
             if (latest == null ||
                 latest.digest != digest ||
-                !listed.containsKey(latest.objectId)) {
+                !await _canSkipWrite(scope, session, listed, latest)) {
               await _create(state, scope, session, listed, prepared);
             }
-            await _prune(state, scope, session, listed);
+            durable = await _prune(state, scope, session, listed);
           }
         } on _OperationFailure catch (error) {
           failure = error.failure;
           reason = error.reason;
         }
-        final durable = state
-            .verified(scope)
-            .where((backup) => _durable(scope, listed[backup.objectId]));
-        final latest = durable.firstOrNull;
+        if (durable == null) {
+          try {
+            durable = await _provenGenerations(
+              scope,
+              session,
+              listed,
+              state.verified(scope),
+            );
+          } on _OperationFailure catch (error) {
+            failure ??= error.failure;
+            reason ??= error.reason;
+          }
+        }
+        final latest = durable?.firstOrNull;
         groups.add(
           BackupGroupStatus(
             group: group,
             included: true,
             lastDurableBackup: latest?.verifiedAt,
-            previousVersionKept: durable.skip(1).isNotEmpty,
+            previousVersionKept: (durable?.length ?? 0) > 1,
             pendingChanges:
                 digest == null ||
                 latest?.digest != digest ||
@@ -253,8 +264,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         BackupActionReason.tooLarge,
       );
     }
-    // The journal binds the canonical digest to the exact encrypted bytes.
-    // Read-back verification therefore works even if descriptors have changed.
+    // The intent's original ciphertext digest also proves a folder write
+    // whose response or durable receipt was lost.
     if (sha256.convert(bytes).toString() != intent.envelopeDigest) {
       throw const _OperationFailure.unexpected();
     }
@@ -262,36 +273,93 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     listed
       ..clear()
       ..addAll(refreshed);
-    if (!_durable(scope, listed[object.id])) return;
+    if (!await _hasDurabilityProof(
+      scope,
+      session,
+      listed[object.id],
+      intent.envelopeDigest,
+    )) {
+      return;
+    }
 
-    state.acknowledge(scope, (
+    state.acknowledge(
+      scope,
+      intent,
       objectId: object.id,
-      digest: intent.digest,
       verifiedAt: DateTime.now().toUtc(),
-    ));
+    );
   }
 
-  bool _durable(BackupScope scope, StoredObject? object) =>
-      object != null &&
-      (object.durability == Durability.durable ||
-          scope.destination == BackupDestination.folder);
+  Future<bool> _canSkipWrite(
+    BackupScope scope,
+    StorageSession session,
+    Map<String, StoredObject> listed,
+    BackupGeneration latest,
+  ) async {
+    final object = listed[latest.objectId];
+    if (scope.destination != BackupDestination.folder) return object != null;
+    return _hasDurabilityProof(scope, session, object, latest.envelopeDigest);
+  }
 
-  Future<void> _prune(
+  Future<bool> _hasDurabilityProof(
+    BackupScope scope,
+    StorageSession session,
+    StoredObject? object,
+    String? envelopeDigest,
+  ) async {
+    if (object == null) return false;
+    if (object.durability == Durability.durable) return true;
+    if (scope.destination != BackupDestination.folder ||
+        envelopeDigest == null) {
+      return false;
+    }
+
+    final result = await session.read(object, maxBytes: backupMetadataMaxBytes);
+    if (result case Err(
+      failure: BackupStorageNotFoundFailure() || BackupStorageTooLargeFailure(),
+    )) {
+      return false;
+    }
+    final bytes = _storageValue(result);
+    return bytes.length <= backupMetadataMaxBytes &&
+        sha256.convert(bytes).toString() == envelopeDigest;
+  }
+
+  Future<List<BackupGeneration>> _provenGenerations(
+    BackupScope scope,
+    StorageSession session,
+    Map<String, StoredObject> listed,
+    List<BackupGeneration> generations,
+  ) async => [
+    for (final backup in generations)
+      if (await _hasDurabilityProof(
+        scope,
+        session,
+        listed[backup.objectId],
+        backup.envelopeDigest,
+      ))
+        backup,
+  ];
+
+  Future<List<BackupGeneration>> _prune(
     BackupMetadataState state,
     BackupScope scope,
     StorageSession session,
     Map<String, StoredObject> listed,
   ) async {
     final generations = state.verified(scope);
-    if (generations.length < 3) return;
-
-    // Re-list before any deletion, especially for providers with pending uploads.
-    final refreshed = await _list(session);
-    listed
-      ..clear()
-      ..addAll(refreshed);
-    final durable = generations.where(
-      (backup) => _durable(scope, listed[backup.objectId]),
+    if (generations.length >= 3) {
+      // Revalidate every candidate against the latest listing before deletion.
+      final refreshed = await _list(session);
+      listed
+        ..clear()
+        ..addAll(refreshed);
+    }
+    final durable = await _provenGenerations(
+      scope,
+      session,
+      listed,
+      generations,
     );
     for (final old in durable.skip(2)) {
       final object = listed[old.objectId];
@@ -299,6 +367,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       await _delete(state, scope.destination, session, scope.lineage, object);
       listed.remove(old.objectId);
     }
+    return durable.take(2).toList();
   }
 
   @override
