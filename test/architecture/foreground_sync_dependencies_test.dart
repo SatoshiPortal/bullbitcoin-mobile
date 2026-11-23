@@ -30,7 +30,8 @@ const _allowedTargets = <String, String>{
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'address_view send swap wallet',
-  'backup_settings': 'recoverbull settings test_wallet_backup wallet',
+  'backup_settings': 'backups recoverbull settings test_wallet_backup wallet',
+  'backups': 'recoverbull',
   'broadcast_signed_tx': 'scanning send wallet',
   'buy':
       'address_view bull_exchange exchange fund_exchange transactions wallet',
@@ -57,13 +58,13 @@ const _allowedTargets = <String, String>{
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price bull_exchange coins exchange fees recipients send transactions wallet',
   'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
-  'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85 bitcoin_price broadcast_signed_tx bull_exchange default_wallets exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
+  'settings': 'address_view all_seed_view access ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange default_wallets exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
   'support': 'bull_exchange',
   'swap': 'address_view ark coins consolidation fees send transactions wallet',
   'test_wallet_backup': 'access onboarding physical_backup_verification recoverbull wallet',
   'transactions':
       'ark buy exchange label_editor pay replace_by_fee swap wallet',
-  'wallet': 'ark backup_settings bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
+  'wallet': 'ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

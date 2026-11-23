@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
+import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -26,8 +25,11 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
+import 'package:network/network.dart' show NoDefaultWalletFailure;
+import 'package:network/testing.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
 import 'package:novlang/novlang.dart' show NovlangPolicy;
+import 'package:settings/settings.dart';
 
 class _Wallet extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
@@ -106,16 +108,17 @@ class ArkShellVisualFixtures {
     locator.registerSingleton<ArkForegroundHost>(fixture._host);
     fixture._settingsRouter = GoRouter(
       navigatorKey: fixture._settingsNavigator,
-      initialLocation: SettingsRoute.settings.path,
+      initialLocation: '/settings',
       routes: [
-        GoRoute(
-          name: SettingsRoute.settings.name,
-          path: SettingsRoute.settings.path,
-          builder: (_, _) => AllSettingsScreen(
-            watchServiceHealth: () =>
-                Stream.value(SettingsServiceHealth.unhealthy),
+        SettingsFeature.mount(
+          menuOf: SettingsHubBindings.menuOf,
+          labelsOf: SettingsHubBindings.labelsOf,
+          menuScope: SettingsHubBindings.menuScope,
+          status: networkStatusForTest(
+            () async => const Err(NoDefaultWalletFailure()),
           ),
-        ),
+          childRoutes: const [],
+        ).route,
       ],
     );
     fixture._homeRouter = GoRouter(

@@ -1,11 +1,12 @@
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
+
+import 'search_registry.dart';
 
 void main() {
   for (final network in NetworkEnv.values) {
@@ -19,7 +20,7 @@ void main() {
       if (ark.isNotEmpty) {
         expect(ark.single.section, SettingsItemSection.wallet);
         expect(ark.single.path, ['Settings', 'Wallet', 'Ark']);
-        expect(searchSettings(items, 'ark').first.id, SettingsItemId.ark);
+        expect(searchRegistry(items, 'ark').first.id, SettingsItemId.ark);
       }
     });
   }

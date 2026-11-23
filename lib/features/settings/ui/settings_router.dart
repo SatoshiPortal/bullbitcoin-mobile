@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.d
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/backup_options_bindings.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
@@ -19,7 +19,6 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/permissions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
@@ -30,11 +29,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:network/network.dart' show NetworkFeature;
-import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -115,28 +111,16 @@ class SettingsRouter {
     ),
   );
 
-  static GoRoute route({
+  static List<RouteBase> childRoutes({
     required List<RouteBase> priceRoutes,
     required void Function(BuildContext) onBackupTestSucceeded,
     required List<RouteBase> appSettingsRoutes,
     required List<RouteBase> accessRoutes,
     RouteBase? seedViewRoute,
     required List<RouteBase> exchangeSettingsRoutes,
-  }) => GoRoute(
-    name: SettingsRoute.settings.name,
-    path: SettingsRoute.settings.path,
-    builder: (context, state) => AllSettingsScreen(
-      watchServiceHealth: WatchSettingsServiceHealthUsecase(
-        locator<NetworkFeature>().status,
-      ).execute,
-    ),
-    routes: [
+  }) {
+    return [
       ...priceRoutes,
-      GoRoute(
-        name: SettingsRoute.search.name,
-        path: SettingsRoute.search.path,
-        builder: (context, state) => const SettingsSearchScreen(),
-      ),
       GoRoute(
         name: SettingsRoute.quickActions.name,
         path: SettingsRoute.quickActions.path,
@@ -213,7 +197,7 @@ class SettingsRouter {
         name: SettingsRoute.backupSettings.name,
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
-          BackupSettingsSettingsRouter.route,
+          BackupOptionsBindings.mount().route,
           TestWalletBackupRouter.route(onTestSucceeded: onBackupTestSucceeded),
         ],
       ),
@@ -269,6 +253,6 @@ class SettingsRouter {
       ),
       const LogsFeature().route,
       ?seedViewRoute,
-    ],
-  );
+    ];
+  }
 }

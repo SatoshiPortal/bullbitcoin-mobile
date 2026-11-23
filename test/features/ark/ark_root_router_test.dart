@@ -201,6 +201,16 @@ void main() {
       });
       // Exercise the actual production route configuration, not a test GoRouter.
       expect(router.configuration.findMatch(Uri.parse('/ark')).isError, false);
+      expect(router.namedLocation('settings'), '/settings');
+      expect(router.namedLocation('search'), '/settings/search');
+      expect(
+        router.namedLocation('backupSettings'),
+        '/settings/backup-settings',
+      );
+      expect(
+        router.namedLocation('backupOptions'),
+        '/settings/backup-settings/backup-options',
+      );
       expect(
         router.namedLocation('torSettings'),
         '/settings/app-settings/tor-settings',

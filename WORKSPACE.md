@@ -12,6 +12,8 @@ graph TD
   style ark stroke:#18f150
   background_tasks["background_tasks"]
   style background_tasks stroke:#e69535
+  backups["backups"]
+  style backups stroke:#e0e4c1
   bb_mobile["bb_mobile"]
   style bb_mobile stroke:#8b5641
   bbx_api["bbx_api"]
@@ -90,6 +92,8 @@ graph TD
   style screen_privacy stroke:#7725dd
   secrets["secrets"]
   style secrets stroke:#07e9ae
+  settings["settings"]
+  style settings stroke:#a681c0
   signers["signers"]
   style signers stroke:#5be3aa
   swap_feature["swap_feature"]
@@ -112,6 +116,8 @@ graph TD
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
+  backups --> bull_recoverbull
+  backups --> bull_ui
   bbx_api --> primitives
   bitbox_transport --> rust_bindings
   bitcoin_price --> bull_logger
@@ -230,6 +236,9 @@ graph TD
   secrets --> bull_logger
   secrets --> rust_bindings
   secrets --> legacy_storage
+  settings --> bull_ui
+  settings --> network
+  settings --> primitives
   signers --> secrets
   signers --> legacy_storage
   signers --> bitbox_transport
@@ -261,6 +270,7 @@ graph TD
   subgraph features0 ["features"]
     access
     announcements
+    backups
     bitcoin_price
     btc_map
     bull_ark
@@ -271,6 +281,7 @@ graph TD
     fees_feature
     label_editor
     network
+    settings
     signers
     swap_feature
   end

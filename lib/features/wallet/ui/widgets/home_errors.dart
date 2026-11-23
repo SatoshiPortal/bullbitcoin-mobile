@@ -1,7 +1,7 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/backup_settings/public/backup_settings.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:backups/backups.dart';
 import 'package:network/network.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart'
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullCarousel, BullInfoCard, Gap;
-import 'package:go_router/go_router.dart';
 
 class HomeWarnings extends StatelessWidget {
   const HomeWarnings({super.key});
@@ -76,11 +75,7 @@ class HomeWarnings extends StatelessWidget {
               if (errorCards.isNotEmpty) BullCarousel(children: errorCards),
               if (showBackupWarning) ...[
                 if (errorCards.isNotEmpty) const Gap(5),
-                BackupCard(
-                  onTap: () => context.pushNamed(
-                    BackupSettingsSubroute.backupOptions.name,
-                  ),
-                ),
+                BackupCard(onTap: () => BackupsNavigation.start(context)),
               ],
             ],
           ),

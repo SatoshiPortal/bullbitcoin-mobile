@@ -124,7 +124,7 @@ void main() {
     when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
-    final settingsRoute = SettingsRouter.route(
+    final settingsRoutes = SettingsRouter.childRoutes(
       accessRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
         settings: SettingsRouter.exchangeSettingsHost,
@@ -140,10 +140,10 @@ void main() {
       onBackupTestSucceeded: (_) {},
       priceRoutes: const [],
     );
-    final manage = settingsRoute.routes.whereType<GoRoute>().singleWhere(
+    final manage = settingsRoutes.whereType<GoRoute>().singleWhere(
       (route) => route.name == ExchangeAccessSettingsNavigation.name,
     );
-    final account = settingsRoute.routes.whereType<GoRoute>().singleWhere(
+    final account = settingsRoutes.whereType<GoRoute>().singleWhere(
       (route) => route.name == ExchangeSettingsRoute.home.name,
     );
     final router = GoRouter(

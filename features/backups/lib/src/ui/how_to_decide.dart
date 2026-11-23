@@ -1,11 +1,13 @@
-import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullShapesX, BullText, BullTypographyX, Gap;
+    show BullShapesX, BullText, BullThemeX, BullTypographyX, Gap;
+
+import '../backups_copy.dart';
 
 class HowToDecideBackupOption extends StatelessWidget {
-  const HowToDecideBackupOption({super.key});
+  final BackupsCopy copy;
+
+  const HowToDecideBackupOption({super.key, required this.copy});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class HowToDecideBackupOption extends StatelessWidget {
       heightFactor: 0.75,
       child: Container(
         decoration: BoxDecoration(
-          color: context.appColors.surface,
+          color: context.bull.surface,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(context.bullShapes.sheet),
           ),
@@ -25,23 +27,24 @@ class HowToDecideBackupOption extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
-                mainAxisAlignment: .spaceBetween,
                 children: [
-                  const Spacer(),
-                  BullText(
-                    context.loc.backupWalletHowToDecideBackupModalTitle,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w500,
+                  const SizedBox(width: 48),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
+                      child: BullText(
+                        copy.helpTitle,
+                        style: context.bullType.subtitle.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: .center,
+                      ),
                     ),
-                    textAlign: .center,
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.close,
-                      color: context.appColors.onSurface,
-                    ),
+                  IconButton(
+                    tooltip: copy.closeLabel,
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -55,13 +58,13 @@ class HowToDecideBackupOption extends StatelessWidget {
                     crossAxisAlignment: .start,
                     children: [
                       BullText(
-                        context.loc.backupWalletHowToDecideBackupLosePhysical,
+                        copy.losePhysical,
                         style: context.bullType.label.copyWith(height: 1.5),
                         maxLines: 8,
                       ),
                       const Gap(32),
                       BullText(
-                        context.loc.backupWalletHowToDecideBackupEncryptedVault,
+                        copy.encryptedVault,
                         style: context.bullType.label.copyWith(height: 1.5),
                         maxLines: 16,
                       ),
@@ -71,17 +74,13 @@ class HowToDecideBackupOption extends StatelessWidget {
                           style: context.bullType.body,
                           children: [
                             TextSpan(
-                              text: context
-                                  .loc
-                                  .backupWalletHowToDecideBackupPhysicalRecommendation,
+                              text: copy.physicalRecommendation,
                               style: context.bullType.caption.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
-                              text: context
-                                  .loc
-                                  .backupWalletHowToDecideBackupPhysicalRecommendationText,
+                              text: copy.physicalRecommendationText,
                               style: context.bullType.caption,
                             ),
                           ],
@@ -93,17 +92,13 @@ class HowToDecideBackupOption extends StatelessWidget {
                           style: context.bullType.body,
                           children: [
                             TextSpan(
-                              text: context
-                                  .loc
-                                  .backupWalletHowToDecideBackupEncryptedRecommendation,
+                              text: copy.encryptedRecommendation,
                               style: context.bullType.caption.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
-                              text: context
-                                  .loc
-                                  .backupWalletHowToDecideBackupEncryptedRecommendationText,
+                              text: copy.encryptedRecommendationText,
                               style: context.bullType.caption,
                             ),
                           ],
@@ -111,7 +106,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                       ),
                       const Gap(12),
                       BullText(
-                        context.loc.backupWalletHowToDecideBackupMoreInfo,
+                        copy.moreInfo,
                         style: context.bullType.label.copyWith(height: 1.5),
                       ),
                       const Gap(20),

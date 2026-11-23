@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
+import 'package:settings/settings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -45,6 +46,7 @@ import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
@@ -97,7 +99,7 @@ class AppRouter {
         context.read<SettingsCubit>().state.isSuperuser ?? false,
     homePath: WalletRoute.walletHome.path,
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
-    onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
+    onOpenSettings: SettingsNavigation.open,
     onAction: (context, action) => _openQuickAction(context, switch (action) {
       ExchangeHomeAction.buy => QuickAction.buy,
       ExchangeHomeAction.sell => QuickAction.sell,
@@ -189,8 +191,7 @@ class AppRouter {
                 // ExchangeHomeScreen itself, as an overlay.
                 appBar: tabIndex == 0
                     ? WalletHomeAppBar(
-                        onSettings: () =>
-                            context.pushNamed(SettingsRoute.settings.name),
+                        onSettings: () => SettingsNavigation.open(context),
                       )
                     : null,
                 extendBodyBehindAppBar: true,
@@ -230,14 +231,19 @@ class AppRouter {
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
       ConsolidationRouter.route,
-      SettingsRouter.route(
-        accessRoutes: locator<AccessFeature>().routes.settings,
-        seedViewRoute: locator<AllSeedViewFeature>().route,
-        exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
-        appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
-        onBackupTestSucceeded: _onBackupTestSucceeded,
-        priceRoutes: locator<BitcoinPriceFeature>().routes,
-      ),
+      SettingsFeature.mount(
+        menuOf: SettingsHubBindings.menuOf,
+        labelsOf: SettingsHubBindings.labelsOf,
+        menuScope: SettingsHubBindings.menuScope,
+        status: locator<NetworkFeature>().status,
+        childRoutes: SettingsRouter.childRoutes(
+          accessRoutes: locator<AccessFeature>().routes.settings,
+          exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
+          appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
+          onBackupTestSucceeded: _onBackupTestSucceeded,
+          priceRoutes: locator<BitcoinPriceFeature>().routes,
+        ),
+      ).route,
       TransactionsRouter.transactionsRoute(
         scope: (child) => ActiveNetworkScope(child: child),
       ),

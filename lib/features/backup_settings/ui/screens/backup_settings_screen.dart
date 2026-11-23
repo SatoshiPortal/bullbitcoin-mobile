@@ -2,7 +2,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:backups/backups.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
@@ -183,10 +183,7 @@ class _TestBackupButton extends StatelessWidget {
     return BullSettingsEntryItem(
       icon: Icons.verified,
       title: context.loc.backupSettingsTestBackup,
-      onTap: () => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.test,
-      ),
+      onTap: () => BackupsNavigation.verify(context),
     );
   }
 }

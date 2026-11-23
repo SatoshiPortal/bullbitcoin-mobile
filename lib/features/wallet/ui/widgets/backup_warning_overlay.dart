@@ -1,12 +1,11 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:backups/backups.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullText, Gap, BullTypographyX;
-import 'package:go_router/go_router.dart';
 
 class BackupWarningOverlay extends StatelessWidget {
   const BackupWarningOverlay({super.key, required this.child});
@@ -130,11 +129,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                     const Gap(24),
                     BullButton.primary(
                       label: context.loc.backupWarningBackupNow,
-                      onPressed: () {
-                        context.pushNamed(
-                          BackupSettingsSubroute.backupOptions.name,
-                        );
-                      },
+                      onPressed: () => BackupsNavigation.start(context),
                     ),
                     const Gap(12),
                     BullButton.secondary(

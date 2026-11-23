@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.da
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/settings_links.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:backups/backups.dart';
 import 'package:bip85/bip85.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
@@ -34,6 +34,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:settings/settings.dart';
 
 enum SettingsItemId {
   exchange,
@@ -126,10 +127,34 @@ class SettingsItem {
     this.iconAsset,
   }) : _open = open; // ignore: prefer_initializing_formals
 
-  String location(TextDirection textDirection) =>
-      path.join(textDirection == TextDirection.rtl ? ' ← ' : ' → ');
-
   void open(BuildContext context) => _open(context);
+
+  SettingsEntry hubEntry({Widget? homeIcon}) => SettingsEntry(
+    id: id.name,
+    title: title,
+    breadcrumbs: path,
+    icon: icon,
+    open: open,
+    keywords: keywords,
+    showOnHome: section == SettingsItemSection.root,
+    isSuperuser: isSuperuser,
+    indicatesServiceHealth: id == SettingsItemId.servicesStatus,
+    homeIcon: homeIcon,
+  );
+
+  Widget? assetIcon(BuildContext context, {Color? iconColor}) {
+    final asset = iconAsset;
+    if (asset == null) return null;
+    return SvgPicture.asset(
+      asset,
+      width: 24,
+      height: 24,
+      colorFilter: ColorFilter.mode(
+        iconColor ?? context.appColors.onSurface,
+        BlendMode.srcIn,
+      ),
+    );
+  }
 
   Widget buildTile(
     BuildContext context, {
@@ -137,20 +162,9 @@ class SettingsItem {
     Color? iconColor,
     Color? textColor,
   }) {
-    final asset = iconAsset;
     return BullSettingsEntryItem(
       icon: icon,
-      leading: asset == null
-          ? null
-          : SvgPicture.asset(
-              asset,
-              width: 24,
-              height: 24,
-              colorFilter: ColorFilter.mode(
-                iconColor ?? context.appColors.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
+      leading: assetIcon(context, iconColor: iconColor),
       iconColor: iconColor,
       textColor: textColor,
       title: title,
@@ -265,10 +279,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsStartBackup,
       ),
       icon: Icons.save_as,
-      open: (context) => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
-      ),
+      open: (context) => BackupsNavigation.start(context),
       keywords: _keywords(
         localization.settingsSearchStartBackupKeywords,
         english.settingsSearchStartBackupKeywords,

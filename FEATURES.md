@@ -156,7 +156,12 @@ graph TB
     MNEMONIC_ENTRY[Mnemonic Entry]
     PHYSICAL_BACKUP_VERIFICATION[Physical Backup Verification]
     ONBOARDING[Onboarding]
-    SETTINGS[Settings]
+    SETTINGS[Legacy Settings<br/>Preferences and child screens]
+    SETTINGS_HUB[Settings home and search<br/>Workspace Feature]
+    SETTINGS -->|menu projection and child routes| SETTINGS_HUB
+    SETTINGS_HUB --> NETWORK
+    SETTINGS_HUB --> BULL_UI
+    SETTINGS_HUB --> PRIMITIVES
     PREFERENCES[Preferences Package]
     PREFERENCES --> LEGACY_STORAGE
     PREFERENCES --> SECRETS
@@ -214,6 +219,7 @@ graph TB
     UTXO_MGMT[UTXO Management]
     ADDRESS_MGMT[Address Management]
     BACKUPS[Backups]
+    BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
     SWAPS[Swaps]
     SEND[Send]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
@@ -356,6 +362,11 @@ graph TB
     WALLETS -->|signer device properties| SIGNERS
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
+    BACKUPS -->|mount backup options| BACKUP_OPTIONS
+    SETTINGS -->|start backup| BACKUP_OPTIONS
+    WALLETS -->|start backup| BACKUP_OPTIONS
+    BACKUP_OPTIONS -->|vault navigation| RECOVERBULL
+    BACKUP_OPTIONS --> BULL_UI
     BACKUPS --> SECRETS
     BACKUPS --> ACCESS
     BACKUPS --> TOR
