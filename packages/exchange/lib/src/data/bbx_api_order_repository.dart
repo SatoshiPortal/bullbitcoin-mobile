@@ -12,6 +12,7 @@ import '../domain/exchange_failure.dart';
 import '../domain/exchange_orders.dart';
 import 'bbx_api_order_mapper.dart';
 import 'btc_network_wire.dart';
+import 'dca_frequency_wire.dart';
 import 'exchange_call_classifier.dart';
 
 typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
@@ -245,12 +246,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         () => api.orderTriggers.createDca(
           amount: amount,
           currencyCode: currency.code,
-          frequency: switch (frequency) {
-            DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
-            DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
-            DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
-            DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
-          },
+          frequency: DcaFrequencyWire.toWire(frequency),
           recipientType: BtcNetworkWire.dcaRecipientType(network),
           address: address,
         ),
@@ -290,13 +286,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       UnknownCurrency() => null,
     };
     final nextPurchase = DateTime.tryParse(dca.nextRunAt);
-    final frequency = switch (dca.recurringFrequency) {
-      'HOURLY' => DcaBuyFrequency.hourly,
-      'DAILY' => DcaBuyFrequency.daily,
-      'WEEKLY' => DcaBuyFrequency.weekly,
-      'MONTHLY' => DcaBuyFrequency.monthly,
-      _ => null,
-    };
+    final frequency = dcaFrequencyFromWire(dca.recurringFrequency);
     final network = switch (BtcNetworkWire.parseRecipientType(
       dca.recipientType,
     )) {

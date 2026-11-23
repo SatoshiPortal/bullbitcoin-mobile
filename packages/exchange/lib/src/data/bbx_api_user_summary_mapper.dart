@@ -1,9 +1,9 @@
 import 'package:bbx_api/bbx_api.dart' as bbx;
 
 import '../domain/catalog/exchange_catalog.dart';
-import '../domain/entities/dca.dart';
 import '../domain/entities/user_summary.dart';
 import 'btc_network_wire.dart';
+import 'dca_frequency_wire.dart';
 import 'unknown_server_value.dart';
 
 /// Maps the `bbx_api` user summary to the app entity.
@@ -48,13 +48,7 @@ UserSummary userSummaryFromBbxApi(bbx.UserSummary s) => UserSummary(
 
 UserDca _dca(bbx.UserDca dca) => UserDca(
   isActive: dca.isActive,
-  frequency: switch (dca.frequency?.toLowerCase()) {
-    'hourly' => DcaBuyFrequency.hourly,
-    'daily' => DcaBuyFrequency.daily,
-    'weekly' => DcaBuyFrequency.weekly,
-    'monthly' => DcaBuyFrequency.monthly,
-    _ => null,
-  },
+  frequency: dcaFrequencyFromWire(dca.frequency),
   // A DCA currency this build doesn't support must not fail the whole user
   // summary (balances, stats and preferences come with it).
   currency: switch (dca.currencyCode == null
