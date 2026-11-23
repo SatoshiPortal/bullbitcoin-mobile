@@ -97,8 +97,9 @@ graph TD
   access --> primitives
   access --> secrets
   announcements --> bull_ui
-  announcements --> preferences
+  announcements --> legacy_storage
   announcements --> primitives
+  announcements --> secrets
   ark --> primitives
   background_tasks --> legacy_storage
   background_tasks --> sync
@@ -133,6 +134,7 @@ graph TD
   bull_recoverbull --> file_system
   bull_recoverbull --> google_drive
   bull_recoverbull --> secrets
+  bull_recoverbull --> legacy_storage
   bull_recoverbull --> bull_logger
   bull_recoverbull --> bull_tor
   bull_recoverbull --> bull_ui
