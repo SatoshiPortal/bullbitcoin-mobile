@@ -74,6 +74,6 @@ final class VerifiedBackups implements InventoryBackupVerification {
 
   @override
   Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    Set<String> secretFingerprints,
+    List<WalletRegistration> defaults,
   ) async => const Ok(true);
 }
