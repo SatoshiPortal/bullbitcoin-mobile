@@ -23,7 +23,11 @@ void main() {
       spend.count = Ok(count);
       expect(
         await check.isRequired(walletId),
-        Ok<bool, ConsolidationStatusFailure>(offset > 0),
+        isA<Ok<bool, ConsolidationStatusFailure>>().having(
+          (result) => result.value,
+          'value',
+          offset > 0,
+        ),
       );
     }
     spend.count = const Err(SpendUnavailableFailure());

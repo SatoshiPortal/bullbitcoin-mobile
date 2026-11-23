@@ -18,9 +18,8 @@ class ConsolidationCubit extends Cubit<ConsolidationState> {
   ConsolidationCubit({
     required String walletId,
     required ConsolidateLiquidWalletUsecase consolidateLiquidWalletUsecase,
-    required Spend spend,
+    required this._spend,
   }) : _consolidate = consolidateLiquidWalletUsecase,
-       _spend = spend,
        super(ConsolidationState(walletId: walletId));
 
   bool get canSubmit => _lastSubmissionFailure?.outcomeUnknown != true;
