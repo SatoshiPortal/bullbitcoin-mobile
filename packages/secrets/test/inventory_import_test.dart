@@ -7,6 +7,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
+import 'package:secrets/secrets.dart' show SecretFailure, WalletRegistration;
 import 'package:secrets/src/data/fss_datasource.dart';
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/src/data/owner_keychain.dart';
@@ -53,6 +54,46 @@ void main() {
     final opened = await participant.prepare(admission, origin);
     expect(opened, isA<Ok<PreparedOwner, LegacyImportFailure>>());
     return (opened as Ok<PreparedOwner, LegacyImportFailure>).value;
+  }
+
+  Future<void> writeReceipt(
+    LifecycleAdmission admission,
+    String receipt,
+  ) async {
+    final opened = await InventoryStore.open(
+      destination,
+      admission,
+      existing: true,
+    );
+    final store = (opened as Ok<InventoryStore, DatabaseOpenFailure>).value;
+    try {
+      await store.database.customStatement(
+        'UPDATE access_state SET import_receipt = ?',
+        [receipt],
+      );
+    } finally {
+      await store.close();
+    }
+  }
+
+  Future<void> admitBeforeCatalog(OwnerOrigin origin) async {
+    final admission = await exclusive();
+    try {
+      final owner = await prepare(admission, origin);
+      final receipt = switch (origin) {
+        OwnerOrigin.legacy => 'split-v1/secrets',
+        OwnerOrigin.fresh => 'fresh-v1/secrets',
+      };
+      _expectOk(
+        await (origin == OwnerOrigin.legacy
+            ? owner.importLegacy(LegacySource(source, 16))
+            : owner.initializeFresh()),
+      );
+      _expectOk(await owner.close());
+      await writeReceipt(admission, receipt);
+    } finally {
+      await admission.close();
+    }
   }
 
   test('copies raw definitions and parent paths exactly once', () async {
@@ -246,6 +287,135 @@ void main() {
   });
 
   test(
+    'an admitted inventory picks up a PIN subsequently set by Access',
+    () async {
+      _createSource(source);
+      await admitBeforeCatalog(OwnerOrigin.legacy);
+
+      final pin = Random.secure().nextInt(100000000).toString().padLeft(8, '0');
+      final keychain = OwnerKeychain();
+      _expectOk(await keychain.write(OwnerKey.pin, pin));
+      _expectOk(await keychain.write(OwnerKey.attempts, '2'));
+
+      final admission = await runtime();
+      try {
+        Future<SecretsInventory> open() async => (await SecretsInventory.open(
+          file: destination,
+          admission: admission,
+        ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+
+        final inventory = await open();
+        expect(
+          (await inventory.isProtected()).fold((v) => v, (_) => null),
+          isTrue,
+        );
+        expect(await inventory.listWallets(), isA<Err>());
+        expect(await inventory.resumeUnprotected(), isA<Err>());
+        expect(
+          (await inventory.accessStatus()).fold(
+            (v) => v.failedAttempts,
+            (_) => -1,
+          ),
+          2,
+        );
+        expect(
+          (await inventory.unlock('${pin}0'))
+              .fold((v) => v.accepted, (_) => null),
+          isFalse,
+        );
+        expect(
+          (await inventory.unlock(pin)).fold((v) => v.accepted, (_) => null),
+          isTrue,
+        );
+        _expectOk(await inventory.removeCredential());
+        await inventory.close();
+
+        final reopened = await open();
+        expect(
+          (await reopened.isProtected()).fold((v) => v, (_) => null),
+          isFalse,
+        );
+        expect(await reopened.listWallets(), isA<Ok>());
+        expect(
+          (await keychain.read(OwnerKey.pin))
+              .fold((v) => v == pin, (_) => false),
+          isTrue,
+        );
+      } finally {
+        await admission.close();
+      }
+    },
+  );
+
+  test('a prior fresh admission picks up a PIN and a later cooldown', () async {
+    await admitBeforeCatalog(OwnerOrigin.fresh);
+    final keychain = OwnerKeychain();
+    final pin = Random.secure().nextInt(100000000).toString().padLeft(8, '0');
+    final deadline = DateTime.now().add(const Duration(minutes: 1));
+    _expectOk(await keychain.write(OwnerKey.pin, pin));
+    _expectOk(await keychain.write(OwnerKey.attempts, '4'));
+    _expectOk(
+      await keychain.write(
+        OwnerKey.lockedUntil,
+        deadline.millisecondsSinceEpoch.toString(),
+      ),
+    );
+    final admission = await runtime();
+    try {
+      final opened = await SecretsInventory.open(
+        file: destination,
+        admission: admission,
+      );
+      final inventory =
+          (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+      final status = await inventory.accessStatus();
+      expect(status.fold((v) => v.failedAttempts, (_) => -1), 4);
+      expect(
+        status.fold((v) => v.lockedUntil?.millisecondsSinceEpoch, (_) => null),
+        deadline.millisecondsSinceEpoch,
+      );
+      expect(
+        (await inventory.unlock(pin)).fold((v) => v.accepted, (_) => null),
+        isFalse,
+      );
+      expect(await inventory.listWallets(), isA<Err>());
+    } finally {
+      await admission.close();
+    }
+  });
+
+  test('a native PIN survives a stale keychain on a fresh receipt', () async {
+    await admitBeforeCatalog(OwnerOrigin.fresh);
+    final pin = Random.secure().nextInt(100000000).toString().padLeft(8, '0');
+    final admission = await runtime();
+    try {
+      Future<SecretsInventory> open() async => (await SecretsInventory.open(
+        file: destination,
+        admission: admission,
+      ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+      final inventory = await open();
+      _expectOk(
+        await inventory.setCredential(
+          pin,
+          backupVerification: const _VerifiedBackups(),
+        ),
+      );
+      await inventory.close();
+      await writeReceipt(admission, 'fresh-v1/secrets');
+      _expectOk(await OwnerKeychain().write(OwnerKey.pin, '${pin}0'));
+
+      final reopened = await open();
+      expect(await reopened.listWallets(), isA<Err>());
+      expect(
+        (await reopened.unlock(pin)).fold((v) => v.accepted, (_) => null),
+        isTrue,
+      );
+    } finally {
+      await admission.close();
+    }
+  });
+
+  test(
     'the initial view retains a stored secret without wallet usage',
     () async {
       _createSource(source);
@@ -391,6 +561,15 @@ void main() {
 }
 
 void _expectOk(Result<void, Failure> result) => expect(result, isA<Ok>());
+
+final class _VerifiedBackups implements InventoryBackupVerification {
+  const _VerifiedBackups();
+
+  @override
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    List<WalletRegistration> defaults,
+  ) async => const Ok(true);
+}
 
 final class _InventoryReadFailure extends FakeSecureStoragePlatform {
   bool failed = true;

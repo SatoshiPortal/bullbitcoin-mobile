@@ -109,6 +109,11 @@ import 'package:sync/sync.dart'
 final GetIt locator = GetIt.instance;
 
 class AppLocator {
+  static Future<void> startWalletsAfterUnlock(GetIt locator) async {
+    await locator<ForegroundWalletStartup>().start();
+    unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+  }
+
   /// Foreground-only composition. Headless setup never opens this database.
   static Future<void> setupRecoverBull(
     GetIt locator, {
@@ -312,9 +317,8 @@ class AppLocator {
               Err() => false,
             },
         onUnlocked: (context) async {
-          await locator<ForegroundWalletStartup>().start();
+          await startWalletsAfterUnlock(locator);
           if (!context.mounted) return;
-          unawaited(locator<RecoverBullFacade>().checkAtColdStart());
           completeAppStartupUnlock(context);
           context.goNamed(WalletRoute.walletHome.name);
         },
