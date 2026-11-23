@@ -434,5 +434,34 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
+  "coreSwapsStatusCompleted": "Πλήρης",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusPending": "Pending",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "swapRescueAmountLabel": "Ποσό",
+  "swapRescueButton": "Επαναφορά",
+  "swapRescueCreatedLabel": "Δημιουργήθηκε",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueRouteLabel": "Διαδρομή",
+  "swapRescueStatusLabel": "Κατάσταση",
+  "swapRescueSuccess": "Η ανταλλαγή επαναφέρθηκε — θα συνεχιστεί τώρα",
+  "swapRescueTitle": "Διάσωση ανταλλαγής",
+  "swapRescueTypeLabel": "Τύπος",
+  "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
+  "swapRescueWalletLabel": "Επαναφορά σε πορτοφόλι",
+  "swapRestoreActionable": "{count, plural, =0{Δεν υπάρχουν ανταλλαγές προς ανάκτηση} =1{Μπορείτε να επιχειρήσετε να ανακτήσετε 1 ανταλλαγή. Ενδέχεται να βρίσκεται ήδη σε τελική κατάσταση.} other{Μπορείτε να επιχειρήσετε να ανακτήσετε {count} ανταλλαγές. Σημειώστε ότι ορισμένες από αυτές ενδέχεται να βρίσκονται ήδη σε τελική κατάσταση.}}",
+  "swapRestoreAllSection": "Όλες οι ανταλλαγές",
+  "swapRestoreFailed": "Δεν ήταν δυνατή η επαναφορά των ανταλλαγών",
+  "swapRestoreKindCrossChain": "Μεταξύ αλυσίδων",
+  "swapRestoreKindLightningReceive": "Λήψη Lightning",
+  "swapRestoreKindLightningSend": "Αποστολή Lightning",
+  "swapRestoreNoSwaps": "Δεν βρέθηκαν ανταλλαγές για επαναφορά",
+  "swapRestoreRecoverableSection": "Ανακτήσιμα",
+  "swapRestoreTitle": "Επαναφορά ανταλλαγών"
 }

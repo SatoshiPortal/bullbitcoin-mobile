@@ -380,5 +380,34 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "Портфейлите ви не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "walletLoadFailed": "Портфейлите ви не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "copiedToClipboard": "Копирано в клипборда",
+  "coreSwapsStatusCompleted": "Завършено",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusPending": "В очакване",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "swapRescueAmountLabel": "Сума",
+  "swapRescueButton": "Възстанови",
+  "swapRescueCreatedLabel": "Създаден",
+  "swapRescueIdLabel": "ID на обмена",
+  "swapRescueRouteLabel": "Маршрут",
+  "swapRescueStatusLabel": "Статус",
+  "swapRescueSuccess": "Обменът е възстановен — сега ще продължи",
+  "swapRescueTitle": "Спасяване на обмен",
+  "swapRescueTypeLabel": "Тип",
+  "swapRescueWalletHint": "Изберете портфейл",
+  "swapRescueWalletLabel": "Възстанови в портфейл",
+  "swapRestoreActionable": "{count, plural, =0{Няма обмени за възстановяване} =1{Можете да опитате да възстановите 1 обмен. Възможно е вече да е в краен статус.} other{Можете да опитате да възстановите {count} обмена. Обърнете внимание, че някои от тях може вече да са в краен статус.}}",
+  "swapRestoreAllSection": "Всички обмени",
+  "swapRestoreFailed": "Обмените не можаха да бъдат възстановени",
+  "swapRestoreKindCrossChain": "Междуверижен",
+  "swapRestoreKindLightningReceive": "Получаване през Lightning",
+  "swapRestoreKindLightningSend": "Изпращане през Lightning",
+  "swapRestoreNoSwaps": "Няма намерени обмени за възстановяване",
+  "swapRestoreRecoverableSection": "Възстановими",
+  "swapRestoreTitle": "Възстановяване на обмен"
 }

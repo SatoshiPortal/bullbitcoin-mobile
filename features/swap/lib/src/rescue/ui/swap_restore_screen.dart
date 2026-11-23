@@ -1,9 +1,9 @@
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import '../../../generated/l10n/swap_localizations.dart';
+import '../presentation/swap_restore_cubit.dart';
+import '../presentation/swaps_failure_l10n.dart';
+import '../swap_rescue_routes.dart' show swapRescueRouteName;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +19,7 @@ class SwapRestoreScreen extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             BullTopBar(
-              title: context.loc.swapRestoreTitle,
+              title: SwapLocalizations.of(context).swapRestoreTitle,
               onBack: () => context.pop(),
             ),
             const Expanded(child: _SwapRestoreBody()),
@@ -51,7 +51,7 @@ class _SwapRestoreBody extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: BullText(
               state.error?.toTranslated(context) ??
-                  context.loc.swapRestoreFailed,
+                  SwapLocalizations.of(context).swapRestoreFailed,
               style: context.bullType.body,
               color: context.bull.textMuted,
               textAlign: .center,
@@ -62,7 +62,7 @@ class _SwapRestoreBody extends StatelessWidget {
         if (state.swaps.isEmpty) {
           return Center(
             child: BullText(
-              context.loc.swapRestoreNoSwaps,
+              SwapLocalizations.of(context).swapRestoreNoSwaps,
               style: context.bullType.body,
               color: context.bull.textMuted,
             ),
@@ -76,7 +76,7 @@ class _SwapRestoreBody extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: BullText(
-                context.loc.swapRestoreActionable(state.actionableCount),
+                SwapLocalizations.of(context).swapRestoreActionable(state.actionableCount),
                 style: context.bullType.label.copyWith(
                   fontWeight: FontWeight.w400,
                 ),
@@ -84,12 +84,12 @@ class _SwapRestoreBody extends StatelessWidget {
               ),
             ),
             if (recoverable.isNotEmpty) ...[
-              _SectionHeader(label: context.loc.swapRestoreRecoverableSection),
+              _SectionHeader(label: SwapLocalizations.of(context).swapRestoreRecoverableSection),
               for (final s in recoverable) _SwapRow(restorable: s),
             ],
             if (others.isNotEmpty) ...[
               if (recoverable.isNotEmpty)
-                _SectionHeader(label: context.loc.swapRestoreAllSection),
+                _SectionHeader(label: SwapLocalizations.of(context).swapRestoreAllSection),
               for (final s in others) _SwapRow(restorable: s),
             ],
           ],
@@ -124,17 +124,17 @@ class _SwapRow extends StatelessWidget {
   String _kindLabel(BuildContext context) {
     switch (restorable.swap.kind) {
       case RestoredSwapKind.lightningSend:
-        return context.loc.swapRestoreKindLightningSend;
+        return SwapLocalizations.of(context).swapRestoreKindLightningSend;
       case RestoredSwapKind.lightningReceive:
-        return context.loc.swapRestoreKindLightningReceive;
+        return SwapLocalizations.of(context).swapRestoreKindLightningReceive;
       case RestoredSwapKind.crossChain:
-        return context.loc.swapRestoreKindCrossChain;
+        return SwapLocalizations.of(context).swapRestoreKindCrossChain;
     }
   }
 
   String _statusLabel(BuildContext context) => restorable.isRescuable
-      ? context.loc.coreSwapsStatusPending
-      : context.loc.coreSwapsStatusCompleted;
+      ? SwapLocalizations.of(context).coreSwapsStatusPending
+      : SwapLocalizations.of(context).coreSwapsStatusCompleted;
 
   Color _statusColor(BuildContext context) =>
       restorable.isRescuable ? context.bull.warning : context.bull.success;
@@ -209,7 +209,7 @@ class _SwapRow extends StatelessWidget {
       // Make the whole row tappable, not just its painted children.
       behavior: HitTestBehavior.opaque,
       onTap: () =>
-          context.pushNamed(SettingsRoute.swapRescue.name, extra: restorable),
+          context.pushNamed(swapRescueRouteName, extra: restorable),
       child: row,
     );
   }

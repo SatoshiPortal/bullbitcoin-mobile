@@ -15,10 +15,6 @@
       }
     }
   },
-  "coreSwapsStatusCompleted": "Hotovo",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
   "coreSwapsActionClose": "Zavřít",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
@@ -7823,24 +7819,6 @@
   "logsExportFailedMessage": "Export záznamů se nezdařil",
   "swapRestoreTitle": "Obnovení swapu",
   "swapRestoreActionable": "{count, plural, =0{Žádné swapy k obnovení} =1{Můžete se pokusit obnovit 1 swap. Možná je již v konečném stavu.} other{Můžete se pokusit obnovit {count} swapů. Upozorňujeme, že některé z nich již mohou být v konečném stavu.}}",
-  "swapRestoreNoSwaps": "Nebyly nalezeny žádné swapy k obnovení",
-  "swapRestoreRecoverableSection": "Obnovitelné",
-  "swapRestoreAllSection": "Všechny swapy",
-  "swapRestoreFailed": "Swapy se nepodařilo obnovit",
-  "swapRestoreKindLightningSend": "Odeslání přes Lightning",
-  "swapRestoreKindLightningReceive": "Příjem přes Lightning",
-  "swapRestoreKindCrossChain": "Mezi řetězci",
-  "swapRescueTitle": "Záchrana swapu",
-  "swapRescueTypeLabel": "Typ",
-  "swapRescueStatusLabel": "Stav",
-  "swapRescueAmountLabel": "Částka",
-  "swapRescueRouteLabel": "Trasa",
-  "swapRescueCreatedLabel": "Vytvořeno",
-  "swapRescueIdLabel": "ID swapu",
-  "swapRescueWalletLabel": "Obnovit do peněženky",
-  "swapRescueWalletHint": "Vyberte peněženku",
-  "swapRescueButton": "Obnovit",
-  "swapRescueSuccess": "Swap obnoven — nyní bude pokračovat",
   "mempoolServerStatusUnknown": "Neznámý",
   "receivePayjoinNoUtxos": "Nejprve přijměte prostředky, abyste to mohli povolit.\nK použití payjoin jsou potřeba UTXO.",
   "paySinpeReceipt": "Účtenka SINPE",

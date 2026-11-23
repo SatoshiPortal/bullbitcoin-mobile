@@ -5972,10 +5972,6 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
-  "coreSwapsStatusCompleted": "تکمیل شده",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
   "fundExchangeCrIbanUsdDescriptionEnd": "... وجوه به حساب شما اضافه خواهد شد.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
@@ -7724,24 +7720,6 @@
   "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود",
   "swapRestoreTitle": "بازیابی مبادله",
   "swapRestoreActionable": "{count, plural, =0{هیچ مبادله‌ای برای بازیابی وجود ندارد} =1{می‌توانید بازیابی ۱ مبادله را امتحان کنید. ممکن است این مبادله از قبل در وضعیت نهایی باشد.} other{می‌توانید بازیابی {count} مبادله را امتحان کنید. توجه داشته باشید که برخی از آن‌ها ممکن است از قبل در وضعیت نهایی باشند.}}",
-  "swapRestoreNoSwaps": "هیچ مبادله‌ای برای بازیابی پیدا نشد",
-  "swapRestoreRecoverableSection": "قابل بازیابی",
-  "swapRestoreAllSection": "همه مبادله‌ها",
-  "swapRestoreFailed": "بازیابی مبادله‌ها ممکن نشد",
-  "swapRestoreKindLightningSend": "ارسال Lightning",
-  "swapRestoreKindLightningReceive": "دریافت Lightning",
-  "swapRestoreKindCrossChain": "میان‌زنجیره‌ای",
-  "swapRescueTitle": "نجات مبادله",
-  "swapRescueTypeLabel": "نوع",
-  "swapRescueStatusLabel": "وضعیت",
-  "swapRescueAmountLabel": "مبلغ",
-  "swapRescueRouteLabel": "مسیر",
-  "swapRescueCreatedLabel": "تاریخ ایجاد",
-  "swapRescueIdLabel": "شناسه مبادله",
-  "swapRescueWalletLabel": "بازیابی به کیف پول",
-  "swapRescueWalletHint": "یک کیف پول را انتخاب کنید",
-  "swapRescueButton": "بازیابی",
-  "swapRescueSuccess": "مبادله بازیابی شد — اکنون از سر گرفته می‌شود",
   "mempoolServerStatusUnknown": "نامشخص",
   "exchangeStatisticsBuySellRatioDesc": "درصد حجم کل از خرید در مقابل فروش",
   "exchangeStatisticsBuyVolumeDesc": "مبلغ کل صرف‌شده برای خرید Bitcoin",

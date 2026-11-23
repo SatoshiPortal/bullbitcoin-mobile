@@ -5416,10 +5416,6 @@
       }
     }
   },
-  "coreSwapsStatusCompleted": "Completada",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
   "autoswapInfoDismissButton": "Entendido, não voltes a aparecer",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -7847,24 +7843,6 @@
   "logsExportFailedMessage": "Falha ao exportar os registros",
   "swapRestoreTitle": "Restaurar swap",
   "swapRestoreActionable": "{count, plural, =0{Nenhum swap para recuperar} =1{Você pode tentar recuperar 1 swap. Ele já pode estar em um status final.} other{Você pode tentar recuperar {count} swaps. Observe que alguns deles já podem estar em um status final.}}",
-  "swapRestoreNoSwaps": "Nenhum swap encontrado para restaurar",
-  "swapRestoreRecoverableSection": "Recuperáveis",
-  "swapRestoreAllSection": "Todos os swaps",
-  "swapRestoreFailed": "Não foi possível restaurar os swaps",
-  "swapRestoreKindLightningSend": "Envio Lightning",
-  "swapRestoreKindLightningReceive": "Recebimento Lightning",
-  "swapRestoreKindCrossChain": "Entre Cadeias",
-  "swapRescueTitle": "Resgatar swap",
-  "swapRescueTypeLabel": "Tipo",
-  "swapRescueStatusLabel": "Estado",
-  "swapRescueAmountLabel": "Montante",
-  "swapRescueRouteLabel": "Rota",
-  "swapRescueCreatedLabel": "Criado em",
-  "swapRescueIdLabel": "ID do swap",
-  "swapRescueWalletLabel": "Restaurar para a carteira",
-  "swapRescueWalletHint": "Selecione uma carteira",
-  "swapRescueButton": "Restaurar",
-  "swapRescueSuccess": "Swap restaurado — agora ele será retomado",
   "mempoolServerStatusUnknown": "Desconhecido",
   "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
   "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",

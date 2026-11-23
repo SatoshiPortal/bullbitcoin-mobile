@@ -34,28 +34,16 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_useca
 import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:overview/setup.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:secrets/storage.dart' show SecretsInventory;
 
 class SettingsLocator {
   static void setup(GetIt locator) {
-    locator.registerFactory<SwapRestoreCubit>(
-      () =>
-          SwapRestoreCubit(restoreSwapsUsecase: locator<RestoreSwapsUsecase>()),
-    );
-    locator.registerFactory<GetSwapRescueWalletsUsecase>(
-      () => GetSwapRescueWalletsUsecase(
-        inventory: locator<SecretsInventory>(),
-        environment: locator<ActiveEnvironmentReader>(),
-      ),
-    );
     locator.registerLazySingleton<QuickActionsCubit>(
       () => createQuickActionsCubit(
         warning: log.warning,

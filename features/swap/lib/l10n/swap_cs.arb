@@ -434,5 +434,34 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "coreSwapsStatusCompleted": "Hotovo",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusPending": "Čeká na zpracování",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "swapRescueAmountLabel": "Částka",
+  "swapRescueButton": "Obnovit",
+  "swapRescueCreatedLabel": "Vytvořeno",
+  "swapRescueIdLabel": "ID swapu",
+  "swapRescueRouteLabel": "Trasa",
+  "swapRescueStatusLabel": "Stav",
+  "swapRescueSuccess": "Swap obnoven — nyní bude pokračovat",
+  "swapRescueTitle": "Záchrana swapu",
+  "swapRescueTypeLabel": "Typ",
+  "swapRescueWalletHint": "Vyberte peněženku",
+  "swapRescueWalletLabel": "Obnovit do peněženky",
+  "swapRestoreActionable": "{count, plural, =0{Žádné swapy k obnovení} =1{Můžete se pokusit obnovit 1 swap. Možná je již v konečném stavu.} other{Můžete se pokusit obnovit {count} swapů. Upozorňujeme, že některé z nich již mohou být v konečném stavu.}}",
+  "swapRestoreAllSection": "Všechny swapy",
+  "swapRestoreFailed": "Swapy se nepodařilo obnovit",
+  "swapRestoreKindCrossChain": "Mezi řetězci",
+  "swapRestoreKindLightningReceive": "Příjem přes Lightning",
+  "swapRestoreKindLightningSend": "Odeslání přes Lightning",
+  "swapRestoreNoSwaps": "Nebyly nalezeny žádné swapy k obnovení",
+  "swapRestoreRecoverableSection": "Obnovitelné",
+  "swapRestoreTitle": "Obnovení swapu"
 }

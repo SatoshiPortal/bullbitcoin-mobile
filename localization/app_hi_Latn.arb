@@ -24,10 +24,6 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "coreSwapsStatusCompleted": "Poora Ho Gaya",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
   "coreSwapsActionClaim": "Claim Karo",
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
@@ -7828,24 +7824,6 @@
   "logsExportFailedMessage": "Logs export karne mein vifal",
   "swapRestoreTitle": "Swap Restore",
   "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap 1 swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
-  "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
-  "swapRestoreRecoverableSection": "Recoverable",
-  "swapRestoreAllSection": "Sabhi swaps",
-  "swapRestoreFailed": "Swaps restore nahi ho sake",
-  "swapRestoreKindLightningSend": "Lightning Send",
-  "swapRestoreKindLightningReceive": "Lightning Receive",
-  "swapRestoreKindCrossChain": "Cross Chain",
-  "swapRescueTitle": "Swap Rescue",
-  "swapRescueTypeLabel": "Type",
-  "swapRescueStatusLabel": "Status",
-  "swapRescueAmountLabel": "Amount",
-  "swapRescueRouteLabel": "Route",
-  "swapRescueCreatedLabel": "Banaya Gaya",
-  "swapRescueIdLabel": "Swap ID",
-  "swapRescueWalletLabel": "Wallet mein restore karo",
-  "swapRescueWalletHint": "Ek wallet chuniye",
-  "swapRescueButton": "Restore Karo",
-  "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
   "receivePayjoinNoUtxos": "Pehle funds receive karo ise enable karne ke liye.\nPayjoin use karne ke liye UTXOs zaroori hain.",
   "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
   "walletLiquidRiskDisclosureLabel": "Ye funds Liquid L-BTC hain (BTC nahi). Aur jaano.",

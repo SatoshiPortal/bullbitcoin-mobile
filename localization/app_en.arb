@@ -17,10 +17,6 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "coreSwapsStatusCompleted": "Completed",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
   "swapRestoreTitle": "Swap Restore",
   "@swapRestoreTitle": {
     "description": "Title for the swap restore settings page"
@@ -33,78 +29,6 @@
         "type": "int"
       }
     }
-  },
-  "swapRestoreNoSwaps": "No swaps found to restore",
-  "@swapRestoreNoSwaps": {
-    "description": "Empty state when the restore endpoint returns no swaps"
-  },
-  "swapRestoreRecoverableSection": "Recoverable",
-  "@swapRestoreRecoverableSection": {
-    "description": "Section header for swaps that can be recovered (tappable)"
-  },
-  "swapRestoreAllSection": "All swaps",
-  "@swapRestoreAllSection": {
-    "description": "Section header for the remaining (non-recoverable) swaps"
-  },
-  "swapRestoreFailed": "Couldn't restore swaps",
-  "@swapRestoreFailed": {
-    "description": "Error message when restoring swaps fails"
-  },
-  "swapRestoreKindLightningSend": "Lightning Send",
-  "@swapRestoreKindLightningSend": {
-    "description": "Label for a submarine (on-chain to Lightning) swap in the restore list"
-  },
-  "swapRestoreKindLightningReceive": "Lightning Receive",
-  "@swapRestoreKindLightningReceive": {
-    "description": "Label for a reverse (Lightning to on-chain) swap in the restore list"
-  },
-  "swapRestoreKindCrossChain": "Cross Chain",
-  "@swapRestoreKindCrossChain": {
-    "description": "Label for a chain swap in the restore list"
-  },
-  "swapRescueTitle": "Rescue swap",
-  "@swapRescueTitle": {
-    "description": "Title of the swap rescue details page"
-  },
-  "swapRescueTypeLabel": "Type",
-  "@swapRescueTypeLabel": {
-    "description": "Detail row label for the swap type"
-  },
-  "swapRescueStatusLabel": "Status",
-  "@swapRescueStatusLabel": {
-    "description": "Detail row label for the swap status"
-  },
-  "swapRescueAmountLabel": "Amount",
-  "@swapRescueAmountLabel": {
-    "description": "Detail row label for the swap amount"
-  },
-  "swapRescueRouteLabel": "Route",
-  "@swapRescueRouteLabel": {
-    "description": "Detail row label for the swap from/to assets"
-  },
-  "swapRescueCreatedLabel": "Created",
-  "@swapRescueCreatedLabel": {
-    "description": "Detail row label for when the swap was created"
-  },
-  "swapRescueIdLabel": "Swap ID",
-  "@swapRescueIdLabel": {
-    "description": "Detail row label for the swap id"
-  },
-  "swapRescueWalletLabel": "Restore to wallet",
-  "@swapRescueWalletLabel": {
-    "description": "Label above the wallet picker on the rescue page"
-  },
-  "swapRescueWalletHint": "Select a wallet",
-  "@swapRescueWalletHint": {
-    "description": "Placeholder for the rescue wallet picker"
-  },
-  "swapRescueButton": "Restore",
-  "@swapRescueButton": {
-    "description": "Button that re-imports the swap and resumes it"
-  },
-  "swapRescueSuccess": "Swap restored — it will now resume",
-  "@swapRescueSuccess": {
-    "description": "Confirmation shown after a swap is rescued"
   },
   "coreSwapsActionClaim": "Claim",
   "@coreSwapsActionClaim": {
@@ -10374,26 +10298,6 @@
   "sendSelectedCoinsLabel": "Selected coins",
   "@sendSelectedCoinsLabel": {
     "description": "Label for the amount available from manually selected transaction inputs"
-  },
-  "swapsFailureMasterKeyUnavailable": "This wallet cannot restore swaps: no bitcoin seed is available to derive the swap key.",
-  "@swapsFailureMasterKeyUnavailable": {
-    "description": "Rescue failure: watch-only or hardware-only wallet"
-  },
-  "swapsFailureNotRestorable": "This swap could not be rebuilt from the server. Contact support with your swap ID.",
-  "@swapsFailureNotRestorable": {
-    "description": "Rescue failure: restore endpoint could not rebuild the swap"
-  },
-  "swapsFailureRefundNotFinal": "The refund is not spendable yet (timelock). Try again later.",
-  "@swapsFailureRefundNotFinal": {
-    "description": "Rescue failure: refund timelock not passed"
-  },
-  "swapsFailureNetwork": "Could not reach any server. Check your connection and try again.",
-  "@swapsFailureNetwork": {
-    "description": "Rescue failure: no server reachable"
-  },
-  "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
-  "@swapsFailureUnexpected": {
-    "description": "Rescue failure: generic catch-all, never shows raw details"
   },
   "settingsSearchSwapsKeywords": "swaps|boltz|exchange fallback|swap provider|lightning|liquid",
   "@settingsSearchSwapsKeywords": {

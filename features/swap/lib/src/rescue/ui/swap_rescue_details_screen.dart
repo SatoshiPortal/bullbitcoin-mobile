@@ -1,9 +1,9 @@
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show FormatAmount, LiquidNetwork;
-import 'package:bb_mobile/localization/app_localizations_context.dart';
+import '../../../generated/l10n/swap_localizations.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
+import '../presentation/swap_rescue_cubit.dart';
+import '../presentation/swaps_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +24,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
             if (state.status == SwapRescueStatus.success) {
               BullSnackBar.show(
                 context,
-                message: context.loc.swapRescueSuccess,
+                message: SwapLocalizations.of(context).swapRescueSuccess,
               );
               context.pop();
             } else if (state.status == SwapRescueStatus.error) {
@@ -41,7 +41,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
               crossAxisAlignment: .stretch,
               children: [
                 BullTopBar(
-                  title: context.loc.swapRescueTitle,
+                  title: SwapLocalizations.of(context).swapRescueTitle,
                   onBack: () => context.pop(),
                 ),
                 Expanded(
@@ -51,35 +51,35 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                       BullDetailsTable(
                         items: [
                           BullDetailsTableItem(
-                            label: context.loc.swapRescueTypeLabel,
+                            label: SwapLocalizations.of(context).swapRescueTypeLabel,
                             displayValue: _kindLabel(context, swap.kind),
                           ),
                           BullDetailsTableItem(
-                            label: context.loc.swapRescueStatusLabel,
+                            label: SwapLocalizations.of(context).swapRescueStatusLabel,
                             displayValue: restorable.isRescuable
-                                ? context.loc.coreSwapsStatusPending
-                                : context.loc.coreSwapsStatusCompleted,
+                                ? SwapLocalizations.of(context).coreSwapsStatusPending
+                                : SwapLocalizations.of(context).coreSwapsStatusCompleted,
                           ),
                           if (swap.amountSat > 0)
                             BullDetailsTableItem(
-                              label: context.loc.swapRescueAmountLabel,
+                              label: SwapLocalizations.of(context).swapRescueAmountLabel,
                               displayValue: FormatAmount.sats(swap.amountSat),
                             ),
                           BullDetailsTableItem(
-                            label: context.loc.swapRescueRouteLabel,
+                            label: SwapLocalizations.of(context).swapRescueRouteLabel,
                             displayValue: '${swap.fromAsset} → ${swap.toAsset}',
                           ),
                           BullDetailsTableItem(
-                            label: context.loc.swapRescueCreatedLabel,
+                            label: SwapLocalizations.of(context).swapRescueCreatedLabel,
                             displayValue: _formatDate(swap.createdAt),
                           ),
                           BullDetailsTableItem(
-                            label: context.loc.swapRescueIdLabel,
+                            label: SwapLocalizations.of(context).swapRescueIdLabel,
                             displayValue: swap.id,
                             copyValue: swap.id,
                             onCopied: () => BullSnackBar.show(
                               context,
-                              message: context.loc.copiedToClipboard,
+                              message: SwapLocalizations.of(context).copiedToClipboard,
                             ),
                           ),
                         ],
@@ -88,7 +88,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                       _WalletSelector(state: state),
                       const Gap(24),
                       BullButton.primary(
-                        label: context.loc.swapRescueButton,
+                        label: SwapLocalizations.of(context).swapRescueButton,
                         onPressed: (!swap.recoverable || !state.canRescue)
                             ? null
                             : () => context.read<SwapRescueCubit>().rescue(),
@@ -107,11 +107,11 @@ class SwapRescueDetailsScreen extends StatelessWidget {
   String _kindLabel(BuildContext context, RestoredSwapKind kind) {
     switch (kind) {
       case RestoredSwapKind.lightningSend:
-        return context.loc.swapRestoreKindLightningSend;
+        return SwapLocalizations.of(context).swapRestoreKindLightningSend;
       case RestoredSwapKind.lightningReceive:
-        return context.loc.swapRestoreKindLightningReceive;
+        return SwapLocalizations.of(context).swapRestoreKindLightningReceive;
       case RestoredSwapKind.crossChain:
-        return context.loc.swapRestoreKindCrossChain;
+        return SwapLocalizations.of(context).swapRestoreKindCrossChain;
     }
   }
 
@@ -136,14 +136,14 @@ class _WalletSelector extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         BullText(
-          context.loc.swapRescueWalletLabel,
+          SwapLocalizations.of(context).swapRescueWalletLabel,
           style: context.bullType.body,
           color: context.bull.text,
         ),
         const Gap(8),
         BullDropdown<WalletRegistration>(
           value: selected,
-          hint: context.loc.swapRescueWalletHint,
+          hint: SwapLocalizations.of(context).swapRescueWalletHint,
           items: [
             for (final wallet in state.wallets)
               BullPickerItem(
@@ -163,7 +163,7 @@ class _WalletSelector extends StatelessWidget {
       return wallet.label ?? wallet.id.replaceFirst(RegExp(r':regtest$'), '');
     }
     return wallet.network is LiquidNetwork
-        ? context.loc.globalDefaultLiquidWalletLabel
-        : context.loc.globalDefaultBitcoinWalletLabel;
+        ? SwapLocalizations.of(context).globalDefaultLiquidWalletLabel
+        : SwapLocalizations.of(context).globalDefaultBitcoinWalletLabel;
   }
 }
