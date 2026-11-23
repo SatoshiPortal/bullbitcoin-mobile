@@ -11,21 +11,15 @@ void main() {
   group('Security audit #2636 scanner latch', () {
     test('cancelled derivation choice releases the scanner latch', () {
       final source = File(
-        'lib/features/import_watch_only_wallet/presentation/scan_watch_only_screen.dart',
+        'features/wallet_import/lib/src/ui/watch_only/scan_watch_only_screen.dart',
       ).readAsStringSync();
 
-      // The latch is set before the derivation prompt is shown…
+      // The latch is set before reading the QR, including the derivation prompt.
       expect(
         source.indexOf('_handled = true'),
-        lessThan(source.indexOf('_chooseDerivation')),
+        lessThan(source.indexOf('await readWatchOnlyQr')),
       );
-      // …and a dismissed prompt returns early…
-      expect(source, contains('if (selectedDescriptor == null)'));
-
-      // …without releasing the latch: between that early return and the
-      // catch block there is no reset.
-      expect(source, contains('if (selectedDescriptor == null) {'));
-      expect(source, contains('_handled = false;'));
+      expect(source, contains(RegExp(r'else\s*\{\s*_handled = false;')));
     });
   });
 }

@@ -1,3 +1,10 @@
+import 'package:wallet_import/wallet_import.dart'
+    show
+        ImportMnemonicFailure,
+        ImportMnemonicUnexpectedFailure,
+        ImportMnemonicDuplicateFailure,
+        ImportMnemonicCustodyMetadataFailure;
+import 'package:wallet_import/wallet_import.dart';
 import 'package:all_seed_view/testing.dart';
 
 import '../../../support/inventory_fixture.dart';
@@ -8,9 +15,7 @@ import 'dart:io';
 
 import 'package:preferences/preferences.dart' hide Language;
 import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
+import 'package:wallet_import/testing.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
@@ -157,7 +162,7 @@ void main() {
       ),
       secrets: secrets,
       settingsRepository: settings,
-      walletRepository: repository,
+      provision: repository.importWallet,
       admission: admission,
     );
     references = SeedReferences(repository, admission: admission);
@@ -184,14 +189,14 @@ void main() {
         mnemonicWords: words,
         language: Language.english,
       );
-      expect(first, isA<Ok<Wallet, ImportMnemonicFailure>>());
+      expect(first, isA<Ok<void, ImportMnemonicFailure>>());
       expect(await delete.execute(walletId: (first as Ok).value.id), isA<Ok>());
       expect((await secrets.exists(parent) as Ok).value, isFalse);
       final second = await importer.execute(
         mnemonicWords: words,
         language: Language.english,
       );
-      expect(second, isA<Ok<Wallet, ImportMnemonicFailure>>());
+      expect(second, isA<Ok<void, ImportMnemonicFailure>>());
       expect(
         await delete.execute(walletId: (second as Ok).value.id),
         isA<Ok>(),
@@ -233,7 +238,7 @@ void main() {
         ),
         secrets: secrets,
         settingsRepository: settings,
-        walletRepository: repository,
+        provision: repository.importWallet,
         admission: port,
       );
 
@@ -339,8 +344,7 @@ void main() {
       language: Language.english,
       passphrase: 'TREZOR',
     );
-    expect(result, isA<Ok<Wallet, ImportMnemonicFailure>>());
-    expect((result as Ok).value.isDefault, isFalse);
+    expect(result, isA<Ok<void, ImportMnemonicFailure>>());
     expect((await metadata.fetchAll()).single.isDefault, isFalse);
   });
 

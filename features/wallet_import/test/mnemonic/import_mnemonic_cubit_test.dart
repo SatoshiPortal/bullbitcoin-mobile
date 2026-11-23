@@ -1,23 +1,20 @@
+import 'package:wallet_import/src/domain/mnemonic/check_duplicate_mnemonic_usecase.dart';
+import 'package:wallet_import/src/domain/mnemonic/import_wallet_usecase.dart';
+import 'package:wallet_import/src/presentation/mnemonic/cubit.dart';
+import 'package:wallet_import/src/presentation/mnemonic/state.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, Result, ScriptType;
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:wallet_import/wallet_import.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
-
-class MockWallet extends Mock implements Wallet {}
 
 class _MockWalletInventory extends Mock implements WalletInventory {}
 
@@ -123,7 +120,7 @@ void main() {
           words: bip39.Mnemonic(List.filled(16, 0), language).words,
           language: language,
         );
-        final wallet = MockWallet();
+
         when(
           () => checkDuplicate.execute(
             mnemonicWords: mnemonic.words,
@@ -139,14 +136,14 @@ void main() {
             label: mnemonic.label,
             scriptType: ScriptType.bip84,
           ),
-        ).thenAnswer((_) async => Ok(wallet));
+        ).thenAnswer((_) async => const Ok(null));
         final cubit = buildCubit();
         addTearDown(cubit.close);
         await cubit.updateMnemonic(mnemonic);
         await pumpEventQueue();
         expect(cubit.state.failure, isNull);
         await cubit.import();
-        expect(cubit.state.wallet, wallet);
+        expect(cubit.state.imported, isTrue);
         verify(
           () => checkDuplicate.execute(
             mnemonicWords: mnemonic.words,

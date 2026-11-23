@@ -1,10 +1,11 @@
+import 'package:wallet_import/src/presentation/mnemonic/cubit.dart';
+import 'package:wallet_import/src/presentation/mnemonic/state.dart';
+import 'package:wallet_import/src/ui/mnemonic/select_purpose_page.dart';
 import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/select_purpose_page.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
+import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,7 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(ScriptType.bip84);
-    loc = await AppLocalizations.delegate.load(const Locale('en'));
+    loc = await ImportLocalizations.delegate.load(const Locale('en'));
     importLoc = await ImportLocalizations.delegate.load(const Locale('en'));
   });
 
@@ -36,11 +37,11 @@ void main() {
     return tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: ImportLocalizations.localizationsDelegates,
+        supportedLocales: ImportLocalizations.supportedLocales,
         home: BlocProvider<ImportMnemonicCubit>.value(
           value: cubit,
-          child: const SelectScriptTypePage(),
+          child: SelectScriptTypePage(onExit: (_) {}),
         ),
       ),
     );

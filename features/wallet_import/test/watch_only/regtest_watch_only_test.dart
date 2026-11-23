@@ -1,15 +1,14 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:wallet_import/src/domain/watch_only/parse_watch_only_input_usecase.dart';
+import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
 import 'package:wallet_import/wallet_import.dart';
 import 'package:bip32_keys/bip32_keys.dart'
     show changeVersionBytes, Slip132Format;
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show Network;
+import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide Network;
+import 'package:primitives/primitives.dart';
 
 // Published public BIP84 test-vector account. No private material is needed.
 const vpub =
@@ -27,8 +26,8 @@ void main() {
       expect(result, isA<Ok>());
       final entity =
           (result as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>).value;
-      expect(entity.network, Network.bitcoinRegtest);
-      expect(entity.keyNetwork, Network.bitcoinTestnet);
+      expect(entity.network, BitcoinNetwork.regtest);
+      expect(entity.keyNetwork, BitcoinNetwork.testnet);
       expect(entity.signer, SignerEntity.none);
       expect(entity.pubkey, vpub);
     },
@@ -70,7 +69,7 @@ void main() {
     final entity =
         (result as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>).value;
     expect(entity, isA<WatchOnlyDescriptorEntity>());
-    expect(entity.network, Network.bitcoinRegtest);
+    expect(entity.network, BitcoinNetwork.regtest);
     expect(entity.signer, SignerEntity.none);
     expect((entity as WatchOnlyDescriptorEntity).signerDevice, isNull);
     final hardware = await WatchOnlyInput.parse(
@@ -110,7 +109,7 @@ void main() {
           (await WatchOnlyInput.parse('[73c5da0a/44h/1h/0h]$tpub') as Ok).value
               as WatchOnlyInput;
       expect(legacyScanned.captureEnvironment(NetworkEnv.regtest), isA<Err>());
-      expect(entity.network, Network.bitcoinRegtest);
+      expect(entity.network, BitcoinNetwork.regtest);
       final invalidOrigin = await WatchOnlyInput.parse(
         '[73c5da0a/44h/1h/0h]$tpub',
         environment: NetworkEnv.regtest,
@@ -120,8 +119,12 @@ void main() {
         isA<InvalidWatchOnlyInputFailure>(),
       );
       expect(
-        () => entity.captureNetwork(Network.bitcoinTestnet),
-        throwsA(isA<WatchOnlyNetworkMismatchException>()),
+        entity.validatedInput(NetworkEnv.testnet),
+        isA<Err<WatchOnlyInput, ImportWatchOnlyFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<NetworkMismatchFailure>(),
+        ),
       );
     },
   );
@@ -159,14 +162,14 @@ void main() {
       (mainnet as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
           .value
           .network,
-      Network.bitcoinMainnet,
+      BitcoinNetwork.mainnet,
     );
     final testnet = await parse.execute(vpub, environment: NetworkEnv.testnet);
     expect(
       (testnet as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
           .value
           .network,
-      Network.bitcoinTestnet,
+      BitcoinNetwork.testnet,
     );
     expect(
       (await parse.execute(

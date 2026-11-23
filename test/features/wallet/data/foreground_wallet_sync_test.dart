@@ -17,7 +17,7 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
@@ -674,14 +674,16 @@ void main() {
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
       );
-      final wallet = await importing.importDescriptor(
-        watchOnlyDescriptor: WatchOnlyDescriptorEntity(
-          watchOnlyDescriptor: watchOnly,
-        ),
+      final descriptor = WatchOnlyInput.fromDescriptor(watchOnly);
+      final result = await importing.importDescriptor(
+        descriptor:
+            (descriptor as Ok<WatchOnlyDescriptorInput, ImportFailure>).value,
+        signer: SignerEntity.remote,
+        label: '',
         sync: true,
       );
       expect(synchronized, isTrue);
-      expect(wallet.id, id);
+      expect((result as Ok<Wallet, ImportWatchOnlyFailure>).value.id, id);
       verify(() => values.getBalance(key: any(named: 'key'))).called(1);
     },
   );

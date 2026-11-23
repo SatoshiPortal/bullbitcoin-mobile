@@ -14,13 +14,10 @@ void main() {
       'parser accepts origin-prefixed xpub input and maps unsupported formats',
       () {
         final source = File(
-          'lib/features/import_watch_only_wallet/watch_only_wallet_entity.dart',
+          'features/wallet_import/lib/src/domain/watch_only_input.dart',
         ).readAsStringSync();
-        expect(source, contains("replaceFirst(RegExp(r'^\\[[^\\]]+\\]'), '')"));
-        expect(
-          source,
-          contains("throw Exception('Unsupported watch only format')"),
-        );
+        expect(source, contains('trimmed.substring(origin?.length ?? 0)'));
+        expect(source, contains('Err<WatchOnlyInput, ImportFailure>'));
       },
     );
   });

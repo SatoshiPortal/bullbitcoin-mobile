@@ -1,5 +1,13 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:wallet_import/wallet_import.dart'
+    show
+        ImportMnemonicFailure,
+        ImportMnemonicUnexpectedFailure,
+        ImportMnemonicDuplicateFailure,
+        ImportMnemonicCustodyMetadataFailure;
+import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
+    show BitcoinNetwork, BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
@@ -7,9 +15,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
+import 'package:wallet_import/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
@@ -67,7 +73,7 @@ void main() {
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(_Admission());
-    registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(ScriptType.bip84);
   });
 
@@ -81,7 +87,7 @@ void main() {
       checkDuplicateMnemonicUsecase: checkDuplicate,
       secrets: secrets,
       settingsRepository: settingsRepository,
-      walletRepository: walletRepository,
+      provision: walletRepository.importWallet,
       admission: _Admission(),
     );
     when(
@@ -151,7 +157,7 @@ void main() {
         language: bip39.Language.english,
       );
 
-      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+      expect(result, isA<Err<void, ImportMnemonicFailure>>());
       expect(
         askedIsDefault,
         isFalse,
@@ -222,7 +228,7 @@ void main() {
           language: bip39.Language.english,
         );
 
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(result, isA<Err<void, ImportMnemonicFailure>>());
         expect(storedSecrets(), hasLength(1));
       },
     );
@@ -243,7 +249,7 @@ void main() {
         language: bip39.Language.english,
       );
 
-      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+      expect(result, isA<Err<void, ImportMnemonicFailure>>());
       expect(
         storedSecrets(),
         hasLength(1),
@@ -264,7 +270,7 @@ void main() {
             Wallet(
               origin: 'other-import',
               label: 'Other',
-              network: Network.bitcoinMainnet,
+              network: BitcoinNetwork.mainnet,
               isDefault: false,
               masterFingerprint: '73c5da0a',
               xpubFingerprint: '73c5da0a',
@@ -285,7 +291,7 @@ void main() {
           language: bip39.Language.english,
         );
 
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(result, isA<Err<void, ImportMnemonicFailure>>());
         expect(
           storedSecrets(),
           hasLength(1),
@@ -306,7 +312,7 @@ void main() {
           language: bip39.Language.english,
         );
 
-        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(result, isA<Err<void, ImportMnemonicFailure>>());
         expect(
           storedSecrets(),
           hasLength(1),

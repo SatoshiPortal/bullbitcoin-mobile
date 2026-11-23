@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 // consumers migrate; never extend this list to permit a new shell dependency.
 const _legacyImports = {
   'lib/features/broadcast_signed_tx/router.dart -> locator.dart',
-  'lib/features/import_mnemonic/router.dart -> locator.dart',
   'lib/features/replace_by_fee/router.dart -> locator.dart',
   'lib/features/pay/ui/pay_router.dart -> locator.dart',
   'lib/features/send/ui/send_router.dart -> locator.dart',
@@ -31,7 +30,6 @@ const _legacyImports = {
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
   'lib/features/consolidation/ui/consolidation_router.dart -> locator.dart',
   'lib/features/consolidation/ui/widgets/consolidation_banner.dart -> locator.dart',
-  'lib/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart -> locator.dart',
 };
 
 void main() {

@@ -1,7 +1,7 @@
+import 'package:wallet_import/src/domain/watch_only/parse_watch_only_input_usecase.dart';
+import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

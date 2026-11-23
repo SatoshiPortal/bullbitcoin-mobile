@@ -1,6 +1,15 @@
+import 'package:wallet_import/wallet_import.dart'
+    show
+        ImportMnemonicFailure,
+        ImportMnemonicUnexpectedFailure,
+        ImportMnemonicDuplicateFailure,
+        ImportMnemonicCustodyMetadataFailure;
+import 'package:wallet_import/wallet_import.dart';
+
 import 'dart:io';
 
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Err, Ok;
 import 'package:preferences/preferences.dart';
 
 import '../../../support/inventory_fixture.dart';
@@ -8,8 +17,7 @@ import '../../../support/inventory_fixture.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:unorm_dart/unorm_dart.dart' show nfc;
-import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
+import 'package:wallet_import/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';

@@ -1,12 +1,12 @@
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show Network;
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
+import 'package:wallet_import/src/presentation/watch_only/import_watch_only_cubit.dart';
+import 'package:wallet_import/src/presentation/watch_only/import_watch_only_state.dart';
+import 'package:wallet_import/src/ui/watch_only/watch_only_details_widget.dart';
 import 'package:signers/signers.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/presentation/watch_only_details_widget.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
+import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:bull_ui/bull_ui.dart' show BullInputText;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +24,7 @@ class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 Future<_MockImportWatchOnlyCubit> _pumpDetails(
   WidgetTester tester, {
   required satoshifier.Network network,
-  Network? selectedNetwork,
+  BitcoinNetwork? selectedNetwork,
   bool missing = false,
 }) async {
   final descriptor = _MockDescriptor();
@@ -38,7 +38,7 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
   final wallet = WatchOnlyWalletEntity.descriptor(
     watchOnlyDescriptor: watchOnlyDescriptor,
     selectedNetwork: selectedNetwork,
-    signerDevice: selectedNetwork == Network.bitcoinRegtest
+    signerDevice: selectedNetwork == BitcoinNetwork.regtest
         ? null
         : SignerDevice.seedsigner,
   );
@@ -56,8 +56,8 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
       value: cubit,
       child: MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: ImportLocalizations.localizationsDelegates,
+        supportedLocales: ImportLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
             child: WatchOnlyDetailsWidget(watchOnlyWallet: wallet),
@@ -110,7 +110,7 @@ void main() {
     await _pumpDetails(
       tester,
       network: satoshifier.Network.bitcoinTestnet,
-      selectedNetwork: Network.bitcoinRegtest,
+      selectedNetwork: BitcoinNetwork.regtest,
     );
     expect(find.text('Regtest'), findsOneWidget);
     expect(find.text('Signing Device'), findsNothing);

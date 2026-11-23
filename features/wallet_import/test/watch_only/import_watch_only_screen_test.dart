@@ -1,14 +1,16 @@
+import 'package:wallet_import/src/domain/watch_only/import_watch_only_descriptor_usecase.dart';
+import 'package:wallet_import/src/domain/watch_only/import_watch_only_xpub_usecase.dart';
+import 'package:wallet_import/src/domain/watch_only/parse_watch_only_input_usecase.dart';
+import 'package:wallet_import/src/domain/watch_only/read_watch_only_network_usecase.dart';
+import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
+import 'package:wallet_import/src/presentation/watch_only/import_watch_only_cubit.dart';
+import 'package:wallet_import/src/ui/watch_only/import_watch_only_screen.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/generated/l10n/localization_en.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
+import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
+import 'package:wallet_import/generated/l10n/import_localizations_en.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -38,21 +40,21 @@ void main() {
         final importer = _Xpub();
         when(settings.readActiveEnvironment)
             .thenAnswer((_) async => Ok(Environment.testnet));
-        locator.registerSingleton<ActiveEnvironmentReader>(settings);
-        locator.registerSingleton<ImportWatchOnlyXpubUsecase>(importer);
-        locator.registerSingleton<ImportWatchOnlyDescriptorUsecase>(
-          _Descriptor(),
-        );
-        locator.registerSingleton<ParseWatchOnlyInputUsecase>(
-          ParseWatchOnlyInputUsecase(),
-        );
-        addTearDown(locator.reset);
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: ImportWatchOnlyScreen(watchOnlyWallet: wallet),
+            localizationsDelegates: ImportLocalizations.localizationsDelegates,
+            supportedLocales: ImportLocalizations.supportedLocales,
+            home: ImportWatchOnlyScreen(
+              createCubit: () => ImportWatchOnlyCubit(
+                watchOnlyWallet: wallet,
+                importWatchOnlyXpubUsecase: importer,
+                importWatchOnlyDescriptorUsecase: _Descriptor(),
+                parseWatchOnlyInputUsecase: ParseWatchOnlyInputUsecase(),
+                readNetworkUsecase: ReadWatchOnlyNetworkUsecase(settings),
+              ),
+              onImported: (_) => fail('unexpected import'),
+            ),
           ),
         );
         await tester.pumpAndSettle();
@@ -63,7 +65,9 @@ void main() {
               .thenAnswer((_) async => Ok(Environment.mainnet));
         }
         for (var attempt = 0; attempt < 2; attempt++) {
-          final button = find.text(AppLocalizationsEn().importWatchOnlyImport);
+          final button = find.text(
+            ImportLocalizationsEn().importWatchOnlyImport,
+          );
           await tester.ensureVisible(button);
           await tester.tap(button);
           await tester.pumpAndSettle();
@@ -77,8 +81,8 @@ void main() {
           expect(
             find.text(
               labelCorrection
-                  ? AppLocalizationsEn().importWatchOnlyErrorLabelRequired
-                  : AppLocalizationsEn().importWatchOnlyErrorNetworkMismatch,
+                  ? ImportLocalizationsEn().importWatchOnlyErrorLabelRequired
+                  : ImportLocalizationsEn().importWatchOnlyErrorNetworkMismatch,
             ),
             labelCorrection ? findsNothing : findsOneWidget,
           );

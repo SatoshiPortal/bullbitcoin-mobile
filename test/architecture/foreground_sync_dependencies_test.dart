@@ -36,10 +36,6 @@ const _allowedTargets = <String, String>{
   'coins': 'address_view bitcoin_price wallet',
   'consolidation': 'wallet',
   'exchange': 'address_view bull_exchange transactions wallet',
-  'import_coldcard': 'scanning signers wallet_import',
-  'import_mnemonic': 'mnemonic_entry wallet wallet_import',
-  'import_wallet': 'import_coldcard import_mnemonic import_watch_only_wallet settings signers wallet_import',
-  'import_watch_only_wallet': 'scanning signers wallet wallet_import',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
   'onboarding':
@@ -51,14 +47,14 @@ const _allowedTargets = <String, String>{
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
+  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet wallet_import',
   'support': 'bull_exchange',
   'swap': 'address_view ark coins consolidation fees send transactions wallet',
   'test_wallet_backup':
       'access onboarding physical_backup_verification recoverbull wallet',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
-  'wallet_import': 'signers',
+  'wallet': 'address_view ark backup_settings backups bitcoin_price coins consolidation network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
+  'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
 

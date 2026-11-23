@@ -9,11 +9,12 @@ void main() {
   group('Security audit #2596 xprv descriptor import', () {
     test('watch-only parser rejects private key material', () {
       final source = File(
-        'lib/features/import_watch_only_wallet/watch_only_wallet_entity.dart',
+        'features/wallet_import/lib/src/domain/watch_only_input.dart',
       ).readAsStringSync();
       expect(source, contains('xprv'));
       expect(source, contains('yprv'));
       expect(source, contains('zprv'));
+      expect(source, contains('_privateKey.hasMatch'));
     });
   });
 }
