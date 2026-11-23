@@ -18,6 +18,7 @@ class BullInputText extends StatefulWidget {
     this.controller,
     required this.onChanged,
     required this.value,
+    this.semanticLabel,
     this.hint,
     this.hintStyle,
     this.rightIcon,
@@ -56,6 +57,9 @@ class BullInputText extends StatefulWidget {
 
   /// The current value (the field is controlled by the parent).
   final String value;
+
+  /// Accessible name when the caller displays a separate field label.
+  final String? semanticLabel;
 
   /// Placeholder text.
   final String? hint;
@@ -177,6 +181,11 @@ class _BullInputTextState extends State<BullInputText> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final semanticLabel = widget.semanticLabel;
+    final placeholder = widget.hint;
+    final fieldStyle =
+        widget.style ?? context.bullType.body.copyWith(color: colors.onSurface);
+    final hintStyle = widget.hintStyle ?? TextStyle(color: colors.textMuted);
     // Numeric and obscured fields are never legitimately multiline, so they
     // default to a single line instead of Flutter's unlimited `null`.
     final effectiveMaxLines =
@@ -184,7 +193,7 @@ class _BullInputTextState extends State<BullInputText> {
     final shouldPreventNewlines =
         effectiveMaxLines != null && effectiveMaxLines <= 2;
 
-    return TextField(
+    final field = TextField(
       key: widget.uiKey,
       controller: _controller,
       onChanged: widget.onChanged,
@@ -217,18 +226,27 @@ class _BullInputTextState extends State<BullInputText> {
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
       maxLines: effectiveMaxLines,
-      style:
-          widget.style ??
-          context.bullType.body.copyWith(color: colors.onSurface),
+      style: fieldStyle,
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
       onEditingComplete: widget.onEditingComplete,
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        hintText: widget.hint,
+        hintText: semanticLabel == null ? placeholder : null,
+        hint: semanticLabel != null && placeholder != null
+            ? ExcludeSemantics(
+                child: Text(
+                  placeholder,
+                  style: fieldStyle.merge(hintStyle),
+                  textAlign: TextAlign.left,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+            : null,
         suffixText: widget.suffixText,
-        hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
+        hintStyle: hintStyle,
         prefixIcon: widget.fixedPrefix != null
             ? Container(
                 padding: const EdgeInsets.symmetric(
@@ -271,6 +289,13 @@ class _BullInputTextState extends State<BullInputText> {
         filled: true,
         fillColor: colors.surface,
       ),
+    );
+    return Semantics(
+      label: semanticLabel,
+      hint: semanticLabel == null || semanticLabel == placeholder
+          ? null
+          : placeholder,
+      child: field,
     );
   }
 }

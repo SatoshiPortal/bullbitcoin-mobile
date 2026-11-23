@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsAction;
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +8,35 @@ import 'package:primitives/primitives.dart';
 
 void main() {
   final quotedAt = DateTime.utc(2026, 11, 19, 14, 32);
+
+  testWidgets('the empty amount editor exposes its name and unit', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final canonical = TextEditingController();
+    addTearDown(canonical.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullAmountInput(
+          canonicalUnit: BitcoinUnit.sats,
+          amountController: canonical,
+        ),
+      ),
+    );
+
+    final editor = find.byType(EditableText);
+    expect(
+      tester.getSemantics(editor).getSemanticsData().label,
+      startsWith('Amount '),
+    );
+    await tester.tap(editor);
+    await tester.pump();
+    final focused = tester.getSemantics(editor).getSemanticsData();
+    expect(focused.label, startsWith('Amount '));
+    expect(focused.flagsCollection.isTextField, isTrue);
+    expect(focused.hasAction(SemanticsAction.setText), isTrue);
+    semantics.dispose();
+  });
 
   testWidgets('Max fiat approximation rounds a half cent up', (tester) async {
     final canonical = TextEditingController(text: '1249580');
