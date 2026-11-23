@@ -1,12 +1,16 @@
 import '../../../scripted_wallet_connections.dart';
 
-import 'package:bb_mobile/features/wallet/data/payjoin_blockchain_adapter.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:sync/sync.dart'
     show
+        BitcoinSpendStatus,
+        SignedPsbt,
+        SpendOwner,
+        SpendReceipt,
+        SyncFailure,
         SyncBusyFailure,
         SyncConnectionFailure,
         SyncInvalidTransactionFailure,
@@ -20,31 +24,21 @@ void main() {
   setUp(() => servers = ScriptedWalletConnections());
 
   Future<void> broadcast(Result<SpendReceipt, SyncFailure> outcome) =>
-      AppPayjoinBlockchainAdapter(
-        servers,
-        WalletFacade(
-          const Stream.empty(),
-          broadcastSpend:
-              (
-                walletId,
-                transaction, {
-                required network,
-                built,
-                owner,
-                replacing,
-              }) async {
-                expect(walletId, 'wallet-1');
-                expect((transaction as SignedPsbt).psbt, 'psbt');
-                expect(network, BitcoinNetwork.testnet);
-                // The session alone may spend the inputs it reserved.
-                expect(
-                  owner,
-                  SpendOwner(protocol: 'payjoin', session: 'session-1'),
-                );
-                return outcome;
-              },
-        ),
-      ).broadcastPsbt(
+      AppPayjoinBlockchainAdapter(servers, (
+        walletId,
+        transaction, {
+        required network,
+        built,
+        owner,
+        replacing,
+      }) async {
+        expect(walletId, 'wallet-1');
+        expect((transaction as SignedPsbt).psbt, 'psbt');
+        expect(network, BitcoinNetwork.testnet);
+        // The session alone may spend the inputs it reserved.
+        expect(owner, SpendOwner(protocol: 'payjoin', session: 'session-1'));
+        return outcome;
+      }).broadcastPsbt(
         walletId: 'wallet-1',
         sessionId: 'session-1',
         network: BitcoinNetwork.testnet,

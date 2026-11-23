@@ -4,16 +4,19 @@ import 'package:primitives/primitives.dart' hide Network;
 import '../../../scripted_wallet_connections.dart';
 
 import 'package:sync/sync.dart'
-    show SyncConnectionFailure, SyncUnrecognizedReplyFailure;
+    show
+        SyncConnectionFailure,
+        SyncFailure,
+        SyncStorageFailure,
+        SyncUnrecognizedReplyFailure,
+        WalletKey;
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:transactions/testing.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:transactions/transactions.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_transaction_adapter.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:dio/dio.dart';
@@ -22,22 +25,27 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockLogger extends Mock implements Logger {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _Inventory extends Mock implements WalletInventory {}
+
+abstract interface class _Synchronization {
+  Future<Result<void, SyncFailure>> execute(WalletKey key);
+}
+
+class _MockSynchronization extends Mock implements _Synchronization {}
 
 class _MockTransactions extends Mock implements Transactions {}
-
-class _MockWallet extends Mock implements Wallet {}
 
 const _walletId = 'wallet';
 const _txId =
     'bb71279aa030b144a12329126f0b44e6954225834d3dafaab6328bfd48939325';
 
 void main() {
-  late _MockWalletRepository wallets;
+  late _Inventory inventory;
+  late _MockSynchronization synchronization;
   late _MockTransactions transactions;
   late ScriptedWalletConnections servers;
-  late _MockWallet wallet;
   late AppPayjoinTransactionAdapter adapter;
+  const key = WalletKey(id: _walletId, network: BitcoinNetwork.testnet);
 
   test('poll state codes survive the persisted host adapter', () async {
     final directory = await Directory.systemTemp.createTemp(
@@ -78,20 +86,26 @@ void main() {
   });
 
   setUp(() {
-    wallets = _MockWalletRepository();
+    inventory = _Inventory();
+    synchronization = _MockSynchronization();
+    when(() => inventory.readWallet(_walletId)).thenAnswer(
+      (_) async =>
+          Ok(walletRegistrationForTesting(id: _walletId, network: key.network)),
+    );
+    when(() => synchronization.execute(key))
+        .thenAnswer((_) async => const Ok(null));
     transactions = _MockTransactions();
     servers = ScriptedWalletConnections();
     adapter = AppPayjoinTransactionAdapter(
-      wallets,
+      inventory,
       transactions,
       servers,
+      synchronize: synchronization.execute,
+      finished: const Stream.empty(),
+      protectSpend: (_, _) async => false,
       reconcileDelay: Duration.zero,
     );
 
-    wallet = _MockWallet();
-    when(() => wallet.network).thenReturn(Network.bitcoinTestnet);
-    when(() => wallets.getWallet(_walletId, sync: any(named: 'sync')))
-        .thenAnswer((_) async => Ok(wallet));
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
         .thenAnswer((_) async => const Ok(null));
   });
@@ -449,9 +463,9 @@ void main() {
   test('asks the server for the one transaction instead of syncing', () async {
     servers.reply = () => const Ok(true);
     var synced = false;
-    when(() => wallets.getWallet(_walletId, sync: true)).thenAnswer((_) async {
+    when(() => synchronization.execute(key)).thenAnswer((_) async {
       synced = true;
-      return Ok(wallet);
+      return const Ok(null);
     });
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
         .thenAnswer((_) async => Ok(synced ? _transaction() : null));
@@ -473,15 +487,15 @@ void main() {
     );
     // The wallet catches up in the background.
     await pumpEventQueue();
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(1);
+    verify(() => synchronization.execute(key)).called(1);
   });
 
   test('syncs again when the wallet fails or misses the transaction', () async {
     servers.reply = () => const Ok(true);
     var syncs = 0;
-    when(() => wallets.getWallet(_walletId, sync: true)).thenAnswer((_) async {
+    when(() => synchronization.execute(key)).thenAnswer((_) async {
       syncs++;
-      return syncs == 1 ? const Err(WalletStorageFailure('busy')) : Ok(wallet);
+      return syncs == 1 ? const Err(SyncStorageFailure()) : const Ok(null);
     });
     // The second sync joined a pass that started before the broadcast.
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
@@ -494,13 +508,13 @@ void main() {
     );
     await pumpEventQueue();
 
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(3);
+    verify(() => synchronization.execute(key)).called(3);
   });
 
   test('stops reconciling after a few failed syncs', () async {
     servers.reply = () => const Ok(true);
-    when(() => wallets.getWallet(_walletId, sync: true))
-        .thenAnswer((_) async => const Err(WalletStorageFailure('busy')));
+    when(() => synchronization.execute(key))
+        .thenAnswer((_) async => const Err(SyncStorageFailure()));
 
     await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -509,13 +523,13 @@ void main() {
     );
     await pumpEventQueue();
 
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(3);
+    verify(() => synchronization.execute(key)).called(3);
   });
 
   test('a failing wallet read does not end the reconciliation', () async {
     servers.reply = () => const Ok(true);
-    when(() => wallets.getWallet(_walletId, sync: true))
-        .thenAnswer((_) async => Ok(wallet));
+    when(() => synchronization.execute(key))
+        .thenAnswer((_) async => const Ok(null));
     var reads = 0;
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
         .thenAnswer((_) async {
@@ -531,7 +545,7 @@ void main() {
     );
     await pumpEventQueue();
 
-    verify(() => wallets.getWallet(_walletId, sync: true)).called(2);
+    verify(() => synchronization.execute(key)).called(2);
   });
 
   test('reports an unknown transaction without syncing the wallet', () async {
@@ -544,7 +558,7 @@ void main() {
     );
 
     expect(visible, isFalse);
-    verifyNever(() => wallets.getWallet(_walletId, sync: true));
+    verifyNever(() => synchronization.execute(key));
   });
 
   for (final present in [true, false]) {
@@ -576,7 +590,7 @@ void main() {
           sync: true,
         ),
       ).called(present ? 1 : 2);
-      verifyNever(() => wallets.getWallet(_walletId, sync: true));
+      verifyNever(() => synchronization.execute(key));
     });
   }
 
