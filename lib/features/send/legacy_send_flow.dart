@@ -20,10 +20,9 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:coins/coins.dart';
 import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:transactions/transactions.dart';
@@ -120,7 +119,7 @@ abstract final class LegacySendFlow {
     locator.registerFactory<ValidateBitcoinSelectionUsecase>(
       () => ValidateBitcoinSelectionUsecase(
         payjoinSessions: locator<PayjoinSessions>(),
-        walletUtxoRepository: locator<WalletUtxoRepository>(),
+        coins: locator<Coins>(),
       ),
     );
     locator.registerFactory<PrepareLiquidSendUsecase>(
@@ -274,7 +273,7 @@ abstract final class LegacySendFlow {
         readExchangeRate: locator<Send>().exchangeRate,
         readAmountQuotes: locator<Send>().amountQuotes,
         loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: locator()),
-        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
+        coins: locator<Coins>(),
         validateBitcoinSelectionUsecase:
             locator<ValidateBitcoinSelectionUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),

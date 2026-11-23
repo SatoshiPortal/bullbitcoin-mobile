@@ -12,7 +12,6 @@ const _legacyImports = {
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
   'lib/features/settings/ui/widgets/settings_failure_listener.dart -> router.dart',
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
-  'lib/features/coins/ui/coins_router.dart -> locator.dart',
 };
 
 void main() {

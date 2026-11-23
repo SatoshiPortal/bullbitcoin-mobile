@@ -6,7 +6,7 @@ import 'package:silent/localizations.dart';
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:signers/signers.dart';
 
-import '../../../coins/public/coins.dart' show CoinsRoute;
+import 'package:coins/coins.dart' show CoinsNavigation;
 
 import 'dart:async';
 

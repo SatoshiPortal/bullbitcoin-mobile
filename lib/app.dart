@@ -1,4 +1,5 @@
 import 'package:send/setup.dart' show SendLocalizations;
+import 'package:coins/setup.dart' show CoinsLocalizations;
 import 'package:send/send.dart' show Consolidation;
 import 'package:spend/spend.dart' show Spend;
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -205,6 +206,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         localizationsDelegates: [
                           StartupLocalizations.delegate,
                           SendLocalizations.delegate,
+                          CoinsLocalizations.delegate,
                           NovlangReceiveLocalizationsDelegate(novlangPolicy),
                           AddressViewLocalizations.delegate,
                           NovlangLabelEditorLocalizationsDelegate(

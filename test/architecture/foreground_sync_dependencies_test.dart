@@ -29,7 +29,7 @@ const _allowedTargets = <String, String>{
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price coins fees',
-  'coins': 'address_view bitcoin_price wallet',
+  'coins': 'address_view bitcoin_price',
   'exchange': 'address_view bull_exchange transactions wallet',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',

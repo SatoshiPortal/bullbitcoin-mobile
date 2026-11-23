@@ -4,7 +4,7 @@ import '../../../../scripted_wallet_connections.dart';
 import '../../../../frozen_outpoints_fixture.dart';
 
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 import 'dart:async';
@@ -22,11 +22,11 @@ class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Frozen extends Mock implements WalletUtxoRepository {}
+class _Frozen extends Mock implements Coins {}
 
-WalletUtxoRepository _emptyFrozenStore() {
+Coins _emptyFrozenStore() {
   final store = _Frozen();
-  when(store.getAllFrozenOutpoints).thenAnswer((_) async => []);
+  when(store.frozenOutpoints).thenAnswer((_) async => Ok([]));
   return store;
 }
 
@@ -67,7 +67,7 @@ void main() {
               ).execute(_signedPublicTest)
             : BroadcastBitcoinTransactionUsecase(
                 bitcoinBlockchainRepository: bitcoin,
-                walletUtxoRepository: EmptyFrozenOutpoints(),
+                coins: EmptyFrozenOutpoints(),
                 settingsRepository: settings,
               ).execute(
                 _signedPublicTest,
@@ -121,7 +121,7 @@ void main() {
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,
-        walletUtxoRepository: _emptyFrozenStore(),
+        coins: _emptyFrozenStore(),
       );
       final captured = await usecase.captureNetwork();
       when(() => value.environment).thenReturn(Environment.mainnet);
@@ -169,7 +169,7 @@ void main() {
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,
-        walletUtxoRepository: _emptyFrozenStore(),
+        coins: _emptyFrozenStore(),
       );
       try {
         await usecase.execute(
@@ -215,7 +215,7 @@ void main() {
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,
-        walletUtxoRepository: _emptyFrozenStore(),
+        coins: _emptyFrozenStore(),
       );
       final running = usecase.execute(
         _signedPublicTest,
