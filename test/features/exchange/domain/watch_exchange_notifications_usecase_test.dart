@@ -1,16 +1,14 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import '../fixtures/legacy_access.dart';
+
+import 'package:exchange/setup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -21,7 +19,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 };
 
 abstract interface class _Notifications {
-  Stream<NotificationMessage> get messages;
+  Stream<Result<NotificationMessage, ExchangeFailure>> get messages;
   Future<Result<void, ExchangeFailure>> connect();
   Future<Result<void, ExchangeFailure>> reconnect();
   void disconnect();
@@ -39,9 +37,9 @@ Exchange _exchange(_Notifications notifications) => exchangeForTesting(
   ),
 );
 
-class _Access extends Mock implements ExchangeAccessRepository {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
-class _Keys extends Mock implements ExchangeApiKeyRepository {}
+class _Keys extends Mock implements ExchangeCredentials {}
 
 class _MockSettings extends Mock implements Preferences {}
 
@@ -56,7 +54,7 @@ void main() {
   late _MockNotificationRepository repository;
   late _Access access;
   late _MockSettings settings;
-  late StreamController<NotificationMessage> messages;
+  late StreamController<Result<NotificationMessage, ExchangeFailure>> messages;
 
   WatchExchangeNotificationsUsecase build() =>
       WatchExchangeNotificationsUsecase(
@@ -91,7 +89,10 @@ void main() {
         ),
       ),
     );
-    messages = StreamController<NotificationMessage>.broadcast();
+    messages =
+        StreamController<
+          Result<NotificationMessage, ExchangeFailure>
+        >.broadcast();
     when(() => repository.messages).thenAnswer((_) => messages.stream);
   });
 
@@ -102,8 +103,9 @@ void main() {
     final sub = build().accountChanges().listen((m) => seen.add(m.kind));
     addTearDown(sub.cancel);
 
+    messages.add(const Err(ExchangeNotificationsUnavailableFailure()));
     for (final kind in NotificationMessageKind.values) {
-      messages.add(_message(kind));
+      messages.add(Ok(_message(kind)));
     }
     await Future<void>.delayed(Duration.zero);
 
@@ -168,7 +170,7 @@ void main() {
       final pending = Completer<Result<void, ExchangeFailure>>();
       when(repository.connect).thenAnswer((_) => pending.future);
       var disconnects = 0;
-      final realAccess = ExchangeAccessRepositoryImpl(
+      final realAccess = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -177,7 +179,7 @@ void main() {
         },
         clearCookies: () async {},
       );
-      await realAccess.resolve();
+      final _ = await realAccess.resolve();
       final usecase = WatchExchangeNotificationsUsecase(
         exchange: _exchange(repository),
         access: realAccess,
@@ -286,7 +288,7 @@ void main() {
       connected = false;
     });
     var testnet = false;
-    final realAccess = ExchangeAccessRepositoryImpl(
+    final realAccess = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => testnet,
       platformAllowed: () async => true,
@@ -295,7 +297,7 @@ void main() {
       },
       clearCookies: () async {},
     );
-    await realAccess.resolve();
+    final _ = await realAccess.resolve();
     final usecase = WatchExchangeNotificationsUsecase(
       exchange: _exchange(repository),
       access: realAccess,
@@ -307,7 +309,7 @@ void main() {
     testnet = true;
     final newSession = () async {
       await logout;
-      await realAccess.enable();
+      final _ = await realAccess.enable();
       return usecase.connect();
     }();
     await Future<void>.delayed(Duration.zero);

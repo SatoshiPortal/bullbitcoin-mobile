@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart';

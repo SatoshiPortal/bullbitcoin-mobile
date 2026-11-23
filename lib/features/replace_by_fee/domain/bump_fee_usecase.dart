@@ -1,60 +1,29 @@
-import 'package:bb_mobile/features/send/public/broadcast_failure.dart'
-    show WalletSpendBlockedException;
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show BitcoinSpendStatus;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     as wallet
     show Network, NetworkX;
-import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' hide Network;
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BitcoinWalletRepository;
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
-import 'package:sync/sync.dart'
-    show
-        SignatureCheck,
-        SyncBusyFailure,
-        SyncFailure,
-        SyncFeeRateTooLowFailure,
-        SyncOriginalSignaturesFailure,
-        SyncSpendBlockedFailure,
-        UnsignedSpend;
 import 'package:meta/meta.dart';
+import 'package:spend/spend.dart';
 
 class BumpFeeUsecase {
-  final BitcoinWalletRepository _bitcoinWalletRepository;
-  final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final Spend _spend;
   final Fees _fees;
-  final Preferences _preferences;
 
-  BumpFeeUsecase({
-    required this._bitcoinWalletRepository,
-    required this._broadcastBitcoinTransactionUsecase,
-    required this._fees,
-    required this._preferences,
-  });
+  BumpFeeUsecase({required this._spend, required this._fees});
 
   @useResult
-  Future<Result<FeeOptions, ReplaceByFeeFailure>> getNetworkFees() async {
+  Future<Result<FeeOptions, ReplaceByFeeFailure>> getNetworkFees(
+    wallet.Network network,
+  ) async {
+    final captured = network.shared;
+    if (captured is! BitcoinNetwork) {
+      return const Err(ReplaceByFeeNetworkFeesFailure());
+    }
     try {
-      final SettingsEntity settings;
-      switch (await _preferences.fetch()) {
-        case Ok(:final value):
-          settings = value;
-        case Err(:final failure):
-          final reason = 'Preferences read failed: ${failure.runtimeType}';
-          log.warning(reason);
-          return const Err(ReplaceByFeeNetworkFeesFailure());
-      }
-      final network = wallet.Network.fromEnvironment(
-        environment: settings.environment.networkEnv,
-        isLiquid: false,
-      );
-      switch (await _fees.estimate(network.shared)) {
+      switch (await _fees.estimate(captured)) {
         case Ok(:final value):
           return Ok(value);
         case Err(:final failure):
@@ -76,28 +45,15 @@ class BumpFeeUsecase {
   Future<Result<void, ReplaceByFeeFailure>> verifyOriginalTransaction({
     required String walletId,
     required String txid,
-  }) async {
-    try {
-      final status = await _bitcoinWalletRepository
-          .getTransactionSignatureStatus(walletId: walletId, txid: txid);
-      return switch (status) {
-        SignatureCheck.valid => const Ok(null),
-        SignatureCheck.invalid => const Err(
-          ReplaceByFeeManipulatedTransactionFailure(),
-        ),
-        SignatureCheck.unverifiable => const Err(
-          ReplaceByFeeUnverifiableTransactionFailure(),
-        ),
-      };
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to verify original transaction for RBF',
-        error: e,
-        trace: st,
-      );
-      return Err(ReplaceByFeeUnexpectedFailure(e.toString()));
-    }
-  }
+    required wallet.Network network,
+  }) async => switch (network.shared) {
+    final BitcoinNetwork bitcoin => (await _spend.verifyOriginalBitcoin(
+      walletId: walletId,
+      originalTxid: txid,
+      network: bitcoin,
+    )).mapErr(_bumpFailure),
+    _ => const Err(ReplaceByFeeUnexpectedFailure()),
+  };
 
   /// Builds the replacement in sync's writer, signs it with `secrets`, then
   /// broadcasts it with the generation it was built at.
@@ -106,76 +62,42 @@ class BumpFeeUsecase {
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
-    required Network network,
-  }) async {
-    try {
-      final built = await _bitcoinWalletRepository.bumpFee(
-        walletId: walletId,
-        txid: txid,
-        newFeeRate: newFeeRate,
-      );
-      final UnsignedSpend unsigned;
-      switch (built) {
-        case Ok(:final value):
-          unsigned = value;
-        case Err(:final failure):
-          return Err(_bumpFailure(failure));
-      }
-      final signed = await _bitcoinWalletRepository.signPsbt(
-        unsigned.encoded,
-        walletId: walletId,
-      );
-      final broadcastedTxid = await _broadcastBitcoinTransactionUsecase.execute(
-        signed,
-        isPsbt: true,
-        network: network,
-        walletId: walletId,
-        built: unsigned,
-      );
-      return Ok(broadcastedTxid);
-    } on WalletSpendBlockedException catch (e) {
-      return Err(
-        ReplaceByFeeSpendBlockedFailure(
-          replacementPending: e.status == BitcoinSpendStatus.replacementPending,
-          busy: e.status == BitcoinSpendStatus.busy,
-        ),
-      );
-    } catch (e, st) {
-      log.severe(message: 'Bump fee failed', error: e, trace: st);
-      return Err(ReplaceByFeeUnexpectedFailure(e.toString()));
-    }
-  }
+    required wallet.Network network,
+  }) async => switch (network.shared) {
+    final BitcoinNetwork bitcoin => (await _spend.replaceBitcoin(
+      walletId: walletId,
+      originalTxid: txid,
+      newFeeRate: newFeeRate,
+      network: bitcoin,
+    )).map((receipt) => receipt.txid).mapErr(_bumpFailure),
+    _ => const Err(ReplaceByFeeUnexpectedFailure()),
+  };
 
-  static ReplaceByFeeFailure _bumpFailure(SyncFailure failure) {
+  static ReplaceByFeeFailure _bumpFailure(SpendFailure failure) {
     switch (failure) {
-      case SyncOriginalSignaturesFailure(check: SignatureCheck.invalid):
+      case SpendOriginalSignaturesFailure(unverifiable: false):
         log.severe(
           message: 'Refused to bump a transaction with invalid signatures',
           error: 'original_signatures',
           trace: StackTrace.current,
         );
         return const ReplaceByFeeManipulatedTransactionFailure();
-      case SyncOriginalSignaturesFailure():
+      case SpendOriginalSignaturesFailure():
         log.warning(
           'Refused to bump a transaction whose signatures could not be verified',
         );
         return const ReplaceByFeeUnverifiableTransactionFailure();
-      case SyncFeeRateTooLowFailure():
+      case SpendFeeRateTooLowFailure():
         log.warning('Replacement fee rate below the original');
         return const ReplaceByFeeFeeRateTooLowFailure();
-      case SyncSpendBlockedFailure(:final status):
+      case SpendUnavailableFailure(:final replacementPending, :final busy):
         return ReplaceByFeeSpendBlockedFailure(
-          replacementPending: status == BitcoinSpendStatus.replacementPending,
-          busy: false,
-        );
-      case SyncBusyFailure():
-        return const ReplaceByFeeSpendBlockedFailure(
-          replacementPending: false,
-          busy: true,
+          replacementPending: replacementPending,
+          busy: busy,
         );
       case _:
-        log.warning('Bump fee refused category=${failure.logCode}');
-        return ReplaceByFeeUnexpectedFailure(failure.logCode);
+        log.warning('Bump fee refused category=${failure.runtimeType}');
+        return const ReplaceByFeeUnexpectedFailure();
     }
   }
 }

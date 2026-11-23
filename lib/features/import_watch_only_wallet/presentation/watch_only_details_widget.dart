@@ -1,6 +1,6 @@
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';

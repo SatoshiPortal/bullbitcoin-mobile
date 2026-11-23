@@ -97,5 +97,891 @@
   "notLoggedInTitle": "Δεν είστε προσκολλημένοι στο",
   "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις"
+  "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Δεν ήταν δυνατή η αποθήκευση αυτής της ρύθμισης. Παρακαλώ δοκιμάστε ξανά.",
+  "fundExchangeSepaDescriptionExactly": "ακριβώς.",
+  "fundExchangeInstantSepaInfo": "Μόνο χρήση για συναλλαγές κάτω από 20.000 ευρώ. Για μεγαλύτερες συναλλαγές, χρησιμοποιήστε την τακτική επιλογή SEPA.",
+  "fundExchangeLabelBicCode": "Κωδικός BIC",
+  "fundExchangeMethodRegularSepa": "Τακτικό SEPA",
+  "fundExchangeSinpeLabelPhone": "Στείλε σε αυτόν τον αριθμό τηλεφώνου",
+  "fundExchangeCrIbanCrcTransferCodeWarning": "Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"διαγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να συμπεριλάβετε αυτόν τον κώδικα, η πληρωμή σας μπορεί να απορριφθεί.",
+  "fundExchangeSinpeTitle": "SINPE Transfer",
+  "fundExchangeInfoPaymentDescription": "Στην περιγραφή πληρωμής, προσθέστε τον κωδικό μεταφοράς σας.",
+  "fundExchangeCrIbanCrcDescriptionBold": "ακριβώς",
+  "fundExchangeLabelRecipientAddress": "Μαθητική διεύθυνση",
+  "fundExchangeCrIbanCrcTitle": "Τραπεζική Μεταφορά (CRC)",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Μόνο για συναλλαγές κάτω από €30.000",
+  "fundExchangeSepaDescription": "Στείλτε μια μεταφορά SEPA από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ",
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Ο κωδικός μεταφοράς σας.",
+  "fundExchangeLabelBankAccountCountry": "Τράπεζα λογαριασμού χώρα",
+  "fundExchangeLabelTransitNumber": "Αριθμός διαμετακόμισης",
+  "fundExchangeLabelMemo": "Memo",
+  "fundExchangeBankTransferWireTitle": "Τραπεζική μεταφορά (wire)",
+  "fundExchangeWarningTactic5": "Ζητούν να στείλουν Bitcoin σε άλλη πλατφόρμα",
+  "fundExchangeAccountTitle": "Χρηματοδότηση του λογαριασμού σας",
+  "fundExchangeWarningTactic1": "Είναι υποσχόμενες επιστροφές στις επενδύσεις",
+  "fundExchangeMethodBankTransferWire": "Τράπεζα Μεταφοράς (Wire ή EFT)",
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Costa Costa Λιβερία",
+  "fundExchangeContinueButton": "Συνεχίστε να συνεχίζετε",
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".",
+  "fundExchangeArsBankTransferTitle": "Τράπεζα Μεταφοράς",
+  "fundExchangeJurisdictionCanada": "Καναδάς",
+  "fundExchangeCrIbanUsdLabelIban": "IBAN Account Number (μόνο δολάρια ΗΠΑ)",
+  "fundExchangeInfoTransferCode": "Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως το \"message\" ή \"reason\" όταν κάνετε την πληρωμή.",
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Περιγραφή πληρωμής",
+  "fundExchangeTitle": "Χρηματοδότηση",
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
+  "fundExchangeHelpBeneficiaryName": "Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".",
+  "fundExchangeWarningTactic7": "Σας λένε να μην ανησυχείτε για αυτή την προειδοποίηση",
+  "fundExchangeMethodCanadaPost": "Σε μετρητά προσώπου ή χρέωση στον Καναδά Post",
+  "fundExchangeSepaTitle": "Μεταφορά SEPA",
+  "fundExchangeLabelBeneficiaryAddress": "Υποχρεωτική διεύθυνση",
+  "fundExchangeJurisdictionArgentina": "Αργεντινή",
+  "fundExchangeWarningTactic6": "Θέλουν να μοιραστείτε την οθόνη σας",
+  "fundExchangeCrIbanUsdDescriptionBold": "ακριβώς",
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
+  "fundExchangeArsBankTransferDescription": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις ακριβείς λεπτομέρειες της τράπεζας της Αργεντινής παρακάτω.",
+  "fundExchangeCrIbanUsdDescription": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ",
+  "fundExchangeLabelBankCountry": "Τράπεζα",
+  "fundExchangeBankTransferSubtitle": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας",
+  "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
+  "fundExchangeWarningConfirmation": "Επιβεβαιώνω ότι δεν μου ζητείται να αγοράσω Bitcoin από κάποιον άλλο.",
+  "fundExchangeLabelCvu": "CVU",
+  "fundExchangeLabelRecipientName": "Μαθητές όνομα",
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Μεταφορά κεφαλαίων σε δολάρια ΗΠΑ (USD)",
+  "fundExchangeMethodRegularSepaSubtitle": "Μόνο χρήση για μεγαλύτερες συναλλαγές άνω των €30.000",
+  "fundExchangeLabelTransferCode": "Κωδικός μεταφοράς (προσθέτως αυτό ως περιγραφή πληρωμής)",
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeSpeiTitle": "Μεταφορά SPEI",
+  "fundExchangeRegularSepaInfo": "Μόνο χρήση για συναλλαγές άνω των 20.000 ευρώ. Για μικρότερες συναλλαγές, χρησιμοποιήστε την επιλογή Instant SEPA.",
+  "fundExchangeDoneButton": "Έγινε",
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Η πιο αργή επιλογή, αλλά μπορεί να γίνει μέσω online banking (3-4 εργάσιμες ημέρες)",
+  "fundExchangeLabelBankAccountDetails": "Οι λεπτομέρειες λογαριασμού της Τράπεζας",
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Ο κωδικός μεταφοράς σας.",
+  "fundExchangeLabelRecipientNameArs": "Μαθητές Όνομα",
+  "fundExchangeCrIbanUsdTitle": "Τραπεζική Μεταφορά (USD)",
+  "fundExchangeWarningDescription": "Αν κάποιος σας ζητάει να αγοράσετε Bitcoin ή να «βοηθήσετε», να είστε προσεκτικοί, μπορεί να προσπαθείτε να σας εξαπατήσετε!",
+  "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "fundExchangeBankTransferWireDescription": "Στείλτε μια μεταφορά καλωδίων από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις λεπτομέρειες της τράπεζας του Bull Bitcoin παρακάτω. Η τράπεζά σας μπορεί να απαιτεί μόνο μερικά μέρη αυτών των λεπτομερειών.",
+  "fundExchangeWarningTactic4": "Ζητούν να στείλουν Bitcoin στη διεύθυνση τους",
+  "fundExchangeSinpeDescription": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
+  "fundExchangeMethodCanadaPostSubtitle": "Καλύτερα για όσους προτιμούν να πληρώνουν σε άτομο",
+  "fundExchangeSinpeDescriptionBold": "θα απορριφθεί.",
+  "fundExchangeMethodBankTransferWireSubtitle": "Καλύτερη και πιο αξιόπιστη επιλογή για μεγαλύτερες ποσότητες (same ή την επόμενη ημέρα)",
+  "fundExchangeCrIbanCrcLabelIban": "IBAN Account Number (Colones Only)",
+  "fundExchangeLabelClabe": "CLABE",
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
+  "fundExchangeCanadaPostQrCodeLabel": "Φόρος QR κωδικός",
+  "fundExchangeSinpeLabelRecipientName": "Μαθητές Όνομα",
+  "fundExchangeMethodInstantSepa": "Άμεση και κανονική μεταφορά SEPA",
+  "fundExchangeCrIbanUsdTransferCodeWarning": "Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"διαγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να συμπεριλάβετε αυτόν τον κώδικα, η πληρωμή σας μπορεί να απορριφθεί.",
+  "fundExchangeSpeiInfo": "Κάντε μια κατάθεση χρησιμοποιώντας τη μεταφορά SPEI (σταθερή).",
+  "fundExchangeMethodEmailETransferSubtitle": "Η πιο ευτυχισμένη και ταχύτερη μέθοδος (σταθερή)",
+  "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
+  "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
+  "fundExchangeErrorTitleRcpPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
+  "fundExchangeErrorTitleRcpPosinpe404": "Το SINPE δεν είναι διαθέσιμο",
+  "fundExchangeErrorTitleOrdKyc400": "Λείπουν απαιτήσεις KYC",
+  "fundExchangeErrorOrdKyc400": "Δεν έχετε τις απαιτήσεις KYC για αυτή την ενέργεια",
+  "fundExchangeErrorOrdCsrcp400": "Ενεργοποιήστε την επιλογή εικονικής πληρωμής για αυτόν τον παραλήπτη SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Δεν ήταν δυνατό το άνοιγμα του συνδέσμου πληρωμής. Παρακαλώ δοκιμάστε ξανά.",
+  "fundExchangeErrorTitleOrdCop400": "Μη έγκυρα δεδομένα χρηματοδότησης COP",
+  "fundExchangeErrorOrdCop400": "Μη έγκυρα δεδομένα αιτήματος για χρηματοδότηση COP",
+  "fundExchangeErrorTitleOrdCsrcp400": "Η εικονική πληρωμή δεν έχει ενεργοποιηθεί",
+  "fundExchangeErrorTitleRcp400": "Μη έγκυρο αίτημα",
+  "fundExchangeErrorRcp400": "Μη έγκυρο αίτημα",
+  "fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
+  "fundExchangeErrorRcpPo404": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
+  "fundExchangeErrorRcpPosinpe404": "Για πρόσβαση σε αυτή την επιλογή χρηματοδότησης, ο αριθμός τηλεφώνου σας πρέπει να είναι εγγεγραμμένος στο δίκτυο SINPE στην Κόστα Ρίκα.",
+  "fundExchangeErrorFetchingBankCodes": "Σφάλμα κατά τη λήψη τραπεζικών κωδικών. Δοκιμάστε ξανά αργότερα.",
+  "fundExchangeSpeiTransfer": "Μεταφορά SPEI",
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".",
+  "fundExchangeSinpeAddedToBalance": "Μόλις αποσταλεί η πληρωμή, θα προστεθεί στην ισορροπία λογαριασμού σας.",
+  "fundExchangeSpeiSubtitle": "Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE",
+  "fundExchangeAccountSubtitle": "Επιλέξτε τη χώρα και τη μέθοδο πληρωμής",
+  "fundExchangeJurisdictionMexico": "Μεξικό",
+  "fundExchangeLabelSwiftCode": "Κωδικός SWIFT",
+  "fundExchangeCrIbanCrcDescription": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ",
+  "fundExchangeLabelRoutingNumber": "Αριθμός Routing",
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Περιγραφή πληρωμής",
+  "fundExchangeInfoBeneficiaryNameLeonod": "Το όνομα του δικαιούχου πρέπει να είναι LEONOD. Εάν βάλετε οτιδήποτε άλλο, η πληρωμή σας θα απορριφθεί.",
+  "doneButton": "Έγινε",
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Μεταφορά κεφαλαίων στην Costa Rican Colón (CRC)",
+  "fundExchangeLabelIban": "IBAN Αριθμός λογαριασμού",
+  "fundExchangeMethodEmailETransfer": "Email E-Transfer",
+  "fundExchangeLabelBankName": "Bank name Bank",
+  "fundExchangeInfoBankCountryUk": "Η τραπεζική μας χώρα είναι το Ηνωμένο Βασίλειο.",
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
+  "fundExchangeLabelBeneficiaryName": "Υποχρεωτικό όνομα",
+  "fundExchangeWarningTactic2": "Σας προσφέρουν δάνειο",
+  "fundExchangeHelpTransferCode": "Προσθέστε αυτό ως το λόγο για τη μεταφορά",
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
+  "fundExchangeRestrictedTitle": "Η χρηματοδότηση δεν είναι διαθέσιμη",
+  "fundExchangeRestrictedMessage": "Η χρηματοδότηση δεν είναι διαθέσιμη στον λογαριασμό σας. Επικοινωνήστε με την υποστήριξη για περισσότερες πληροφορίες.",
+  "fundExchangeWarningTitle": "Παρακολουθήστε τους απατεώνες",
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "fundExchangeCrIbanCrcLabelRecipientName": "Μαθητές Όνομα",
+  "fundExchangeCanadaPostStep7": "7. Τα κεφάλαια θα προστεθούν στην ισορροπία λογαριασμού σας Bull Bitcoin μέσα σε 30 λεπτά",
+  "fundExchangeWarningTactic8": "Σας πιέζουν να ενεργήσετε γρήγορα",
+  "fundExchangeBankTransfer": "Τράπεζα Μεταφοράς",
+  "fundExchangeWarningTactic3": "Λένε ότι εργάζονται για το χρέος ή τη συλλογή φόρων",
+  "fundExchangeWarningTacticsTitle": "Κοινές τακτικές απατεώνες",
+  "fundExchangeHelpBeneficiaryAddress": "Η επίσημη διεύθυνση μας, σε περίπτωση που αυτό απαιτείται από την τράπεζά σας",
+  "fundExchangeBankTransferWireTimeframe": "Κάθε κεφάλαια που στέλνετε θα προστεθεί στο Bitcoin της Bull μέσα σε 1-2 εργάσιμες ημέρες.",
+  "fundExchangeLabelInstitutionNumber": "Αριθμός ιδρύματος",
+  "fundExchangeSpeiDescription": "Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE",
+  "fundExchangeCrIbanUsdLabelRecipientName": "Μαθητές Όνομα",
+  "fundExchangeETransferLabelSecretAnswer": "Μυστική απάντηση",
+  "fundExchangeCanadaPostStep6": "6. Το ταμείο θα σας παραδώσει μια παραλαβή, κρατήστε το ως απόδειξη πληρωμής σας",
+  "fundExchangeCanadaPostStep5": "5. Πληρώστε με μετρητά ή χρεωστική κάρτα",
+  "fundExchangeETransferLabelEmail": "Στείλτε την μεταφορά E σε αυτό το email",
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Προσθέστε αυτή την εταιρεία ως payee - είναι ο επεξεργαστής πληρωμών της Bull Bitcoin",
+  "fundExchangeETransferTitle": "E-Transfer λεπτομέρειες",
+  "fundExchangeETransferLabelSecretQuestion": "Μυστική ερώτηση",
+  "fundExchangeCanadaPostStep1": "1. Πηγαίνετε σε οποιαδήποτε τοποθεσία Canada Post",
+  "fundExchangeLabelBankAddress": "Διεύθυνση της τράπεζάς μας",
+  "fundExchangeCanadaPostStep2": "2. 2. 2. 2. Ζητήστε από τα ταμειακά ταμεία να σαρώσουν τον κωδικό \"Loadhub\" QR",
+  "fundExchangeETransferLabelBeneficiaryName": "Χρησιμοποιήστε αυτό ως δικαιούχο όνομα ηλεκτρονικού ταχυδρομείου",
+  "fundExchangeCanadaPostStep4": "4. Το ταμείο θα ζητήσει να δει ένα κομμάτι της κυβερνητικής ταυτότητας και να επαληθεύσει ότι το όνομα στο ID σας ταιριάζει με το λογαριασμό Bitcoin της Bull σας",
+  "fundExchangeOnlineBillPaymentDescription": "Κάθε ποσό που στέλνετε μέσω του online λογαριασμού πληρωμής της τράπεζάς σας χρησιμοποιώντας τις παρακάτω πληροφορίες θα πιστωθεί στην ισορροπία λογαριασμού σας Bull Bitcoin εντός 3-4 εργάσιμων ημερών.",
+  "fundExchangeETransferDescription": "Κάθε ποσό που στέλνετε από την τράπεζά σας μέσω ηλεκτρονικού ταχυδρομείου E-Transfer χρησιμοποιώντας τις παρακάτω πληροφορίες θα πιστωθεί στην ισορροπία λογαριασμού σας Bull Bitcoin μέσα σε λίγα λεπτά.",
+  "fundExchangeCanadaPostStep3": "3. Tell the Cashier το ποσό που θέλετε να φορτώσετε",
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Αναζητήστε τον κατάλογο των τιμητών της τράπεζάς σας για αυτό το όνομα",
+  "fundExchangeCanadaPostTitle": "Σε μετρητά προσώπου ή χρέωση στον Καναδά Post",
+  "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
+  "fundExchangeScamConsentError": "Αποτυχία καταγραφής της συγκατάθεσής σας. Δοκιμάστε ξανά.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Κολομβία",
+  "fundExchangeCopDailyLimitWarning": "Αν υπερβείτε το ημερήσιο όριο συναλλαγών σας, η συναλλαγή θα αποτύχει. Θα χρειαστεί να επικοινωνήσετε με την υποστήριξη πελατών.",
+  "fundExchangeCopSenderName": "Όνομα αποστολέα",
+  "fundExchangeCopIssuingBank": "Τράπεζα έκδοσης",
+  "fundExchangeCopSelectBankError": "Επιλέξτε μια τράπεζα έκδοσης",
+  "fundExchangeCopAmount": "Ποσό",
+  "fundExchangeCopEnterAmountError": "Εισάγετε ένα ποσό",
+  "fundExchangeCopValidAmountError": "Εισάγετε ένα έγκυρο ποσό",
+  "fundExchangeCopGeneratePaymentLink": "Δημιουργία συνδέσμου πληρωμής",
+  "fundExchangeCopRedirectMessage": "Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.",
+  "fundExchangeCopOpenPaymentLink": "Άνοιγμα συνδέσμου πληρωμής",
+  "fundExchangeErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "fundExchangeMethodConfidentialSepa": "Εμπιστευτικό SEPA",
+  "fundExchangeMethodConfidentialSepaSubtitle": "Ένα προσωπικό εικονικό IBAN για ιδιωτική κατάθεση χρημάτων",
+  "fundExchangeSinpeWarningNoBitcoin": "Μην βάζεις",
+  "fundExchangeSinpeWarningNoBitcoinDescription": " τη λέξη \"Bitcoin\" ή \"Crypto\" στην περιγραφή πληρωμής. Αυτό θα εμποδίσει την πληρωμή σας.",
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Αυτός ο μοναδικός αριθμός λογαριασμού δημιουργείται μόνο για εσάς",
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Προσθέστε αυτό ως τον αριθμό λογαριασμού",
+  "exchangeCurrencyDropdownTitle": "Επιλέξτε νόμισμα",
+  "exchangeAmountInputValidationInvalid": "Ακυρωμένο ποσό",
+  "exchangeAmountInputValidationInsufficient": "Ανεπαρκή ισορροπία",
+  "exchangeAmountInputValidationEmpty": "Παρακαλώ εισάγετε ένα ποσό",
+  "exchangeCurrencyDropdownValidation": "Επιλέξτε ένα νόμισμα",
+  "exchangeAmountInputTitle": "Εισάγετε το ποσό",
+  "exchangeAmountInputValidationZero": "Το ποσό πρέπει να είναι μεγαλύτερο από το μηδέν",
+  "save": "Εξοικονομήστε",
+  "exchangeBitcoinWalletsDescription": "Ορίστε προεπιλεγμένο πορτοφόλι διευθύνσεις για αυτόματη απόσυρση Bitcoin.",
+  "exchangeBitcoinWalletsEnterAddressHint": "Διεύθυνση Enter",
+  "exchangeDcaAddressLabelLiquid": "Liquid διεύθυνση",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin διεύθυνση Bitcoin",
+  "delete": "Διαγράψτε",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin διεύθυνση",
+  "cancel": "Ακύρωση",
+  "exchangeBitcoinWalletsSaveSuccess": "Η διεύθυνση Wallet έσωσε με επιτυχία",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid διεύθυνση",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN διεύθυνση)",
+  "exchangeDcaAddressLabelLightning": "Lightning διεύθυνση Lightning",
+  "settingsTermsOfServiceTitle": "Όροι Υπηρεσίας",
+  "continueButton": "Συνεχίστε να συνεχίζετε",
+  "autoBuyTitle": "Αυτόματη αγορά",
+  "autoBuyDescription": "Αγοράζετε αυτόματα Bitcoin κάθε φορά που καταθέτετε χρήματα στον λογαριασμό σας",
+  "autoBuyActivate": "Ενεργοποίηση αυτόματης αγοράς",
+  "autoBuyDeactivate": "Απενεργοποίηση αυτόματης αγοράς",
+  "autoBuyCancelTitle": "Ακύρωση αυτόματης αγοράς;",
+  "autoBuyCancelMessage": "Την επόμενη φορά που θα χρηματοδοτήσετε τον λογαριασμό σας δεν θα αγοράσετε αυτόματα Bitcoin.",
+  "autoBuyDeactivateConfirm": "Ναι, απενεργοποίηση",
+  "autoBuyHowItWorks": "Πώς λειτουργεί",
+  "autoBuyConnectWallet": "Συνδέστε το Bitcoin, Lightning ή Liquid πορτοφόλι σας",
+  "autoBuyPurchaseCreated": "Κάθε φορά που χρηματοδοτείτε τον λογαριασμό σας Bull Bitcoin δημιουργείται αυτόματα μια αγορά Bitcoin.",
+  "autoBuyBitcoinSent": "Το Bitcoin αποστέλλεται απευθείας στο δικό σας πορτοφόλι.",
+  "autoBuyRiskDisclaimer": "Η εκτέλεση της εντολής δεν είναι εγγυημένη. Καθυστερήσεις ή μεταβολές της τιμής μεταξύ της κατάθεσης και της αγοράς μπορούν να αλλάξουν την πραγματική ισοτιμία.",
+  "autoBuyGetStarted": "Ξεκινήστε με την αυτόματη αγορά",
+  "autoBuyConfirmTitle": "Επιβεβαίωση αυτόματης αγοράς",
+  "autoBuyInfoMessage": "Κάθε ποσό που προστίθεται στον λογαριασμό σας θα μετατρέπεται σε Bitcoin με την τρέχουσα συναλλαγματική ισοτιμία και θα αποστέλλεται στο πορτοφόλι σας.",
+  "autoBuyAccountUnavailableError": "Ο λογαριασμός σας Bull Bitcoin δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
+  "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
+  "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
+  "exchangeAuthLoginFailedMessage": "Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.",
+  "exchangeAuthLoginFailedOkButton": "ΕΝΤΆΞΕΙ",
+  "exchangeAuthLoginFailedTitle": "Εμπορία",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
+  "exchangeDcaNetworkLiquid": "Liquid Network",
+  "exchangeDcaNetworkBitcoin": "Bitcoin Network",
+  "exchangeDcaCancelDialogCancelButton": "Ακύρωση",
+  "exchangeDcaCancelDialogConfirmButton": "Ναι, απενεργοποιημένη",
+  "exchangeDcaCancelDialogMessage": "Το επαναλαμβανόμενο σχέδιο αγοράς Bitcoin θα σταματήσει και οι προγραμματισμένες αγορές θα τελειώσουν. Για να επανεκκινήσετε, θα πρέπει να δημιουργήσετε ένα νέο σχέδιο.",
+  "exchangeDcaFrequencyDay": "μέρα",
+  "exchangeKycCardSubtitle": "Για να αφαιρέσετε τα όρια συναλλαγών",
+  "exchangeDcaFrequencyWeek": "εβδομάδα",
+  "exchangeDcaNetworkLightning": "Δίκτυο Lightning Network",
+  "exchangeKycLevelLimited": "Limited",
+  "exchangeKycLevelLight": "Φως",
+  "exchangeDcaFrequencyHour": "ώρα",
+  "exchangeKycCardTitle": "Πλήρης σας KYC",
+  "exchangeDcaCancelDialogTitle": "Ακυρώστε Bitcoin Recurring Buy?",
+  "transactionHistoryTitle": "Ιστορικό συναλλαγών",
+  "exchangeDcaSummaryMessage": "Αγοράζετε {amount} κάθε {frequency} μέσω {network}, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.",
+  "exchangeDcaFrequencyMonth": "μήνα",
+  "settingsScreenTitle": "Ρυθμίσεις",
+  "exchangeDcaHideSettings": "Κρυμμένες ρυθμίσεις",
+  "exchangeDcaViewSettings": "Ρυθμίσεις προβολής",
+  "exchangeDcaUnableToGetConfig": "Δεν είναι σε θέση να πάρει τη διαμόρφωση DCA",
+  "exchangeDcaActivateTitle": "Ενεργοποίηση Recuring Buy",
+  "exchangeHomeDepositButton": "Προκαταβολή",
+  "exchangeHomeWithdrawButton": "Withdraw",
+  "exchangeDcaDeactivateTitle": "Απενεργοποιήστε το Recuring Buy",
+  "homeActionBuy": "Αγορά",
+  "homeActionSell": "Πώληση",
+  "homeActionPay": "Πληρωμή",
+  "homeActionTransfer": "Ανταλλαγή",
+  "recipientsSearchHint": "Παραλήπτες αναζήτησης με όνομα ή ετικέτα",
+  "recipientsScreenTitle": "Επιλογή παραλήπτη",
+  "recipientsScreenSubtitle": "Σε ποιον πληρώνεις;",
+  "recipientsTabNew": "Νέος παραλήπτης",
+  "recipientsTabList": "Οι παραλήπτες fiat μου",
+  "recipientsPayoutMethod": "Μέθοδος πληρωμής",
+  "recipientsFilterByJurisdiction": "Φιλτράρισμα ανά δικαιοδοσία:",
+  "recipientsListEmpty": "Δεν βρέθηκαν παραλήπτες.",
+  "recipientsContinue": "Συνέχεια",
+  "recipientsJurisdictionAll": "Όλες οι δικαιοδοσίες",
+  "recipientsJurisdictionCanada": "🇨🇦 Καναδάς",
+  "recipientsJurisdictionEurope": "🇪🇺 Ευρώπη (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Μεξικό",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Κόστα Ρίκα",
+  "recipientsJurisdictionArgentina": "🇦🇷 Αργεντινή",
+  "recipientsJurisdictionColombia": "🇨🇴 Κολομβία",
+  "recipientsTypeInteracEmail": "Μεταφορά χρημάτων μέσω email",
+  "recipientsTypeBillPayment": "Πληρωμή λογαριασμού",
+  "recipientsTypeBankTransfer": "Τραπεζικό έμβασμα",
+  "recipientsTypeSepa": "Έμβασμα SEPA",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Κάρτα",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Αργεντινής",
+  "recipientsTypeBankAccountCo": "Τραπεζικός λογαριασμός COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "Email",
+  "recipientsInfoPayee": "Δικαιούχος",
+  "recipientsInfoAccount": "Λογαριασμός",
+  "recipientsInfoPhone": "Τηλέφωνο",
+  "recipientsInfoCard": "Κάρτα",
+  "recipientsInfoLabel": "Ετικέτα",
+  "recipientsValidationFieldRequired": "Αυτό το πεδίο δεν μπορεί να είναι κενό",
+  "recipientsLabelOptional": "Ετικέτα (προαιρετικό)",
+  "recipientsLabelHint": "Εισαγάγετε μια ετικέτα για αυτόν τον παραλήπτη",
+  "recipientsFieldName": "Όνομα",
+  "recipientsFieldNameHint": "Εισαγάγετε το όνομα του παραλήπτη",
+  "recipientsFieldRecipientNameLabel": "Όνομα του παραλήπτη",
+  "recipientsFieldPhoneNumber": "Αριθμός τηλεφώνου",
+  "recipientsFieldPhoneNumberHint": "Εισαγάγετε τον αριθμό τηλεφώνου",
+  "recipientsFieldDocumentType": "Τύπος ταυτότητας παραλήπτη",
+  "recipientsFieldDocumentNumberHint": "Εισαγάγετε τον αριθμό ταυτότητας του παραλήπτη",
+  "recipientsFieldOwnerName": "Όνομα κατόχου",
+  "recipientsFieldOwnerNameHint": "Εισαγάγετε το όνομα του κατόχου",
+  "recipientsAccountOwnerQuestion": "Σε ποιον ανήκει αυτός ο λογαριασμός;",
+  "recipientsAccountOwnerMine": "Είναι ο λογαριασμός μου",
+  "recipientsAccountOwnerSomeoneElse": "Είναι ο λογαριασμός κάποιου άλλου",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "Εισαγάγετε το IBAN",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "Εισαγάγετε τον αριθμό CLABE",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "Εισαγάγετε τον αριθμό CVU/CBU",
+  "recipientsFieldBankInstitution": "Τραπεζικό ίδρυμα",
+  "recipientsFieldBankInstitutionPlaceholder": "Επιλέξτε τραπεζικό ίδρυμα",
+  "recipientsValidationBankInstitution": "Παρακαλώ επιλέξτε ένα τραπεζικό ίδρυμα",
+  "recipientsFieldAccountType": "Τύπος λογαριασμού",
+  "recipientsAccountTypeSavings": "Αποταμίευσης",
+  "recipientsAccountTypeChecking": "Τρεχούμενος",
+  "recipientsFieldBankAccountNumber": "Αριθμός τραπεζικού λογαριασμού",
+  "recipientsFieldBankAccountNumberHint": "Εισαγάγετε τον αριθμό τραπεζικού λογαριασμού",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "Διαβατήριο",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Αριθμός χρεωστικής κάρτας",
+  "recipientsFieldDebitCardHint": "Εισαγάγετε τον αριθμό της χρεωστικής κάρτας",
+  "recipientsFieldOwnerNameSinpeHint": "Το όνομα του κατόχου θα εμφανιστεί εδώ",
+  "recipientsValidationSinpeOwner": "Επικυρώστε τον αριθμό τηλεφώνου",
+  "recipientsFieldEmailAddress": "Διεύθυνση email",
+  "recipientsFieldEmailAddressHint": "Εισαγάγετε τη διεύθυνση email",
+  "recipientsFieldSecurityQuestion": "Ερώτηση ασφαλείας",
+  "recipientsFieldSecurityQuestionHint": "Εισαγάγετε την ερώτηση ασφαλείας (10-40 χαρακτήρες)",
+  "recipientsFieldSecurityAnswer": "Απάντηση ασφαλείας",
+  "recipientsFieldSecurityAnswerHint": "Εισαγάγετε την απάντηση ασφαλείας",
+  "recipientsValidationSecurityQuestionMin": "Η ερώτηση ασφαλείας πρέπει να έχει τουλάχιστον 10 χαρακτήρες",
+  "recipientsCharCounter": "{count}/40 χαρακτήρες",
+  "recipientsFieldInstitutionCode": "Κωδικός ιδρύματος",
+  "recipientsFieldInstitutionCodeHint": "Εισαγάγετε τον κωδικό του ιδρύματος",
+  "recipientsFieldInstitutionNumber": "Αριθμός ιδρύματος",
+  "recipientsFieldInstitutionNumberHint": "Εισαγάγετε τον αριθμό του ιδρύματος",
+  "recipientsFieldTransitNumber": "Αριθμός διέλευσης",
+  "recipientsFieldTransitNumberHint": "Εισαγάγετε τον αριθμό διέλευσης",
+  "recipientsFieldAccountNumber": "Αριθμός λογαριασμού",
+  "recipientsFieldAccountNumberHint": "Εισαγάγετε τον αριθμό λογαριασμού",
+  "recipientsFieldDefaultComment": "Προεπιλεγμένο σχόλιο (προαιρετικό)",
+  "recipientsFieldDefaultCommentHint": "Εισαγάγετε το προεπιλεγμένο σχόλιο",
+  "recipientsFieldCorporateAccount": "Εταιρικός λογαριασμός",
+  "recipientsFieldFirstName": "Όνομα",
+  "recipientsFieldFirstNameHint": "Εισαγάγετε το όνομα",
+  "recipientsFieldLastName": "Επώνυμο",
+  "recipientsFieldLastNameHint": "Εισαγάγετε το επώνυμο",
+  "recipientsFieldCorporateName": "Εταιρική επωνυμία",
+  "recipientsFieldCorporateNameHint": "Εισαγάγετε την εταιρική επωνυμία",
+  "recipientsFieldBillerName": "Όνομα παρόχου",
+  "recipientsFieldBillerNameHint": "Αναζητήστε και επιλέξτε έναν πάροχο",
+  "recipientsValidationBillerSearchMin": "Εισαγάγετε 3 ή περισσότερους χαρακτήρες για αναζήτηση",
+  "recipientsValidationBillerSelect": "Επιλέξτε έναν πάροχο από τη λίστα",
+  "recipientsFieldPayeeAccountNumber": "Αριθμός λογαριασμού δικαιούχου",
+  "recipientsFieldSinpePhoneNumberHint": "8 ψηφία χωρίς κωδικό χώρας",
+  "recipientsCopDocCcRecipientNumber": "Αριθμός cédula παραλήπτη",
+  "recipientsCopDocCeRecipientNumber": "Αριθμός cédula de extranjería παραλήπτη",
+  "recipientsCopDocNitRecipientNumber": "ΑΦΜ παραλήπτη",
+  "recipientsCopDocPassportRecipientNumber": "Αριθμός διαβατηρίου παραλήπτη",
+  "recipientsCopDocTiRecipientNumber": "Αριθμός ταυτότητας παραλήπτη",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Αριθμός ληξιαρχικής εγγραφής παραλήπτη",
+  "recipientsValidationSinpePhoneCountryCode": "Αφαιρέστε τον κωδικό χώρας (+506). Εισαγάγετε μόνο τον 8ψήφιο αριθμό",
+  "recipientsValidationSinpePhoneInvalidChars": "Χρησιμοποιήστε μόνο ψηφία (όχι γράμματα ή σύμβολα)",
+  "recipientsValidationSinpePhoneTooShort": "Εισαγάγετε και τα 8 ψηφία του αριθμού τηλεφώνου",
+  "recipientsErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των παραληπτών σας. Δοκιμάστε ξανά.",
+  "recipientsErrorSaveFailed": "Δεν ήταν δυνατή η αποθήκευση αυτού του παραλήπτη. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
+  "recipientsErrorSinpeLookupFailed": "Δεν μπορέσαμε να επαληθεύσουμε αυτόν τον αριθμό τηλεφώνου. Ελέγξτε τον και δοκιμάστε ξανά.",
+  "recipientsErrorBillerSearchFailed": "Δεν ήταν δυνατή η αναζήτηση φορέων πληρωμών. Δοκιμάστε ξανά.",
+  "recipientsErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "recipientsListPullToRetry": "Τραβήξτε προς τα κάτω για επανάληψη.",
+  "recipientsErrorSavedButNotSelected": "Αυτός ο παραλήπτης αποθηκεύτηκε, αλλά δεν μπορέσαμε να συνεχίσουμε. Βρείτε τον στη λίστα σας.",
+  "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",
+  "recipientsErrorVirtualIbanNotAvailable": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
+  "recipientsErrorEuResidencyRequired": "Πρέπει να είστε κάτοικος της Ευρωπαϊκής Ένωσης για να ενεργοποιήσετε το εμπιστευτικό SEPA.",
+  "recipientsConfidentialSepaActivatingTitle": "Ενεργοποίηση παραλήπτη",
+  "recipientsConfidentialSepaActivatingDescription": "Ο παραλήπτης σας ενεργοποιείται για το Εμπιστευτικό SEPA. Αυτό μπορεί να διαρκέσει μερικά λεπτά.",
+  "recipientsConfidentialSepaNotActivatedTitle": "Ο παραλήπτης δεν έχει ενεργοποιηθεί για το Εμπιστευτικό SEPA",
+  "recipientsConfidentialSepaNotActivatedDescription": "Αυτός ο παραλήπτης δεν έχει ενεργοποιηθεί ακόμη για το Εμπιστευτικό SEPA. Τον ενεργοποιούμε τώρα. Αυτό μπορεί να διαρκέσει μερικά λεπτά. Μπορείτε να χρησιμοποιήσετε το Άμεσο και Κανονικό SEPA αντ' αυτού.",
+  "recipientsConfidentialSepaActivatedTitle": "Ο παραλήπτης ενεργοποιήθηκε",
+  "recipientsConfidentialSepaActivatedDescription": "Ο παραλήπτης σας είναι πλέον ενεργός για το Εμπιστευτικό SEPA.",
+  "recipientsConfidentialSepaUseRegularSepa": "Χρησιμοποιήστε το Άμεσο και Κανονικό SEPA αντ' αυτού",
+  "recipientsVirtualIbanIntroTitle": "Ενεργοποίηση Εμπιστευτικού SEPA;",
+  "recipientsVirtualIbanNewBadge": "Νέο",
+  "recipientsVirtualIbanIntroDescription": "Χρηματοδοτήστε τον λογαριασμό σας ιδιωτικά με ένα προσωπικό εικονικό IBAN στο όνομά σας. Είναι δωρεάν.",
+  "recipientsVirtualIbanIntroSelfTransfer": "Όταν στέλνετε χρήματα από την τράπεζά σας στο Bull Bitcoin, εμφανίζεται ως μεταφορά στον εαυτό σας.",
+  "recipientsVirtualIbanIntroNoTransferCode": "Δεν απαιτείται κωδικός μεταφοράς.",
+  "recipientsVirtualIbanNameWarningTitle": "Σημαντικό: Απαιτείται αντιστοίχιση ονόματος",
+  "recipientsVirtualIbanNameWarningDescription": "Το όνομα του τραπεζικού λογαριασμού πρέπει να ταιριάζει ακριβώς με το όνομα του εικονικού σας IBAN στο Bull Bitcoin, αλλιώς η μεταφορά θα επιστραφεί αυτόματα. Τα ονόματα δεν ταιριάζουν; Επικοινωνήστε με την υποστήριξη.",
+  "recipientsVirtualIbanAccountOwnerName": "Όνομα κατόχου λογαριασμού",
+  "recipientsVirtualIbanNameConfirmation": "Επιβεβαιώνω ότι το όνομα ταιριάζει με τον/τους τραπεζικό/ούς λογαριασμό/ούς μου",
+  "recipientsVirtualIbanActivate": "Ενεργοποίηση Εμπιστευτικού SEPA",
+  "recipientsVirtualIbanActivatingTitle": "Ενεργοποίηση Εμπιστευτικού SEPA...",
+  "recipientsVirtualIbanActivatingDescription": "Δημιουργείται το εικονικό σας IBAN. Αυτό μπορεί να διαρκέσει λίγα λεπτά.",
+  "recipientsVirtualIbanActivatedTitle": "Το Εμπιστευτικό SEPA ενεργοποιήθηκε",
+  "recipientsVirtualIbanActivatedDescription": "Μπορείτε πλέον να χρησιμοποιείτε το προσωπικό σας εικονικό IBAN για να κάνετε αναλήψεις ιδιωτικά.",
+  "recipientsVirtualIbanCopied": "Κόπηκε να πετάξε",
+  "recipientsVirtualIbanDone": "Έγινε",
+  "recipientsVirtualIbanRecipientName": "Μαθητές όνομα",
+  "recipientsVirtualIbanIbanLabel": "Αριθμός εικονικού λογαριασμού IBAN",
+  "recipientsVirtualIbanCountry": "Τράπεζα λογαριασμού χώρα",
+  "recipientsVirtualIbanBic": "Κωδικός BIC",
+  "recipientsVirtualIbanActivatedFundingDescription": "Μπορείτε πλέον να χρησιμοποιείτε το προσωπικό σας εικονικό IBAN για να καταθέτετε χρήματα ιδιωτικά.",
+  "recipientsVirtualIbanShowDetails": "Εμφάνιση στοιχείων του εικονικού μου IBAN",
+  "recipientsVirtualIbanDetailsDescription": "Χρηματοδοτήστε τον λογαριασμό σας ιδιωτικά με ένα προσωπικό εικονικό IBAN στο όνομά σας. Η κατάθεση θα εμφανίζεται ως πληρωμή στον εαυτό σας, χωρίς κωδικό μεταφοράς.",
+  "recipientsVirtualIbanBankAddress": "Διεύθυνση τράπεζας",
+  "recipientsVirtualIbanBankAddressHelp": "Η επίσημη διεύθυνση της τράπεζας, σε περίπτωση που τη ζητήσει η τράπεζά σας.",
+  "recipientsConfidentialSepaNameMustMatchHint": "Τα ονόματα στην τράπεζά σας και στον εικονικό IBAN πρέπει να ταιριάζουν, διαφορετικά οι μεταφορές θα επιστρέφονται αυτόματα.",
+  "recipientsFieldBankAccountIban": "Αριθμός τραπεζικού λογαριασμού (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας",
+  "withdrawOwnershipQuestion": "Ποιος ανήκει σε αυτόν τον λογαριασμό?",
+  "withdrawOwnershipOtherAccount": "Αυτός είναι ο λογαριασμός κάποιου άλλου",
+  "withdrawAboveMaxAmountError": "Μέγιστη ποσότητα είναι {amount} {currency}",
+  "withdrawConfirmCard": "Card",
+  "withdrawBelowMinAmountError": "Ελάχιστη ποσότητα είναι {amount} {currency}",
+  "withdrawConfirmPhone": "Phone",
+  "withdrawAmountContinue": "Συνεχίστε να συνεχίζετε",
+  "withdrawUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
+  "withdrawConfirmTitle": "Επιβεβαίωση απόσυρσης",
+  "withdrawConfirmAmount": "Ποσο Ποσό Ποσο",
+  "withdrawConfirmEmail": "E-mail email",
+  "withdrawConfirmButton": "Επιβεβαίωση απόσυρσης",
+  "withdrawOwnershipMyAccount": "Αυτός είναι ο λογαριασμός μου",
+  "withdrawAmountTitle": "Mdraw fiat",
+  "withdrawConfirmClabe": "CLABE",
+  "withdrawConfirmPayee": "Payee",
+  "withdrawConfirmRecipientName": "Μαθητές όνομα",
+  "withdrawConfirmAccount": "Λογαριασμός",
+  "withdrawSuccessOrderDetails": "Διατάξει λεπτομέρειες",
+  "withdrawSuccessTitle": "Απόσυρση",
+  "withdrawConfirmIban": "IBAN",
+  "withdrawConfirmBankAccount": "Τραπεζικό λογαριασμό",
+  "withdrawInteracSecurityDetailsTitle": "Στοιχεία ασφαλείας μεταφοράς",
+  "withdrawInteracSaveAsDefault": "Αποθήκευση αυτών των στοιχείων ως προεπιλογή",
+  "withdrawInteracSecurityQuestionLengthError": "Η ερώτηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες",
+  "withdrawInteracSecurityAnswerLengthError": "Η απάντηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες",
+  "withdrawInteracSecurityAnswerFormatError": "Χρησιμοποιήστε γράμματα, αριθμούς ή παύλες χωρίς κενά",
+  "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
+  "withdrawConfidentialSepaNotActivatedError": "Ενεργοποιήστε την επιλογή εμπιστευτικής πληρωμής για αυτόν τον παραλήπτη SEPA.",
+  "limitOrdersTitle": "Limit orders",
+  "limitOrdersActiveTitle": "Active limit orders",
+  "limitOrdersCreateNew": "Create new",
+  "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
+  "limitOrdersBuyAt": "Buy at {price}",
+  "limitOrdersCancelAll": "Cancel all",
+  "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
+  "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
+  "limitOrdersDialogConfirm": "Confirm",
+  "limitOrdersDone": "Done",
+  "limitOrdersTargetPrice": "Target price",
+  "limitOrdersFiatAmount": "Amount",
+  "limitOrdersEstimatedBuyPrice": "Estimated buy price",
+  "limitOrderDetailsTitle": "Limit order details",
+  "limitOrderDetailsStatus": "Status",
+  "limitOrderDetailsNumber": "Order number",
+  "limitOrderDetailsAddress": "Payout address",
+  "limitOrderDetailsCreated": "Created",
+  "limitOrderDetailsExpires": "Expires",
+  "limitOrderCancel": "Cancel limit order",
+  "limitOrderCancelTitle": "Cancel this limit order?",
+  "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
+  "limitOrderStatusActive": "Active",
+  "limitOrderStatusExecuted": "Executed",
+  "limitOrderStatusCancelled": "Cancelled",
+  "limitOrderStatusExpired": "Expired",
+  "limitOrderStatusFailed": "Failed",
+  "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
+  "limitOrderNotFoundError": "This limit order could not be found.",
+  "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
+  "limitOrderInvalidAddressError": "The selected payout address is not valid.",
+  "limitOrderCreationError": "The limit order could not be created. Please try again.",
+  "logoutConfirmationLogout": "Logout",
+  "logoutConfirmationTitle": "Επιβεβαίωση Logout",
+  "logoutConfirmationCancel": "Ακύρωση",
+  "logoutConfirmationDescription": "Είστε σίγουροι ότι θέλετε να συνδεθείτε από το λογαριασμό σας Bitcoin Bull; Θα πρέπει να συνδεθείτε ξανά σε χαρακτηριστικά ανταλλαγής.",
+  "exchangeSettingsLogOutTitle": "Συνδεθείτε έξω",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationDescription": "Αυτό θα στείλει ένα αίτημα διαγραφής λογαριασμού στην ομάδα υποστήριξής μας. Ο λογαριασμός σας θα διαγραφεί εντός 5 εργάσιμων ημερών.",
+  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountSuccessTitle": "Ζητήθηκε Διαγραφή Λογαριασμού",
+  "deleteAccountSuccessDescription": "Το αίτημά σας για διαγραφή λογαριασμού έχει υποβληθεί. Θα επεξεργαστεί εντός 5 εργάσιμων ημερών.",
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "Η πληρωμή σας θα σταλεί ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "buyConfirmExternalWallet": "Εξωτερικό Bitcoin πορτοφόλι",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "buyConfirmExpressWithdrawal": "Επιβεβαίωση ρητή απόσυρση",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Απαιτείται συμβατό πορτοφόλι",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "Παίρνεις",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyAboveMaxAmountError": "Προσπαθείτε να αγοράσετε πάνω από το μέγιστο ποσό.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyBelowMinAmountError": "Προσπαθείτε να αγοράσετε κάτω από το ελάχιστο ποσό.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyConfirmPayoutWallet": "Πορτοφόλι πληρωμής",
+  "buyPayoutMethodLiquid": "L-BTC στο Liquid",
+  "buyPayoutMethodBitcoin": "BTC στην αλυσίδα Bitcoin",
+  "buyConfirmPayoutMethod": "Μέθοδος πληρωμής",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "Υγρό",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "Ελάχιστη 0,001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "Συνεχίστε να συνεχίζετε",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "Ανεπαρκή ισορροπία",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "buyUnexpectedError": "Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
+  "dcaConfirmPaymentMethod": "Μέθοδος πληρωμής",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Bitcoin Price",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "Εκτιμώμενη τιμή χρέωσης",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Εισαγάγετε ποσό",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "buyInputContinue": "Συνεχίστε να συνεχίζετε",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Επιβεβαίωση χρόνου επιβεβαίωσης",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "Αγοράσατε {amount} με {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Επιτυχημένη συναλλαγή",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Max",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Αγοράστε Bitcoin Bitcoin",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buySelectWallet": "Επιλέξτε πορτοφόλι",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H ...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyInputKycMessage": "Πρέπει να ολοκληρώσετε την επαλήθευση ταυτότητας πρώτα",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyNetworkFees": "Network χρεώσεις",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaConfirmNetworkLightning": "Lightning",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSelectFrequencyLabel": "Επιλέξτε συχνότητα",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaConfirmPaymentBalance": "{currency} ισορροπία",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputCompleteKyc": "Πλήρης KYC",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaConfirmFrequency": "Συχνότητα συχνότητας",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "dcaConfirmOrderType": "Τύπος τύπου παραγγελίας",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "buyWaitForFreeWithdrawal": "Περιμένετε δωρεάν απόσυρση",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Απαιτεί συμβατό πορτοφόλι, μέγιστο 0,25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "Χρηματοδότηση του λογαριασμού σας",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "10 λεπτά",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Περιμένοντας επιβεβαίωση ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaSetupFrequencyError": "Επιλέξτε μια συχνότητα",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "buyConfirmTitle": "Αγοράστε Bitcoin Bitcoin",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyThatWasFast": "Αυτό ήταν γρήγορο, δεν ήταν αυτό?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyDaily": "Κάθε μέρα",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "buyConfirmPurchase": "Επιβεβαίωση αγοράς",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyInputMaxAmountError": "Δεν μπορείς να αγοράσεις περισσότερα από",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyNetworkFeeRate": "Φόρος χρέωσης δικτύου",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmNetwork": "Network",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "dcaConfirmTitle": "Επιβεβαίωση Αγοράστε αγορά αγορά",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaSetupContinue": "Συνεχίστε να συνεχίζετε",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "buyConfirmYouPay": "Πληρώνετε",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Επιλέξτε Bitcoin Wallet Type",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "buyInputInsufficientBalance": "Ανεπαρκή ισορροπία",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "buyInputInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmAmount": "Ποσο Ποσό Ποσο",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaConfirmFrequencyWeekly": "Κάθε εβδομάδα",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "dcaSetupFundAccount": "Χρηματοδότηση του λογαριασμού σας",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyEnterBitcoinAddress": "Εισάγετε διεύθυνση bitcoin",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "dcaConfirmAutoMessage": "Οι παραγγελίες αγοράς θα τοποθετηθούν αυτόματα ανά αυτές τις ρυθμίσεις. Μπορείτε να τα απενεργοποιήσετε οποιαδήποτε στιγμή.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLightning": "Lightning Network (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Το τέλος του δικτύου Bitcoin θα αφαιρεθεί από το ποσό που λαμβάνετε και συλλέγονται από τους ανθρακωρύχους Bitcoin",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaSetupScheduleMessage": "Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmContinue": "Συνεχίστε να συνεχίζετε",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "Δείτε λεπτομέρειες",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "Κάθε ώρα",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmLightningAddress": "Lightning διεύθυνση Lightning",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyPaymentMethod": "Μέθοδος πληρωμής",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "dcaConfirmFrequencyMonthly": "Κάθε μήνα",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyBitcoinSent": "Bitcoin αποστέλλεται!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "buyUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyInputMinAmountError": "Θα πρέπει να αγοράσετε τουλάχιστον",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "dcaUseDefaultLightningAddress": "Χρησιμοποιήστε την προεπιλεγμένη διεύθυνση Lightning μου.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Αποκτήστε το επιβεβαίωσε πιο γρήγορα",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Επιβεβαίωση",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Recuring buy",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Set Recuring Buy",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaChooseWalletTitle": "Επιλέξτε Bitcoin Wallet",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "dcaSuccessMessageHourly": "Θα αγοράζετε {amount} κάθε ώρα",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaNetworkValidationError": "Επιλέξτε ένα δίκτυο",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaSuccessMessageMonthly": "Θα αγοράζετε {amount} κάθε μήνα",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaEnterLightningAddressLabel": "Εισάγετε διεύθυνση Lightning",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "dcaWalletSelectionDescription": "Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "dcaSuccessMessageDaily": "Θα αγοράσετε {amount} κάθε μέρα",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSuccessTitle": "Το Recuring Buy είναι Active!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "dcaBackToHomeButton": "Επιστροφή στο σπίτι",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "dcaSuccessMessageWeekly": "Θα αγοράζετε {amount} κάθε εβδομάδα",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "dcaAccountUnavailableError": "Δεν ήταν δυνατή η φόρτωση του λογαριασμού σας. Ελέγξτε τη σύνδεσή σας, βεβαιωθείτε ότι έχετε συνδεθεί και δοκιμάστε ξανά.",
+  "dcaLightningAddressRequiredError": "Εισαγάγετε μια διεύθυνση Lightning για να λαμβάνετε τις αγορές σας.",
+  "dcaReceiveAddressError": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης στο πορτοφόλι σας. Δοκιμάστε ξανά.",
+  "dcaOrderCreationError": "Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα."
 }

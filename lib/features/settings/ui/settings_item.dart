@@ -1,3 +1,4 @@
+import 'package:all_seed_view/all_seed_view.dart';
 import 'package:access/access.dart';
 import 'package:background_tasks/background_tasks.dart'
     show backgroundSyncAvailable;
@@ -5,10 +6,10 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/features/settings/settings_links.dart';
+import 'package:backups/backups.dart';
+import 'package:bip85/bip85.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
@@ -19,19 +20,21 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:silent/silent.dart';
+import 'package:silent/localizations.dart';
+import 'package:swap_feature/swap_feature.dart' show SwapNavigation;
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:settings/settings.dart';
 
 enum SettingsItemId {
   exchange,
@@ -124,10 +127,34 @@ class SettingsItem {
     this.iconAsset,
   }) : _open = open; // ignore: prefer_initializing_formals
 
-  String location(TextDirection textDirection) =>
-      path.join(textDirection == TextDirection.rtl ? ' ← ' : ' → ');
-
   void open(BuildContext context) => _open(context);
+
+  SettingsEntry hubEntry({Widget? homeIcon}) => SettingsEntry(
+    id: id.name,
+    title: title,
+    breadcrumbs: path,
+    icon: icon,
+    open: open,
+    keywords: keywords,
+    showOnHome: section == SettingsItemSection.root,
+    isSuperuser: isSuperuser,
+    indicatesServiceHealth: id == SettingsItemId.servicesStatus,
+    homeIcon: homeIcon,
+  );
+
+  Widget? assetIcon(BuildContext context, {Color? iconColor}) {
+    final asset = iconAsset;
+    if (asset == null) return null;
+    return SvgPicture.asset(
+      asset,
+      width: 24,
+      height: 24,
+      colorFilter: ColorFilter.mode(
+        iconColor ?? context.appColors.onSurface,
+        BlendMode.srcIn,
+      ),
+    );
+  }
 
   Widget buildTile(
     BuildContext context, {
@@ -135,20 +162,9 @@ class SettingsItem {
     Color? iconColor,
     Color? textColor,
   }) {
-    final asset = iconAsset;
     return BullSettingsEntryItem(
       icon: icon,
-      leading: asset == null
-          ? null
-          : SvgPicture.asset(
-              asset,
-              width: 24,
-              height: 24,
-              colorFilter: ColorFilter.mode(
-                iconColor ?? context.appColors.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
+      leading: assetIcon(context, iconColor: iconColor),
       iconColor: iconColor,
       textColor: textColor,
       title: title,
@@ -211,6 +227,7 @@ List<SettingsItem> buildSettingsItems({
   required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
+  final silent = silentCopy(localization.localeName);
   final feeSourceTitle = FeesNavigation.settingsTitle(localization.localeName);
   final arkTitle = arkLocalizationsForLanguage(localization.localeName).title;
   final rootSection = localization.settingsScreenTitle;
@@ -262,10 +279,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsStartBackup,
       ),
       icon: Icons.save_as,
-      open: (context) => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
-      ),
+      open: (context) => BackupsNavigation.start(context),
       keywords: _keywords(
         localization.settingsSearchStartBackupKeywords,
         english.settingsSearchStartBackupKeywords,
@@ -314,8 +328,7 @@ List<SettingsItem> buildSettingsItems({
         localization.transactionHistoryTitle,
       ),
       icon: Icons.file_download,
-      open: (context) =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
+      open: (context) => TransactionsNavigation.openExport(context),
       keywords: _keywords(
         localization.settingsSearchTransactionHistoryKeywords,
         english.settingsSearchTransactionHistoryKeywords,
@@ -341,7 +354,7 @@ List<SettingsItem> buildSettingsItems({
       title: localization.settingsExchangeTitle,
       path: path(SettingsItemSection.root, localization.settingsExchangeTitle),
       icon: Icons.currency_exchange,
-      open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
+      open: ExchangeAccessSettingsNavigation.open,
       keywords: _keywords(
         localization.settingsSearchExchangeKeywords,
         english.settingsSearchExchangeKeywords,
@@ -378,7 +391,7 @@ List<SettingsItem> buildSettingsItems({
       ),
       icon: Icons.description,
       open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.termsAndConditionsLink),
+        Uri.parse(SettingsLinks.termsAndConditionsLink),
         mode: LaunchMode.inAppBrowserView,
       ),
       keywords: _keywords(
@@ -428,7 +441,7 @@ List<SettingsItem> buildSettingsItems({
       icon: Icons.code,
       iconAsset: Assets.icons.github,
       open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.githubSupportLink),
+        Uri.parse(SettingsLinks.githubSupportLink),
         mode: LaunchMode.externalApplication,
       ),
       keywords: [
@@ -517,14 +530,17 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.swaps,
       section: SettingsItemSection.wallet,
-      title: localization.swapSettingsTitle,
-      path: path(SettingsItemSection.wallet, localization.swapSettingsTitle),
+      title: SwapNavigation.settingsTitle(localization.localeName),
+      path: path(
+        SettingsItemSection.wallet,
+        SwapNavigation.settingsTitle(localization.localeName),
+      ),
       icon: Icons.swap_horiz,
-      open: (context) => context.pushNamed(SwapRoute.swapSettings.name),
+      open: SwapNavigation.openSettings,
       keywords: _keywords(
         localization.settingsSearchSwapsKeywords,
         english.settingsSearchSwapsKeywords,
-        [english.swapSettingsTitle],
+        [SwapNavigation.settingsTitle(english.localeName)],
       ),
     ),
     SettingsItem(
@@ -590,7 +606,8 @@ List<SettingsItem> buildSettingsItems({
         title: localization.allSeedViewTitle,
         path: path(SettingsItemSection.wallet, localization.allSeedViewTitle),
         icon: Icons.vpn_key,
-        open: (context) => context.pushNamed(SettingsRoute.allSeedView.name),
+        open: (context) =>
+            context.pushNamed<void>(AllSeedViewRoute.allSeedView.name),
         keywords: _keywords(
           localization.settingsSearchSeedViewerKeywords,
           english.settingsSearchSeedViewerKeywords,
@@ -608,7 +625,7 @@ List<SettingsItem> buildSettingsItems({
           localization.bitcoinSettingsBip85EntropiesTitle,
         ),
         icon: Icons.science,
-        open: (context) => context.pushNamed(Bip85EntropyRoute.bip85Home.name),
+        open: const Bip85Route().push,
         keywords: _keywords(
           localization.settingsSearchBip85Keywords,
           english.settingsSearchBip85Keywords,
@@ -623,18 +640,17 @@ List<SettingsItem> buildSettingsItems({
         id: SettingsItemId.sp,
         section: SettingsItemSection.wallet,
         title: isSpWalletSetup
-            ? localization.spSettingsTitle
-            : localization.spSetupTitle,
+            ? silent.silentSettingsTitle
+            : silent.silentSetupTitle,
         path: path(
           SettingsItemSection.wallet,
           isSpWalletSetup
-              ? localization.spSettingsTitle
-              : localization.spSetupTitle,
+              ? silent.silentSettingsTitle
+              : silent.silentSetupTitle,
         ),
         icon: isSpWalletSetup ? Icons.currency_bitcoin : Icons.science,
-        open: (context) => context.pushNamed(
-          isSpWalletSetup ? SpRoute.spSettings.name : SpSetupRoute.spSetup.name,
-        ),
+        open: (context) =>
+            SilentNavigation.openSettings(context, isSetUp: isSpWalletSetup),
         isSuperuser: true,
       ),
     SettingsItem(

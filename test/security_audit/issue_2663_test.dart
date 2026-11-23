@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('source validates order binding beyond the server transaction ID', () {
     final source = File(
-      'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
     ).readAsStringSync();
     expect(source, contains('o.toAddress != wt.toAddress'));
     expect(source, contains('expectedDirection'));

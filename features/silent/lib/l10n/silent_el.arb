@@ -1,0 +1,60 @@
+{
+  "@@locale": "el",
+  "save": "Εξοικονομήστε",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "Αντιγραφή",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "Διαγράψτε",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "receiveQRCode": "QR Code",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "Ακύρωση",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "Pending",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "amountLabel": "Ποσο Ποσό Ποσο",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "transactionListLoadingTransactions": "Φόρτωση συναλλαγών...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionListYesterday": "Χθες",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "Σήμερα σήμερα",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "Πατήστε για αντιγραφή",
+  "viewerViewInExplorer": "Προβολή στον εξερευνητή",
+  "transactionViewerTitle": "ID συναλλαγής",
+  "viewerCopyLink": "Αντιγραφή συνδέσμου",
+  "coinsTitle": "Νομίσματα",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο"
+}

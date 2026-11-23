@@ -10,6 +10,9 @@ final class WalletRegistration {
   final ScriptType scriptType;
   final WalletSigner signer;
 
+  /// Validated public key origin, for every signer type.
+  final Fingerprint? masterFingerprint;
+
   /// The expected local seed reference, not proof of seed availability or authority.
   final Fingerprint? secretFingerprint;
 
@@ -25,6 +28,7 @@ final class WalletRegistration {
     required this.network,
     required this.scriptType,
     required this.signer,
+    required this.masterFingerprint,
     required this.secretFingerprint,
     required this.derivationPath,
     required this.label,
@@ -37,11 +41,14 @@ final class WalletRegistration {
 final class WalletSelection {
   final List<WalletRegistration> wallets;
 
+  /// Whether every visible wallet on the requested network was readable.
+  final bool isComplete;
+
   /// All wallets explicitly marked as default, including any legacy conflict.
   final List<WalletRegistration> defaults;
 
   @internal
-  WalletSelection(List<WalletRegistration> wallets)
+  WalletSelection(List<WalletRegistration> wallets, {required this.isComplete})
     : wallets = List.unmodifiable(wallets),
       defaults = List.unmodifiable(wallets.where((wallet) => wallet.isDefault));
 

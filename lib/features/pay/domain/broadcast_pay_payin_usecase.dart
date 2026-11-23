@@ -1,70 +1,45 @@
-import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' hide Network;
+import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
+
+import 'package:bull_logger/bull_logger.dart';
 
 class BroadcastPayPayinUsecase {
-  final WalletFacade _wallet;
-  final SendFacade _send;
+  final Spend _spend;
 
-  const BroadcastPayPayinUsecase({required this._wallet, required this._send});
-
-  @useResult
-  Future<Result<String, PayFailure>> bitcoin(
-    String transaction, {
-    required String walletId,
-    required bool isPsbt,
-    required Network network,
-  }) async {
-    try {
-      final txid = await _send.bitcoin(
-        transaction,
-        isPsbt: isPsbt,
-        walletId: walletId,
-        network: network,
-      );
-      _wallet.pollWallet(walletId, isActive: () => true).ignore();
-      return Ok(txid);
-    } on WalletSpendBlockedException catch (e) {
-      return Err(
-        PaySpendBlockedFailure(busy: e.status == BitcoinSpendStatus.busy),
-      );
-    } on Exception catch (e) {
-      return Err(_broadcastFailure(e, 'bitcoin'));
-    }
-  }
+  const BroadcastPayPayinUsecase(this._spend);
 
   @useResult
-  Future<Result<String, PayFailure>> liquid(
-    String signedPset, {
-    required String walletId,
-  }) async {
-    try {
-      final txid = await _send.liquid(signedPset);
-      _wallet.pollWallet(walletId, isActive: () => true).ignore();
-      return Ok(txid);
-    } on Exception catch (e) {
-      return Err(_broadcastFailure(e, 'liquid'));
-    }
-  }
+  Future<Result<String, PayFailure>> bitcoin(SignedBitcoinSpend signed) async =>
+      _receipt(await _spend.broadcastBitcoin(signed), 'bitcoin');
 
-  PayFailure _broadcastFailure(Exception error, String chain) {
+  @useResult
+  Future<Result<String, PayFailure>> liquid(SignedLiquidSpend signed) async =>
+      _receipt(await _spend.broadcastLiquid(signed), 'liquid');
+
+  Result<String, PayFailure> _receipt(
+    Result<SpendBroadcastReceipt, SpendFailure> result,
+    String chain,
+  ) => result.map((receipt) => receipt.txid).mapErr((failure) {
     const code = 'pay_payin_broadcast_failed';
-    final category = BroadcastFailureCategory.of(error);
-    final message = '$code chain=$chain category=${category.name}';
-    if (error is BroadcastTransactionException) {
-      log.warning(message);
-    } else {
-      log.severe(
-        message: message,
-        error: Exception(code),
-        trace: StackTrace.current,
-      );
-    }
-    return PayUnexpectedFailure(code);
-  }
+    final category = switch (failure) {
+      SpendDeveloperAuthorizationFailure() => 'authorization',
+      SpendBroadcastConnectionFailure() => 'connection',
+      SpendBroadcastRejectedFailure() => 'rejected',
+      SpendAlreadyInChainFailure() => 'alreadyInChain',
+      SpendBroadcastOutcomeUnknownFailure() => 'outcomeUnknown',
+      SpendUnavailableFailure() => 'blocked',
+      _ => 'unexpected',
+    };
+    log.warning('$code chain=$chain category=$category');
+    return switch (failure) {
+      SpendUnavailableFailure(:final busy) => PaySpendBlockedFailure(
+        busy: busy,
+      ),
+      SpendBroadcastOutcomeUnknownFailure() =>
+        const PayPayinOutcomeUnknownFailure(),
+      _ => const PayUnexpectedFailure(code),
+    };
+  });
 }

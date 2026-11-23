@@ -1,15 +1,15 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:material_ui/material_ui.dart';
@@ -443,7 +443,11 @@ class _BottomButtons extends StatelessWidget {
       },
     );
     final isReady = context.select(
-      (PayBloc bloc) => bloc.state is PayPaymentState,
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final error) =>
+          error is! PayPayinOutcomeUnknownFailure,
+        _ => false,
+      },
     );
     final paused = context.select(
       (PayBloc bloc) => switch (bloc.state) {

@@ -1,0 +1,83 @@
+{
+  "addressViewTransactions": "การทําธุรกรรม",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewNoAddressesFound": "ไม่มีที่อยู่",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "okButton": "ตกลง",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewBalance": "สมดุล",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewAddress": "ที่อยู่",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewShowQR": "แสดงรหัส QR",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewAddressesTitle": "ที่อยู่",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressCardUsedLabel": "ใช้",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressViewChangeAddressesComingSoon": "เปลี่ยนที่อยู่ทันที",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressCardBalanceLabel": "สมดุล: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "addressCardUnusedLabel": "ไม่ได้ใช้",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardIndexLabel": "ดัชนี: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressViewCopyAddress": "สําเนา",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressViewChangeType": "เปลี่ยนการเปลี่ยนแปลง",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressViewReceiveType": "ลงทะเบียน",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeAddressesDescription": "แสดงกระเป๋า การเปลี่ยนแปลง",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewTitle": "รายละเอียด",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "addressViewerTitle": "ที่อยู่",
+  "viewerTapToCopy": "แตะเพื่อคัดลอก",
+  "viewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
+  "viewerCopyLink": "คัดลอกลิงก์",
+  "viewerAddressTab": "ที่อยู่",
+  "viewerPaymentUriTab": "Payment URI",
+  "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
+  "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+}

@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Видалити мнемоніку переказів?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Це видалить головний ключ переказів із захищеного сховища. Його буде повторно виведено з seed-фрази вашого гаманця, коли застосунку він знадобиться наступного разу, з тим самим відбитком. Поточні перекази це не торкнеться.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоніка переказів",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Видалити мнемоніку переказів?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Це видалить головний ключ переказів із захищеного сховища. Його буде повторно виведено з seed-фрази вашого гаманця, коли застосунку він знадобиться наступного разу, з тим самим відбитком. Поточні перекази це не торкнеться."
 }

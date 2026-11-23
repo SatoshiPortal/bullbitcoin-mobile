@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:preferences/preferences.dart';
@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_useca
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_sp_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
@@ -21,7 +21,7 @@ class SyncLocator {
       () => SyncOrderSwapsUsecase(locator<SwapFacade>()),
     );
     locator.registerFactory<SyncSpForWalletUsecase>(
-      () => SyncSpForWalletUsecase(locator<SpFacade>()),
+      () => SyncSpForWalletUsecase(locator<Silent>()),
     );
     SyncLocator.setup(
       locator,
@@ -59,7 +59,7 @@ class SyncLocator {
         syncSwapsOutcome: syncSwapsOutcome,
         syncSp: syncSp,
         syncSpOutcome: syncSpOutcome,
-        refreshRevisions: () async => WalletCatalogPortImpl.value(
+        refreshRevisions: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().refreshAll(),
         ),
       ),

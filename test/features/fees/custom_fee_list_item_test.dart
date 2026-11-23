@@ -1,5 +1,5 @@
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';

@@ -1,0 +1,10 @@
+{
+  "@@locale": "ru",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Факультативная фраза",
+  "recipientsInfoLabel": "Метка",
+  "requiredHint": "Требуемые",
+  "submitButton": "Submit",
+  "emptyMnemonicWordsError": "Введите все слова вашей ямонии",
+  "oopsSomethingWentWrong": "Упс! Что-то не так"
+}

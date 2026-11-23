@@ -36,21 +36,9 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "coreSwapsStatusInProgress": "Chal Raha Hai",
-  "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
-  },
   "coreSwapsStatusCompleted": "Poora Ho Gaya",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
-  },
-  "coreSwapsStatusExpired": "Khatam Hua",
-  "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
-  },
-  "coreSwapsStatusFailed": "Fail Ho Gaya",
-  "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
   },
   "coreSwapsActionClaim": "Claim Karo",
   "@coreSwapsActionClaim": {
@@ -67,10 +55,6 @@
   "coreSwapsLnReceivePending": "Swap abhi shuru nahi hua.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
-  },
-  "coreSwapsLnReceivePaid": "Bhejne wale ne invoice pay kar diya.",
-  "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
   },
   "coreSwapsLnReceiveClaimable": "Swap claim karne ke liye taiyar hai.",
   "@coreSwapsLnReceiveClaimable": {
@@ -99,10 +83,6 @@
   "coreSwapsLnSendPending": "Swap abhi shuru nahi hua.",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
-  },
-  "coreSwapsLnSendPaid": "Invoice confirm hone ke baad pay ki jaayegi.",
-  "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
   },
   "coreSwapsLnSendClaimable": "Swap claim karne ke liye taiyar hai.",
   "@coreSwapsLnSendClaimable": {
@@ -175,10 +155,6 @@
   "coreSwapsChainFailed": "Swap Fail Ho Gaya.",
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
-  },
-  "coreWalletTransactionStatusPending": "Pending",
-  "@coreWalletTransactionStatusPending": {
-    "description": "Display name for pending wallet transaction status"
   },
   "coreWalletTransactionStatusConfirmed": "Confirmed",
   "@coreWalletTransactionStatusConfirmed": {
@@ -437,34 +413,6 @@
   "exchangeTransactionsComingSoon": "Transactions - Jald Aane Wala Hai",
   "@exchangeTransactionsComingSoon": {
     "description": "Message indicating that the transactions feature is coming soon"
-  },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA aur password manage karo",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
-  "exchangeSecurityAccessSettingsButton": "Settings Access Karo",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
-  },
-  "exchangeReferralsTitle": "Referral Codes",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
-  "exchangeReferralsJoinMissionTitle": "Mission Mein Shamil Ho",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
-  },
-  "exchangeReferralsContactSupportMessage": "Hamare referral program ke baare mein jaankari ke liye support se sampark karo",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
-  "exchangeReferralsApplyToJoinMessage": "Program mein shamil hone ke liye yahan apply karo",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
   },
   "exchangeRecipientsTitle": "Recipients",
   "@exchangeRecipientsTitle": {
@@ -1210,10 +1158,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "buyTitle": "Bitcoin Kharido",
-  "@buyTitle": {
-    "description": "Screen title for buying Bitcoin"
-  },
   "buyEnterAmount": "Raashi daalo",
   "@buyEnterAmount": {
     "description": "Label for amount input field in buy flow"
@@ -1305,79 +1249,6 @@
   "buyAwaitingConfirmation": "Confirmation ka intezaar hai ",
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
-  },
-  "buyConfirmPurchase": "Khareedari confirm karo",
-  "@buyConfirmPurchase": {
-    "description": "Button to confirm purchase"
-  },
-  "buyYouBought": "Aapne {fiatAmount} mein {amount} kharida",
-  "@buyYouBought": {
-    "description": "Success message with amount bought",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Aapka payout bheja jayega ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
-  "buyViewDetails": "Jaankari dekho",
-  "@buyViewDetails": {
-    "description": "Button to view order details"
-  },
-  "buyAccelerateTransaction": "Transaction Tez Karo",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
-  },
-  "buyGetConfirmedFaster": "Jaldi confirm karwao",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
-  "buyConfirmExpressWithdrawal": "Express withdrawal confirm karo",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
-  },
-  "buyNetworkFeeExplanation": "Bitcoin network fee aapko milne wali raashi se kati jayegi aur Bitcoin miners ko milegi",
-  "@buyNetworkFeeExplanation": {
-    "description": "Explanation of network fees for express withdrawal"
-  },
-  "buyNetworkFees": "Network fees",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
-  },
-  "buyEstimatedFeeValue": "Anumaan fee kimat",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
-  },
-  "buyNetworkFeeRate": "Network fee rate",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
-  },
-  "buyConfirmationTime": "Confirmation samay",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
-  },
-  "buyConfirmationTimeValue": "~10 minute",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
-  "buyWaitForFreeWithdrawal": "Muft withdrawal ka intezaar karo",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
-  "buyConfirmExpress": "Express confirm karo",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
-  },
-  "buyBitcoinSent": "Bitcoin bheja gaya!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
-  },
-  "buyThatWasFast": "Kitni jaldi, hai na?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "sellTitle": "Bitcoin Becho",
   "@sellTitle": {
@@ -1702,14 +1573,6 @@
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "transactionTitle": "Transactions",
-  "@transactionTitle": {
-    "description": "Title for the transactions screen"
-  },
-  "transactionDetailTitle": "Transaction ki jaankari",
-  "@transactionDetailTitle": {
-    "description": "Title for transaction details screen"
-  },
   "transactionDetailTransferProgress": "Swap ki pragati",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
@@ -1718,57 +1581,9 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "transactionDetailAddNote": "Note jodo",
-  "@transactionDetailAddNote": {
-    "description": "Button label to add a note to a transaction"
-  },
-  "transactionFilterAll": "Sab",
-  "@transactionFilterAll": {
-    "description": "Filter option to show all transactions"
-  },
-  "transactionFilterSend": "Bhejo",
-  "@transactionFilterSend": {
-    "description": "Filter option to show only sent transactions"
-  },
-  "transactionFilterReceive": "Prapt karo",
-  "@transactionFilterReceive": {
-    "description": "Filter option to show only received transactions"
-  },
   "transactionFilterTransfer": "Swap",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "transactionFilterPayjoin": "Payjoin",
-  "@transactionFilterPayjoin": {
-    "description": "Filter option to show only payjoin transactions"
-  },
-  "transactionFilterSell": "Becho",
-  "@transactionFilterSell": {
-    "description": "Filter option to show only sell orders"
-  },
-  "transactionFilterBuy": "Kharido",
-  "@transactionFilterBuy": {
-    "description": "Filter option to show only buy orders"
-  },
-  "transactionFilterWithdraw": "Nikalo",
-  "@transactionFilterWithdraw": {
-    "description": "Filter option to show only withdraw orders"
-  },
-  "transactionFilterPay": "Pay karo",
-  "@transactionFilterPay": {
-    "description": "Filter option to show only fiat payment orders"
-  },
-  "transactionFilterFunding": "Funding",
-  "@transactionFilterFunding": {
-    "description": "Filter option to show only funding orders"
-  },
-  "transactionFilterReward": "Inam",
-  "@transactionFilterReward": {
-    "description": "Filter option to show only reward orders"
-  },
-  "transactionFilterRefund": "Wapasi",
-  "@transactionFilterRefund": {
-    "description": "Filter option to show only refund orders"
   },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
@@ -1782,18 +1597,6 @@
   "@transactionNetworkLiquid": {
     "description": "Label for Liquid network transactions"
   },
-  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
-  "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
-  },
-  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
-  "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
-  },
-  "transactionStatusInProgress": "Chal Raha Hai",
-  "@transactionStatusInProgress": {
-    "description": "Status label for transactions in progress"
-  },
   "transactionStatusPending": "Baaki Hai",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
@@ -1805,14 +1608,6 @@
   "transactionStatusTransferInProgress": "Swap Chal Raha Hai",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
-  },
-  "transactionStatusPaymentInProgress": "Payment Chal Rahi Hai",
-  "@transactionStatusPaymentInProgress": {
-    "description": "Status label for Lightning payments in progress"
-  },
-  "transactionStatusPaymentRefunded": "Payment Wapas Hui",
-  "@transactionStatusPaymentRefunded": {
-    "description": "Status label for refunded payments"
   },
   "transactionStatusTransferFailed": "Swap Fail Ho Gaya",
   "@transactionStatusTransferFailed": {
@@ -1830,14 +1625,6 @@
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
-  "transactionStatusPayjoinRequested": "Payjoin maanga gaya",
-  "@transactionStatusPayjoinRequested": {
-    "description": "Status label for payjoin transaction requests"
-  },
-  "transactionNotesLabel": "Transaction ke notes",
-  "@transactionNotesLabel": {
-    "description": "Label for transaction notes section"
-  },
   "transactionNoteAddTitle": "Note jodo",
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
@@ -1845,46 +1632,6 @@
   "transactionNoteHint": "Note",
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
-  },
-  "transactionPayjoinSendWithout": "Payjoin ke bina bhejo",
-  "@transactionPayjoinSendWithout": {
-    "description": "Button label to send transaction without payjoin"
-  },
-  "transactionSwapProgressInitiated": "Shuru Hua",
-  "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
-  },
-  "transactionSwapProgressPaymentMade": "Payment\nHo Gayi",
-  "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
-  },
-  "transactionSwapProgressFundsClaimed": "Paise\nLiye Gaye",
-  "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
-  },
-  "transactionSwapProgressBroadcasted": "Broadcast Hua",
-  "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
-  },
-  "transactionSwapProgressInvoicePaid": "Invoice\nPay Hua",
-  "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
-  },
-  "transactionSwapProgressConfirmed": "Confirm Hua",
-  "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
-  },
-  "transactionSwapProgressClaim": "Claim",
-  "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
-  },
-  "transactionSwapProgressCompleted": "Poora Hua",
-  "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
-  },
-  "transactionSwapProgressInProgress": "Chal Raha Hai",
-  "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
   },
   "transactionSwapStatusTransferStatus": "Swap ki Sthiti",
   "@transactionSwapStatusTransferStatus": {
@@ -1897,10 +1644,6 @@
   "transactionSwapDescLnReceivePending": "Aapka swap shuru ho gaya hai. Hum Lightning Network par payment aane ka intezaar kar rahe hain.",
   "@transactionSwapDescLnReceivePending": {
     "description": "Description for pending Lightning receive swap"
-  },
-  "transactionSwapDescLnReceivePaid": "Payment aa gayi! Ab hum on-chain transaction aapke wallet mein bhej rahe hain.",
-  "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
   },
   "transactionSwapDescLnReceiveClaimable": "On-chain transaction confirm ho gayi. Ab hum aapka swap poora karne ke liye paise claim kar rahe hain.",
   "@transactionSwapDescLnReceiveClaimable": {
@@ -1926,10 +1669,6 @@
   "@transactionSwapDescLnSendPending": {
     "description": "Description for pending Lightning send swap"
   },
-  "transactionSwapDescLnSendPaid": "Aapki on-chain transaction broadcast ho gayi. 1 confirmation ke baad Lightning payment bheja jayega.",
-  "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
-  },
   "transactionSwapDescLnSendCompleted": "Lightning payment kamyabi se bheja gaya! Aapka swap ab poora ho gaya.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -1949,10 +1688,6 @@
   "transactionSwapDescChainPending": "Aapka swap bana diya gaya hai lekin abhi shuru nahi hua.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
-  },
-  "transactionSwapDescChainPaid": "Aapki transaction broadcast ho gayi. Ab hum lockup transaction confirm hone ka intezaar kar rahe hain.",
-  "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
   },
   "transactionSwapDescChainClaimable": "Lockup transaction confirm ho gayi. Ab aap swap poora karne ke liye paise claim kar rahe ho.",
   "@transactionSwapDescChainClaimable": {
@@ -1977,10 +1712,6 @@
   "transactionSwapDescChainDefault": "Aapka swap chal raha hai. Yeh process apne aap hoti hai aur poori hone mein thoda waqt lag sakta hai.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
-  },
-  "transactionSwapInfoFailedExpired": "Agar koi sawaal ya chinta hai toh madad ke liye support se sampark karo.",
-  "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
   },
   "transactionSwapInfoChainDelay": "On-chain swaps mein blockchain confirmation times ki wajah se thoda waqt lag sakta hai.",
   "@transactionSwapInfoChainDelay": {
@@ -2014,10 +1745,6 @@
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
   },
-  "transactionListNoTransactions": "Abhi koi transaction nahi hai.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "transactionListToday": "Aaj",
   "@transactionListToday": {
     "description": "Date label for today's transactions"
@@ -2030,146 +1757,9 @@
   "@transactionSwapDoNotUninstall": {
     "description": "Warning message to not uninstall app during swap"
   },
-  "transactionFeesDeductedFrom": "Yeh fee bheji gayi raashi se kati jayegi",
-  "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
-  },
-  "transactionFeesTotalDeducted": "Yeh bheji gayi raashi se kati gayi kul fee hai",
-  "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
-  },
-  "transactionLabelSendAmount": "Bhejne ki Raashi",
-  "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
-  },
-  "transactionLabelReceiveAmount": "Prapt Raashi",
-  "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
-  },
-  "transactionLabelSendNetworkFees": "Bhejne ki Network fees",
-  "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
-  },
-  "transactionLabelReceiveNetworkFee": "Prapt Network Fee",
-  "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
-  },
-  "transactionLabelServerNetworkFees": "Server Network Fees",
-  "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
-  },
-  "transactionLabelPreimage": "Preimage",
-  "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
-  },
-  "transactionOrderLabelReferenceNumber": "Reference Number",
-  "@transactionOrderLabelReferenceNumber": {
-    "description": "Label for reference number in order details"
-  },
-  "transactionOrderLabelOriginName": "Bhejne wale ka naam",
-  "@transactionOrderLabelOriginName": {
-    "description": "Label for origin name in fiat payment order"
-  },
-  "transactionOrderLabelOriginCedula": "Bhejne wali ki Cedula",
-  "@transactionOrderLabelOriginCedula": {
-    "description": "Label for origin cedula in fiat payment order"
-  },
-  "transactionDetailAccelerate": "Tez Karo",
-  "@transactionDetailAccelerate": {
-    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
-  },
-  "transactionDetailLabelTransactionId": "Transaction ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
-  "transactionDetailLabelToWallet": "Wallet ko",
-  "@transactionDetailLabelToWallet": {
-    "description": "Label for destination wallet"
-  },
-  "transactionDetailLabelFromWallet": "Wallet se",
-  "@transactionDetailLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
-  "transactionDetailLabelRecipientAddress": "Praaptakarta ka pata",
-  "@transactionDetailLabelRecipientAddress": {
-    "description": "Label for recipient address"
-  },
-  "transactionDetailLabelAddress": "Pata",
-  "@transactionDetailLabelAddress": {
-    "description": "Label for address"
-  },
-  "transactionDetailLabelAddressNotes": "Pate ke notes",
-  "@transactionDetailLabelAddressNotes": {
-    "description": "Label for address notes"
-  },
-  "transactionDetailLabelAmountReceived": "Prapt raashi",
-  "@transactionDetailLabelAmountReceived": {
-    "description": "Label for amount received"
-  },
-  "transactionDetailLabelAmountSent": "Bheji gayi raashi",
-  "@transactionDetailLabelAmountSent": {
-    "description": "Label for amount sent"
-  },
-  "transactionDetailLabelTransactionFee": "Transaction Fee",
-  "@transactionDetailLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
-  "transactionDetailLabelStatus": "Sthiti",
-  "@transactionDetailLabelStatus": {
-    "description": "Label for status"
-  },
-  "transactionDetailLabelConfirmationTime": "Confirmation samay",
-  "@transactionDetailLabelConfirmationTime": {
-    "description": "Label for confirmation time"
-  },
-  "transactionDetailLabelOrderType": "Order ka prakar",
-  "@transactionDetailLabelOrderType": {
-    "description": "Label for order type"
-  },
-  "transactionDetailLabelOrderNumber": "Order number",
-  "transactionDetailLabelPaymentDescription": "Bhugtan vivaran",
-  "@transactionDetailLabelOrderNumber": {
-    "description": "Label for order number"
-  },
-  "transactionDetailLabelPayinAmount": "Payin raashi",
-  "@transactionDetailLabelPayinAmount": {
-    "description": "Label for payin amount"
-  },
-  "transactionDetailLabelPayoutAmount": "Payout raashi",
-  "@transactionDetailLabelPayoutAmount": {
-    "description": "Label for payout amount"
-  },
   "transactionDetailLabelExchangeRate": "Vinimay dar",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "transactionDetailLabelPayinMethod": "Payin ka tarika",
-  "@transactionDetailLabelPayinMethod": {
-    "description": "Label for payin method"
-  },
-  "transactionDetailLabelPayoutMethod": "Payout ka tarika",
-  "@transactionDetailLabelPayoutMethod": {
-    "description": "Label for payout method"
-  },
-  "transactionDetailLabelPayinStatus": "Payin ki sthiti",
-  "@transactionDetailLabelPayinStatus": {
-    "description": "Label for payin status"
-  },
-  "transactionDetailLabelOrderStatus": "Order ki sthiti",
-  "@transactionDetailLabelOrderStatus": {
-    "description": "Label for order status"
-  },
-  "transactionDetailLabelPayoutStatus": "Payout ki sthiti",
-  "@transactionDetailLabelPayoutStatus": {
-    "description": "Label for payout status"
-  },
-  "transactionDetailLabelCreatedAt": "Kab banaya",
-  "@transactionDetailLabelCreatedAt": {
-    "description": "Label for creation time"
-  },
-  "transactionDetailLabelCompletedAt": "Kab poora hua",
-  "@transactionDetailLabelCompletedAt": {
-    "description": "Label for completion time"
   },
   "transactionDetailLabelTransferId": "Swap ID",
   "@transactionDetailLabelTransferId": {
@@ -2187,18 +1777,6 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "transactionDetailLabelRefunded": "Wapas Hua",
-  "@transactionDetailLabelRefunded": {
-    "description": "Label for refunded status"
-  },
-  "transactionDetailLabelLiquidTxId": "Liquid transaction ID",
-  "@transactionDetailLabelLiquidTxId": {
-    "description": "Label for Liquid transaction ID"
-  },
-  "transactionDetailLabelBitcoinTxId": "Bitcoin transaction ID",
-  "@transactionDetailLabelBitcoinTxId": {
-    "description": "Label for Bitcoin transaction ID"
-  },
   "transactionDetailLabelTransferFees": "Swap fees",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -2207,29 +1785,9 @@
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
   },
-  "transactionDetailLabelSendNetworkFee": "Bhejne ki Network Fee",
-  "@transactionDetailLabelSendNetworkFee": {
-    "description": "Label for send network fee"
-  },
   "transactionDetailLabelTransferFee": "Swap Fee",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
-  },
-  "transactionDetailLabelPayjoinStatus": "Payjoin ki sthiti",
-  "@transactionDetailLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
-  "transactionDetailLabelPayjoinCompleted": "Poora Hua",
-  "@transactionDetailLabelPayjoinCompleted": {
-    "description": "Payjoin completed status"
-  },
-  "transactionDetailLabelPayjoinExpired": "Khatam Ho Gaya",
-  "@transactionDetailLabelPayjoinExpired": {
-    "description": "Payjoin expired status"
-  },
-  "transactionDetailLabelPayjoinCreationTime": "Payjoin banane ka samay",
-  "@transactionDetailLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation time"
   },
   "globalDefaultBitcoinWalletLabel": "Surakshit Bitcoin",
   "@globalDefaultBitcoinWalletLabel": {
@@ -3162,66 +2720,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSuccessTitle": "Recurring Buy Chalu Ho Gaya!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
-  },
-  "dcaSuccessMessageHourly": "Aap har ghante {amount} kharidoge",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "Aap har din {amount} kharidoge",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "Aap har hafte {amount} kharidoge",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "Aap har mahine {amount} kharidoge",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "Home wapas jao",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
-  },
-  "dcaChooseWalletTitle": "Bitcoin Wallet Chuniye",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
-  },
-  "dcaWalletSelectionDescription": "Bitcoin khareedari is schedule ke anusar apne aap hogi.",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
-  },
-  "dcaNetworkValidationError": "Kripya ek network chuniye",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
-  },
-  "dcaEnterLightningAddressLabel": "Lightning Address Daalo",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
-  },
   "dcaLightningAddressEmptyError": "Kripya Lightning address daalo",
   "@dcaLightningAddressEmptyError": {
     "description": "Validation error when Lightning address field is empty"
@@ -3229,46 +2727,6 @@
   "dcaLightningAddressInvalidError": "Kripya sahi Lightning address daalo",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "dcaUseDefaultLightningAddress": "Mera default Lightning address use karo.",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
-  "dcaWalletSelectionContinueButton": "Aage Badho",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
-  },
-  "dcaSelectFrequencyLabel": "Frequency Chuniye",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
-  },
-  "dcaSelectWalletTypeLabel": "Bitcoin Wallet Prakar Chuniye",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
-  },
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
-  },
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
-  },
-  "dcaWalletBitcoinSubtitle": "Minimum 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
-  "dcaWalletLightningSubtitle": "Compatible wallet chahiye, maximum 0.25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
-  },
-  "dcaWalletLiquidSubtitle": "Compatible wallet chahiye",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "swapInternalTransferTitle": "Internal Swap",
   "@swapInternalTransferTitle": {
@@ -3724,36 +3182,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "scanningProgressLabel": "Scan ho raha hai: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
-  "urProgressLabel": "UR ke {parts} parts process ho chuke hain",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningCompletedMessage": "Scanning poori hui",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
-  },
-  "urDecodingFailedMessage": "UR decoding fail hua",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
-  "urProcessingFailedMessage": "UR processing fail hua",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
-  },
   "scanNfcButton": "NFC Scan Karo",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -3778,22 +3206,6 @@
         "type": "String"
       }
     }
-  },
-  "submitButton": "Submit Karo",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
-  "optionalPassphraseHint": "Optional Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
-  "requiredHint": "Zaroori",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
-  "emptyMnemonicWordsError": "Apne mnemonic ke saare words daalo",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "tryAgainButton": "Phir Try Karo",
   "@tryAgainButton": {
@@ -6102,10 +5514,6 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlySelectDerivation": "Derivation chuniye",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
-  },
   "importWatchOnlyType": "Type",
   "@importWatchOnlyType": {
     "description": "Label for wallet script type field"
@@ -6177,20 +5585,6 @@
   },
   "transactionHistoryTitle": "Lenden Itihaas",
   "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
-  "exportTransactionsStartDate": "Shuru ki taarikh",
-  "exportTransactionsEndDate": "Antim taarikh",
-  "exportTransactionsAnyDate": "Koi bhi",
-  "exportTransactionsButton": "CSV export karein",
-  "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
-  "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
-  "exportTransactionsError": "Lenden export nahi ho saka.",
-  "@exportTransactionsError": {
-    "description": "Message shown when an unexpected error occurs during CSV export"
-  },
-  "exportTransactionsInvalidDateRange": "Shuru ki taareekh khatam ki taareekh se pehle honi chahiye",
-  "@exportTransactionsInvalidDateRange": {
-    "description": "Message shown when start date is after end date"
-  },
   "broadcastSignedTxTitle": "Transaction Broadcast Karo",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
@@ -6278,24 +5672,6 @@
   "@addressViewShowQR": {
     "description": "Button to display address as QR code"
   },
-  "importQrDeviceTitle": "{deviceName} Connect Karo",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importQrDeviceScanPrompt": "Apne {deviceName} ka QR code scan karo",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceScanning": "Scan ho raha hai...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
@@ -6327,290 +5703,6 @@
   "importQrDeviceImport": "Import Karo",
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
-  },
-  "importQrDeviceButtonOpenCamera": "Camera kholiye",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
-  },
-  "importQrDeviceButtonInstructions": "Instructions",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
-  },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
-  },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Instructions",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
-  "importQrDeviceJadeStep1": "Apna Jade device on karo",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
-  },
-  "importQrDeviceJadeStep2": "Main menu se \"QR Mode\" select karo",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
-  "importQrDeviceJadeStep3": "Jade unlock karne ke liye device ke instructions follow karo",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
-  },
-  "importQrDeviceJadeStep4": "Main menu se \"Options\" select karo",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
-  "importQrDeviceJadeStep5": "Options list se \"Wallet\" select karo",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
-  },
-  "importQrDeviceJadeStep6": "Wallet menu se \"Export Xpub\" select karo",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
-  "importQrDeviceJadeStep7": "Zaroorat ho toh address type badalne ke liye \"Options\" select karo",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
-  "importQrDeviceJadeStep8": "\"Camera kholiye\" button click karo",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
-  "importQrDeviceJadeStep9": "Device pe dikha QR code scan karo.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
-  },
-  "importQrDeviceJadeStep10": "Bas, ho gaya!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
-  "importQrDeviceJadeFirmwareWarning": "Dhyan rakho ki device ka latest firmware install ho",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
-  },
-  "importQrDeviceKruxInstructionsTitle": "Krux Instructions",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
-  "importQrDeviceKruxStep1": "Apna Krux device on karo",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
-  "importQrDeviceKruxStep2": "Extended Public Key click karo",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
-  },
-  "importQrDeviceKruxStep3": "XPUB - QR Code click karo",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
-  },
-  "importQrDeviceKruxStep4": "\"Camera kholiye\" button click karo",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
-  "importQrDeviceKruxStep5": "Device pe dikha QR code scan karo.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
-  "importQrDeviceKruxStep6": "Bas, ho gaya!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
-  "importQrDeviceKeystoneName": "Keystone",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone Instructions",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
-  },
-  "importQrDeviceKeystoneStep1": "Apna Keystone on karo",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "importQrDeviceKeystoneStep2": "PIN daalo aur unlock karo",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
-  "importQrDeviceKeystoneStep3": "Top-right corner mein *** (teen dots) tap karo",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
-  "importQrDeviceKeystoneStep4": "\"Connect Software Wallet\" tap karo",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
-  },
-  "importQrDeviceKeystoneStep5": "Wallets ki list mein se \"BULL\" select karo",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
-  "importQrDeviceKeystoneStep6": "Mobile pe \"Camera kholiye\" click karo",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
-  "importQrDeviceKeystoneStep7": "Keystone pe dikha QR code scan karo",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
-  },
-  "importQrDeviceKeystoneStep8": "BULL wallet mein apna pasandida derivation type chuniye. Agar sure nahi ho toh \"Segwit (BIP84)\" select karo",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
-  "importQrDeviceKeystoneStep9": "Keystone wallet ka label daalo aur \"Import Karo\" tap karo",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
-  "importQrDeviceKeystoneStep10": "Aapka Keystone ab BULL Wallet ke saath connect aur use ke liye ready hai.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
-  "importQrDevicePassportName": "Foundation Passport",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
-  "importQrDevicePassportInstructionsTitle": "Foundation Passport Instructions",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
-  "importQrDevicePassportStep1": "Apna Passport device on karo",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "importQrDevicePassportStep2": "Apna PIN daalo",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
-  },
-  "importQrDevicePassportStep3": "\"Wallet\" select karo",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "importQrDevicePassportStep4": "\"Connect App\" select karo",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
-  "importQrDevicePassportStep5": "\"Bull\" select karo",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
-  "importQrDevicePassportStep6": "Passport pe dikha QR code scan karo",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
-  },
-  "importQrDevicePassportStep7": "BULL wallet app mein derivation option ke roop mein \"Segwit (BIP84)\" select karo",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
-  },
-  "importQrDevicePassportStep8": "Passport wallet ka label daalo aur \"Import Karo\" tap karo",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
-  },
-  "importQrDevicePassportStep9": "Setup poora hua.",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
-  },
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Instructions",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
-  },
-  "importQrDeviceSeedsignerStep1": "Apna SeedSigner device on karo",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
-  "importQrDeviceSeedsignerStep2": "\"Seeds\" menu kholiye",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
-  "importQrDeviceSeedsignerStep3": "SeedQR scan karo ya apna 12 ya 24 word seed phrase daalo",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
-  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" select karo",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
-  "importQrDeviceSeedsignerStep5": "\"Single Sig\" chuniye, phir apna pasandida script type select karo (agar sure nahi toh Native Segwit chuniye).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
-  },
-  "importQrDeviceSeedsignerStep6": "Export option ke roop mein \"Animated\" chunein. Purane SeedSigner firmware par \"Sparrow\" chunein.",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
-  },
-  "importQrDeviceSeedsignerStep7": "Mobile device pe Camera Kholiye tap karo",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
-  "importQrDeviceSeedsignerStep8": "SeedSigner pe dikha QR code scan karo",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
-  },
-  "importQrDeviceSeedsignerStep9": "SeedSigner wallet ka label daalo aur Import Karo tap karo",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
-  },
-  "importQrDeviceSeedsignerStep10": "Setup poora hua",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
-  "importQrDeviceSpecterName": "Specter",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Specter Instructions",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
-  },
-  "importQrDeviceSpecterStep1": "Apna Specter device on karo",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
-  },
-  "importQrDeviceSpecterStep2": "Apna PIN daalo",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
-  "importQrDeviceSpecterStep3": "Apna seed/key daalo (jo bhi option suit kare)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
-  "importQrDeviceSpecterStep4": "Chune hue method ke prompts follow karo",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
-  },
-  "importQrDeviceSpecterStep5": "\"Master public keys\" select karo",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
-  },
-  "importQrDeviceSpecterStep6": "\"Single key\" chuniye",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceSpecterStep7": "\"Use SLIP-132\" disable karo",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
-  "importQrDeviceSpecterStep8": "Mobile device pe Camera Kholiye tap karo",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
-  "importQrDeviceSpecterStep9": "Apne Specter par dikhaya gaya QR code scan karo",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
-  "importQrDeviceSpecterStep10": "Apne Specter wallet ke liye ek label enter karo aur Import tap karo",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
-  },
-  "importQrDeviceSpecterStep11": "Setup poora hua",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "importColdcardTitle": "Coldcard Q Connect Karo",
   "@importColdcardTitle": {
@@ -6856,123 +5948,6 @@
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
   },
-  "dcaSetupTitle": "Recurring Buy Set Karo",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
-  },
-  "dcaSetupInsufficientBalance": "Insufficient Balance",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
-  },
-  "dcaSetupInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
-  "dcaSetupFundAccount": "Apna account fund karo",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
-  },
-  "dcaSetupScheduleMessage": "Bitcoin purchases is schedule ke hisaab se automatically place hongi.",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
-  "dcaSetupFrequencyError": "Kripya ek frequency select karo",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
-  "dcaSetupContinue": "Continue",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
-  "dcaConfirmTitle": "Recurring Buy Confirm Karo",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
-  },
-  "dcaConfirmAutoMessage": "Buy orders in settings ke hisaab se automatically place honge. Aap inhe kisi bhi waqt disable kar sakte hain.",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
-  "dcaConfirmFrequency": "Frequency",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
-  "dcaConfirmFrequencyHourly": "Har ghante",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
-  "dcaConfirmFrequencyDaily": "Har din",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "dcaConfirmFrequencyWeekly": "Har hafte",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
-  "dcaConfirmFrequencyMonthly": "Har mahine",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
-  },
-  "dcaConfirmAmount": "Amount",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
-  },
-  "dcaConfirmPaymentMethod": "Payment method",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
-  },
-  "dcaConfirmPaymentBalance": "{currency} balance",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "Order type",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
-  },
-  "dcaConfirmOrderTypeValue": "Recurring buy",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
-  "dcaConfirmNetwork": "Network",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
-  },
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
-  "dcaConfirmNetworkLightning": "Lightning",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
-  "dcaConfirmLightningAddress": "Lightning address",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
-  },
-  "dcaConfirmContinue": "Continue",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
-  },
-  "buyInputTitle": "Bitcoin Kharido",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
-  },
-  "buyInputMinAmountError": "Aapko kam se kam itna kharidna chahiye",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "Aap itne se zyada nahi kharid sakte",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC ID Verification Baaki Hai",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -6984,53 +5959,6 @@
   "buyInputCompleteKyc": "KYC Complete Karo",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
-  },
-  "buyInputInsufficientBalance": "Insufficient balance",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
-  "buyInputInsufficientBalanceMessage": "Ye order banane ke liye aapke paas itna balance nahi hai.",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
-  "buyInputFundAccount": "Apna account fund karo",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
-  "buyInputContinue": "Continue",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
-  "buyConfirmTitle": "Bitcoin Kharido",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
-  "buyConfirmYouPay": "Aap dete hain",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
-  },
-  "buyConfirmYouReceive": "Aap paate hain",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
-  "buyConfirmBitcoinPrice": "Bitcoin Price",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
-  "buyConfirmPayoutWallet": "Bhugtaan wallet",
-  "buyPayoutMethodLiquid": "Liquid par L-BTC",
-  "buyPayoutMethodBitcoin": "Bitcoin chain par BTC",
-  "buyConfirmPayoutMethod": "Payout method",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "buyConfirmExternalWallet": "External Bitcoin wallet",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
-  "buyConfirmAwaitingConfirmation": "Confirmation ka intezaar hai",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "sellSendPaymentTitle": "Payment confirm karo",
   "@sellSendPaymentTitle": {
@@ -7376,25 +6304,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "Abhi koi message nahi. Baat shuru karo!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "Message type karo...",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "Ek message zaruri hai",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "Message khali nahi reh sakta",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "Kal",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "Ye chat sirf Funding/Buy/Sell/Withdraw/Pay se related exchange issues ke liye hai.\nWallet related issues ke liye, yahan click karke telegram group join karo.",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -7732,19 +6644,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "buyUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "Aap minimum amount se kam kharidne ki koshish kar rahe hain.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "Aap maximum amount se zyada kharidne ki koshish kar rahe hain.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
   "withdrawUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
@@ -8330,10 +7229,6 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "payViewReceipt": "Receipt dekhein",
-  "@payViewReceipt": {
-    "description": "Button to view SINPE payment receipt"
-  },
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
@@ -8381,10 +7276,6 @@
   "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "transactionListLoadingFailed": "Transactions load nahi ho sake.",
-  "@transactionListLoadingFailed": {
-    "description": "Error message when transaction loading fails"
   },
   "fundExchangeWarningTactic3": "Woh kehte hain ki woh karz ya tax vasooli ke liye kaam karte hain",
   "@fundExchangeWarningTactic3": {
@@ -8990,10 +7881,6 @@
   "recipientsFieldDocumentType": "Recipient ka ID type",
   "recipientsFieldDocumentNumberHint": "Recipient ka ID number daalein",
   "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein",
-  "transactionStatusPayjoinCompleted": "Payjoin poora hua",
-  "@transactionStatusPayjoinCompleted": {
-    "description": "Jab Payjoin transaction successfully complete ho jati hai tab dikhaya jata hai."
-  },
   "homeActionBuy": "Kharido",
   "homeActionSell": "Becho",
   "homeActionPay": "Pay Karo",
@@ -9285,7 +8172,6 @@
   "logsShareOptionExport": "Export karein",
   "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
   "logsExportFailedMessage": "Logs export karne mein vifal",
-  "coreSwapsStatusRefunded": "Refund Hua",
   "swapRestoreTitle": "Swap Restore",
   "swapRestoreActionable": "{count, plural, =0{Recover karne ke liye koi swap nahi} =1{Aap 1 swap recover karne ki koshish kar sakte ho. Ho sakta hai ye pehle se hi terminal status mein ho.} other{Aap {count} swaps recover karne ki koshish kar sakte ho. Dhyan rahe, inme se kuch pehle se hi terminal status mein ho sakte hain.}}",
   "swapRestoreNoSwaps": "Restore karne ke liye koi swap nahi mila",
@@ -9307,18 +8193,11 @@
   "swapRescueButton": "Restore Karo",
   "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
   "receivePayjoinNoUtxos": "Pehle funds receive karo ise enable karne ke liye.\nPayjoin use karne ke liye UTXOs zaroori hain.",
-  "transactionLabelNetworkFees": "Network fees",
   "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
   "walletLiquidRiskDisclosureLabel": "Ye funds Liquid L-BTC hain (BTC nahi). Aur jaano.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk disclosure kholo",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin Risk Jaankari",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
-  "nfcNotAvailable": "NFC is device par supported nahi hai",
-  "nfcDisabled": "NFC disabled hai. Settings mein ise enable karo.",
-  "nfcInvalidData": "Koi supported NFC data nahi mila",
-  "nfcConnectionLost": "NFC connection toot gaya. Apna device NFC tag ke paas rakho aur phir try karo.",
-  "nfcWriteFailed": "NFC transfer fail ho gaya. Kripya phir try karo.",
-  "nfcError": "NFC error: {error}",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
   "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
   "importWalletColdcardMk4": "Coldcard Mk4",
@@ -9328,33 +8207,6 @@
   "importColdcardConnectTitle": "{deviceName} Connect Karo",
   "importColdcardConnectDescription": "Apne {deviceName} se wallet descriptor import karo",
   "importColdcardScanNfcSheetTitle": "Wallet descriptor NFC se import karne ke liye apna {deviceName} tap karo",
-  "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
-  "importColdcardQStep1": "Apne Coldcard Q device mein login karo",
-  "importColdcardQStep2": "Agar passphrase hai toh add karo (optional)",
-  "importColdcardQStep3": "Advanced/settings menu select karo",
-  "importColdcardQStep4": "\"export wallet\" click karo",
-  "importColdcardQStep5": "Export type mein \"descriptor\" select karo",
-  "importColdcardQStep6": "Pehli screen par \"Enter\" press karo",
-  "importColdcardQStep7": "Dusri screen par \"Enter\" press karo",
-  "importColdcardQStep8": "Apna address type select karo (agar pata na ho toh Segwit use karo)",
-  "importColdcardQStep9": "QR ke liye, device par QR code button click karo. Ye aapko device par ek QR code dikhayega",
-  "importColdcardQStep10": "NFC ke liye, device par NFC button click karo",
-  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" button click karo",
-  "importColdcardQStep12": "Apne device par dikha QR code scan karo ya phone ka NFC Coldcard ke NFC ke upar rakho",
-  "importColdcardQStep13": "Bas, ho gaya!",
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
-  "importColdcardMk4Step1": "Apne Coldcard Mk4 device mein login karo",
-  "importColdcardMk4Step2": "Agar passphrase hai toh add karo (optional)",
-  "importColdcardMk4Step3": "Advanced/settings menu select karo",
-  "importColdcardMk4Step4": "\"export wallet\" click karo",
-  "importColdcardMk4Step5": "Export type mein \"descriptor\" select karo",
-  "importColdcardMk4Step6": "Pehli screen par \"Enter\" press karo",
-  "importColdcardMk4Step7": "Dusri screen par \"Enter\" press karo",
-  "importColdcardMk4Step8": "Apna address type select karo (agar pata na ho toh Segwit use karo)",
-  "importColdcardMk4Step9": "Coldcard NFC start karne ke liye number 3 click karo",
-  "importColdcardMk4Step10": "\"Scan NFC\" button click karo",
-  "importColdcardMk4Step11": "Phone ka NFC Coldcard ke NFC ke upar rakho",
-  "importColdcardMk4Step12": "Bas, ho gaya!",
   "coreScreensResolvingInputs": "Transaction inputs resolve ho rahe hain...",
   "coreScreensFeeRateLabel": "Fee Rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -9477,11 +8329,6 @@
   "recipientsFieldPayeeAccountNumber": "Payee Account Number",
   "exchangeFileUploadStatusRejectedBadge": "Rejected",
   "exchangeFileUploadTapToReupload": "Phir se upload karne ke liye tap karo",
-  "exchangeSupportChatAttachmentImage": "Image",
-  "exchangeSupportChatAttachmentUnknownFile": "Anjaan file",
-  "exchangeSupportChatPickFilesFailed": "Files select nahi ho saki. Kripya dobara try karein.",
-  "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
-  "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
   "importMnemonicDuplicateError": "Ye mnemonic pehle se maujood hai",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
@@ -9501,10 +8348,6 @@
   "consolidationScreenTitle": "Samekit karein",
   "consolidationSuccessBody": "Aapke coins jode ja rahe hain. Network confirm karne par yeh pura hoga.",
   "consolidationSuccessTitle": "Samekan prarambh hua",
-  "transactionStatusPayjoinAborted": "Payjoin Radd Kiya Gaya",
-  "transactionDetailLabelPayjoinAborted": "Radd Kiya Gaya",
-  "transactionDetailLabelPayjoinFeeContribution": "Payjoin Shulk Yogdaan",
-  "transactionPayjoinFeeContributionExplanation": "Gopniyata behtar banane ke liye Payjoin bhugtaan mein aapka ek sikka atirikt input ke roop mein jodta hai. Us jode gaye input ka mining shulk aapko milne wali raashi se kaat liya jaata hai (BIP78).",
   "dcaAccountUnavailableError": "Aapka account load nahi ho saka. Apna connection jaanchein, sunishchit karein ki aap logged in hain aur phir se koshish karein.",
   "dcaLightningAddressRequiredError": "Apni khareedari paane ke liye ek Lightning address daalein.",
   "dcaReceiveAddressError": "Aapke wallet mein receiving address taiyaar nahi ho saka. Kripya phir se koshish karein.",
@@ -9515,16 +8358,6 @@
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
   "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
-  "coreSwapsStatusNotStarted": "Shuru nahi hua",
-  "coreSwapsStatusAwaitingPayment": "Bhugtan ka intezaar",
-  "coreSwapsStatusAwaitingConfirmation": "Pushti ka intezaar",
-  "coreSwapsStatusUnderReview": "Samiksha mein",
-  "coreSwapsStatusRejected": "Asvikrit",
-  "coreSwapsStatusCanceled": "Radd",
-  "coreSwapsStatusPaymentDeadlineExpired": "Bhugtan ki samay-seema samapt",
-  "coreSwapsStatusScheduled": "Nirdharit",
-  "coreSwapsStatusAwaitingClaim": "Dawe ka intezaar",
-  "coreSwapsStatusUnknown": "Agyaat",
   "sendSwapExpiredTitle": "Order Khatam Ho Gaya",
   "sendSwapExpiredMessage": "Koi bhi rashi bheje jaane se pehle hi yeh order khatam ho gaya. Aapke wallet se kuch bhi nahi bheja gaya.",
   "settingsScreenPrivacyTitle": "Screen Privacy",
@@ -9558,9 +8391,6 @@
   "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
   "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
   "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein.",
-  "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
-  "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
-  "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
   "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
@@ -9574,10 +8404,6 @@
   "walletWarningElectrumBothDown": "Bitcoin aur Liquid server uplabdh nahi hain",
   "walletWarningElectrumAction": "Server settings configure karne ke liye tap karein",
   "walletLoadFailedRetryHint": "Refresh karne ke liye neeche kheenchein aur dobara koshish karein",
-  "transactionDetailLoadError": "Transaction ki details load nahin ho sakin.",
-  "transactionPayjoinBroadcastFailed": "Original transaction broadcast nahin ho saka. Kripya dobara koshish karein.",
-  "transactionPayjoinOriginalUnavailable": "Original transaction ab broadcast ke liye available nahin hai.",
-  "transactionLabelLimitReached": "Aap zyada se zyada 10 labels rakh sakte hain.",
   "settingsErrorSavingSetting": "Woh setting save nahin ho saki. Kripya dobara koshish karein.",
   "settingsErrorConsentNotGiven": "Is setting ko badalne se pehle aapki confirmation zaroori hai.",
   "settingsErrorLoadingLogs": "Diagnostic logs taiyar nahin ho sake. Kripya dobara koshish karein.",
@@ -9779,5 +8605,6 @@
   "permissionsTitle": "Anumatiyan",
   "settingsSearchPermissionsKeywords": "notifications|background kaam|battery|alerts",
   "wizardBackgroundTasksDescription": "App band hone par payment check karta hai.",
-  "wizardNotificationsDescription": "Payment aane par jaanein."
+  "wizardNotificationsDescription": "Payment aane par jaanein.",
+  "sendErrorInvoiceExpiryTooShort": "Ye invoice bahut jaldi expire ho jayegi. Praaptakarta se nayi invoice maango."
 }

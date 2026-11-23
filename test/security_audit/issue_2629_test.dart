@@ -2,7 +2,7 @@
 // Finding: unanchored Lightning-address regex extracts an email-like substring from a Bitcoin URI.
 // Regression test for the fix.
 
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

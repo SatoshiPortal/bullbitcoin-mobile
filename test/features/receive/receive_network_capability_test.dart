@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
@@ -14,8 +14,8 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';

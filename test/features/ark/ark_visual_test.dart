@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ark/ark_ui.dart' show ArkLocalizations;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';

@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, bullUiLocalizationsDelegate;
@@ -26,7 +26,7 @@ Future<void> _pumpInput(WidgetTester tester, TransferBloc bloc) =>
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: [
-            ...AppLocalizations.localizationsDelegates,
+            ...appLocalizationsDelegates,
             bullUiLocalizationsDelegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,

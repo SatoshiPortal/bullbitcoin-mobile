@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 

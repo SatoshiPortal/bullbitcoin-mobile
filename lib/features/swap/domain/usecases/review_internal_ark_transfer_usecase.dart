@@ -3,7 +3,9 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import '../entities/internal_transfer.dart';
-import '../swap_failure.dart';
+
+import 'package:swaps/order_swaps.dart';
+
 import 'load_internal_ark_transfer_usecase.dart';
 
 /// Navigation input, never a review or permission to sign.

@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:material_ui/material_ui.dart';

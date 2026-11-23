@@ -1,0 +1,60 @@
+{
+  "@@locale": "pt_BR",
+  "save": "Salvar",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "Entendido",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "Excluir",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "receiveQRCode": "Código QR",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "transactionListLoadingTransactions": "Carregando transações...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "Pendente",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "Ontem",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "Hoje",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "Montante",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "Toque para copiar",
+  "viewerViewInExplorer": "Ver no explorador",
+  "transactionViewerTitle": "ID da transação",
+  "viewerCopyLink": "Copiar link",
+  "coinsTitle": "Moedas",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Copiado para a área de transferência"
+}

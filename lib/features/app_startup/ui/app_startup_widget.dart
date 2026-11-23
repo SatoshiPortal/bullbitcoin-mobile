@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
@@ -16,9 +16,14 @@ import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullSupportButton, Gap, BullTypographyX;
 
 class AppStartupWidget extends StatefulWidget {
-  const AppStartupWidget({super.key, required this.app});
+  const AppStartupWidget({
+    super.key,
+    required this.app,
+    required this.onUnlocked,
+  });
 
   final Widget app;
+  final Future<void> Function() onUnlocked;
 
   @override
   State<AppStartupWidget> createState() => _AppStartupWidgetState();
@@ -38,9 +43,20 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               return const OnboardingSplash(loading: true);
               // show status of migration
             } else if (state is AppStartupSuccess) {
-              // if (!state.hasDefaultWallets) return const OnboardingScreen();
-              // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
-              // return const HomeScreen();
+              if (state.isPinCodeSet) {
+                // The PIN may already be required when this widget mounts.
+                return Overlay.wrap(
+                  child: const Access().buildReauthenticationGate(
+                    onSuccess: (_) async {
+                      await widget.onUnlocked();
+                      if (!context.mounted) return;
+                      context.read<AppStartupBloc>().add(
+                        const AppStartupUnlocked(),
+                      );
+                    },
+                  ),
+                );
+              }
               return widget.app;
             } else if (state is AppStartupFailureState) {
               return AppStartupFailureScreen(failure: state.failure);
@@ -67,15 +83,12 @@ class AppStartupListener extends StatelessWidget {
       listeners: [
         BlocListener<AppStartupBloc, AppStartupState>(
           listenWhen: (previous, current) =>
-              current is AppStartupSuccess && previous != current,
+              current is AppStartupSuccess &&
+              !current.isPinCodeSet &&
+              !current.hasDefaultWallets &&
+              previous != current,
           listener: (context, state) {
-            if (state is AppStartupSuccess && state.isPinCodeSet) {
-              const AppUnlockRouteData().go(AppRouter.router);
-            }
-
-            if (state is AppStartupSuccess && !state.hasDefaultWallets) {
-              AppRouter.router.go(OnboardingRoute.onboarding.path);
-            }
+            AppRouter.router.go(OnboardingRoute.onboarding.path);
           },
         ),
       ],

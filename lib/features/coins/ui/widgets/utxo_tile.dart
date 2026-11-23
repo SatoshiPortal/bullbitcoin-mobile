@@ -2,7 +2,7 @@ import 'package:sync/sync.dart' show Keychain;
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart';

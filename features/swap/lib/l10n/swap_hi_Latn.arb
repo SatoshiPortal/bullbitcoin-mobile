@@ -1,0 +1,11 @@
+{
+  "@@locale": "hi_Latn",
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  }
+}

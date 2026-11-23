@@ -1,112 +1,71 @@
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show LiquidWalletRepository;
 import 'package:bb_mobile/features/consolidation/domain/consolidation_config.dart';
+import 'package:fees/fees.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
 
-/// Result of building (but not yet broadcasting) a consolidation: the unsigned
-/// PSETs plus the total network fee summed across them, for the confirm screen.
-class ConsolidationPreview {
-  const ConsolidationPreview({
-    required this.unsignedPsets,
-    required this.totalFeeSat,
-  });
+final class ConsolidationPreview {
+  final PreparedLiquidConsolidation _prepared;
 
-  final List<String> unsignedPsets;
-  final int totalFeeSat;
+  const ConsolidationPreview(this._prepared);
 
-  /// One consolidated output per transaction, so this is also the resulting
-  /// UTXO count.
-  int get transactionCount => unsignedPsets.length;
+  int get totalFeeSat => _prepared.totalFee.value.toInt();
+  int get transactionCount => _prepared.transactionCount;
 }
 
-/// Orchestrates a Liquid consolidation as a set of self-transactions:
-/// `consolidate` (build) → `signPset` (each) → broadcast (each, via the same
-/// [BroadcastLiquidTransactionUsecase] a normal send uses).
-///
-/// [prepare] builds the PSETs and totals the fee for the confirm screen;
-/// [broadcast] signs and broadcasts them. Thresholds/batch size come from the
-/// per-boot [ConsolidationConfig] to avoid fingerprinting.
-///
-/// KNOWN LIMITATION (accepted for now — see
-/// [LiquidWalletRepository.consolidate]'s doc comment): repeated calls to
-/// [prepare] in quick succession (before a sync completes) can produce
-/// batches that reuse a drain address, since address selection happens
-/// natively and isn't backed by a persisted, app-level reservation. Not a
-/// fund-safety issue — only an address-reuse/privacy one.
+sealed class ConsolidationFailure extends Failure {
+  const ConsolidationFailure();
+}
+
+final class ConsolidationPreparationFailure extends ConsolidationFailure {
+  const ConsolidationPreparationFailure();
+}
+
+final class ConsolidationSubmissionFailure extends ConsolidationFailure {
+  final List<String> acceptedTxids;
+  final bool outcomeUnknown;
+
+  ConsolidationSubmissionFailure({
+    required Iterable<String> acceptedTxids,
+    required this.outcomeUnknown,
+  }) : acceptedTxids = List.unmodifiable(acceptedTxids);
+}
+
 class ConsolidateLiquidWalletUsecase {
-  final LiquidWalletRepository _repository;
-  final BroadcastLiquidTransactionUsecase _broadcast;
+  final Spend _spend;
 
-  // Liquid network minrelayfee default (0.1 sat/vByte = 25 sat/kwu); the
-  // consolidation self-transfer doesn't need to be fast.
-  static const RelativeFee _feeRate = NetworkFeeRelayPolicy.minRelay;
+  const ConsolidateLiquidWalletUsecase(this._spend);
 
-  ConsolidateLiquidWalletUsecase({
-    required LiquidWalletRepository liquidWalletRepository,
-    required BroadcastLiquidTransactionUsecase
-    broadcastLiquidTransactionUsecase,
-  }) : _repository = liquidWalletRepository,
-       _broadcast = broadcastLiquidTransactionUsecase;
-
-  Future<ConsolidationPreview> prepare({required String walletId}) async {
-    try {
-      final psets = await _repository.consolidate(
-        walletId: walletId,
-        feeRate: _feeRate,
-        highUtxoThreshold: ConsolidationConfig.highUtxoThreshold,
-        maximumInputs: ConsolidationConfig.maximumInputs,
-      );
-      var totalFeeSat = 0;
-      for (final pset in psets) {
-        final (_, feeSat) = await _repository.getPsetSizeAndAbsoluteFees(
-          pset: pset,
-        );
-        totalFeeSat += feeSat;
-      }
-      return ConsolidationPreview(
-        unsignedPsets: psets,
-        totalFeeSat: totalFeeSat,
-      );
-    } catch (e) {
-      throw ConsolidationException(e.toString());
-    }
-  }
-
-  /// Sign and broadcast the previously-built PSETs, returning the txids.
-  ///
-  /// If a PSET partway through the list fails to sign or broadcast, the
-  /// txids of whatever already succeeded are carried on the thrown
-  /// [ConsolidationException.succeededTxids] rather than discarded — the
-  /// caller (see [ConsolidationCubit]) uses this to avoid resubmitting an
-  /// already-broadcast (and so already-spent) PSET on retry.
-  Future<List<String>> broadcast({
+  @useResult
+  Future<Result<ConsolidationPreview, ConsolidationFailure>> prepare({
     required String walletId,
-    required List<String> unsignedPsets,
-  }) async {
-    final txids = <String>[];
-    try {
-      for (final pset in unsignedPsets) {
-        final signed = await _repository.signPset(
-          pset: pset,
-          walletId: walletId,
-        );
-        // Sync checks each batch's inputs against the freezes again.
-        txids.add(await _broadcast.execute(signed, walletId: walletId));
-      }
-      return txids;
-    } catch (e) {
-      throw ConsolidationException(e.toString(), List.unmodifiable(txids));
-    }
-  }
-}
+  }) async =>
+      (await _spend.prepareLiquidConsolidation(
+            walletId,
+            feeRate: NetworkFeeRelayPolicy.minRelay,
+            highUtxoThreshold: ConsolidationConfig.highUtxoThreshold,
+            maximumInputs: ConsolidationConfig.maximumInputs,
+          ))
+          .map(ConsolidationPreview.new)
+          .mapErr((_) => const ConsolidationPreparationFailure());
 
-class ConsolidationException extends BullException {
-  /// Txids that already broadcast successfully before this failure occurred
-  /// (empty if the failure happened before anything broadcast, e.g. during
-  /// [ConsolidateLiquidWalletUsecase.prepare]).
-  final List<String> succeededTxids;
-
-  ConsolidationException(super.message, [this.succeededTxids = const []]);
+  @useResult
+  Future<Result<List<String>, ConsolidationFailure>> broadcast(
+    ConsolidationPreview preview,
+  ) async => (await _spend.submitLiquidConsolidation(preview._prepared)).mapErr(
+    (failure) => switch (failure) {
+      SpendConsolidationInterruptedFailure(
+        :final acceptedTxids,
+        :final cause,
+      ) =>
+        ConsolidationSubmissionFailure(
+          acceptedTxids: acceptedTxids,
+          outcomeUnknown: cause is SpendBroadcastOutcomeUnknownFailure,
+        ),
+      _ => ConsolidationSubmissionFailure(
+        acceptedTxids: const [],
+        outcomeUnknown: failure is SpendBroadcastOutcomeUnknownFailure,
+      ),
+    },
+  );
 }

@@ -1,0 +1,57 @@
+{
+  "allSeedViewDeleteSwapMnemonicMessage": "Esto elimina la clave maestra de intercambios del almacenamiento seguro. Se volverá a derivar de la semilla de tu billetera la próxima vez que la app la necesite, con la misma huella. Los intercambios en curso no se ven afectados.",
+  "parentCustodyMetadataUnavailable": "Faltan los registros de seguridad de la billetera o están dañados. Se ha detenido esta acción para proteger tu semilla. Contacta con soporte antes de volver a intentarlo.",
+  "allSeedViewSecurityWarningMessage": "Mostrar frases de recuperación es un riesgo de seguridad. Cualquiera que vea su frase de recuperación puede acceder a sus fondos. Asegúrese de estar en un lugar privado y de que nadie pueda ver su pantalla.",
+  "cancel": "Cancelar",
+  "screenPrivacyUnavailable": "No se pudo activar la protección de pantalla, así que este secreto permanece oculto.",
+  "allSeedViewLoadingMessage": "Esto puede tardar un tiempo en cargar si tiene muchas semillas en este dispositivo.",
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "allSeedViewNoSeedsFound": "No se encontraron semillas.",
+  "allSeedViewSecurityWarningTitle": "Advertencia de Seguridad",
+  "passphraseWordsIncompleteWarning": "Estas palabras por sí solas no pueden restaurar esta billetera. Guarda tu frase de contraseña por separado.",
+  "allSeedViewPassphraseLabel": "Frase de contraseña:",
+  "allSeedViewOldWallets": "Billeteras Antiguos ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Entiendo",
+  "allSeedViewDeleteWarningTitle": "¡ADVERTENCIA!",
+  "allSeedViewDeleteWarningMessage": "Eliminar la semilla es una acción irreversible. Solo haga esto si tiene copias de seguridad seguras de esta semilla o si las billeteras asociadas han sido completamente vaciadas.",
+  "passphraseHide": "Ocultar frase de contraseña",
+  "delete": "Eliminar",
+  "allSeedViewErrorDelete": "No se pudo eliminar la semilla. Por favor, inténtalo de nuevo.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "No se pudieron cargar las semillas. Por favor, inténtalo de nuevo.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewUnreadableEntries": "{count, plural, =1{No se pudo leer 1 entrada guardada y no se muestra.} other{No se pudieron leer {count} entradas guardadas y no se muestran.}}",
+  "allSeedViewShowSeedsButton": "Mostrar Semillas",
+  "allSeedViewSwapLinkedWallet": "Billetera vinculada: {fingerprint}",
+  "allSeedViewDeleteSwapMnemonicTitle": "¿Eliminar la frase mnemónica de intercambios?",
+  "passphraseShow": "Mostrar frase de contraseña",
+  "allSeedViewTitle": "Visualizador de Semillas",
+  "allSeedViewSwapMnemonicTitle": "Frase mnemónica de intercambios",
+  "allSeedViewSwapFingerprint": "Huella: {fingerprint} ({network})",
+  "allSeedViewExistingWallets": "Billeteras Existentes ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "@@locale": "es"
+}

@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer mnemoniği silinsin mi?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Bu işlem, transfer ana anahtarını güvenli depolamadan kaldırır. Uygulamanın ihtiyaç duyduğu bir sonraki seferde cüzdan seed'inizden aynı parmak iziyle yeniden türetilecektir. Devam eden transferler etkilenmez.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemoniği",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer mnemoniği silinsin mi?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Bu işlem, transfer ana anahtarını güvenli depolamadan kaldırır. Uygulamanın ihtiyaç duyduğu bir sonraki seferde cüzdan seed'inizden aynı parmak iziyle yeniden türetilecektir. Devam eden transferler etkilenmez."
 }

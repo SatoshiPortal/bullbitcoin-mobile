@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';

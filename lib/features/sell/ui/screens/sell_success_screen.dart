@@ -4,10 +4,10 @@ import 'package:primitives/primitives.dart'
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,16 +109,16 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
             onPressed: () {
               final txId = order.payjoin?.txid;
               if (txId != null) {
-                context.pushNamed(
-                  TransactionsRoute.payjoinTransactionDetailsByTxId.name,
-                  pathParameters: {'txId': txId},
-                  queryParameters: {'returnToExchange': 'true'},
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.payjoinByTxId(txId),
+                  returnToExchange: true,
                 );
               } else {
-                context.pushNamed(
-                  TransactionsRoute.orderTransactionDetails.name,
-                  pathParameters: {'orderId': order.orderId},
-                  queryParameters: {'returnToExchange': 'true'},
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.order(order.orderId),
+                  returnToExchange: true,
                 );
               }
             },

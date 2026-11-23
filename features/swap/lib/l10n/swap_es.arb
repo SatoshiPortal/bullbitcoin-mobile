@@ -1,0 +1,20 @@
+{
+  "@@locale": "es",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "save": "Guardar",
+  "swapSettingsTitle": "Intercambios",
+  "swapSettingsExchangeFallbackLabel": "Recurrir al exchange de Bull Bitcoin",
+  "swapSettingsExchangeFallbackDescription": "Los intercambios se realizan a través de Boltz. Cuando no se puede conectar con Boltz o no acepta el monto, se crea en su lugar una orden en el exchange de Bull Bitcoin. El exchange custodia los fondos hasta que se completa la orden.",
+  "swapSettingsRouteOverrideTitle": "Proveedor de intercambios",
+  "swapSettingsRouteOverrideAuto": "Automático",
+  "swapSettingsRouteOverrideBoltzOnly": "Solo Boltz",
+  "swapSettingsRouteOverrideExchangeOnly": "Solo el exchange",
+  "swapServerTitle": "Servidor de intercambios",
+  "swapServerSubtitle": "El servidor de Boltz que se usa para los intercambios sin confianza en esta red. Déjalo vacío para usar el predeterminado.",
+  "swapServerDefault": "Predeterminado",
+  "swapServerReset": "Restablecer el predeterminado",
+  "swapServerInvalid": "Introduce una dirección de servidor válida (p. ej., api.boltz.exchange/v2)",
+  "swapServerChangedNotice": "Los intercambios ahora usan este servidor.",
+  "swapServerBusyError": "Termina tus swaps en curso antes de cambiar el servidor de swaps.",
+  "networkFeatureUnavailable": "Esta función no está disponible en la red seleccionada."
+}

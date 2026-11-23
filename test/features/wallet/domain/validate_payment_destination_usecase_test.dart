@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/validate_payment_destination_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/payment_destination.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -12,7 +12,7 @@ void main() {
           'bitcoin:address?amount=0.000025&pj=https%3A%2F%2Fexample.com';
       final usecase = ValidatePaymentDestinationUsecase(
         parse: (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: raw,
           address: 'address',
           amountSat: 2500,

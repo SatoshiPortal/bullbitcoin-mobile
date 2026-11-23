@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bull_pricer/bull_pricer.dart';
 
 import '../../domain/send_amount_conversion.dart';
@@ -12,14 +13,15 @@ import 'package:primitives/primitives.dart'
         Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:fees/fees.dart';
+import 'package:spend/spend.dart';
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/liquid_address.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/liquid_address.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show calculatePercentage;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -52,7 +54,7 @@ enum SendType {
       case LnAddressPaymentRequest():
         return SendType.lightning;
       case Bip21PaymentRequest():
-        if (paymentRequest.network.isBitcoin) {
+        if (paymentRequest.network is BitcoinNetwork) {
           return SendType.bitcoin;
         } else {
           return SendType.liquid;
@@ -108,6 +110,8 @@ SendStep sendStepAfterBroadcastPersistenceFailure({
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({
+    PreparedBitcoinSpend? bitcoinPreparation,
+    SignedBitcoinSpend? bitcoinSignature,
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
     @Default('') String scannedRawPaymentRequest,

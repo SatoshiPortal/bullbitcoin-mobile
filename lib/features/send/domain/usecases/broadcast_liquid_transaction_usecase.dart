@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show NetworkX, SignedPset, WalletFacade;

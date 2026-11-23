@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ark/ark.dart';
-import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';

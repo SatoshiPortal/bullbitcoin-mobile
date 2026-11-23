@@ -2,7 +2,7 @@
 // Finding: an out-of-range BBQR part index is accepted and permanently prevents completion.
 // Regression test for the fix.
 
-import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
+import 'package:satoshifier/bbqr.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

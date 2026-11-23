@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/localization/payment_network_l10n.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus;
 import 'package:flutter/widgets.dart';
@@ -13,7 +13,6 @@ extension SwapFailureL10n on SwapFailure {
           : context.loc.walletSpendAwaitingObservation,
     SwapUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     SwapRelaunchRequiredFailure() => context.loc.networkRelaunchRequiredError,
-    SwapServerBusyFailure() => context.loc.swapServerBusyError,
     SwapLockupPendingFailure() =>
       context.loc.broadcastSignedTxErrorOutcomeUnknown,
     SwapAmountOutOfBoundsFailure(

@@ -10,7 +10,7 @@ part 'statistics_state.freezed.dart';
 @freezed
 abstract class StatisticsState with _$StatisticsState {
   const factory StatisticsState({
-    OrderStatsResponse? stats,
+    OrderStatistics? stats,
     @Default(false) bool isLoading,
     ExchangeSettingsFailure? failure,
   }) = _StatisticsState;

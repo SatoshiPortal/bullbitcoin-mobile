@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "¿Eliminar la frase mnemónica de transferencia?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Esto elimina la clave maestra de transferencia del almacenamiento seguro. Se volverá a derivar de la semilla de su billetera la próxima vez que la aplicación la necesite, con la misma huella. Las transferencias en curso no se ven afectadas.",
   "app__exchangeAccessSettingsDescription_apple": "Muestra Comprar, Vender y Pagar en la pantalla de inicio. Las transferencias siguen disponibles.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Frase mnemónica de transferencia",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "¿Eliminar la frase mnemónica de transferencia?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Esto elimina la clave maestra de transferencia del almacenamiento seguro. Se volverá a derivar de la semilla de su billetera la próxima vez que la aplicación la necesite, con la misma huella. Las transferencias en curso no se ven afectadas."
 }

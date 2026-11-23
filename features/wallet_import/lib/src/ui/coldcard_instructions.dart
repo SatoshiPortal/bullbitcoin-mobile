@@ -1,0 +1,50 @@
+import 'package:wallet_import/src/presentation/import_l10n.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInstructionsSheet;
+
+class ColdcardQInstructionsBottomSheet {
+  static Future<void> show(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.importColdcardQInstructionsTitle,
+      instructions: [
+        context.loc.importColdcardQStep1,
+        context.loc.importColdcardQStep2,
+        context.loc.importColdcardQStep3,
+        context.loc.importColdcardQStep4,
+        context.loc.importColdcardQStep5,
+        context.loc.importColdcardQStep6,
+        context.loc.importColdcardQStep7,
+        context.loc.importColdcardQStep8,
+        context.loc.importColdcardQStep9,
+        context.loc.importColdcardQStep10,
+        context.loc.importColdcardQStep11,
+        context.loc.importColdcardQStep12,
+        context.loc.importColdcardQStep13,
+      ],
+    );
+  }
+}
+
+class ColdcardMk4InstructionsBottomSheet {
+  static Future<void> show(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.importColdcardMk4InstructionsTitle,
+      instructions: [
+        context.loc.importColdcardMk4Step1,
+        context.loc.importColdcardMk4Step2,
+        context.loc.importColdcardMk4Step3,
+        context.loc.importColdcardMk4Step4,
+        context.loc.importColdcardMk4Step5,
+        context.loc.importColdcardMk4Step6,
+        context.loc.importColdcardMk4Step7,
+        context.loc.importColdcardMk4Step8,
+        context.loc.importColdcardMk4Step9,
+        context.loc.importColdcardMk4Step10,
+        context.loc.importColdcardMk4Step11,
+        context.loc.importColdcardMk4Step12,
+      ],
+    );
+  }
+}

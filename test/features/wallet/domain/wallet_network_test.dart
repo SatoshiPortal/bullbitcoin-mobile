@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,7 +1,8 @@
+import 'package:exchange/setup.dart';
+
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bbx_api/bbx_api.dart'
     show
         Bbx,
@@ -51,7 +52,7 @@ String _record(String key, {bool active = true}) =>
 /// The app's credential read as the package's own failure family, as the
 /// composition root wires it.
 Future<Result<String?, BbxFailure>> _credential(
-  ExchangeApiKeyRepositoryImpl repository, {
+  ExchangeCredentials repository, {
   required bool isTestnet,
 }) async => switch (await repository.readActiveApiKey(isTestnet: isTestnet)) {
   Ok(:final value) => Ok<String?, BbxFailure>(value),
@@ -60,7 +61,7 @@ Future<Result<String?, BbxFailure>> _credential(
 
 Bbx _client(
   HttpClientAdapter adapter,
-  ExchangeApiKeyRepositoryImpl repository, {
+  ExchangeCredentials repository, {
   required bool isTestnet,
 }) => bbxForTesting(
   endpoint: 'https://example.invalid',
@@ -78,9 +79,8 @@ Future<bool> _consent(Bbx api) async =>
 void main() {
   test('rereads rotation, environment and logout on every request', () async {
     final storage = FakeSecureStoragePlatform().install();
-    final repository = ExchangeApiKeyRepositoryImpl(
-      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-          .exchangeKeychain,
+    final repository = ExchangeCredentials.open(
+      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
     );
     final adapter = _Adapter();
     final mainnet = _client(adapter, repository, isTestnet: false);
@@ -108,9 +108,8 @@ void main() {
     'inactive, corrupt and inaccessible credentials never reach the adapter',
     () async {
       final storage = FakeSecureStoragePlatform().install();
-      final repository = ExchangeApiKeyRepositoryImpl(
-        secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-            .exchangeKeychain,
+      final repository = ExchangeCredentials.open(
+        Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
       );
       final adapter = _Adapter();
       final api = _client(adapter, repository, isTestnet: true);
@@ -174,9 +173,8 @@ void main() {
 
   test('typed absence and read failure are separate outcomes', () async {
     final storage = FakeSecureStoragePlatform().install();
-    final repository = ExchangeApiKeyRepositoryImpl(
-      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-          .exchangeKeychain,
+    final repository = ExchangeCredentials.open(
+      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
     );
     final adapter = _Adapter();
     final api = _client(adapter, repository, isTestnet: true);

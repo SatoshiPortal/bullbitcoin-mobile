@@ -1,0 +1,730 @@
+{
+  "transactionDetailLabelTransactionFee": "İşlem Ücreti",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionSwapDescLnSendPending": "Değişiminiz başlatılmıştır. Paralarınızı kilitlemek için on zincir işlemi yayınlıyoruz.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionNoteHint": "Not",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionLabelPreimage": "Preimage",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "coreSwapsChainCanCoop": "Takas birazdan tamamlanacak.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionDetailLabelConfirmationTime": "Onay zamanı",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapDescChainPending": "Takasınız oluşturuldu ancak henüz başlatılmadı.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapStatusSwapStatus": "Swap Status",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionStatusTransferFailed": "Takas Başarısız Oldu",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "Takas",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "Swap ücretleri",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "Swap Expired",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionFilterBuy": "Satın Al Satın Al",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreWalletTransactionStatusPending": "Pending",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionDetailLabelTransferStatus": "Takas durumu",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsLnSendExpired": "Swap Expired",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsChainFailedRefunding": "Takas kısa süre içinde iade edilecek.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "Yeniden finanse edilen ödeme",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "İlerlemede Ödeme",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "transactionSwapDescChainFailed": "Takasınızla ilgili bir sorun oluştu. Fonlar 24 saat içinde iade edilmezse lütfen destekle iletişime geçin.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionSwapDescLnSendDefault": "Değişiminiz devam ediyor. Bu süreç otomatikdir ve tamamlamak için biraz zaman alabilir.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "buyTitle": "Bitcoin satın alın",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapDescLnSendFailed": "Değişiminizle ilgili bir sorun vardı. Paranız cüzdanınız otomatik olarak iade edilecektir.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "Bu değişim sona erdi. Paralarınız otomatik olarak cüzdanınıza geri dönecek.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveExpired": "Bu değişim sona erdi. Gönderilen herhangi bir fon otomatik olarak göndericiye iade edilecektir.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapProgressClaim": "Talep Davası",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionDetailLabelTransferId": "Takas ID",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "Bütün Bütün Hepsi",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "$ aldı",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "transactionLabelReceiveAmount": "Kabul Miktarı",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "coreSwapsLnSendPaid": "Fatura, ödeme onay aldıktan sonra ödenecektir.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "transactionDetailAccelerate": "Hızlanma",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLabelPayjoinExpired": "Açıklama",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionSwapProgressCompleted": "Tamamlandı",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapDescLnSendCompleted": "Lightning ödeme başarıyla gönderildi! Sizin takasınız şimdi tamamlandı.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionListNoTransactions": "Henüz işlem yok.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionStatusTransferInProgress": "Takas Devam Ediyor",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "Takas İlerlemesi",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailLabelPayinAmount": "Payin miktarı",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "coreSwapsLnSendPending": "Swap henüz başlangıç değildir.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "transactionSwapProgressInitiated": "Initiated",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "coreSwapsLnReceivePaid": "Sender faturayı ödedi.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "transactionSwapInfoClaimableTransfer": "Takas birkaç saniye içinde otomatik olarak tamamlanacaktır. Tamamlanmazsa \"Takas Talebini Yeniden Dene\" düğmesine tıklayarak manuel talep deneyebilirsiniz.",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionDetailLabelRefunded": "Yeniden finanse edildi",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "Add note",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Tamamlandı",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelCreatedAt": "Oluşturulduğunda",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "transactionLabelSendAmount": "Gönder",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "Ağ Ücreti Al",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapDescChainExpired": "Bu takasın süresi doldu. Fonlarınız otomatik olarak cüzdanınıza iade edilecektir.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "coreSwapsChainCompletedRefunded": "Takas iade edildi.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionDetailLabelPayjoinStatus": "Payjoin statüsü",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "Kabul Kabul Al",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionSwapProgressInProgress": "İlerleme",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "coreSwapsLnSendCompletedSuccess": "Swap başarıyla tamamlandı.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "Değişiminiz devam ediyor. Bu süreç otomatikdir ve tamamlamak için biraz zaman alabilir.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionSwapDoNotUninstall": "Uygulamayı tamamen tamamlanmış olana kadar yüklemeyin.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionDetailLabelExchangeRate": "Değişim oranı",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionSwapBitcoinToLiquid": "BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "coreSwapsStatusPending": "Pending",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "transactionDetailLabelToWallet": "Cüzdan için",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "coreSwapsChainCompletedSuccess": "Takas başarıyla tamamlandı.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsLnReceiveFailed": "Swap başarısız oldu.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "transactionDetailLabelPayinStatus": "Payin Status",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "transactionListOngoingTransfersTitle": "Devam Eden Takaslar",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDescChainClaimable": "Kilitleme işlemi onaylandı. Şimdi takasınızı tamamlamak için fonları talep ediyorsunuz.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "Takas iade edilecek. Fonlarınız otomatik olarak cüzdanınıza iade edilecektir.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "receivePaymentNormally": "Normalde ödeme alın",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "coreSwapsStatusInProgress": "İlerleme",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "transactionSwapProgressConfirmed": "Onaylandı",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionTitle": "İşlemler",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionSwapDescLnReceivePending": "Değişiminiz başlatılmıştır. Lightning Network'te alınacak bir ödeme bekliyoruz.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionDetailLabelFromWallet": "Cüzdandan cüzdan",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "transactionSwapDescChainCompleted": "Takasınız başarıyla tamamlandı! Fonlar artık cüzdanınızda olmalıdır.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "coreSwapsLnSendRefundable": "Swap geri ödeme yapmaya hazırdır.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionPayjoinSendWithout": "Ödeme yapmadan gönder",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "Swap şu anda tamamlanacak.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionDetailLabelTransactionId": "İşlem ID",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "coreSwapsLnReceiveClaimable": "Swap iddia edilmeye hazır.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "transactionSwapProgressFundsClaimed": "Fonlar\nDavalı",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "coreSwapsLnReceiveCanCoop": "Swap şu anda tamamlanacak.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "transactionSwapProgressPaymentMade": "Ödeme",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "coreSwapsChainPending": "Takas henüz başlatılmadı.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsLnSendFailed": "Swap başarısız oldu.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainRefundable": "Takas iadeye hazır.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "transactionFeesTotalDeducted": "Bu, gönderilen miktarın toplam ücretidir",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionStatusPayjoinRequested": "Payjoin talep istedi",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionSwapInfoRefundableTransfer": "Bu takas birkaç saniye içinde otomatik olarak iade edilecektir. İade edilmezse \"Takas İadesini Yeniden Dene\" düğmesine tıklayarak manuel iade deneyebilirsiniz.",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapDescLnReceiveCompleted": "Değişiminiz başarıyla tamamlandı! Fonlar şimdi cüzdanınızda mevcut olmalıdır.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionDetailLabelPayoutStatus": "Payout Status",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "Swap geri alındı.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "transactionSwapInfoClaimableSwap": "Değişim birkaç saniye içinde otomatik olarak tamamlanacaktır. Değilse, \"Retry Swap Talep\" düğmesine tıklayarak bir manuel iddiaya deneyebilirsiniz.",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionListLoadingTransactions": "Yükleniyor işlemleri...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionDetailLabelBitcoinTxId": "Bitcoin İşlem ID",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "Takas başarısız oldu.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "Add note",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "Payin yöntemi",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "Takas Tamamlandı",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "Sıvı işlem ID",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "transactionLabelServerNetworkFees": "Server Network Fees",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "coreSwapsChainPaid": "Takas sağlayıcısının ödemesinin onaylanması bekleniyor. Tamamlanması biraz zaman alabilir.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "transactionSwapDescLnSendPaid": "On zincir işleminiz yayınlandı. 1 onayından sonra, Lightning ödeme gönderilir.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionSwapDescChainDefault": "Takasınız devam ediyor. Bu süreç otomatiktir ve tamamlanması biraz zaman alabilir.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "coreSwapsChainClaimable": "Takas talep edilmeye hazır.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "Ağ Fee gönder",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionStatusInProgress": "İlerleme",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionOrderLabelOriginName": "Origin Name Name Name",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "globalDefaultLiquidWalletLabel": "Anında ödeme",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "exportTransactionsDescription": "Cüzdanınızın tüm işlemlerini (Bitcoin, Liquid, Lightning ve takasları) CSV dosyası olarak dışa aktarın. İsteğe bağlı olarak tarih aralığına göre filtreleyin.",
+  "exportTransactionsStartDate": "Başlangıç tarihi",
+  "exportTransactionsEndDate": "Bitiş tarihi",
+  "exportTransactionsAnyDate": "Herhangi",
+  "exportTransactionsButton": "CSV olarak dışa aktar",
+  "exportTransactionsSuccess": "İşlemler başarıyla dışa aktarıldı",
+  "exportTransactionsEmpty": "Seçilen dönem için dışa aktarılacak işlem yok",
+  "exportTransactionsError": "İşlemler dışa aktarılamadı",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Başlangıç tarihi bitiş tarihinden önce olmalıdır",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionSwapInfoRefundableSwap": "Bu değişim birkaç saniye içinde otomatik olarak geri ödenecektir. Değilse, \"Retry Swap Refund\" düğmesine tıklayarak manuel bir geri ödeme deneyebilirsin.",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionDetailLabelAddressNotes": "Adres Notları",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "Referans Numarası",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "Durum durumu",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionFeesDeductedFrom": "Bu ücretler gönderilen miktartan silinecektir",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionStatusPending": "Pending",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionLabelSendNetworkFees": "Ağ ücretleri gönder",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "coreSwapsChainExpired": "Takasın süresi doldu",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionListYesterday": "Dün",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionDetailLabelPayoutMethod": "Payout yöntemi",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "coreSwapsStatusFailed": "Başarısızlık",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "transactionFilterSell": "Sat Satış Sat",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "transactionSwapInfoChainDelay": "Zincir üstü takasların tamamlanması, blokzinciri onay süreleri nedeniyle biraz zaman alabilir.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "sellTitle": "Bitcoin satmak",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionListToday": "Bugün",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionDetailLabelSwapStatus": "Swap statüsü",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "Gönderilen miktar",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "coreSwapsLnReceiveRefundable": "Swap geri ödeme yapmaya hazırdır.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFees": "Takas ücretleri",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionSwapStatusTransferStatus": "Takas Durumu",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionDetailLabelOrderType": "Sipariş Türü",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "Payout amount",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "coreSwapsLnSendFailedRefunding": "Swap kısa süre içinde geri dönecek.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "transactionSwapProgressBroadcasted": "Yayınlandı",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionDetailLabelAddress": "Adres",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "coreSwapsLnReceivePending": "Swap henüz başlangıç değildir.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin yaratım zamanı",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "transactionSwapInfoFailedExpired": "Herhangi bir sorunuz veya endişeniz varsa lütfen yardım için iletişim desteği ile iletişime geçin.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "coreSwapsStatusExpired": "Açıklama",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsLnReceiveExpired": "Swap Expired.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionDetailLabelOrderNumber": "Sipariş Numarası",
+  "transactionDetailLabelPaymentDescription": "Ödeme açıklaması",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionListOngoingTransfersDescription": "Bu takaslar şu anda devam ediyor. Fonlarınız güvendedir ve takas tamamlandığında kullanılabilir olacaktır.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionOrderLabelOriginCedula": "Origin Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionStatusTransferExpired": "Takasın Süresi Doldu",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "Swap tamamlandı.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "Takas Ücreti",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "Sıvı",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionSwapDescChainPaid": "İşleminiz yayınlandı. Artık kilit işlemin doğrulanması için bekliyoruz.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "coreSwapsStatusCompleted": "Tamamlandı",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Onaylandı",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionStatusSwapFailed": "Swap Başarısız",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionSwapDescLnReceiveFailed": "Değişiminizle ilgili bir sorun vardı. Lütfen fonlar 24 saat içinde iade edilmediyse iletişim desteği.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionDetailSwapProgress": "Swap Progress",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "Sipariş Durumu",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "Send Send Send Gönder",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "coreSwapsLnSendClaimable": "Swap iddia edilmeye hazır.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionDetailTitle": "İşlem detayları",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelCompletedAt": "Tamamlandı",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionSwapProgressInvoicePaid": "Fatura\nÜcretli Ücretli Ücretli",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionDetailLabelSwapId": "Swap ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionSwapDescLnReceivePaid": "Ödeme alındı! Artık cüzdanınıza on zincir işlemi yayınlıyoruz.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "On zincir işlemi onaylandı. Şimdi fonları takasınızı tamamlamak için iddia ediyoruz.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionNotesLabel": "İşlem notları",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelRecipientAddress": "Onaylı Adres",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
+  "viewerTapToCopy": "Kopyalamak için dokunun",
+  "viewerViewInExplorer": "Gezginde görüntüle",
+  "transactionViewerTitle": "İşlem kimliği",
+  "viewerCopyLink": "Bağlantıyı kopyala",
+  "coreSwapsStatusRefunded": "İade Edildi",
+  "payViewReceipt": "Makbuzu görüntüle",
+  "transactionFilterWithdraw": "Çekim",
+  "transactionFilterPay": "Öde",
+  "transactionFilterFunding": "Fonlama",
+  "transactionFilterReward": "Ödül",
+  "transactionFilterRefund": "İade",
+  "transactionListLoadingFailed": "İşlemler yüklenemedi.",
+  "transactionLabelNetworkFees": "Ağ ücretleri",
+  "transactionSwapOpenWithin24h": "Takasınızı tamamlamak için uygulamayı 24 saat içinde açın.",
+  "recipientsTypeInteracEmail": "E-posta ile para transferi",
+  "transactionStatusPayjoinAborted": "Payjoin iptal edildi",
+  "transactionDetailLabelPayjoinAborted": "İptal edildi",
+  "transactionDetailLabelPayjoinFeeContribution": "Payjoin ücret katkısı",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin, gizliliği artırmak için ödemeye madeni paralarınızdan birini ek girdi olarak ekler. Eklenen bu girdi için madencilik ücreti, aldığınız tutardan düşülür (BIP78).",
+  "coreSwapsStatusNotStarted": "Başlatılmadı",
+  "coreSwapsStatusAwaitingPayment": "Ödeme bekleniyor",
+  "coreSwapsStatusAwaitingConfirmation": "Onay bekleniyor",
+  "coreSwapsStatusUnderReview": "İnceleniyor",
+  "coreSwapsStatusRejected": "Reddedildi",
+  "coreSwapsStatusCanceled": "İptal edildi",
+  "coreSwapsStatusPaymentDeadlineExpired": "Ödeme süresi doldu",
+  "coreSwapsStatusScheduled": "Planlandı",
+  "coreSwapsStatusAwaitingClaim": "Talep bekleniyor",
+  "coreSwapsStatusUnknown": "Bilinmiyor",
+  "transactionDetailLoadError": "İşlem ayrıntıları yüklenemedi.",
+  "transactionPayjoinBroadcastFailed": "Orijinal işlem yayınlanamadı. Lütfen tekrar deneyin.",
+  "transactionPayjoinOriginalUnavailable": "Orijinal işlem artık yayınlanmak üzere mevcut değil.",
+  "transactionLabelLimitReached": "En fazla 10 etiketiniz olabilir.",
+  "copiedToClipboard": "Panoya kopyalandı"
+}

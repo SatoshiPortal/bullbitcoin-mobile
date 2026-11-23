@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/support/public/support_links.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +27,7 @@ class SupportFacade {
     }
     unawaited(
       launchUrl(
-        Uri.parse(SettingsConstants.webSupportLink),
+        Uri.parse(SupportLinks.webSupportLink),
         mode: LaunchMode.externalApplication,
       ),
     );

@@ -1,8 +1,8 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_receive_payment_screen.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_receive_payment_screen.dart';
 import 'package:bb_mobile/localizations.dart';

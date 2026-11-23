@@ -1,0 +1,68 @@
+{
+  "addressViewAddressesTitle": "ঠিকনাসমূহ",
+  "addressCardUsedLabel": "ব্যৱহাৰ কৰা হৈছে",
+  "addressCardUnusedLabel": "ব্যৱহাৰ কৰা হোৱা নাই",
+  "addressCardIndexLabel": "সূচকাংক: ",
+  "addressCardBalanceLabel": "ব্যালেন্স: ",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "okButton": "ঠিক আছে",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewReceiveType": "গ্ৰহণ",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeType": "পৰিৱৰ্তন",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "addressViewTitle": "ঠিকনাৰ বিৱৰণ",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "addressViewAddress": "ঠিকনা",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewBalance": "বেলেন্স",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewTransactions": "লেনদেন",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewCopyAddress": "ঠিকনা কপি কৰক",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressViewShowQR": "QR Code দেখুৱাওক",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewNoAddressesFound": "কোনো ঠিকনা পোৱা নগ'ল",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "addressViewChangeAddressesComingSoon": "পৰিৱৰ্তন ঠিকনা শীঘ্ৰে আহিছে",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressViewChangeAddressesDescription": "Wallet পৰিৱৰ্তন ঠিকনাসমূহ প্ৰদৰ্শন কৰক",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewerTitle": "ঠিকনা",
+  "viewerTapToCopy": "কপি কৰিবলৈ টিপক",
+  "viewerViewInExplorer": "এক্সপ্ল 'ৰাৰত দৰ্শন কৰক",
+  "viewerCopyLink": "লিংক কপি কৰক",
+  "viewerAddressTab": "ঠিকনা",
+  "viewerPaymentUriTab": "পৰিশোধ URI",
+  "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
+  "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+}

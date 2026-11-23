@@ -6,7 +6,7 @@
 // What the screen used to render was `Instance of
 // 'TransactionAggregationFailure'`; `transactions_screen.dart` now renders a
 // localized message instead and no longer interpolates the failure.
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

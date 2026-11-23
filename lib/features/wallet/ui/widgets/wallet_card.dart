@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -6,8 +6,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmount,
         BullAmountScope,
         BullFadingLinearProgress,
-        BullQuickActionBar,
         BullShapesX,
+        BullSizes,
         Gap,
         BullTypographyX;
 
@@ -48,9 +48,7 @@ class WalletCard extends StatelessWidget {
           color: context.appColors.walletCardBackground,
           borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Container(
-            constraints: const BoxConstraints(
-              minHeight: BullQuickActionBar.minHeight,
-            ),
+            constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
             decoration: BoxDecoration(
               color: context.appColors.walletCardBackground,
               border: Border(left: BorderSide(color: tagColor, width: 4)),

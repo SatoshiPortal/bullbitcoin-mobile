@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:cbor/cbor.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +38,7 @@ void main() {
 
       final readerFinder = find.byType(ReaderWidget);
       final reader = tester.widget<ReaderWidget>(readerFinder);
-      final labels = tester.element(readerFinder).loc;
+      final labels = ScanningLocalizations.of(tester.element(readerFinder));
       expect(reader.showGallery, isTrue);
       expect(reader.tryInverted, isTrue);
 

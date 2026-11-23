@@ -1,7 +1,7 @@
 /// What the seed viewer shows about the dedicated swap master key.
 ///
 /// **No mnemonic.** The words are read at the moment they are drawn, by
-/// `GetSwapMnemonicUsecase`, so they never sit in screen state. Never
+/// `SwapMnemonicView`, so they never sit in screen state. Never
 /// round-tripped into storage.
 class SwapMasterKeyInfo {
   /// The swap master key's OWN fingerprint (distinct from [walletFingerprint]).

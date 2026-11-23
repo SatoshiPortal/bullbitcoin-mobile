@@ -2,8 +2,8 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/sync.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/coins/data/mappers/wallet_utxo_mapper.dart';
 import 'package:primitives/primitives.dart' show Outpoint, Result;
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
@@ -11,13 +11,13 @@ import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_reposit
 import 'package:labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final WalletRegistrations _walletRegistrations;
   final Labels _labelsFacade;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
   final SyncFreezesDatasource _freezes;
 
   WalletUtxoRepositoryImpl({
-    required this._walletMetadataDatasource,
+    required this._walletRegistrations,
     required this._labelsFacade,
     required this._loadWallet,
     required SyncFreezesDatasource freezesDatasource,
@@ -29,16 +29,16 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
 
     final key = WalletKey(id: metadata.id, network: metadata.network.shared);
-    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+    final wallet = WalletSyncBinding.value(await _loadWallet(key));
     // An unavailable freeze policy must never publish apparently spendable coins.
-    final coins = WalletCatalogPortImpl.value(wallet.coins.now.latest);
+    final coins = WalletSyncBinding.value(wallet.coins.now.latest);
 
     final utxos = await Future.wait(
       coins.map((coin) async {
@@ -80,7 +80,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     required String walletId,
     required List<Outpoint> outpoints,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }

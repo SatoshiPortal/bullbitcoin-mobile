@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';

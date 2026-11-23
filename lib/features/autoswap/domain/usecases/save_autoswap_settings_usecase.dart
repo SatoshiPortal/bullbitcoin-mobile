@@ -1,17 +1,11 @@
-import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
 
 class SaveAutoswapSettingsUsecase {
-  final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
+  final AutoSwapSettings _autoSwapSettings;
 
-  const SaveAutoswapSettingsUsecase({
-    required this._saveAutoSwapSettingsUsecase,
-  });
+  const SaveAutoswapSettingsUsecase(this._autoSwapSettings);
 
   /// Refuses settings the entity rejects, then writes them.
   ///
@@ -22,19 +16,13 @@ class SaveAutoswapSettingsUsecase {
     final violation = settings.violation;
     if (violation != null) return Err(_failureFor(violation));
 
-    try {
-      await _saveAutoSwapSettingsUsecase.execute(settings);
-      return const Ok(null);
-    } on AutoswapNetworkUnavailableException {
-      return const Err(AutoswapUnsupportedNetworkFailure());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to save auto swap settings',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(AutoswapSettingsSaveFailure(e.runtimeType.toString()));
-    }
+    return (await _autoSwapSettings.saveAutoSwap(settings)).mapErr(
+      (failure) => switch (failure) {
+        SwapsUnsupportedNetworkFailure() =>
+          const AutoswapUnsupportedNetworkFailure(),
+        _ => AutoswapSettingsSaveFailure(failure.logMessage),
+      },
+    );
   }
 
   AutoswapFailure _failureFor(AutoSwapSettingsViolation violation) =>

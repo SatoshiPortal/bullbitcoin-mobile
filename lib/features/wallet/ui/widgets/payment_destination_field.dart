@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:silent/localizations.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show setEquals;
@@ -7,7 +9,6 @@ import 'package:material_ui/material_ui.dart'
 
 import '../../domain/payment_destination.dart';
 import '../../domain/validate_payment_destination_usecase.dart';
-import 'address_viewer.dart';
 import 'full_screen_scanner_page.dart';
 
 /// App wiring for the pure destination input. Parsing never navigates forward.
@@ -129,8 +130,8 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
               : TextInputType.text),
       onChanged: _change,
       pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
-      scanLabel: context.loc.spScan,
-      clearLabel: context.loc.spClearButton,
+      scanLabel: context.silentLoc.silentScan,
+      clearLabel: context.silentLoc.silentClearButton,
       onClear: () => _change(''),
       onPaste: () async {
         final data = await Clipboard.getData(Clipboard.kTextPlain);

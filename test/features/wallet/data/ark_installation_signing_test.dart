@@ -1,14 +1,15 @@
+import 'package:ark/funding.dart';
+import 'package:ark/ark.dart' show ArkWalletFailure;
+
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
-import 'package:bb_mobile/features/wallet/data/ark_installation_state.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/types.dart';
-import 'package:sync/sync.dart';
 
 import 'ark_funding_test_fixture.dart';
 
@@ -40,11 +41,12 @@ void main() {
     documents: directory,
     fundingPath: '${directory.path}/ark-funding.sqlite',
   );
-  Future<Result<void, SyncFailure>> admit(
+  Future<Result<void, ArkWalletFailure>> admit(
     ArkInstallationState state, {
     Network network = BitcoinNetwork.regtest,
-  }) => ArkFundingSigningGuard(const Err(SyncStorageFailure()), state).admit(
-    key: WalletKey(id: 'ordinary', network: network),
+  }) => ArkFundingSigningGuard(authority: null, installation: state).admit(
+    walletId: 'ordinary',
+    network: network,
     unsignedPsbt: publicFundingPsbt,
   );
 

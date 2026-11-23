@@ -1,21 +1,20 @@
+import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:fees_feature/fee_ui.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
@@ -31,8 +30,6 @@ import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart'
@@ -63,13 +60,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._broadcastPayjoinOriginalUsecase,
     required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
-    required this._calculateSellLiquidFeesUsecase,
     required this._loadSellWalletUtxosUsecase,
     required this._readSellPayinTxidUsecase,
     required this._storeSellTransactionLabel,
     required this._labelCompletedSellOrderUsecase,
-    required this._previewBitcoinFeeUsecase,
-    required this._previewBitcoinFeePresetsUsecase,
+    required this._spend,
   }) : super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -118,13 +113,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final GetVisiblePayjoinTransactionUsecase
   _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
-  final CalculateSellLiquidFeesUsecase _calculateSellLiquidFeesUsecase;
   final LoadSellWalletUtxosUsecase _loadSellWalletUtxosUsecase;
   final ReadSellPayinTxidUsecase _readSellPayinTxidUsecase;
   final StoreSellTransactionLabelUsecase _storeSellTransactionLabel;
   final LabelCompletedSellOrderUsecase _labelCompletedSellOrderUsecase;
-  final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
-  final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  final Spend _spend;
+  final _spendPreviews = SpendFeePreview();
   int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
 
@@ -143,6 +137,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// matches the current order — otherwise the session belongs to a
   /// torn-down order and must not mark the new one as paid.
   String? _activePayjoinOrderId;
+  final _unresolvedPayins = <String>{};
 
   /// A payment is committed once its transaction is on the wire
   /// (`isPayinBroadcast`), while it is being prepared/signed/broadcast
@@ -153,7 +148,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     final current = _currentPaymentState;
     return _activePayjoinSessionId != null ||
         (current != null &&
-            (current.isConfirmingPayment || current.isPayinBroadcast));
+            (current.isConfirmingPayment ||
+                current.isPayinBroadcast ||
+                _unresolvedPayins.contains(current.sellOrder.orderId)));
   }
 
   /// Bumped whenever the cached previews stop describing the payin being
@@ -161,6 +158,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// preview build that started under an older epoch is discarded on return
   /// instead of writing a slot for a tx shape that no longer exists.
   int _bitcoinPreviewEpoch = 0;
+  int _feeRecalculation = 0;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
     final contextResult = await _loadSellContextUsecase
@@ -350,7 +348,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
           feeRate: const RelativeFee(25),
         );
-        final String pset;
+        final PreparedLiquidSpend pset;
         if (!isCurrent()) return;
         switch (psetResult) {
           case Ok(:final value):
@@ -359,17 +357,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             emit(preparing.copyWith(error: failure));
             return;
         }
-        final feesResult = await _calculateSellLiquidFeesUsecase.execute(
-          pset: pset,
-        );
-        if (!isCurrent()) return;
-        switch (feesResult) {
-          case Ok(:final value):
-            absoluteFees = value;
-          case Err(:final failure):
-            emit(preparing.copyWith(error: failure));
-            return;
-        }
+        absoluteFees = pset.fee.value.toInt();
       } else {
         final feeOptions = await _loadSellContextUsecase.networkFees(
           isLiquid: false,
@@ -394,7 +382,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           ],
           networkFee: bitcoinFees.fastest,
         );
-        final PreparedSellBitcoinPayin preparedSend;
+        final PreparedBitcoinSpend preparedSend;
         if (!isCurrent()) return;
         switch (preparedResult) {
           case Ok(:final value):
@@ -404,7 +392,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             return;
         }
         bitcoinTxSize = preparedSend.txSize;
-        absoluteFees = preparedSend.absoluteFees;
+        absoluteFees = preparedSend.fee.value.toInt();
       }
     } catch (e, st) {
       // Boundary onto the shared prepare/fee use-cases, which still throw.
@@ -591,7 +579,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // transaction pays the current order's amount, and going through
     // toCleanPaymentState would clear isConfirmingPayment and visually re-arm
     // the Confirm button mid-confirmation (#2522).
-    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+    if (paymentState.isConfirmingPayment ||
+        paymentState.isPayinBroadcast ||
+        _unresolvedPayins.contains(paymentState.sellOrder.orderId)) {
       return;
     }
 
@@ -617,7 +607,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
             return;
           }
           if (currentOnFailure.isConfirmingPayment ||
-              currentOnFailure.isPayinBroadcast) {
+              currentOnFailure.isPayinBroadcast ||
+              _unresolvedPayins.contains(currentOnFailure.sellOrder.orderId)) {
             return;
           }
           emit(currentOnFailure.copyWith(error: failure));
@@ -634,7 +625,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
         _resumeQuoteSchedule(current);
         return;
       }
-      if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+      if (current.isConfirmingPayment ||
+          current.isPayinBroadcast ||
+          _unresolvedPayins.contains(current.sellOrder.orderId)) {
+        return;
+      }
       // The error is kept: when this refresh was triggered by a failed send
       // (see _emitSendPaymentError) clearing it would erase the only
       // explanation the user has. The next confirmation clears it anyway.
@@ -663,7 +658,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// order's own refresh may have been dropped as overlapping while that one
   /// was in flight, so put it back on its deadline.
   void _resumeQuoteSchedule(SellPaymentState current) {
-    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+    if (current.isConfirmingPayment ||
+        current.isPayinBroadcast ||
+        _unresolvedPayins.contains(current.sellOrder.orderId)) {
+      return;
+    }
     _quoteScheduler.track(current.sellOrder.confirmationDeadline);
   }
 
@@ -675,6 +674,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   ) {
     final current = _currentPaymentState;
     if (current == null ||
+        _unresolvedPayins.contains(current.sellOrder.orderId) ||
         current.isConfirmingPayment ||
         current.isPayinBroadcast) {
       return;
@@ -702,6 +702,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // The payin is already on the wire. Re-running prepare/sign/broadcast could
     // pay the order a second time from different UTXOs, so only wait for the
     // order to catch up (#2522).
+    if (_unresolvedPayins.contains(sellPaymentState.sellOrder.orderId)) return;
     if (sellPaymentState.isPayinBroadcast) {
       emit(sellPaymentState.copyWith(isConfirmingPayment: true));
       try {
@@ -753,7 +754,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
           feeRate: const RelativeFee(25),
         );
-        final String pset;
+        final PreparedLiquidSpend pset;
         switch (psetResult) {
           case Ok(:final value):
             pset = value;
@@ -761,11 +762,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
             _emitSendPaymentError(emit, failure);
             return;
         }
-        final signedResult = await _signSellPayinUsecase.liquid(
-          pset: pset,
-          walletId: wallet.id,
-        );
-        final String signedPset;
+        final signedResult = await _signSellPayinUsecase.liquid(pset);
+        final SignedLiquidSpend signedPset;
         switch (signedResult) {
           case Ok(:final value):
             signedPset = value;
@@ -775,7 +773,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
         // Derived before broadcasting so the latch can be set on the very next
         // line: nothing may run between the broadcast and the latch.
-        final txidResult = await _readSellPayinTxidUsecase.fromPset(signedPset);
+        final txidResult = await _readSellPayinTxidUsecase.fromPset(
+          signedPset.signedPset,
+        );
         final String txid;
         switch (txidResult) {
           case Ok(:final value):
@@ -788,10 +788,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
           return;
         }
-        final broadcast = await _broadcastSellPayinUsecase.liquid(
-          signedPset,
-          walletId: wallet.id,
-        );
+        final broadcast = await _broadcastSellPayinUsecase.liquid(signedPset);
         if (broadcast case Err(:final failure)) {
           _emitSendPaymentError(emit, failure);
           return;
@@ -820,21 +817,30 @@ class SellBloc extends Bloc<SellEvent, SellState>
           return;
         }
 
-        final preparedResult = await _prepareSellBitcoinPayinUsecase.execute(
-          walletId: wallet.id,
-          recipients: [
-            BitcoinTransactionRecipient.fixed(
-              address: depositAddress,
-              amountSat: Sats.fromInt(payinAmountSat),
-            ),
-          ],
-          networkFee: networkFee,
-          selectedInputs: sellPaymentState.selectedUtxos.isNotEmpty
-              ? sellPaymentState.selectedUtxos
-              : null,
-          replaceByFee: sellPaymentState.replaceByFee,
+        final cached = _spendPreviews.prepared(
+          sellPaymentState.feePreviewCache.slotFor(
+            sellPaymentState.selectedFeeOption,
+          ),
+          address: depositAddress,
+          fee: networkFee,
         );
-        final PreparedSellBitcoinPayin preparedSend;
+        final preparedResult = cached != null
+            ? Ok<PreparedBitcoinSpend, SellFailure>(cached)
+            : await _prepareSellBitcoinPayinUsecase.execute(
+                walletId: wallet.id,
+                recipients: [
+                  BitcoinTransactionRecipient.fixed(
+                    address: depositAddress,
+                    amountSat: Sats.fromInt(payinAmountSat),
+                  ),
+                ],
+                networkFee: networkFee,
+                selectedInputs: sellPaymentState.selectedUtxos.isNotEmpty
+                    ? sellPaymentState.selectedUtxos
+                    : null,
+                replaceByFee: sellPaymentState.replaceByFee,
+              );
+        final PreparedBitcoinSpend preparedSend;
         switch (preparedResult) {
           case Ok(:final value):
             preparedSend = value;
@@ -842,7 +848,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             _emitSendPaymentError(emit, failure);
             return;
         }
-        final absoluteFeesUpdated = preparedSend.absoluteFees;
+        final absoluteFeesUpdated = preparedSend.fee.value.toInt();
         // An absolute custom fee was checked against the *previous* vsize; if
         // this build came out larger it can sit below the relay floor, which
         // strands the payin unbroadcastable. Re-check the built fee against the
@@ -896,7 +902,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             walletId: wallet.id,
             network: wallet.network.bitcoin,
             bip21: payjoinBip21,
-            unsignedOriginalPsbt: preparedSend.unsignedPsbt,
+            prepared: preparedSend,
             amountSat: payinAmountSat,
             networkFeesSatPerVb: networkFee.isRelative
                 ? networkFee.value as double
@@ -918,6 +924,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
                 sessionId: payjoinBip21,
                 walletId: wallet.id,
                 amountSat: payinAmountSat,
+                expectedOriginalTxId: failure is SellPayinOutcomeUnknownFailure
+                    ? failure.originalTxId
+                    : null,
               )) {
                 case Ok(:final value):
                   persisted = value;
@@ -985,10 +994,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
             'windowAvailable=${payjoinWindow != null}',
           );
           final signedResult = await _signSellPayinUsecase.bitcoin(
-            psbt: preparedSend.unsignedPsbt,
-            walletId: wallet.id,
+            preparedSend,
           );
-          final ({String signedPsbt, int txSize}) signedTx;
+          final SignedBitcoinSpend signedTx;
           switch (signedResult) {
             case Ok(:final value):
               signedTx = value;
@@ -1014,12 +1022,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
             _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
             return;
           }
-          final broadcast = await _broadcastSellPayinUsecase.bitcoin(
-            signedTx.signedPsbt,
-            walletId: wallet.id,
-            isPsbt: true,
-            network: wallet.network,
-          );
+          final broadcast = await _broadcastSellPayinUsecase.bitcoin(signedTx);
           if (broadcast case Err(:final failure)) {
             _emitSendPaymentError(emit, failure);
             return;
@@ -1355,7 +1358,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
       // "payment sent, refreshing order" state and let polling finish the job.
       return;
     }
+    if (error is SellPayinOutcomeUnknownFailure) {
+      _unresolvedPayins.add(current.sellOrder.orderId);
+    }
     emit(current.copyWith(error: error, isConfirmingPayment: false));
+    if (error is SellPayinOutcomeUnknownFailure) return;
 
     // Confirm is live again. If the lock lapsed during this failed attempt,
     // the refresh the scheduler fired meanwhile was skipped as in flight, so
@@ -1642,6 +1649,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
     if (sellPaymentState == null) return;
     final wallet = sellPaymentState.selectedWallet;
     if (wallet == null) return;
+    final revision = ++_feeRecalculation;
+    final epoch = _bitcoinPreviewEpoch;
+    bool isCurrent() =>
+        revision == _feeRecalculation && epoch == _bitcoinPreviewEpoch;
 
     // The displayed fee belongs to the previous build until this one lands, so
     // drop it and let the row show its calculating state — pairing the old
@@ -1656,7 +1667,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     // while this recalculation was in flight.
     void restoreOnFailure(SellFailure failure) {
       final live = _currentPaymentState;
-      if (live == null) return;
+      if (live == null || !isCurrent()) return;
       emit(live.copyWith(absoluteFees: previousAbsoluteFees, error: failure));
     }
 
@@ -1685,7 +1696,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
           feeRate: const RelativeFee(25),
         );
-        final String pset;
+        final PreparedLiquidSpend pset;
         switch (psetResult) {
           case Ok(:final value):
             pset = value;
@@ -1693,19 +1704,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
             restoreOnFailure(failure);
             return;
         }
-        final feesResult = await _calculateSellLiquidFeesUsecase.execute(
-          pset: pset,
-        );
-        final int absoluteFees;
-        switch (feesResult) {
-          case Ok(:final value):
-            absoluteFees = value;
-          case Err(:final failure):
-            restoreOnFailure(failure);
-            return;
-        }
+        final absoluteFees = pset.fee.value.toInt();
         final liveAfterLiquidBuild = _currentPaymentState;
-        if (liveAfterLiquidBuild == null) return;
+        if (liveAfterLiquidBuild == null || !isCurrent()) return;
         emit(liveAfterLiquidBuild.copyWith(absoluteFees: absoluteFees));
       } else {
         final feeOptionsResult = await _loadSellContextUsecase.networkFees(
@@ -1723,7 +1724,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         // refresh that silently reset the selection to Fastest would undo the
         // user's choice behind their back.
         final liveAfterFeeFetch = _currentPaymentState;
-        if (liveAfterFeeFetch == null) return;
+        if (liveAfterFeeFetch == null || !isCurrent()) return;
         final repriced = liveAfterFeeFetch.copyWith(bitcoinFees: bitcoinFees);
         final networkFee = repriced.selectedFee ?? bitcoinFees.fastest;
         final addressResult = await _payinBuildAddress(repriced, wallet);
@@ -1735,21 +1736,28 @@ class SellBloc extends Bloc<SellEvent, SellState>
             restoreOnFailure(failure);
             return;
         }
-        final preparedResult = await _prepareSellBitcoinPayinUsecase.execute(
-          walletId: wallet.id,
-          recipients: [
-            BitcoinTransactionRecipient.fixed(
-              address: address,
-              amountSat: Sats.fromInt(payinAmountSat),
-            ),
-          ],
-          networkFee: networkFee,
-          selectedInputs: repriced.selectedUtxos.isNotEmpty
-              ? repriced.selectedUtxos
-              : null,
-          replaceByFee: repriced.replaceByFee,
+        final cached = _spendPreviews.prepared(
+          repriced.feePreviewCache.slotFor(repriced.selectedFeeOption),
+          address: address,
+          fee: networkFee,
         );
-        final PreparedSellBitcoinPayin preparedSend;
+        final preparedResult = cached != null
+            ? Ok<PreparedBitcoinSpend, SellFailure>(cached)
+            : await _prepareSellBitcoinPayinUsecase.execute(
+                walletId: wallet.id,
+                recipients: [
+                  BitcoinTransactionRecipient.fixed(
+                    address: address,
+                    amountSat: Sats.fromInt(payinAmountSat),
+                  ),
+                ],
+                networkFee: networkFee,
+                selectedInputs: repriced.selectedUtxos.isNotEmpty
+                    ? repriced.selectedUtxos
+                    : null,
+                replaceByFee: repriced.replaceByFee,
+              );
+        final PreparedBitcoinSpend preparedSend;
         switch (preparedResult) {
           case Ok(:final value):
             preparedSend = value;
@@ -1757,14 +1765,27 @@ class SellBloc extends Bloc<SellEvent, SellState>
             restoreOnFailure(failure);
             return;
         }
-        final absoluteFees = preparedSend.absoluteFees;
+        final absoluteFees = preparedSend.fee.value.toInt();
         final liveAfterBitcoinBuild = _currentPaymentState;
-        if (liveAfterBitcoinBuild == null) return;
+        if (liveAfterBitcoinBuild == null ||
+            !isCurrent() ||
+            liveAfterBitcoinBuild.isConfirmingPayment ||
+            liveAfterBitcoinBuild.isPayinBroadcast) {
+          return;
+        }
         emit(
           liveAfterBitcoinBuild.copyWith(
             bitcoinFees: bitcoinFees,
             absoluteFees: absoluteFees,
             bitcoinTxSize: preparedSend.txSize,
+            feePreviewCache: liveAfterBitcoinBuild.feePreviewCache.withSlot(
+              repriced.selectedFeeOption,
+              _spendPreviews.project(
+                (prepared: preparedSend, fee: preparedSend.fee),
+                address: address,
+                fee: networkFee,
+              ),
+            ),
           ),
         );
       }
@@ -1775,7 +1796,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         trace: st,
       );
       final liveAfterFailure = _currentPaymentState;
-      if (liveAfterFailure == null) return;
+      if (liveAfterFailure == null || !isCurrent()) return;
       emit(
         liveAfterFailure.copyWith(
           absoluteFees: previousAbsoluteFees,
@@ -1953,7 +1974,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       case Err():
         return;
     }
-    final slot = await _previewBitcoinFeeUsecase.execute(
+    final preview = await _spend.previewBitcoinFee(
       walletId: wallet.id,
       recipients: [
         BitcoinTransactionRecipient.fixed(
@@ -1965,7 +1986,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
       ],
       networkFee: event.fee,
       replaceByFee: current.replaceByFee,
-      selectedInputs: current.selectedUtxos,
+      selectedInputs: current.selectedUtxos
+          .map((coin) => coin.outpoint)
+          .toSet(),
     );
     // The payin's shape changed while this build ran, so the slot describes a
     // transaction we are no longer offering.
@@ -1975,7 +1998,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
     emit(
       live.copyWith(
         feePreviewCache: live.feePreviewCache
-            .withSlot(FeeSelection.custom, slot)
+            .withSlot(
+              FeeSelection.custom,
+              _spendPreviews.project(
+                preview.fold((value) => value, (_) => null),
+                address: address,
+                fee: event.fee,
+              ),
+            )
             .copyWith(customLoading: false),
       ),
     );
@@ -2004,7 +2034,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
       case Err():
         return;
     }
-    final slots = await _previewBitcoinFeePresetsUsecase.execute(
+    final previews = await _spend.previewBitcoinFeePresets(
       presets: presets,
       walletId: wallet.id,
       recipients: [
@@ -2016,18 +2046,25 @@ class SellBloc extends Bloc<SellEvent, SellState>
         ),
       ],
       replaceByFee: current.replaceByFee,
-      selectedInputs: current.selectedUtxos,
+      selectedInputs: current.selectedUtxos
+          .map((coin) => coin.outpoint)
+          .toSet(),
     );
+    final slots = previews.fold(
+      (value) => value,
+      (_) => <FeeSelection, BitcoinSpendPreview?>{},
+    );
+    BitcoinFeePreviewSlot project(FeeSelection selection, NetworkFee fee) =>
+        _spendPreviews.project(slots[selection], address: address, fee: fee);
     if (epoch != _bitcoinPreviewEpoch) return;
     final live = _currentPaymentState;
     if (live == null) return;
     emit(
       live.copyWith(
         feePreviewCache: live.feePreviewCache.copyWith(
-          fastest: slots[FeeSelection.fastest] ?? const BitcoinFeePreviewSlot(),
-          economic:
-              slots[FeeSelection.economic] ?? const BitcoinFeePreviewSlot(),
-          slow: slots[FeeSelection.slow] ?? const BitcoinFeePreviewSlot(),
+          fastest: project(FeeSelection.fastest, presets.fastest),
+          economic: project(FeeSelection.economic, presets.economic),
+          slow: project(FeeSelection.slow, presets.slow),
           presetsLoading: false,
         ),
       ),

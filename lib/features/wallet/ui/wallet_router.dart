@@ -25,6 +25,8 @@ class WalletRouter {
     required QuickActionsCubit quickActions,
     required void Function(BuildContext, QuickAction) onQuickAction,
     required void Function(BuildContext) onCustomizeQuickActions,
+    required ExchangePromptCubit exchangePrompt,
+    required void Function(BuildContext) onActivateExchange,
     required Widget Function() announcements,
     required NetworkWalletSetupCubit Function() createSetupCubit,
   }) => GoRoute(
@@ -45,6 +47,8 @@ class WalletRouter {
           quickActions: quickActions,
           onQuickAction: onQuickAction,
           onCustomizeQuickActions: onCustomizeQuickActions,
+          exchangePrompt: exchangePrompt,
+          onActivateExchange: onActivateExchange,
           announcements: announcements(),
         ),
       );
@@ -52,6 +56,7 @@ class WalletRouter {
   );
 
   static GoRoute walletDetailRoute({
+    required Widget Function(String walletId, Widget child) scopeWalletHistory,
     required Future<void> Function(BuildContext context, Wallet wallet)
     onOpenCoins,
     required Future<Result<CoinSummary, CoinsFailure>> Function(String)
@@ -68,6 +73,7 @@ class WalletRouter {
         walletId: walletId,
         onOpenCoins: onOpenCoins,
         loadCoinSummary: loadCoinSummary,
+        scopeWalletHistory: scopeWalletHistory,
       );
     },
   );

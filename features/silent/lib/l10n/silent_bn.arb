@@ -1,0 +1,60 @@
+{
+  "@@locale": "bn",
+  "save": "সংরক্ষণ করুন",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "কপি",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "মুছে ফেলুন",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "পুনরায় চেষ্টা করুন",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "লেনদেনগুলো লোড হচ্ছে।",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR কোড",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "বাতিল",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "প্রক্রিয়াধীন",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "গতকাল",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "আজ",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "পরিমাণ",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "কপি করতে ট্যাপ করুন",
+  "viewerViewInExplorer": "এক্সপ্লোরারে দেখুন",
+  "transactionViewerTitle": "লেনদেন আইডি",
+  "viewerCopyLink": "লিঙ্ক কপি করুন",
+  "coinsTitle": "কয়েন",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে"
+}

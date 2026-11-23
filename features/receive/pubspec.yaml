@@ -1,0 +1,26 @@
+name: receive
+description: Receive request policies, preferences, pricing and address notes.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  address_view:
+  flutter:
+    sdk: flutter
+  bull_logger:
+  bull_pricer:
+  labels:
+  meta: ^1.17.0
+  preferences:
+  primitives:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4

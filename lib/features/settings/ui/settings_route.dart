@@ -1,13 +1,8 @@
 enum SettingsRoute {
-  settings('/settings'),
-  search('search'),
   language('language'),
   backupSettings('backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
-  walletAddresses('wallet-details/:walletId/addresses'),
-  allSeedView('seed-viewer'),
   experimental('experimental-settings'),
-  exchangeAccess('exchange-access'),
   quickActions('quick-actions'),
   walletSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),

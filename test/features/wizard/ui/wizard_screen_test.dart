@@ -1,8 +1,7 @@
 import 'dart:ui' show Tristate;
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
@@ -14,6 +13,8 @@ import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_exchange/bull_exchange.dart'
+    show ExchangeLocalizations, WizardExchangeOption;
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,7 +91,10 @@ Future<void> _pump(WidgetTester tester, Widget home) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        ExchangeLocalizations.delegate,
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: home,
     ),
@@ -127,6 +131,10 @@ void main() {
         );
         // Dark mode, then the exchange where the platform allows it.
         expect(switches, findsNWidgets(allowed ? 2 : 1));
+        expect(
+          find.byType(WizardExchangeOption),
+          allowed ? findsOneWidget : findsNothing,
+        );
         if (allowed) {
           await tester.tap(switches.at(1));
           await tester.pump();

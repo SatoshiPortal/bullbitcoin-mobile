@@ -7,6 +7,11 @@ final class SecretAlreadyExistsFailure extends SecretFailure {
   const SecretAlreadyExistsFailure(this.id) : super('secret already exists');
 }
 
+/// The inventory already has a registration for this native wallet ID.
+final class WalletAlreadyRegisteredFailure extends SecretFailure {
+  const WalletAlreadyRegisteredFailure() : super('wallet already registered');
+}
+
 sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }

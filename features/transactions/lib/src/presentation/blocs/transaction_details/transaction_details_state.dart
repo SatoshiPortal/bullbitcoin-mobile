@@ -1,0 +1,135 @@
+part of 'transaction_details_cubit.dart';
+
+@freezed
+sealed class TransactionDetailsState with _$TransactionDetailsState {
+  const factory TransactionDetailsState({
+    Transaction? transaction,
+    WalletRegistration? wallet,
+    WalletRegistration? counterpartWallet,
+    String? swapCounterpartTxId,
+    // The exact amount claimed on a recovered chain swap's receive (claim) leg,
+    // resolved by the cubit. Used as the received amount because the canonical
+    // tx shown can be the lockup (send) leg, whose amount is what was sent.
+    int? swapClaimedAmountSat,
+    @Default(false) bool isBroadcastingPayjoinOriginalTx,
+    @Default(false) bool retryingSwap,
+    TransactionFailure? failure,
+  }) = _TransactionDetailsState;
+  const TransactionDetailsState._();
+
+  /// The failure to render full-screen: set only when the load left nothing to
+  /// show. Without this, a failed load left the screen on loading skeletons
+  /// forever.
+  ///
+  /// Nothing renders `failure` once a transaction is on screen, so an action
+  /// that can fail on a rendered transaction must return its own `Result` and
+  /// let the caller surface it — see [saveTransactionLabel] and
+  /// [deleteTransactionNote]. The one exception is
+  /// [payjoinBroadcastFailure], which the broadcast button renders inline.
+  TransactionFailure? get loadFailure => transaction == null ? failure : null;
+
+  bool get hasLoadError => loadFailure != null;
+
+  /// The failure the broadcast action owns, so the button renders it inline
+  /// and the UI never has to switch on a failure type itself.
+  TransactionFailure? get payjoinBroadcastFailure => switch (failure) {
+    final TransactionPayjoinBroadcastFailure f => f,
+    final TransactionPayjoinVerificationFailure f => f,
+    _ => null,
+  };
+
+  /// The failure the swap retry action owns, so its button renders it inline.
+  TransactionFailure? get swapRetryFailure => switch (failure) {
+    final TransactionSwapRetryFailure f => f,
+    _ => null,
+  };
+
+  bool get isLoading => transaction == null && !hasLoadError;
+
+  WalletTransaction? get walletTransaction => transaction?.walletTransaction;
+  Swap? get swap => transaction?.swap;
+  PayjoinSession? get payjoin => transaction?.payjoin;
+
+  bool get isOngoingSwap => transaction?.isOngoingSwap == true;
+
+  /// Calculates the actual amount sent (received by recipient)
+  /// For swaps: amount - txFee + aggregateSwapFees
+  /// For regular transactions: amount - txFee
+  int getAmountSent() {
+    final swap = this.swap;
+    final payjoin = this.payjoin;
+    final txFee = walletTransaction?.feeSat ?? 0;
+    final amount = walletTransaction?.amountSat;
+    if (payjoin != null) {
+      return payjoin.amountSat ?? 0;
+    }
+
+    if (swap != null) {
+      // Recovered swaps carry no sendAmount; when the linked tx is the lockup
+      // (send) leg, its amount IS what was sent.
+      if (swap.sendAmount != null) return swap.sendAmount!;
+      if (walletTransaction?.isOutgoing == true) {
+        return walletTransaction!.amountSat;
+      }
+      return 0;
+    }
+    return amount ?? 0 + txFee;
+  }
+
+  /// Send amount for the details row — null when genuinely unknown so the row
+  /// is hidden rather than showing a misleading "0 sats". A loading state has
+  /// no transaction yet, which also yields null (not a real zero).
+  int? get displayAmountSentSat {
+    if (isLoading) return null;
+    final sent = getAmountSent();
+    return sent > 0 ? sent : null;
+  }
+
+  int getAmountReceived() {
+    if (payjoin != null) {
+      return payjoin?.amountSat ?? 0;
+    }
+    // A recovered chain swap's canonical tx may be the lockup (send) leg, whose
+    // amount is what was SENT. Use the exact amount the user received on the
+    // counterpart leg (claim tx on a forward swap, refund tx on a refund).
+    if (isRecoveredSwap && swapClaimedAmountSat != null) {
+      return swapClaimedAmountSat!;
+    }
+    final orderSwap = transaction?.orderSwap;
+    if (orderSwap != null && transaction?.isIncoming == true) {
+      return orderSwap.order?.payoutAmountSat.toInt() ??
+          orderSwap.requestedAmountSat.toInt();
+    }
+    final amount = walletTransaction?.amountSat ?? 0;
+    return amount;
+  }
+
+  bool get isRecoveredSwap => swap?.recovered == true;
+
+  /// Recovered-swap fee breakdown (see Swap.recovered): only the Boltz % fee is
+  /// trustworthy, so the remaining on-chain cost is derived as
+  /// sent − received − boltz; the per-leg lockup/server fees are hidden.
+  int get recoveredBoltzFeeSat => swap?.fees?.boltzFee ?? 0;
+  int get recoveredNetworkFeeSat =>
+      getAmountSent() - getAmountReceived() - recoveredBoltzFeeSat;
+
+  /// "Send network fee" for a send/chain swap is the user's lockup tx fee:
+  /// prefer the persisted lockupFee, else fall back to the linked lockup tx's
+  /// actual fee (older swaps didn't record it).
+  int? get swapSendNetworkFeeSat {
+    final lockupFee = swap?.fees?.lockupFee ?? 0;
+    return lockupFee > 0 ? lockupFee : walletTransaction?.feeSat;
+  }
+
+  /*
+  bool
+  get isOngoingPayjoin {
+    final transaction = incomingTransaction ?? outgoingTransaction!;
+  }
+      incomingTransaction?.payjoin != null &&
+      transaction!.payjoin!.isOngoing &&
+      // Todo: remove the following line once we put a payjoin to complete or failed
+      // depending on watched transactions
+      transaction?.walletTransaction?.txId ==
+          transaction?.payjoin!.originalTxId;*/
+}

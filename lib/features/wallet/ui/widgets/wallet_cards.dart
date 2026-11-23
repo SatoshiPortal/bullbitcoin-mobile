@@ -1,14 +1,13 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_card.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class WalletCards extends StatelessWidget {
   const WalletCards({
@@ -86,15 +85,15 @@ class WalletCards extends StatelessWidget {
               ),
           ],
           if (showSpWallet) ...[
+            if (wallets.isNotEmpty) const Gap(8),
             WalletCard(
               tagColor: context.appColors.tertiary,
               title: context.loc.walletSpTitle,
               description: context.loc.walletSpExperimental,
               balanceSat: spBalanceSat,
               isSyncing: isSpWalletLoading,
-              onTap: () => context.pushNamed(SpRoute.spWalletDetail.name),
+              onTap: () => SilentNavigation.openWallet(context),
             ),
-            const Gap(8),
           ],
         ],
       ),

@@ -2,7 +2,7 @@ import 'package:preferences/testing.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_tor/tor.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

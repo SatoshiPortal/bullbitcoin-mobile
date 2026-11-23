@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -21,7 +20,7 @@ class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetNetworkFees extends Mock implements Fees {}
 
-class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
+class _MockGetAddressAtIndex extends Mock implements AddressView {}
 
 class _MockGetOrder extends Mock implements GetOrderUsecase {}
 
@@ -59,7 +58,7 @@ void main() {
       getExchangeUserSummaryUsecase: getUserSummary,
       getSettingsUsecase: getSettings,
       fees: getNetworkFees,
-      getAddressAtIndexUsecase: getAddressAtIndex,
+      addresses: getAddressAtIndex,
       getIndexPrice: getIndexPrice.call,
       getOrderUsecase: getOrder,
     );
@@ -126,11 +125,11 @@ void main() {
         updatedAt: DateTime(2026),
       );
       when(
-        () => getAddressAtIndex.execute(
+        () => getAddressAtIndex.at(
           walletId: any(named: 'walletId'),
           index: any(named: 'index'),
         ),
-      ).thenAnswer((_) async => address);
+      ).thenAnswer((_) async => Ok(address));
 
       final result = await usecase.addressAtIndex(
         walletId: 'wallet-1',
@@ -142,11 +141,14 @@ void main() {
 
     test('sanitizes a derivation failure', () async {
       when(
-        () => getAddressAtIndex.execute(
+        () => getAddressAtIndex.at(
           walletId: any(named: 'walletId'),
           index: any(named: 'index'),
         ),
-      ).thenThrow(Exception(_rawReason));
+      ).thenAnswer(
+        (_) async =>
+            const Err(AddressViewAddressesUnavailableFailure(_rawReason)),
+      );
 
       expect(
         await usecase.addressAtIndex(walletId: 'wallet-1', index: 0),
@@ -233,7 +235,7 @@ void main() {
     test('returns the order', () async {
       final order = _MockOrder();
       when(() => getOrder.execute(orderId: any(named: 'orderId')))
-          .thenAnswer((_) async => order);
+          .thenAnswer((_) async => Ok(order));
 
       final result = await usecase.order(orderId: 'order-1');
 
@@ -242,7 +244,7 @@ void main() {
 
     test('sanitizes a fetch failure', () async {
       when(() => getOrder.execute(orderId: any(named: 'orderId')))
-          .thenThrow(Exception(_rawReason));
+          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       final result = await usecase.order(orderId: 'order-1');
 

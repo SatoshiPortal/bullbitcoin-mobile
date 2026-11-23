@@ -4,7 +4,7 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';

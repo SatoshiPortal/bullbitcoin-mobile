@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
@@ -117,7 +118,7 @@ void main() {
       walletId: wallet.id,
       wallets: [wallet],
       request: const PaymentRequest.bip21(
-        network: Network.bitcoinRegtest,
+        network: BitcoinNetwork.regtest,
         address: 'bcrt1primary',
         uri: 'bcrt1primary',
       ),

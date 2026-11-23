@@ -9,6 +9,7 @@ final class QuickActionsRepositoryImpl implements QuickActionsRepository {
   const QuickActionsRepositoryImpl(this._storage);
 
   static const key = 'quick_actions';
+  static const exchangePromptKey = 'quick_actions_exchange_prompt_dismissed';
   final QuickActionsStorage _storage;
 
   @override
@@ -45,6 +46,25 @@ final class QuickActionsRepositoryImpl implements QuickActionsRepository {
       return const Ok(null);
     } on Exception {
       return const Err(QuickActionsStorageFailure('remove'));
+    }
+  }
+
+  @override
+  Future<Result<bool, QuickActionsFailure>> exchangePromptDismissed() async {
+    try {
+      return Ok(await _storage.read(exchangePromptKey) != null);
+    } on Exception {
+      return const Err(QuickActionsStorageFailure('read'));
+    }
+  }
+
+  @override
+  Future<Result<void, QuickActionsFailure>> dismissExchangePrompt() async {
+    try {
+      await _storage.write(exchangePromptKey, 'true');
+      return const Ok(null);
+    } on Exception {
+      return const Err(QuickActionsStorageFailure('write'));
     }
   }
 }

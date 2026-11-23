@@ -3,6 +3,15 @@
 /// drives every swap to resolution, and thin usecases for blocs.
 library;
 
+export 'src/swaps.dart';
+export 'src/domain/autoswap.dart' show Autoswap;
+export 'src/domain/entities/swap_route.dart';
+export 'src/domain/swap_routing.dart' show SwapRouting;
+export 'src/domain/swap_server_control.dart' show SwapServerSettings;
+export 'src/domain/verify_swap_lockup.dart';
+export 'src/domain/entities/auto_swap.dart';
+export 'src/domain/entities/swap_server.dart';
+
 export 'package:swaps/src/data/models/boltz_network.dart';
 export 'package:swaps/src/data/boltz_swap_repository.dart';
 
@@ -29,11 +38,8 @@ export 'src/domain/usecases/create_lightning_to_bitcoin_swap_usecase.dart';
 export 'src/domain/usecases/create_lightning_to_liquid_swap_usecase.dart';
 export 'src/domain/usecases/create_liquid_to_bitcoin_swap_usecase.dart';
 export 'src/domain/usecases/create_liquid_to_lightning_swap_usecase.dart';
-export 'src/domain/usecases/delete_swap_master_key_usecase.dart';
 export 'src/domain/usecases/drop_pending_swap_lockup_usecase.dart';
 export 'src/domain/usecases/get_swap_limits_and_fees_usecase.dart';
-export 'src/domain/usecases/get_swap_master_key_usecase.dart';
-export 'src/domain/usecases/get_swap_mnemonic_usecase.dart';
 export 'src/domain/usecases/get_swap_usecase.dart';
 export 'src/domain/usecases/get_swaps_usecase.dart';
 export 'src/domain/usecases/log_swap_census_usecase.dart';

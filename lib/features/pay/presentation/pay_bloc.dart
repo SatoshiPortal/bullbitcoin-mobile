@@ -1,18 +1,17 @@
+import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_payjoin_original_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
@@ -29,10 +28,8 @@ import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:fees_feature/fee_ui.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:clock/clock.dart';
@@ -60,7 +57,6 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._broadcastPayPayinUsecase,
     required this._loadPayWalletUtxosUsecase,
     required this._loadPayNetworkFeesUsecase,
-    required this._calculatePayAbsoluteFeesUsecase,
     required this._getPayPayinAddressUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
@@ -68,8 +64,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._broadcastPayjoinOriginalUsecase,
     required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
-    required this._previewBitcoinFeeUsecase,
-    required this._previewBitcoinFeePresetsUsecase,
+    required this._spend,
   }) : super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
@@ -118,7 +113,6 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final BroadcastPayPayinUsecase _broadcastPayPayinUsecase;
   final LoadPayWalletUtxosUsecase _loadPayWalletUtxosUsecase;
   final LoadPayNetworkFeesUsecase _loadPayNetworkFeesUsecase;
-  final CalculatePayAbsoluteFeesUsecase _calculatePayAbsoluteFeesUsecase;
   final GetPayPayinAddressUsecase _getPayPayinAddressUsecase;
 
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
@@ -128,8 +122,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final GetVisiblePayjoinTransactionUsecase
   _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
-  final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
-  final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
+  final Spend _spend;
+  final _spendPreviews = SpendFeePreview();
   int _paymentPreparationGeneration = 0;
   Timer? _pollingTimer;
 
@@ -150,6 +144,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   /// matches the current order — otherwise the session belongs to a
   /// torn-down order and must not mark the new one as paid.
   String? _activePayjoinOrderId;
+  final _unresolvedPayins = <String>{};
 
   /// A payment is committed once its transaction is on the wire
   /// (`isPayinBroadcast`), while it is being prepared/signed/broadcast
@@ -160,7 +155,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final current = _currentPaymentState;
     return _activePayjoinSessionId != null ||
         (current != null &&
-            (current.isConfirmingPayment || current.isPayinBroadcast));
+            (current.isConfirmingPayment ||
+                current.isPayinBroadcast ||
+                _unresolvedPayins.contains(current.payOrder.orderId)));
   }
 
   /// Bumped whenever the cached previews stop describing the payin being built
@@ -168,6 +165,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   /// build that started under an older epoch is discarded on return instead of
   /// writing a slot for a tx shape that no longer exists.
   int _bitcoinPreviewEpoch = 0;
+  int _feeRecalculation = 0;
 
   Future<void> _onStarted(PayStarted event, Emitter<PayState> emit) async {
     final recipientSelectionState = state.cleanRecipientSelectionState;
@@ -466,7 +464,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
       return;
     }
 
-    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+    if (paymentState.isConfirmingPayment ||
+        paymentState.isPayinBroadcast ||
+        _unresolvedPayins.contains(paymentState.payOrder.orderId)) {
       return;
     }
 
@@ -484,7 +484,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
       _resumeQuoteSchedule(current);
       return;
     }
-    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+    if (current.isConfirmingPayment ||
+        current.isPayinBroadcast ||
+        _unresolvedPayins.contains(current.payOrder.orderId)) {
+      return;
+    }
 
     switch (result) {
       case Err(:final failure):
@@ -509,7 +513,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
   /// order's own refresh may have been dropped as overlapping while that one
   /// was in flight, so put it back on its deadline.
   void _resumeQuoteSchedule(PayPaymentState current) {
-    if (current.isConfirmingPayment || current.isPayinBroadcast) return;
+    if (current.isConfirmingPayment ||
+        current.isPayinBroadcast ||
+        _unresolvedPayins.contains(current.payOrder.orderId)) {
+      return;
+    }
     _quoteScheduler.track(current.payOrder.confirmationDeadline);
   }
 
@@ -521,6 +529,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   ) {
     final current = _currentPaymentState;
     if (current == null ||
+        _unresolvedPayins.contains(current.payOrder.orderId) ||
         current.isConfirmingPayment ||
         current.isPayinBroadcast) {
       return;
@@ -545,6 +554,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       );
       return;
     }
+    if (_unresolvedPayins.contains(payPaymentState.payOrder.orderId)) return;
 
     if (payPaymentState.isPayinBroadcast) {
       emit(payPaymentState.copyWith(isConfirmingPayment: true));
@@ -607,7 +617,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       }
 
       if (isLiquid) {
-        final String pset;
+        final PreparedLiquidSpend pset;
         switch (await _preparePayLiquidPayinUsecase.execute(
           walletId: wallet.id,
           address: payinAddress,
@@ -622,11 +632,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
             pset = value;
         }
 
-        final String signedPset;
-        switch (await _signPayPayinUsecase.liquid(
-          pset: pset,
-          walletId: wallet.id,
-        )) {
+        final SignedLiquidSpend signedPset;
+        switch (await _signPayPayinUsecase.liquid(pset)) {
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
@@ -638,10 +645,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           _emitSendPaymentError(emit, const PayQuoteExpiredFailure());
           return;
         }
-        switch (await _broadcastPayPayinUsecase.liquid(
-          signedPset,
-          walletId: wallet.id,
-        )) {
+        switch (await _broadcastPayPayinUsecase.liquid(signedPset)) {
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
@@ -662,17 +666,26 @@ class PayBloc extends Bloc<PayEvent, PayState>
           return;
         }
 
-        final PreparedPayBitcoinPayin preparedSend;
-        switch (await _preparePayBitcoinPayinUsecase.execute(
-          walletId: wallet.id,
+        final cached = _spendPreviews.prepared(
+          payPaymentState.feePreviewCache.slotFor(
+            payPaymentState.selectedFeeOption,
+          ),
           address: payinAddress,
-          amountSat: payinAmountSat,
-          networkFee: networkFee,
-          selectedInputs: payPaymentState.selectedUtxos.isNotEmpty
-              ? payPaymentState.selectedUtxos
-              : null,
-          replaceByFee: payPaymentState.replaceByFee,
-        )) {
+          fee: networkFee,
+        );
+        final PreparedBitcoinSpend preparedSend;
+        switch (cached != null
+            ? Ok<PreparedBitcoinSpend, PayFailure>(cached)
+            : await _preparePayBitcoinPayinUsecase.execute(
+                walletId: wallet.id,
+                address: payinAddress,
+                amountSat: payinAmountSat,
+                networkFee: networkFee,
+                selectedInputs: payPaymentState.selectedUtxos.isNotEmpty
+                    ? payPaymentState.selectedUtxos
+                    : null,
+                replaceByFee: payPaymentState.replaceByFee,
+              )) {
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
@@ -680,16 +693,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
             preparedSend = value;
         }
 
-        final int absoluteFeesUpdated;
-        switch (await _calculatePayAbsoluteFeesUsecase.bitcoin(
-          psbt: preparedSend.unsignedPsbt,
-        )) {
-          case Err(:final failure):
-            _emitSendPaymentError(emit, failure);
-            return;
-          case Ok(:final value):
-            absoluteFeesUpdated = value;
-        }
+        final absoluteFeesUpdated = preparedSend.fee.value.toInt();
 
         // An absolute custom fee was checked against the *previous* vsize; if
         // this build came out larger it can sit below the relay floor, which
@@ -735,7 +739,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
             walletId: wallet.id,
             network: wallet.network.bitcoin,
             bip21: payjoinBip21,
-            unsignedOriginalPsbt: preparedSend.unsignedPsbt,
+            prepared: preparedSend,
             amountSat: payinAmountSat,
             networkFeesSatPerVb: networkFee.isRelative
                 ? networkFee.value as double
@@ -753,6 +757,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
                 sessionId: payjoinBip21,
                 walletId: wallet.id,
                 amountSat: payinAmountSat,
+                expectedOriginalTxId: failure is PayPayinOutcomeUnknownFailure
+                    ? failure.originalTxId
+                    : null,
               );
               if (persisted == null) {
                 _emitSendPaymentError(emit, failure);
@@ -794,11 +801,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
           }
         } else {
           log.fine('Pay Payjoin skipped; broadcasting plain transaction');
-          final ({String signedPsbt, int txSize}) signedTx;
-          switch (await _signPayPayinUsecase.bitcoin(
-            psbt: preparedSend.unsignedPsbt,
-            walletId: wallet.id,
-          )) {
+          final SignedBitcoinSpend signedTx;
+          switch (await _signPayPayinUsecase.bitcoin(preparedSend)) {
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);
               return;
@@ -811,12 +815,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
             _emitSendPaymentError(emit, const PayQuoteExpiredFailure());
             return;
           }
-          switch (await _broadcastPayPayinUsecase.bitcoin(
-            signedTx.signedPsbt,
-            walletId: wallet.id,
-            isPsbt: true,
-            network: wallet.network,
-          )) {
+          switch (await _broadcastPayPayinUsecase.bitcoin(signedTx)) {
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);
               return;
@@ -1225,6 +1224,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
     if (payPaymentState == null) return;
     final wallet = payPaymentState.selectedWallet;
     if (wallet == null) return;
+    final revision = ++_feeRecalculation;
+    final epoch = _bitcoinPreviewEpoch;
+    bool isCurrent() =>
+        revision == _feeRecalculation && epoch == _bitcoinPreviewEpoch;
 
     // The displayed fee belongs to the previous build until this one lands, so
     // drop it and let the row show its calculating state — pairing the old
@@ -1237,7 +1240,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     /// row cannot be left calculating forever.
     void giveUp(PayFailure failure) {
       final live = _currentPaymentState;
-      if (live == null) return;
+      if (live == null || !isCurrent()) return;
       emit(live.copyWith(absoluteFees: previousAbsoluteFees, error: failure));
     }
 
@@ -1254,7 +1257,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           throwawayAddress = value;
       }
 
-      final String pset;
+      final PreparedLiquidSpend pset;
       switch (await _preparePayLiquidPayinUsecase.execute(
         walletId: wallet.id,
         address: throwawayAddress,
@@ -1268,15 +1271,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
           pset = value;
       }
 
-      switch (await _calculatePayAbsoluteFeesUsecase.liquid(pset: pset)) {
-        case Err(:final failure):
-          return giveUp(failure);
-        case Ok(:final value):
-          final live = _currentPaymentState;
-          if (live == null) return;
-          emit(live.copyWith(absoluteFees: value));
-          return;
-      }
+      final live = _currentPaymentState;
+      if (live == null || !isCurrent()) return;
+      emit(live.copyWith(absoluteFees: pset.fee.value.toInt()));
+      return;
     }
 
     final FeeOptions bitcoinFees;
@@ -1291,7 +1289,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     // that silently reset the selection to Fastest would undo the user's
     // choice behind their back.
     final liveAfterFeeFetch = _currentPaymentState;
-    if (liveAfterFeeFetch == null) return;
+    if (liveAfterFeeFetch == null || !isCurrent()) return;
     final repriced = liveAfterFeeFetch.copyWith(bitcoinFees: bitcoinFees);
     final networkFee = repriced.selectedFee ?? bitcoinFees.fastest;
 
@@ -1303,39 +1301,52 @@ class PayBloc extends Bloc<PayEvent, PayState>
         address = value;
     }
 
-    final PreparedPayBitcoinPayin preparedSend;
-    switch (await _preparePayBitcoinPayinUsecase.execute(
-      walletId: wallet.id,
+    final PreparedBitcoinSpend preparedSend;
+    final cached = _spendPreviews.prepared(
+      repriced.feePreviewCache.slotFor(repriced.selectedFeeOption),
       address: address,
-      amountSat: payinAmountSat,
-      networkFee: networkFee,
-      selectedInputs: repriced.selectedUtxos.isNotEmpty
-          ? repriced.selectedUtxos
-          : null,
-      replaceByFee: repriced.replaceByFee,
-    )) {
+      fee: networkFee,
+    );
+    switch (cached != null
+        ? Ok<PreparedBitcoinSpend, PayFailure>(cached)
+        : await _preparePayBitcoinPayinUsecase.execute(
+            walletId: wallet.id,
+            address: address,
+            amountSat: payinAmountSat,
+            networkFee: networkFee,
+            selectedInputs: repriced.selectedUtxos.isNotEmpty
+                ? repriced.selectedUtxos
+                : null,
+            replaceByFee: repriced.replaceByFee,
+          )) {
       case Err(:final failure):
         return giveUp(failure);
       case Ok(:final value):
         preparedSend = value;
     }
 
-    switch (await _calculatePayAbsoluteFeesUsecase.bitcoin(
-      psbt: preparedSend.unsignedPsbt,
-    )) {
-      case Err(:final failure):
-        return giveUp(failure);
-      case Ok(:final value):
-        final live = _currentPaymentState;
-        if (live == null) return;
-        emit(
-          live.copyWith(
-            bitcoinFees: bitcoinFees,
-            absoluteFees: value,
-            bitcoinTxSize: preparedSend.txSize,
-          ),
-        );
+    final live = _currentPaymentState;
+    if (live == null ||
+        !isCurrent() ||
+        live.isConfirmingPayment ||
+        live.isPayinBroadcast) {
+      return;
     }
+    emit(
+      live.copyWith(
+        bitcoinFees: bitcoinFees,
+        absoluteFees: preparedSend.fee.value.toInt(),
+        bitcoinTxSize: preparedSend.txSize,
+        feePreviewCache: live.feePreviewCache.withSlot(
+          repriced.selectedFeeOption,
+          _spendPreviews.project(
+            (prepared: preparedSend, fee: preparedSend.fee),
+            address: address,
+            fee: networkFee,
+          ),
+        ),
+      ),
+    );
   }
 
   PayPaymentState? get _currentPaymentState {
@@ -1411,7 +1422,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
   void _emitSendPaymentError(Emitter<PayState> emit, PayFailure error) {
     final current = _currentPaymentState;
     if (current == null || current.isPayinBroadcast) return;
+    if (error is PayPayinOutcomeUnknownFailure) {
+      _unresolvedPayins.add(current.payOrder.orderId);
+    }
     emit(current.copyWith(error: error, isConfirmingPayment: false));
+    if (error is PayPayinOutcomeUnknownFailure) return;
 
     // Confirm is live again. If the lock lapsed during this failed attempt,
     // the refresh the scheduler fired meanwhile was skipped as in flight, so
@@ -1596,7 +1611,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       case Ok(:final value):
         address = value;
     }
-    final slot = await _previewBitcoinFeeUsecase.execute(
+    final preview = await _spend.previewBitcoinFee(
       walletId: wallet.id,
       recipients: [
         BitcoinTransactionRecipient.fixed(
@@ -1608,7 +1623,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
       ],
       networkFee: event.fee,
       replaceByFee: current.replaceByFee,
-      selectedInputs: current.selectedUtxos,
+      selectedInputs: current.selectedUtxos
+          .map((coin) => coin.outpoint)
+          .toSet(),
     );
     // The payin's shape changed while this build ran, so the slot describes a
     // transaction we are no longer offering.
@@ -1618,7 +1635,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
     emit(
       live.copyWith(
         feePreviewCache: live.feePreviewCache
-            .withSlot(FeeSelection.custom, slot)
+            .withSlot(
+              FeeSelection.custom,
+              _spendPreviews.project(
+                preview.fold((value) => value, (_) => null),
+                address: address,
+                fee: event.fee,
+              ),
+            )
             .copyWith(customLoading: false),
       ),
     );
@@ -1656,7 +1680,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       case Ok(:final value):
         address = value;
     }
-    final slots = await _previewBitcoinFeePresetsUsecase.execute(
+    final previews = await _spend.previewBitcoinFeePresets(
       presets: presets,
       walletId: wallet.id,
       recipients: [
@@ -1668,18 +1692,25 @@ class PayBloc extends Bloc<PayEvent, PayState>
         ),
       ],
       replaceByFee: current.replaceByFee,
-      selectedInputs: current.selectedUtxos,
+      selectedInputs: current.selectedUtxos
+          .map((coin) => coin.outpoint)
+          .toSet(),
     );
+    final slots = previews.fold(
+      (value) => value,
+      (_) => <FeeSelection, BitcoinSpendPreview?>{},
+    );
+    BitcoinFeePreviewSlot project(FeeSelection selection, NetworkFee fee) =>
+        _spendPreviews.project(slots[selection], address: address, fee: fee);
     if (epoch != _bitcoinPreviewEpoch) return;
     final live = _currentPaymentState;
     if (live == null) return;
     emit(
       live.copyWith(
         feePreviewCache: live.feePreviewCache.copyWith(
-          fastest: slots[FeeSelection.fastest] ?? const BitcoinFeePreviewSlot(),
-          economic:
-              slots[FeeSelection.economic] ?? const BitcoinFeePreviewSlot(),
-          slow: slots[FeeSelection.slow] ?? const BitcoinFeePreviewSlot(),
+          fastest: project(FeeSelection.fastest, presets.fastest),
+          economic: project(FeeSelection.economic, presets.economic),
+          slow: project(FeeSelection.slow, presets.slow),
           presetsLoading: false,
         ),
       ),

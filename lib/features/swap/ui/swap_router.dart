@@ -1,12 +1,10 @@
-import 'package:swaps/swaps.dart';
+import 'package:swaps/swaps.dart' show ChainSwap;
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/internal_ark_transfer_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_settings_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/internal_transfer_page.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,8 +12,7 @@ import 'package:go_router/go_router.dart';
 enum SwapRoute {
   swap('/swap'),
   confirmSwap('/swap/confirm'),
-  inProgressSwap('/swap/in-progress'),
-  swapSettings('/swap-settings');
+  inProgressSwap('/swap/in-progress');
 
   final String path;
 
@@ -23,15 +20,6 @@ enum SwapRoute {
 }
 
 class SwapRouter {
-  static final settingsRoute = GoRoute(
-    name: SwapRoute.swapSettings.name,
-    path: SwapRoute.swapSettings.path,
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<SwapSettingsCubit>()..load(),
-      child: const SwapSettingsPage(),
-    ),
-  );
-
   static final route = GoRoute(
     name: SwapRoute.swap.name,
     path: SwapRoute.swap.path,
@@ -70,10 +58,10 @@ class SwapRouter {
               listener: (context, state) {
                 final orderSwap = state.orderSwap;
                 if (orderSwap != null) {
-                  context.goNamed(
-                    TransactionsRoute.orderSwapTransactionDetails.name,
-                    pathParameters: {'localId': orderSwap.localId},
-                    queryParameters: {'returnHome': 'true'},
+                  TransactionsNavigation.goToDetails(
+                    context,
+                    TransactionDetailsTarget.orderSwap(orderSwap.localId),
+                    returnHome: true,
                   );
                 } else {
                   context.goNamed(

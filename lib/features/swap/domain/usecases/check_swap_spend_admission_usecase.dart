@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:meta/meta.dart';
 

@@ -1,0 +1,24 @@
+import 'package:silent/src/domain/entities/sp_coin.dart';
+import 'package:silent/src/domain/entities/sp_payment.dart';
+import 'package:silent/src/domain/entities/sp_wallet.dart';
+import 'package:primitives/primitives.dart';
+
+/// Wallet snapshot + payment history + chain info read in one pass (used by
+/// the cubit on load and after coin-change notifications).
+class SpWalletData {
+  final SilentWallet wallet;
+  final List<SpPayment> history;
+  final List<SpCoin> coins;
+  final BitcoinNetwork? network;
+  final int? chainTip;
+  final int minBirthdayHeight;
+
+  const SpWalletData({
+    required this.wallet,
+    required this.history,
+    required this.coins,
+    required this.network,
+    this.chainTip,
+    this.minBirthdayHeight = 0,
+  });
+}

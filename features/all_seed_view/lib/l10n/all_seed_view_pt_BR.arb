@@ -1,0 +1,86 @@
+{
+  "allSeedViewSecurityWarningMessage": "Exibir frases de sementes é um risco de segurança. Qualquer pessoa que veja sua frase de sementes pode acessar seus fundos. Certifique-se de que você está em um local privado e que ninguém pode ver sua tela.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "allSeedViewLoadingMessage": "Isso pode levar algum tempo para carregar se você tiver muitas sementes neste dispositivo.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "allSeedViewNoSeedsFound": "Nenhuma semente encontrada.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewSecurityWarningTitle": "Aviso de Segurança",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "allSeedViewOldWallets": "Carteiras antigas ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Eu compreendo",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "ATENÇÃO!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "delete": "Excluir",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "allSeedViewErrorDelete": "Falha ao excluir a seed. Por favor, tente novamente.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Falha ao carregar as seeds. Por favor, tente novamente.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Mostrar sementes",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewTitle": "Visualizador de sementes",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewExistingWallets": "Carteiras existentes ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

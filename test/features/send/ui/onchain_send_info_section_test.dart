@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
+import 'package:bull_ui/app_theme.dart';
+import 'package:address_view/address_view.dart' show AddressViewer;
+import 'package:bb_mobile/localization/onchain_send_labels_l10n.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +23,9 @@ void main() {
         localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: OnchainSendInfoSection(
+          body: BullOnchainSendInfoSection(
+            labels: lookupAppLocalizations(const Locale('en'))
+                .onchainSendLabels,
             sendWalletLabel: 'Cold storage',
             addressBuilder: (style, color) =>
                 AddressViewer('Savings', style: style, color: color),

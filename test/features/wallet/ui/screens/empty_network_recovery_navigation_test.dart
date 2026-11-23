@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
@@ -97,6 +97,12 @@ void main() {
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
+                exchangePrompt: createExchangePromptCubit(
+                  storage: _MemoryQuickActionsStorage(),
+                  warning: (_) {},
+                  offered: const Stream.empty(),
+                ),
+                onActivateExchange: (_) {},
                 announcements: () => const SizedBox.shrink(),
                 createSetupCubit: createSetupCubit,
               ),

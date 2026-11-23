@@ -1,5 +1,4 @@
-import 'package:bull_ui/bull_ui.dart'
-    show BullThemeX, BullButton, BullButtonSize;
+import 'package:bull_ui/bull_ui.dart' show BullThemeX;
 
 import '../../../network_l10n.dart';
 import '../../presentation/tor_settings_cubit.dart';
@@ -10,6 +9,8 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullDropdown,
         BullInfoCard,
+        BullInlineTextButton,
+        BullText,
         BullPickerItem,
         BullSettingsEntryItem,
         BullSnackBar,
@@ -84,13 +85,21 @@ class TorProxyWidget extends StatelessWidget {
                 .copyWith(color: context.bull.onSurface.withValues(alpha: 0.7)),
           ),
         ),
-        const Gap(8),
-        BullButton.secondary(
-          label: context.loc.torSettingsLearnAboutOrbot,
-          onPressed: () => _learnAboutOrbot(context),
-          size: BullButtonSize.small,
-          compact: true,
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: BullInlineTextButton(
+              onPressed: () => _learnAboutOrbot(context),
+              child: BullText(
+                context.loc.torSettingsLearnAboutOrbot,
+                style: context.bullType.label,
+                color: context.bull.primary,
+              ),
+            ),
+          ),
         ),
+        const Gap(8),
         Card(
           child: BullSettingsEntryItem(
             icon: Icons.settings_ethernet,

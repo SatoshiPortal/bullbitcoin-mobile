@@ -1,12 +1,12 @@
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Sp extends Mock implements SpFacade {}
+class _Sp extends Mock implements Silent {}
 
 void main() {
   test('rejects an absolute fee before preparing a Silent Payment', () async {
@@ -16,12 +16,12 @@ void main() {
         recipients: const [],
         feerateSatVb: BigInt.from(5000),
       ),
-    ).thenAnswer((_) async => const Err(SpUnexpected()));
+    ).thenAnswer((_) async => const Err(SilentUnexpected()));
     final result = await PrepareSpPaymentForSendUsecase(sp)
         .execute(recipients: const [], fee: const NetworkFee.absolute(5000));
     expect(
       result,
-      isA<Err<SpTxDraft, SendFailure>>().having(
+      isA<Err<SilentTxDraft, SendFailure>>().having(
         (result) => result.failure,
         'failure',
         isA<SendTransactionBuildFailure>(),
@@ -40,7 +40,7 @@ void main() {
       final expected = fee == null || fee.value < 1 ? BigInt.one : BigInt.two;
       when(
         () => sp.preparePayment(recipients: const [], feerateSatVb: expected),
-      ).thenAnswer((_) async => const Err(SpUnexpected()));
+      ).thenAnswer((_) async => const Err(SilentUnexpected()));
       await PrepareSpPaymentForSendUsecase(sp)
           .execute(recipients: const [], fee: fee);
       verify(

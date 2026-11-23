@@ -48,7 +48,7 @@ void main() {
     expect(violations, isEmpty);
   });
 
-  test('each exchange-order use-case has exactly one registration', () {
+  test('each exchange-order use case has exactly one composition owner', () {
     // `AppLocator.setup` calls `enableRegisteringMultipleInstancesOfOneType`,
     // so get_it accepts a duplicate registration instead of throwing, then
     // resolves the *first* one — leaving the second as dead code that reads
@@ -58,32 +58,42 @@ void main() {
     // Scoped to these types on purpose: duplicate registrations exist
     // elsewhere in the app (swap re-registers much of send), and that is a
     // separate cleanup, not something to smuggle into this test.
-    const singleOwner = [
-      'PlacePayOrderUsecase',
-      'RefreshSellOrderUsecase',
-      'ConfirmBuyOrderUsecase',
-      'RefreshBuyOrderUsecase',
-      'AccelerateBuyOrderUsecase',
-    ];
+    const purchaseRoutes =
+        'features/bull_exchange/lib/src/exchange_purchase_routes.dart';
+    const owners = {
+      'PlacePayOrderUsecase': 'lib/features/pay/pay_locator.dart',
+      'RefreshSellOrderUsecase': 'lib/features/sell/sell_locator.dart',
+      'ConfirmBuyOrderUsecase': purchaseRoutes,
+      'RefreshBuyOrderUsecase': purchaseRoutes,
+      'AccelerateBuyOrderUsecase': purchaseRoutes,
+    };
 
     // One entry per registration, not per file: a type registered twice inside
     // a single locator is just as dead as one registered across two, and a Set
     // of paths would collapse it to a single owner and pass.
-    final registrations = <String, List<String>>{};
+    final wiring = <String, List<String>>{};
     for (final file in locatorFiles) {
       for (final type in _registeredTypes(file.readAsStringSync())) {
-        if (singleOwner.contains(type)) {
-          registrations.putIfAbsent(type, () => []).add(file.path);
+        if (owners.containsKey(type)) {
+          wiring
+              .putIfAbsent(type, () => [])
+              .add(file.path.replaceAll(Platform.pathSeparator, '/'));
         }
       }
     }
 
-    for (final type in singleOwner) {
-      expect(
-        registrations[type],
-        hasLength(1),
-        reason: '$type should have exactly one registration',
-      );
+    // Buy now constructs its use cases directly in the route-owned Bloc.
+    final purchases = File(purchaseRoutes).readAsStringSync();
+    for (final entry in owners.entries) {
+      if (entry.value == purchaseRoutes) {
+        final calls = RegExp('\\b${entry.key}\\s*\\(').allMatches(purchases);
+        wiring
+            .putIfAbsent(entry.key, () => [])
+            .addAll(calls.map((_) => purchaseRoutes));
+      }
+      expect(wiring[entry.key], [
+        entry.value,
+      ], reason: '${entry.key} should be wired exactly once by its owner');
     }
   });
 }

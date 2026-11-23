@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_scan_facade.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/scan_onboarding_wallet_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Scan extends Mock implements ImportMnemonicScanFacade {}
+class _Scan extends Mock implements ImportFeature {}
 
 void main() {
   setUpAll(() => registerFallbackValue(Language.english));

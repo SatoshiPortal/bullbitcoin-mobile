@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
@@ -73,7 +72,7 @@ void main() {
         ),
         origin,
       );
-      final result = WalletCatalogPortImpl.descriptorFromMetadata(
+      final result = WalletSyncBinding.descriptorFromMetadata(
         _row(id, 'bitcoinRegtest'),
       );
       expect(result, isA<Ok<PublicWalletDescriptor, SyncFailure>>());
@@ -92,7 +91,7 @@ void main() {
         _row('$origin:regtest', 'bitcoinTestnet'),
       ]) {
         expect(
-          WalletCatalogPortImpl.descriptorFromMetadata(row),
+          WalletSyncBinding.descriptorFromMetadata(row),
           isA<Err<PublicWalletDescriptor, SyncFailure>>(),
         );
         // A row remains usable for cross-network custody reference checks.

@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_pending_order_swaps_usecase.dart';
@@ -37,7 +37,7 @@ class _ApplyLabels extends Mock
 
 class _Swaps extends Mock implements SwapFacade {}
 
-class _Sp extends Mock implements SpFacade {}
+class _Sp extends Mock implements Silent {}
 
 class _GetWallets extends Mock implements GetWalletsUsecase {}
 
@@ -73,7 +73,7 @@ void main() {
     swaps = _Swaps();
     sp = _Sp();
     locator.registerSingleton<SwapFacade>(swaps);
-    locator.registerSingleton<SpFacade>(sp);
+    locator.registerSingleton<Silent>(sp);
   });
 
   tearDown(() async {
@@ -228,8 +228,9 @@ void main() {
   );
 
   test('SP failure fails the pass without throttling its retry', () async {
-    when(sp.syncWallet)
-        .thenAnswer((_) async => const Err(SpBackendUnreachable('private')));
+    when(
+      sp.syncWallet,
+    ).thenAnswer((_) async => const Err(SilentBackendUnreachable('private')));
     final result = await locator<SyncSpForWalletUsecase>().execute();
     expect(result, isA<Err<void, WalletFailure>>());
     await expectLater(

@@ -1,0 +1,14 @@
+{
+  "@@locale": "uk",
+  "bip85NextMnemonic": "Далі Mnemonic",
+  "bip85ExperimentalWarning": "Експериментальні\nРезервне копіювання стежок видалення вручну",
+  "bip85Title": "BIP85 Визначення ентропії",
+  "bip85NextHex": "Далі HEX",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "bip85NoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "Скопійовано в буфер обміну"
+}

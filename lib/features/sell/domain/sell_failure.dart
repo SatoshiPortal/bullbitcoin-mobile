@@ -104,6 +104,11 @@ final class SellUnexpectedFailure extends SellFailure {
   const SellUnexpectedFailure([super.logMessage]);
 }
 
+final class SellPayinOutcomeUnknownFailure extends SellFailure {
+  final String? originalTxId;
+  const SellPayinOutcomeUnknownFailure({this.originalTxId});
+}
+
 /// The selected network has no exchange order service.
 final class SellUnsupportedNetworkFailure extends SellFailure {
   const SellUnsupportedNetworkFailure();

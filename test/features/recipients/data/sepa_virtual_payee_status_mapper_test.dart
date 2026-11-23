@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_status_mapper.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
+import 'package:exchange/testing.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

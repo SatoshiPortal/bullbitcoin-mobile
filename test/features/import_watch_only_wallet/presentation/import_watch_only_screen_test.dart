@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -27,8 +27,13 @@ void main() {
         // Published BIP84 test account, as entered in the FIX device campaign.
         const vpub =
             'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc';
-        final wallet = (await WatchOnlyWalletEntity.parse(vpub))
-            .copyWith(label: labelCorrection ? '' : 'NeverScanned');
+        final parsed = await ParseWatchOnlyInputUsecase().execute(
+          vpub,
+          environment: Environment.testnet.networkEnv,
+        );
+        final wallet = ((parsed as Ok).value as WatchOnlyWalletEntity).copyWith(
+          label: labelCorrection ? '' : 'NeverScanned',
+        );
         final settings = _Settings();
         final importer = _Xpub();
         when(settings.readActiveEnvironment)

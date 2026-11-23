@@ -51,6 +51,17 @@ Result<DecodedBitcoinTransaction, SyncFailure> finalizeBitcoinPsbts({
 Result<int, SyncFailure> bitcoinPsbtFee(String psbtBase64) =>
     _withPsbt(psbtBase64, (psbt) => Ok(psbt.fee()));
 
+/// Reads only the unsigned skeleton. A signer may have removed the input
+/// metadata required by the fee-checked transaction extractor.
+@useResult
+Result<DecodedBitcoinTransaction, SyncFailure> bitcoinPsbtSkeleton(
+  String psbtBase64,
+) => _withPsbt(
+  psbtBase64,
+  (psbt) =>
+      Ok(decodeBitcoinTransaction(psbtUnsignedTransaction(psbt.serialize()))),
+);
+
 /// Inspects PSBT evidence without opening a wallet or finalising/signing anything. Missing or contradictory UTXOs refuse; structural final fields never establish valid signatures. Hosts must compare finalTransaction.bytes with every byte of their independently decoded raw transaction, witnesses included.
 @useResult
 Result<BitcoinPsbtFacts, SyncFailure> inspectBitcoinPsbt(String psbtBase64) =>

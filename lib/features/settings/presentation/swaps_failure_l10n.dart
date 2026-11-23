@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:flutter/widgets.dart';
 import 'package:swaps/swaps.dart';
 
@@ -17,6 +17,12 @@ extension SwapsFailureL10n on SwapsFailure {
     // never fit to show a user.
     SwapsBusyFailure() ||
     SwapsAuthorizationFailure() ||
-    SwapsUnexpectedFailure() => context.loc.swapsFailureUnexpected,
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => context.loc.swapsFailureUnexpected,
   };
 }

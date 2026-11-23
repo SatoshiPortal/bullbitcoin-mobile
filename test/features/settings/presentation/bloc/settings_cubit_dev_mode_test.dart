@@ -7,7 +7,6 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -215,7 +214,7 @@ void main() {
 
     test(
       'dev-mode true -> false revokes the SP wallet; the wallet feature picks '
-      'the change up from SpSetupChanged, settings never drives it',
+      'the change up from SilentSetupChanged, settings never drives it',
       () async {
         // Seed cubit state with dev mode currently enabled.
         cubit.emit(
@@ -252,8 +251,9 @@ void main() {
     test(
       'dev-mode toggle-off keeps dev mode enabled when revoke fails',
       () async {
-        when(() => revokeSpWalletUsecase.execute())
-            .thenAnswer((_) async => const Err(SpUnexpected('file locked')));
+        when(() => revokeSpWalletUsecase.execute()).thenAnswer(
+          (_) async => const Err(SettingsStorageFailure('file locked')),
+        );
         cubit.emit(
           cubit.state.copyWith(
             storedSettings: _settings(isDevModeEnabled: true),

@@ -9,10 +9,10 @@ import 'dart:ui';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_ark/ark_maintenance_setup.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
@@ -20,9 +20,6 @@ import 'package:bull_ark/bull_ark.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
-
-import 'ark_board_abandonment.dart';
-import 'sqlite_ark_funding_reservations.dart';
 
 /// Only existing stores are opened. Every resource remains alive until the
 /// admitted native work has completed and the runner closes its resources.

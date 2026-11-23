@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('source validates swap association against wallet ownership', () {
     final source = File(
-      'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
     ).readAsStringSync();
     expect(source, contains('s.walletId == wt.walletId'));
     expect(source, contains('wt.amountSat <= s.amountSat'));

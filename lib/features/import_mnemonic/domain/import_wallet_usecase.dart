@@ -92,22 +92,31 @@ class ImportWalletUsecase {
         case Ok(:final value):
           secret = value;
         case Err(failure: SecretAlreadyExistsFailure(:final id)):
-          if (await _checkDuplicateMnemonicUsecase.isReferenced(
+          switch (await _checkDuplicateMnemonicUsecase.isReferenced(
             id,
             bitcoinNetwork,
           )) {
-            log.warning('Wallet import refused reason=duplicate');
-            return const Err(ImportMnemonicDuplicateFailure());
+            case Err(:final failure):
+              return Err(failure);
+            case Ok(value: true):
+              log.warning('Wallet import refused reason=duplicate');
+              return const Err(ImportMnemonicDuplicateFailure());
+            case Ok(value: false):
+              break;
           }
           switch (await _secrets.fetch(id)) {
             case Ok(:final value):
               secret = value;
             case Err(:final failure):
-              return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
+              return Err(
+                ImportMnemonicUnexpectedFailure(failure.runtimeType.toString()),
+              );
           }
           log.warning('Resuming orphan mnemonic import');
         case Err(:final failure):
-          return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
+          return Err(
+            ImportMnemonicUnexpectedFailure(failure.runtimeType.toString()),
+          );
       }
       final Wallet wallet;
       switch (await _wallet.importWallet(
@@ -135,7 +144,7 @@ class ImportWalletUsecase {
       );
 
       return Ok(wallet);
-    } catch (e) {
+    } on Exception catch (e) {
       // Provisioning may already have committed a catalog row. Preserve custody;
       // orphan cleanup is an explicit user action, never failure compensation.
       log.severe(
@@ -143,7 +152,7 @@ class ImportWalletUsecase {
         error: 'storage',
         trace: StackTrace.empty,
       );
-      return Err(ImportMnemonicUnexpectedFailure(e.toString()));
+      return Err(ImportMnemonicUnexpectedFailure(e.runtimeType.toString()));
     }
   }
 }

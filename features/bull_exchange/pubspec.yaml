@@ -8,9 +8,15 @@ environment:
   flutter: "3.50.0"
 
 dependencies:
+  bitcoin_price:
+  bloc_concurrency: ^0.3.0
   bull_logger:
+  bull_payjoin:
+  bull_pricer:
   bull_ui:
+  clock: ^1.1.2
   exchange:
+  fees:
   file_system:
   flutter:
     sdk: flutter
@@ -25,21 +31,25 @@ dependencies:
   meta: ^1.17.0
   path: ^1.9.1
   path_provider: ^2.1.5
+  preferences:
   primitives:
+  secrets:
   share_plus: ^13.3.1
+  shimmer: ^4.0.0
+  sync:
   url_launcher: ^6.3.2
   webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10
   webview_flutter_wkwebview: ^3.23.4
 
 dev_dependencies:
+  bloc_test: ^10.0.0
   build_runner: ^2.10.4
   flutter_test:
     sdk: flutter
   freezed: ^4.0.0
   mocktail: ^1.0.4
   path_provider_platform_interface: ^2.1.2
-  preferences:
 
 flutter:
   generate: true

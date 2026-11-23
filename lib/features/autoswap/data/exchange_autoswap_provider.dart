@@ -1,17 +1,15 @@
+import 'package:address_view/address_view.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show LiquidWalletRepository;
+import 'package:spend/spend.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart' show NetworkX;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 class ExchangeAutoswapProvider implements AutoswapProviderPort {
   /// Fallback when the server sends no Retry-After.
@@ -26,9 +24,8 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
 
   final WalletRepository _walletRepository;
   final Preferences _settingsRepository;
-  final LiquidWalletRepository _liquidWalletRepository;
-  final GetReceiveAddressUsecase _getReceiveAddress;
-  final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
+  final Spend _spend;
+  final AddressView _getReceiveAddress;
   final SwapFacade _swapFacade;
   final Labels _labelsFacade;
   final Future<void> Function(Duration) _delay;
@@ -36,9 +33,8 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   ExchangeAutoswapProvider(
     this._walletRepository,
     this._settingsRepository,
-    this._liquidWalletRepository,
+    this._spend,
     this._getReceiveAddress,
-    this._broadcastLiquidTransaction,
     this._swapFacade,
     this._labelsFacade, {
     Future<void> Function(Duration)? delay,
@@ -104,12 +100,28 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         );
       }
 
-      final destination = await _getReceiveAddress.execute(
+      final WalletAddress destination;
+      switch (await _getReceiveAddress.receiveAddress(
         walletId: recipientWallet.id,
-      );
-      final fallback = await _getReceiveAddress.execute(
+      )) {
+        case Ok(:final value):
+          destination = value;
+        case Err():
+          return const Err(
+            AutoswapExecutionFailure('Receive address unavailable'),
+          );
+      }
+      final WalletAddress fallback;
+      switch (await _getReceiveAddress.receiveAddress(
         walletId: liquidWallet.id,
-      );
+      )) {
+        case Ok(:final value):
+          fallback = value;
+        case Err():
+          return const Err(
+            AutoswapExecutionFailure('Receive address unavailable'),
+          );
+      }
       final feeResult = await _estimateNetworkFee(
         balanceSat: balanceSat,
         wallet: liquidWallet,
@@ -237,29 +249,24 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   ) async {
     final order = record.order;
     if (order == null) return const Err(AutoswapPendingFailure());
-    final preparation = await _liquidWalletRepository.buildPset(
+    final preparation = await _spend.prepareLiquid(
       walletId: wallet.id,
       address: order.payinAddress,
       amountSat: order.payinAmountSat.toInt(),
       feeRate: NetworkFeeRelayPolicy.minRelay,
     );
-    final String pset;
+    final PreparedLiquidSpend prepared;
     switch (preparation) {
       case Ok(:final value):
-        pset = value;
+        prepared = value;
       case Err(:final failure):
         return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
     }
-    final actualAmount = await _liquidWalletRepository.getAmountSentToAddress(
-      pset: pset,
-      address: order.payinAddress,
-      walletId: wallet.id,
-    );
+    final actualAmount = prepared.amountSent.value.toInt();
     if (actualAmount != order.payinAmountSat.toInt()) {
       return const Err(AutoswapPayinMismatchFailure());
     }
-    final (_, actualFeeSat) = await _liquidWalletRepository
-        .getPsetSizeAndAbsoluteFees(pset: pset);
+    final actualFeeSat = prepared.fee.value.toInt();
     final balance = wallet.balanceSat;
     if (balance == null) {
       return const Err(AutoswapExecutionFailure('Wallet unavailable'));
@@ -279,13 +286,16 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         ),
       );
     }
-    final signed = await _liquidWalletRepository.signPset(
-      walletId: wallet.id,
-      pset: pset,
-    );
+    final SignedLiquidSpend signed;
+    switch (await _spend.signLiquid(prepared: prepared)) {
+      case Ok(:final value):
+        signed = value;
+      case Err(:final failure):
+        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+    }
     final preparedResult = await _swapFacade.savePreparedPayin(
       localId: record.localId,
-      signedTransaction: signed,
+      signedTransaction: signed.signedPset,
       isPsbt: false,
     );
     if (preparedResult case Err(:final failure)) {
@@ -294,13 +304,30 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     return await _broadcast(
       (preparedResult as Ok<OrderSwapRecord, SwapFailure>).value,
       wallet,
+      signed: signed,
     );
   }
 
   Future<Result<String, AutoswapFailure>> _broadcast(
     OrderSwapRecord record,
-    Wallet wallet,
-  ) async {
+    Wallet wallet, {
+    SignedLiquidSpend? signed,
+  }) async {
+    final order = record.order;
+    final storedPset = record.signedPayinTransaction;
+    if (record.purpose != OrderSwapPurpose.autoswap ||
+        record.inNetwork != OrderSwapNetwork.liquid ||
+        record.sourceWalletId != wallet.id ||
+        record.environment !=
+            (wallet.network.isMainnet
+                ? OrderSwapEnvironment.mainnet
+                : OrderSwapEnvironment.testnet) ||
+        order == null ||
+        storedPset == null ||
+        record.payinIsPsbt != false ||
+        (signed != null && signed.signedPset != storedPset)) {
+      return const Err(AutoswapPayinMismatchFailure());
+    }
     final unknownResult = await _swapFacade.markBroadcastUnknown(
       record.localId,
     );
@@ -309,14 +336,33 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     }
     final broadcasting =
         (unknownResult as Ok<OrderSwapRecord, SwapFailure>).value;
-    final signedTransaction = broadcasting.signedPayinTransaction;
-    if (signedTransaction == null) {
+    if (broadcasting.signedPayinTransaction != storedPset ||
+        broadcasting.payinIsPsbt != false) {
       return const Err(AutoswapPendingFailure());
     }
-    final txid = await _broadcastLiquidTransaction.execute(
-      signedTransaction,
-      isTestnet: wallet.network.requireHistoricalTestnet(),
-    );
+    final receipt = signed == null
+        ? await _spend.resumeLiquidPayin(
+            signedPset: storedPset,
+            walletId: wallet.id,
+            network: wallet.network.liquid,
+            address: order.payinAddress,
+            amount: Sats(order.payinAmountSat),
+          )
+        : await _spend.broadcastLiquid(signed);
+    final String txid;
+    switch (receipt) {
+      case Ok(:final value):
+        txid = value.txid;
+      case Err(
+        failure: SpendBroadcastOutcomeUnknownFailure() ||
+            SpendAlreadyInChainFailure(),
+      ):
+        return const Err(AutoswapPendingFailure());
+      case Err(failure: SpendSignedTransactionMismatchFailure()):
+        return const Err(AutoswapPayinMismatchFailure());
+      case Err(:final failure):
+        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+    }
     final paidResult = await _swapFacade.markPayinBroadcast(
       localId: record.localId,
       transactionId: txid,
@@ -341,21 +387,16 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     required int targetBalanceSat,
   }) async {
     final provisionalAmount = balanceSat - targetBalanceSat;
-    final preparation = await _liquidWalletRepository.buildPset(
+    final preparation = await _spend.prepareLiquid(
       walletId: wallet.id,
       address: address,
       amountSat: provisionalAmount,
       feeRate: NetworkFeeRelayPolicy.minRelay,
     );
-    final String pset;
-    switch (preparation) {
-      case Ok(:final value):
-        pset = value;
-      case Err(:final failure):
-        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
-    }
-    final (_, feeSat) = await _liquidWalletRepository
-        .getPsetSizeAndAbsoluteFees(pset: pset);
-    return Ok(feeSat);
+    return preparation
+        .map((value) => value.fee.value.toInt())
+        .mapErr(
+          (failure) => AutoswapExecutionFailure(failure.runtimeType.toString()),
+        );
   }
 }

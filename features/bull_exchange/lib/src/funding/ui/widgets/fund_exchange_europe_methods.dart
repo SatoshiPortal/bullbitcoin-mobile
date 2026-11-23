@@ -1,0 +1,77 @@
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/funding/fund_exchange_router.dart';
+import 'package:bull_exchange/src/funding/ui/widgets/fund_exchange_method_list_tile.dart';
+import 'package:bull_exchange/src/funding/presentation/fund_exchange_bloc.dart';
+import 'package:bull_exchange/src/funding/presentation/fund_exchange_failure_l10n.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullErrorState, Gap;
+
+class FundExchangeEuropeMethods extends StatelessWidget {
+  const FundExchangeEuropeMethods({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isConfidentialSepaAvailable = context.select(
+      (FundExchangeBloc bloc) => bloc.state.isConfidentialSepaAvailable,
+    );
+    final failure = context.select(
+      (FundExchangeBloc bloc) => bloc.state.confidentialSepaAvailabilityFailure,
+    );
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        if (failure != null) ...[
+          BullErrorState(
+            message: failure is FundExchangeNetworkFailure
+                ? '${context.loc.oopsSomethingWentWrong}\n'
+                      '${failure.toTranslated(context)}'
+                : context.loc.oopsSomethingWentWrong,
+            retryLabel: context.loc.retry,
+            onRetry: () => context.read<FundExchangeBloc>().add(
+              const FundExchangeEvent.confidentialSepaAvailabilityRetried(),
+            ),
+          ),
+          const Gap(16),
+        ],
+        if (isConfidentialSepaAvailable) ...[
+          FundExchangeMethodListTile(
+            title: context.loc.fundExchangeMethodConfidentialSepa,
+            subtitle: context.loc.fundExchangeMethodConfidentialSepaSubtitle,
+            onTap: () => context.pushNamed(
+              FundExchangeRoute.fundExchangeConfidentialSepa.name,
+              extra: context.read<FundExchangeBloc>(),
+            ),
+          ),
+          const Gap(16.0),
+        ],
+        FundExchangeMethodListTile(
+          title: context.loc.fundExchangeMethodInstantSepa,
+          subtitle: context.loc.fundExchangeMethodInstantSepaSubtitle,
+          onTap: () {
+            context.read<FundExchangeBloc>().add(
+              const FundExchangeEvent.fundingDetailsRequested(
+                fundingMethod: InstantSepa(),
+              ),
+            );
+          },
+        ),
+        const Gap(16.0),
+        FundExchangeMethodListTile(
+          title: context.loc.fundExchangeMethodRegularSepa,
+          subtitle: context.loc.fundExchangeMethodRegularSepaSubtitle,
+          onTap: () {
+            context.read<FundExchangeBloc>().add(
+              const FundExchangeEvent.fundingDetailsRequested(
+                fundingMethod: RegularSepa(),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:primitives/primitives.dart';
 import 'package:swaps/src/domain/entities/swap.dart';
 import 'package:swaps/src/domain/entities/swap_failure.dart';
@@ -70,10 +71,13 @@ abstract interface class BoltzSwaps {
   /// The rescue key of the default Bitcoin wallet, if one was derived.
   Future<Result<SwapMasterKeyInfo?, SwapsFailure>> masterKeyInfo();
 
-  /// The rescue key's words for [walletFingerprint], for display only.
-  Future<Result<String?, SwapsFailure>> masterKeyMnemonic({
-    required String walletFingerprint,
+  /// Paint the confirmed key's words inside the swap owner.
+  Widget masterKeyView({
+    required SwapMasterKeyInfo key,
+    required TextStyle style,
+    required Widget failure,
   });
 
-  Future<Result<void, SwapsFailure>> deleteMasterKey();
+  /// Deletes only the confirmed key in its original network and wallet.
+  Future<Result<void, SwapsFailure>> deleteMasterKey(SwapMasterKeyInfo key);
 }

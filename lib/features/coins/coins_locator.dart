@@ -2,7 +2,7 @@ import 'public/coins.dart';
 
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:preferences/preferences.dart'
     show AmountDisplayPreferencesReader;
@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
@@ -29,7 +29,7 @@ class CoinsLocator {
     );
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        walletRegistrations: locator<WalletRegistrations>(),
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
         freezesDatasource: locator<SyncFreezesDatasource>(),
         labelsFacade: locator<Labels>(),

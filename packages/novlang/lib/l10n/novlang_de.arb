@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase löschen?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Dadurch wird der Transfer-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Transfers bleiben davon unberührt.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase löschen?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Dadurch wird der Transfer-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Transfers bleiben davon unberührt."
 }

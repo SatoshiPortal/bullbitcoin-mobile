@@ -1,0 +1,26 @@
+{
+  "@@locale": "as",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "bip85NoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip85Title": "BIP85 নিৰ্ণায়ক Entropies",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85ExperimentalWarning": "পৰীক্ষামূলক \nআপোনাৰ Derivation Path বোৰ মানৱীয়ভাৱে বেকআপ কৰক",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "bip85NextMnemonic": "পৰৱৰ্তী Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85NextHex": "পৰৱৰ্তী HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+}

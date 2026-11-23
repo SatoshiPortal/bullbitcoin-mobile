@@ -76,7 +76,9 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
   ) async {
     // During a cooldown the dial pad is disabled in the UI; ignore digits
     // here too so no PIN accumulates through any other path.
-    if (state.timeoutSeconds > 0 || state.isVerifying) {
+    if (state.status == AppUnlockStatus.success ||
+        state.timeoutSeconds > 0 ||
+        state.isVerifying) {
       return;
     }
     if (state.pinCode.length >= state.maxPinCodeLength) {
@@ -110,11 +112,8 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     AppUnlockSubmitted event,
     Emitter<AppUnlockState> emit,
   ) async {
-    // The usecase enforces the cooldown against the persisted wall clock;
-    // this gate only spares a pointless round-trip.
-    if (state.timeoutSeconds > 0 || state.isVerifying) {
-      return;
-    }
+    // The inventory enforces the cooldown independently of the UI gate.
+    if (!state.canSubmit) return;
     emit(state.copyWith(isVerifying: true));
     switch (await _attemptUnlockWithPinCodeUsecase.execute(state.pinCode)) {
       case Err(:final failure):
@@ -134,7 +133,7 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
             isVerifying: false,
             failedAttempts: value.failedAttempts,
             timeoutSeconds: value.timeout,
-            pinCode: value.success ? state.pinCode : '',
+            pinCode: '',
             showError: !value.success,
           ),
         );

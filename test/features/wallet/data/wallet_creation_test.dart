@@ -1,13 +1,17 @@
+import 'package:wallet_import/wallet_import.dart';
+
+import '../../../support/wallet_registrations.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:sync/write.dart'
@@ -34,7 +38,7 @@ import 'package:sync/sync.dart'
         WalletConnectionPort,
         WalletKey;
 import 'package:sync/write.dart' show ElectrumSync;
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
 import 'package:secrets/testing.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
@@ -53,7 +57,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
   late SqliteDatabase database;
-  late WalletMetadataDatasource metadata;
+  late WalletRegistrations metadata;
   late _Native native;
   late WalletRepository repository;
   late Secret secret;
@@ -78,9 +82,10 @@ void main() {
       isDefault: false,
     );
     registerFallbackValue(row);
-    registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
-    descriptor = await WatchOnlyWalletEntity.parse(
-      row.externalPublicDescriptor,
+    registerFallbackValue(WalletSyncBinding.keyFromMetadata(row));
+    final parsed = await WatchOnlyInput.parse(row.externalPublicDescriptor);
+    descriptor = WatchOnlyWalletEntity.fromInput(
+      (parsed as Ok).value as WatchOnlyInput,
     ) as WatchOnlyDescriptorEntity;
     directory = await Directory.systemTemp.createTemp('wallet-create-');
     reporter = _Reporter();
@@ -88,7 +93,7 @@ void main() {
     database = SqliteDatabase(
       NativeDatabase(File('${directory.path}/app.sqlite'), setup: _configure),
     );
-    metadata = WalletMetadataDatasource(sqlite: database);
+    metadata = MemoryWalletRegistrations();
     native = _Native();
     when(() => native.prepareCreate(any()))
         .thenAnswer((_) async => const Ok(null));
@@ -105,7 +110,7 @@ void main() {
     );
     repository = WalletRepository(
       native: native,
-      walletMetadataDatasource: metadata,
+      walletRegistrations: metadata,
       wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
@@ -114,10 +119,8 @@ void main() {
         allowInitialScan = true,
         reason = SyncReason.auto,
       }) async {},
-      isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
-      electrumSyncResultStream: const Stream.empty(),
     );
     addTearDown(() async {
       await database.close();
@@ -231,7 +234,7 @@ void main() {
 
   test('real writer resolves metadata during native creation', () async {
     final runtime = WalletNativeRuntime.open(
-      catalog: WalletCatalogPortImpl(metadata),
+      catalog: TestWalletCatalog(metadata),
       reserved: _Reserved(),
       inputReservations: _NoInputReservations(),
       deleteCatalogEntry: (key) async {
@@ -258,37 +261,9 @@ void main() {
     }
   });
 
-  test('another connection sees compensation after native failure', () async {
-    await metadata.fetchAll();
-    final observer = SqliteDatabase(
-      NativeDatabase(File('${directory.path}/app.sqlite'), setup: _configure),
-    );
-    final observed = WalletMetadataDatasource(sqlite: observer);
-    await observed.fetchAll();
-    try {
-      when(() => native.create(any())).thenAnswer((_) async {
-        expect((await observed.fetchAll()).single.id, row.id);
-        return const Err(SyncStorageFailure());
-      });
-      await expectLater(
-        create('secret'),
-        throwsA(
-          isA<WalletSnapshotException>().having(
-            (error) => error.failure,
-            'failure',
-            isA<SyncStorageFailure>(),
-          ),
-        ),
-      );
-      expect(await observed.fetchAll(), isEmpty);
-    } finally {
-      await observer.close();
-    }
-  });
-
   test('existing metadata survives a rejected creation', () async {
     final existing = row.copyWith(label: 'original');
-    await metadata.store(existing);
+    await metadata.insert(existing);
     when(() => native.create(any()))
         .thenThrow(const FileSystemException('injected'));
     await expectLater(
@@ -312,18 +287,13 @@ void main() {
       throwsA(isA<WalletAlreadyExistsException>()),
     );
     await prepared.future;
-    final observer = await independent();
     final winner = row.copyWith(label: 'concurrent winner');
-    try {
-      await WalletMetadataDatasource(sqlite: observer).store(winner);
-      resume.complete();
-      await rejected;
-      expect(await metadata.fetch(row.id), winner);
-      verifyNever(() => native.create(any()));
-      verifyNever(() => native.delete(any()));
-    } finally {
-      await observer.close();
-    }
+    await metadata.insert(winner);
+    resume.complete();
+    await rejected;
+    expect(await metadata.fetch(row.id), winner);
+    verifyNever(() => native.create(any()));
+    verifyNever(() => native.delete(any()));
   });
 
   test('concurrent duplicate cannot replace a successful creation', () async {

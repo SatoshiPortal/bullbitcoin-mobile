@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:swaps/swaps.dart';
 
 extension SwapsFailureToSwapFailure on SwapsFailure {
@@ -17,6 +17,12 @@ extension SwapsFailureToSwapFailure on SwapsFailure {
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() ||
-    SwapsUnexpectedFailure() => SwapUnexpectedFailure(logMessage),
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => SwapUnexpectedFailure(logMessage),
   };
 }

@@ -1,20 +1,23 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
-
-import 'bitcoin_recipient_list_policy.dart';
+import 'package:satoshifier/payment_request.dart';
+import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
+    show Wallet;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 /// Internal recipients are direct Bitcoin outputs on the primary network.
 final class InternalRecipientPolicy {
   const InternalRecipientPolicy();
 
-  Network? network(PaymentRequest? request) => switch (request) {
+  BitcoinNetwork? network(PaymentRequest? request) => switch (request) {
     BitcoinPaymentRequest(:final address)
         when address.toLowerCase().startsWith('bcrt1') =>
-      Network.bitcoinRegtest,
+      BitcoinNetwork.regtest,
     BitcoinPaymentRequest(:final isTestnet) =>
-      isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
-    Bip21PaymentRequest(:final network)
-        when const BitcoinRecipientListPolicy().supports(request) =>
+      isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet,
+    Bip21PaymentRequest(
+      network: final BitcoinNetwork network,
+      amountSat: null,
+    ) =>
       network,
     _ => null,
   };
@@ -25,6 +28,6 @@ final class InternalRecipientPolicy {
     String? fixedSourceWalletId,
   }) =>
       wallet.isBitcoin &&
-      wallet.network == network(request) &&
+      wallet.network.shared == network(request) &&
       wallet.id != fixedSourceWalletId;
 }

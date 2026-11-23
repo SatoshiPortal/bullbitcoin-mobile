@@ -1,34 +1,28 @@
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:address_view/address_view.dart';
+import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
 
-/// Receive-owned boundary for the shared address use-case, which still throws
-/// (a `GetReceiveAddressException`).
 class PrepareReceiveAddressUsecase {
-  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
+  final AddressView _addresses;
 
-  const PrepareReceiveAddressUsecase(this._getReceiveAddressUsecase);
+  const PrepareReceiveAddressUsecase(this._addresses);
 
   @useResult
   Future<Result<WalletAddress, ReceiveFailure>> execute({
     required String walletId,
     bool generateNew = false,
   }) async {
-    try {
-      return Ok(
-        await _getReceiveAddressUsecase.execute(
-          walletId: walletId,
-          generateNew: generateNew,
-        ),
-      );
-    } on Exception catch (e) {
-      if (e is! GetReceiveAddressException || !e.reported) {
+    final result = await _addresses.receiveAddress(
+      walletId: walletId,
+      advance: generateNew,
+    );
+    return result.mapErr((failure) {
+      if (failure is! AddressViewWriterBusyFailure) {
         log.warning('Receive address failed reason=unavailable');
       }
-      return const Err(ReceiveAddressUnavailableFailure('unavailable'));
-    }
+      return const ReceiveAddressUnavailableFailure('unavailable');
+    });
   }
 }

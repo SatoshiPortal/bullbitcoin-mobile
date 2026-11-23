@@ -8,18 +8,31 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/address_view
   - features/announcements
+  - features/backups
+  - features/coins
   - features/bitcoin_price
   - features/bull_exchange
+  - features/receive
   - packages/labels
   - packages/legacy_storage
   - packages/exchange
   - features/label_editor
   - features/network
+  - features/mnemonic_entry
+  - features/scanning
+  - features/settings
   - features/signers
   - features/access
+  - features/all_seed_view
+  - features/bip85
+  - features/silent
+  - features/transactions
   - features/ark
   - features/fees
+  - features/swap
+  - features/wallet_import
   - packages/fees
   - packages/ark
   - packages/secrets
@@ -35,6 +48,7 @@ workspace:
   - packages/background_tasks
   - packages/notifications
   - packages/sync
+  - packages/spend
   - packages/electrum
   - packages/bull_tor
   - packages/mempool
@@ -50,6 +64,7 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - features/physical_backup_verification
   - packages/rust_bindings
   - packages/onion
   - packages/boltz_stream
@@ -58,17 +73,30 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  all_seed_view:
+  bip85:
   access:
+  wallet_import:
+  address_view:
   announcements:
+  backups:
+  coins:
   bitcoin_price:
+  receive:
   labels:
   label_editor:
   network:
+  mnemonic_entry:
+  scanning:
+  settings:
   signers:
+  silent:
   ark:
   bull_ark:
   fees:
   fees_feature:
+  swap_feature:
+  physical_backup_verification:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:
@@ -88,6 +116,7 @@ dependencies:
   notifications:
   flutter_local_notifications: ^23.0.2
   sync:
+  spend:
   electrum:
   bull_tor:
   mempool:
@@ -148,7 +177,6 @@ dependencies:
   webview_flutter_wkwebview: ^3.23.4
   async: ^2.11.0
   drift: ^2.35.4
-  drift_flutter: ^0.3.1
   sqlite3: ^3.5.2
   package_info_plus: ^10.2.2
   share_plus: ^13.3.1
@@ -174,6 +202,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.26.0
+  transactions:
 
 dev_dependencies:
   file_picker: ^13.3.3

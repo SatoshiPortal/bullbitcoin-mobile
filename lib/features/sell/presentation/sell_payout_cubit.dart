@@ -1,5 +1,4 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

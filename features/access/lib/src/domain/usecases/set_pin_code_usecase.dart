@@ -1,19 +1,12 @@
-import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
 import 'package:access/src/domain/access_failure.dart';
+import 'package:access/src/domain/access_inventory.dart';
+import 'package:primitives/primitives.dart';
 
 class SetPinCodeUsecase {
-  final AccessKeychain _accessKeychain;
-  SetPinCodeUsecase({required this._accessKeychain});
+  final AccessInventory _inventory;
 
-  Future<Result<Null, AccessFailure>> execute(String pinCode) async =>
-      switch (await _accessKeychain.setPin(pinCode)) {
-        Ok() => const Ok(null),
-        Err(failure: KeystoreLockedFailure()) => const Err(
-          AccessPinSaveFailure(),
-        ),
-        Err(:final failure) => Err(
-          AccessPinSettingsUnexpectedFailure(failure.logMessage),
-        ),
-      };
+  SetPinCodeUsecase({required this._inventory});
+
+  Future<Result<void, AccessFailure>> execute(String pinCode) =>
+      _inventory.setCredential(pinCode);
 }

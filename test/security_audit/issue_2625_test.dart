@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('CSV source neutralizes spreadsheet formula cells', () {
     final source = File(
-      'lib/features/transactions/adapters/csv_transaction_export_formatter.dart',
+      'features/transactions/lib/src/data/csv_transaction_export_formatter.dart',
     ).readAsStringSync();
     expect(source, contains('toFields().map(_escape).join'));
     expect(source, contains("value.contains(',')"));

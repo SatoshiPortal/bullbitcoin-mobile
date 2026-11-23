@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक हटाएं?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "यह ट्रांसफ़र मास्टर की को सुरक्षित स्टोरेज से हटा देता है। ऐप को अगली बार इसकी आवश्यकता होने पर यह आपके वॉलेट सीड से, उसी फ़िंगरप्रिंट के साथ, फिर से निकाली जाएगी। जारी ट्रांसफ़रों पर कोई असर नहीं पड़ेगा।",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक हटाएं?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "यह ट्रांसफ़र मास्टर की को सुरक्षित स्टोरेज से हटा देता है। ऐप को अगली बार इसकी आवश्यकता होने पर यह आपके वॉलेट सीड से, उसी फ़िंगरप्रिंट के साथ, फिर से निकाली जाएगी। जारी ट्रांसफ़रों पर कोई असर नहीं पड़ेगा।"
 }

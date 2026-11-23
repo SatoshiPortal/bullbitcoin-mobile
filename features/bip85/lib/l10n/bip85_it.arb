@@ -1,0 +1,14 @@
+{
+  "@@locale": "it",
+  "bip85NextMnemonic": "Mnemonica successiva",
+  "bip85ExperimentalWarning": "Sperimentale\nEsegui manualmente il backup dei percorsi di derivazione",
+  "bip85Title": "Entropie deterministiche BIP85",
+  "bip85NextHex": "HEX successivo",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "bip85NoDefaultWalletError": "Nessun portafoglio Bitcoin predefinito trovato. Imposta un portafoglio predefinito e riprova.",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "Copiato negli appunti"
+}

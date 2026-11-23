@@ -1,9 +1,8 @@
+import 'package:primitives/primitives.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:flutter_test/flutter_test.dart';
@@ -16,11 +15,11 @@ void main() {
     'receive and transaction detail watchers re-read a committed revision',
     () async {
       final revisions = StreamController<WalletRevisionState>.broadcast();
-      final facade = WalletFacade(revisions.stream);
+      final facade = walletHistoryEvents(revisions.stream);
       final repository = _Transactions();
       const tx = WalletTransaction(
         walletId: 'fixture',
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
         direction: WalletTransactionDirection.incoming,
         status: WalletTransactionStatus.confirmed,
         txId: 'fixture-tx',
@@ -36,11 +35,11 @@ void main() {
           walletId: 'fixture',
           toAddress: 'fixture-address',
         ),
-      ).thenAnswer((_) async => [tx]);
+      ).thenAnswer((_) async => Ok([tx]));
       when(
         () =>
             repository.getWalletTransaction('fixture-tx', walletId: 'fixture'),
-      ).thenAnswer((_) async => tx);
+      ).thenAnswer((_) async => Ok(tx));
       final addressUpdates = <WalletTransaction>[];
       final byAddress =
           WatchWalletTransactionByAddressUsecase(

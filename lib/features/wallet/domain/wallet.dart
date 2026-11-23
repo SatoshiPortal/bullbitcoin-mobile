@@ -1,8 +1,9 @@
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:material_ui/material_ui.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkEnv, ScriptType, UnsupportedNetworkException;
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -54,14 +55,6 @@ enum Network {
     bitcoinRegtest ||
     liquidRegtest => throw const UnsupportedNetworkException(),
   };
-}
-
-final class UnsupportedNetworkException implements Exception {
-  const UnsupportedNetworkException();
-}
-
-final class InvalidWalletAddressException implements Exception {
-  const InvalidWalletAddressException();
 }
 
 @freezed

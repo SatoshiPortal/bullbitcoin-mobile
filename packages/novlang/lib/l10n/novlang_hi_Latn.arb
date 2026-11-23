@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer mnemonic delete karein?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Isse secure storage se transfer master key hat jaati hai. Jab app ko agli baar iski zaroorat hogi, yeh aapke wallet seed se wahi fingerprint ke saath dobara bana li jayegi. Chal rahe transfers par koi asar nahi padta.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemonic",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer mnemonic delete karein?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Isse secure storage se transfer master key hat jaati hai. Jab app ko agli baar iski zaroorat hogi, yeh aapke wallet seed se wahi fingerprint ke saath dobara bana li jayegi. Chal rahe transfers par koi asar nahi padta."
 }

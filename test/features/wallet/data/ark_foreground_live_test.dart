@@ -3,18 +3,16 @@
 /// http://127.0.0.1:3535 and http://127.0.0.1:3000.
 library;
 
-import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+import 'package:secrets/bip85.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart'
     show ArkBoardFundingPort, ArkPreferencesRepository;
 import 'package:bull_ark/bull_ark.dart';
@@ -26,13 +24,13 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _Bip85 extends Mock implements Bip85Repository {}
+class _Bip85 extends Mock implements Bip85Derivations {}
 
 class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Wallets extends Mock implements WalletMetadataDatasource {}
+class _Wallets extends Mock implements WalletRegistrations {}
 
 class _Wallet extends Mock implements WalletMetadataModel {}
 
@@ -108,7 +106,7 @@ void main() {
       when(() => wallet.isDefault).thenReturn(true);
       when(() => wallet.masterFingerprint).thenReturn(parent.hex);
       when(() => wallet.id).thenReturn('live-regtest-wallet');
-      when(() => bip85.fetchAll()).thenAnswer((_) async => const Ok([]));
+      when(() => bip85.list()).thenAnswer((_) async => const Ok([]));
       final admission = SqliteParentCustodyAdmission(
         directory: () async => directory.path,
         mayCreate: true,
@@ -116,8 +114,8 @@ void main() {
       locator
         ..registerSingleton<ActiveEnvironmentReader>(settings)
         ..registerSingleton<RuntimeDisplayPreferencesReader>(settings)
-        ..registerSingleton<WalletMetadataDatasource>(wallets)
-        ..registerSingleton<Bip85Registry>(Bip85Registry(bip85.fetchAll))
+        ..registerSingleton<WalletRegistrations>(wallets)
+        ..registerSingleton<Bip85Derivations>(bip85)
         ..registerSingleton<Secrets>(secrets)
         ..registerSingleton<ParentCustodyAdmissionPort>(admission)
         ..registerSingleton<SeedReferences>(

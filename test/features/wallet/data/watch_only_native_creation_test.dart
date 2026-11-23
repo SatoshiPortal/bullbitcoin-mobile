@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart' show ScriptType;
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -62,7 +62,7 @@ void main() {
             network: Network.bitcoinTestnet,
             scriptType: ScriptType.bip84,
           );
-          final descriptor = (WalletCatalogPortImpl.descriptorFromMetadata(
+          final descriptor = (WalletSyncBinding.descriptorFromMetadata(
             metadata,
           ) as p.Ok<PublicWalletDescriptor, SyncFailure>).value;
           final catalog = _Catalog(descriptor);

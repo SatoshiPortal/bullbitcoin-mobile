@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -83,6 +83,7 @@ class _ReviewView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final consolidation = context.read<ConsolidationCubit>();
     final wallet = context.select((WalletBloc bloc) {
       try {
         return bloc.state.wallets.firstWhere((w) => w.id == state.walletId);
@@ -177,7 +178,9 @@ class _ReviewView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: BullButton.primary(
               label: context.loc.consolidationScreenTitle,
-              onPressed: () => context.read<ConsolidationCubit>().consolidate(),
+              onPressed: consolidation.canSubmit
+                  ? consolidation.consolidate
+                  : null,
             ),
           ),
         ],

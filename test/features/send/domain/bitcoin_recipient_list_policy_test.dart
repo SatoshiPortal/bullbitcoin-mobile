@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,7 +19,7 @@ void main() {
     expect(
       policy.supports(
         const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -98,7 +98,7 @@ void main() {
 
   test('accepts embedded amounts outside sweeps only', () {
     const request = PaymentRequest.bip21(
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       uri: 'bitcoin:bc1qrecipient?amount=0.0005',
       address: 'bc1qrecipient',
       amountSat: 50000,

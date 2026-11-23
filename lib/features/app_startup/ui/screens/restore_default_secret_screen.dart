@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;

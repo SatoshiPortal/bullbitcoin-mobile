@@ -1,3 +1,5 @@
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -23,11 +25,14 @@ void main() {
 
   Future<Result<PayjoinSenderSession, PayFailure>> start(
     PayjoinSender sender,
-  ) => SendWithPayjoinUsecase(sender).execute(
+  ) => SendWithPayjoinUsecase(sender, _SigningSpend()).execute(
     walletId: 'wallet-1',
     network: BitcoinNetwork.mainnet,
     bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
-    unsignedOriginalPsbt: 'cHNidP8=',
+    prepared: SpendFixtures.preparedBitcoin(
+      unsignedPsbt: 'cHNidP8=',
+      fee: Sats.zero,
+    ),
     amountSat: 100000,
     networkFeesSatPerVb: 2,
   );
@@ -50,6 +55,25 @@ void main() {
       isA<PayPayjoinSessionKeptFailure>(),
     );
   });
+
+  test(
+    'an uncertain POST is not a definitely failed retained session',
+    () async {
+      final sender = _MockPayjoinSender();
+      when(() => sender.start(any())).thenAnswer(
+        (_) async => const Err(PayjoinPublicationUnknownFailure('original')),
+      );
+      final result = await start(sender);
+      expect(
+        (result as Err<PayjoinSenderSession, PayFailure>).failure,
+        isA<PayPayinOutcomeUnknownFailure>().having(
+          (failure) => failure.originalTxId,
+          'original',
+          'original',
+        ),
+      );
+    },
+  );
 
   for (final busy in [true, false]) {
     test('a blocked spend keeps its busy flag (busy=$busy)', () async {
@@ -83,4 +107,11 @@ void main() {
     expect(failure, isA<PayUnexpectedFailure>());
     expect(failure, isNot(isA<PayjoinFailure>()));
   });
+}
+
+final class _SigningSpend extends FakeSpend {
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin({
+    required PreparedBitcoinSpend prepared,
+  }) async => Ok(SpendFixtures.signedBitcoin('signed-original'));
 }

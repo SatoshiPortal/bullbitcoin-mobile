@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show ArkFundingSigningGuard;
+import 'package:ark/funding.dart' show ArkFundingSigningGuard;
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -27,7 +26,7 @@ import 'package:meta/meta.dart';
 
 import 'package:fees/fees.dart';
 import 'package:sync/sync.dart' as sync;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
@@ -37,14 +36,14 @@ import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final WalletRegistrations _walletRegistrations;
   final Secrets _secrets;
   final ArkFundingSigningGuard _arkFundingGuard;
   final Future<Result<sync.Wallet, SyncFailure>> Function(WalletKey) _wallet;
   final SyncWalletValuesDatasource _values;
 
   BitcoinWalletRepository({
-    required this._walletMetadataDatasource,
+    required this._walletRegistrations,
     required this._secrets,
     required this._arkFundingGuard,
     required this._wallet,
@@ -67,7 +66,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     bool? replaceByFee,
   }) async {
     try {
-      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      final metadata = await _walletRegistrations.fetch(walletId);
 
       if (metadata == null) {
         return const Err(WalletNotFoundFailure());
@@ -166,7 +165,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final metadata = await _metadataFor(walletId);
     final admission = await _arkFundingGuard.admit(
-      key: WalletKey(id: metadata.id, network: metadata.network.shared),
+      walletId: metadata.id,
+      network: metadata.network.shared,
       unsignedPsbt: psbt,
     );
     if (admission case Err()) {
@@ -185,7 +185,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   }
 
   Future<WalletMetadataModel> _metadataFor(String walletId) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -247,7 +247,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required List<BitcoinTransactionRecipient> recipients,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -278,7 +278,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String address,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -294,52 +294,6 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       Err(failure: sync.SyncInvalidTransactionFailure()) =>
         throw const FormatException('Not a PSBT'),
       Err(:final failure) => throw sync.WalletSnapshotException(failure),
-    };
-  }
-
-  /// Verifies the stored transaction's wallet-owned input signatures against
-  /// its watch-only descriptors (GHSA-6jp4-8v48-cc5v guard); no key material
-  /// is loaded.
-  Future<sync.SignatureCheck> getTransactionSignatureStatus({
-    required String walletId,
-    required String txid,
-  }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
-    final handle = switch (await _wallet(key)) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw sync.WalletSnapshotException(failure),
-    };
-    return switch (await handle.tx.originalSignatures(txid)) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw sync.WalletSnapshotException(failure),
-    };
-  }
-
-  /// A replacement of [txid] built by sync's writer, only on an original
-  /// whose own inputs' signatures verify: the caller signs it, then
-  /// broadcasts it with the generation it carries.
-  Future<Result<UnsignedSpend, SyncFailure>> bumpFee({
-    required String walletId,
-    required String txid,
-    required RelativeFee newFeeRate,
-  }) async {
-    final metadata = await _metadataFor(walletId);
-    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
-    return switch (await _wallet(key)) {
-      Ok(:final value) => value.tx.bump(
-        sync.BumpFeeRequest(
-          txid: txid,
-          fee: sync.SpendFeeRate(newFeeRate.satPerKwu),
-        ),
-      ),
-      Err(:final failure) => Err(failure),
     };
   }
 }

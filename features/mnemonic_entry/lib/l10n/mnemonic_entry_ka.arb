@@ -1,0 +1,10 @@
+{
+  "@@locale": "ka",
+  "passphraseLabel": "საიდუმლო ფრაზა",
+  "optionalPassphraseHint": "საიდუმლო ფრაზა (არასავალდებულო)",
+  "recipientsInfoLabel": "იარლიყი",
+  "requiredHint": "სავალდებულო",
+  "submitButton": "გაგზავნა",
+  "emptyMnemonicWordsError": "შეიყვანეთ თქვენი მნემონიკის ყველა სიტყვა",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა"
+}

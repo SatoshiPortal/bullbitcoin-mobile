@@ -1,19 +1,12 @@
-import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
 import 'package:access/src/domain/access_failure.dart';
+import 'package:access/src/domain/access_inventory.dart';
+import 'package:primitives/primitives.dart';
 
 class DeletePinCodeUsecase {
-  final AccessKeychain _accessKeychain;
-  DeletePinCodeUsecase({required this._accessKeychain});
+  final AccessInventory _inventory;
 
-  Future<Result<Null, AccessFailure>> execute() async =>
-      switch (await _accessKeychain.deletePin()) {
-        Ok() => const Ok(null),
-        Err(failure: KeystoreLockedFailure()) => const Err(
-          AccessPinDeleteFailure(),
-        ),
-        Err(:final failure) => Err(
-          AccessPinSettingsUnexpectedFailure(failure.logMessage),
-        ),
-      };
+  DeletePinCodeUsecase({required this._inventory});
+
+  Future<Result<void, AccessFailure>> execute() =>
+      _inventory.removeCredential();
 }

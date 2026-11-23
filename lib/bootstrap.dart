@@ -12,6 +12,10 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
+import 'package:exchange/exchange.dart'
+    show ExchangeAvailability, ExchangePlatform;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
+import 'package:legacy_storage/legacy_storage.dart' show LegacyImportFailure;
 import 'package:material_ui/material_ui.dart';
 
 Future<void> startApp() async {
@@ -21,31 +25,26 @@ Future<void> startApp() async {
         WidgetsFlutterBinding.ensureInitialized();
         await runStartupWizard(
           notificationChannelId: paymentNotificationChannelId,
+          exchangeAllowed: ExchangeAvailability.platformAllowed(
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? ExchangePlatform.ios
+                : ExchangePlatform.other,
+          ),
         );
-        if (await Bull.init() case Err(:final failure)) {
+        if (await Bull.init(retryStorage: _retryStorage) case Err(
+          :final failure,
+        )) {
           log.severe(
             message: 'App Init Error',
             error: failure,
             trace: StackTrace.current,
           );
-          runApp(
-            BullSupportScope(
-              onContactSupport: SupportFacade.contactSupport,
-              child: AppInitErrorScreen(error: failure),
-            ),
-          );
-          _refreshDiagnosticContextAfterFirstFrame();
+          _showInitError(failure);
           return;
         }
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
-        runApp(
-          BullSupportScope(
-            onContactSupport: SupportFacade.contactSupport,
-            child: AppInitErrorScreen(error: error),
-          ),
-        );
-        _refreshDiagnosticContextAfterFirstFrame();
+        _showInitError(error);
         return;
       } finally {
         // Make sure the just-logged severe line is on disk before we
@@ -80,6 +79,24 @@ Future<void> startApp() async {
       }
     },
   );
+}
+
+Future<void> _retryStorage(LegacyImportFailure failure) async {
+  final retry = Completer<void>();
+  log.warning('Application storage preparation could not complete');
+  _showInitError(failure, onRetry: retry.complete);
+  await log.flush();
+  await retry.future;
+}
+
+void _showInitError(Object error, {VoidCallback? onRetry}) {
+  runApp(
+    BullSupportScope(
+      onContactSupport: SupportFacade.contactSupport,
+      child: AppInitErrorScreen(error: error, onRetry: onRetry),
+    ),
+  );
+  _refreshDiagnosticContextAfterFirstFrame();
 }
 
 void _refreshDiagnosticContextAfterFirstFrame() {

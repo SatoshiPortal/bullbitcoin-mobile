@@ -1,6 +1,6 @@
+import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/select_purpose_page.dart';
@@ -17,10 +17,12 @@ class _MockImportMnemonicCubit extends MockCubit<ImportMnemonicState>
 void main() {
   late _MockImportMnemonicCubit cubit;
   late AppLocalizations loc;
+  late ImportLocalizations importLoc;
 
   setUpAll(() async {
     registerFallbackValue(ScriptType.bip84);
     loc = await AppLocalizations.delegate.load(const Locale('en'));
+    importLoc = await ImportLocalizations.delegate.load(const Locale('en'));
   });
 
   setUp(() {
@@ -58,7 +60,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text(loc.importMnemonicUnsupportedScript), findsOneWidget);
+    expect(
+      find.text(importLoc.importMnemonicUnsupportedScript),
+      findsOneWidget,
+    );
     await tester.ensureVisible(find.text(loc.importMnemonicLegacy));
     await tester.tap(find.text(loc.importMnemonicLegacy), warnIfMissed: false);
     verifyNever(() => cubit.updateBip39Purpose(ScriptType.bip44));
@@ -104,7 +109,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(loc.importMnemonicScanServerUnavailable),
+        find.text(importLoc.importMnemonicScanServerUnavailable),
         findsOneWidget,
       );
       expect(find.text(loc.importMnemonicBalanceLabel('1500')), findsOneWidget);
@@ -140,7 +145,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text(loc.importMnemonicScanUnavailable), findsOneWidget);
+    expect(find.text(importLoc.importMnemonicScanUnavailable), findsOneWidget);
     expect(find.textContaining('StateError'), findsNothing);
   });
 }

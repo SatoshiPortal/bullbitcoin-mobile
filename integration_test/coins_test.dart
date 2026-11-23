@@ -1,33 +1,25 @@
-import 'initialization_result.dart';
-
-import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, Err, Ok, Result;
-import 'package:primitives/primitives.dart' as primitives show Network;
-
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:address_view/address_view.dart';
+import 'package:bb_mobile/init.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:fees/fees.dart';
-import 'package:secrets/secrets.dart';
-import 'package:preferences/preferences.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:labels/migration.dart';
 import 'package:labels/setup.dart';
 import 'package:legacy_storage/coordination.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/init.dart';
-import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:spend/spend.dart';
 import 'package:sync/sync.dart' as sync;
-import 'package:flutter_test/flutter_test.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'developer_network.dart';
 import 'funded_testnet_wallet.dart';
+import 'initialization_result.dart';
 
 // Integration tests for the Coins / UTXO view + freeze (issue #760).
 //
@@ -36,7 +28,7 @@ import 'funded_testnet_wallet.dart';
 //      encrypted Labels owner, the outpoint is still frozen. Funds-free: this
 //      is the load-bearing persistence guarantee and runs anywhere.
 //   2. A frozen coin is never spent — freeze a real wallet outpoint, have
-//      PrepareBitcoinSendUsecase build a PSBT, assert the frozen outpoint is
+//      Spend build a PSBT, assert the frozen outpoint is
 //      absent from the PSBT inputs (the D7 guarantee). Needs a funded testnet
 //      wallet (TEST_ALICE_MNEMONIC) → skipped when absent.
 //   3. The list surfaces confirmed vs unconfirmed + BIP329 labels — reads the
@@ -50,9 +42,6 @@ Future<void> main({bool isInitialized = false}) async {
     requireSuccessfulBullInitialization(await Bull.init());
   }
 
-  final frozenDatasource = locator<SyncFreezesDatasource>();
-  final utxoRepository = locator<WalletUtxoRepository>();
-
   group('Coins / freeze persistence (funds-free)', () {
     const walletId = 'coins-integration-test-wallet';
     const outpoint = (
@@ -60,8 +49,18 @@ Future<void> main({bool isInitialized = false}) async {
       vout: 0,
     );
 
+    late final sync.SyncCoins coins;
+
+    setUpAll(() async {
+      final runtime = requireValue(
+        await locator<WalletNativeRuntime>().foreground(),
+        'open foreground Sync',
+      );
+      coins = runtime.coins;
+    });
+
     Future<void> clear() async {
-      await frozenDatasource.unfreeze([outpoint]);
+      requireValue(await coins.unfreeze(outpoint), 'clear the fixture freeze');
     }
 
     setUp(clear);
@@ -83,13 +82,17 @@ Future<void> main({bool isInitialized = false}) async {
           Ok(:final value) => value,
           Err(:final failure) => fail('prepare Labels: ${failure.runtimeType}'),
         };
-        expect(await owner.initializeFresh(), isA<Ok>());
+        try {
+          requireValue(await owner.initializeFresh(), 'initialize Labels');
+        } finally {
+          requireValue(await owner.close(), 'close prepared Labels');
+        }
       } finally {
         await exclusive.close();
       }
 
       Future<T> withReopenedLabels<T>(
-        Future<T> Function(SyncFreezesDatasource) action,
+        Future<T> Function(sync.SyncCoins) action,
       ) async {
         final admission = await gate.acquire(
           exclusive: false,
@@ -116,45 +119,46 @@ Future<void> main({bool isInitialized = false}) async {
             connections: const _NoConnections(),
           );
           try {
-            return await action(
-              SyncFreezesDatasource(sync: () async => runtime),
-            );
+            return await action(runtime.coins);
           } finally {
             await runtime.close();
+            requireValue(await labels.close(), 'close Labels');
           }
         } finally {
           await admission.close();
         }
       }
 
-      await withReopenedLabels(
-        (freezes) => freezes.freezeAttributed([
-          sync.FrozenOutpoint(outpoint, origin: walletId),
-        ]),
-      );
-      final afterRestart = await withReopenedLabels(
-        (freezes) => freezes.getFrozenOutpoints(),
-      );
+      await withReopenedLabels((freezes) async {
+        requireValue(
+          await freezes.freeze(outpoint, origin: walletId),
+          'freeze the fixture outpoint',
+        );
+      });
+      final afterRestart = await withReopenedLabels((freezes) async {
+        return requireValue(
+          await freezes.listFrozen(),
+          'read reopened freezes',
+        );
+      });
 
       expect(
-        afterRestart,
+        afterRestart.map((row) => row.outpoint),
         contains(outpoint),
         reason: 'a user-frozen outpoint must persist across an app restart',
       );
     });
 
     test('unfreeze removes the freeze row', () async {
-      await frozenDatasource.freezeAttributed([
-        sync.FrozenOutpoint(outpoint, origin: walletId),
-      ]);
-      await utxoRepository.unfreezeUtxos(
-        walletId: walletId,
-        outpoints: [outpoint],
+      requireValue(
+        await coins.freeze(outpoint, origin: walletId),
+        'freeze the fixture outpoint',
       );
+      requireValue(await coins.unfreeze(outpoint), 'unfreeze the outpoint');
       // Freeze is matched by outpoint across all wallets — the global set must
       // no longer carry it after unfreeze.
-      final remaining = await utxoRepository.getAllFrozenOutpoints();
-      expect(remaining, isNot(contains(outpoint)));
+      final remaining = requireValue(await coins.listFrozen(), 'read freezes');
+      expect(remaining.map((row) => row.outpoint), isNot(contains(outpoint)));
     });
   });
 
@@ -173,62 +177,103 @@ Future<void> main({bool isInitialized = false}) async {
   group(
     'Coins / freeze enforcement (funded testnet)',
     () {
-      // Resolve from the locator inside setUpAll, NOT in the group body: a
-      // group callback runs at test-collection time for every group — even a
-      // skipped one — so resolving here crashed loading the whole aggregated
-      // all_test.dart when this group is skipped (no TEST_ALICE_MNEMONIC).
-      // setUpAll only runs when the group actually runs.
-      late final WalletRepository walletRepository;
-      late final WalletAddressRepository addressRepository;
-      late final PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
-      late Wallet wallet;
+      late final AddressView addresses;
+      late final Spend spend;
+      late final sync.Wallet wallet;
 
       setUpAll(() async {
-        walletRepository = locator<WalletRepository>();
-        addressRepository = locator<WalletAddressRepository>();
-        prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
-
+        addresses = locator<AddressView>();
+        spend = locator<Spend>();
         // Testnet is a developer network: enable it as a user would.
         // Restored when the group ends, even if this setup fails.
         await selectDeveloperNetwork(Environment.testnet);
-        wallet = await openFundedTestnetWallet(
+        final key = await openFundedTestnetWallet(
           mnemonic: mnemonic ?? fail('missing Alice fixture'),
           secrets: locator<Secrets>(),
-          wallets: walletRepository,
+          inventory: locator<SecretsInventory>(),
+          native: locator<WalletNativeRuntime>(),
         );
-        // Fail fast: a funding sync that failed would otherwise surface as a
-        // confusing balance assertion further down.
-        expect(
-          await walletRepository.getWallets(sync: true),
-          isA<Ok<List<Wallet>, WalletFailure>>(),
-        );
+        wallet = await syncFundedTestnetWallet(key);
       });
 
+      sync.CoinList readCoins() =>
+          requireValue(wallet.coins.now.latest, 'read fixture coins');
+
+      Future<void> freezeForTest(Outpoint outpoint) async {
+        requireValue(
+          await wallet.coins.freeze(outpoint),
+          'freeze fixture coin',
+        );
+        addTearDown(() async {
+          requireValue(
+            await wallet.coins.unfreeze(outpoint),
+            'unfreeze fixture coin',
+          );
+        });
+      }
+
+      Future<String> issueReceiveAddress() async => requireValue(
+        await addresses.receiveAddress(walletId: wallet.key.id, advance: true),
+        'issue a fixture receive address',
+      ).address;
+
       test('list surfaces confirmations and labels per UTXO', () async {
-        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
+        final utxos = readCoins();
         if (utxos.isEmpty) {
           // The mnemonic is set but the testnet wallet has no UTXOs (faucet
           // funds expire). Skip rather than hard-fail CI — the D7 exclusion
           // guarantee is covered deterministically by the prepare-send unit
           // tests; this group is the live, best-effort on-chain confirmation.
-          markTestSkipped('testnet wallet $wallet is unfunded');
+          markTestSkipped('testnet wallet is unfunded');
           return;
         }
 
-        // confirmations is intrinsic per-UTXO data (D2); confirmed coins carry
-        // a positive count and isConfirmed mirrors it.
-        for (final utxo in utxos) {
-          expect(utxo.confirmations, greaterThanOrEqualTo(0));
-          expect(utxo.isConfirmed, utxo.confirmations > 0);
-          // labels are read-only BIP329 strings the tile renders; the field is
-          // always present (possibly empty) — assert the contract, not content.
-          expect(utxo.labels, isNotNull);
+        final history = requireValue(
+          wallet.history.now.latest,
+          'read fixture history',
+        );
+        for (final coin in utxos) {
+          expect(coin, isA<sync.BitcoinCoin>());
+          final bitcoin = coin as sync.BitcoinCoin;
+          final transaction = history.singleWhere(
+            (transaction) => transaction.txid == coin.outpoint.txId,
+          );
+          expect(bitcoin.confirmations, greaterThanOrEqualTo(0));
+          expect(
+            bitcoin.confirmations > 0,
+            transaction.confirmationTime != null,
+          );
         }
+
+        final labels = locator<Labels>();
+        final (:txId, :vout) = utxos.first.outpoint;
+        final reference = '$txId:$vout';
+        final stored = requireValue(
+          await labels.store(
+            NewLabel(
+              type: LabelType.output,
+              label: 'Coins integration fixture',
+              reference: reference,
+            ),
+          ),
+          'label the fixture outpoint',
+        );
+        addTearDown(() async {
+          requireValue(
+            await labels.trash(stored.id),
+            'remove the fixture label',
+          );
+        });
+        final found = requireValue(
+          await labels.fetch(reference: reference),
+          'read the fixture label',
+        );
+        expect(found.map((label) => label.id), contains(stored.id));
       });
 
       test('a manual drain spends exactly the selected outpoint', () async {
-        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
-        final spendable = utxos.where((utxo) => !utxo.isFrozen).toList();
+        final utxos = readCoins();
+        final spendable = utxos.where((utxo) => !utxo.frozen).toList();
         if (spendable.length < 2) {
           markTestSkipped('requires at least two testnet UTXOs');
           return;
@@ -237,125 +282,80 @@ Future<void> main({bool isInitialized = false}) async {
           (largest, candidate) =>
               candidate.amountSat > largest.amountSat ? candidate : largest,
         );
-        final receive = await addressRepository.generateNewReceiveAddress(
-          walletId: wallet.id,
-        );
-
-        final preparationResult = await prepareBitcoinSendUsecase.execute(
-          walletId: wallet.id,
-          recipients: [
-            BitcoinTransactionRecipient.remainder(address: receive.address),
-          ],
-          selectedInputs: [selected],
-          networkFee: NetworkFee.relativeFromSatPerVbyte(2),
-        );
-        final prepared = switch (preparationResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail(
-            'Bitcoin preparation failed: ${failure.runtimeType}',
+        final address = await issueReceiveAddress();
+        final prepared = requireValue(
+          await spend.prepareBitcoin(
+            walletId: wallet.key.id,
+            recipients: [
+              BitcoinTransactionRecipient.remainder(address: address),
+            ],
+            selectedInputs: {selected.outpoint},
+            selectedOnly: true,
+            networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
-        };
-
-        final inputs = bdk.Psbt(psbtBase64: prepared.unsignedPsbt)
-            .extractTx()
-            .input();
-        expect(inputs, hasLength(1));
-        expect(inputs.single.previousOutput.txid.toString(), selected.txId);
-        expect(inputs.single.previousOutput.vout, selected.vout);
+          'prepare the selected-coin drain',
+        );
+        final psbt = requireValue(
+          sync.inspectBitcoinPsbt(prepared.unsignedPsbt),
+          'inspect the selected-coin drain',
+        );
+        expect(psbt.inputs.map((input) => input.outpoint), [selected.outpoint]);
       });
 
       test('a partly frozen manual selection fails closed', () async {
-        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
-        final spendable = utxos.where((utxo) => !utxo.isFrozen).toList();
+        final utxos = readCoins();
+        final spendable = utxos.where((utxo) => !utxo.frozen).toList();
         if (spendable.length < 2) {
           markTestSkipped('requires at least two testnet UTXOs');
           return;
         }
-        final selection = spendable.take(2).toList();
-        final frozenOutpoint = (
-          txId: selection.first.txId,
-          vout: selection.first.vout,
-        );
-        await utxoRepository.freezeUtxos(
-          walletId: wallet.id,
-          outpoints: [frozenOutpoint],
-        );
-        addTearDown(
-          () => utxoRepository.unfreezeUtxos(
-            walletId: wallet.id,
-            outpoints: [frozenOutpoint],
-          ),
-        );
-        final receive = await addressRepository.generateNewReceiveAddress(
-          walletId: wallet.id,
-        );
+        final selection = spendable
+            .take(2)
+            .map((coin) => coin.outpoint)
+            .toSet();
+        await freezeForTest(selection.first);
+        final address = await issueReceiveAddress();
 
-        await expectLater(
-          prepareBitcoinSendUsecase.execute(
-            walletId: wallet.id,
-            recipients: [
-              BitcoinTransactionRecipient.remainder(address: receive.address),
-            ],
-            selectedInputs: selection,
-            networkFee: NetworkFee.relativeFromSatPerVbyte(2),
-          ),
-          completion(
-            isA<Err<Object?, WalletFailure>>().having(
-              (result) => result.failure,
-              'failure',
-              isA<WalletSelectedInputsUnavailableFailure>(),
-            ),
+        final prepared = await spend.prepareBitcoin(
+          walletId: wallet.key.id,
+          recipients: [BitcoinTransactionRecipient.remainder(address: address)],
+          selectedInputs: selection,
+          selectedOnly: true,
+          networkFee: NetworkFee.relativeFromSatPerVbyte(2),
+        );
+        expect(
+          prepared,
+          isA<Err<PreparedBitcoinSpend, SpendFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SpendSelectedInputsUnavailableFailure>(),
           ),
         );
       });
 
       test('frozen coins are excluded from every PSBT build (D7)', () async {
-        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
+        final utxos = readCoins();
         if (utxos.isEmpty) {
-          markTestSkipped('testnet wallet $wallet is unfunded');
+          markTestSkipped('testnet wallet is unfunded');
           return;
         }
 
-        // Freeze EVERY coin. A decode-free way to prove D7 exclusion is real:
-        // if frozen coins were still selectable, a drain would build fine; with
-        // all coins in the unspendable set, BDK has nothing to pick and the
-        // build must fail with WalletNoSpendableInputsFailure. (Asserting a specific
-        // outpoint's absence would need PSBT-input decoding; this is the same
-        // guarantee without that machinery.)
-        final allOutpoints = utxos
-            .map((u) => (txId: u.txId, vout: u.vout))
-            .toList();
-        await utxoRepository.freezeUtxos(
-          walletId: wallet.id,
-          outpoints: allOutpoints,
+        // A drain would sweep the whole wallet if frozen coins were selectable.
+        for (final coin in utxos) {
+          await freezeForTest(coin.outpoint);
+        }
+        final address = await issueReceiveAddress();
+        final prepared = await spend.prepareBitcoin(
+          walletId: wallet.key.id,
+          recipients: [BitcoinTransactionRecipient.remainder(address: address)],
+          networkFee: NetworkFee.relativeFromSatPerVbyte(2),
         );
-        addTearDown(
-          () => utxoRepository.unfreezeUtxos(
-            walletId: wallet.id,
-            outpoints: allOutpoints,
-          ),
-        );
-
-        final receive = await addressRepository.generateNewReceiveAddress(
-          walletId: wallet.id,
-        );
-
-        // Drain to self: selection would otherwise sweep every coin. With all
-        // frozen, the prepare must return WalletNoSpendableInputsFailure.
-        await expectLater(
-          prepareBitcoinSendUsecase.execute(
-            walletId: wallet.id,
-            recipients: [
-              BitcoinTransactionRecipient.remainder(address: receive.address),
-            ],
-            networkFee: NetworkFee.relativeFromSatPerVbyte(2),
-          ),
-          completion(
-            isA<Err<Object?, WalletFailure>>().having(
-              (result) => result.failure,
-              'failure',
-              isA<WalletNoSpendableInputsFailure>(),
-            ),
+        expect(
+          prepared,
+          isA<Err<PreparedBitcoinSpend, SpendFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SpendNoSpendableInputsFailure>(),
           ),
         );
       });
@@ -395,7 +395,7 @@ final class _NoConnections implements sync.WalletConnectionPort {
 
   @override
   Future<Result<T, sync.SyncFailure>> run<T>({
-    required primitives.Network network,
+    required Network network,
     required Future<Result<T, sync.SyncFailure>> Function(sync.WalletConnection)
     operation,
     required bool Function(sync.SyncFailure) mayRetry,

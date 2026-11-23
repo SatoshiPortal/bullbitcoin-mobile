@@ -1,4 +1,4 @@
-import 'swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 
 import 'package:primitives/primitives.dart';
 
