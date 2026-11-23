@@ -1,7 +1,7 @@
 import 'package:spend/payjoin.dart';
 import 'package:spend/spend.dart';
 import 'package:primitives/primitives.dart' as core;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';

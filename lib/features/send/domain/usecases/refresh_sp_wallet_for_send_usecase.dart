@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';

@@ -55,7 +55,6 @@ import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:swap_feature/swap_feature.dart';
-import 'package:send/send.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:address_view/address_view.dart';
@@ -74,7 +73,8 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/send/send_locator.dart';
+import 'package:bb_mobile/features/send/legacy_send_flow.dart';
+import 'package:send/send.dart' show ReplaceByFee;
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
@@ -442,7 +442,7 @@ class AppLocator {
             OrderSwapUnderReviewCard(orderSwap: order),
       ),
     );
-    SendLocator.setup(locator);
+    LegacySendFlow.mount(locator);
     CoinsLocator.setup(locator);
     locator.registerSingleton(
       SwapFeature.mount(

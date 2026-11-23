@@ -23,6 +23,16 @@ enum BroadcastSignedTxRoute {
   const BroadcastSignedTxRoute(this.path);
 
   final String path;
+
+  /// Opens the existing reader in verify-only mode for a prepared send.
+  static Future<String?> readForSend(
+    BuildContext context,
+    PreparedBitcoinSpend prepared,
+    BitcoinNetwork network,
+  ) => context.pushNamed<String>(
+    broadcastHome.name,
+    extra: (prepared: prepared, network: network),
+  );
 }
 
 ShellRoute broadcastSignedTxRoute({

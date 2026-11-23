@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-import '../send_failure.dart';
+import 'package:send/send.dart';
 
 class LoadSendDisplayPreferencesUsecase {
   final Preferences _preferences;

@@ -2,7 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/usecases/recognize_ark_address_usecase.dart';
-import '../domain/send_failure.dart';
+
+import 'package:send/send.dart';
 
 sealed class SendArkState {
   const SendArkState();
