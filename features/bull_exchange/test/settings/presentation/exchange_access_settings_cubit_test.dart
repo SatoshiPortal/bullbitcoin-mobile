@@ -1,16 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
+import 'package:bull_exchange/src/settings/domain/manage_exchange_access_usecase.dart';
+import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 
-class _Watch extends Mock implements WatchSettingsExchangeAccessUsecase {}
+class _Watch extends Mock implements WatchExchangeAccessUsecase {}
 
-class _Set extends Mock implements SetSettingsExchangeAccessUsecase {}
+class _Set extends Mock implements ManageExchangeAccessUsecase {}
 
 void main() {
   late _Watch watch;
@@ -32,7 +31,7 @@ void main() {
   });
 
   test('ignores a second tap while the first operation is pending', () async {
-    final pending = Completer<Result<void, SettingsFailure>>();
+    final pending = Completer<Result<void, ExchangeFailure>>();
     when(() => set.execute(true)).thenAnswer((_) => pending.future);
     final first = cubit.setEnabled(true);
     expect(cubit.state.busy, isTrue);
@@ -57,9 +56,9 @@ void main() {
 
   test('exposes a failure after logout fails', () async {
     when(() => set.execute(false))
-        .thenAnswer((_) async => const Err(SettingsExchangeSyncFailure()));
+        .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
     expect(await cubit.setEnabled(false), isFalse);
-    expect(cubit.state.failure, isA<SettingsExchangeSyncFailure>());
+    expect(cubit.state.failure, isA<ExchangeSessionClearFailure>());
     expect(cubit.state.busy, isFalse);
   });
 }
