@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:transactions/src/domain/entities/wallet_transaction.dart';
 import 'package:transactions/src/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
 
@@ -56,7 +57,7 @@ class LabelExchangeOrdersUsecase {
               .getWalletTransactions(txId: transactionId);
           final walletTransactions = switch (ownedHistory) {
             Ok(:final value) => value,
-            Err() => const [],
+            Err() => const <WalletTransaction>[],
           };
           if (walletTransactions.isEmpty) {
             log.warning(
