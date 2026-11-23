@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
-import 'package:flutter/services.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:legacy_storage/owner_database.dart';
@@ -98,15 +97,18 @@ final class RecoverBullCutover {
   Future<Result<OwnerDatabase<RecoverBullDatabase>, LegacyImportFailure>> _open(
     LifecycleAdmission admission, {
     required bool existing,
-  }) async {
-    final token = RootIsolateToken.instance;
-    if (token == null) return const Err(LegacyImportDeferred());
-    return OwnerDatabase.open(
-      admission: admission,
-      openExecutor: _opener(file.path, ownerId, token, existing),
-      create: RecoverBullDatabase.new,
-    );
-  }
+  }) => OwnerDatabase.open(
+    admission: admission,
+    openExecutor: Secrets.databaseOpener<LegacyImportFailure>(
+      module: ownerId,
+      name: 'main',
+      file: file,
+      schema: RecoverBullDatabase.schema,
+      deferred: const LegacyImportDeferred(),
+      unavailable: const LegacyImportUnavailable(),
+    )(existing),
+    create: RecoverBullDatabase.new,
+  );
 }
 
 const _tables = [
@@ -143,31 +145,3 @@ const _tables = [
     orderBy: 'id',
   ),
 ];
-
-Future<Result<QueryExecutor, LegacyImportFailure>> Function() _opener(
-  String path,
-  String owner,
-  RootIsolateToken token,
-  bool existing,
-) => () async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-  final opened =
-      await Secrets(
-            scratchDirectory: () async =>
-                throw UnsupportedError('Database-only capability'),
-          )
-          .databaseKeys(module: owner)
-          .open(
-            name: 'main',
-            file: File(path),
-            existingSchemaVersion: existing ? RecoverBullDatabase.schema : null,
-          );
-  return switch (opened) {
-    Ok(:final value) => Ok(value),
-    Err(failure: DatabaseNotReady()) ||
-    Err(
-      failure: DatabaseKeyUnavailable(reason: DatabaseKeyProblem.locked),
-    ) => const Err(LegacyImportDeferred()),
-    Err() => const Err(LegacyImportUnavailable()),
-  };
-};

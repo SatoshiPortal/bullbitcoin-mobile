@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart';
-import 'package:flutter/services.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:legacy_storage/owner_database.dart';
@@ -92,41 +90,15 @@ Future<Result<OwnerDatabase<AnnouncementsDatabase>, LegacyImportFailure>> _open(
   File file,
   LifecycleAdmission admission, {
   required bool existing,
-}) async {
-  final token = RootIsolateToken.instance;
-  if (token == null) return const Err(LegacyImportDeferred());
-  return OwnerDatabase.open(
-    admission: admission,
-    openExecutor: _opener(file.path, token, existing),
-    create: AnnouncementsDatabase.new,
-  );
-}
-
-Future<Result<QueryExecutor, LegacyImportFailure>> Function() _opener(
-  String path,
-  RootIsolateToken token,
-  bool existing,
-) => () async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-  final opened =
-      await Secrets(
-            scratchDirectory: () async =>
-                throw UnsupportedError('Database-only capability'),
-          )
-          .databaseKeys(module: _owner)
-          .open(
-            name: 'main',
-            file: File(path),
-            existingSchemaVersion: existing
-                ? AnnouncementsDatabase.schema
-                : null,
-          );
-  return switch (opened) {
-    Ok(:final value) => Ok(value),
-    Err(failure: DatabaseNotReady()) ||
-    Err(
-      failure: DatabaseKeyUnavailable(reason: DatabaseKeyProblem.locked),
-    ) => const Err(LegacyImportDeferred()),
-    Err() => const Err(LegacyImportUnavailable()),
-  };
-};
+}) => OwnerDatabase.open(
+  admission: admission,
+  openExecutor: Secrets.databaseOpener<LegacyImportFailure>(
+    module: _owner,
+    name: 'main',
+    file: file,
+    schema: AnnouncementsDatabase.schema,
+    deferred: const LegacyImportDeferred(),
+    unavailable: const LegacyImportUnavailable(),
+  )(existing),
+  create: AnnouncementsDatabase.new,
+);
