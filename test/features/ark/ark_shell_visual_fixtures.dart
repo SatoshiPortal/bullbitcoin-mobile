@@ -8,7 +8,7 @@ import 'package:settings/testing.dart';
 import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -30,9 +30,12 @@ import 'package:network/network.dart' show NoDefaultWalletFailure;
 import 'package:network/testing.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
 import 'package:novlang/novlang.dart' show NovlangPolicy;
+import 'package:secrets/secrets.dart' show WalletInventory;
 
 class _Wallet extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
+
+class _Inventory extends Mock implements WalletInventory {}
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
@@ -92,6 +95,7 @@ class ArkShellVisualFixtures {
     await fixture._quickActions.load();
     fixture._host = ArkForegroundHost(
       fixture._hostDependencies,
+      inventory: _Inventory(),
       arkUrl: Uri.parse('http://127.0.0.1:7070'),
       primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
       initializeNew: false,

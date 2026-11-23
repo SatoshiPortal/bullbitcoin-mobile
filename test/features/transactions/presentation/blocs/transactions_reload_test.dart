@@ -10,7 +10,7 @@ import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:overview/setup.dart';
 import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -22,7 +22,7 @@ class _Labels extends Mock implements RefreshTransactionLabelsUsecase {}
 
 class _Wallets extends Mock implements GetWalletsUsecase {}
 
-class _Sync extends Mock implements SyncWalletUsecase {}
+class _Sync extends Mock implements WalletRepository {}
 
 class _Wallet extends Mock implements Wallet {}
 
@@ -93,7 +93,7 @@ void main() {
       classifyFailure: (failure) =>
           (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
       getWallets: wallets.execute,
-      syncWallet: sync.execute,
+      syncWallet: sync.sync,
     );
     final facade = walletHistoryEvents(
       revisions.stream,
@@ -108,7 +108,7 @@ void main() {
     var walletRuns = 0;
     for (final entry in [(a, first), (b, second)]) {
       when(
-        () => sync.execute(
+        () => sync.sync(
           entry.$1,
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),

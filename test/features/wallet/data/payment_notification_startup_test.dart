@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:notifications/notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -52,7 +51,7 @@ void main() {
         final notifications = await PaymentNotifications.initializeBackground(
           documents,
           null,
-          resources,
+          resources.onClose,
         );
         expect(notifications, isNull);
         final queue = switch (openForegroundWalletSyncJobQueue(

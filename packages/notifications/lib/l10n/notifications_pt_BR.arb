@@ -1,0 +1,7 @@
+{
+  "@@locale": "pt_BR",
+  "receivePaymentReceived": "Pagamento recebido!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

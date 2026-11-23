@@ -1,26 +1,17 @@
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' show hex;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok, ScriptType;
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:primitives/primitives.dart' as p;
 import 'package:secrets/secrets.dart' as s;
 import 'package:secrets/testing.dart';
+import 'package:provisioning/provisioning.dart';
 
-class _Settings extends Mock implements Preferences {}
-
-class _Wallets extends Mock implements WalletRepository {}
-
-class _Wallet extends Mock implements Wallet {}
+class _Inventory extends Mock implements s.WalletInventory {}
 
 class _Verification extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
@@ -40,57 +31,50 @@ void main() {
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
     secrets = s.Secrets(scratchDirectory: () async => '/tmp');
-    // mocktail needs a real handle as the fallback of `any()`; then forget it.
-    final fallback = await secrets.import(
-      words: [...List.filled(11, 'abandon'), 'about'],
-      language: bip39.Language.english,
-    );
-    registerFallbackValue((fallback as Ok<s.Secret, s.SecretFailure>).value);
-    storage.entries.clear();
-    registerFallbackValue(Network.bitcoinMainnet);
-    registerFallbackValue(ScriptType.bip84);
-    final settings = _Settings();
-    when(settings.readActiveEnvironment)
-        .thenAnswer((_) async => Ok(Environment.mainnet));
-    when(settings.fetch).thenAnswer(
-      (_) async => Ok(
-        const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+    final inventory = _Inventory();
+    final registrations = <s.WalletRegistration>[];
+    registerFallbackValue(p.BitcoinNetwork.mainnet);
+    registerFallbackValue(<s.WalletRegistration>[]);
+    when(() => inventory.walletsForNetwork(any())).thenAnswer((
+      invocation,
+    ) async {
+      final network = invocation.positionalArguments.single as p.Network;
+      return Ok(
+        walletSelectionForTesting(
+          registrations.where((wallet) => wallet.network == network).toList(),
         ),
-      ),
-    );
-    final wallets = _Wallets();
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
-    ).thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
-    created = [];
-    when(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: any(named: 'network'),
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenAnswer((invocation) async {
-      created.add(invocation.namedArguments[#secret] as s.Secret);
-      return _Wallet();
+      );
     });
+    when(() => inventory.readWallet(any())).thenAnswer((invocation) async {
+      final id = invocation.positionalArguments.single as String;
+      return Ok(registrations.singleWhere((wallet) => wallet.id == id));
+    });
+    created = [];
+    final provisioning = DefaultWalletProvisioning(
+      secrets: secrets,
+      inventory: inventory,
+      environment: () async => p.NetworkEnv.mainnet,
+      resume: () async {},
+      create: (secret, network, birthday) async {
+        created.add(secret);
+        final id = network.toString();
+        registrations.add(
+          walletRegistrationForTesting(
+            id: id,
+            network: network,
+            isDefault: true,
+            signer: s.WalletSigner.local,
+            masterFingerprint: secret.id,
+            secretFingerprint: secret.id,
+          ),
+        );
+        return id;
+      },
+    );
     final verification = _Verification();
-    when(verification.execute).thenAnswer((_) async {});
+    when(() => verification.execute(any())).thenAnswer((_) async {});
     usecase = RecoverOnboardingWalletUsecase(
-      defaultWallets: DefaultWalletsFacade(
-        CreateDefaultWalletsUsecase(
-          secrets: secrets,
-          settingsRepository: settings,
-          walletRepository: wallets,
-        ),
-      ),
+      defaultWallets: provisioning,
       completePhysicalBackupVerificationUsecase: verification,
     );
   });

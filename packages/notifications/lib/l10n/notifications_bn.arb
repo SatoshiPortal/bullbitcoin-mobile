@@ -1,0 +1,7 @@
+{
+  "@@locale": "bn",
+  "receivePaymentReceived": "পেমেন্ট প্রাপ্ত হয়েছে!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

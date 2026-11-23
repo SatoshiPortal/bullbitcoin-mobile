@@ -6,12 +6,14 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 dependencies:
+  ark:
   bitcoin_price:
   bull_logger:
   bull_payjoin:
   bull_ui:
   clock: ^1.1.2
   exchange:
+  fees:
   file_system:
   flutter:
     sdk: flutter
@@ -24,6 +26,7 @@ dependencies:
   intl: any
   label_editor:
   labels:
+  legacy_storage:
   material_ui: ^1.11.0
   mempool:
   meta: ^1.17.0

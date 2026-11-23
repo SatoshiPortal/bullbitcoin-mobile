@@ -4,10 +4,10 @@ import 'package:satoshifier/payment_request.dart';
 import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:receive/receive.dart';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 
 Wallet _wallet(Network network) => Wallet(
   origin: 'destination',
@@ -22,6 +22,25 @@ Wallet _wallet(Network network) => Wallet(
   balanceSat: BigInt.zero,
 );
 
+class _Receive implements Receive {
+  final Future<Result<String, ReceiveFailure>> Function(
+    String, {
+    Set<String> excludedAddresses,
+  })
+  next;
+
+  _Receive(this.next);
+
+  @override
+  Future<Result<String, ReceiveFailure>> nextUnusedAddress(
+    String walletId, {
+    Set<String> excludedAddresses = const {},
+  }) => next(walletId, excludedAddresses: excludedAddresses);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
   const request = PaymentRequest.bitcoin(address: 'primary', isTestnet: false);
 
@@ -29,14 +48,11 @@ void main() {
     final wallet = _wallet(Network.bitcoinMainnet);
     Set<String>? excluded;
     final usecase = PrepareInternalRecipientUsecase(
-      WalletFacade(
-        const Stream.empty(),
-        nextReceiveAddress: (id, {excludedAddresses = const {}}) async {
-          expect(id, wallet.id);
-          excluded = excludedAddresses;
-          return const Ok('fresh');
-        },
-      ),
+      _Receive((id, {excludedAddresses = const {}}) async {
+        expect(id, wallet.id);
+        excluded = excludedAddresses;
+        return const Ok('fresh');
+      }),
     );
     final result = await usecase.execute(
       walletId: wallet.id,
@@ -57,13 +73,10 @@ void main() {
     () async {
       var calls = 0;
       final usecase = PrepareInternalRecipientUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          nextReceiveAddress: (id, {excludedAddresses = const {}}) async {
-            calls++;
-            return const Ok('fresh');
-          },
-        ),
+        _Receive((id, {excludedAddresses = const {}}) async {
+          calls++;
+          return const Ok('fresh');
+        }),
       );
       for (final network in [
         Network.liquidMainnet,
@@ -108,11 +121,7 @@ void main() {
   test('retains the concrete regtest network of the parsed primary', () async {
     final wallet = _wallet(Network.bitcoinRegtest);
     final usecase = PrepareInternalRecipientUsecase(
-      WalletFacade(
-        const Stream.empty(),
-        nextReceiveAddress: (id, {excludedAddresses = const {}}) async =>
-            const Ok('fresh'),
-      ),
+      _Receive((id, {excludedAddresses = const {}}) async => const Ok('fresh')),
     );
     final result = await usecase.execute(
       walletId: wallet.id,
@@ -130,10 +139,8 @@ void main() {
     'bare regtest addresses never select a testnet destination wallet',
     () async {
       final usecase = PrepareInternalRecipientUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          nextReceiveAddress: (id, {excludedAddresses = const {}}) async =>
-              const Ok('fresh'),
+        _Receive(
+          (id, {excludedAddresses = const {}}) async => const Ok('fresh'),
         ),
       );
       for (final address in ['bcrt1primary', 'BCRT1PRIMARY']) {

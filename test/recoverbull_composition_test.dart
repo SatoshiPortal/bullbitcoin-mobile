@@ -3,7 +3,7 @@ import 'package:electrum/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/testing.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
-import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
+import 'package:transactions/setup.dart';
 
 import 'dart:io';
 
@@ -173,7 +173,7 @@ void main() {
           ),
         );
         // Wallet's native runtime requires the Payjoin owner's reservation port.
-        PayjoinSetup.setup(services, startRecovery: false);
+        mountPayjoin(services, startRecovery: false);
         wallet.WalletLocator.setup(services);
 
         expect(services.isRegistered<EmbeddedTor>(), isFalse);

@@ -1,0 +1,7 @@
+{
+  "@@locale": "th",
+  "receivePaymentReceived": "ชําระเงิน!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

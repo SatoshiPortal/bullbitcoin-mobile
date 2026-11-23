@@ -1,0 +1,7 @@
+{
+  "@@locale": "hi_Latn",
+  "receivePaymentReceived": "Payment aa gayi!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

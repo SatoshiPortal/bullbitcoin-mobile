@@ -31,7 +31,6 @@ void main() {
         coins: EmptyFrozenOutpoints(),
         settingsRepository: settings,
         wallet: WalletFacade(
-          const Stream.empty(),
           broadcastSpend:
               (_, _, {required network, built, owner, replacing}) async =>
                   const Err(
@@ -59,7 +58,6 @@ void main() {
       coins: EmptyFrozenOutpoints(),
       settingsRepository: _Settings(),
       wallet: WalletFacade(
-        const Stream.empty(),
         broadcastSpend:
             (_, _, {required network, built, owner, replacing}) async =>
                 const Ok(

@@ -58,7 +58,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/silent_wallet_balance.dart'
     show SilentWalletPresentation;
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:preferences/preferences.dart';

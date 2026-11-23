@@ -1,15 +1,13 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:secrets/secrets.dart' show WalletRegistration;
 import 'package:onboarding/onboarding.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockCreateDefaultWalletsUsecase extends Mock
-    implements CreateDefaultWalletsUsecase {}
-
-class _MockWallet extends Mock implements Wallet {}
+    implements DefaultWalletProvisioning {}
 
 void main() {
   late _MockCreateDefaultWalletsUsecase createDefaultWalletsUsecase;
@@ -18,7 +16,7 @@ void main() {
   setUp(() {
     createDefaultWalletsUsecase = _MockCreateDefaultWalletsUsecase();
     usecase = CreateOnboardingWalletUsecase(
-      defaultWallets: DefaultWalletsFacade(createDefaultWalletsUsecase),
+      defaultWallets: createDefaultWalletsUsecase,
     );
   });
 
@@ -38,7 +36,7 @@ void main() {
     });
 
     test('reports success without exporting wallet objects', () async {
-      final wallets = [_MockWallet()];
+      final wallets = <WalletRegistration>[];
       when(() => createDefaultWalletsUsecase.execute())
           .thenAnswer((_) async => Ok(wallets));
 

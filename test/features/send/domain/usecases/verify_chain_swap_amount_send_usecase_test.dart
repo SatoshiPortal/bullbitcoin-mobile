@@ -1,11 +1,12 @@
 import 'package:spend/legacy_exceptions.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/read_send_recipient_amount_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockRecipientAmount extends Mock
+    implements ReadSendRecipientAmountUsecase {}
 
 final _lnSend = Swap.lnSend(
   id: 'lnSendSwap01',
@@ -21,11 +22,11 @@ final _lnSend = Swap.lnSend(
 );
 
 void main() {
-  late _MockWalletRepository wallets;
+  late _MockRecipientAmount wallets;
   late VerifyChainSwapAmountSendUsecase usecase;
 
   void stubSent(int amount) => when(
-    () => wallets.getAmountSentToAddress(
+    () => wallets.execute(
       psbtOrPset: 'psbt',
       address: 'bc1plockup',
       walletId: 'w',
@@ -33,8 +34,8 @@ void main() {
   ).thenAnswer((_) async => amount);
 
   setUp(() {
-    wallets = _MockWalletRepository();
-    usecase = VerifyChainSwapAmountSendUsecase(walletRepository: wallets);
+    wallets = _MockRecipientAmount();
+    usecase = VerifyChainSwapAmountSendUsecase(recipientAmount: wallets);
   });
 
   test('accepts a lightning lockup that pays exactly the swap', () async {

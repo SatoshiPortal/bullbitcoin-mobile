@@ -81,6 +81,10 @@ Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
 
 class _Settings extends Fake implements Preferences {
   @override
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async => const Ok(Environment.testnet);
+
+  @override
   Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
     const SettingsEntity(
       environment: Environment.testnet,

@@ -193,7 +193,7 @@ WalletBloc _makeBloc({
       watchFinished: watchFinished,
       watchElectrum: watchElectrum.execute,
     ),
-    syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator),
+    syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator.sync),
     getUnconfirmedIncomingBalanceUsecase: _MockGetUnconfirmed(),
     deleteWalletUsecase: _MockDeleteWallet(),
     getExternalTorProxyStatusUsecase: _MockExternalTorStatus(),

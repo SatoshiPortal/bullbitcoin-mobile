@@ -1,13 +1,14 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:secrets/secrets.dart' show WalletRegistration;
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 
 class RecoverOnboardingWalletUsecase {
-  final DefaultWalletsFacade _defaultWallets;
+  final DefaultWalletProvisioning _defaultWallets;
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
 
@@ -22,17 +23,20 @@ class RecoverOnboardingWalletUsecase {
     required Language language,
     String passphrase = '',
   }) async {
-    if (await _defaultWallets.restore(
-          words: mnemonicWords,
-          language: language,
-          passphrase: passphrase,
-        )
-        case Err()) {
+    final restored = await _defaultWallets.execute(
+      mnemonicWords: mnemonicWords,
+      language: language,
+      passphrase: passphrase,
+    );
+    if (restored case Err()) {
       return const Err(OnboardingWalletSetupFailure());
     }
 
     try {
-      await _completePhysicalBackupVerificationUsecase.execute();
+      final wallets =
+          (restored as Ok<List<WalletRegistration>, DefaultWalletFailure>)
+              .value;
+      await _completePhysicalBackupVerificationUsecase.execute(wallets);
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: backup verification failed',

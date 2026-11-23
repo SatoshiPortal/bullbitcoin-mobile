@@ -7098,7 +7098,7 @@ void main() {
       final revisions = StreamController<WalletRevisionState>();
       final cubit = buildCubit(
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-          WalletFacade(revisions.stream),
+          revisions.stream,
         ),
       );
       addTearDown(cubit.close);

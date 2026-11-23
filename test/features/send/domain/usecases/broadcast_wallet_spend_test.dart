@@ -43,7 +43,6 @@ final class _Spends {
   );
 
   WalletFacade get facade => WalletFacade(
-    const Stream.empty(),
     broadcastSpend:
         (
           walletId,

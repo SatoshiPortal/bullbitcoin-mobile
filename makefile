@@ -188,6 +188,7 @@ translations:
 	@(cd features/settings && fvm flutter gen-l10n)
 	@(cd features/wizard && fvm flutter gen-l10n)
 	@(cd features/onboarding && fvm flutter gen-l10n)
+	@(cd packages/notifications && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations

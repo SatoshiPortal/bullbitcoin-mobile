@@ -39,10 +39,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
   final WalletRegistrations _walletRegistrations;
-  final Future<Result<native_sync.Wallet, native_sync.SyncFailure>> Function(
-    native_sync.WalletKey,
-  )
-  _wallet;
   final SyncWalletValuesDatasource _values;
   final Future<void> Function(
     WalletMetadataModel, {
@@ -57,7 +53,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   WalletRepository({
     this._native,
     required this._walletRegistrations,
-    required this._wallet,
     required SyncWalletValuesDatasource walletValuesDatasource,
     required Future<void> Function(
       WalletMetadataModel, {
@@ -124,13 +119,12 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
   }
 
-  Future<Wallet> createWallet({
+  Future<String> createWallet({
     required Secret secret,
     required Network network,
     required ScriptType scriptType,
     String? label,
     bool isDefault = false,
-    bool sync = false,
     DateTime? birthday,
   }) async {
     final metadata = await _provisionSecretWallet(
@@ -141,7 +135,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       isDefault: isDefault,
       birthday: birthday,
     );
-    return _createdWallet(metadata, sync: sync);
+    return metadata.id;
   }
 
   /// Explicit mnemonic import only: default creation/startup keep their existing
@@ -436,15 +430,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
   }
 
-  @override
-  @useResult
-  Future<Result<List<Wallet>, WalletFailure>>
-  getDefaultMainnetBitcoinWallets() => getWallets(
-    environment: Environment.mainnet,
-    onlyDefaults: true,
-    onlyBitcoin: true,
-  );
-
   /// Exhaustive custody references, independent of origin and native reads.
   /// A partial result must never authorize destruction of a secret.
   @override
@@ -549,29 +534,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       log.warning('Wallet catalog read invalid_count=$invalid');
     }
     return wallets.whereType<Wallet>().toList();
-  }
-
-  Future<void> updateBackupInfo({
-    required bool isEncryptedVaultTested,
-    required bool isPhysicalBackupTested,
-    required DateTime? latestEncryptedBackup,
-    required DateTime? latestPhysicalBackup,
-    required String walletId,
-  }) async {
-    final metadata = await _walletRegistrations.fetch(walletId);
-
-    if (metadata == null) {
-      throw WalletNotFoundException(walletId);
-    }
-
-    await _walletRegistrations.recordBackup(
-      metadata.copyWith(
-        isEncryptedVaultTested: isEncryptedVaultTested,
-        isPhysicalBackupTested: isPhysicalBackupTested,
-        latestEncryptedBackup: latestEncryptedBackup?.millisecondsSinceEpoch,
-        latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
-      ),
-    );
   }
 
   Future<native_sync.Balances> getWalletBalances({
@@ -699,45 +661,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       allowInitialScan: allowInitialScan,
       reason: reason,
     );
-  }
-
-  Future<int> getAmountSentToAddress({
-    required String psbtOrPset,
-    required String address,
-    required String walletId,
-  }) async {
-    final metadata = await _walletRegistrations.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (metadata.isLiquid) {
-      final key = native_sync.WalletKey(
-        id: metadata.id,
-        network: metadata.network.shared,
-      );
-      final wallet = switch (await _wallet(key)) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw WalletSnapshotException(failure),
-      };
-      return switch (await wallet.tx.liquidAmountToAddress(
-        psbtOrPset,
-        address,
-      )) {
-        Ok(:final value) => value.toInt(),
-        Err(:final failure) => throw WalletSnapshotException(failure),
-      };
-    }
-    return switch (await native_sync.bitcoinRecipientAmounts(
-      psbt: psbtOrPset,
-      network: metadata.network.bitcoin,
-      recipients: [(address: address, amountSat: null)],
-    )) {
-      Ok(:final value) => value.single,
-      Err(failure: native_sync.SyncInvalidTransactionFailure()) =>
-        throw const FormatException('Not a PSBT'),
-      Err(:final failure) => throw WalletSnapshotException(failure),
-    };
   }
 }
 

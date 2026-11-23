@@ -11,10 +11,10 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit
 import 'package:settings/settings.dart';
 import 'package:swaps/swaps.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 class SettingsLocator {
@@ -25,8 +25,8 @@ class SettingsLocator {
     );
     locator.registerFactory<GetSwapRescueWalletsUsecase>(
       () => GetSwapRescueWalletsUsecase(
-        walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<Preferences>(),
+        inventory: locator<SecretsInventory>(),
+        environment: locator<ActiveEnvironmentReader>(),
       ),
     );
     locator.registerLazySingleton<QuickActionsCubit>(
@@ -57,7 +57,9 @@ class SettingsLocator {
       dispose: (cubit) => cubit.close(),
     );
     locator.registerFactory<DiscoverWalletUsecase>(
-      () => DiscoverWalletUsecase(locator<WalletFacade>()),
+      () => DiscoverWalletUsecase(
+        locator<OverviewSynchronization>().coordinator.discoverWallet,
+      ),
     );
     locator.registerFactory<WalletDiscoveryCubit>(
       () => WalletDiscoveryCubit(locator<DiscoverWalletUsecase>()),
