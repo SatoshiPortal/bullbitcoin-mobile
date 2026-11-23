@@ -136,7 +136,7 @@ void main() {
     () {
       final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
       for (final path in [
-        'lib/features/send/presentation/bloc/send_cubit.dart',
+        'features/send/lib/src/payment/presentation/bloc/send_cubit.dart',
         'lib/features/settings/presentation/bloc/settings_cubit.dart',
         'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {

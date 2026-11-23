@@ -8,7 +8,6 @@ import 'package:path/path.dart' as p;
 // Exact legacy feature imports at 982b98e90 (2026-11-06). Remove entries as their
 // consumers migrate; never extend this list to permit a new shell dependency.
 const _legacyImports = {
-  'lib/features/send/ui/send_router.dart -> locator.dart',
   'lib/features/limit_orders/ui/limit_orders_router.dart -> locator.dart',
   'lib/features/onboarding/ui/onboarding_router.dart -> locator.dart',
   'lib/features/settings/ui/settings_router.dart -> locator.dart',

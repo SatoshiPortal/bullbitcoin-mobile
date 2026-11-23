@@ -1,25 +1,28 @@
+import '../../../../features/send/test/payment/testing/send_test_localizations.dart';
+
+import 'package:send/setup.dart' show SendLocalizations;
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
+import '../../../../features/send/test/payment/testing/send_source_fixture.dart';
+
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 
-// ignore: avoid_relative_lib_imports
-import '../../../../lib/features/send/ui/widgets/send_whole_balance_dialog.dart';
+import 'package:send/src/payment/ui/widgets/send_whole_balance_dialog.dart';
 
 // The legacy screen already has a public shell import target.
-import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
+import 'package:send/src/payment/ui/screens/send_screen.dart';
 
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
-import 'package:primitives/primitives.dart' show Sats, ScriptType;
-import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:send/src/payment/domain/send_amount_conversion.dart';
+import 'package:primitives/primitives.dart' show Sats;
+import 'package:send/src/payment/presentation/bloc/send_cubit.dart';
+import 'package:send/src/payment/presentation/bloc/send_state.dart';
+import 'package:send/src/payment/presentation/send_wallet_view.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,16 +48,10 @@ void main() {
         ))
         .load();
   });
-  final wallet = Wallet(
-    origin: 'mono',
+  final wallet = sendSourceFixture(
+    id: 'mono',
     label: 'bitcoin',
-    network: Network.bitcoinMainnet,
-    xpubFingerprint: '00000000',
-    scriptType: ScriptType.bip84,
-    xpub: '',
-    externalPublicDescriptor: '',
-    internalPublicDescriptor: '',
-    signer: SignerEntity.local,
+    network: BitcoinNetwork.mainnet,
     signerDevice: null,
     balanceSat: BigInt.from(1000000),
   );
@@ -128,9 +125,9 @@ void main() {
           ),
           localizationsDelegates: const [
             ...bullUiLocalizationsDelegates,
-            ...appLocalizationsDelegates,
+            ...sendTestLocalizationsDelegates,
           ],
-          supportedLocales: AppLocalizations.supportedLocales,
+          supportedLocales: SendLocalizations.supportedLocales,
           home: BlocProvider<SendCubit>.value(
             value: cubit,
             child: const SendScreen(),

@@ -8,6 +8,7 @@ WalletRegistration walletRegistrationForTesting({
   bool isDefault = false,
   ScriptType scriptType = ScriptType.bip84,
   String? derivationPath,
+  String? label,
   WalletSigner signer = WalletSigner.none,
   Fingerprint? masterFingerprint,
   Fingerprint? secretFingerprint,
@@ -19,7 +20,7 @@ WalletRegistration walletRegistrationForTesting({
   masterFingerprint: masterFingerprint,
   secretFingerprint: secretFingerprint,
   derivationPath: derivationPath,
-  label: null,
+  label: label,
   birthday: null,
   isDefault: isDefault,
 );

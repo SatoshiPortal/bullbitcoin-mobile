@@ -1,10 +1,21 @@
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    as legacy
-    show Network;
+import '../../../../features/send/test/payment/testing/send_spend_test_double.dart'
+    show
+        PreparedBitcoinSend,
+        PrepareLiquidSendUsecase,
+        SignLiquidTxUsecase,
+        BroadcastLiquidTransactionUsecase,
+        CalculateLiquidAbsoluteFeesUsecase,
+        BroadcastBitcoinTransactionUsecase,
+        CalculateBitcoinAbsoluteFeesUsecase,
+        SignBitcoinTxUsecase,
+        InsufficientFundsException,
+        NoSpendableUtxoException,
+        WalletSpendBlockedException,
+        CategorizedBroadcastException,
+        BroadcastFailureCategory;
+
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletFacade;
 import 'package:secrets/testing.dart';
 import 'package:secrets/secrets.dart' show WalletSigner;
 import 'package:primitives/primitives.dart'
@@ -13,27 +24,18 @@ import 'package:swap_feature/testing.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
-import '../../../frozen_outpoints_fixture.dart';
-
 import 'package:satoshifier/payment_request.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
-import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
-import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
+import 'package:send/src/payment/domain/send_failure.dart';
 
 import 'package:sync/sync.dart' as native;
 
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:spend/legacy_exceptions.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
@@ -41,15 +43,9 @@ import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:sync/sync.dart' show BitcoinSpendStatus;
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:send/send.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart'
@@ -57,6 +53,17 @@ import 'package:material_ui/material_ui.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+
+abstract interface class PrepareBitcoinSendUsecase {
+  Future<Result<PreparedBitcoinSend, WalletFailure>> execute({
+    required String walletId,
+    required List<primitives.BitcoinTransactionRecipient> recipients,
+    required NetworkFee networkFee,
+    List<WalletUtxo>? selectedInputs,
+    bool selectedOnly = false,
+    bool replaceByFee = true,
+  });
+}
 
 class _MockGetSettings extends Mock implements Preferences {}
 
@@ -129,10 +136,6 @@ Matcher _paysTo(String address, {int? amountSat}) =>
               (amountSat == null ? null : Sats.fromInt(amountSat)),
     );
 
-class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
-
-class _Preferences extends Mock implements Preferences {}
-
 Matcher _toWallet(String walletId) =>
     isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
 
@@ -166,7 +169,6 @@ void main() {
     registerFallbackValue(_wallet().key);
     registerFallbackValue(NetworkEnv.testnet);
     registerFallbackValue(BitcoinNetwork.mainnet);
-    registerFallbackValue(legacy.Network.bitcoinMainnet);
     registerFallbackValue(OrderSwapPurpose.transfer);
     registerFallbackValue(SwapType.bitcoinToLiquid);
     registerFallbackValue(const ToWallet(''));
@@ -319,7 +321,7 @@ void main() {
         walletId: any(named: 'walletId'),
         selectedInputs: any(named: 'selectedInputs'),
       ),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer((_) async => const Ok(null));
     when(
       () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
     ).thenAnswer(
@@ -569,46 +571,18 @@ void main() {
     test(
       'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet',
       () async {
-        final blockchain = _Blockchain();
-        final settings = _Preferences();
-        when(settings.fetch).thenAnswer(
-          (_) async => Ok(
-            const SettingsEntity(
-              environment: Environment.testnet,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'CAD',
-              isSuperuser: true,
-              isDevModeEnabled: true,
-            ),
-          ),
-        );
         var broadcasts = 0;
-        final wallet = WalletFacade(
-          broadcastSpend:
-              (
-                id,
-                transaction, {
-                required network,
-                built,
-                owner,
-                replacing,
-              }) async {
-                expect(id, 'wallet-1');
-                broadcasts++;
-                return Ok(
-                  native.SpendReceipt('a' * 64, durable: true, guarded: true),
-                );
-              },
-        );
-        await bloc.close();
-        bloc = buildBloc(
-          bitcoinBroadcast: BroadcastBitcoinTransactionUsecase(
-            bitcoinBlockchainRepository: blockchain,
-            walletUtxoRepository: EmptyFrozenOutpoints(),
-            settingsRepository: settings,
-            wallet: wallet,
+        when(
+          () => broadcastBitcoin.execute(
+            'signed-psbt',
+            isPsbt: true,
+            network: BitcoinNetwork.testnet,
+            walletId: 'wallet-1',
           ),
-        );
+        ).thenAnswer((_) async {
+          broadcasts++;
+          return 'a' * 64;
+        });
         when(() => orders.markBroadcastUnknown('local-1')).thenAnswer(
           (_) async =>
               Ok(_prepared(status: OrderSwapLocalStatus.broadcastUnknown)),
@@ -656,7 +630,7 @@ void main() {
           () => broadcastBitcoin.execute(
             any(),
             isPsbt: any(named: 'isPsbt'),
-            network: legacy.Network.bitcoinTestnet,
+            network: BitcoinNetwork.testnet,
             walletId: any(named: 'walletId'),
           ),
         ).thenThrow(
@@ -1128,9 +1102,9 @@ void main() {
     when(
       () => validateBitcoinSelection.execute(
         walletId: 'wallet-1',
-        selectedInputs: [_legacyCoin(selected, 'wallet-1')],
+        selectedInputs: {selected.outpoint},
       ),
-    ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+    ).thenAnswer((_) async => const Err(SendSelectedCoinsUnavailableFailure()));
     preview = (
       fee: Sats.fromInt(250),
       prepared: SpendFixtures.preparedBitcoin(
@@ -1205,7 +1179,7 @@ void main() {
         () => broadcastBitcoin.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       );
@@ -1230,7 +1204,7 @@ void main() {
         () => broadcastBitcoin.execute(
           'signed-psbt',
           isPsbt: true,
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       ).thenAnswer((_) async => 'txid-1');
@@ -1261,7 +1235,7 @@ void main() {
         () => broadcastBitcoin.execute(
           'signed-psbt',
           isPsbt: true,
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       ).called(1);
@@ -1505,7 +1479,7 @@ void main() {
         () => broadcastBitcoin.execute(
           'old-signed-psbt',
           isPsbt: true,
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       );
@@ -1555,9 +1529,11 @@ void main() {
       when(
         () => validateBitcoinSelection.execute(
           walletId: 'wallet-1',
-          selectedInputs: [_legacyCoin(selected, 'wallet-1')],
+          selectedInputs: {selected.outpoint},
         ),
-      ).thenThrow(InsufficientFundsException('reserved'));
+      ).thenAnswer(
+        (_) async => const Err(SendSelectedCoinsUnavailableFailure()),
+      );
       bloc.emit(
         TransferState(
           fromWallet: _wallet(),
@@ -1588,7 +1564,7 @@ void main() {
         () => broadcastBitcoin.execute(
           'old-signed-psbt',
           isPsbt: true,
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       );
@@ -1602,9 +1578,11 @@ void main() {
       when(
         () => validateBitcoinSelection.execute(
           walletId: 'wallet-1',
-          selectedInputs: [_legacyCoin(selected, 'wallet-1')],
+          selectedInputs: {selected.outpoint},
         ),
-      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      ).thenAnswer(
+        (_) async => const Err(SendSelectedCoinsUnavailableFailure()),
+      );
       bloc.emit(
         TransferState(
           fromWallet: _wallet(),
@@ -1635,7 +1613,7 @@ void main() {
         () => broadcastBitcoin.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       );
@@ -2117,7 +2095,7 @@ void main() {
       () => broadcastBitcoin.execute(
         'signed-psbt',
         isPsbt: true,
-        network: legacy.Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
         walletId: 'wallet-1',
       ),
     ).thenAnswer((_) async => 'txid-1');
@@ -2342,7 +2320,7 @@ void main() {
         () => broadcastBitcoin.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       );
@@ -2386,7 +2364,7 @@ void main() {
         () => broadcastBitcoin.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       );
@@ -2402,7 +2380,7 @@ void main() {
         () => broadcastBitcoin.execute(
           'signed-psbt',
           isPsbt: true,
-          network: legacy.Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
           walletId: 'wallet-1',
         ),
       ).thenThrow(
@@ -2733,13 +2711,9 @@ void main() {
           () => validateBitcoinSelection.execute(walletId: 'wallet-1'),
         );
         if (readable) {
-          stub.thenAnswer((_) async => []);
+          stub.thenAnswer((_) async => const Ok(null));
         } else {
-          stub.thenThrow(
-            ValidateBitcoinSelectionException(
-              'Failed to load Payjoin-reserved UTXOs',
-            ),
-          );
+          stub.thenAnswer((_) async => const Err(SendSpendBlockedFailure()));
         }
       }
 
@@ -3693,12 +3667,6 @@ WalletUtxo _legacyCoin(native.Coin coin, String walletId) => switch (coin) {
   ),
 };
 
-legacy.Network _legacyNetwork(Network network) =>
-    legacy.Network.fromEnvironment(
-      environment: network.env,
-      isLiquid: network is LiquidNetwork,
-    );
-
 final class _SwapSpend extends FakeSpend {
   final TransferState Function() read;
   final PrepareBitcoinSendUsecase btc;
@@ -3747,17 +3715,18 @@ final class _SwapSpend extends FakeSpend {
     required String walletId,
     Set<primitives.Outpoint>? selectedInputs,
   }) async {
-    try {
-      await selection.execute(
-        walletId: walletId,
-        selectedInputs: coins(selectedInputs, walletId),
-      );
-      return const Ok(null);
-    } on ValidateBitcoinSelectionException {
-      return const Err(SpendUnavailableFailure());
-    } on Exception {
-      return const Err(SpendSelectedInputsUnavailableFailure());
-    }
+    final result = await selection.execute(
+      walletId: walletId,
+      selectedInputs: selectedInputs,
+    );
+    return result.mapErr(
+      (failure) => switch (failure) {
+        SendSpendBlockedFailure(:final busy) => SpendUnavailableFailure(
+          busy: busy,
+        ),
+        _ => const SpendSelectedInputsUnavailableFailure(),
+      },
+    );
   }
 
   @override
@@ -3929,7 +3898,7 @@ final class _SwapSpend extends FakeSpend {
     return _send(
       () => btcBroadcast.execute(
         signed.signedTransaction,
-        network: _legacyNetwork(source.network),
+        network: source.network,
         isPsbt: true,
         walletId: source.id,
       ),

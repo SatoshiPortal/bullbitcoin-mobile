@@ -1,3 +1,4 @@
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';

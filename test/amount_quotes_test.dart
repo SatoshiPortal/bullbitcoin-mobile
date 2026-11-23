@@ -2,7 +2,7 @@ import 'package:address_view/address_view.dart';
 import 'package:labels/labels.dart';
 import 'package:receive/receive.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_send_amount_quotes_usecase.dart';
 import 'package:swap_feature/testing.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';

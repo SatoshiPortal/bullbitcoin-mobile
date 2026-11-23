@@ -4,7 +4,7 @@ import 'initialization_result.dart';
 
 import 'package:satoshifier/liquid_address.dart';
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';

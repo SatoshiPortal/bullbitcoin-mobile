@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:labels/labels.dart';
 import 'package:sync/sync.dart' show CoinFreezes;
-import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
+import 'package:coins/coins.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -56,13 +56,12 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
-  WalletUtxoRepositoryImpl repository(sync.Wallet wallet) =>
-      WalletUtxoRepositoryImpl(
-        inventory: inventory,
-        labelsFacade: labels,
-        loadWallet: (_) async => Ok(wallet),
-        freezesDatasource: CoinFreezes(sync: () async => owner),
-      );
+  Coins repository(sync.Wallet wallet) => Coins.open(
+    inventory: inventory,
+    labels: labels,
+    loadWallet: (_) async => Ok(wallet),
+    freezes: CoinFreezes(sync: () async => owner),
+  );
 
   test('coins carry the frozen state sync publishes', () async {
     final wallet = await testWallet(
@@ -71,12 +70,27 @@ void main() {
       frozen: {frozen},
     );
 
-    final utxos = await repository(wallet).getWalletUtxos(walletId: walletId);
+    final result = await repository(wallet).coins(walletId);
+    expect(result, isA<Ok<List<WalletUtxo>, CoinsFailure>>());
+    final utxos = (result as Ok<List<WalletUtxo>, CoinsFailure>).value;
 
     expect(
       {for (final u in utxos) u.outpoint: u.isFrozen},
       {kept: false, frozen: true},
     );
+  });
+
+  test('a failed wallet read returns a typed failure', () async {
+    final coins = Coins.open(
+      inventory: inventory,
+      labels: labels,
+      loadWallet: (_) async => const Err(sync.SyncStorageFailure()),
+      freezes: CoinFreezes(sync: () async => owner),
+    );
+
+    final result = await coins.coins(walletId);
+    expect(result, isA<Err<List<WalletUtxo>, CoinsFailure>>());
+    expect((result as Err).failure, isA<CoinsLoadFailure>());
   });
 
   test('unfreeze lifts a freeze attributed to another origin', () async {
@@ -87,10 +101,10 @@ void main() {
     ]);
     final wallet = await testWallet(key: key);
 
-    await repository(wallet)
-        .unfreezeUtxos(walletId: walletId, outpoints: [frozen]);
+    final result = await repository(wallet).unfreeze([frozen]);
+    expect(result, isA<Ok<void, CoinsFailure>>());
 
-    expect(await repository(wallet).getAllFrozenOutpoints(), isEmpty);
+    expect(await freezes.getFrozenOutpoints(), isEmpty);
   });
 
   test('an unreadable freeze store fails; it is never empty', () async {

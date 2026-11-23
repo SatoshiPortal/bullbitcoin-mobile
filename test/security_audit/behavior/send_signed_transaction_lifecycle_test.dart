@@ -1,12 +1,18 @@
-import '../../features/send/testing/send_spend_test_double.dart';
+import 'package:send/src/payment/domain/usecases/load_send_sources_usecase.dart';
+import 'package:send/src/payment/domain/usecases/load_send_coins_usecase.dart';
+import 'package:coins/coins.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, LiquidNetwork, Outpoint, Result;
+import 'package:spend/spend.dart' show SpendFailure;
+
+import '../../../features/send/test/payment/testing/send_source_fixture.dart';
+import '../../../features/send/test/payment/testing/send_spend_test_double.dart';
 
 import 'package:spend/testing.dart';
-import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:primitives/primitives.dart' show ConvertAmount, Ok, ScriptType;
-import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
+import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';
+import 'package:send/src/payment/domain/usecases/load_send_network_fees_usecase.dart';
+import 'package:send/src/payment/domain/usecases/retry_payjoin_proposal_usecase.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, Ok;
 
 // Behavioral proof for two audit findings on SendCubit:
 //
@@ -19,8 +25,8 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_tra
 //    closed mid-broadcast throws instead of recording the send.
 import 'dart:async';
 
-import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
+import 'package:send/src/payment/domain/usecases/create_boltz_send_swap_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart'
     show
         CreateBitcoinToLiquidSwapUsecase,
@@ -30,64 +36,46 @@ import 'package:swaps/swaps.dart'
         RecordPendingSwapLockupUsecase,
         RecordSwapLockupUsecase,
         WatchSwapUsecase;
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:send/src/payment/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:send/send.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
+import 'package:send/src/payment/domain/usecases/create_send_cross_chain_swap_usecase.dart';
+import 'package:send/src/payment/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:send/src/payment/domain/usecases/get_send_exchange_rate_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_send_cross_chain_quote_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_send_swap_quote_usecase.dart';
+import 'package:send/src/payment/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:send/src/payment/domain/usecases/resolve_selected_inputs_usecase.dart';
+import 'package:send/src/payment/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:send/src/payment/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:send/src/payment/domain/usecases/update_send_swap_payin_usecase.dart';
+import 'package:send/src/payment/domain/usecases/validate_coin_control_payment_request_usecase.dart';
+import 'package:send/src/payment/domain/usecases/verify_exchange_payin_usecase.dart';
+import 'package:send/src/payment/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:send/src/payment/domain/usecases/watch_payjoin_usecase.dart';
+import 'package:send/src/payment/domain/usecases/watch_send_swap_usecase.dart';
+import 'package:send/src/payment/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
+import 'package:send/src/payment/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
+import 'package:send/src/payment/domain/usecases/send_sp_payment_for_send_usecase.dart';
+import 'package:send/src/payment/domain/usecases/get_sp_network_for_send_usecase.dart';
+import 'package:send/src/payment/domain/usecases/validate_sp_amount_for_send_usecase.dart';
+import 'package:send/src/payment/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
+import 'package:send/src/payment/presentation/bloc/send_cubit.dart';
+import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
+import 'package:send/src/payment/presentation/send_wallet_view.dart';
+import 'package:send/src/payment/domain/usecases/load_send_label_suggestions_usecase.dart';
+import 'package:send/src/payment/domain/usecases/store_send_transaction_label_usecase.dart';
 
 class _MockLabels extends Mock implements Labels {}
 
@@ -106,31 +94,29 @@ class _MockGetSendExchangeRateUsecase extends Mock
 
 class _MockFees extends Mock implements Fees {}
 
-class _MockGetWalletUtxosUsecase extends Mock
-    implements GetWalletUtxosUsecase {}
+class _MockCoins extends Mock implements Coins {}
+
+class _MockLoadSendSourcesUsecase extends Mock
+    implements LoadSendSourcesUsecase {}
 
 class _MockPrepareBitcoinSendUsecase extends Mock
     implements PrepareSendBitcoinTransactionUsecase {}
 
-class _MockValidateBitcoinSelectionUsecase extends Mock
-    implements ValidateBitcoinSelectionUsecase {}
+class _SelectionSpend extends FakeSpend {
+  @override
+  Future<Result<void, SpendFailure>> validateBitcoinSelection({
+    required String walletId,
+    Set<Outpoint>? selectedInputs,
+  }) async => const Ok(null);
+}
 
 class _MockPrepareLiquidSendUsecase extends Mock
     implements PrepareLiquidSendUsecase {}
 
 class _MockSignBitcoinTxUsecase extends Mock implements SignBitcoinTxUsecase {}
 
-class _MockSignLiquidTxUsecase extends Mock implements SignLiquidTxUsecase {}
-
 class _MockBroadcastBitcoinTransactionUsecase extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
-
-class _MockBroadcastLiquidTransactionUsecase extends Mock
-    implements BroadcastLiquidTransactionUsecase {}
-
-class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
-
-class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
 class _MockCreateSendSwapUsecase extends Mock
     implements CreateSendSwapUsecase {}
@@ -175,14 +161,8 @@ class _MockBroadcastPayjoinOriginalUsecase extends Mock
 class _MockGetVisiblePayjoinTransactionUsecase extends Mock
     implements GetVisiblePayjoinTransactionUsecase {}
 
-class _MockWatchFinishedWalletSyncsUsecase extends Mock
-    implements WatchFinishedWalletSyncsUsecase {}
-
 class _MockCalculateLiquidAbsoluteFeesUsecase extends Mock
     implements CalculateLiquidAbsoluteFeesUsecase {}
-
-class _MockCalculateLiquidPsetSizeUsecase extends Mock
-    implements CalculateLiquidPsetSizeUsecase {}
 
 class _MockWatchWalletTransactionByTxIdUsecase extends Mock
     implements Transactions {}
@@ -255,14 +235,10 @@ class _TestSendCubit extends SendCubit {
     required super.loadPreferencesUsecase,
     required super.getSendExchangeRateUsecase,
     required super.loadNetworkFeesUsecase,
-    required super.getWalletUtxosUsecase,
+    required super.loadCoins,
     required super.validateBitcoinSelectionUsecase,
     required super.spend,
-    required super.prepareLiquidSendUsecase,
-    required super.signLiquidTxUsecase,
-    required super.broadcastLiquidTxUsecase,
-    required super.getWalletsUsecase,
-    required super.getWalletUsecase,
+    required super.loadSources,
     required super.createSendSwapUsecase,
     required super.getSendSwapQuoteUsecase,
     required super.createSendCrossChainSwapUsecase,
@@ -276,9 +252,6 @@ class _TestSendCubit extends SendCubit {
     required super.broadcastPayjoinOriginalUsecase,
     required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
-    required super.watchFinishedWalletSyncsUsecase,
-    required super.calculateLiquidAbsoluteFeesUsecase,
-    required super.calculateLiquidPsetSizeUsecase,
     required super.transactions,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
@@ -315,30 +288,20 @@ class _TestSendCubit extends SendCubit {
   }
 }
 
-final _wallet = Wallet(
-  origin: 'wpkh([aabbccdd/84h/0h/0h])',
-  label: 'Secure Bitcoin',
-  network: Network.bitcoinMainnet,
+final _wallet = sendSourceFixture(
+  id: 'wpkh([aabbccdd/84h/0h/0h])',
+  network: BitcoinNetwork.mainnet,
   isDefault: true,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.from(1000000),
 );
 
 void main() {
   late _MockBroadcastBitcoinTransactionUsecase broadcastBitcoinTx;
   late _MockLabels labelsFacade;
-  late _MockGetWalletUsecase getWalletUsecase;
-  late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
+  late _MockLoadSendSourcesUsecase loadSources;
+  late _MockCoins coins;
   late _MockConsolidation consolidation;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
-  late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockCalculateLiquidAbsoluteFeesUsecase
   calculateLiquidAbsoluteFeesUsecase;
   late _TestSendCubit cubit;
@@ -353,19 +316,12 @@ void main() {
   setUp(() {
     broadcastBitcoinTx = _MockBroadcastBitcoinTransactionUsecase();
     labelsFacade = _MockLabels();
-    getWalletUsecase = _MockGetWalletUsecase();
-    getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
+    loadSources = _MockLoadSendSourcesUsecase();
+    coins = _MockCoins();
     consolidation = _MockConsolidation();
     prepareLiquidSendUsecase = _MockPrepareLiquidSendUsecase();
-    validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
     calculateLiquidAbsoluteFeesUsecase =
         _MockCalculateLiquidAbsoluteFeesUsecase();
-    when(
-      () => validateBitcoinSelectionUsecase.execute(
-        walletId: any(named: 'walletId'),
-        selectedInputs: any(named: 'selectedInputs'),
-      ),
-    ).thenAnswer((_) async => []);
 
     cubit = _TestSendCubit(
       loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(labelsFacade),
@@ -377,7 +333,7 @@ void main() {
       ),
       getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
       loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: _MockFees()),
-      getWalletUtxosUsecase: getWalletUtxosUsecase,
+      loadCoins: LoadSendCoinsUsecase(coins),
       spend: SendSpendTestDouble(
         read: () => cubit.state,
         prepare: _MockPrepareBitcoinSendUsecase(),
@@ -387,13 +343,13 @@ void main() {
         preview: _MockPreviewBitcoinFeeUsecase(),
         presets: _MockPreviewBitcoinFeePresetsUsecase(),
         verify: _MockVerifySignedTxUsecase(),
+        prepareLiquidUsecase: prepareLiquidSendUsecase,
+        liquidFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
       ),
-      validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
-      prepareLiquidSendUsecase: prepareLiquidSendUsecase,
-      signLiquidTxUsecase: _MockSignLiquidTxUsecase(),
-      broadcastLiquidTxUsecase: _MockBroadcastLiquidTransactionUsecase(),
-      getWalletsUsecase: _MockGetWalletsUsecase(),
-      getWalletUsecase: getWalletUsecase,
+      validateBitcoinSelectionUsecase: ValidateBitcoinSelectionUsecase(
+        _SelectionSpend(),
+      ),
+      loadSources: loadSources,
       createSendSwapUsecase: _MockCreateSendSwapUsecase(),
       getSendSwapQuoteUsecase: _MockGetSendSwapQuoteUsecase(),
       createSendCrossChainSwapUsecase: _MockCreateSendCrossChainSwapUsecase(),
@@ -408,9 +364,6 @@ void main() {
       getVisiblePayjoinTransactionUsecase:
           _MockGetVisiblePayjoinTransactionUsecase(),
       retryPayjoinProposalUsecase: _MockRetryPayjoinProposalUsecase(),
-      watchFinishedWalletSyncsUsecase: _MockWatchFinishedWalletSyncsUsecase(),
-      calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
-      calculateLiquidPsetSizeUsecase: _MockCalculateLiquidPsetSizeUsecase(),
       transactions: _MockWatchWalletTransactionByTxIdUsecase(),
       verifyChainSwapAmountSendUsecase: _MockVerifyChainSwapAmountSendUsecase(),
       verifyExchangePayinUsecase: _MockVerifyExchangePayinUsecase(),
@@ -487,19 +440,10 @@ void main() {
         const frozenSat = 40000;
         const absoluteFeesSat = 500;
 
-        final liquidWallet = Wallet(
-          origin: 'ct(slip77(..))',
-          label: 'Instant payments',
-          network: Network.liquidMainnet,
+        final liquidWallet = sendSourceFixture(
+          id: 'ct(slip77(..))',
+          network: LiquidNetwork.mainnet,
           isDefault: true,
-          masterFingerprint: 'aabbccdd',
-          xpubFingerprint: 'aabbccdd',
-          scriptType: ScriptType.bip84,
-          xpub: 'xpub',
-          externalPublicDescriptor: 'desc',
-          internalPublicDescriptor: 'desc',
-          signer: SignerEntity.local,
-          signerDevice: null,
           balanceSat: BigInt.from(walletBalanceSat),
         );
 
@@ -515,13 +459,11 @@ void main() {
               isFrozen: isFrozen,
             );
 
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer(
-          (_) async => [
+        when(() => coins.coins(any())).thenAnswer(
+          (_) async => Ok([
             utxo(amountSat: walletBalanceSat - frozenSat, isFrozen: false),
             utxo(amountSat: frozenSat, isFrozen: true),
-          ],
+          ]),
         );
         when(() => consolidation.isRequired(any()))
             .thenAnswer((_) async => const Ok(false));
@@ -591,15 +533,15 @@ void main() {
           walletId: _wallet.id,
           any(),
           isPsbt: any(named: 'isPsbt'),
-          network: app.Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
         ),
       ).thenAnswer((_) => broadcast.future);
       when(() => labelsFacade.store(any())).thenAnswer(
         (invocation) async =>
             Ok(Label.tx(id: 1, transactionId: 'broadcast-txid', label: 'rent')),
       );
-      when(() => getWalletUsecase.execute(any(), sync: any(named: 'sync')))
-          .thenAnswer((_) async => _wallet);
+      when(() => loadSources.read(any(), sync: any(named: 'sync')))
+          .thenAnswer((_) async => Ok(_wallet));
 
       cubit.seed(
         SendState(

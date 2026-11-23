@@ -1,216 +1,91 @@
-import 'package:primitives/primitives.dart' hide Network;
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
+import 'package:coins/coins.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 
 import '../../wallet_utxo_fixture.dart';
 
-class _MockGetWalletUtxosUsecase extends Mock
-    implements GetWalletUtxosUsecase {}
-
-class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
+class _MockCoins extends Mock implements Coins {}
 
 void main() {
-  group('RefreshCoinsUsecase', () {
-    test('requests a screen sync of the wallet', () async {
-      final polled = <String>[];
-      final usecase = RefreshCoinsUsecase(
-        (walletId) async => polled.add(walletId),
-      );
-
-      await usecase.execute(walletId: 'w1');
-
-      expect(polled, ['w1']);
-    });
-
-    test('settles after a sync failure', () async {
-      final usecase = RefreshCoinsUsecase(
-        (_) async => throw Exception('offline'),
-      );
-
-      await expectLater(usecase.execute(walletId: 'w1'), completes);
-    });
+  test('refresh requests a screen sync of the wallet', () async {
+    final polled = <String>[];
+    final usecase = RefreshCoinsUsecase(
+      (walletId) async => polled.add(walletId),
+    );
+    await usecase.execute(walletId: 'w1');
+    expect(polled, ['w1']);
   });
 
-  group('GetUtxosUsecase', () {
-    late _MockGetWalletUtxosUsecase core;
-    late GetUtxosUsecase usecase;
-
-    setUp(() {
-      core = _MockGetWalletUtxosUsecase();
-      usecase = GetUtxosUsecase(getWalletUtxosUsecase: core);
-    });
-
-    test('returns the utxos from the core usecase', () async {
-      final utxos = [walletUtxoFixture()];
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenAnswer((_) async => utxos);
-
-      final result = await usecase.execute(walletId: 'w1');
-
-      expect(result, isA<Ok<List<WalletUtxo>, CoinsFailure>>());
-      expect((result as Ok).value, utxos);
-    });
-
-    test('maps GetUtxosUsecaseException to CoinsLoadFailure', () async {
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenThrow(GetUtxosUsecaseException('boom'));
-
-      final result = await usecase.execute(walletId: 'w1');
-
-      expect(result, isA<Err<List<WalletUtxo>, CoinsFailure>>());
-      expect((result as Err).failure, isA<CoinsLoadFailure>());
-    });
-
-    test('maps another exception to CoinsUnexpectedFailure', () async {
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenThrow(Exception('weird'));
-
-      final result = await usecase.execute(walletId: 'w1');
-
-      expect(result, isA<Err<List<WalletUtxo>, CoinsFailure>>());
-      expect((result as Err).failure, isA<CoinsUnexpectedFailure>());
-    });
-
-    test('allows programmer errors to propagate', () async {
-      when(() => core.execute(walletId: any(named: 'walletId')))
-          .thenThrow(StateError('programmer defect'));
-
-      await expectLater(
-        usecase.execute(walletId: 'w1'),
-        throwsA(isA<StateError>()),
-      );
-    });
+  test('refresh settles after a sync failure', () async {
+    final usecase = RefreshCoinsUsecase(
+      (_) async => throw Exception('offline'),
+    );
+    await expectLater(usecase.execute(walletId: 'w1'), completes);
   });
 
-  group('FreezeUtxosUsecase', () {
-    late _MockWalletUtxoRepository repo;
-    late FreezeUtxosUsecase usecase;
+  test('loading forwards coins and typed failures', () async {
+    final coins = _MockCoins();
+    final utxos = [walletUtxoFixture()];
+    when(() => coins.coins('w1')).thenAnswer((_) async => Ok(utxos));
+    final usecase = GetUtxosUsecase(coins);
+    expect((await usecase.execute(walletId: 'w1') as Ok).value, utxos);
 
-    setUp(() {
-      repo = _MockWalletUtxoRepository();
-      usecase = FreezeUtxosUsecase(walletUtxoRepository: repo);
-    });
-
-    test('delegates to repository.freezeUtxos', () async {
-      when(
-        () => repo.freezeUtxos(
-          walletId: any(named: 'walletId'),
-          outpoints: any(named: 'outpoints'),
-        ),
-      ).thenAnswer((_) async {});
-
-      final result = await usecase.execute(
-        walletId: 'w1',
-        outpoints: [(txId: 'a', vout: 0)],
-      );
-
-      expect(result, isA<Ok<void, CoinsFailure>>());
-      verify(
-        () =>
-            repo.freezeUtxos(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
-      ).called(1);
-    });
-
-    test('maps failure to CoinsFreezeFailure', () async {
-      when(
-        () => repo.freezeUtxos(
-          walletId: any(named: 'walletId'),
-          outpoints: any(named: 'outpoints'),
-        ),
-      ).thenThrow(Exception('db down'));
-
-      final result = await usecase.execute(
-        walletId: 'w1',
-        outpoints: [(txId: 'a', vout: 0)],
-      );
-
-      expect(result, isA<Err<void, CoinsFailure>>());
-      expect((result as Err).failure, isA<CoinsFreezeFailure>());
-    });
-
-    test('allows programmer errors to propagate', () async {
-      when(
-        () => repo.freezeUtxos(
-          walletId: any(named: 'walletId'),
-          outpoints: any(named: 'outpoints'),
-        ),
-      ).thenThrow(StateError('programmer defect'));
-
-      await expectLater(
-        usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
-        throwsA(isA<StateError>()),
-      );
-    });
+    when(() => coins.coins('w1'))
+        .thenAnswer((_) async => const Err(CoinsLoadFailure()));
+    expect(
+      (await usecase.execute(walletId: 'w1') as Err).failure,
+      isA<CoinsLoadFailure>(),
+    );
   });
 
-  group('UnfreezeUtxosUsecase', () {
-    late _MockWalletUtxoRepository repo;
-    late UnfreezeUtxosUsecase usecase;
+  test('freeze forwards the wallet, outpoints and typed result', () async {
+    final coins = _MockCoins();
+    final outpoints = [(txId: 'a', vout: 0)];
+    when(() => coins.freeze('w1', outpoints))
+        .thenAnswer((_) async => const Ok(null));
+    final usecase = FreezeUtxosUsecase(coins);
+    expect(
+      await usecase.execute(walletId: 'w1', outpoints: outpoints),
+      isA<Ok<void, CoinsFailure>>(),
+    );
+    verify(() => coins.freeze('w1', outpoints)).called(1);
 
-    setUp(() {
-      repo = _MockWalletUtxoRepository();
-      usecase = UnfreezeUtxosUsecase(walletUtxoRepository: repo);
-    });
-
-    test('delegates to repository.unfreezeUtxos', () async {
-      when(
-        () => repo.unfreezeUtxos(
-          walletId: any(named: 'walletId'),
-          outpoints: any(named: 'outpoints'),
-        ),
-      ).thenAnswer((_) async {});
-
-      final result = await usecase.execute(
+    when(() => coins.freeze('w1', outpoints))
+        .thenAnswer((_) async => const Err(CoinsFreezeFailure()));
+    expect(
+      (await usecase.execute(
         walletId: 'w1',
-        outpoints: [(txId: 'a', vout: 0)],
-      );
+        outpoints: outpoints,
+      ) as Err).failure,
+      isA<CoinsFreezeFailure>(),
+    );
+  });
 
-      expect(result, isA<Ok<void, CoinsFailure>>());
-      verify(
-        () => repo.unfreezeUtxos(
-          walletId: 'w1',
-          outpoints: [(txId: 'a', vout: 0)],
-        ),
-      ).called(1);
-    });
+  test('unfreeze forwards outpoints and typed result', () async {
+    final coins = _MockCoins();
+    final outpoints = [(txId: 'a', vout: 0)];
+    when(() => coins.unfreeze(outpoints))
+        .thenAnswer((_) async => const Ok(null));
+    final usecase = UnfreezeUtxosUsecase(coins);
+    expect(
+      await usecase.execute(walletId: 'w1', outpoints: outpoints),
+      isA<Ok<void, CoinsFailure>>(),
+    );
+    verify(() => coins.unfreeze(outpoints)).called(1);
 
-    test('maps failure to CoinsUnfreezeFailure', () async {
-      when(
-        () => repo.unfreezeUtxos(
-          walletId: any(named: 'walletId'),
-          outpoints: any(named: 'outpoints'),
-        ),
-      ).thenThrow(Exception('db down'));
-
-      final result = await usecase.execute(
+    when(() => coins.unfreeze(outpoints))
+        .thenAnswer((_) async => const Err(CoinsUnfreezeFailure()));
+    expect(
+      (await usecase.execute(
         walletId: 'w1',
-        outpoints: [(txId: 'a', vout: 0)],
-      );
-
-      expect(result, isA<Err<void, CoinsFailure>>());
-      expect((result as Err).failure, isA<CoinsUnfreezeFailure>());
-    });
-
-    test('allows programmer errors to propagate', () async {
-      when(
-        () => repo.unfreezeUtxos(
-          walletId: any(named: 'walletId'),
-          outpoints: any(named: 'outpoints'),
-        ),
-      ).thenThrow(StateError('programmer defect'));
-
-      await expectLater(
-        usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
-        throwsA(isA<StateError>()),
-      );
-    });
+        outpoints: outpoints,
+      ) as Err).failure,
+      isA<CoinsUnfreezeFailure>(),
+    );
   });
 }
