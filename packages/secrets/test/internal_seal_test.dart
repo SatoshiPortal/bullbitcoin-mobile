@@ -35,6 +35,7 @@ void main() {
         'storage',
         'bip85',
         'custody',
+        'metadata_backup',
       ])
         await library('package:secrets/$name.dart'),
     ];

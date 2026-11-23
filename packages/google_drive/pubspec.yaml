@@ -10,6 +10,8 @@ environment:
 resolution: workspace
 
 dependencies:
+  flutter:
+    sdk: flutter
   bull_logger:
   google_sign_in: ^6.3.0
   google_sign_in_platform_interface: ^2.5.0

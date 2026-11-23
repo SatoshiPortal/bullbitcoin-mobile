@@ -22,6 +22,7 @@ boltz = { path = "crates/boltz", features = ["bull_sdk"] }
 # Keep the workspace patches below on the same LWK core as this crate.
 lwk = { path = "crates/lwk", features = ["bull_sdk"] }
 dart_bwk = { path = "crates/bwk", package = "dart_bwk", features = ["bull_sdk"] }
+dart_bip138 = { path = "crates/dart_bip138", features = ["bull_sdk"] }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
@@ -34,6 +35,7 @@ exclude = [
     "crates/bitbox",
     "crates/boltz",
     "crates/bwk",
+    "crates/dart_bip138",
     "crates/lwk",
 ]
 resolver = "2"

@@ -5,12 +5,16 @@ final class GoogleDriveFileMetadata {
   final String name;
   final DateTime createdTime;
   final DateTime? modifiedTime;
+  final int? size;
+  final String? md5;
 
   const GoogleDriveFileMetadata({
     required this.id,
     required this.name,
     required this.createdTime,
     this.modifiedTime,
+    this.size,
+    this.md5,
   });
 }
 
@@ -26,5 +30,7 @@ GoogleDriveFileMetadata decodeDriveFile(drive.File file) {
     name: name,
     createdTime: created,
     modifiedTime: file.modifiedTime,
+    size: int.tryParse(file.size ?? ''),
+    md5: file.md5Checksum,
   );
 }

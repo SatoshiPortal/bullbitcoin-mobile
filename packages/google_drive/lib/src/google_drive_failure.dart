@@ -19,3 +19,23 @@ final class GoogleDriveInvalidResponseFailure extends GoogleDriveFailure {
 final class GoogleDriveTooLargeFailure extends GoogleDriveFailure {
   const GoogleDriveTooLargeFailure();
 }
+
+final class GoogleDriveAuthorizationRequiredFailure extends GoogleDriveFailure {
+  const GoogleDriveAuthorizationRequiredFailure();
+}
+
+final class GoogleDriveCancelledFailure extends GoogleDriveFailure {
+  const GoogleDriveCancelledFailure();
+}
+
+final class GoogleDrivePermissionRevokedFailure extends GoogleDriveFailure {
+  const GoogleDrivePermissionRevokedFailure();
+}
+
+final class GoogleDriveQuotaExceededFailure extends GoogleDriveFailure {
+  const GoogleDriveQuotaExceededFailure();
+}
+
+final class GoogleDriveNotFoundFailure extends GoogleDriveFailure {
+  const GoogleDriveNotFoundFailure();
+}

@@ -14,6 +14,7 @@ flowchart TD
   pkg_address_view["address_view"]
   pkg_all_seed_view["all_seed_view"]
   pkg_announcements["announcements"]
+  pkg_backup_metadata["backup_metadata"]
   pkg_backups["backups"]
   pkg_bip85["bip85"]
   pkg_bitcoin_price["bitcoin_price"]
@@ -119,6 +120,7 @@ flowchart TD
 flowchart TD
   pkg_ark["ark"]
   pkg_background_tasks["background_tasks"]
+  pkg_backup_storage["backup_storage"]
   pkg_bbx_api["bbx_api"]
   pkg_bitbox_transport["bitbox_transport"]
   pkg_boltz_stream["boltz_stream"]
@@ -161,6 +163,8 @@ flowchart TD
   pkg_background_tasks --> pkg_primitives
   pkg_background_tasks --> pkg_secrets
   pkg_background_tasks --> pkg_sync
+  pkg_backup_storage --> pkg_google_drive
+  pkg_backup_storage --> pkg_primitives
   pkg_bbx_api --> pkg_primitives
   pkg_bitbox_transport --> pkg_rust_bindings
   pkg_boltz_stream --> pkg_rust_bindings
@@ -259,6 +263,7 @@ flowchart TD
 | [`address_view`](features/address_view/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_ui`, `labels`, `mempool`, `preferences`, `primitives`, `satoshifier`, `secrets`, `sync` | — |
 | [`all_seed_view`](features/all_seed_view/pubspec.yaml) | `bull_logger`, `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets`, `swaps` | — |
 | [`announcements`](features/announcements/pubspec.yaml) | `bull_ui`, `legacy_storage`, `primitives`, `secrets` | — |
+| [`backup_metadata`](features/backup_metadata/pubspec.yaml) | `backup_storage`, `bull_ui`, `labels`, `primitives`, `secrets` | — |
 | [`backups`](features/backups/pubspec.yaml) | `bull_logger`, `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets` | — |
 | [`bip85`](features/bip85/pubspec.yaml) | `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets` | — |
 | [`bitcoin_price`](features/bitcoin_price/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `preferences`, `primitives` | — |
@@ -267,7 +272,7 @@ flowchart TD
 | [`bull_exchange`](features/bull_exchange/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `exchange`, `fees`, `file_system`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `sync` | — |
 | [`bull_logs`](features/logs/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |
 | [`bull_quick_actions`](features/quick_actions/pubspec.yaml) | `bull_ui`, `primitives` | — |
-| [`bull_recoverbull`](features/recoverbull/pubspec.yaml) | `bull_logger`, `bull_tor`, `bull_ui`, `file_system`, `google_drive`, `legacy_storage`, `preferences`, `primitives`, `screen_awake`, `screen_privacy`, `secrets` | — |
+| [`bull_recoverbull`](features/recoverbull/pubspec.yaml) | `backup_storage`, `bull_logger`, `bull_tor`, `bull_ui`, `file_system`, `legacy_storage`, `preferences`, `primitives`, `screen_awake`, `screen_privacy`, `secrets` | — |
 | [`coins`](features/coins/pubspec.yaml) | `bull_logger`, `bull_ui`, `labels`, `preferences`, `primitives`, `sync` | — |
 | [`fees_feature`](features/fees/pubspec.yaml) | `bull_ui`, `fees`, `primitives` | — |
 | [`label_editor`](features/label_editor/pubspec.yaml) | `bull_logger`, `bull_ui`, `file_system`, `labels`, `primitives` | — |

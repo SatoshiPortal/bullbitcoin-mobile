@@ -18,3 +18,20 @@ abstract class WalletFreezePort {
     required String walletId,
   });
 }
+
+/// Verifies ownership within the wallet named by each imported record.
+extension ImportedFreezeOwnership on WalletFreezePort {
+  Future<List<({String? walletId, String txId, int vout})>>
+  ownedImportedFreezes(
+    String walletId,
+    Iterable<({String? walletId, String txId, int vout})> outputs,
+  ) async {
+    final owned = (await getOwnedOutpoints(walletId: walletId)).toSet();
+    return [
+      for (final output in outputs)
+        if (output.walletId == walletId &&
+            owned.contains((txId: output.txId, vout: output.vout)))
+          output,
+    ];
+  }
+}
