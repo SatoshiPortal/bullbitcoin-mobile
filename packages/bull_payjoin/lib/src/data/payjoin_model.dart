@@ -176,6 +176,14 @@ sealed class PayjoinModel with _$PayjoinModel {
   }
 }
 
+extension PayjoinSenderAdmission on PayjoinSenderModel {
+  /// A local marker, not a PDK event log (which is a JSON list). The
+  /// reservation is durable before Sync returns, but this row cannot send.
+  static const pendingState = '{"admission":"pending"}';
+
+  bool get isAwaitingAdmission => sender == pendingState;
+}
+
 extension PayjoinReceiverSqlite on PayjoinReceiverModel {
   PayjoinReceiverRow toSqlite() => PayjoinReceiverRow(
     id: id,

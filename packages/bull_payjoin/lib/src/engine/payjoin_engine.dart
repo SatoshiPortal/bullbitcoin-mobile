@@ -252,7 +252,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (receiver != null) {
       return receiver.toEntity();
     }
-    if (sender != null) {
+    if (sender != null && !sender.isAwaitingAdmission) {
       return sender.toEntity();
     }
     // No payjoin found with the given ID
@@ -275,18 +275,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       network: network,
     );
 
-    final payjoins = models.map((model) => model.toEntity()).toList();
-
-    return payjoins;
+    return [
+      for (final model in models)
+        if (model is! PayjoinSenderModel || !model.isAwaitingAdmission)
+          model.toEntity(),
+    ];
   }
 
   @override
   Future<List<Payjoin>> getPayjoinsByTxId(String txId) async {
     final payjoinModels = await _localPayjoinDatasource.fetchByTxId(txId);
 
-    return payjoinModels
-        .map((payjoinModel) => payjoinModel.toEntity())
-        .toList();
+    return [
+      for (final model in payjoinModels)
+        if (model is! PayjoinSenderModel || !model.isAwaitingAdmission)
+          model.toEntity(),
+    ];
   }
 
   @override
@@ -462,26 +466,24 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // before any publication; a POST failure after a successful persist
         // deliberately keeps the row (the receiver may still have received
         // the original) and lets the expiry fallback settle the payment.
-        // The row is written with network evidence already set: once the POST
-        // goes out the receiver holds a fully signed, broadcastable original
-        // that BIP 77 lets it broadcast at any point and that this device
-        // cannot revoke, so the payment can exist without this device ever
-        // reaching the bitcoin network. Setting it before the POST closes the
-        // window in which a kill right after the POST leaves a row without
-        // it. Expiry then keeps the row reserved and replays this same
-        // original (_processExpiredPayjoinInner, _holdUnresolvedOriginal)
-        // instead of releasing its inputs to a rebuild that would not conflict
-        // with the receiver's copy. The evidence is withdrawn below only when
-        // the datasource states the request never left the device.
+        // Sync checks ownership again after persist(). Until it accepts, the
+        // durable row reserves inputs but must not poll or broadcast, even if
+        // a crash or a failed abort leaves it behind. Only after admission do
+        // we arm it with network evidence, still before the directory POST:
+        // the receiver might get the signed original and broadcast it at any
+        // point, including if this process dies before reading the response.
         persistBeforePost: (model) async {
-          final delivered = model.copyWith(hasNetworkEvidence: true);
-          persistedAttempt = delivered;
+          final pending = model.copyWith(
+            sender: PayjoinSenderAdmission.pendingState,
+            hasNetworkEvidence: false,
+          );
+          persistedAttempt = pending;
           Future<void> persist() async {
             if (existing == null) {
-              await _localPayjoinDatasource.storeSender(delivered);
+              await _localPayjoinDatasource.storeSender(pending);
             } else {
               final replaced = await _localPayjoinDatasource
-                  .replaceExpiredSender(delivered);
+                  .replaceExpiredSender(pending);
               if (!replaced) {
                 throw const PayjoinEngineException(
                   'The expired Payjoin session could not be replaced',
@@ -492,7 +494,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           }
 
           if (admitOriginal case final admit?) {
-            switch (await admit(sessionId: delivered.id, persist: persist)) {
+            switch (await admit(sessionId: pending.id, persist: persist)) {
               case Ok() when attemptStored:
                 break;
               case primitives.Err(
@@ -507,11 +509,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           } else {
             await _publishInputReservation(
               walletId: walletId,
-              sessionId: delivered.id,
+              sessionId: pending.id,
               network: _networkFor(isTestnet),
               readInputs: () =>
-                  _codec.decodePsbt(delivered.originalPsbt).inputs.toSet(),
+                  _codec.decodePsbt(pending.originalPsbt).inputs.toSet(),
               persist: persist,
+            );
+          }
+          if (!await _localPayjoinDatasource.admitSenderPublication(model)) {
+            throw const PayjoinEngineException(
+              'Could not arm the admitted Payjoin sender',
             );
           }
           publicationAdmitted = true;
@@ -524,7 +531,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // Do not arm any publication or fallback for a refused handoff.
         if (attemptStored && attempt != null) {
           try {
-            await _localPayjoinDatasource.markAborted(attempt);
+            if (!await _localPayjoinDatasource.markAborted(attempt)) {
+              throw const PayjoinEngineException(
+                'Could not abort the unadmitted Payjoin sender',
+              );
+            }
           } on Exception catch (e, st) {
             _log.warning(
               code: api.PayjoinLogCode.storageFailure,
@@ -668,7 +679,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final freshModel =
         await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
         await _localPayjoinDatasource.fetchSender(payjoinId);
-    if (freshModel == null) return false;
+    if (freshModel == null ||
+        (freshModel is PayjoinSenderModel && freshModel.isAwaitingAdmission)) {
+      return false;
+    }
     return _canManuallyBroadcastOriginal(freshModel.toEntity());
   }
 
@@ -686,7 +700,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final freshModel =
         await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
         await _localPayjoinDatasource.fetchSender(payjoinId);
-    if (freshModel == null) return null;
+    if (freshModel == null ||
+        (freshModel is PayjoinSenderModel && freshModel.isAwaitingAdmission)) {
+      return null;
+    }
     return _visibleCompetingTransaction(freshModel.toEntity());
   }
 
@@ -746,7 +763,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final freshModel = payjoin is PayjoinReceiver
         ? await _localPayjoinDatasource.fetchReceiver(payjoin.id)
         : await _localPayjoinDatasource.fetchSender(payjoin.id);
-    if (freshModel == null) {
+    if (freshModel == null ||
+        (freshModel is PayjoinSenderModel && freshModel.isAwaitingAdmission)) {
       // No persisted row: nothing to broadcast against. Broadcasting the
       // caller's copy would leave no local record of the outcome (no aborted
       // marker, no fallback watcher) — the same hazard as a stale entity.
@@ -1513,6 +1531,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       payjoinModel.id,
     );
     if (persisted == null ||
+        persisted.isAwaitingAdmission ||
         persisted.isCompleted ||
         persisted.isAborted ||
         persisted.isExpired) {
@@ -1880,6 +1899,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     if (freshModel == null || freshModel.isCompleted || freshModel.isAborted) {
       return;
     }
+    if (freshModel is PayjoinSenderModel && freshModel.isAwaitingAdmission) {
+      // Never replay an original that did not pass Sync. An expired pending
+      // row releases its reservation and can be replaced on a later attempt.
+      if (freshModel.isExpiryTimePassed) {
+        await _localPayjoinDatasource.markExpired(freshModel);
+      }
+      return;
+    }
     if (freshModel is PayjoinSenderModel &&
         freshModel.proposalPsbt != null &&
         !freshModel.isExpired) {
@@ -2202,7 +2229,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // counterparty's funds rather than free our own.
     final senders = await _localPayjoinDatasource.fetchSenders();
     for (final sender in senders) {
-      if (!sender.isExpired || sender.isAborted || sender.isCompleted) continue;
+      if (!sender.isExpired ||
+          sender.isAborted ||
+          sender.isCompleted ||
+          sender.isAwaitingAdmission) {
+        continue;
+      }
       try {
         // An expired sender has its txId cleared for display hygiene (see
         //  _broadcastOriginalTransaction and the both-broadcasts-failed branch
@@ -2293,6 +2325,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumeOne(PayjoinModel model) async {
+    if (model is PayjoinSenderModel && model.isAwaitingAdmission) {
+      if (model.isExpiryTimePassed) await _processExpiredPayjoin(model);
+      return;
+    }
     bool ofSession(String key) =>
         key == model.id || key.startsWith('${model.id}|');
     // Proposal delivery ends directory polling, but its watchers stay active.
@@ -2587,6 +2623,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<bool> _recordSenderNetworkEvidence(String payjoinId) async {
     final sender = await _localPayjoinDatasource.fetchSender(payjoinId);
     if (sender == null || sender.hasNetworkEvidence) return false;
+    if (sender.isAwaitingAdmission) {
+      throw const api.PayjoinSpendBlockedException();
+    }
     return _localPayjoinDatasource.setSenderNetworkEvidence(
       payjoinId,
       present: true,
