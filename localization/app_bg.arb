@@ -28,6 +28,10 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
+  "coreSwapsStatusCompleted": "Завършено",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
   "coreSwapsActionClaim": "Вземи",
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
@@ -6489,6 +6493,24 @@
   "logsExportFailedMessage": "Неуспешно експортиране на журналите",
   "swapRestoreTitle": "Възстановяване на обмен",
   "swapRestoreActionable": "{count, plural, =0{Няма обмени за възстановяване} =1{Можете да опитате да възстановите 1 обмен. Възможно е вече да е в краен статус.} other{Можете да опитате да възстановите {count} обмена. Обърнете внимание, че някои от тях може вече да са в краен статус.}}",
+  "swapRestoreNoSwaps": "Няма намерени обмени за възстановяване",
+  "swapRestoreRecoverableSection": "Възстановими",
+  "swapRestoreAllSection": "Всички обмени",
+  "swapRestoreFailed": "Обмените не можаха да бъдат възстановени",
+  "swapRestoreKindLightningSend": "Изпращане през Lightning",
+  "swapRestoreKindLightningReceive": "Получаване през Lightning",
+  "swapRestoreKindCrossChain": "Междуверижен",
+  "swapRescueTitle": "Спасяване на обмен",
+  "swapRescueTypeLabel": "Тип",
+  "swapRescueStatusLabel": "Статус",
+  "swapRescueAmountLabel": "Сума",
+  "swapRescueRouteLabel": "Маршрут",
+  "swapRescueCreatedLabel": "Създаден",
+  "swapRescueIdLabel": "ID на обмена",
+  "swapRescueWalletLabel": "Възстанови в портфейл",
+  "swapRescueWalletHint": "Изберете портфейл",
+  "swapRescueButton": "Възстанови",
+  "swapRescueSuccess": "Обменът е възстановен — сега ще продължи",
   "mempoolServerStatusUnknown": "Неизвестен",
   "receivePayjoinNoUtxos": "Първо получете средства, за да го активирате.\nЗа използване на payjoin са необходими UTXO.",
   "paySinpeReceipt": "SINPE разписка",

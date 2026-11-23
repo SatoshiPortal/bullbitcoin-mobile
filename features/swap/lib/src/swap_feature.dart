@@ -50,7 +50,6 @@ import 'order_swap_watcher.dart';
 import 'presentation/internal_ark_transfer_cubit.dart';
 import 'presentation/transfer_bloc.dart';
 import 'ui/swap_router.dart';
-import 'rescue/swap_rescue_routes.dart';
 
 import 'domain/usecases/get_swap_route_settings_usecase.dart';
 import 'domain/usecases/get_swap_server_usecase.dart';
@@ -74,9 +73,6 @@ abstract interface class SwapActivity {
 
 abstract interface class SwapFeature implements SwapActivity {
   List<GoRoute> get routes;
-
-  /// Swap restore and rescue, mounted under the settings home.
-  List<GoRoute> get rescueRoutes;
   GoRoute get autoswapSettingsRoute;
   bool get isWatchingOrders;
   bool get isWatchingAutoswap;
@@ -195,13 +191,6 @@ abstract interface class SwapFeature implements SwapActivity {
     ];
     return _SwapFeature(
       List.unmodifiable(routes),
-      List.unmodifiable(
-        swapRescueRoutes(
-          swaps: swaps,
-          inventory: inventory,
-          environment: preferences,
-        ),
-      ),
       GoRoute(
         name: _autoswapRoute,
         path: _autoswapPath,
@@ -248,8 +237,6 @@ final class _SwapFeature implements SwapFeature {
   @override
   final List<GoRoute> routes;
   @override
-  final List<GoRoute> rescueRoutes;
-  @override
   final GoRoute autoswapSettingsRoute;
   final RefreshOrderSwapsUsecase _refresh;
   final RetryOngoingSwapsUsecase _retry;
@@ -261,7 +248,6 @@ final class _SwapFeature implements SwapFeature {
 
   _SwapFeature(
     this.routes,
-    this.rescueRoutes,
     this.autoswapSettingsRoute,
     this._refresh,
     this._retry,
@@ -330,9 +316,6 @@ abstract final class SwapNavigation {
 
   static Future<void> openSettings(BuildContext context) =>
       context.pushNamed<void>(_settingsRoute);
-
-  static Future<void> openRestore(BuildContext context) =>
-      context.pushNamed<void>(swapRestoreRouteName);
 }
 
 GoRoute swapSettingsRoute(SwapRouting routing, SwapServerSettings servers) =>

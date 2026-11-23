@@ -6,7 +6,9 @@ enum SettingsRoute {
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),
   appSettings('app-settings'),
-  permissions('permissions');
+  permissions('permissions'),
+  swapRestore('swap-restore'),
+  swapRescue('swap-rescue');
 
   final String path;
 

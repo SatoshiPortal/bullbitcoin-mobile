@@ -6442,6 +6442,10 @@
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
   },
+  "coreSwapsStatusCompleted": "지원하다",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
   "fundExchangeCrIbanUsdDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
@@ -7720,6 +7724,24 @@
   "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
   "swapRestoreTitle": "스왑 복구",
   "swapRestoreActionable": "{count, plural, other{복구를 시도할 수 있는 스왑이 {count}건 있습니다. 이미 종료 상태일 수 있으니 참고하세요.}}",
+  "swapRestoreNoSwaps": "복구할 스왑을 찾지 못했습니다",
+  "swapRestoreRecoverableSection": "복구 가능",
+  "swapRestoreAllSection": "전체 스왑",
+  "swapRestoreFailed": "스왑을 복구하지 못했습니다",
+  "swapRestoreKindLightningSend": "Lightning 보내기",
+  "swapRestoreKindLightningReceive": "Lightning 받기",
+  "swapRestoreKindCrossChain": "크로스체인",
+  "swapRescueTitle": "스왑 구제",
+  "swapRescueTypeLabel": "유형",
+  "swapRescueStatusLabel": "상태",
+  "swapRescueAmountLabel": "금액",
+  "swapRescueRouteLabel": "경로",
+  "swapRescueCreatedLabel": "생성일",
+  "swapRescueIdLabel": "스왑 ID",
+  "swapRescueWalletLabel": "복구할 지갑",
+  "swapRescueWalletHint": "지갑 선택",
+  "swapRescueButton": "복구",
+  "swapRescueSuccess": "스왑이 복구되었습니다 — 곧 재개됩니다",
   "mempoolServerStatusUnknown": "알 수 없음",
   "mempoolErrorUnexpected": "예기치 않은 오류가 발생했습니다",
   "mempoolErrorUpdateSettingsFailed": "설정을 업데이트하지 못했습니다: {error}",

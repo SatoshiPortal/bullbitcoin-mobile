@@ -6442,6 +6442,10 @@
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
   },
+  "coreSwapsStatusCompleted": "पूर्ण",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
   "fundExchangeCrIbanUsdDescriptionEnd": "। आपके खाते की शेष राशि में फंड जोड़े जाएंगे।।",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
@@ -7934,6 +7938,24 @@
   "logsExportFailedMessage": "लॉग निर्यात करने में विफल",
   "swapRestoreTitle": "Swap रिस्टोर",
   "swapRestoreActionable": "{count, plural, =0{रिकवर करने के लिए कोई Swap नहीं} =1{आप 1 Swap रिकवर करने का प्रयास कर सकते हैं। यह पहले से ही अंतिम स्थिति में हो सकता है।} other{आप {count} Swaps रिकवर करने का प्रयास कर सकते हैं। ध्यान दें, इनमें से कुछ पहले से ही अंतिम स्थिति में हो सकते हैं।}}",
+  "swapRestoreNoSwaps": "रिस्टोर करने के लिए कोई Swap नहीं मिला",
+  "swapRestoreRecoverableSection": "रिकवर करने योग्य",
+  "swapRestoreAllSection": "सभी Swaps",
+  "swapRestoreFailed": "Swaps रिस्टोर नहीं हो सके",
+  "swapRestoreKindLightningSend": "Lightning भेजें",
+  "swapRestoreKindLightningReceive": "Lightning प्राप्त करें",
+  "swapRestoreKindCrossChain": "क्रॉस-चेन",
+  "swapRescueTitle": "Swap बचाव",
+  "swapRescueTypeLabel": "प्रकार",
+  "swapRescueStatusLabel": "स्थिति",
+  "swapRescueAmountLabel": "राशि",
+  "swapRescueRouteLabel": "मार्ग",
+  "swapRescueCreatedLabel": "बनाया गया",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueWalletLabel": "वॉलेट में रिस्टोर करें",
+  "swapRescueWalletHint": "एक वॉलेट चुनें",
+  "swapRescueButton": "रिस्टोर करें",
+  "swapRescueSuccess": "Swap रिस्टोर हो गया — यह अब फिर से शुरू होगा",
   "receivePayjoinNoUtxos": "इसे सक्षम करने के लिए पहले फंड प्राप्त करें।\npayjoin का उपयोग करने के लिए UTXO आवश्यक हैं।",
   "receiveLiquidRiskDisclosureLabel": "भुगतान Liquid L-BTC (BTC नहीं) में बदल दिए जाएंगे। और जानें।",
   "walletLiquidRiskDisclosureLabel": "यह फंड Liquid L-BTC (BTC नहीं) है। और जानें।",

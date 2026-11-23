@@ -1,5 +1,5 @@
 import 'package:swaps/swaps.dart';
-import '../domain/get_swap_rescue_wallets_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:secrets/secrets.dart';

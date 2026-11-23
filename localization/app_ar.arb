@@ -5915,6 +5915,10 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
+  "coreSwapsStatusCompleted": "مكتملة",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
   "fundExchangeCrIbanUsdDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
@@ -7712,6 +7716,24 @@
   "logsExportFailedMessage": "فشل تصدير السجلات",
   "swapRestoreTitle": "استعادة المبادلات",
   "swapRestoreActionable": "{count, plural, =0{لا توجد مبادلات لاستعادتها} =1{يمكنك محاولة استعادة مبادلة واحدة. قد تكون بالفعل في حالة نهائية.} other{يمكنك محاولة استعادة {count} مبادلات. لاحظ أن بعضها قد يكون بالفعل في حالة نهائية.}}",
+  "swapRestoreNoSwaps": "لم يُعثر على مبادلات لاستعادتها",
+  "swapRestoreRecoverableSection": "قابلة للاستعادة",
+  "swapRestoreAllSection": "جميع المبادلات",
+  "swapRestoreFailed": "تعذّرت استعادة المبادلات",
+  "swapRestoreKindLightningSend": "إرسال عبر البرق",
+  "swapRestoreKindLightningReceive": "استلام عبر البرق",
+  "swapRestoreKindCrossChain": "عبر السلاسل",
+  "swapRescueTitle": "إنقاذ المبادلة",
+  "swapRescueTypeLabel": "النوع",
+  "swapRescueStatusLabel": "الحالة",
+  "swapRescueAmountLabel": "المبلغ",
+  "swapRescueRouteLabel": "المسار",
+  "swapRescueCreatedLabel": "تاريخ الإنشاء",
+  "swapRescueIdLabel": "معرّف المبادلة",
+  "swapRescueWalletLabel": "استعادة إلى محفظة",
+  "swapRescueWalletHint": "اختر محفظة",
+  "swapRescueButton": "استعادة",
+  "swapRescueSuccess": "تمت استعادة المبادلة — ستُستأنف الآن",
   "mempoolServerStatusUnknown": "غير معروف",
   "exchangeStatisticsBuySellRatioDesc": "نسبة إجمالي الحجم بين الشراء والبيع",
   "exchangeStatisticsBuyVolumeDesc": "المبلغ الإجمالي المُنفَق في شراء البيتكوين",

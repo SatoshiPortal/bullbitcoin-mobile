@@ -5450,6 +5450,10 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
+  "coreSwapsStatusCompleted": "Πλήρης",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
   "fundExchangeCrIbanUsdDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
@@ -7820,6 +7824,24 @@
   "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
   "swapRestoreTitle": "Επαναφορά ανταλλαγών",
   "swapRestoreActionable": "{count, plural, =0{Δεν υπάρχουν ανταλλαγές προς ανάκτηση} =1{Μπορείτε να επιχειρήσετε να ανακτήσετε 1 ανταλλαγή. Ενδέχεται να βρίσκεται ήδη σε τελική κατάσταση.} other{Μπορείτε να επιχειρήσετε να ανακτήσετε {count} ανταλλαγές. Σημειώστε ότι ορισμένες από αυτές ενδέχεται να βρίσκονται ήδη σε τελική κατάσταση.}}",
+  "swapRestoreNoSwaps": "Δεν βρέθηκαν ανταλλαγές για επαναφορά",
+  "swapRestoreRecoverableSection": "Ανακτήσιμα",
+  "swapRestoreAllSection": "Όλες οι ανταλλαγές",
+  "swapRestoreFailed": "Δεν ήταν δυνατή η επαναφορά των ανταλλαγών",
+  "swapRestoreKindLightningSend": "Αποστολή Lightning",
+  "swapRestoreKindLightningReceive": "Λήψη Lightning",
+  "swapRestoreKindCrossChain": "Μεταξύ αλυσίδων",
+  "swapRescueTitle": "Διάσωση ανταλλαγής",
+  "swapRescueTypeLabel": "Τύπος",
+  "swapRescueStatusLabel": "Κατάσταση",
+  "swapRescueAmountLabel": "Ποσό",
+  "swapRescueRouteLabel": "Διαδρομή",
+  "swapRescueCreatedLabel": "Δημιουργήθηκε",
+  "swapRescueIdLabel": "Swap ID",
+  "swapRescueWalletLabel": "Επαναφορά σε πορτοφόλι",
+  "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
+  "swapRescueButton": "Επαναφορά",
+  "swapRescueSuccess": "Η ανταλλαγή επαναφέρθηκε — θα συνεχιστεί τώρα",
   "mempoolServerStatusUnknown": "Άγνωστο",
   "receivePayjoinNoUtxos": "Λάβετε πρώτα κεφάλαια για να το ενεργοποιήσετε.\nΑπαιτούνται UTXOs για να χρησιμοποιήσετε το payjoin.",
   "paySinpeReceipt": "Απόδειξη SINPE",

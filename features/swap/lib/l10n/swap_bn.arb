@@ -437,34 +437,5 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
-  "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
-  "coreSwapsStatusCompleted": "সম্পন্ন",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
-  "coreSwapsStatusPending": "মুলতুবি",
-  "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
-  },
-  "swapRescueAmountLabel": "পরিমাণ",
-  "swapRescueButton": "পুনরুদ্ধার করুন",
-  "swapRescueCreatedLabel": "তৈরি হয়েছে",
-  "swapRescueIdLabel": "বদল আইডি",
-  "swapRescueRouteLabel": "রুট",
-  "swapRescueStatusLabel": "অবস্থা",
-  "swapRescueSuccess": "সোয়াপ পুনরুদ্ধার হয়েছে — এটি এখন আবার শুরু হবে",
-  "swapRescueTitle": "সোয়াপ উদ্ধার",
-  "swapRescueTypeLabel": "ধরন",
-  "swapRescueWalletHint": "একটি ওয়ালেট নির্বাচন করুন",
-  "swapRescueWalletLabel": "ওয়ালেটে পুনরুদ্ধার করুন",
-  "swapRestoreActionable": "{count, plural, =0{পুনরুদ্ধারের জন্য কোনো সোয়াপ নেই} one{আপনি ১টি সোয়াপ পুনরুদ্ধারের চেষ্টা করতে পারেন। এটি হয়তো ইতিমধ্যে একটি চূড়ান্ত অবস্থায় থাকতে পারে।} other{আপনি {count}টি সোয়াপ পুনরুদ্ধারের চেষ্টা করতে পারেন। মনে রাখবেন, এদের মধ্যে কিছু হয়তো ইতিমধ্যে চূড়ান্ত অবস্থায় থাকতে পারে।}}",
-  "swapRestoreAllSection": "সব সোয়াপ",
-  "swapRestoreFailed": "সোয়াপ পুনরুদ্ধার করা যায়নি",
-  "swapRestoreKindCrossChain": "ক্রস-চেইন",
-  "swapRestoreKindLightningReceive": "লাইটনিং গ্রহণ",
-  "swapRestoreKindLightningSend": "লাইটনিং পাঠানো",
-  "swapRestoreNoSwaps": "পুনরুদ্ধারের জন্য কোনো সোয়াপ পাওয়া যায়নি",
-  "swapRestoreRecoverableSection": "পুনরুদ্ধারযোগ্য",
-  "swapRestoreTitle": "সোয়াপ পুনরুদ্ধার"
+  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
 }

@@ -6363,6 +6363,10 @@
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
   },
+  "coreSwapsStatusCompleted": "Tamamlandı",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
   "fundExchangeCrIbanUsdDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
@@ -7720,6 +7724,24 @@
   "logsExportFailedMessage": "Kayıtlar dışa aktarılamadı",
   "swapRestoreTitle": "Takas Kurtarma",
   "swapRestoreActionable": "{count, plural, =0{Kurtarılacak takas yok} =1{1 takası kurtarmayı deneyebilirsiniz. Zaten sonlanmış bir durumda olabilir.} other{{count} takası kurtarmayı deneyebilirsiniz. Bazılarının zaten sonlanmış bir durumda olabileceğini unutmayın.}}",
+  "swapRestoreNoSwaps": "Kurtarılacak takas bulunamadı",
+  "swapRestoreRecoverableSection": "Kurtarılabilir",
+  "swapRestoreAllSection": "Tüm takaslar",
+  "swapRestoreFailed": "Takaslar kurtarılamadı",
+  "swapRestoreKindLightningSend": "Lightning Gönderimi",
+  "swapRestoreKindLightningReceive": "Lightning Alımı",
+  "swapRestoreKindCrossChain": "Zincirler Arası",
+  "swapRescueTitle": "Takası Kurtar",
+  "swapRescueTypeLabel": "Tür",
+  "swapRescueStatusLabel": "Durum",
+  "swapRescueAmountLabel": "Miktar",
+  "swapRescueRouteLabel": "Rota",
+  "swapRescueCreatedLabel": "Oluşturulma",
+  "swapRescueIdLabel": "Takas ID",
+  "swapRescueWalletLabel": "Cüzdana geri yükle",
+  "swapRescueWalletHint": "Bir cüzdan seçin",
+  "swapRescueButton": "Geri Yükle",
+  "swapRescueSuccess": "Takas geri yüklendi — şimdi devam edecek",
   "mempoolServerStatusUnknown": "Bilinmiyor",
   "exchangeStatisticsBuySellRatioDesc": "Alım ve satımdan gelen toplam hacim yüzdesi",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin satın almak için harcanan toplam miktar",

@@ -1,17 +1,17 @@
-import '../../../generated/l10n/swap_localizations.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:flutter/widgets.dart';
 import 'package:swaps/swaps.dart';
 
 extension SwapsFailureL10n on SwapsFailure {
   String toTranslated(BuildContext context) => switch (this) {
     SwapsMasterKeyUnavailableFailure() =>
-      SwapLocalizations.of(context).swapsFailureMasterKeyUnavailable,
-    SwapsNotRestorableFailure() => SwapLocalizations.of(context).swapsFailureNotRestorable,
-    SwapsRefundNotFinalFailure() => SwapLocalizations.of(context).swapsFailureRefundNotFinal,
+      context.loc.swapsFailureMasterKeyUnavailable,
+    SwapsNotRestorableFailure() => context.loc.swapsFailureNotRestorable,
+    SwapsRefundNotFinalFailure() => context.loc.swapsFailureRefundNotFinal,
     SwapsNetworkFailure() ||
-    SwapsBoltzUnavailableFailure() => SwapLocalizations.of(context).swapsFailureNetwork,
+    SwapsBoltzUnavailableFailure() => context.loc.swapsFailureNetwork,
     SwapsBoltzRejectedFailure() ||
-    SwapsAmountOutOfLimitsFailure() => SwapLocalizations.of(context).swapsFailureUnexpected,
+    SwapsAmountOutOfLimitsFailure() => context.loc.swapsFailureUnexpected,
 
     // Never `logMessage`: the raw reason is logged at the boundary and is
     // never fit to show a user.
@@ -23,6 +23,6 @@ extension SwapsFailureL10n on SwapsFailure {
     SwapsInvalidLockupFailure() ||
     SwapsStorageFailure() ||
     SwapsUnexpectedFailure() ||
-    AutoswapFailure() => SwapLocalizations.of(context).swapsFailureUnexpected,
+    AutoswapFailure() => context.loc.swapsFailureUnexpected,
   };
 }

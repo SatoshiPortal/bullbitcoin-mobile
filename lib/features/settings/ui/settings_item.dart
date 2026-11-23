@@ -543,7 +543,7 @@ List<SettingsItem> buildSettingsItems({
       title: localization.swapRestoreTitle,
       path: path(SettingsItemSection.wallet, localization.swapRestoreTitle),
       icon: Icons.restore,
-      open: SwapNavigation.openRestore,
+      open: (context) => context.pushNamed(SettingsRoute.swapRestore.name),
       keywords: _keywords(
         localization.settingsSearchSwapRestoreKeywords,
         english.settingsSearchSwapRestoreKeywords,

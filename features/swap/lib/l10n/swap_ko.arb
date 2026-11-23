@@ -434,34 +434,5 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "walletLoadFailed": "지갑을 불러오지 못했습니다. 연결을 확인한 후 다시 시도하세요.",
-  "copiedToClipboard": "클립보드에 복사되었습니다",
-  "coreSwapsStatusCompleted": "지원하다",
-  "@coreSwapsStatusCompleted": {
-    "description": "Display name for completed swap status"
-  },
-  "coreSwapsStatusPending": "관련 기사",
-  "@coreSwapsStatusPending": {
-    "description": "Display name for pending swap status"
-  },
-  "swapRescueAmountLabel": "금액",
-  "swapRescueButton": "복구",
-  "swapRescueCreatedLabel": "생성일",
-  "swapRescueIdLabel": "스왑 ID",
-  "swapRescueRouteLabel": "경로",
-  "swapRescueStatusLabel": "상태",
-  "swapRescueSuccess": "스왑이 복구되었습니다 — 곧 재개됩니다",
-  "swapRescueTitle": "스왑 구제",
-  "swapRescueTypeLabel": "유형",
-  "swapRescueWalletHint": "지갑 선택",
-  "swapRescueWalletLabel": "복구할 지갑",
-  "swapRestoreActionable": "{count, plural, other{복구를 시도할 수 있는 스왑이 {count}건 있습니다. 이미 종료 상태일 수 있으니 참고하세요.}}",
-  "swapRestoreAllSection": "전체 스왑",
-  "swapRestoreFailed": "스왑을 복구하지 못했습니다",
-  "swapRestoreKindCrossChain": "크로스체인",
-  "swapRestoreKindLightningReceive": "Lightning 받기",
-  "swapRestoreKindLightningSend": "Lightning 보내기",
-  "swapRestoreNoSwaps": "복구할 스왑을 찾지 못했습니다",
-  "swapRestoreRecoverableSection": "복구 가능",
-  "swapRestoreTitle": "스왑 복구"
+  "walletLoadFailed": "지갑을 불러오지 못했습니다. 연결을 확인한 후 다시 시도하세요."
 }
