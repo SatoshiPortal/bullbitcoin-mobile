@@ -100,7 +100,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
         bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
       ),
-      reportCreationLimits: true,
+      creatingOrder: true,
     ),
   );
 
@@ -119,7 +119,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
         bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
       ),
-      reportCreationLimits: true,
+      creatingOrder: true,
     ),
   );
 
@@ -144,7 +144,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
             ? paymentDescription
             : null,
       ),
-      reportCreationLimits: true,
+      creatingOrder: true,
     ),
   );
 
@@ -164,7 +164,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         securityQuestion: securityQuestion,
         securityAnswer: securityAnswer,
       ),
-      reportCreationLimits: true,
+      creatingOrder: true,
     ),
   );
 
@@ -303,14 +303,32 @@ final class BbxApiOrderRepository implements ExchangeOrders {
 
   Future<Result<T, ExchangeFailure>> _readOrder<T extends Order>(
     Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request, {
-    bool reportCreationLimits = false,
-  }) async => switch (await request) {
-    Ok(:final value) => _mapOrder<T>(value),
-    Err(failure: bbx.BbxOrderLimitFailure(:final apiCode, :final code))
-        when !reportCreationLimits =>
-      Err(ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code)),
-    Err(:final failure) => Err(_mapFailure(failure)),
-  };
+    bool creatingOrder = false,
+  }) async {
+    final result = await request;
+    if (result
+        case Err(
+          failure: bbx.BbxRpcFailure(:final apiCode, :final code) ||
+              bbx.BbxOrderLimitFailure(:final apiCode, :final code) ||
+              bbx.BbxConfidentialSepaInactiveFailure(
+                :final apiCode,
+                :final code,
+              ),
+        )
+        when creatingOrder) {
+      log.warning(
+        'Exchange order creation refused',
+        error: {'apiCode': apiCode, 'rpcCode': code},
+      );
+    }
+    return switch (result) {
+      Ok(:final value) => _mapOrder<T>(value),
+      Err(failure: bbx.BbxOrderLimitFailure(:final apiCode, :final code))
+          when !creatingOrder =>
+        Err(ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code)),
+      Err(:final failure) => Err(_mapFailure(failure)),
+    };
+  }
 
   Result<T, ExchangeFailure> _mapOrder<T extends Order>(
     bbx.OrderSummary summary,
