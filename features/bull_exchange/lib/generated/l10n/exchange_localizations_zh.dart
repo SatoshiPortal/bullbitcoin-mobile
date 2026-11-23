@@ -2743,6 +2743,10 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
       'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
 
   @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
   String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
 
   @override

@@ -2977,6 +2977,10 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
       'Ce paiement Payjoin est en pause car le portefeuille ne peut pas continuer en toute sécurité. Ses entrées restent réservées. Actualisez le portefeuille ou utilisez Rechercher les transactions manquantes, puis réessayez cette proposition tant qu’elle est valide. Si elle a expiré, vérifiez le paiement dans Transactions avant toute autre action.';
 
   @override
+  String get exchangePayinNetworkMismatch =>
+      'Le portefeuille sélectionné ne correspond pas au réseau de cet ordre ou à l’environnement actuel de l’application. Choisissez un portefeuille compatible et réessayez.';
+
+  @override
   String get walletSpendBusy =>
       'Le portefeuille est occupé. Réessayez dans un instant.';
 

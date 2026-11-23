@@ -5331,6 +5331,12 @@ abstract class ExchangeLocalizations {
   /// **'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.'**
   String get sendPayjoinSpendPaused;
 
+  /// Sell and Pay refuse to create the order when the selected wallet belongs to a different chain or environment.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.'**
+  String get exchangePayinNetworkMismatch;
+
   /// Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments.
   ///
   /// In en, this message translates to:

@@ -2975,6 +2975,10 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
       'Este pago Payjoin está en pausa porque la cartera no puede continuar de forma segura. Sus entradas siguen reservadas. Actualiza la cartera o busca las transacciones faltantes y vuelve a intentar esta propuesta mientras siga siendo válida. Si ha caducado, revisa el pago en Transacciones antes de hacer nada más.';
 
   @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
   String get walletSpendBusy =>
       'La cartera está ocupada. Vuelve a intentarlo en un momento.';
 
