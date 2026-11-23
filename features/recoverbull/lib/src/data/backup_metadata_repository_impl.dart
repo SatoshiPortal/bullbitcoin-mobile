@@ -17,11 +17,13 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   final RecoverBullDatabase _database;
   final bool durable;
   final DateTime Function() _now;
+  final Uri? configuredServer;
 
   BackupMetadataRepositoryImpl(
     this._database, {
     this.durable = true,
     DateTime Function()? clock,
+    this.configuredServer,
   }) : _now = clock ?? DateTime.now;
 
   Future<RecoverbullStateData> _state() =>
@@ -31,7 +33,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   Future<Result<BackupSettings, RecoverBullFailure>> settings() =>
       _guard(() async {
         final state = await _state();
-        final server = Uri.tryParse(state.server);
+        final server = configuredServer ?? Uri.tryParse(state.server);
         if (server == null || !isValidRecoverBullServerUrl(server)) {
           return const Err(VaultStorageFailure());
         }
@@ -41,6 +43,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
             permissionGranted: state.permissionGranted,
             monitoringEnabled: durable && state.monitoringEnabled,
             generation: state.generation,
+            serverEditable: configuredServer == null,
           ),
         );
       });
@@ -70,6 +73,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   @override
   Future<Result<void, RecoverBullFailure>> changeServer(Uri server) => _guard(
     () => _database.transaction(() async {
+      if (configuredServer != null) return const Err(VaultInvalidFailure());
       if (!isValidRecoverBullServerUrl(server)) {
         return const Err(VaultInvalidFailure());
       }
@@ -94,7 +98,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       _guard(
         () => _database.transaction(() async {
           final state = await _state();
-          if (state.server != displayedServer.toString()) {
+          final server = configuredServer ?? Uri.tryParse(state.server);
+          if (server != displayedServer) {
             return const Err(VaultContextChangedFailure());
           }
           await _database

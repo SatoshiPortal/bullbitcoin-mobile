@@ -6,4 +6,5 @@ const storageOwnerManifest = {
   'order_swaps',
   'swaps_regtest',
   'payjoin_regtest',
+  'recoverbull_regtest',
 };

@@ -1,19 +1,25 @@
 import 'package:drift/native.dart' show NativeDatabase;
+import 'package:legacy_storage/coordination.dart';
+import 'package:primitives/primitives.dart';
 
 import '../../domain/recoverbull_failure.dart';
 import '../recoverbull_storage_failure.dart';
+import 'recoverbull_cutover.dart';
 import 'recoverbull_database.dart';
 
 /// Owns a single connection and preserves unavailable or future databases.
 final class RecoverBullStorage {
   final String path;
+  final RecoverBullCutover? cutover;
+  final RuntimeAdmission? admission;
   Future<RecoverBullDatabase>? _opening;
   RecoverBullDatabase? _database;
+  LifecycleHandle? _handle;
   bool _disposed = false;
   bool _temporary = false;
   RecoverBullFailure? _unavailableFailure;
 
-  RecoverBullStorage(this.path);
+  RecoverBullStorage(this.path, {this.cutover, this.admission});
 
   bool get isTemporary => _temporary;
   RecoverBullFailure? get unavailableFailure => _unavailableFailure;
@@ -28,6 +34,23 @@ final class RecoverBullStorage {
   }
 
   Future<RecoverBullDatabase> _open() async {
+    final selected = cutover;
+    final lease = admission;
+    if (selected != null || lease != null) {
+      if (selected == null || lease == null) {
+        throw const LifecycleException('recoverbull_admission');
+      }
+      final opened = await selected.open(lease);
+      if (opened case Ok(:final value)) {
+        if (_disposed) {
+          await value.handle.close();
+          throw const LifecycleException('recoverbull_disposed');
+        }
+        _handle = value.handle;
+        return _accept(value.database);
+      }
+      throw const LifecycleException('recoverbull_open');
+    }
     final database = RecoverBullDatabase.open(path);
     try {
       await database.forceOpen();
@@ -74,7 +97,12 @@ final class RecoverBullStorage {
     _disposed = true;
     final database = _database;
     _database = null;
-    if (database != null) await database.close();
+    if (_handle case final handle?) {
+      await handle.close();
+      _handle = null;
+    } else if (database != null) {
+      await database.close();
+    }
     // An in-flight open observes _disposed and closes its own connection.
   }
 }

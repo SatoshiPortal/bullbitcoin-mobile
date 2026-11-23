@@ -2,22 +2,28 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:google_drive/google_drive.dart';
 import 'package:file_system/file_system.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 
 import '../data/attempt_monitoring_repository_impl.dart';
 import '../data/backup_metadata_repository_impl.dart';
 import '../data/database/recoverbull_storage.dart';
+import '../data/database/recoverbull_cutover.dart';
+import '../data/database/wallet_backup_import.dart';
 import '../data/google_drive_repository.dart';
 import '../data/key_server_session_repository_impl.dart';
 import '../data/secrets_vault_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
+import '../domain/entities/backup_settings.dart' show LegacyBackupSettings;
 import '../domain/recoverbull_failure.dart';
 import '../domain/recoverbull_legacy_settings_port.dart';
 import '../domain/recoverbull_route_port.dart';
+import '../domain/recoverbull_server_url.dart';
 import '../domain/recoverbull_wallet_port.dart';
+import '../domain/wallet_backup_usage.dart';
 import '../domain/usecases/acknowledge_backup_alerts_usecase.dart';
 import '../domain/usecases/check_backup_monitoring_usecase.dart';
 import '../domain/usecases/check_backup_server_usecase.dart';
@@ -78,6 +84,17 @@ final class RecoverBullRuntime {
     this.coldStart,
   );
 
+  Future<Result<SecretBackupProjection, RecoverBullFailure>> backupProjection(
+    Fingerprint fingerprint,
+  ) async {
+    try {
+      final database = await _storage.open();
+      return Ok(await readSecretBackupProjection(database, fingerprint.hex));
+    } on Exception {
+      return const Err(VaultStorageFailure());
+    }
+  }
+
   static Future<RecoverBullRuntime> open({
     required String databasePath,
     required Secrets secrets,
@@ -86,8 +103,14 @@ final class RecoverBullRuntime {
     required RecoverBullLegacySettingsPort legacy,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
+    RecoverBullCutover? cutover,
+    RuntimeAdmission? admission,
   }) async {
-    final storage = RecoverBullStorage(databasePath);
+    final storage = RecoverBullStorage(
+      databasePath,
+      cutover: cutover,
+      admission: admission,
+    );
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive.open());
     const files = FileSystem.open();
@@ -97,17 +120,41 @@ final class RecoverBullRuntime {
     RecoverBullFailure unavailable = const RecoverBullJournalFailure();
     try {
       final database = await storage.open();
-      metadata = BackupMetadataRepositoryImpl(database);
-      monitoring = AttemptMonitoringRepositoryImpl(database, durable: true);
+      final Uri? server;
+      if (cutover == null) {
+        server = null;
+      } else if (cutover.regtest) {
+        final configuration = await legacy.read();
+        if (configuration is! Ok<LegacyBackupSettings, RecoverBullFailure>) {
+          throw const _MissingRecoverBullConfiguration();
+        }
+        server = configuration.value.server;
+      } else {
+        server = Uri.parse(recoverBullDefaultServerUrl);
+      }
+      metadata = BackupMetadataRepositoryImpl(
+        database,
+        configuredServer: server,
+      );
+      monitoring = AttemptMonitoringRepositoryImpl(
+        database,
+        durable: true,
+        configuredServer: server,
+      );
     } on Exception {
       unavailable = storage.unavailableFailure ?? unavailable;
       log.warning('recoverbull.storage.unavailable');
     }
     StartBackupMonitoringUsecase? coldStart;
     if (metadata != null && monitoring != null) {
-      if (await ImportBackupSettingsUsecase(metadata, legacy).execute()
-          case Err()) {
-        log.warning('recoverbull.settings.import.unavailable');
+      if (cutover == null) {
+        final imported = await ImportBackupSettingsUsecase(
+          metadata,
+          legacy,
+        ).execute();
+        if (imported case Err()) {
+          log.warning('recoverbull.settings.import.unavailable');
+        }
       }
       coldStart = StartBackupMonitoringUsecase(
         DiscoverDriveBackupsUsecase(drive, vaults, metadata, monitoring),
@@ -239,4 +286,8 @@ final class RecoverBullRuntime {
     _drive.dispose();
     await _storage.dispose();
   }
+}
+
+final class _MissingRecoverBullConfiguration implements Exception {
+  const _MissingRecoverBullConfiguration();
 }

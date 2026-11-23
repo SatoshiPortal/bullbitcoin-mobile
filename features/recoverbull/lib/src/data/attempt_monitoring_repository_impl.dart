@@ -22,11 +22,13 @@ final class AttemptMonitoringRepositoryImpl
   final RecoverBullDatabase _database;
   final bool _durable;
   final RecoverBullFailure? _unavailableFailure;
+  final Uri? _configuredServer;
 
   AttemptMonitoringRepositoryImpl(
     this._database, {
     required this._durable,
     this._unavailableFailure,
+    this._configuredServer,
   });
 
   Uint8List _digest(EncryptedVault vault) =>
@@ -34,8 +36,11 @@ final class AttemptMonitoringRepositoryImpl
   Future<RecoverbullStateData> _state() =>
       _database.select(_database.recoverbullState).getSingle();
 
+  String _server(RecoverbullStateData state) =>
+      _configuredServer?.toString() ?? state.server;
+
   bool _current(RecoverbullStateData state, BackupSettings settings) =>
-      state.server == settings.server.toString() &&
+      _server(state) == settings.server.toString() &&
       state.generation == settings.generation &&
       state.permissionGranted;
 
@@ -64,7 +69,7 @@ final class AttemptMonitoringRepositoryImpl
       return Err(_unavailableFailure ?? const RecoverBullJournalFailure());
     }
     final state = await _state();
-    if (state.server != settings.server.toString() ||
+    if (_server(state) != settings.server.toString() ||
         state.generation != settings.generation) {
       return const Err(VaultContextChangedFailure());
     }
@@ -186,12 +191,12 @@ final class AttemptMonitoringRepositoryImpl
         }
         final rows = await (_database.select(
           _database.recoverbullMonitoredVaults,
-        )..where((row) => row.server.equals(state.server))).get();
+        )..where((row) => row.server.equals(_server(state)))).get();
         if (rows.isEmpty) return const Ok(null);
         return Ok(
           MonitoringCheck(
             BackupSettings(
-              server: Uri.parse(state.server),
+              server: _configuredServer ?? Uri.parse(state.server),
               permissionGranted: true,
               monitoringEnabled: true,
               generation: state.generation,
@@ -215,7 +220,7 @@ final class AttemptMonitoringRepositoryImpl
     }
     final rows = await (_database.select(
       _database.recoverbullMonitoredVaults,
-    )..where((row) => row.server.equals(state.server))).get();
+    )..where((row) => row.server.equals(_server(state)))).get();
     for (final row in rows) {
       final sample = snapshot?.entries[hex.encode(row.digest)];
       if (snapshot != null && sample == null && row.anchorRequests == null) {
@@ -392,14 +397,14 @@ final class AttemptMonitoringRepositoryImpl
   Future<Result<BackupMonitoring, RecoverBullFailure>> status() => _guard(
     () async {
       final state = await _state();
+      final server = _server(state);
       final rows = await (_database.select(
         _database.recoverbullMonitoredVaults,
-      )..where((row) => row.server.equals(state.server))).get();
+      )..where((row) => row.server.equals(server))).get();
       final alerts =
           await (_database.select(_database.recoverbullAlerts)..where(
                 (row) =>
-                    row.server.equals(state.server) &
-                    row.acknowledged.equals(false),
+                    row.server.equals(server) & row.acknowledged.equals(false),
               ))
               .get();
       return Ok(
@@ -425,7 +430,7 @@ final class AttemptMonitoringRepositoryImpl
         final state = await _state();
         await (_database.update(_database.recoverbullAlerts)..where(
               (row) =>
-                  row.server.equals(state.server) &
+                  row.server.equals(_server(state)) &
                   row.id.equals(acknowledgement),
             ))
             .write(const RecoverbullAlertsCompanion(acknowledged: Value(true)));

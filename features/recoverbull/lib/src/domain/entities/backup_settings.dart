@@ -5,12 +5,14 @@ final class BackupSettings {
   final bool permissionGranted;
   final bool monitoringEnabled;
   final int generation;
+  final bool serverEditable;
 
   BackupSettings({
     required Uri server,
     required this.permissionGranted,
     required this.monitoringEnabled,
     required this.generation,
+    this.serverEditable = true,
   }) : server = validateRecoverBullServerUrl(server);
 }
 

@@ -10,8 +10,9 @@ import 'package:announcements/migration.dart';
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/swap/data/order_swaps_store.dart';
 import 'package:bb_mobile/storage_owner_manifest.dart';
-import 'package:swaps/migration.dart';
 import 'package:bull_payjoin/migration.dart';
+import 'package:bull_recoverbull/migration.dart';
+import 'package:swaps/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -123,8 +124,6 @@ class Bull {
       );
     }
 
-    final boltz = boltzStore(regtest: false);
-    final regtestBoltz = boltzStore(regtest: true);
     PayjoinCutover payjoinStore({required bool regtest}) {
       final owner = regtest ? 'payjoin_regtest' : 'payjoin';
       return PayjoinCutover(
@@ -144,8 +143,20 @@ class Bull {
       );
     }
 
+    final boltz = boltzStore(regtest: false);
+    final regtestBoltz = boltzStore(regtest: true);
     final payjoin = payjoinStore(regtest: false);
     final regtestPayjoin = payjoinStore(regtest: true);
+    final recoverBull = RecoverBullCutover(
+      file: destination('recoverbull'),
+      standalone: standalone('recoverbull.sqlite'),
+      regtest: false,
+    );
+    final regtestRecoverBull = RecoverBullCutover(
+      file: destination('recoverbull_regtest'),
+      standalone: standalone('recoverbull-regtest.sqlite'),
+      regtest: true,
+    );
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -161,6 +172,8 @@ class Bull {
         regtestBoltz.participant,
         payjoin.participant,
         regtestPayjoin.participant,
+        recoverBull.participant,
+        regtestRecoverBull.participant,
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
@@ -183,6 +196,27 @@ class Bull {
     );
     var initialized = false;
     try {
+      locator.registerSingleton(payjoin);
+      locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
+      locator.registerSingleton(recoverBull);
+      locator.registerSingleton(regtestRecoverBull, instanceName: 'regtest');
+      final openedBoltz = await boltz.open(admission);
+      if (openedBoltz case Err(:final failure)) return Err(failure);
+      if (openedBoltz case Ok(:final value)) {
+        locator.registerSingleton(
+          value.database,
+          dispose: (_) => value.handle.close(),
+        );
+      }
+      final openedRegtestBoltz = await regtestBoltz.open(admission);
+      if (openedRegtestBoltz case Err(:final failure)) return Err(failure);
+      if (openedRegtestBoltz case Ok(:final value)) {
+        locator.registerSingleton(
+          value.database,
+          instanceName: 'regtest',
+          dispose: (_) => value.handle.close(),
+        );
+      }
       final announcements = await AnnouncementsStore.open(
         announcementsFile,
         admission,
@@ -202,25 +236,6 @@ class Bull {
           dispose: (_) => value.handle.close(),
         );
       }
-      final openedBoltz = await boltz.open(admission);
-      if (openedBoltz case Err(:final failure)) return Err(failure);
-      if (openedBoltz case Ok(:final value)) {
-        locator.registerSingleton(
-          value.database,
-          dispose: (_) => value.handle.close(),
-        );
-      }
-      final openedRegtestBoltz = await regtestBoltz.open(admission);
-      if (openedRegtestBoltz case Err(:final failure)) return Err(failure);
-      if (openedRegtestBoltz case Ok(:final value)) {
-        locator.registerSingleton(
-          value.database,
-          instanceName: 'regtest',
-          dispose: (_) => value.handle.close(),
-        );
-      }
-      locator.registerSingleton(payjoin);
-      locator.registerSingleton(regtestPayjoin, instanceName: 'regtest');
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),

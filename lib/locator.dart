@@ -17,6 +17,8 @@ import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/migration.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
@@ -89,6 +91,14 @@ class AppLocator {
       databasePath: databasePath,
     );
     WalletRecoverBullBindings.setup(locator);
+    final admission = locator.isRegistered<RuntimeAdmission>()
+        ? locator<RuntimeAdmission>()
+        : null;
+    final family = selectedDatabasePath == databasePath ? null : 'regtest';
+    final cutover =
+        locator.isRegistered<RecoverBullCutover>(instanceName: family)
+        ? locator<RecoverBullCutover>(instanceName: family)
+        : null;
     final feature = await RecoverBullFeature.mount(
       databasePath: selectedDatabasePath,
       secrets: locator<Secrets>(),
@@ -97,6 +107,8 @@ class AppLocator {
       legacy: locator<RecoverBullLegacySettingsPort>(),
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
+      admission: admission,
+      cutover: cutover,
     );
     locator.registerSingleton<RecoverBullFeature>(
       feature,

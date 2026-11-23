@@ -1,5 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:secrets/secrets.dart';
+import 'package:legacy_storage/coordination.dart';
+
+import '../data/database/recoverbull_cutover.dart';
+
 import 'package:bull_tor/tor.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,6 +45,8 @@ final class RecoverBullFeature {
     required RecoverBullLegacySettingsPort legacy,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
+    RecoverBullCutover? cutover,
+    RuntimeAdmission? admission,
   }) async {
     final runtime = await RecoverBullRuntime.open(
       databasePath: databasePath,
@@ -50,6 +56,8 @@ final class RecoverBullFeature {
       legacy: legacy,
       routes: routes,
       clients: clients,
+      cutover: cutover,
+      admission: admission,
     );
     final vaults = SecretsVaultRepository(secrets);
     return RecoverBullFeature._(
@@ -63,6 +71,7 @@ final class RecoverBullFeature {
         runtime.parseVault,
         runtime.settings,
         runtime.recoverServerVault,
+        runtime.backupProjection,
       ),
       runtime,
     );

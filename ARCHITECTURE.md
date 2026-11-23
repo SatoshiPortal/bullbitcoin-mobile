@@ -462,6 +462,8 @@ The native flock sentinel is stable and independently opened per admission. Temp
 
 Announcements reads and writes dismissals only in its encrypted schema-1 database under runtime admission. Its cutover participant preserves even unknown announcement IDs and compares the raw historical timestamp text before committing the import receipt.
 
+Boltz, public order swaps, Payjoin and RecoverBull each have a separate encrypted database under the same foreground-only cutover. Public order swaps preserve their request, wallet and transaction indices. Boltz and Payjoin verify standalone and root data together before admission, without replacing an unreadable source or overwriting a matching live row with its historical version. Standalone sources are retained. RecoverBull imports its monitoring data and provides a separate transactional import for wallet-usage backup facts; Preferences alone owns production server consent. The production URL is configured, not migrated.
+
 ### Secrets inventory storage
 
 The schema owned by `packages/secrets` stores wallet definitions, derivation records, access views, credentials and the global access state. Its split-v1 participant imports raw schema-16 rows, the initial view and its access state under exclusive admission. Its receipt commits in the same transaction after row-by-row verification. Secret material and module keys stay in the OS keystore. The participant leaves the source and legacy access entries available for coordinated retirement after the complete manifest verifies.
