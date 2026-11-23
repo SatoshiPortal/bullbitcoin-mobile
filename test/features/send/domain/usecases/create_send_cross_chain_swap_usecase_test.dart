@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:swaps/order_swaps.dart';
 import 'package:signers/signers.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
