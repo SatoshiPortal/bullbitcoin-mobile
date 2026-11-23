@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/swap/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:address_view/address_view.dart';
 import 'package:labels/labels.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -10,37 +11,18 @@ import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:transactions/transactions.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
+import 'package:receive/testing.dart';
 import 'package:swaps/swaps.dart' as swaps;
 
 class _MockLabels extends Mock implements Labels {}
@@ -152,7 +134,7 @@ void main() {
               receive: operations,
               pollAmountQuotes: false,
               prepareReceiveAddressUsecase: _MockPrepareReceiveAddressUsecase(),
-              createReceiveOrderSwapUsecase: swap,
+              createReceiveOrderSwapUsecase: swap.execute,
               getReceiveSwapRouteUsecase: _MockGetReceiveSwapRouteUsecase(),
               createBoltzReceiveSwapUsecase:
                   _MockCreateBoltzReceiveSwapUsecase(),
@@ -175,24 +157,24 @@ void main() {
             errors.add(error);
           },
         );
-        locator.registerFactoryParam<ReceiveBloc, Wallet?, void>(
-          (wallet, _) => bloc,
-        );
-        locator.registerSingleton<PollReceiveWalletUsecase>(
-          PollReceiveWalletUsecase(WalletFacade(const Stream.empty())),
-        );
+        final root = GlobalKey<NavigatorState>();
         final router = GoRouter(
-          navigatorKey: AppRouter.rootNavigatorKey,
+          navigatorKey: root,
           initialLocation: '/review-home',
           routes: [
             GoRoute(path: '/review-home', builder: (_, _) => const SizedBox()),
-            ReceiveRouter.route,
+            ReceiveRouter.mount(
+              rootNavigatorKey: root,
+              createBloc: (_) => bloc,
+              poll: PollReceiveWalletUsecase((_, {required isActive}) async {}),
+              openHome: (context) => context.go('/review-home'),
+              successAnimation: const AssetImage(
+                'assets/animations/success_tick.gif',
+              ),
+            ),
           ],
         );
-        addTearDown(() {
-          router.dispose();
-          unawaited(locator.reset());
-        });
+        addTearDown(router.dispose);
         await tester.pumpWidget(
           MaterialApp.router(
             routerConfig: router,

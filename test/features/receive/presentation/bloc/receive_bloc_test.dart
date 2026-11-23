@@ -1,7 +1,7 @@
+import 'package:bb_mobile/features/swap/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:preferences/preferences.dart';
 
@@ -19,24 +19,12 @@ import 'dart:typed_data';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:transactions/transactions.dart';
 import 'package:receive/receive.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:receive/testing.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:swaps/swaps.dart' show SwapRoute;
@@ -168,24 +156,19 @@ class _ControlledCancelPayjoinStream
 // confirmedBalanceSat is a separate optional override so a test can build a
 // wallet with unconfirmed-only funds (balanceSat > 0, confirmedBalanceSat ==
 // 0) to cover the accepted unconfirmed-only case.
-Wallet _testWallet({
+ReceiveWallet _testWallet({
   String origin = 'w1',
   BigInt? balanceSat,
   BigInt? confirmedBalanceSat,
-  Network network = Network.bitcoinMainnet,
+  Network network = BitcoinNetwork.mainnet,
   SignerEntity signer = SignerEntity.local,
-}) => Wallet(
-  origin: origin,
+}) => ReceiveWallet(
+  id: network.env == primitives.NetworkEnv.regtest ? '$origin:regtest' : origin,
   network: network,
-  xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: signer,
+  signsLocally: signer == SignerEntity.local,
   signerDevice: null,
   balanceSat: balanceSat ?? BigInt.from(50000),
-  confirmedBalanceSat: confirmedBalanceSat ?? balanceSat ?? BigInt.from(50000),
 );
 
 WalletAddress _testAddress({String walletId = 'w1'}) => WalletAddress(
@@ -245,6 +228,7 @@ class _MockTransactions extends Mock implements WalletTransactionRepository {}
 void main() {
   late _MockReceive receive;
   late _MockGetReceiveWalletsUsecase getWallets;
+  var lightningRefreshes = 0;
   late _MockPrepareReceiveAddressUsecase getReceiveAddress;
   late _MockReceiveWithPayjoinUsecase receiveWithPayjoin;
   late _MockBroadcastOriginalTransactionUsecase broadcastOriginalTransaction;
@@ -269,7 +253,7 @@ void main() {
   });
 
   ReceiveBloc buildBloc({
-    Wallet? wallet,
+    ReceiveWallet? wallet,
     bool withPresetWallet = true,
     Transactions? observation,
     Preferences? settings,
@@ -298,10 +282,13 @@ void main() {
     return ReceiveBloc(
       getReceiveSwapLimitsUsecase: getSwapLimits,
       getReceiveWalletsUsecase: getWallets,
+      refreshAfterLightningPayment: () async {
+        lightningRefreshes++;
+      },
       receive: receive,
       pollAmountQuotes: false,
       prepareReceiveAddressUsecase: getReceiveAddress,
-      createReceiveOrderSwapUsecase: createOrderSwap,
+      createReceiveOrderSwapUsecase: createOrderSwap.execute,
       getReceiveSwapRouteUsecase: getSwapRoute,
       createBoltzReceiveSwapUsecase: createBoltzSwap,
       watchSwapUsecase: watchSwap,
@@ -329,6 +316,7 @@ void main() {
               const Ok(swaps.SwapLimits(min: 1, max: 2100000000000000)),
         );
     getWallets = _MockGetReceiveWalletsUsecase();
+    lightningRefreshes = 0;
     when(() => getWallets.execute(onlyBitcoin: true))
         .thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
     getReceiveAddress = _MockPrepareReceiveAddressUsecase();
@@ -543,10 +531,10 @@ void main() {
               ),
             ),
           );
-          final selected = _testWallet(network: Network.bitcoinRegtest);
+          final selected = _testWallet(network: BitcoinNetwork.regtest);
           final liquid = _testWallet(
             origin: 'liquid-regtest',
-            network: Network.liquidRegtest,
+            network: LiquidNetwork.regtest,
           );
           final receiveWallet = preset ? selected : liquid;
           when(() => getWallets.execute(onlyBitcoin: true))
@@ -673,7 +661,7 @@ void main() {
         ),
       ),
     );
-    final selected = _testWallet(network: Network.bitcoinRegtest);
+    final selected = _testWallet(network: BitcoinNetwork.regtest);
     when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
         .thenAnswer((_) async => const Ok([]));
     final bloc = buildBloc(wallet: selected, settings: inner);
@@ -1120,7 +1108,7 @@ void main() {
       // GetReceiveWalletsUsecase returns Ok([]) for an empty list; .first
       // would throw a StateError with no try/catch left to convert it.
       when(() => getWallets.execute(onlyBitcoin: true))
-          .thenAnswer((_) async => const Ok(<Wallet>[]));
+          .thenAnswer((_) async => const Ok(<ReceiveWallet>[]));
 
       final bloc = buildBloc(withPresetWallet: false);
       addTearDown(bloc.close);
@@ -1334,7 +1322,7 @@ void main() {
           .thenAnswer((_) => updates.stream);
 
       final bloc = buildBloc(
-        wallet: _testWallet(network: Network.liquidTestnet),
+        wallet: _testWallet(network: LiquidNetwork.testnet),
       );
       addTearDown(bloc.close);
       bloc.add(const ReceiveLightningStarted());
@@ -1956,7 +1944,7 @@ void main() {
       when(() => watchOrderSwap.execute(record.localId))
           .thenAnswer((_) => const Stream.empty());
       final bloc = buildBloc(
-        wallet: _testWallet(network: Network.liquidTestnet),
+        wallet: _testWallet(network: LiquidNetwork.testnet),
       );
       addTearDown(bloc.close);
       bloc.add(const ReceiveLightningStarted());
@@ -1987,7 +1975,7 @@ void main() {
     ).thenAnswer((_) async => Ok(record));
     when(() => watchOrderSwap.execute(record.localId))
         .thenAnswer((_) => lateStream);
-    final bloc = buildBloc(wallet: _testWallet(network: Network.liquidTestnet));
+    final bloc = buildBloc(wallet: _testWallet(network: LiquidNetwork.testnet));
 
     bloc.add(const ReceiveLightningStarted());
     await pumpEventQueue();
@@ -2011,7 +1999,7 @@ void main() {
         ),
       ).thenAnswer((_) => creation.future);
       final bloc = buildBloc(
-        wallet: _testWallet(network: Network.liquidTestnet),
+        wallet: _testWallet(network: LiquidNetwork.testnet),
       );
       addTearDown(bloc.close);
 
@@ -2060,8 +2048,6 @@ void main() {
           .thenAnswer((_) async => SwapRoute.boltz);
       when(() => watchSwap.execute(any()))
           .thenAnswer((_) => swapUpdates.stream);
-      when(() => getWallets.execute(sync: true))
-          .thenAnswer((_) async => const Ok([]));
     });
 
     tearDown(() => swapUpdates.close());
@@ -2076,11 +2062,11 @@ void main() {
         ).thenAnswer((_) async => result);
 
     Future<ReceiveBloc> confirmLightning({
-      Wallet? wallet,
+      ReceiveWallet? wallet,
       String note = '',
     }) async {
       final bloc = buildBloc(
-        wallet: wallet ?? _testWallet(network: Network.liquidTestnet),
+        wallet: wallet ?? _testWallet(network: LiquidNetwork.testnet),
       );
       addTearDown(bloc.close);
       bloc.add(const ReceiveLightningStarted());
@@ -2234,7 +2220,7 @@ void main() {
         'on-chain through Boltz', () async {
       final bitcoinWallet = _testWallet(
         origin: 'btc-w',
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
       );
       stubBoltz(
         Ok(
@@ -2266,7 +2252,7 @@ void main() {
       swapUpdates.add(_boltzReceiveSwap(status: swaps.SwapStatus.completed));
       await pumpEventQueue();
       expect(bloc.state.isPaymentReceived, isTrue);
-      verify(() => getWallets.execute(sync: true)).called(1);
+      expect(lightningRefreshes, 1);
     });
 
     test('an expired invoice is a terminal failure', () async {
@@ -2297,7 +2283,7 @@ void main() {
   test(
     'Liquid new address uses the persistent writer and survives reopen',
     () async {
-      final wallet = _testWallet(network: Network.liquidMainnet);
+      final wallet = _testWallet(network: LiquidNetwork.mainnet);
       final next = _testAddress().copyWith(index: 1, address: 'liquid-next');
       var issued = _testAddress();
       when(() => getReceiveAddress.execute(walletId: wallet.id))
@@ -2327,7 +2313,7 @@ void main() {
     },
   );
 
-  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+  for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
     test(
       '$network retry retains new-address intent and drops duplicates',
       () async {
@@ -2490,7 +2476,7 @@ void main() {
     },
   );
 
-  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+  for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
     test(
       'Retry keeps an edited message and rejects late labels on $network',
       () async {
@@ -2513,7 +2499,7 @@ void main() {
           if (!labelLoad.isCompleted) labelLoad.complete(const Ok('stored'));
           await bloc.close();
         });
-        final start = network.isBitcoin
+        final start = network is BitcoinNetwork
             ? ReceiveBitcoinStarted(wallet)
             : const ReceiveLiquidStarted();
         bloc.add(start);
@@ -2526,7 +2512,7 @@ void main() {
         bloc.add(const ReceiveAddressRetried());
         await pumpEventQueue();
         final duringRetry = (bloc.state.note, bloc.state.confirmedNote);
-        final latest = network.isBitcoin ? 'newer user draft' : '';
+        final latest = network is BitcoinNetwork ? 'newer user draft' : '';
         bloc.add(ReceiveNoteChanged(latest));
         await pumpEventQueue();
         labelLoad.complete(const Ok('stored'));
@@ -2540,10 +2526,10 @@ void main() {
         );
 
         // Switching rails starts a fresh request without this wallet's draft.
-        if (network.isBitcoin) {
+        if (network is BitcoinNetwork) {
           final liquid = _testWallet(
             origin: 'other',
-            network: Network.liquidMainnet,
+            network: LiquidNetwork.mainnet,
           );
           when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
               .thenAnswer((_) async => Ok([liquid]));
@@ -2656,7 +2642,8 @@ void main() {
     );
     final wallet = _testWallet();
     final firstLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
-    final retryCatalog = Completer<Result<List<Wallet>, ReceiveFailure>>();
+    final retryCatalog =
+        Completer<Result<List<ReceiveWallet>, ReceiveFailure>>();
     final retryLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
     var catalogCalls = 0;
     var addressCalls = 0;
@@ -2756,9 +2743,9 @@ void main() {
     () async {
       final first = _testWallet(
         origin: 'first',
-        network: Network.liquidMainnet,
+        network: LiquidNetwork.mainnet,
       );
-      final next = _testWallet(origin: 'next', network: Network.liquidMainnet);
+      final next = _testWallet(origin: 'next', network: LiquidNetwork.mainnet);
       final oldAddress = _testAddress(walletId: first.id)
           .copyWith(address: 'lq1old');
       final nextAddress = _testAddress(walletId: next.id)
@@ -2821,10 +2808,10 @@ void main() {
 
   for (final sameWallet in [true, false]) {
     test('Liquid address Retry with same wallet=$sameWallet', () async {
-      final wallet = _testWallet(network: Network.liquidMainnet);
+      final wallet = _testWallet(network: LiquidNetwork.mainnet);
       final next = sameWallet
           ? wallet
-          : _testWallet(origin: 'next', network: Network.liquidMainnet);
+          : _testWallet(origin: 'next', network: LiquidNetwork.mainnet);
       final firstLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
       final address = _testAddress(walletId: next.id)
           .copyWith(address: 'liquid-fixture');
@@ -2903,7 +2890,7 @@ void main() {
     });
   }
 
-  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+  for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
     for (final succeeds in [true, false]) {
       test(
         '$network navigation while advance pending success=$succeeds',
@@ -2912,8 +2899,8 @@ void main() {
           final destination = _testWallet(
             origin: 'destination',
             network: wallet.isBitcoin
-                ? Network.liquidMainnet
-                : Network.bitcoinMainnet,
+                ? LiquidNetwork.mainnet
+                : BitcoinNetwork.mainnet,
           );
           final pending = Completer<Result<WalletAddress, ReceiveFailure>>();
           when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
@@ -3028,7 +3015,7 @@ void main() {
         '— the default bitcoin wallet is used instead', () async {
       final liquidWallet = _testWallet(
         origin: 'liquid-w',
-        network: Network.liquidMainnet,
+        network: LiquidNetwork.mainnet,
         balanceSat: BigInt.from(900000),
       );
       final bloc = buildBloc(wallet: liquidWallet);
@@ -3037,7 +3024,7 @@ void main() {
       bloc.add(const ReceiveBitcoinStarted(null));
       await Future<void>.delayed(Duration.zero);
 
-      expect(bloc.state.wallet?.origin, 'default-btc');
+      expect(bloc.state.wallet?.id, 'default-btc');
       expect(bloc.state.wallet?.isBitcoin, isTrue);
     });
 
@@ -3049,7 +3036,7 @@ void main() {
       );
       final liquidWallet = _testWallet(
         origin: 'liquid-w',
-        network: Network.liquidMainnet,
+        network: LiquidNetwork.mainnet,
         balanceSat: BigInt.from(900000),
       );
       final bloc = buildBloc(wallet: liquidWallet);
@@ -3213,7 +3200,7 @@ void main() {
 
         final payment = WalletTransaction(
           walletId: walletA.id,
-          network: walletA.network.shared,
+          network: walletA.network,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.pending,
           txId: 'payment-for-a',
@@ -3280,7 +3267,7 @@ void main() {
         final price = Completer<Result<double, ReceiveFailure>>();
         final payment = WalletTransaction(
           walletId: wallet.id,
-          network: wallet.network.shared,
+          network: wallet.network,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'confirmed-during-receive-preparation',
@@ -3441,7 +3428,7 @@ void main() {
       () {
         fakeAsync((async) {
           final wallet = _testWallet(
-            network: liquid ? Network.liquidMainnet : Network.bitcoinMainnet,
+            network: liquid ? LiquidNetwork.mainnet : BitcoinNetwork.mainnet,
           );
           final initial = Completer<Result<WalletAddress, ReceiveFailure>>();
           final next = Completer<Result<WalletAddress, ReceiveFailure>>();

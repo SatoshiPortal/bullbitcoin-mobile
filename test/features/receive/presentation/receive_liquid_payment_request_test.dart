@@ -1,25 +1,22 @@
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart' show AssetConstants;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:receive/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  for (final network in [Network.liquidMainnet, Network.liquidTestnet]) {
-    final address = network.requireHistoricalTestnet()
+  for (final network in [LiquidNetwork.mainnet, LiquidNetwork.testnet]) {
+    final address = (network == LiquidNetwork.testnet)
         ? 'tlq1testaddress'
         : 'lq1testaddress';
-    final wallet = Wallet(
-      origin: 'test-origin',
+    final wallet = ReceiveWallet(
+      id: 'test-origin',
       network: network,
-      xpubFingerprint: '00000000',
       scriptType: ScriptType.bip84,
-      xpub: '',
-      externalPublicDescriptor: '',
-      internalPublicDescriptor: '',
-      signer: SignerEntity.local,
+      signsLocally: true,
       signerDevice: null,
       balanceSat: BigInt.zero,
     );
@@ -49,14 +46,14 @@ void main() {
             // The send parser requires liquidtestnet for testnet addresses.
             expect(
               uri.scheme,
-              network.requireHistoricalTestnet()
+              (network == LiquidNetwork.testnet)
                   ? 'liquidtestnet'
                   : 'liquidnetwork',
             );
             expect(uri.path, address);
             expect(
               uri.queryParameters['assetid'],
-              network.requireHistoricalTestnet()
+              (network == LiquidNetwork.testnet)
                   ? AssetConstants.lbtcTestnet
                   : AssetConstants.lbtcMainnet,
             );
@@ -77,7 +74,7 @@ void main() {
 
         expect(
           uri.scheme,
-          network.requireHistoricalTestnet()
+          (network == LiquidNetwork.testnet)
               ? 'liquidtestnet'
               : 'liquidnetwork',
         );
@@ -86,7 +83,7 @@ void main() {
         expect(uri.queryParameters.containsKey('message'), isFalse);
         expect(
           uri.queryParameters['assetid'],
-          network.requireHistoricalTestnet()
+          (network == LiquidNetwork.testnet)
               ? AssetConstants.lbtcTestnet
               : AssetConstants.lbtcMainnet,
         );

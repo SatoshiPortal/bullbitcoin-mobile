@@ -26,8 +26,6 @@ const _legacyImports = {
   'lib/features/swap/ui/swap_router.dart -> locator.dart',
   'lib/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart -> locator.dart',
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
-  'lib/features/receive/ui/receive_router.dart -> locator.dart',
-  'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
   'lib/features/consolidation/ui/consolidation_router.dart -> locator.dart',
   'lib/features/consolidation/ui/widgets/consolidation_banner.dart -> locator.dart',

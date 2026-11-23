@@ -45,15 +45,14 @@ const _allowedTargets = <String, String>{
   'onboarding':
       'mnemonic_entry network recoverbull settings wallet wallet_import',
   'pay': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
-  'receive':
-      'address_view label_editor settings signers swap transactions wallet',
+  'receive': 'address_view label_editor signers transactions',
   'replace_by_fee': 'fees wallet',
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
+  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions receive recoverbull silent swap test_wallet_backup transactions wallet',
   'support': 'bull_exchange',
-  'swap': 'address_view ark coins consolidation fees send transactions wallet',
+  'swap': 'address_view ark coins consolidation fees receive send transactions wallet',
   'test_wallet_backup':
       'access onboarding physical_backup_verification recoverbull wallet',
   'transactions': 'bitcoin_price label_editor',

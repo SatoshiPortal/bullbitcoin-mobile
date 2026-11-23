@@ -1,10 +1,10 @@
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:receive/testing.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
@@ -29,7 +29,7 @@ Future<void> _mount(WidgetTester tester, {Network? destination}) async {
   final swap = Swap.lnReceive(
     id: 'public-swap-1234',
     keyIndex: 0,
-    type: destination?.isBitcoin == true
+    type: destination is BitcoinNetwork
         ? SwapType.lightningToBitcoin
         : SwapType.lightningToLiquid,
     status: SwapStatus.pending,
@@ -49,15 +49,11 @@ Future<void> _mount(WidgetTester tester, {Network? destination}) async {
       type: ReceiveType.lightning,
       wallet: destination == null
           ? null
-          : Wallet(
-              origin: 'destination',
+          : ReceiveWallet(
+              id: 'destination',
               network: destination,
-              xpubFingerprint: '00000000',
               scriptType: ScriptType.bip84,
-              xpub: '',
-              externalPublicDescriptor: '',
-              internalPublicDescriptor: '',
-              signer: SignerEntity.local,
+              signsLocally: true,
               signerDevice: null,
               balanceSat: BigInt.zero,
             ),
@@ -106,7 +102,7 @@ void main() {
       'MaterialIcons',
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
-  for (final destination in [Network.liquidMainnet, Network.bitcoinMainnet]) {
+  for (final destination in [LiquidNetwork.mainnet, BitcoinNetwork.mainnet]) {
     testWidgets('Lightning invoice Liquid disclosure for $destination', (
       tester,
     ) async {
@@ -114,7 +110,7 @@ void main() {
       final context = tester.element(find.byType(ReceiveLnInfoDetails));
       final loc = context.loc;
       final link = find.byType(BullDisclosureLink);
-      if (destination.isBitcoin) {
+      if (destination is BitcoinNetwork) {
         expect(link, findsNothing);
         return;
       }

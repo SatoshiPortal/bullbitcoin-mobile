@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
+import 'package:receive/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

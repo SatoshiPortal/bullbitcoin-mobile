@@ -1,12 +1,12 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
+import 'package:receive/testing.dart';
 import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -149,10 +149,18 @@ void main() {
         when(() => send.stream).thenAnswer((_) => sendStates.stream);
         when(() => send.isSpMode).thenReturn(false);
         when(() => send.preparedMaxAmountSat).thenReturn(max ? 1249580 : null);
+        final receiveWallet = ReceiveWallet(
+          id: wallet.id,
+          network: wallet.network.shared,
+          signsLocally: wallet.signsLocally,
+          scriptType: wallet.scriptType,
+          balanceSat: wallet.balanceSat,
+          label: wallet.label,
+        );
         when(() => receive.state).thenReturn(
           ReceiveState(
-            wallet: wallet,
-            wallets: [wallet],
+            wallet: receiveWallet,
+            wallets: [receiveWallet],
             walletAdmitted: true,
             type: ReceiveType.bitcoin,
             bitcoinUnit: BitcoinUnit.sats,

@@ -1,9 +1,8 @@
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:receive/testing.dart';
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,15 +25,11 @@ void main() {
         when(() => bloc.state).thenReturn(
           ReceiveState(
             type: ReceiveType.lightning,
-            wallet: Wallet(
-              origin: 'limits',
-              network: Network.bitcoinMainnet,
-              xpubFingerprint: '00000000',
+            wallet: ReceiveWallet(
+              id: 'limits',
+              network: BitcoinNetwork.mainnet,
               scriptType: ScriptType.bip84,
-              xpub: '',
-              externalPublicDescriptor: '',
-              internalPublicDescriptor: '',
-              signer: SignerEntity.local,
+              signsLocally: true,
               signerDevice: null,
               balanceSat: BigInt.zero,
             ),

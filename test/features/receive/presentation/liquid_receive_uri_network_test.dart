@@ -1,23 +1,21 @@
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:receive/testing.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show AssetConstants;
 
-Wallet _wallet(Network network) => Wallet(
-  origin: 'fixture',
-  network: network,
-  xpubFingerprint: '00000000',
-  scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
-);
+ReceiveWallet _wallet(Network network, {String id = 'fixture'}) =>
+    ReceiveWallet(
+      id: id,
+      network: network,
+      scriptType: ScriptType.bip84,
+      signsLocally: true,
+      signerDevice: null,
+      balanceSat: BigInt.zero,
+    );
 WalletAddress _address(String address, {String walletId = 'fixture'}) =>
     WalletAddress(
       walletId: walletId,
@@ -29,14 +27,14 @@ WalletAddress _address(String address, {String walletId = 'fixture'}) =>
 
 void main() {
   for (final network in [
-    Network.liquidMainnet,
-    Network.liquidTestnet,
-    Network.liquidRegtest,
+    LiquidNetwork.mainnet,
+    LiquidNetwork.testnet,
+    LiquidNetwork.regtest,
   ]) {
     test('Liquid receive URI keeps exact network $network', () {
       final address = switch (network) {
-        Network.liquidMainnet => 'lq1fixture',
-        Network.liquidTestnet => 'tlq1fixture',
+        LiquidNetwork.mainnet => 'lq1fixture',
+        LiquidNetwork.testnet => 'tlq1fixture',
         _ => 'el1fixture',
       };
       final wallet = _wallet(network);
@@ -47,20 +45,20 @@ void main() {
         confirmedAmountSat: 10000,
         note: 'fixture',
       );
-      if (network == Network.liquidRegtest) {
+      if (network == LiquidNetwork.regtest) {
         expect(state.paymentRequest, address);
       } else {
         final uri = Uri.parse(state.paymentRequest);
         expect(
           uri.scheme,
-          network == Network.liquidMainnet ? 'liquidnetwork' : 'liquidtestnet',
+          network == LiquidNetwork.mainnet ? 'liquidnetwork' : 'liquidtestnet',
         );
         expect(uri.path, address);
         expect(uri.queryParameters['amount'], '0.0001');
         expect(uri.queryParameters['message'], 'fixture');
         expect(
           uri.queryParameters['assetid'],
-          network == Network.liquidMainnet
+          network == LiquidNetwork.mainnet
               ? AssetConstants.lbtcMainnet
               : AssetConstants.lbtcTestnet,
         );
@@ -68,21 +66,23 @@ void main() {
     });
   }
   for (final network in [
-    Network.bitcoinTestnet,
-    Network.liquidTestnet,
-    Network.liquidMainnet,
+    BitcoinNetwork.testnet,
+    LiquidNetwork.testnet,
+    LiquidNetwork.mainnet,
   ]) {
     test('Receive serializes 1–99 sats as decimal BTC on $network', () {
       final wallet = _wallet(network);
       final address = _address(
-        network.isBitcoin ? 'tb1fixture' : 'tlq1fixture',
+        network is BitcoinNetwork ? 'tb1fixture' : 'tlq1fixture',
         walletId: wallet.id,
       );
       final draft = ReceiveState(
-        type: network.isBitcoin ? ReceiveType.bitcoin : ReceiveType.liquid,
+        type: network is BitcoinNetwork
+            ? ReceiveType.bitcoin
+            : ReceiveType.liquid,
         wallet: wallet,
-        bitcoinAddress: network.isBitcoin ? address : null,
-        liquidAddress: network.isBitcoin ? null : address,
+        bitcoinAddress: network is BitcoinNetwork ? address : null,
+        liquidAddress: network is BitcoinNetwork ? null : address,
         payjoinAttemptSettled: true,
       );
       final values = [
@@ -106,7 +106,7 @@ void main() {
   test('Liquid never exposes an address owned by a different wallet', () {
     final state = ReceiveState(
       type: ReceiveType.liquid,
-      wallet: _wallet(Network.liquidTestnet).copyWith(origin: 'next'),
+      wallet: _wallet(LiquidNetwork.testnet, id: 'next'),
       walletAdmitted: true,
       liquidAddress: _address('tlq1oldfixture'),
       confirmedAmountSat: 321,
