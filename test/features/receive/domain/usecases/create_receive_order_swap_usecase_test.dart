@@ -6,7 +6,8 @@ import 'package:primitives/primitives.dart'
 import 'package:address_view/address_view.dart';
 import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_receive_order_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart'
+    show OrderSwapQuote, SwapFacade;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

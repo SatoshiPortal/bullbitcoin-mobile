@@ -25,7 +25,6 @@ import 'package:transactions/transactions.dart';
 import 'package:receive/receive.dart';
 import 'package:address_view/address_view.dart';
 import 'package:receive/testing.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:swaps/swaps.dart' show SwapRoute;
 import 'package:clock/clock.dart';
