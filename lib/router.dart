@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:address_view/routes.dart';
+import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
@@ -107,12 +108,18 @@ class AppRouter {
     homePath: WalletRoute.walletHome.path,
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: SettingsNavigation.open,
-    onAction: (context, action) => context.pushNamed(switch (action) {
-      ExchangeHomeAction.buy => BuyRoute.buy.name,
-      ExchangeHomeAction.sell => SellRoute.sell.name,
-      ExchangeHomeAction.pay => PayRoute.pay.name,
-      ExchangeHomeAction.transfer => SwapRoute.swap.name,
-    }),
+    onAction: (context, action) {
+      switch (action) {
+        case ExchangeHomeAction.buy:
+          context.pushNamed(BuyRoute.buy.name);
+        case ExchangeHomeAction.sell:
+          context.pushNamed(SellRoute.sell.name);
+        case ExchangeHomeAction.pay:
+          context.pushNamed(PayRoute.pay.name);
+        case ExchangeHomeAction.transfer:
+          SwapNavigation.open(context);
+      }
+    },
   );
 
   static void _openQuickAction(BuildContext context, QuickAction action) {

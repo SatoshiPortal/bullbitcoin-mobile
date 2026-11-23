@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';

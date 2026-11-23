@@ -1,5 +1,4 @@
 import 'package:swap_feature/src/swap_l10n.dart';
-import 'package:swap_feature/src/presentation/swap_failure_l10n.dart';
 import 'package:swap_feature/src/presentation/transfer_bloc.dart';
 import 'package:address_view/payment_destination.dart';
 import 'package:bull_ui/bull_ui.dart';
