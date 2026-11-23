@@ -15,6 +15,7 @@ import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
 import 'data/bbx_api_virtual_iban_repository.dart';
 import 'data/exchange_notification_service.dart';
+import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
 import 'domain/entities/default_wallet.dart';
@@ -26,6 +27,7 @@ import 'domain/entities/user_summary.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
+import 'domain/exchange_kyc_configuration.dart';
 import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
@@ -121,6 +123,7 @@ final class Exchange {
   final ExchangeLimitOrders limitOrders;
   final ExchangeFunding funding;
   final ExchangeVirtualIbans virtualIbans;
+  final ExchangeKycConfigurationRepository? _kyc;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -137,6 +140,7 @@ final class Exchange {
     this.limitOrders,
     this.funding,
     this.virtualIbans,
+    this._kyc,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -149,12 +153,14 @@ final class Exchange {
     required ExchangeSessionReader readSession,
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
+    ExchangeKycSetup? kyc,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
     readSession: readSession,
     notifications: notifications,
     paymentReturnUrl: paymentReturnUrl,
+    kyc: kyc,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -172,6 +178,7 @@ final class Exchange {
     required OpenInventoryClient openUntimedClient,
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
+    ExchangeKycSetup? kyc,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -474,6 +481,7 @@ final class Exchange {
           untimed: true,
         ),
       ),
+      kyc == null ? null : ExchangeKycConfigurationRepository(kyc),
     );
   }
 
@@ -487,6 +495,11 @@ final class Exchange {
 
   Future<Result<void, ExchangeFailure>> uploadKycDocument({
     required List<int> fileBytes,
+  @useResult
+  Future<Result<ExchangeKycConfiguration, ExchangeFailure>> loadKyc() async =>
+      await _kyc?.load() ?? const Err(ExchangeUnexpectedFailure());
+
+  @useResult
     required String fileName,
   }) => _uploadKycDocument(fileBytes: fileBytes, fileName: fileName);
 
@@ -708,3 +721,4 @@ Exchange exchangeWithTransportForTesting({
   openClient: openClient,
   openUntimedClient: openUntimedClient ?? openClient,
 );
+  null,

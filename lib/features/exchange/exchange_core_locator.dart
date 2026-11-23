@@ -34,6 +34,11 @@ class ExchangeLocator {
         mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
         testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
         paymentReturnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
+        kyc: (
+          mainnetUrl: Uri.parse(ApiServiceConstants.bbKycUrl),
+          testnetUrl: Uri.parse(ApiServiceConstants.bbKycTestUrl),
+          preferences: locator<Preferences>(),
+        ),
         readSession: () => readLegacyExchangeSession(
           preferences: locator<Preferences>(),
           readEpoch: () => locator<ExchangeAccessRepository>().epoch,

@@ -21,6 +21,7 @@ export 'src/domain/entities/user_summary.dart';
 export 'src/domain/entities/virtual_iban.dart';
 export 'src/domain/exchange_access.dart';
 export 'src/domain/exchange_availability.dart';
+export 'src/domain/exchange_kyc_configuration.dart';
 export 'src/domain/exchange_failure.dart';
 export 'src/domain/exchange_environment.dart' show ExchangeEnvironment;
 export 'src/exchange.dart' show Exchange;
