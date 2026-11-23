@@ -36,7 +36,8 @@ import 'package:send/setup.dart';
 import 'package:electrum/electrum.dart' show Electrum;
 import 'package:fees/fees.dart' show Fees;
 import 'package:spend/spend.dart' show Spend;
-import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:coins/coins.dart';
+import 'package:coins/setup.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
 import 'package:settings/settings.dart';
@@ -274,8 +275,7 @@ class AppRouter {
       WalletRouter.walletDetailRoute(
         scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,
         loadCoinSummary: (id) => locator<Coins>().summary(id),
-        onOpenCoins: (context, wallet) =>
-            context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
+        onOpenCoins: CoinsNavigation.open,
       ),
       _sendRoutes.consolidation,
       SettingsFeature.mount(
@@ -327,17 +327,7 @@ class AppRouter {
               extra: (prepared: prepared, network: network),
             ),
       ),
-      CoinsRouter.route(
-        missingWalletRedirect: WalletRoute.walletHome.path,
-        onSend: (context, wallet, outpoints) => context.pushNamed<void>(
-          SendRoute.send.name,
-          extra: SendRouteArgs.selected(wallet: wallet, outpoints: outpoints),
-        ),
-        onSweep: (context, wallet, outpoints) => context.pushNamed<void>(
-          SendRoute.send.name,
-          extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
-        ),
-      ),
+      locator<CoinsFeature>().route,
       ...locator<SwapFeature>().routes,
       ..._exchangeFeature.buyRoutes,
       ..._exchangeFeature.fundingRoutes,

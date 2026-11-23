@@ -60,7 +60,7 @@ BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/b
 
 bull-ui-check: typography-check
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
-	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" features/coins/lib/src/ui; then echo "features/coins/lib/src/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
 	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 	@echo "🧱 text sizes (typography roles, never a typed-in font size)"
@@ -137,7 +137,7 @@ onion-codegen:
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
 BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view features/receive
 BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps features/address_view
-BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import
+BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/coins
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -185,6 +185,7 @@ translations:
 	@(cd features/send && fvm flutter gen-l10n)
 	@(cd features/address_view && fvm flutter gen-l10n)
 	@(cd features/receive && fvm flutter gen-l10n)
+	@(cd features/coins && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
 	@(cd features/network && fvm flutter gen-l10n)

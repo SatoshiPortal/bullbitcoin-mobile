@@ -2,7 +2,7 @@ import 'package:transactions/transactions.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';

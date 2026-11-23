@@ -183,11 +183,10 @@ graph TB
     WALLETS --> PREFERENCES
     BTC_PRICE --> PREFERENCES
     COINS --> PREFERENCES
-    COIN_SELECTION[Coins Workspace Feature<br/>Selection sheet]
-    COIN_SELECTION --> BULL_UI
-    COIN_SELECTION --> PRIMITIVES
-    BULL_EXCHANGE --> COIN_SELECTION
-    TRANSFER --> COIN_SELECTION
+    COINS --> BULL_UI
+    COINS --> PRIMITIVES
+    BULL_EXCHANGE -->|selection sheet| COINS
+    TRANSFER -->|selection sheet| COINS
     EXCHANGE --> PREFERENCES
     SWAPS --> PREFERENCES
     SEND --> PREFERENCES
@@ -281,7 +280,7 @@ graph TB
     RECEIVE --> PREFERENCES
     BG_TASKS[Background Tasks Package]
     LIMIT_ORDERS[Limit Orders]
-    COINS[Coins / UTXOs]
+    COINS[Coins / UTXOs<br/>Workspace Feature]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
     SP[Silent Payments<br/>Workspace Feature]
@@ -415,7 +414,8 @@ graph TB
     SEND --> LABELS
     RECEIVE --> LABELS
     SETTINGS --> LABELS
-    COINS -->|public revision stream| WALLETS
+    WALLETS -->|coin summary and navigation| COINS
+    CORE -->|binds wallet identity and sync activity| COINS
     SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> TX_HISTORY

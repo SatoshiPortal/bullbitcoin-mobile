@@ -67,7 +67,15 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:signers/routes.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bb_mobile/features/coins/coins_locator.dart';
+import 'package:coins/coins.dart';
+import 'package:coins/setup.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app_wallet;
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_route.dart';
+import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
@@ -442,8 +450,37 @@ class AppLocator {
             OrderSwapUnderReviewCard(orderSwap: order),
       ),
     );
+    locator.registerLazySingleton(
+      () => CoinsFeature.mount<app_wallet.Wallet>(
+        resolveWalletKey: (id) =>
+            WalletSyncBinding.keyForId(locator<WalletRegistrations>(), id),
+        loadWallet: locator<WalletNativeRuntime>().loadWallet,
+        foreground: locator<WalletNativeRuntime>().foreground,
+        labels: locator<Labels>(),
+        preferences: locator<AmountDisplayPreferencesReader>(),
+        poll: (id) => wallet().pollWallet(id, isActive: () => true),
+        watchRevisions: (id) => wallet()
+            .watchRevisions(walletId: id)
+            .map((revision) => revision.stamp.key.id),
+        watchStartedSyncs: (id) =>
+            locator<WatchStartedWalletSyncsUsecase>().execute(walletId: id),
+        watchFinishedSyncs: (id) => locator<WatchFinishedWalletSyncsUsecase>()
+            .execute(walletId: id)
+            .map((wallet) => wallet.id),
+        walletId: (wallet) => wallet.id,
+        missingWalletRedirect: WalletRoute.walletHome.path,
+        onSend: (context, wallet, outpoints) => context.pushNamed<void>(
+          SendRoute.send.name,
+          extra: SendRouteArgs.selected(wallet: wallet, outpoints: outpoints),
+        ),
+        onSweep: (context, wallet, outpoints) => context.pushNamed<void>(
+          SendRoute.send.name,
+          extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
+        ),
+      ),
+    );
+    locator.registerLazySingleton<Coins>(() => locator<CoinsFeature>().coins);
     SendLocator.setup(locator);
-    CoinsLocator.setup(locator);
     locator.registerSingleton(
       SwapFeature.mount(
         swaps: locator<Swaps>(),
