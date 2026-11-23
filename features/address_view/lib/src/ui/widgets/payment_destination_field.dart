@@ -1,7 +1,5 @@
 import 'package:silent/localizations.dart';
 
-import '../../localizations.dart';
-
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +9,7 @@ import 'package:material_ui/material_ui.dart'
 
 import '../../domain/payment_destination.dart';
 import '../../domain/validate_payment_destination_usecase.dart';
+import '../../presentation/address_view_l10n.dart';
 import 'full_screen_scanner_page.dart';
 
 /// App wiring for the pure destination input. Parsing never navigates forward.
@@ -105,15 +104,11 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
   }
 
   String _kind(PaymentDestinationType type) => switch (type) {
-    PaymentDestinationType.bitcoin => addressViewCopy(
-      context,
-    ).exchangeDcaAddressLabelBitcoin,
-    PaymentDestinationType.liquid => addressViewCopy(
-      context,
-    ).exchangeDcaAddressLabelLiquid,
-    PaymentDestinationType.lightningAddress => addressViewCopy(
-      context,
-    ).exchangeDcaAddressLabelLightning,
+    PaymentDestinationType.bitcoin =>
+      context.loc.exchangeDcaAddressLabelBitcoin,
+    PaymentDestinationType.liquid => context.loc.exchangeDcaAddressLabelLiquid,
+    PaymentDestinationType.lightningAddress =>
+      context.loc.exchangeDcaAddressLabelLightning,
   };
 
   @override
@@ -161,18 +156,19 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
               style: context.bullType.body,
             ),
       kind: destination?.amountSat != null
-          ? addressViewCopy(
-              context,
-            ).destinationAmountFromQr(kind ?? '', destination?.amountSat ?? 0)
+          ? context.loc.destinationAmountFromQr(
+              kind ?? '',
+              destination?.amountSat ?? 0,
+            )
           : kind,
       error:
           widget.error ??
           (invalid
               ? widget.acceptedTypes.length == 1
-                    ? addressViewCopy(context).destinationExpectedType(
+                    ? context.loc.destinationExpectedType(
                         _kind(widget.acceptedTypes.single),
                       )
-                    : addressViewCopy(context).sendErrorInvalidAddressOrInvoice
+                    : context.loc.sendErrorInvalidAddressOrInvoice
               : null),
     );
   }
