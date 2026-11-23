@@ -30,10 +30,8 @@ class _Exchange extends Mock implements ExchangeAccessLifecycle {}
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
-class _ExchangeCubit extends MockCubit<ExchangeState>
-    implements ExchangeCubit {}
-
-class _ExchangeState extends Mock implements ExchangeState {}
+class _ExchangeBloc extends MockBloc<ExchangeEvent, ExchangeState>
+    implements ExchangeBloc {}
 
 void main() {
   testWidgets('sign-in from manage access returns to the same route', (
@@ -112,11 +110,9 @@ void main() {
   ) async {
     final exchange = _Exchange();
     final settings = _Settings();
-    final exchangeCubit = _ExchangeCubit();
-    final exchangeState = _ExchangeState();
-    when(() => exchangeState.notLoggedIn).thenReturn(false);
-    when(() => exchangeState.hasUser).thenReturn(true);
-    when(() => exchangeCubit.state).thenReturn(exchangeState);
+    final exchangeCubit = _ExchangeBloc();
+    when(() => exchangeCubit.state)
+        .thenReturn(const ExchangeLoading(_testSession));
     when(() => settings.state).thenReturn(
       const SettingsState(
         storedSettings: SettingsEntity(
@@ -187,7 +183,7 @@ void main() {
       MultiBlocProvider(
         providers: [
           BlocProvider<SettingsCubit>.value(value: settings),
-          BlocProvider<ExchangeCubit>.value(value: exchangeCubit),
+          BlocProvider<ExchangeBloc>.value(value: exchangeCubit),
         ],
         child: MaterialApp.router(
           routerConfig: router,

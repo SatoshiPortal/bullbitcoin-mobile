@@ -20,7 +20,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockBuyBloc extends Mock implements BuyBloc {}
 
-class _MockExchangeCubit extends Mock implements ExchangeCubit {}
+class _MockExchangeBloc extends Mock implements ExchangeBloc {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
@@ -152,7 +152,7 @@ void main() {
         ),
       );
       final bloc = _MockBuyBloc();
-      final exchange = _MockExchangeCubit();
+      final exchange = _MockExchangeBloc();
       final states = StreamController<BuyState>.broadcast();
       addTearDown(states.close);
       var state = const BuyState(
@@ -183,8 +183,19 @@ void main() {
           state.copyWith(isCreatingOrder: false, buyOrder: null, failure: null),
         );
       });
-      when(() => exchange.state)
-          .thenReturn(const ExchangeState(userSummary: user));
+      when(() => exchange.state).thenReturn(
+        const ExchangeLoaded(
+          session: ExchangeSession(
+            environment: ExchangeEnvironment.mainnet,
+            epoch: 1,
+            sessionId: 'test',
+          ),
+          summary: user,
+          announcements: AnnouncementsShown([]),
+          refresh: RefreshIdle(),
+          dcaStop: DcaStopIdle(),
+        ),
+      );
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
       final router = GoRouter(
         initialLocation: '/buy',
@@ -199,7 +210,7 @@ void main() {
       addTearDown(router.dispose);
       await tester.pumpWidget(
         MultiBlocProvider(
-          providers: [BlocProvider<ExchangeCubit>.value(value: exchange)],
+          providers: [BlocProvider<ExchangeBloc>.value(value: exchange)],
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.themeData(AppThemeType.light),

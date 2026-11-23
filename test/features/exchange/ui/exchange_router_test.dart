@@ -30,8 +30,8 @@ class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Preferences extends Mock implements Preferences {}
 
-class _ExchangeCubit extends MockCubit<ExchangeState>
-    implements ExchangeCubit {}
+class _ExchangeBloc extends MockBloc<ExchangeEvent, ExchangeState>
+    implements ExchangeBloc {}
 
 BullExchangeFeature _mount({
   required Exchange Function() exchange,
@@ -171,8 +171,8 @@ void main() {
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
     final capability = exchangeForTesting(access: exchange);
-    final cubit = _ExchangeCubit();
-    when(() => cubit.state).thenReturn(const ExchangeState());
+    final cubit = _ExchangeBloc();
+    when(() => cubit.state).thenReturn(const ExchangeSignedOut());
     final router = GoRouter(
       initialLocation: BullExchangeNavigation.dashboardPath,
       routes: [
@@ -184,7 +184,7 @@ void main() {
     addTearDown(cubit.close);
     addTearDown(changes.close);
     await tester.pumpWidget(
-      BlocProvider<ExchangeCubit>.value(
+      BlocProvider<ExchangeBloc>.value(
         value: cubit,
         child: MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
@@ -248,9 +248,9 @@ void main() {
     when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => changes.stream);
     final capability = exchangeForTesting(access: exchange);
-    final cubit = _ExchangeCubit();
-    // The cubit resets to its empty state when the session ends.
-    when(() => cubit.state).thenReturn(const ExchangeState());
+    final cubit = _ExchangeBloc();
+    // The bloc is signed out once the session ends.
+    when(() => cubit.state).thenReturn(const ExchangeSignedOut());
     final router = GoRouter(
       initialLocation: BullExchangeNavigation.dashboardPath,
       routes: [
@@ -260,7 +260,7 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      BlocProvider<ExchangeCubit>.value(
+      BlocProvider<ExchangeBloc>.value(
         value: cubit,
         child: MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),

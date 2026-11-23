@@ -6,6 +6,7 @@ import 'dca_list_tile.dart';
 import 'exchange_home_actions.dart';
 import 'exchange_home_kyc_card.dart';
 import 'exchange_home_top_section.dart';
+import '../session/exchange_state.dart';
 
 import 'dart:async';
 
@@ -23,14 +24,8 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
-typedef ExchangeDashboardState = ({
-  UserSummary? summary,
-  List<UserBalance> displayBalances,
-  ExchangeFailure? summaryFailure,
-  ExchangeFailure? stopDcaFailure,
-  List<Announcement> announcements,
-  int unreadSupportMessages,
-});
+/// The session state the dashboard renders.
+typedef ExchangeDashboardState = ExchangeState;
 
 class ExchangeHomeScreen extends StatelessWidget {
   final ExchangeDashboardState Function(BuildContext) watchDashboard;
@@ -72,39 +67,48 @@ class ExchangeHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = watchDashboard(context);
-    final summary = state.summary;
-    final notLoggedIn = summary == null;
-    final getUserSummaryFailure = state.summaryFailure;
-    final stopDcaFailure = state.stopDcaFailure;
-    final isFullyVerified = summary?.isFullyVerifiedKycLevel ?? false;
-    final dca = summary?.dca;
-    final autoBuy = summary?.autoBuy;
-    final isFundingRestricted = summary?.isFundingRestricted ?? true;
-    final unreadSupportMessages = state.unreadSupportMessages;
-
-    if (notLoggedIn && getUserSummaryFailure != null) {
-      return _WithExit(
-        onExit: onExit,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: BullErrorState(
-              message: failureMessage(context, getUserSummaryFailure),
-              retryLabel: context.loc.retry,
-              onRetry: refreshAccount,
+    final ExchangeLoaded state;
+    switch (watchDashboard(context)) {
+      case ExchangeLoadFailed(:final failure):
+        return _WithExit(
+          onExit: onExit,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: BullErrorState(
+                message: failureMessage(context, failure),
+                retryLabel: context.loc.retry,
+                onRetry: refreshAccount,
+              ),
             ),
           ),
-        ),
-      );
+        );
+      case ExchangeSignedOut() || ExchangeLoading():
+        return _WithExit(
+          onExit: onExit,
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      case final ExchangeLoaded loaded:
+        state = loaded;
     }
-
-    if (notLoggedIn) {
-      return _WithExit(
-        onExit: onExit,
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
+    final summary = state.summary;
+    final getUserSummaryFailure = switch (state.refresh) {
+      RefreshFailed(:final failure) => failure,
+      RefreshIdle() || Refreshing() => null,
+    };
+    final stopDcaFailure = switch (state.dcaStop) {
+      DcaStopFailed(:final failure) => failure,
+      DcaStopIdle() || DcaStopping() => null,
+    };
+    final announcements = switch (state.announcements) {
+      AnnouncementsShown(:final items) => items,
+      AnnouncementsLoading() ||
+      AnnouncementsUnavailable() => const <Announcement>[],
+    };
+    final isFullyVerified = summary.isFullyVerifiedKycLevel;
+    final dca = summary.dca;
+    final autoBuy = summary.autoBuy;
+    final isFundingRestricted = summary.isFundingRestricted;
 
     return Stack(
       children: [
@@ -157,7 +161,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                       const Gap(12),
                     ],
                     DcaListTile(
-                      hasDcaActive: dca?.isActive ?? false,
+                      hasDcaActive: dca.isActive,
                       dca: dca,
                       onActivate: onOpenDca,
                       onDeactivate: stopDca,
@@ -166,13 +170,13 @@ class ExchangeHomeScreen extends StatelessWidget {
                     ExchangeAutoBuyCard(
                       exchange: exchange,
                       preferences: preferences,
-                      isActive: autoBuy?.isActive ?? false,
+                      isActive: autoBuy.isActive,
                       isRestricted: isFundingRestricted,
                       onStatusChanged: refreshAccount,
                     ),
                     const Gap(12),
                     for (final card in homeCards) ...[card, const Gap(12)],
-                    AnnouncementBanner(announcements: state.announcements),
+                    AnnouncementBanner(announcements: announcements),
                   ],
                 ),
               ),

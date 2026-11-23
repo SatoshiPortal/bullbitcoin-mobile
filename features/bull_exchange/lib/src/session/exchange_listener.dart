@@ -1,13 +1,17 @@
-import 'exchange_cubit.dart';
+import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Reconnects the notification socket when the app returns from the
-/// background, as the OS may have dropped the connection while it was hidden.
-/// The socket itself opens and closes with the signed-in access state.
+/// Runs [onShow] when the app returns from the background: the OS may have
+/// dropped the notification socket while it was hidden. The socket itself
+/// opens and closes with the signed-in access state.
 class ExchangeListener extends StatefulWidget {
-  const ExchangeListener({super.key, required this.child});
+  const ExchangeListener({
+    super.key,
+    required this.onShow,
+    required this.child,
+  });
+  final Future<void> Function() onShow;
   final Widget child;
 
   @override
@@ -20,18 +24,9 @@ class _ExchangeListenerState extends State<ExchangeListener> {
   @override
   void initState() {
     super.initState();
-    _lifecycleListener = AppLifecycleListener(onShow: _onShow);
-  }
-
-  void _onShow() {
-    final exchangeCubit = context.read<ExchangeCubit>();
-    if (exchangeCubit.state.userSummary != null) {
-      exchangeCubit.reconnectWebSocket();
-      // The reconnect covers pushes from now on; this covers whatever was
-      // pushed while the app was hidden and the socket was down.
-      exchangeCubit.fetchUserSummary();
-      exchangeCubit.refreshUnreadSupportMessages();
-    }
+    _lifecycleListener = AppLifecycleListener(
+      onShow: () => unawaited(widget.onShow()),
+    );
   }
 
   @override
