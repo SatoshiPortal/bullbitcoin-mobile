@@ -1,6 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/sync.dart' show WalletKey;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/ui/screens/coins_screen.dart';
@@ -11,7 +9,7 @@ import 'package:go_router/go_router.dart';
 
 typedef OpenSelectedCoinsFlow = Future<void> Function(
   BuildContext context,
-  Wallet wallet,
+  WalletKey wallet,
   Set<Outpoint> outpoints,
 );
 
@@ -34,20 +32,18 @@ class CoinsRouter {
     redirect: (context, state) {
       // Deep-link / refresh with no wallet in `extra` → fall back to home
       // rather than force-unwrap-crash.
-      if (state.extra is! Wallet) {
+      if (state.extra is! WalletKey) {
         return missingWalletRedirect;
       }
       return null;
     },
     builder: (context, state) {
       final wallet = state.extra;
-      if (wallet is! Wallet) {
+      if (wallet is! WalletKey) {
         return const SizedBox.shrink();
       }
       return BlocProvider(
-        create: (_) => locator<CoinsCubit>(
-          param1: WalletKey(id: wallet.id, network: wallet.network.shared),
-        )..load(),
+        create: (_) => locator<CoinsCubit>(param1: wallet)..load(),
         child: CoinsScreen(
           onSend: (outpoints) => onSend(context, wallet, outpoints),
           onSweep: (outpoints) => onSweep(context, wallet, outpoints),

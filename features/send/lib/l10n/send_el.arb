@@ -126,5 +126,441 @@
   "broadcastSignedTxErrorAlreadyInChain": "Αυτή η συναλλαγή βρίσκεται ήδη στο blockchain. Δεν υπάρχει τίποτα άλλο προς μετάδοση.",
   "broadcastSignedTxErrorRejected": "Το δίκτυο απέρριψε αυτή τη συναλλαγή. Μπορεί να μην είναι πλήρως υπογεγραμμένη, να είναι άκυρη ή να συγκρούεται με άλλη πληρωμή.",
   "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
+  "swapMax": "MAX",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "sendSendNetworkFee": "Στείλε δίκτυο Fee",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "transactionNoteHint": "Σημείωση",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "sendBroadcastingTransaction": "Διατυπώνοντας τη συναλλαγή.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "sendAddress": "Διεύθυνση: ",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "sendAmountRequested": "Ποσό που απαιτείται: ",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "sendTransferFeeDescription": "Αυτό είναι το συνολικό ποσό που αφαιρείται από το ποσό που αποστέλλεται",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendShowPsbt": "Show PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSelectAmount": "Επιλέξτε ποσό",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendSendAmount": "Στείλε ποσό",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendSelectedUtxosInsufficient": "Το επιλεγμένο utxos δεν καλύπτει απαιτούμενο ποσό",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendErrorInsufficientFundsForFees": "Όχι αρκετά κεφάλαια για να καλύψει το ποσό και τα τέλη",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendChange": "Αλλαγή αλλαγής",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "sendSwapWillTakeTime": "Θα χρειαστεί λίγος χρόνος για να επιβεβαιωθεί",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendOpenTheCamera": "Ανοίξτε την κάμερα",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "sendSwapId": "Swap ID",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "receiveNote": "Σημείωση",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "sendFrom": "Από",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "sendErrorAmountBelowMinimum": "Ποσό κάτω από το ελάχιστο όριο ανταλλαγής: {minLimit} καθόταν",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "Η διεύθυνση του Recipient",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "sendServerNetworkFees": "Δίκτυο server Fees",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Ακυρωμένη διεύθυνση πληρωμής Bitcoin ή Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "Μη υποστηριζόμενη μορφή κωδικού QR",
+  "appStartupErrorMessage": "Η εφαρμογή απέτυχε να ξεκινήσει. Δοκιμάστε να την κλείσετε εντελώς και να την επανεκκινήσετε. Αν το πρόβλημα συνεχιστεί, επικοινωνήστε με την υποστήριξη και μοιραστείτε τα logs σας.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "sendSignWithBitBox": "Εγγραφείτε με BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendSwapRefundInProgress": "Swap Refund in Progress",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendInsufficientBalance": "Ανεπαρκή ισορροπία",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendNetworkFees": "Network χρεώσεις",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "sendSwapInitiated": "Swap Initi",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "transactionNoteAddTitle": "Προσθήκη σημείωση",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "sendHighFeeWarning": "Υψηλή προειδοποίηση",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "receiveEnterHere": "Εισάγετε εδώ...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "sendDone": "Έγινε",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid διεύθυνση",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "sendErrorAmountAboveMaximum": "Ποσό πάνω από το μέγιστο όριο ανταλλαγής: {maxLimit} καθόταν",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "Η επιστροφή σας έχει υποβληθεί σε επεξεργασία.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendUnconfirmed": "Ανεπιβεβαίωτος",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendTransferFee": "Τέλος ανταλλαγής",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendContinue": "Συνεχίστε να συνεχίζετε",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "sendErrorSwapCreationFailed": "Απέτυχε να δημιουργήσει ανταλλαγή.",
+  "sendErrorInvoiceMustContainAmount": "Το τιμολόγιο πρέπει να περιέχει ποσό",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorHardwareWalletCannotSwap": "Τα hardware πορτοφόλια δεν μπορούν να χρησιμοποιηθούν για ανταλλαγές.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
+  "addressViewBalance": "Ισορροπία",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "sendReplaceByFeeActivated": "Replace-by-fee ενεργοποιημένη",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendType": "Τύπος: ",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "settingsCurrencyTitle": "Νόμισμα νόμισμα",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "sendSats": "καθόταν",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendPaymentWillTakeTime": "Η πληρωμή θα πάρει χρόνο",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendPasteAddressOrInvoice": "Παρακολουθήστε μια διεύθυνση πληρωμής ή τιμολόγιο",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "sendHighFeeWarningDescription": "Η συνολική αμοιβή είναι {feePercent}% του ποσού που στέλνετε",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} επιβεβαιώσεις",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "Για να",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "sendSelectCoinsManually": "Επιλέξτε νομίσματα",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendReceiveNetworkFee": "Λήψη δικτύου Fee",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "sendBroadcastTransaction": "Broadcast Transaction",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "sendSwapInProgressBitcoin": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendTransactionSignedLedger": "Η συναλλαγή υπέγραψε με επιτυχία με τον Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendEconomyFee": "Οικονομία",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 λεπτά",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendReceive": "Παραλαβή",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "sendSatsPerVB": "sat/vB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "sendTitle": "Αποστολή αποστολής",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "sendSlowPaymentWarningDescription": "Bitcoin swaps θα χρειαστεί χρόνος για να επιβεβαιωθεί.",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "sendFastFee": "Fast",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendAdvancedSettings": "Προχωρημένες ρυθμίσεις",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin διεύθυνση",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "cancel": "Ακύρωση",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "sendPaymentProcessing": "Η πληρωμή γίνεται επεξεργασία. Μπορεί να διαρκέσει έως και ένα λεπτό",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendErrorBroadcastFailed": "Απέτυχε να μεταδώσει συναλλαγή. Ελέγξτε τη σύνδεση δικτύου σας και δοκιμάστε ξανά.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendCustomFee": "Custom Fee",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendAmount": "Ποσο Ποσό Ποσο",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "sendSwapRefundCompleted": "Swap Refund ολοκληρώθηκε",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendSending": "Αποστολή",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendErrorConfirmationFailed": "Επιβεβαίωση",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "coreScreensFeePriorityLabel": "Προτεραιότητα",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "sendInvoicePaid": "Invoice Paid",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendSignWithLedger": "Εγγραφείτε με Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSlowPaymentWarning": "Αργή προειδοποίηση πληρωμής",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendErrorAmountBelowSwapLimits": "Ποσό είναι κάτω από όρια ανταλλαγής",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendCoinControl": "Έλεγχος νομισμάτων",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendAdvancedOptions": "Προχωρημένες επιλογές",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendViewDetails": "Λεπτομέρειες",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "transactionNetworkLiquid": "Υγρό",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreWalletTransactionStatusConfirmed": "Επιβεβαιώθηκε",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "sendErrorBuildFailed": "Αυτή η πληρωμή δεν μπόρεσε να προετοιμαστεί. Δοκιμάστε ξανά.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendConfirmSend": "Επιβεβαίωση αποστολής",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSwapInProgressInvoice": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Το τιμολόγιο θα πληρωθεί σε λίγα δευτερόλεπτα.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendScanBitcoinQRCode": "Βάλτε οποιονδήποτε κωδικό Bitcoin ή Lightning QR για να πληρώσει με bitcoin.",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "sendConfirm": "Επιβεβαίωση",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "sendSuccessfullySent": "Με επιτυχία",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendSwapFailed": "Η ανταλλαγή απέτυχε. Η επιστροφή σας θα υποβληθεί σε επεξεργασία σύντομα.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning διεύθυνση Lightning",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Όχι αρκετή ισορροπία για να καλύψει αυτή την πληρωμή",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendReceiveAmount": "Αποδεχόμενο ποσό",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
+  "sendEstimatedDeliveryHours": "ώρες",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 επιλεγμένο} other{{count} επιλεγμένα}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendSelfTransfer": "Αυτομεταφορά",
+  "sendCoordinatingPayjoinTransaction": "Συντονισμός συναλλαγής Payjoin.",
+  "sendErrorInvoiceExpired": "Αυτό το invoice έχει λήξει. Ζητήστε ένα νέο invoice από τον παραλήπτη.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Σκεφτείτε να χρηματοδοτήσετε το Instant Payments για να κάνετε μικρότερες πληρωμές.",
+  "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Η παραγγελία έληξε",
+  "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας.",
+  "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
+  "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
+  "sendErrorInvoiceExpiryTooShort": "Αυτό το invoice λήγει πολύ σύντομα. Ζητήστε ένα νέο invoice από τον παραλήπτη."
 }

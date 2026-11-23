@@ -7,11 +7,19 @@ environment:
 resolution: workspace
 dependencies:
   bull_ui:
+  bull_logger:
   flutter:
     sdk: flutter
+  freezed_annotation: ^3.1.0
+  labels:
+  meta: ^1.17.0
   primitives:
+  secrets:
+  sync:
 dev_dependencies:
+  build_runner: ^2.10.4
   flutter_test:
     sdk: flutter
+  freezed: ^4.0.0
 flutter:
   uses-material-design: true

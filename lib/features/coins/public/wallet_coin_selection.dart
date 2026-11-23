@@ -5,8 +5,6 @@ import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show Keychain;
 
-import '../domain/wallet_utxo.dart';
-
 /// Projects the app's Coins read model onto the workspace selection sheet.
 /// Wallet lookup and spending policy stay outside the sheet.
 Widget walletCoinSelection({

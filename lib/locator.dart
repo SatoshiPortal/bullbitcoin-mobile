@@ -79,7 +79,6 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
@@ -487,7 +486,6 @@ class AppLocator {
             OrderSwapUnderReviewCard(orderSwap: order),
       ),
     );
-    SendLocator.setup(locator);
     CoinsLocator.setup(
       locator,
       pollWallet: (id) =>

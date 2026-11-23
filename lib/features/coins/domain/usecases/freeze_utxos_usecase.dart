@@ -1,32 +1,13 @@
-import 'package:bull_logger/bull_logger.dart';
+import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 
-/// Freezes the given outpoints for a wallet (writes `origin = 'user'` rows via
-/// the core repository). Maps any failure to [CoinsFreezeFailure].
 class FreezeUtxosUsecase {
-  FreezeUtxosUsecase({required this._walletUtxoRepository});
+  final Coins _coins;
 
-  final WalletUtxoRepository _walletUtxoRepository;
+  const FreezeUtxosUsecase(this._coins);
 
   Future<Result<void, CoinsFailure>> execute({
     required String walletId,
     required List<Outpoint> outpoints,
-  }) async {
-    try {
-      await _walletUtxoRepository.freezeUtxos(
-        walletId: walletId,
-        outpoints: outpoints,
-      );
-      return const Ok(null);
-    } on Exception catch (error, stackTrace) {
-      log.warning(
-        'Failed to freeze wallet coins',
-        error: error.runtimeType,
-        trace: stackTrace,
-      );
-      return Err(CoinsFreezeFailure(error.runtimeType.toString()));
-    }
-  }
+  }) => _coins.freeze(walletId, outpoints);
 }

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
-import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:coins/coins.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_failure_l10n.dart';

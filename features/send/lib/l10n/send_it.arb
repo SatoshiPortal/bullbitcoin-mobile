@@ -65,5 +65,170 @@
   "broadcastSignedTxErrorRejected": "La rete ha rifiutato questa transazione. Potrebbe non essere firmata completamente, non essere valida o essere in conflitto con un altro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Non è stato possibile confermare che la transazione sia stata trasmessa. Controlla un block explorer prima di riprovare.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali.",
-  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà."
+  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà.",
+  "swapMax": "MAX",
+  "sendSendNetworkFee": "Commissione di rete per l'invio",
+  "transactionNoteHint": "Nota",
+  "transactionNetworkLightning": "Lightning",
+  "sendBroadcastingTransaction": "Trasmissione della transazione in corso.",
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sicuri",
+  "sendAddress": "Indirizzo: ",
+  "sendAmountRequested": "Importo richiesto: ",
+  "sendTransferFeeDescription": "Questa è la commissione totale detratta dall'importo inviato",
+  "sendShowPsbt": "Mostra PSBT",
+  "sendSelectAmount": "Seleziona l'importo",
+  "sendSendAmount": "Importo inviato",
+  "sendSelectedUtxosInsufficient": "Gli UTXO selezionate non coprono l'importo richiesto",
+  "sendErrorInsufficientFundsForFees": "Non ci sono abbastanza fondi per coprire l'importo e le commissioni",
+  "sendChange": "Resto",
+  "sendSwapWillTakeTime": "Ci vorrà un po' per confermare",
+  "appStartupErrorMessage": "L'app non è riuscita ad avviarsi. Prova a chiuderla completamente e a riavviarla. Se l'errore persiste, contatta il supporto e condividi i tuoi log.",
+  "sendOpenTheCamera": "Apri la fotocamera",
+  "sendSwapId": "ID Swap",
+  "receiveNote": "Nota",
+  "sendFrom": "Da",
+  "sendErrorAmountBelowMinimum": "Importo sotto il limite minimo di swap: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "Indirizzo del destinatario",
+  "sendServerNetworkFees": "Commissioni di rete del server",
+  "sendErrorInvalidAddressOrInvoice": "Indirizzo di pagamento Bitcoin o fattura Lightning non validi",
+  "sendErrorUnsupportedQrCodeFormat": "Formato codice QR non supportato",
+  "sendSignWithBitBox": "Firma con BitBox",
+  "sendSwapRefundInProgress": "Rimborso Swap in progresso",
+  "sendInsufficientBalance": "Saldo insufficiente",
+  "sendNetworkFees": "Commissioni di rete",
+  "sendSwapInitiated": "Swap iniziato",
+  "transactionNoteAddTitle": "Aggiungi nota",
+  "sendHighFeeWarning": "Avviso di commissioni elevate",
+  "receiveEnterHere": "Entra qui...",
+  "sendDone": "Fatto",
+  "exchangeDcaAddressLabelLiquid": "Indirizzo Liquid",
+  "sendErrorAmountAboveMaximum": "Importo sopra il limite massimo di swap: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "Il rimborso è stato effettuato.",
+  "sendUnconfirmed": "Non confermato",
+  "sendTransferFee": "Commissione di swap",
+  "sendContinue": "Continua",
+  "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
+  "sendErrorHardwareWalletCannotSwap": "I portafogli hardware non possono essere utilizzati per gli swap.",
+  "sendErrorInvoiceMustContainAmount": "La fattura deve contenere un importo",
+  "addressViewBalance": "Saldo",
+  "sendReplaceByFeeActivated": "Replace-By-Fee (RBF) attivato",
+  "sendType": "Tipo: ",
+  "settingsCurrencyTitle": "Valuta",
+  "sendSats": "sats",
+  "sendPaymentWillTakeTime": "Il pagamento richiederà del tempo",
+  "sendPasteAddressOrInvoice": "Incolla un indirizzo di pagamento o una fattura",
+  "sendHighFeeWarningDescription": "Costo totale è {feePercent}% dell'importo che state inviando",
+  "@sendHighFeeWarningDescription": {
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} conferme",
+  "@sendCoinConfirmations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "A",
+  "sendSelectCoinsManually": "Seleziona le monete manualmente",
+  "sendReceiveNetworkFee": "Commissione di rete per la ricezione",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "sendBroadcastTransaction": "Trasmetti transazione",
+  "sendSwapInProgressBitcoin": "Swap in corso. Le transazioni Bitcoin possono richiedere un po' di tempo per essere confermate. Puoi tornare alla home e attendere.",
+  "sendTransactionSignedLedger": "Transazione firmata con successo con Ledger",
+  "sendEconomyFee": "Economica",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minuti",
+  "sendReceive": "Ricevi",
+  "sendSatsPerVB": "sat/vB",
+  "sendTitle": "Invia",
+  "sendSlowPaymentWarningDescription": "Gli swap Bitcoin richiedono un po' di tempo per essere confermati.",
+  "globalDefaultLiquidWalletLabel": "Pagamenti istantanei",
+  "sendFastFee": "Veloce",
+  "sendAdvancedSettings": "Impostazioni avanzate",
+  "exchangeDcaAddressLabelBitcoin": "Indirizzo Bitcoin",
+  "cancel": "Annulla",
+  "sendPaymentProcessing": "Pagamento in corso. Potrebbe volerci fino a un minuto",
+  "sendErrorBroadcastFailed": "La transazione non è stata trasmessa. Controlla la tua connessione di rete e riprova.",
+  "sendCustomFee": "Commissione personalizzata",
+  "sendAmount": "Importo",
+  "sendSwapRefundCompleted": "Rimborso dello swap completato",
+  "sendSending": "Inviare",
+  "sendErrorConfirmationFailed": "Conferma non riuscita",
+  "coreScreensFeePriorityLabel": "Priorità",
+  "sendInvoicePaid": "Fattura pagata",
+  "sendSignWithLedger": "Firma con Ledger",
+  "sendSlowPaymentWarning": "Avviso di pagamento lento",
+  "sendErrorAmountBelowSwapLimits": "L'importo è inferiore ai limiti di swap",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Valuta di trasferire fondi nel portafoglio Pagamenti istantanei per effettuare pagamenti più piccoli.",
+  "sendCoinControl": "Controllo delle monete",
+  "sendAdvancedOptions": "Opzioni avanzate",
+  "sendViewDetails": "Visualizza dettagli",
+  "transactionNetworkLiquid": "Liquid",
+  "coreWalletTransactionStatusConfirmed": "Confermato",
+  "sendErrorBuildFailed": "Impossibile preparare questo pagamento. Riprova.",
+  "sendConfirmSend": "Conferma invio",
+  "sendSwapInProgressInvoice": "Lo scambio è in corso. La fattura sarà pagata in pochi secondi.",
+  "sendScanBitcoinQRCode": "Scansiona qualsiasi codice QR Bitcoin o Lightning da pagare con bitcoin.",
+  "sendConfirm": "Conferma",
+  "sendSuccessfullySent": "Inviati con successo",
+  "sendSwapFailed": "Lo swap non è riuscito. Il rimborso verrà effettuato a breve.",
+  "exchangeDcaAddressLabelLightning": "Indirizzo Lightning",
+  "sendErrorInsufficientBalanceForPayment": "Non ci sono abbastanza fondi per coprire questo pagamento",
+  "sendReceiveAmount": "Ricevi l'importo",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendSelfTransfer": "Trasferimento a sé",
+  "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
+  "sendEstimatedDeliveryHours": "ore",
+  "coinsSelectedCount": "{count, plural, =1{1 selezionata} other{{count} selezionate}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendCoordinatingPayjoinTransaction": "Coordinamento di una transazione Payjoin.",
+  "sendErrorInvoiceExpired": "Questa fattura è scaduta. Chiedi al destinatario una nuova fattura.",
+  "sendErrorInsufficientBalanceFrozenHint": "Saldo disponibile insufficiente — {amount} è congelato. Scongela le monete in \"Gestisci monete\" per usarlo.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Ordine scaduto",
+  "sendSwapExpiredMessage": "Questo ordine è scaduto prima dell'invio di fondi. Non è stato inviato nulla dal tuo portafoglio.",
+  "sendErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scegli una commissione più alta.",
+  "sendErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlla la connessione e riprova.",
+  "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvia il pagamento.",
+  "walletSpTitle": "Silent Payments",
+  "swapErrorRateLimited": "Troppe richieste. Attendi {seconds} secondi e riprova.",
+  "swapErrorRouteUnavailable": "Lo swap da {fromNetwork} a {toNetwork} non è disponibile.",
+  "swapErrorRouteUnavailableGeneric": "Questo swap non è disponibile.",
+  "feePrioritySlow": "Lenta",
+  "sendPayjoinFallbackCountdown": "Passaggio a un pagamento normale tra",
+  "sendSentWithoutPayjoin": "Inviato senza Payjoin: il destinatario non ha completato il Payjoin, quindi è stata trasmessa una transazione normale.",
+  "sendUnconfidentialLiquidWarning": "Importo pubblico",
+  "sendUnconfidentialLiquidWarningDescription": "Questo indirizzo Liquid non supporta le transazioni confidenziali. L'importo che invii sarà visibile pubblicamente sulla blockchain.",
+  "sendErrorAddressNetworkMismatch": "Questo indirizzo appartiene a una rete diversa da quella del tuo portafoglio.",
+  "sendErrorSelectedCoinsInsufficient": "Le monete selezionate non coprono l'importo e le commissioni. Seleziona altre monete o riduci l'importo.",
+  "sendErrorSelectedCoinsUnavailable": "Una o più monete selezionate non sono più disponibili. Controlla la selezione e riprova.",
+  "sendErrorInvoiceExpiryTooShort": "Questa fattura scade troppo presto. Chiedi al destinatario una nuova fattura."
 }

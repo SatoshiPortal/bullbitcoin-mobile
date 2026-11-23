@@ -62,5 +62,164 @@
   "broadcastSignedTxErrorAlreadyInChain": "Эта транзакция уже в блокчейне. Транслировать больше нечего.",
   "broadcastSignedTxErrorRejected": "Сеть отклонила эту транзакцию. Возможно, она подписана не полностью, недействительна или конфликтует с другим платежом.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не удалось подтвердить, что транзакция была транслирована. Проверьте её в обозревателе блоков, прежде чем повторить попытку.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках.",
+  "swapMax": "MAX",
+  "sendSendNetworkFee": "Отправить Сеть",
+  "transactionNetworkLightning": "Освещение",
+  "sendBroadcastingTransaction": "Трансляция сделки.",
+  "globalDefaultBitcoinWalletLabel": "Безопасный биткойн",
+  "sendAddress": "Адрес: ",
+  "sendAmountRequested": "Запрошенная сумма: ",
+  "sendTransferFeeDescription": "Это общая плата, вычтенная из суммы, отправленной",
+  "sendShowPsbt": "Показать PSBT",
+  "sendSelectAmount": "Выберите сумму",
+  "sendSendAmount": "Отправить",
+  "sendSelectedUtxosInsufficient": "Выбранные utxos не покрывают требуемую сумму",
+  "sendErrorInsufficientFundsForFees": "Недостаточно средств для покрытия суммы и сборов",
+  "sendChange": "Изменение",
+  "sendSwapWillTakeTime": "Это займет некоторое время, чтобы подтвердить",
+  "appStartupErrorMessage": "Не удалось запустить приложение. Попробуйте полностью закрыть его и перезапустить. Если ошибка сохраняется, обратитесь в поддержку и отправьте логи.",
+  "sendOpenTheCamera": "Откройте камеру",
+  "sendSwapId": "Идентификатор швапа",
+  "sendFrom": "Из",
+  "sendErrorAmountBelowMinimum": "Сумма ниже минимального предела свопа: {minLimit}",
+  "@sendErrorAmountBelowMinimum": {
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "Адрес получателя",
+  "sendServerNetworkFees": "Фейсы сети сервера",
+  "sendErrorInvalidAddressOrInvoice": "Неверный адрес оплаты Bitcoin или счет",
+  "sendErrorUnsupportedQrCodeFormat": "Неподдерживаемый формат QR-кода",
+  "sendSignWithBitBox": "Знак с BitBox",
+  "sendSwapRefundInProgress": "Возвращение смыва в прогресс",
+  "sendInsufficientBalance": "Недостаточный баланс",
+  "sendNetworkFees": "Сетевые сборы",
+  "sendSwapInitiated": "Свап Инициированный",
+  "transactionNoteAddTitle": "Добавление",
+  "sendHighFeeWarning": "Предупреждение",
+  "receiveEnterHere": "Входите сюда...",
+  "sendDone": "Дон",
+  "exchangeDcaAddressLabelLiquid": "Жидкий адрес",
+  "sendErrorAmountAboveMaximum": "Сумма выше максимального предела свопа: {maxLimit}",
+  "@sendErrorAmountAboveMaximum": {
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "Ваш возврат был обработан.",
+  "sendUnconfirmed": "Неподтвержденные",
+  "sendTransferFee": "Комиссия за своп",
+  "sendContinue": "Продолжить",
+  "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendErrorHardwareWalletCannotSwap": "Аппаратные кошельки нельзя использовать для свапов.",
+  "sendErrorInvoiceMustContainAmount": "Счёт должен содержать сумму",
+  "addressViewBalance": "Баланс",
+  "sendReplaceByFeeActivated": "Замена по фе активирована",
+  "sendType": "Тип: ",
+  "settingsCurrencyTitle": "Валюта",
+  "sendSats": "сидение",
+  "sendPaymentWillTakeTime": "Оплата займет время",
+  "sendPasteAddressOrInvoice": "Вставить адрес платежа или счет-фактуру",
+  "sendHighFeeWarningDescription": "Общая плата {feePercent}% от суммы, которую вы отправляете",
+  "@sendHighFeeWarningDescription": {
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count}",
+  "@sendCoinConfirmations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "В",
+  "sendSelectCoinsManually": "Выбрать монеты вручную",
+  "sendReceiveNetworkFee": "Получение сетевой платы",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "sendBroadcastTransaction": "Трансляция",
+  "sendSwapInProgressBitcoin": "Свопа продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
+  "sendTransactionSignedLedger": "Сделка успешно подписана с Ledger",
+  "sendEconomyFee": "Экономика",
+  "sendEstimatedDelivery10to30Minutes": "10-30 минут",
+  "sendReceive": "Получить",
+  "sendSatsPerVB": "sat/vB",
+  "sendTitle": "Отправить",
+  "sendSlowPaymentWarningDescription": "Биткойн обмены потребуют времени, чтобы подтвердить.",
+  "globalDefaultLiquidWalletLabel": "Мгновенные платежи",
+  "sendFastFee": "Быстро",
+  "sendAdvancedSettings": "Дополнительные настройки",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
+  "cancel": "Отмена",
+  "sendPaymentProcessing": "Платежи обрабатываются. Это может занять до минуты",
+  "sendErrorBroadcastFailed": "Не удалось транслировать сделку. Проверьте подключение к сети и попробуйте еще раз.",
+  "sendCustomFee": "Пользовательские феи",
+  "sendAmount": "Сумма",
+  "sendSwapRefundCompleted": "Завершение возврата",
+  "sendSending": "Отправка",
+  "sendErrorConfirmationFailed": "Подтверждение не удалось",
+  "coreScreensFeePriorityLabel": "Очередность",
+  "sendInvoicePaid": "Оплата счетов-фактур",
+  "sendSignWithLedger": "Знак с Ledger",
+  "sendSlowPaymentWarning": "Предупреждение о медленном платеже",
+  "sendErrorAmountBelowSwapLimits": "Сумма ниже лимитов на свопы",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Рассмотрите пополнение Мгновенных Платежей для меньших платежей.",
+  "sendCoinControl": "Контроль",
+  "sendAdvancedOptions": "Дополнительные параметры",
+  "sendViewDetails": "Просмотр деталей",
+  "transactionNetworkLiquid": "Жидкость",
+  "coreWalletTransactionStatusConfirmed": "Подтверждено",
+  "sendErrorBuildFailed": "Не удалось подготовить этот платёж. Пожалуйста, попробуйте снова.",
+  "sendConfirmSend": "Добавить",
+  "sendSwapInProgressInvoice": "Свопа продолжается. Счет будет оплачен через несколько секунд.",
+  "sendScanBitcoinQRCode": "Сканируйте любой код Bitcoin или Lightning QR, чтобы заплатить с биткойном.",
+  "sendConfirm": "Подтверждение",
+  "sendSuccessfullySent": "Успешное направление",
+  "sendSwapFailed": "Свопа провалилась. Ваш возврат будет обработан в ближайшее время.",
+  "exchangeDcaAddressLabelLightning": "Адрес освещения",
+  "sendErrorInsufficientBalanceForPayment": "Недостаточный баланс для покрытия этой выплаты",
+  "sendReceiveAmount": "Получить сумму",
+  "transactionNoteHint": "Заметка",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "receiveNote": "Заметка",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendSelfTransfer": "Перевод себе",
+  "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
+  "sendEstimatedDeliveryHours": "часы",
+  "coinsSelectedCount": "{count, plural, one{Выбрана {count}} few{Выбрано {count}} many{Выбрано {count}} other{Выбрано {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendCoordinatingPayjoinTransaction": "Согласование транзакции Payjoin.",
+  "sendErrorInvoiceExpired": "Срок действия этого счета-фактуры истек. Попросите получателя выставить новый.",
+  "sendErrorInsufficientBalanceFrozenHint": "Недостаточно доступного баланса — {amount} заморожено. Разморозьте монеты в разделе «Управление монетами», чтобы использовать их.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Заявка истекла",
+  "sendSwapExpiredMessage": "Срок этой заявки истёк до отправки средств. Из вашего кошелька ничего не отправлено.",
+  "sendErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
+  "sendErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
+  "sendErrorInvoiceExpiryTooShort": "Срок действия этого счета-фактуры истекает слишком скоро. Попросите получателя выставить новый."
 }

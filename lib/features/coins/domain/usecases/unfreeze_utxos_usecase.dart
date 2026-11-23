@@ -1,33 +1,13 @@
-import 'package:bull_logger/bull_logger.dart';
+import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 
-/// Unfreezes the given outpoints. Persisted freezes are always user freezes
-/// (system/payjoin locks are derived live, never stored), so unfreezing is safe
-/// by construction. Maps any failure to [CoinsUnfreezeFailure].
 class UnfreezeUtxosUsecase {
-  UnfreezeUtxosUsecase({required this._walletUtxoRepository});
+  final Coins _coins;
 
-  final WalletUtxoRepository _walletUtxoRepository;
+  const UnfreezeUtxosUsecase(this._coins);
 
   Future<Result<void, CoinsFailure>> execute({
     required String walletId,
     required List<Outpoint> outpoints,
-  }) async {
-    try {
-      await _walletUtxoRepository.unfreezeUtxos(
-        walletId: walletId,
-        outpoints: outpoints,
-      );
-      return const Ok(null);
-    } on Exception catch (error, stackTrace) {
-      log.warning(
-        'Failed to unfreeze wallet coins',
-        error: error.runtimeType,
-        trace: stackTrace,
-      );
-      return Err(CoinsUnfreezeFailure(error.runtimeType.toString()));
-    }
-  }
+  }) => _coins.unfreeze(outpoints);
 }

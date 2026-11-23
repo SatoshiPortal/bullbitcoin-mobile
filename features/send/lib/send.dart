@@ -1,5 +1,6 @@
 export 'src/broadcast_signed_tx/router.dart' show BroadcastSignedTxRoute;
 export 'src/replace_by_fee/router.dart' show ReplaceByFee;
+export 'src/payment/public/send_route.dart' show SendNavigation, SendRoute;
 export 'src/consolidation/domain/consolidation.dart'
     show
         Consolidation,

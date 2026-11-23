@@ -1,6 +1,5 @@
-import 'public/coins.dart';
+import 'package:coins/coins.dart';
 
-import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:sync/sync.dart' show CoinFreezes, WalletKey;
 import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:sync/write.dart' show ElectrumSync, WalletNativeRuntime;
@@ -8,8 +7,6 @@ import 'package:preferences/preferences.dart'
     show AmountDisplayPreferencesReader;
 import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_activity_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
@@ -25,35 +22,21 @@ class CoinsLocator {
     required Future<void> Function(String) pollWallet,
   }) {
     locator.registerLazySingleton<Coins>(
-      () => Coins(locator<GetUtxosUsecase>().execute),
-    );
-    locator.registerLazySingleton<WalletUtxoRepository>(
-      () => WalletUtxoRepositoryImpl(
+      () => Coins.open(
         inventory: locator<SecretsInventory>(),
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
-        freezesDatasource: locator<CoinFreezes>(),
-        labelsFacade: locator<Labels>(),
-      ),
-    );
-    locator.registerLazySingleton<GetWalletUtxosUsecase>(
-      () => GetWalletUtxosUsecase(
-        utxoRepository: locator<WalletUtxoRepository>(),
+        freezes: locator<CoinFreezes>(),
+        labels: locator<Labels>(),
       ),
     );
     locator.registerFactory<GetUtxosUsecase>(
-      () => GetUtxosUsecase(
-        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
-      ),
+      () => GetUtxosUsecase(locator<Coins>()),
     );
     locator.registerFactory<FreezeUtxosUsecase>(
-      () => FreezeUtxosUsecase(
-        walletUtxoRepository: locator<WalletUtxoRepository>(),
-      ),
+      () => FreezeUtxosUsecase(locator<Coins>()),
     );
     locator.registerFactory<UnfreezeUtxosUsecase>(
-      () => UnfreezeUtxosUsecase(
-        walletUtxoRepository: locator<WalletUtxoRepository>(),
-      ),
+      () => UnfreezeUtxosUsecase(locator<Coins>()),
     );
     locator.registerFactory<RefreshCoinsUsecase>(
       () => RefreshCoinsUsecase(pollWallet),

@@ -130,5 +130,450 @@
   "broadcastSignedTxErrorAlreadyInChain": "Yeh transaction pehle se hi blockchain mein hai. Broadcast karne ke liye kuch bhi baaki nahin hai.",
   "broadcastSignedTxErrorRejected": "Network ne is transaction ko reject kar diya. Yeh adhoora signed, invalid, ya kisi doosre payment se conflict mein ho sakta hai.",
   "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai.",
+  "coreWalletTransactionStatusConfirmed": "Confirmed",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "settingsCurrencyTitle": "Currency",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendTitle": "Bhejo",
+  "@sendTitle": {
+    "description": "Title for the send screen"
+  },
+  "sendPasteAddressOrInvoice": "Payment address ya invoice paste karo",
+  "@sendPasteAddressOrInvoice": {
+    "description": "Placeholder text for the payment address or invoice input field"
+  },
+  "sendContinue": "Aage Badho",
+  "@sendContinue": {
+    "description": "Button label for continuing in the send flow"
+  },
+  "sendSelectAmount": "Rashi chuno",
+  "@sendSelectAmount": {
+    "description": "Label for selecting the amount to send"
+  },
+  "sendAmountRequested": "Maangi gayi rashi: ",
+  "@sendAmountRequested": {
+    "description": "Label for the requested amount in a payment request"
+  },
+  "sendDone": "Ho Gaya",
+  "@sendDone": {
+    "description": "Button label for completing the send flow"
+  },
+  "sendSelectedUtxosInsufficient": "Chunne hue UTXOs zaruri rashi ke liye kaafi nahi hain",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Error message when selected UTXOs don't cover the required amount"
+  },
+  "sendAdvancedOptions": "Advanced Options",
+  "@sendAdvancedOptions": {
+    "description": "Section header for advanced sending features"
+  },
+  "sendReplaceByFeeActivated": "Replace-by-fee activated",
+  "@sendReplaceByFeeActivated": {
+    "description": "Message indicating that replace-by-fee (RBF) is activated"
+  },
+  "sendSelectCoinsManually": "Coins manually chuno",
+  "@sendSelectCoinsManually": {
+    "description": "Label for manually selecting coins (UTXOs) in the send flow"
+  },
+  "sendRecipientAddress": "Praaptakarta ka pata",
+  "@sendRecipientAddress": {
+    "description": "Label for the recipient address field"
+  },
+  "sendInsufficientBalance": "Balance kam hai",
+  "@sendInsufficientBalance": {
+    "description": "Error message when the wallet has insufficient balance to send"
+  },
+  "sendScanBitcoinQRCode": "Bitcoin ya Lightning QR code scan karo payment ke liye.",
+  "@sendScanBitcoinQRCode": {
+    "description": "Instructions for scanning a QR code to make a Bitcoin payment"
+  },
+  "sendOpenTheCamera": "Camera Kholo",
+  "@sendOpenTheCamera": {
+    "description": "Button label for opening the camera to scan QR codes"
+  },
+  "sendCustomFee": "Custom Fee",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendSats": "sats",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendSatsPerVB": "sat/vB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 minute",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendAddress": "Pata: ",
+  "@sendAddress": {
+    "description": "Label prefix for address field"
+  },
+  "sendType": "Prakar: ",
+  "@sendType": {
+    "description": "Label prefix for transaction type field"
+  },
+  "sendReceive": "Prapt karo",
+  "@sendReceive": {
+    "description": "Label for receive transaction type"
+  },
+  "sendChange": "Baki raashi",
+  "@sendChange": {
+    "description": "Label for change output in a transaction"
+  },
+  "sendHighFeeWarning": "Fee bahut zyada hai",
+  "@sendHighFeeWarning": {
+    "description": "Warning title for high transaction fees"
+  },
+  "sendSlowPaymentWarning": "Dheema payment chetavni",
+  "@sendSlowPaymentWarning": {
+    "description": "Warning title for slow payment confirmation"
+  },
+  "sendSlowPaymentWarningDescription": "Bitcoin swap confirm hone mein samay lagega.",
+  "@sendSlowPaymentWarningDescription": {
+    "description": "Description for slow payment warning"
+  },
+  "sendAdvancedSettings": "Advanced Settings",
+  "@sendAdvancedSettings": {
+    "description": "Title for advanced settings in the send flow"
+  },
+  "sendConfirm": "Confirm Karo",
+  "@sendConfirm": {
+    "description": "Button label for confirming a send transaction"
+  },
+  "sendBroadcastTransaction": "Transaction Broadcast Karo",
+  "@sendBroadcastTransaction": {
+    "description": "Button label for broadcasting a transaction to the network"
+  },
+  "sendFrom": "Se",
+  "@sendFrom": {
+    "description": "Label for the sender/source in a transaction"
+  },
+  "sendTo": "Ko",
+  "@sendTo": {
+    "description": "Label for the recipient/destination in a transaction"
+  },
+  "sendAmount": "Raashi",
+  "@sendAmount": {
+    "description": "Label for the transaction amount"
+  },
+  "sendNetworkFees": "Network fees",
+  "@sendNetworkFees": {
+    "description": "Label for network transaction fees"
+  },
+  "receiveNote": "Note",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "receiveEnterHere": "Yahan likho...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "transactionNetworkLightning": "Lightning",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "transactionNetworkLiquid": "Liquid",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "transactionNoteAddTitle": "Note jodo",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionNoteHint": "Note",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "globalDefaultBitcoinWalletLabel": "Surakshit Bitcoin",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "sendCoinControl": "Coin Control",
+  "@sendCoinControl": {
+    "description": "Feature to manually select UTXOs"
+  },
+  "sendCoinConfirmations": "{count} confirmations",
+  "@sendCoinConfirmations": {
+    "description": "Label for UTXO confirmation count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendUnconfirmed": "Confirm Nahi Hua",
+  "@sendUnconfirmed": {
+    "description": "Status for 0-conf UTXO"
+  },
+  "sendEconomyFee": "Sasta",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendFastFee": "Tez",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendSwapId": "Swap ID",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendSendAmount": "Bhejne ki Raashi",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendReceiveAmount": "Prapt Raashi",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendSendNetworkFee": "Bhejne ki Network Fee",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "sendTransferFee": "Swap Fee",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendTransferFeeDescription": "Yeh bheji gayi raashi se kati gayi kul fee hai",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendReceiveNetworkFee": "Prapt Network Fee",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendServerNetworkFees": "Server Network Fees",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendConfirmSend": "Bhejne Ki Pushthi Karo",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSelfTransfer": "Khud ko transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "sendSending": "Bheja Ja Raha Hai",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendBroadcastingTransaction": "Transaction broadcast ho rahi hai.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendCoordinatingPayjoinTransaction": "Payjoin transaction coordinate ho rahi hai.",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
+  "sendSwapInProgressInvoice": "Swap chal raha hai. Invoice kuch seconds mein pay ho jayega.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSwapInProgressBitcoin": "Swap chal raha hai. Bitcoin transactions confirm hone mein waqt lagta hai. Aap home par wapas ja ke intezaar kar sakte ho.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendSwapRefundInProgress": "Swap Refund Chal Raha Hai",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendSwapFailed": "Swap fail ho gaya. Aapka refund jald process hoga.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendSwapRefundCompleted": "Swap Refund Poora Hua",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendRefundProcessed": "Aapka refund process ho gaya.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendInvoicePaid": "Invoice Pay Ho Gaya",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendPaymentProcessing": "Payment process ho rahi hai. Ek minute tak lag sakta hai",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendPaymentWillTakeTime": "Payment Mein Waqt Lagega",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendSwapInitiated": "Swap Shuru Ho Gaya",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendSwapWillTakeTime": "Confirm hone mein thoda waqt lagega",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSuccessfullySent": "Kamyabi Se Bheja Gaya",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendViewDetails": "Jaankari Dekho",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendShowPsbt": "PSBT Dikhaao",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSignWithLedger": "Ledger Se Sign Karo",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "BitBox Se Sign Karo",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendTransactionSignedLedger": "Transaction Ledger se kamyabi se sign ho gayi",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendHighFeeWarningDescription": "Kul fee aapki bheji gayi raashi ka {feePercent}% hai",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapCreationFailed": "Swap banana fail ho gaya.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorInvoiceMustContainAmount": "Invoice mein raashi honi chahiye",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Is payment ke liye enough balance nahi hai",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Bitcoin Payment Address ya Invoice galat hai",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorUnsupportedQrCodeFormat": "Asamarthit QR code format",
+  "sendErrorBuildFailed": "Yah payment taiyar nahi ki ja saki. Kripya phir koshish karein.",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorConfirmationFailed": "Confirmation Fail Ho Gayi",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendErrorAmountBelowSwapLimits": "Raashi swap limits se kam hai",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Chhoti payments ke liye Instant Payments fund karne par sochiye.",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
+  },
+  "sendErrorAmountBelowMinimum": "Raashi minimum swap limit se kam hai: {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "Raashi maximum swap limit se zyada hai: {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorInsufficientFundsForFees": "Raashi aur fees cover karne ke liye enough paise nahi hain",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendErrorBroadcastFailed": "Transaction broadcast karna fail ho gaya. Apna network connection check karo aur dobara koshish karo.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "addressViewBalance": "Balance",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "swapMax": "MAX",
+  "@swapMax": {
+    "description": "MAX button label"
+  },
+  "appStartupErrorMessage": "App startup fail hua. App ko completely band karke restart karo. Agar error continue kare, toh support ko issue report karo aur apne logs share karo.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "Lightning address",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "Liquid address",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "coreScreensFeePriorityLabel": "Fee Priority",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
+  "sendEstimatedDeliveryHours": "ghante",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coinsSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
+  "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
+  "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
+  "sendPayjoinLabel": "Payjoin",
+  "sendSwapExpiredTitle": "Order Khatam Ho Gaya",
+  "sendSwapExpiredMessage": "Koi bhi rashi bheje jaane se pehle hi yeh order khatam ho gaya. Aapke wallet se kuch bhi nahi bheja gaya.",
+  "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
+  "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
+  "sendErrorInvoiceExpiryTooShort": "Ye invoice bahut jaldi expire ho jayegi. Praaptakarta se nayi invoice maango."
 }

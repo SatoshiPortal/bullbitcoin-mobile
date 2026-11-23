@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:coins/coins.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';

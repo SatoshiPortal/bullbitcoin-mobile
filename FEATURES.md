@@ -72,7 +72,7 @@ graph TB
     ELECTRUM --> BULL_LOGGER
     NETWORK --> ELECTRUM
     NETWORK --> MEMPOOL
-    SEND_TOOLS --> ELECTRUM
+    SEND --> ELECTRUM
     CORE --> ELECTRUM
     WALLETS --> ELECTRUM
     LABELS --> SYNC
@@ -94,15 +94,13 @@ graph TB
     BULL_EXCHANGE -->|Sell and Pay review, sign and broadcast| SPEND
     TRANSFER --> SPEND
     FEES_PACKAGE -->|wallet connection policy| SYNC
-    SEND_TOOLS --> SYNC
     SATOSHIFIER[Satoshifier Package]
-    SEND_TOOLS -->|BBQR assembly| SATOSHIFIER
+    SEND -->|BBQR assembly| SATOSHIFIER
     SATOSHIFIER --> SYNC
     SATOSHIFIER --> BULL_LOGGER
     SEND -->|payment requests| SATOSHIFIER
     SWAPS -->|payment requests| SATOSHIFIER
     WALLETS -->|payment requests, public extended keys| SATOSHIFIER
-    SEND_TOOLS --> SPEND
     SPEND -->|write-ahead Payjoin admission| BULL_PAYJOIN
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
@@ -255,10 +253,9 @@ graph TB
     APP_STARTUP[Startup workspace feature]
     UTXO_MGMT[UTXO Management]
     BACKUPS[Backups workspace feature<br/>Backup status and verification]
-    SEND[Send]
-    SEND_TOOLS[Send workspace feature<br/>Signed transaction broadcast, Liquid consolidation and fee replacement]
+    SEND[Send workspace feature<br/>Payments, signed transaction broadcast, Liquid consolidation and fee replacement]
     SCANNING[QR and NFC Scanning workspace member]
-    SEND_TOOLS -->|public QR and NFC scanning| SCANNING
+    SEND -->|public QR and NFC scanning| SCANNING
     CORE -->|composes signer NFC callback| SCANNING
     SCANNING --> SIGNERS
     RECEIVE --> SIGNERS
@@ -442,7 +439,7 @@ graph TB
     SETTINGS --> LABELS
     COINS -->|public revision stream and coins| SYNC
     COINS -->|authorized wallet identity| SECRETS
-    COINS -->|coin selection navigation| WALLETS
+    COINS -->|coin and transaction labels| LABELS
     SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> TX_HISTORY
@@ -462,16 +459,13 @@ graph TB
     SWAPS -->|legacy Lightning fallback uses receive values| RECEIVE
     WALLETS -->|typed receive navigation| RECEIVE
     RECEIVE --> TX_HISTORY
-    SEND -->|signed transaction handoff and consolidation status| SEND_TOOLS
     SEND --> FEES_UI
-    SEND --> NETWORK
     SEND --> BULL_PAYJOIN
     SEND --> SP
-    SEND --> SWAPS
     SEND --> TX_HISTORY
-    SEND --> UTXO_MGMT
-    SEND -->|public coin management route| COINS
-    SEND -->|public spend admission and revisions| WALLETS
+    SEND -->|account inventory| SECRETS
+    SEND -->|internal receive addresses| RECEIVE
+    SEND -->|coin reads and selection| COINS
     SETTINGS -->|public wallet discovery| WALLETS
     SETTINGS -->|swap rescue wallet choices| SECRETS
     SETTINGS --> CORE
@@ -507,15 +501,15 @@ graph TB
     RECOVERBULL --> BULL_LOGGER
     RECOVERBULL --> BULL_UI
     RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
-    SWAPS -->|consolidation status and route| SEND_TOOLS
+    SWAPS -->|consolidation status and route| SEND
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY -->|wallet history projections and revisions| SYNC
     WALLETS -->|wallet detail history widgets| TX_HISTORY
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
-    WALLETS -->|consolidation banner| SEND_TOOLS
-    SETTINGS -->|signed transaction reader| SEND_TOOLS
+    WALLETS -->|payment navigation and consolidation banner| SEND
+    SETTINGS -->|signed transaction reader| SEND
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
     WALLETS --> SECRETS
@@ -543,12 +537,10 @@ graph TB
     EXCHANGE -->|shared destination validation and input| ADDRESS_LABELS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
-    SEND_TOOLS --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
     LIMIT_ORDERS -->|public destination input| ADDRESS_LABELS
     SEND --> SIGNERS
-    SEND_TOOLS --> FEES_UI
-    SEND_TOOLS --> BULL_UI
+    SEND --> BULL_UI
     SWAPS --> FEES_PACKAGE
     NETWORK -->|service status wallet identity| SECRETS
     NETWORK -->|historical backup timing| RECOVERBULL
@@ -566,7 +558,6 @@ graph TB
     COINS -->|coin selection address viewer| ADDRESS_LABELS
     EXCHANGE -->|address viewer| ADDRESS_LABELS
     TX_HISTORY -->|address viewer| ADDRESS_LABELS
-    SEND_TOOLS -->|address viewer| ADDRESS_LABELS
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
@@ -575,7 +566,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,OVERVIEW,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
+    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,OVERVIEW,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
 ```
 
 ## About Package Dependency Diagrams

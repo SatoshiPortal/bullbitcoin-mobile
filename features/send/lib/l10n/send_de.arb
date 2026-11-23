@@ -62,5 +62,170 @@
   "broadcastSignedTxErrorRejected": "Das Netzwerk hat diese Transaktion abgelehnt. Sie ist möglicherweise unvollständig signiert, ungültig oder steht im Konflikt mit einer anderen Zahlung.",
   "broadcastSignedTxErrorOutcomeUnknown": "Wir konnten nicht bestätigen, dass Ihre Transaktion gesendet wurde. Prüfen Sie sie in einem Block-Explorer, bevor Sie es erneut versuchen.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Das Senden in diesem Netzwerk ist in den aktuellen Einstellungen nicht aktiviert.",
-  "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt."
+  "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt.",
+  "swapMax": "MAX",
+  "sendSendNetworkFee": "Netzwerkgebühr (Senden)",
+  "transactionNoteHint": "Notiz",
+  "transactionNetworkLightning": "Lightning",
+  "sendBroadcastingTransaction": "Transaktion wird übertragen…",
+  "globalDefaultBitcoinWalletLabel": "Sichere Bitcoin-Wallet",
+  "sendAddress": "Adresse: ",
+  "sendAmountRequested": "Angeforderter Betrag: ",
+  "sendTransferFeeDescription": "Dies ist die Gesamtgebühr, die vom gesendeten Betrag abgezogen wird",
+  "sendShowPsbt": "PSBT anzeigen",
+  "sendSelectAmount": "Betrag auswählen",
+  "sendSendAmount": "Sendebetrag",
+  "sendSelectedUtxosInsufficient": "Die ausgewählten UTXOs erreichen den erforderlichen Betrag nicht.",
+  "sendErrorInsufficientFundsForFees": "Nicht genügend Guthaben, um Betrag und Gebühren zu decken.",
+  "sendSwapWillTakeTime": "Die Bestätigung kann einige Zeit dauern",
+  "appStartupErrorMessage": "Die App konnte nicht gestartet werden. Versuchen Sie, sie vollständig zu schließen und neu zu starten. Wenn der Fehler weiterhin besteht, kontaktieren Sie den Support und teilen Sie Ihre Protokolle.",
+  "sendOpenTheCamera": "Kamera öffnen",
+  "sendSwapId": "Swap-ID",
+  "receiveNote": "Notiz",
+  "sendFrom": "Von",
+  "sendErrorAmountBelowMinimum": "Betrag unterhalb der Mindest-Swap-Grenze: {minLimit} Sats.",
+  "@sendErrorAmountBelowMinimum": {
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientAddress": "Adresse des Empfängers",
+  "sendServerNetworkFees": "Server-Netzwerkgebühren",
+  "sendErrorInvalidAddressOrInvoice": "Ungültige Bitcoin-Adresse oder Invoice.",
+  "sendErrorUnsupportedQrCodeFormat": "Nicht unterstütztes QR-Code-Format",
+  "sendSignWithBitBox": "Mit BitBox signieren",
+  "sendSwapRefundInProgress": "Swap-Rückerstattung läuft",
+  "sendInsufficientBalance": "Unzureichendes Guthaben",
+  "sendNetworkFees": "Netzwerkgebühren",
+  "sendSwapInitiated": "Swap initiiert",
+  "transactionNoteAddTitle": "Notiz hinzufügen",
+  "sendHighFeeWarning": "Warnung: hohe Gebühren.",
+  "receiveEnterHere": "Hier eingeben…",
+  "sendDone": "Fertig",
+  "exchangeDcaAddressLabelLiquid": "Liquid-Adresse",
+  "sendErrorAmountAboveMaximum": "Betrag über Höchstbetrag: {maxLimit} sats.",
+  "@sendErrorAmountAboveMaximum": {
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRefundProcessed": "Ihre Rückerstattung wurde verarbeitet.",
+  "sendUnconfirmed": "Unbestätigt",
+  "sendTransferFee": "Swap-Gebühr",
+  "sendContinue": "Fortfahren",
+  "sendErrorSwapCreationFailed": "Swap konnte nicht erstellt werden.",
+  "sendErrorHardwareWalletCannotSwap": "Hardware-Wallets können nicht für Swaps verwendet werden.",
+  "sendErrorInvoiceMustContainAmount": "Die Invoice muss einen Betrag enthalten.",
+  "addressViewBalance": "Guthaben",
+  "sendReplaceByFeeActivated": "Gebührenerhöhung aktiviert",
+  "sendType": "Typ:",
+  "settingsCurrencyTitle": "Währung",
+  "sendSats": "sats",
+  "sendPaymentWillTakeTime": "Zahlung wird Zeit in Anspruch nehmen",
+  "sendPasteAddressOrInvoice": "Zahlungsadresse oder Invoice einfügen",
+  "sendHighFeeWarningDescription": "Gesamtgebühr beträgt {feePercent}% des Betrags, den Sie senden.",
+  "@sendHighFeeWarningDescription": {
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCoinConfirmations": "{count} Bestätigungen",
+  "@sendCoinConfirmations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendTo": "An",
+  "sendSelectCoinsManually": "Coins manuell auswählen",
+  "sendReceiveNetworkFee": "Netzwerkgebühren (Empfangen)",
+  "transactionNetworkBitcoin": "Bitcoin",
+  "sendBroadcastTransaction": "Transaktion senden",
+  "sendSwapInProgressBitcoin": "Der Swap läuft. Bitcoin-Transaktionen können eine Weile zur Bestätigung benötigen. Sie können zum Startbildschirm zurückkehren und warten.",
+  "sendTransactionSignedLedger": "Ihre Transaktion wurde erfolgreich mit Ledger signiert.",
+  "sendEconomyFee": "Günstig",
+  "sendEstimatedDelivery10to30Minutes": "10–30 Minuten",
+  "sendReceive": "Empfangen",
+  "sendSatsPerVB": "sat/vB",
+  "sendTitle": "Senden",
+  "sendSlowPaymentWarningDescription": "Bitcoin-Swaps benötigen einige Zeit, um bestätigt zu werden.",
+  "globalDefaultLiquidWalletLabel": "Sofortzahlungen",
+  "sendFastFee": "Schnell",
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin-Adresse",
+  "sendPaymentProcessing": "Die Zahlung wird bearbeitet. Das kann eine Minute dauern.",
+  "sendErrorBroadcastFailed": "Fehler beim Übertragen der Transaktion. Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
+  "sendCustomFee": "Benutzerdefinierte Gebühren",
+  "sendAmount": "Betrag",
+  "sendSwapRefundCompleted": "Swap-Rückerstattung abgeschlossen",
+  "sendSending": "Wird gesendet…",
+  "sendErrorConfirmationFailed": "Bestätigung fehlgeschlagen",
+  "coreScreensFeePriorityLabel": "Priorität",
+  "sendInvoicePaid": "Invoice bezahlt",
+  "sendSignWithLedger": "Mit Ledger signieren",
+  "sendSlowPaymentWarning": "Zahlung könnte lange dauern.",
+  "sendErrorAmountBelowSwapLimits": "Betrag unterhalb der Swap-Grenze.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Erwägen Sie, Sofortzahlungen aufzuladen, um kleinere Zahlungen zu tätigen.",
+  "sendCoinControl": "Coin-Auswahl",
+  "sendAdvancedOptions": "Erweiterte Optionen",
+  "sendViewDetails": "Details anzeigen",
+  "transactionNetworkLiquid": "Liquid",
+  "coreWalletTransactionStatusConfirmed": "Bestätigt",
+  "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
+  "sendConfirmSend": "Senden bestätigen",
+  "sendSwapInProgressInvoice": "Der Swap läuft. Die Invoice wird in wenigen Sekunden bezahlt.",
+  "sendScanBitcoinQRCode": "Scannen Sie einen beliebigen Bitcoin- oder Lightning-QR-Code, um mit Bitcoin zu bezahlen.",
+  "sendConfirm": "Bestätigen",
+  "sendSuccessfullySent": "Erfolgreich gesendet",
+  "sendSwapFailed": "Der Swap ist fehlgeschlagen. Ihre Rückerstattung wird in Kürze bearbeitet.",
+  "exchangeDcaAddressLabelLightning": "Lightning-Adresse",
+  "sendErrorInsufficientBalanceForPayment": "Unzureichendes Guthaben, um diese Zahlung zu decken.",
+  "sendErrorInsufficientBalanceFrozenHint": "Nicht genügend verfügbares Guthaben — {amount} ist eingefroren. Entfrieren Sie Coins unter „Coins verwalten“, um sie zu verwenden.",
+  "sendReceiveAmount": "Empfangsbetrag",
+  "sendChange": "Wechselgeld",
+  "sendAdvancedSettings": "Erweiterte Einstellungen",
+  "cancel": "Abbrechen",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "sendSelfTransfer": "Eigentransfer",
+  "sendCoordinatingPayjoinTransaction": "Payjoin-Transaktion wird koordiniert.",
+  "sendErrorInvoiceExpired": "Diese Invoice ist abgelaufen. Bitten Sie den Empfänger um eine neue Invoice.",
+  "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
+  "sendEstimatedDeliveryHours": "Stunden",
+  "coinsSelectedCount": "{count, plural, =1{1 ausgewählt} other{{count} ausgewählt}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sendPayjoinLabel": "Payjoin",
+  "sendPayjoinFallbackCountdown": "Wechsel zu einer regulären Zahlung in",
+  "sendSentWithoutPayjoin": "Ohne Payjoin gesendet: Der Empfänger hat Payjoin nicht abgeschlossen. Daher wurde stattdessen eine Standardtransaktion veröffentlicht.",
+  "feePrioritySlow": "Langsam",
+  "sendSwapExpiredTitle": "Auftrag abgelaufen",
+  "sendSwapExpiredMessage": "Dieser Auftrag ist abgelaufen, bevor Guthaben gesendet wurde. Aus Ihrer Wallet wurde nichts gesendet.",
+  "sendUnconfidentialLiquidWarning": "Öffentlicher Betrag",
+  "sendUnconfidentialLiquidWarningDescription": "Diese Liquid-Adresse unterstützt keine Confidential Transactions. Der von Ihnen gesendete Betrag ist öffentlich auf der Blockchain sichtbar.",
+  "swapErrorRateLimited": "Zu viele Anfragen. Warten Sie {seconds} Sekunden und versuchen Sie es erneut.",
+  "swapErrorRouteUnavailable": "{fromNetwork} → {toNetwork} ist nicht verfügbar.",
+  "swapErrorRouteUnavailableGeneric": "Dieser Swap ist nicht verfügbar.",
+  "sendErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
+  "sendErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit dem Auftrag überein. Bitte starten Sie die Zahlung erneut.",
+  "sendErrorSelectedCoinsUnavailable": "Ein oder mehrere ausgewählte Coins sind nicht mehr verfügbar. Überprüfen Sie Ihre Coin-Auswahl und versuchen Sie es erneut.",
+  "sendErrorSelectedCoinsInsufficient": "Die ausgewählten Coins reichen nicht aus, um den Betrag und die Gebühren zu decken. Wählen Sie weitere Coins aus oder verringern Sie den Betrag.",
+  "sendErrorAddressNetworkMismatch": "Diese Adresse gehört zu einem anderen Netzwerk als Ihre Wallet.",
+  "walletSpTitle": "Silent Payments",
+  "sendErrorInvoiceExpiryTooShort": "Diese Invoice läuft zu früh ab. Bitten Sie den Empfänger um eine neue Invoice."
 }
