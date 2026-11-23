@@ -1,5 +1,18 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
 
+import 'package:access/setup.dart';
+import 'package:access/testing.dart' show PinCodeUnlockInputScreen;
+import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
@@ -13,8 +26,15 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:secrets/secrets.dart' show DatabaseOpenFailure;
+import 'package:secrets/storage.dart';
+import 'package:secrets/testing.dart';
+
+import '../../support/inventory_fixture.dart';
 
 class _MockAccess extends Mock implements Access {}
+
+class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 class _MockCheckForExistingDefaultWalletsUsecase extends Mock
     implements CheckForExistingDefaultWalletsUsecase {}
@@ -45,8 +65,10 @@ void main() {
   late _MockRestoreMissingDefaultSecretUsecase restoreSecret;
   late _MockStartSwapEngineUsecase startSwapEngine;
 
-  AppStartupBloc buildBloc() => AppStartupBloc(
-    getStartupPinStatusUsecase: GetStartupPinStatusUsecase(checkPinCodeExists),
+  AppStartupBloc buildBloc([Access? access]) => AppStartupBloc(
+    getStartupPinStatusUsecase: GetStartupPinStatusUsecase(
+      access ?? checkPinCodeExists,
+    ),
     checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
     initializeRequiredTorUsecase: initializeRequiredTor,
     restoreMissingDefaultSecretUsecase: restoreSecret,
@@ -203,6 +225,129 @@ void main() {
       verify(() => checkDefaultWallets.execute()).called(1);
     },
   );
+
+  testWidgets('a PIN set before cold start gates the first router frame', (
+    tester,
+  ) async {
+    final services = GetIt.asNewInstance();
+    addTearDown(services.reset);
+    final bloc = buildBloc(const Access());
+    addTearDown(bloc.close);
+    when(() => checkDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(true));
+    late final String pin;
+    await tester.runAsync(() async {
+      FakeSecureStoragePlatform().install();
+      final directory = await Directory.systemTemp.createTemp('cold-pin-');
+      addTearDown(() => directory.delete(recursive: true));
+      final installation = await InventoryFixture.open(directory);
+      addTearDown(installation.close);
+      pin = Random.secure().nextInt(10000).toString().padLeft(4, '0');
+      expect(
+        await installation.inventory.setCredential(
+          pin,
+          backupVerification: installation.backup,
+        ),
+        isA<Ok>(),
+      );
+      await installation.inventory.close();
+      final opened = await SecretsInventory.open(
+        file: File('${directory.path}/test-secrets.sqlite'),
+        admission: installation.admission,
+      );
+      final inventory =
+          (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+      final feature = AccessFeature.mount(
+        services: services,
+        inventory: inventory,
+        backupVerification: installation.backup,
+        hasVerifiedBackup: () async => true,
+        onUnlocked: (_) {},
+        onBackUp: (_) async {},
+      );
+      services.registerSingleton(feature);
+    });
+    bloc.add(const AppStartupStarted());
+    await pumpUntilInventoryReady(
+      tester,
+      () => bloc.state is AppStartupSuccess,
+    );
+    expect(
+      bloc.state,
+      isA<AppStartupSuccess>().having(
+        (state) => state.isPinCodeSet,
+        'PIN required',
+        true,
+      ),
+    );
+
+    var homeBuilds = 0;
+    final settings = _MockSettingsCubit();
+    when(() => settings.state).thenReturn(const SettingsState());
+    when(() => settings.stream)
+        .thenAnswer((_) => const Stream<SettingsState>.empty());
+    var unlocks = 0;
+    final walletRuntime = Completer<void>();
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) {
+            homeBuilds++;
+            return const SizedBox.shrink();
+          },
+        ),
+        ...services<AccessFeature>().routes.root,
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: bloc),
+          BlocProvider.value(value: settings),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: const [
+            ...appLocalizationsDelegates,
+            bullUiLocalizationsDelegate,
+          ],
+          builder: (_, child) => AppStartupWidget(
+            app: child ?? const SizedBox.shrink(),
+            onUnlocked: () {
+              unlocks++;
+              return walletRuntime.future;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(PinCodeUnlockInputScreen), findsOneWidget);
+    expect(homeBuilds, 0);
+    verifyNever(() => checkDefaultWallets.execute());
+
+    for (final digit in pin.split('')) {
+      await tester.tap(find.text(digit));
+      await tester.pump();
+    }
+    final loc = AccessLocalizations.of(
+      tester.element(find.byType(PinCodeUnlockInputScreen)),
+    );
+    await tester.tap(find.text(loc.appUnlockButton));
+    await pumpUntilInventoryReady(tester, () => unlocks == 1);
+    expect(homeBuilds, 0);
+    verifyNever(() => checkDefaultWallets.execute());
+
+    walletRuntime.complete();
+    await tester.pumpAndSettle();
+    expect(homeBuilds, greaterThan(0));
+    expect(find.byType(PinCodeUnlockInputScreen), findsNothing);
+    verify(() => checkDefaultWallets.execute()).called(1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 
   test('starts a fresh install', () async {
     when(() => checkDefaultWallets.execute())
