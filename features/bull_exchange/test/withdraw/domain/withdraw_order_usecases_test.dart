@@ -1,12 +1,11 @@
 import 'package:exchange/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/load_withdraw_context_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_exchange/src/withdraw/domain/confirm_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/load_withdraw_context_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -20,9 +19,6 @@ class _MockSettings extends Mock implements SettingsEntity {}
 class _MockExchangeRecipients extends Mock implements ExchangeRecipients {}
 
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
-
-class _MockGetExchangeUserSummaryUsecase extends Mock
-    implements GetExchangeUserSummaryUsecase {}
 
 const _userSummary = UserSummary(
   userNumber: 1,
@@ -275,30 +271,24 @@ void main() {
   });
 
   group('LoadWithdrawContextUsecase', () {
-    late _MockGetExchangeUserSummaryUsecase getUserSummary;
-
-    LoadWithdrawContextUsecase build() => LoadWithdrawContextUsecase(
-      getExchangeUserSummaryUsecase: getUserSummary,
+    LoadWithdrawContextUsecase build(
+      Result<UserSummary, ExchangeFailure> scenario,
+    ) => LoadWithdrawContextUsecase(
+      exchangeForTesting(getUserSummary: (_) async => scenario),
     );
 
-    setUp(() => getUserSummary = _MockGetExchangeUserSummaryUsecase());
-
     test('returns the user summary', () async {
-      when(getUserSummary.execute).thenAnswer((_) async => _userSummary);
-
-      expect(_ok(await build().execute()), _userSummary);
+      expect(_ok(await build(const Ok(_userSummary)).execute()), _userSummary);
     });
 
-    test('sanitizes the still-throwing core use-case', () async {
-      when(getUserSummary.execute)
-          .thenThrow(GetExchangeUserSummaryException(_rawReason));
-
-      switch (await build().execute()) {
+    test('does not forward account failure detail', () async {
+      switch (await build(const Err(ExchangeUnexpectedFailure(_rawReason)))
+          .execute()) {
         case Ok():
           fail('a failed load must not report a user summary');
         case Err(:final failure):
           expect(failure, isA<WithdrawUnexpectedFailure>());
-          expect(failure.logMessage, contains('secret123'));
+          expect(failure.logMessage, isNot(contains(_rawReason)));
       }
     });
   });

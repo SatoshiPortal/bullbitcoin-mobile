@@ -1,16 +1,17 @@
+import 'package:bull_ui/testing.dart';
+
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/load_withdraw_context_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
-import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
-import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/src/withdraw/domain/confirm_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/load_withdraw_context_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_exchange/src/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_amount_screen.dart';
+import 'package:bull_exchange/src/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,9 +67,9 @@ void main() {
   // The real screen sits behind a GoRoute and its AppBar calls
   // context.canPop(), so a bare MaterialApp is not enough.
   Widget app(WithdrawBloc bloc) => MaterialApp.router(
-    theme: AppTheme.themeData(AppThemeType.light),
-    localizationsDelegates: appLocalizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
+    theme: ThemeData(extensions: testBullExtensions),
+    localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+    supportedLocales: ExchangeLocalizations.supportedLocales,
     routerConfig: GoRouter(
       routes: [
         GoRoute(

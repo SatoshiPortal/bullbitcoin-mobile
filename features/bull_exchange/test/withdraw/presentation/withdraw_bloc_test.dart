@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/load_withdraw_context_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bull_exchange/src/withdraw/domain/confirm_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/load_withdraw_context_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_exchange/src/withdraw/presentation/withdraw_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

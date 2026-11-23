@@ -2,8 +2,8 @@ import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_exchange/src/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

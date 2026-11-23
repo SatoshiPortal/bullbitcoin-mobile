@@ -35,7 +35,6 @@ const _legacyImports = {
   'lib/features/receive/ui/receive_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
-  'lib/features/withdraw/ui/withdraw_router.dart -> locator.dart',
   'lib/features/consolidation/ui/consolidation_router.dart -> locator.dart',
   'lib/features/consolidation/ui/widgets/consolidation_banner.dart -> locator.dart',
   'lib/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart -> locator.dart',

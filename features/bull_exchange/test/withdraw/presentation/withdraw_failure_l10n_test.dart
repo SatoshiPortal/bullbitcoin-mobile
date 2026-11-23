@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
-import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_exchange/src/withdraw/presentation/withdraw_failure_l10n.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,8 +33,11 @@ Future<String> _translate(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        ExchangeLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      supportedLocales: ExchangeLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
           message = failure.toTranslated(context);
@@ -158,7 +161,7 @@ void main() {
     testWidgets('every supported locale can format a bound', (tester) async {
       // Guards the locales intl may not have number symbols for, such as
       // hi_Latn and ka: they must fall back, not throw.
-      for (final locale in AppLocalizations.supportedLocales) {
+      for (final locale in ExchangeLocalizations.supportedLocales) {
         final message = await _translate(
           tester,
           const WithdrawBelowMinAmountFailure(
