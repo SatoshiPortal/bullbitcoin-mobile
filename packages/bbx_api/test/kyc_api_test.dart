@@ -17,6 +17,30 @@ Future<Result<void, BbxFailure>> _upload(FakeHttp http) => bbx(http).kyc
     );
 
 void main() {
+  test(
+    'uploadDocument has no send timeout and reports progress (INT-10)',
+    () async {
+      final http = FakeHttp(body: {'result': <String, Object?>{}});
+      final progress = <(int, int)>[];
+      valueOf(
+        await bbx(http, timeouts: BbxTimeouts.standard).kyc.uploadDocument(
+          fileBytes: const [1, 2, 3],
+          fileName: 'doc-1-ID.png',
+          idTypeCode: 'ID',
+          sourceDetail: 'secureUpload',
+          onProgress: (sent, total) => progress.add((sent, total)),
+        ),
+      );
+
+      final request = http.requests.single;
+      expect(request.sendTimeout, Duration.zero);
+      expect(request.connectTimeout, const Duration(seconds: 30));
+      expect(request.receiveTimeout, const Duration(seconds: 30));
+      expect(progress, isNotEmpty);
+      expect(progress.last.$1, progress.last.$2);
+    },
+  );
+
   test('uploadDocument posts the file and the KYC request as multipart', () async {
     final http = FakeHttp(body: {'result': <String, Object?>{}});
     valueOf(await _upload(http));

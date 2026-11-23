@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+void _ignoreProgress(int sent, int total) {}
+
 /// The authenticated JSON-RPC transport behind `Bbx`.
 ///
 /// Internal: callers build a `Bbx` and use its operations. Every request reads
@@ -64,6 +66,10 @@ final class BbxTransport {
   /// [id] is the JSON-RPC request id and [headers] are added to the request's
   /// headers. [rejection] reads a JSON-RPC error object into the failure to
   /// return.
+  ///
+  /// A non-null [onUploadProgress] makes the call an upload: sending its body
+  /// has no time limit, and [onUploadProgress] reports the bytes sent. The
+  /// connect and receive timeouts still apply.
   Future<Result<T, BbxFailure>> request<T>(
     String endpoint,
     String method, {
@@ -71,6 +77,7 @@ final class BbxTransport {
     String id = '0',
     Map<String, Object?>? headers,
     BbxFailure Function(Object error) rejection = bbxRpcFailure,
+    BbxProgress? onUploadProgress,
     required T Function(Object? result) read,
   }) async {
     final credential = await _credential();
@@ -80,6 +87,7 @@ final class BbxTransport {
         endpoint,
         {'jsonrpc': '2.0', 'id': id, 'method': method, 'params': params},
         headers: {'X-API-Key': value, ...?headers},
+        onUploadProgress: onUploadProgress,
         read: (body) => Ok(read(_resultOf(body, rejection))),
       ),
     };
@@ -119,10 +127,14 @@ final class BbxTransport {
   /// Posts a `multipart/form-data` request to [path] with [fields] and
   /// [files], keyed by form field name, and reads the response body with
   /// [read].
+  ///
+  /// Sending has no time limit ([uploadSendTimeout]); [onProgress] reports the
+  /// bytes sent.
   Future<Result<T, BbxFailure>> upload<T>(
     String path, {
     Map<String, String> fields = const {},
     Map<String, BbxFile> files = const {},
+    BbxProgress? onProgress,
     required Result<T, BbxFailure> Function(Object? body) read,
   }) async {
     final credential = await _credential();
@@ -141,6 +153,7 @@ final class BbxTransport {
           ]),
         headers: {'X-API-Key': value},
         contentType: 'multipart/form-data',
+        onUploadProgress: onProgress ?? _ignoreProgress,
         read: read,
       ),
     };
@@ -158,19 +171,31 @@ final class BbxTransport {
     return body['result'];
   }
 
+  /// The send timeout of an upload: none (Dio reads zero as no limit, and a
+  /// per-request value overrides the client's). A slow connection may take
+  /// longer than any fixed limit to send a file; the progress callback shows
+  /// it is alive.
+  static const uploadSendTimeout = Duration.zero;
+
   Future<Result<T, BbxFailure>> _post<T>(
     String path,
     Object? data, {
     required Map<String, Object?> headers,
     required Result<T, BbxFailure> Function(Object? body) read,
     String? contentType,
+    BbxProgress? onUploadProgress,
   }) async {
     final Response<Object?> response;
     try {
       response = await http.post<Object?>(
         path,
         data: data,
-        options: Options(headers: headers, contentType: contentType),
+        options: Options(
+          headers: headers,
+          contentType: contentType,
+          sendTimeout: onUploadProgress == null ? null : uploadSendTimeout,
+        ),
+        onSendProgress: onUploadProgress,
       );
     } on DioException catch (e) {
       if (e.error case final Error bug) {

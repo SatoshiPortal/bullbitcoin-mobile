@@ -8,7 +8,7 @@ library;
 
 export 'src/bbx.dart' show Bbx;
 export 'src/bbx_failure.dart';
-export 'src/bbx_timeouts.dart' show BbxTimeouts;
+export 'src/bbx_timeouts.dart' show BbxProgress, BbxTimeouts;
 export 'src/commcenter/announcement.dart';
 export 'src/commcenter/commcenter_api.dart';
 export 'src/commcenter/support_message.dart';
