@@ -159,7 +159,9 @@ class _WalletSelector extends StatelessWidget {
   }
 
   String _displayLabel(BuildContext context, WalletRegistration wallet) {
-    if (!wallet.isDefault) return wallet.label ?? wallet.id;
+    if (!wallet.isDefault) {
+      return wallet.label ?? wallet.id.replaceFirst(RegExp(r':regtest$'), '');
+    }
     return wallet.network is LiquidNetwork
         ? context.loc.globalDefaultLiquidWalletLabel
         : context.loc.globalDefaultBitcoinWalletLabel;
