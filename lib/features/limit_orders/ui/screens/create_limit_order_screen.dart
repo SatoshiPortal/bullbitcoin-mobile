@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/localization/app_localizations_context.dart';

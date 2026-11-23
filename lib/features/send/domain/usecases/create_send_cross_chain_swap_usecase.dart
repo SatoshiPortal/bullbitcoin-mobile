@@ -1,15 +1,15 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class CreateSendCrossChainSwapUsecase {
-  final SwapFacade _swapFacade;
+  final OrderSwaps _swapFacade;
   final GetWalletUsecase _getWallet;
   final AddressView _getReceiveAddress;
 

@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
-import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:spend/fee_preview.dart';
 import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
@@ -31,14 +32,13 @@ import 'package:primitives/primitives.dart'
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart'
-    show BroadcastTransactionException;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/consolidation_required_exception.dart';
+import 'package:spend/legacy_exceptions.dart'
+    show BroadcastTransactionException, ConsolidationRequiredException;
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:primitives/primitives.dart' show ConversionConstants;
 import 'package:satoshifier/payment_request.dart';
@@ -57,7 +57,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
@@ -105,7 +105,6 @@ import 'package:swaps/swaps.dart'
         SwapType,
         SwapsFailure,
         WatchSwapUsecase;
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -164,7 +163,7 @@ class SendCubit extends Cubit<SendState>
     required this._transactions,
     required this._verifyChainSwapAmountSendUsecase,
     required this._verifyExchangePayinUsecase,
-    required this._checkLiquidConsolidationUsecase,
+    required this._consolidation,
     required this._getSendPayjoinEnabledUsecase,
     required this._validateSpRecipientForSendUsecase,
     required this._validateSpAmountForSendUsecase,
@@ -295,7 +294,7 @@ class SendCubit extends Cubit<SendState>
 
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
   final VerifyExchangePayinUsecase _verifyExchangePayinUsecase;
-  final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
+  final Consolidation _consolidation;
   final ValidateSpRecipientForSendUsecase _validateSpRecipientForSendUsecase;
   final ValidateSpAmountForSendUsecase _validateSpAmountForSendUsecase;
   final GetSpNetworkForSendUsecase _getSpNetworkForSendUsecase;
@@ -2840,7 +2839,7 @@ class SendCubit extends Cubit<SendState>
       // Proactively flag consolidation for Liquid wallets whose UTXO count is
       // over the threshold, so the card shows before a build is attempted. The
       // ConsolidationRequiredException remains the backstop on the build path.
-      // Routed through CheckLiquidConsolidationUsecase (the same check the
+      // Routed through Consolidation (the same check the
       // consolidation banner uses) rather than re-deriving the comparison
       // here from a possibly-differently-filtered UTXO list, so this and the
       // banner can never disagree about whether the wallet needs
@@ -2848,7 +2847,8 @@ class SendCubit extends Cubit<SendState>
       final consolidationRequired =
           wallet.isLiquid &&
           !state.usesSelectedInputsOnly &&
-          await _checkLiquidConsolidationUsecase.execute(walletId: wallet.id);
+          (await _consolidation.isRequired(wallet.id))
+              .fold((value) => value, (_) => false);
       if (isStale()) return;
       // Resolve the persisted intent against fresh wallet data. On failure the
       // resolved list is emptied but the requested outpoints remain in state,

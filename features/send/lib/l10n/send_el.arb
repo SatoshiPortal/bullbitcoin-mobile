@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "Επιλέξτε ένα επιτόκιο χρέωσης",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "Κάμερα",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "Έγινε",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "Paste a PSBT ή συναλλαγή HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "Broadcast",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "Broadcast υπογεγραμμένη συναλλαγή",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "Ποσο Ποσό Ποσο",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "PushTxx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "Αντικαταστήστε με αμοιβή",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "Broadcast",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "Network χρεώσεις",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "Πιο γρήγορα",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Original συναλλαγή",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "Από",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "Εκτιμώμενη παράδοση - 10 λεπτά",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "doneButton": "Έγινε",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "Συνεχίστε να συνεχίζετε",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "Για να",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή σας. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "broadcastSignedTxErrorInvalidTransaction": "Αυτό δεν μοιάζει με έγκυρη υπογεγραμμένη συναλλαγή. Βεβαιωθείτε ότι επικολλήσατε ολόκληρο το PSBT ή τη συναλλαγή.",
+  "broadcastSignedTxErrorInvalidPushTx": "Δεν μπορέσαμε να διαβάσουμε συναλλαγή από αυτή την ετικέτα. Δοκιμάστε να σαρώσετε ξανά.",
+  "replaceByFeeFeeRateDisplay": "Fee rate: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
+  "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Η έξοδος ρέστων είναι άγνωστη — όλες οι έξοδοι εμφανίζονται ισότιμα",
+  "coreScreensUnknown": "Άγνωστο",
+  "coreScreensFetchFailed": "Αδυναμία ανάκτησης συναλλαγής {txid} από το Electrum.",
+  "coreScreensInputResolutionFailed": "Η είσοδος δεν βρέθηκε: η έξοδος {vout} του {parentTxId} δεν υπάρχει.",
+  "coreScreensNoServersAvailable": "Δεν υπάρχουν διαθέσιμοι Electrum διακομιστές.",
+  "mempoolServerStatusUnknown": "Άγνωστο",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Πλησιάστε το Coldcard σας για να λάβετε την υπογεγραμμένη συναλλαγή μέσω NFC",
+  "consolidationDone": "Τέλος",
+  "consolidationFailedBody": "Παρουσιάστηκε μη αναμενόμενο σφάλμα. Τα κεφάλαιά σας είναι ασφαλή: δεν μεταδόθηκε καμία συναλλαγή. Δοκιμάστε ξανά.",
+  "consolidationFailedTitle": "Η ενοποίηση απέτυχε",
+  "consolidationInProgress": "Ενοποίηση…",
+  "consolidationRequiredTitle": "Ενοποίηση πορτοφολιού",
+  "consolidationRequiredTitleNamed": "Ενοποίηση πορτοφολιού {walletName}",
+  "consolidationRowAmount": "Ποσό",
+  "consolidationRowNetworkFees": "Τέλη δικτύου",
+  "consolidationRowOutputs": "Έξοδοι",
+  "consolidationRowTransactions": "Συναλλαγές",
+  "consolidationScreenDescription": "Οι πάρα πολλές έξοδοι μπορούν να κάνουν το πορτοφόλι ασταθές. Η ενοποίηση τις συνδυάζει σε λιγότερες ώστε το πορτοφόλι σας να λειτουργεί σωστά.",
+  "consolidationScreenTitle": "Ενοποίηση",
+  "consolidationSuccessBody": "Τα νομίσματά σας συνδυάζονται. Θα ολοκληρωθεί μόλις το επιβεβαιώσει το δίκτυο.",
+  "consolidationSuccessTitle": "Η ενοποίηση ξεκίνησε",
+  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "broadcastSignedTxErrorPsbtFinalization": "Δεν ήταν δυνατή η οριστικοποίηση της υπογεγραμμένης συναλλαγής. Βεβαιωθείτε ότι περιέχει όλες τις απαιτούμενες υπογραφές και δοκιμάστε ξανά.",
+  "coreScreensOutputsExceedInputs": "Οι έξοδοι υπερβαίνουν τις εισόδους: αυτή η συναλλαγή είναι άκυρη και το δίκτυο θα την απορρίψει.",
+  "broadcastSignedTxErrorAlreadyInChain": "Αυτή η συναλλαγή βρίσκεται ήδη στο blockchain. Δεν υπάρχει τίποτα άλλο προς μετάδοση.",
+  "broadcastSignedTxErrorRejected": "Το δίκτυο απέρριψε αυτή τη συναλλαγή. Μπορεί να μην είναι πλήρως υπογεγραμμένη, να είναι άκυρη ή να συγκρούεται με άλλη πληρωμή.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις."
+}

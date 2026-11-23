@@ -1,0 +1,89 @@
+{
+  "globalDefaultBitcoinWalletLabel": "Bitcoin у USD",
+  "walletDetailsUnnamedWalletFallback": "Без назви Wallet",
+  "backupWalletTitle": "Резервне копіювання гаманця",
+  "testBackupTitle": "Тестування резервної копії вашого гаманця",
+  "continueButton": "Продовжити",
+  "passphraseLabel": "Проксимус",
+  "testBackupWriteDownPhrase": "Напишіть слово відновлення\nв правильному порядку",
+  "testBackupDigitalCopy": "Цифрова копія",
+  "backupWalletEncryptedVaultTag": "Легкий і простий (1 хвилину)",
+  "backupWalletHowToDecideBackupLosePhysical": "Один з найбільш поширених способів втратити Біткойн, тому що вони втрачають фізичну резервну копію. Будь-ласка, що знаходить вашу фізичну резервну копію, зможе прийняти всі ваші біткойни. Якщо ви дуже впевнені, що ви можете приховати його добре і ніколи не втратите його, це хороший варіант.",
+  "testBackupTapWordsInOrder": "Натисніть кнопку відновлення в\nправо",
+  "testBackupDefaultWallets": "Гаманець за замовчуванням",
+  "testBackupSuccessTitle": "Випробувано успішно!",
+  "testBackupPassphrase": "Проксимус",
+  "testBackupAllWordsSelected": "Ви вибрали всі слова",
+  "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
+  "backupSettingsTested": "Тестування",
+  "backupSettingsLabelsButton": "Етикетки",
+  "backupSettingsRecoverBullSettings": "Реcoverbull",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Ви впевнені, що ваші можливості оперативної безпеки приховати і зберегти ваші слова насіннєвих.",
+  "backupWalletHowToDecideBackupEncryptedVault": "Зашифрована схованка запобігає вам з тих, хто шукає крадіжку вашої резервної копії. Ви також не зможете втратити резервну копію, оскільки вона буде зберігатися у хмарі. Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Існує невелика ймовірність, що веб-сервер, який зберігає ключ шифрування резервної копії. У цьому випадку безпека резервного копіювання у хмарному обліковому записі може бути на ризику.",
+  "testBackupTranscribe": "Тран",
+  "testBackupErrorIncorrectOrder": "Некоректне слово замовлення. Будь ласка, спробуйте знову.",
+  "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Фізична резервна копія: ",
+  "backupWalletHowToDecideBackupMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Зашифрована сорочка: ",
+  "closeDialogButton": "Закрити",
+  "backupWalletPhysicalBackupDescription": "Написати 12 слів на аркуші паперу. Збережіть їх безпечно і переконайтеся, що не втратити їх.",
+  "testBackupNext": "Про нас",
+  "testBackupScreenshot": "Скріншоти",
+  "transactionHistoryTitle": "Історія транзакцій",
+  "backupSettingsPhysicalBackup": "Фізичний фон",
+  "backupWalletHowToDecide": "Як вирішити?",
+  "testBackupConfirm": "Підтвердження",
+  "testBackupLastBackupTest": "Останнє оновлення: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Не тестувати",
+  "backupWalletHowToDecideBackupModalTitle": "Як вирішити",
+  "testBackupWalletTitle": "Тест {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "testBackupDoNotShare": "НЕ ЗДОРОВ'Я",
+  "backupSettingsViewVaultKey": "Переглянути Vault Головна",
+  "testBackupSuccessButton": "Про нас",
+  "testBackupStoreItSafe": "Зберігайте його кудись безпечно.",
+  "testBackupWhatIsWordNumber": "Що таке слово {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Анонімне резервне копіювання з використанням сильного шифрування за допомогою хмари.",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Ви не впевнені, що вам потрібно більше часу, щоб дізнатися про методи резервної копії.",
+  "backupWalletImportanceWarning": "Без резервної копії ви в кінцевому підсумку втратите доступ до ваших грошей. Важливо зробити резервну копію.",
+  "testBackupSuccessMessage": "Ви можете відновити доступ до втраченого біткойн-гаманця",
+  "backupSettingsTestBackup": "Тест резервного копіювання",
+  "backupWalletPhysicalBackupTitle": "Фізична резервна копія",
+  "backupSettingsEncryptedVault": "Зашифрований Vault",
+  "backupSettingsStartBackup": "Початок резервного копіювання",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Невідомо",
+  "testBackupErrorWalletsUnavailable": "Не вдалося завантажити ваші гаманці. Спробуйте ще раз.",
+  "testBackupErrorNoWallets": "Немає гаманця, резервну копію якого можна перевірити.",
+  "testBackupErrorNoWalletSelected": "Виберіть гаманець, перш ніж перевіряти його резервну копію.",
+  "testBackupErrorSeedUnavailable": "Не вдалося прочитати вашу фразу відновлення. Спробуйте ще раз.",
+  "testBackupErrorSeedNotMnemonic": "У цього гаманця немає фрази відновлення для перевірки.",
+  "testBackupErrorCompletionFailed": "Ваша фраза відновлення була правильною, але нам не вдалося зберегти результат. Спробуйте ще раз.",
+  "backupCardTitle": "Захистіть свої біткоїни.",
+  "backupCardSubtitle": "Створіть резервну копію гаманця зараз."
+}

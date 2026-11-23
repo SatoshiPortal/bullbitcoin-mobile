@@ -135,7 +135,7 @@ onion-codegen:
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
-BUILD_RUNNER_MEMBERS := features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view
+BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view
 BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps features/address_view
 
 .PHONY: drift-owners-build
@@ -146,6 +146,7 @@ build-runner: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
 	@set -e; for member in $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS)); do (cd "$$member" && fvm dart run build_runner build --force-jit); done
+	@(cd features/send && fvm dart run build_runner build --force-jit)
 
 .PHONY: btc-map-build-runner
 btc-map-build-runner:
@@ -172,6 +173,7 @@ translations:
 	@(cd features/signers && fvm flutter gen-l10n)
 	@(cd features/scanning && fvm flutter gen-l10n)
 	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
+	@(cd features/backups && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
 	@(cd features/bip85 && fvm flutter gen-l10n)
 	@(cd features/all_seed_view && fvm flutter gen-l10n)
@@ -179,6 +181,7 @@ translations:
 	@(cd features/swap && fvm flutter gen-l10n)
 	@(cd features/wallet_import && fvm flutter gen-l10n)
 	@(cd features/transactions && fvm flutter gen-l10n)
+	@(cd features/send && fvm flutter gen-l10n)
 	@(cd features/address_view && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
@@ -223,7 +226,7 @@ hooks:
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	@(cd packages/legacy_storage && fvm dart run drift_dev make-migrations)
-	fvm dart run drift_dev schema dump lib/features/swap/data/order_swaps_database.dart lib/features/swap/data/schemas/order_swaps_database/
+	fvm dart run drift_dev schema dump packages/swaps/lib/src/orders/data/order_swaps_database.dart packages/swaps/lib/src/orders/data/schemas/order_swaps_database/
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
 	@(cd features/announcements && fvm dart run drift_dev make-migrations)

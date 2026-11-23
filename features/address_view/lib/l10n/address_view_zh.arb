@@ -25,5 +25,9 @@
   "viewerPaymentUriTab": "付款 URI",
   "addressViewErrorWalletNotFound": "找不到此钱包。",
   "addressViewErrorLoadFailed": "无法加载您的地址，请重试。",
-  "copiedToClipboard": "已复制到剪贴板"
+  "copiedToClipboard": "已复制到剪贴板",
+  "sendErrorInvalidAddressOrInvoice": "Invalid Pay Address or Invoice",
+  "exchangeDcaAddressLabelBitcoin": "页: 1",
+  "exchangeDcaAddressLabelLiquid": "流动资金",
+  "exchangeDcaAddressLabelLightning": "照明地址"
 }

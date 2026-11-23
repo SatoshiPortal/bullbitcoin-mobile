@@ -1,6 +1,6 @@
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

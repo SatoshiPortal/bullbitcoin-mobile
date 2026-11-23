@@ -10,7 +10,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/settings_links.dart';
 import 'package:backups/backups.dart';
 import 'package:bip85/bip85.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:send/send.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
 import 'package:bull_exchange/bull_exchange.dart';
@@ -79,11 +79,6 @@ enum SettingsItemId {
 }
 
 enum SettingsItemSection { root, backup, wallet, app }
-
-const backupSettingsDataItemOrder = [
-  SettingsItemId.labels,
-  SettingsItemId.transactionHistory,
-];
 
 const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
@@ -263,7 +258,7 @@ List<SettingsItem> buildSettingsItems({
       title: backupSection,
       path: path(SettingsItemSection.root, backupSection),
       icon: Icons.backup_outlined,
-      open: (context) => context.pushNamed(SettingsRoute.backupSettings.name),
+      open: BackupsNavigation.open,
       keywords: _keywords(
         localization.settingsSearchBackupKeywords,
         english.settingsSearchBackupKeywords,
@@ -517,7 +512,7 @@ List<SettingsItem> buildSettingsItems({
         localization.bitcoinSettingsAutoTransferTitle,
       ),
       icon: Icons.swap_vertical_circle,
-      open: (context) => context.pushNamed(SettingsRoute.autoswapSettings.name),
+      open: SwapNavigation.openAutoswapSettings,
       keywords: _keywords(
         localization.settingsSearchAutoswapKeywords,
         english.settingsSearchAutoswapKeywords,

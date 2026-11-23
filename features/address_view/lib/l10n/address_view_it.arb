@@ -26,5 +26,9 @@
   "addressViewErrorWalletNotFound": "Impossibile trovare questo portafoglio.",
   "addressViewErrorLoadFailed": "Impossibile caricare i tuoi indirizzi. Riprova.",
   "copiedToClipboard": "Copiato negli appunti",
-  "comingSoonTitle": "Funzione in arrivo"
+  "comingSoonTitle": "Funzione in arrivo",
+  "sendErrorInvalidAddressOrInvoice": "Indirizzo di pagamento Bitcoin o fattura Lightning non validi",
+  "exchangeDcaAddressLabelBitcoin": "Indirizzo Bitcoin",
+  "exchangeDcaAddressLabelLiquid": "Indirizzo Liquid",
+  "exchangeDcaAddressLabelLightning": "Indirizzo Lightning"
 }

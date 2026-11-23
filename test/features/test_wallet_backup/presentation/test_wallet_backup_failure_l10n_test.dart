@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
+import 'package:backups/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -23,7 +23,7 @@ import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -33,7 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolut
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
@@ -58,7 +58,7 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
@@ -130,13 +130,13 @@ class SendLocator {
     );
     locator.registerFactory<CreateSendSwapUsecase>(
       () => CreateSendSwapUsecase(
-        locator<SwapFacade>(),
+        locator<OrderSwaps>(),
         getWalletUsecase: locator<GetWalletUsecase>(),
         getReceiveAddressUsecase: locator<AddressView>(),
       ),
     );
     locator.registerFactory<GetSendSwapQuoteUsecase>(
-      () => GetSendSwapQuoteUsecase(locator<SwapFacade>()),
+      () => GetSendSwapQuoteUsecase(locator<OrderSwaps>()),
     );
     locator.registerFactory<GetSendSwapRouteUsecase>(
       () => GetSendSwapRouteUsecase(locator<SwapRouting>()),
@@ -149,22 +149,22 @@ class SendLocator {
     );
     locator.registerFactory<CreateSendCrossChainSwapUsecase>(
       () => CreateSendCrossChainSwapUsecase(
-        locator<SwapFacade>(),
+        locator<OrderSwaps>(),
         getWalletUsecase: locator<GetWalletUsecase>(),
         getReceiveAddressUsecase: locator<AddressView>(),
       ),
     );
     locator.registerFactory<GetSendCrossChainQuoteUsecase>(
-      () => GetSendCrossChainQuoteUsecase(locator<SwapFacade>()),
+      () => GetSendCrossChainQuoteUsecase(locator<OrderSwaps>()),
     );
     locator.registerFactory<ResolveLightningAddressUsecase>(
       ResolveLightningAddressUsecase.new,
     );
     locator.registerFactory<UpdateSendSwapPayinUsecase>(
-      () => UpdateSendSwapPayinUsecase(locator<SwapFacade>()),
+      () => UpdateSendSwapPayinUsecase(locator<OrderSwaps>()),
     );
     locator.registerFactory<WatchSendSwapUsecase>(
-      () => WatchSendSwapUsecase(locator<SwapFacade>()),
+      () => WatchSendSwapUsecase(locator<OrderSwaps>()),
     );
     locator.registerFactory<SelectBestWalletUsecase>(
       () => SelectBestWalletUsecase(),
@@ -312,8 +312,7 @@ class SendLocator {
         verifyChainSwapAmountSendUsecase:
             locator<VerifyChainSwapAmountSendUsecase>(),
         verifyExchangePayinUsecase: locator<VerifyExchangePayinUsecase>(),
-        checkLiquidConsolidationUsecase:
-            locator<CheckLiquidConsolidationUsecase>(),
+        consolidation: Consolidation.open(locator<Spend>()),
         getSendPayjoinEnabledUsecase: locator<GetSendPayjoinEnabledUsecase>(),
         validateSpRecipientForSendUsecase:
             locator<ValidateSpRecipientForSendUsecase>(),

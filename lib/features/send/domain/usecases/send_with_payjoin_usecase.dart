@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/transactions/public/prepare_payjoin_original.dart';
+import 'package:spend/payjoin.dart';
 import 'package:spend/spend.dart';
 import 'package:primitives/primitives.dart' as core;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';

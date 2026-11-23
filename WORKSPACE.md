@@ -108,6 +108,8 @@ graph TD
   style screen_privacy stroke:#7725dd
   secrets["secrets"]
   style secrets stroke:#07e9ae
+  send["send"]
+  style send stroke:#fb0b78
   settings["settings"]
   style settings stroke:#a681c0
   signers["signers"]
@@ -132,10 +134,14 @@ graph TD
   access --> secrets
   access -.-> legacy_storage
   address_view --> bull_logger
+  address_view --> bull_payjoin
   address_view --> bull_ui
+  address_view --> scanning
+  address_view --> silent
   address_view --> label_editor
   address_view --> labels
   address_view --> mempool
+  address_view --> preferences
   address_view --> primitives
   address_view --> satoshifier
   address_view --> secrets
@@ -157,8 +163,16 @@ graph TD
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
+  backups --> access
+  backups --> bull_logger
   backups --> bull_recoverbull
   backups --> bull_ui
+  backups --> label_editor
+  backups --> physical_backup_verification
+  backups --> preferences
+  backups --> primitives
+  backups --> screen_privacy
+  backups --> secrets
   bbx_api --> primitives
   bip85 --> bull_ui
   bip85 --> preferences
@@ -306,6 +320,19 @@ graph TD
   secrets --> bull_logger
   secrets --> rust_bindings
   secrets --> legacy_storage
+  send --> address_view
+  send --> bull_logger
+  send --> bull_ui
+  send --> electrum
+  send --> fees
+  send --> fees_feature
+  send --> preferences
+  send --> primitives
+  send --> satoshifier
+  send --> scanning
+  send --> spend
+  send --> sync
+  send -.-> rust_bindings
   settings --> bull_ui
   settings --> network
   settings --> primitives
@@ -327,11 +354,29 @@ graph TD
   silent --> rust_bindings
   silent --> secrets
   spend --> ark
+  spend --> bull_payjoin
   spend --> fees
   spend --> primitives
   spend --> secrets
   spend --> sync
+  swap_feature --> address_view
+  swap_feature --> bull_ark
+  swap_feature --> bull_logger
+  swap_feature --> bull_pricer
   swap_feature --> bull_ui
+  swap_feature --> coins
+  swap_feature --> fees
+  swap_feature --> fees_feature
+  swap_feature --> labels
+  swap_feature --> preferences
+  swap_feature --> receive
+  swap_feature --> satoshifier
+  swap_feature --> secrets
+  swap_feature --> send
+  swap_feature --> signers
+  swap_feature --> spend
+  swap_feature --> sync
+  swap_feature --> transactions
   swap_feature --> primitives
   swap_feature --> swaps
   swaps --> rust_bindings
@@ -394,6 +439,7 @@ graph TD
     physical_backup_verification
     receive
     scanning
+    send
     settings
     signers
     silent

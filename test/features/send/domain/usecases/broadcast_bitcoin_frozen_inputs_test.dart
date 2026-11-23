@@ -7,16 +7,14 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Result;
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
+import 'package:spend/legacy_exceptions.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_imported_bitcoin_usecase.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
+import 'package:send/testing.dart';
 import 'package:labels/labels.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';

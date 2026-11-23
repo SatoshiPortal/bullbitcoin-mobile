@@ -1,10 +1,10 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class WatchReceiveOrderSwapUsecase {
-  final SwapFacade _swapFacade;
+  final OrderSwaps _swapFacade;
 
   const WatchReceiveOrderSwapUsecase(this._swapFacade);
 

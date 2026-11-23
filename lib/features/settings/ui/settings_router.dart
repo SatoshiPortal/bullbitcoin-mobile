@@ -1,12 +1,9 @@
 import 'dart:io';
 
-import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
+import 'package:bull_ui/bull_ui.dart' show SizedBox;
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_options_bindings.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
@@ -29,7 +26,6 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_scre
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -110,8 +106,9 @@ class SettingsRouter {
   );
 
   static List<RouteBase> childRoutes({
+    RouteBase? autoswapSettingsRoute,
     required List<RouteBase> priceRoutes,
-    required void Function(BuildContext) onBackupTestSucceeded,
+    required List<RouteBase> backupRoutes,
     required List<RouteBase> appSettingsRoutes,
     required List<RouteBase> accessRoutes,
     RouteBase? seedViewRoute,
@@ -168,11 +165,7 @@ class SettingsRouter {
           _ => const SizedBox.shrink(),
         },
       ),
-      GoRoute(
-        name: SettingsRoute.autoswapSettings.name,
-        path: SettingsRoute.autoswapSettings.path,
-        builder: (context, state) => const AutoSwapSettingsScreen(),
-      ),
+      ?autoswapSettingsRoute,
       GoRoute(
         name: SettingsRoute.appSettings.name,
         path: SettingsRoute.appSettings.path,
@@ -191,15 +184,7 @@ class SettingsRouter {
       ),
 
       ...accessRoutes,
-      GoRoute(
-        path: SettingsRoute.backupSettings.path,
-        name: SettingsRoute.backupSettings.name,
-        builder: (context, state) => const BackupSettingsScreen(),
-        routes: [
-          BackupOptionsBindings.mount().route,
-          TestWalletBackupRouter.route(onTestSucceeded: onBackupTestSucceeded),
-        ],
-      ),
+      ...backupRoutes,
       // A wallet is always reached from its own screen (wallet home → gear),
       // never from a list, so these carry the shared prefix themselves.
       GoRoute(

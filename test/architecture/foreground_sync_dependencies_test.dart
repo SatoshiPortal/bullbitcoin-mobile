@@ -11,7 +11,6 @@ import 'package:path/path.dart' as p;
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// Swap still imports the wallet repository and uses wallet navigation.
 // Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
@@ -24,17 +23,13 @@ import 'package:path/path.dart' as p;
 // coin, receive and history edges that replace the legacy wallet placements.
 // Exchange workspace UI consumers use the published routes (see FEATURES.md).
 const _allowedTargets = <String, String>{
-  'address_view': 'label_editor',
+  'address_view': 'label_editor scanning silent',
   'all_seed_view': 'access',
   'app_startup':
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
-  'autoswap': 'address_view swap wallet',
-  'backup_settings': 'backups recoverbull settings test_wallet_backup wallet',
-  'backups': 'recoverbull',
-  'broadcast_signed_tx': 'address_view scanning wallet',
+  'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price',
   'coins': 'address_view bitcoin_price wallet',
-  'consolidation': 'wallet',
   'exchange': 'address_view bull_exchange transactions wallet',
   'import_coldcard': 'scanning signers wallet_import',
   'import_mnemonic': 'mnemonic_entry wallet wallet_import',
@@ -47,17 +42,14 @@ const _allowedTargets = <String, String>{
   'pay': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',
-  'replace_by_fee': 'fees wallet',
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
-  'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
+  'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull send silent swap transactions wallet',
   'support': 'bull_exchange',
-  'swap': 'address_view ark coins consolidation fees send transactions wallet',
-  'test_wallet_backup':
-      'access onboarding physical_backup_verification recoverbull wallet',
+  'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
+  'wallet': 'address_view ark backups bitcoin_price coins import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
   'wallet_import': 'signers',
   'wizard': 'bull_exchange settings',
 };
@@ -152,7 +144,7 @@ void main() {
       for (final path in [
         'lib/features/send/presentation/bloc/send_cubit.dart',
         'lib/features/settings/presentation/bloc/settings_cubit.dart',
-        'lib/features/swap/presentation/transfer_bloc.dart',
+        'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {
         expect(
           File(path).readAsStringSync(),

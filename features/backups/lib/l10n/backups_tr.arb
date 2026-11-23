@@ -1,0 +1,236 @@
+{
+  "globalDefaultBitcoinWalletLabel": "Güvenli Bitcoin Bitcoin",
+  "testBackupWriteDownPhrase": "Kurtarma cümlenizi yazın\nDoğru sırayla",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "Dijital kopya",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletEncryptedVaultTag": "Kolay ve basit (1 dakika)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "İnsanların Bitcoin’i kaybetmesinin en yaygın yollarından biri, fiziksel yedeklemeyi kaybederler. Fiziksel yedeklemenizi bulan herhangi biri tüm Bitcoin'inizi alabilir. Onu iyi saklayabileceğinize ve asla kaybetmeme çok eminseniz, iyi bir seçenek.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "Kurtarma kelimelerini içeri girin\nDoğru düzen",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "Varsayılan Cüzdanlar",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "Test başarıyla tamamlandı!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "Passphrase",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "Tüm kelimeleri seçtin",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletPhysicalBackupTag": "Güvensiz (zamanınızı alın)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "Test edildi",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "Etiketler",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Bitcoin tohum kelimelerinizi gizlemek ve korumak için kendi operasyonel güvenlik yeteneklerinize güveniyorum.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "Şifreli ton sizi hırsızlardan yedeklemenizi çalmanızı engelliyor. Ayrıca sizi yanlışlıkla yedeklemenizi kaybetmekten alıkoyuyor çünkü bulutunuzda depolanacaktır. Google veya Apple gibi bulut depolama sağlayıcıları Bitcoin'e erişimi olmayacak çünkü şifreleme şifresi çok güçlü. Yedeklemenizin şifreleme anahtarını depolayan küçük bir olasılık var. Bu durumda, bulut hesabınızdaki yedeklemenin güvenliği risk altında olabilir.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "Transcript",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "Incorrect word order. Lütfen tekrar deneyin.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletEncryptedVaultTitle": "Encrypted to",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Fiziksel yedekleme: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "Daha fazla bilgi için kurtarmabull.com ziyaret edin.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Şifreli ton: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "testBackupTitle": "Cüzdanınızı yedekleyin",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupWalletPhysicalBackupDescription": "Kağıt parçası üzerine 12 kelime yazın. Onları güvende tut ve onları kaybetmemek için emin olun.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "Sonraki",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "Ekran görüntüsü",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "Cüzdanınızı Değiştirin",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "backupSettingsPhysicalBackup": "Fiziksel yedekleme",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "Nasıl karar verilir?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupConfirm": "Onay Onay Onay Onaylandı",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupLastBackupTest": "Son yedekleme testi: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Test edilmedi",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "Nasıl karar verilir",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "Test {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "testBackupDoNotShare": "ANYONE",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsViewVaultKey": "Manzara Anahtar Anahtar Anahtar Anahtar",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupSuccessButton": "Got it Got it",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "Onu güvenli bir yere saklayın.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "Hangi kelime numarası {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Bulutunuzu kullanarak güçlü şifreleme ile anonim yedekleme.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Emin değilsiniz ve yedekleme güvenlik uygulamaları hakkında bilgi edinmek için daha fazla zamana ihtiyacınız var.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletImportanceWarning": "Bir yedekleme olmadan, sonunda paranıza erişimi kaybedersiniz. Bir yedekleme yapmak eleştireldir.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "continueButton": "Devam etmeye devam et",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "testBackupSuccessMessage": "Kayıp bir Bitcoin cüzdanına erişmek mümkün",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupSettingsTestBackup": "Test Backup",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "Fiziksel yedekleme",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "Encrypted Vault",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "coreScreensUnknown": "Bilinmiyor",
+  "testBackupErrorWalletsUnavailable": "Cüzdanlarınız yüklenemedi. Lütfen tekrar deneyin.",
+  "testBackupErrorNoWallets": "Yedeği test edilecek bir cüzdan yok.",
+  "testBackupErrorNoWalletSelected": "Yedeğini test etmeden önce bir cüzdan seçin.",
+  "testBackupErrorSeedUnavailable": "Kurtarma ifadeniz okunamadı. Lütfen tekrar deneyin.",
+  "testBackupErrorSeedNotMnemonic": "Bu cüzdanın test edilecek bir kurtarma ifadesi yok.",
+  "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin.",
+  "backupCardTitle": "Bitcoin'inizi koruyun.",
+  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin."
+}

@@ -42,6 +42,14 @@ final class ForegroundWalletSync {
     }
   }
 
+  Future<Result<void, SyncFailure>> synchronizeKey(
+    WalletKey key,
+    WalletCatalogPort catalog,
+  ) async => switch (await catalog.find(key)) {
+    Ok(:final value) => await synchronizeDescriptor(value),
+    Err(:final failure) => Err(failure),
+  };
+
   Future<Result<void, SyncFailure>> synchronizeDescriptor(
     PublicWalletDescriptor descriptor, {
     bool discover = false,

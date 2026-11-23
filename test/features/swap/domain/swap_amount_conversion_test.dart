@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/domain/swap_amount_conversion.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

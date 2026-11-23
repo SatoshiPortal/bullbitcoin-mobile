@@ -25,5 +25,9 @@
   "viewerPaymentUriTab": "URI ya Malipo",
   "addressViewErrorWalletNotFound": "Pochi hii haikupatikana.",
   "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
-  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili"
+  "copiedToClipboard": "Imenakiliwa kwenye ubao wa kunakili",
+  "sendErrorInvalidAddressOrInvoice": "Anwani ya Malipo ya Bitcoin au Ankara Batili",
+  "exchangeDcaAddressLabelBitcoin": "Anwani ya Bitcoin",
+  "exchangeDcaAddressLabelLiquid": "Anwani ya Liquid",
+  "exchangeDcaAddressLabelLightning": "Anwani ya Lightning"
 }

@@ -1,5 +1,6 @@
-import 'package:access/access.dart' show Access;
 import 'package:address_view/routes.dart' show AddressViewFeature;
+import 'package:labels/labels.dart' show Labels;
+import 'package:access/access.dart' show Access;
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
 import 'package:secrets/custody.dart';
@@ -10,6 +11,7 @@ import 'package:transactions/setup.dart';
 import '../transactions/support/transaction_ui_actions.dart';
 
 import 'package:fees/fees.dart';
+import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
@@ -30,7 +32,6 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:labels/labels.dart' show Labels;
 import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
@@ -38,13 +39,16 @@ import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
-import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:spend/spend.dart' show Spend;
+import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
 
 import 'package:silent/setup.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 class PricePreferences extends Mock
     implements
@@ -75,11 +79,27 @@ class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
 
+class _MockElectrum extends Mock implements Electrum {}
+
+class _MockElectrumTransactions extends Mock implements ElectrumTransactions {}
+
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 
-class _UnusedSwaps extends Mock implements BoltzSwaps {}
+class _SwapRoutes extends Fake implements SwapFeature {
+  @override
+  final List<GoRoute> routes = [
+    swapSettingsRoute(_UnusedSwapRouting(), _UnusedSwapServers()),
+  ];
+
+  @override
+  GoRoute get autoswapSettingsRoute => GoRoute(
+    name: 'autoswapSettings',
+    path: 'autoswap-settings',
+    builder: (_, _) => const SizedBox.shrink(),
+  );
+}
 
 class _UnusedLabels extends Mock implements Labels {}
 
@@ -89,6 +109,8 @@ class _UnusedReferences extends Mock implements SeedReferencePort {}
 
 class _UnusedCustodyAdmission extends Mock
     implements ParentCustodyAdmissionPort {}
+
+class _UnusedSwaps extends Mock implements BoltzSwaps {}
 
 void main() {
   testWidgets(
@@ -139,7 +161,8 @@ void main() {
         ),
       );
       final networkServices = GetIt.asNewInstance();
-      networkServices.registerSingleton<Fees>(_MockFees());
+      final fees = _MockFees();
+      networkServices.registerSingleton<Fees>(fees);
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
@@ -153,12 +176,7 @@ void main() {
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
-      locator.registerSingleton(
-        SwapFeature.mount(
-          routing: _UnusedSwapRouting(),
-          servers: _UnusedSwapServers(),
-        ),
-      );
+      locator.registerSingleton<SwapFeature>(_SwapRoutes());
       locator.registerSingleton(
         SilentFeature.mount(
           preferences: SilentPreferences(),
@@ -173,6 +191,12 @@ void main() {
         ),
       );
       final preferences = PricePreferences();
+      final electrum = _MockElectrum();
+      when(() => electrum.transactions).thenReturn(_MockElectrumTransactions());
+      locator.registerSingleton<Spend>(FakeSpend());
+      locator.registerSingleton<Fees>(fees);
+      locator.registerSingleton<Electrum>(electrum);
+      locator.registerSingleton<ActiveEnvironmentReader>(preferences);
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
           environment: preferences,
@@ -261,6 +285,10 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<Spend>();
+        await locator.unregister<Fees>();
+        await locator.unregister<Electrum>();
+        await locator.unregister<ActiveEnvironmentReader>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
         await locator.unregister<BitcoinPriceFeature>();
@@ -283,6 +311,10 @@ void main() {
         '/settings/backup-settings/backup-options',
       );
       expect(
+        router.namedLocation('testPhysicalBackupFlow'),
+        '/settings/backup-settings/test-physical-backup-flow',
+      );
+      expect(
         router.namedLocation('torSettings'),
         '/settings/app-settings/tor-settings',
       );
@@ -294,6 +326,10 @@ void main() {
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
       expect(router.namedLocation('swapSettings'), '/swap-settings');
+      expect(
+        router.namedLocation('autoswapSettings'),
+        '/settings/autoswap-settings',
+      );
       expect(router.namedLocation('spSetup'), '/sp-setup');
       expect(router.namedLocation('spWalletDetail'), '/sp-wallet-detail');
       expect(

@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "Prosím vyberte poplatek",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "ČEŠTINA",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "Čeština",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "Čeština",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "Vložte PSBT nebo transakci HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "Čeština",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "Vysílání podepsané transakce",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "Množství",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "Čeština",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "Nahradit poplatek",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "Čeština",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "Síťové poplatky",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "Čeština",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Původní transakce",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "Odhlásit se",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "Odhadováno doručení ~ 10 minut",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "Čeština",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Musíte zvýšit poplatek minimálně 1 sat/vbyte ve srovnání s původní transakcí",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "coreScreensToLabel": "V",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "Vaši transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "broadcastSignedTxErrorInvalidTransaction": "Tohle nevypadá jako platná podepsaná transakce. Ujistěte se, že jste vložili celý PSBT nebo celou transakci.",
+  "broadcastSignedTxErrorInvalidPushTx": "Z tohoto štítku se nepodařilo načíst transakci. Zkuste skenování znovu.",
+  "replaceByFeeFeeRateDisplay": "Cena: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "continueButton": "Pokračovat",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensResolvingInputs": "Načítání vstupů transakce...",
+  "coreScreensFeeRateLabel": "Sazba poplatku",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Výstup drobných neznámý — všechny výstupy zobrazeny stejně",
+  "coreScreensUnknown": "Neznámé",
+  "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
+  "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
+  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
+  "mempoolServerStatusUnknown": "Neznámý",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Přiložte Coldcard, abyste přijali podepsanou transakci přes NFC",
+  "consolidationDone": "Hotovo",
+  "consolidationFailedBody": "Došlo k neočekávané chybě. Vaše prostředky jsou v bezpečí: žádná transakce nebyla odeslána. Zkuste to prosím znovu.",
+  "consolidationFailedTitle": "Konsolidace selhala",
+  "consolidationInProgress": "Konsolidace…",
+  "consolidationRequiredTitle": "Konsolidovat peněženku",
+  "consolidationRequiredTitleNamed": "Konsolidovat peněženku {walletName}",
+  "consolidationRowAmount": "Částka",
+  "consolidationRowNetworkFees": "Síťové poplatky",
+  "consolidationRowOutputs": "Výstupy",
+  "consolidationRowTransactions": "Transakce",
+  "consolidationScreenDescription": "Příliš mnoho výstupů může způsobit nestabilitu peněženky. Konsolidace je sloučí do menšího počtu, aby peněženka správně fungovala.",
+  "consolidationScreenTitle": "Konsolidovat",
+  "consolidationSuccessBody": "Vaše mince se slučují. Dokončí se, jakmile to síť potvrdí.",
+  "consolidationSuccessTitle": "Konsolidace zahájena",
+  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "broadcastSignedTxErrorPsbtFinalization": "Podepsanou transakci se nepodařilo dokončit. Zkontrolujte, zda obsahuje všechny požadované podpisy, a zkuste to znovu.",
+  "coreScreensOutputsExceedInputs": "Výstupy převyšují vstupy: tato transakce je neplatná a síť ji odmítne.",
+  "broadcastSignedTxErrorAlreadyInChain": "Tato transakce už je v blockchainu. Není co dalšího vysílat.",
+  "broadcastSignedTxErrorRejected": "Síť tuto transakci odmítla. Možná není úplně podepsaná, je neplatná nebo je v konfliktu s jinou platbou.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno."
+}

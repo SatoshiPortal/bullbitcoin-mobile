@@ -8,7 +8,6 @@ import 'dart:io';
 
 import 'package:announcements/migration.dart';
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
-import 'package:bb_mobile/features/swap/data/order_swaps_store.dart';
 import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:bull_payjoin/migration.dart';
 import 'package:bull_recoverbull/migration.dart';
@@ -290,7 +289,7 @@ class Bull {
       if (orderSwaps case Err(:final failure)) return Err(failure);
       if (orderSwaps case Ok(:final value)) {
         locator.registerSingleton(
-          value.database,
+          value.orders,
           dispose: (_) => value.handle.close(),
         );
       }

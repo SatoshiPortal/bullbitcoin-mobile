@@ -1,0 +1,651 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bull_ui/app_theme.dart';
+import 'package:swap_feature/src/swap_l10n.dart';
+import 'package:swap_feature/src/domain/entities/swap_wallet.dart';
+import 'package:swap_feature/src/autoswap/presentation/autoswap_failure_l10n.dart';
+import 'package:swap_feature/src/autoswap/presentation/autoswap_settings_cubit.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullKeyboardActions,
+        BullBottomSheet,
+        BullButton,
+        BullDropdown,
+        BullInfoCard,
+        BullInputText,
+        BullPickerItem,
+        BullShapesX,
+        BullSwitch,
+        BullText,
+        Gap,
+        BullTypographyX;
+
+class AutoSwapSettingsBottomSheet extends StatelessWidget {
+  const AutoSwapSettingsBottomSheet({super.key});
+
+  static Future<void> showBottomSheet(
+    BuildContext context, {
+    required AutoSwapSettingsCubit Function() createCubit,
+  }) {
+    return BullBottomSheet.show(
+      context: context,
+      child: BlocProvider<AutoSwapSettingsCubit>(
+        create: (_) => createCubit()..loadSettings(),
+        child: const AutoSwapSettingsBottomSheet(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const AutoSwapSettingsContent();
+  }
+}
+
+class AutoSwapSettingsContent extends StatefulWidget {
+  const AutoSwapSettingsContent({super.key});
+
+  @override
+  State<AutoSwapSettingsContent> createState() =>
+      _AutoSwapSettingsContentState();
+}
+
+class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
+  final FocusNode _amountNode = FocusNode();
+  final FocusNode _triggerNode = FocusNode();
+  final FocusNode _feeNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    _triggerNode.dispose();
+    _feeNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loading = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.loading,
+    );
+
+    return BlocListener<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+      listenWhen: (previous, current) =>
+          previous.successfullySaved != current.successfullySaved &&
+          current.successfullySaved,
+      listener: (context, state) {
+        Navigator.of(context).pop();
+      },
+      child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+        builder: (context, state) {
+          final enabled = state.enabledToggle;
+
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            decoration: BoxDecoration(
+              color: context.appColors.surface,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(context.bullShapes.sheet),
+              ),
+            ),
+            child: BullKeyboardActions(
+              doneText: context.swapCopyForLocale.doneButton,
+              child: Column(
+                mainAxisSize: .min,
+                crossAxisAlignment: .stretch,
+                children: [
+                  _Header(),
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: SingleChildScrollView(
+                        keyboardDismissBehavior: .onDrag,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: loading
+                              ? const SizedBox.shrink()
+                              : Column(
+                                  crossAxisAlignment: .start,
+                                  children: [
+                                    const Gap(16),
+                                    _EnabledToggle(),
+                                    if (state.failure case final failure?) ...[
+                                      const Gap(16),
+                                      BullInfoCard(
+                                        description: failure.toTranslated(
+                                          context,
+                                        ),
+                                        tagColor: context.appColors.error,
+                                        bgColor:
+                                            context.appColors.errorContainer,
+                                      ),
+                                    ],
+                                    const Gap(16),
+                                    Stack(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: .start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            _AmountThresholdField(
+                                              focusNode: _amountNode,
+                                            ),
+                                            const Gap(16),
+                                            _TriggerBalanceField(
+                                              focusNode: _triggerNode,
+                                            ),
+                                            const Gap(16),
+                                            _FeeThresholdField(
+                                              focusNode: _feeNode,
+                                            ),
+                                            const Gap(16),
+                                            _WalletSelectionDropdown(),
+                                            const Gap(16),
+                                            _AlwaysBlockToggle(),
+                                            const Gap(32),
+                                            _SaveButton(),
+                                          ],
+                                        ),
+                                        if (!enabled)
+                                          Positioned.fill(
+                                            child: IgnorePointer(
+                                              child: Container(
+                                                color:
+                                                    context.appColors.overlay,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+      child: Column(
+        children: [
+          const Gap(20),
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: BullText(
+                    context.swapCopyForLocale.autoswapSettingsTitle,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: const Icon(Icons.close),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EnabledToggle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            BullText(
+              context.swapCopyForLocale.autoswapEnableToggleLabel,
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.appColors.text),
+            ),
+            BullSwitch(
+              value: enabled,
+              onChanged: (value) {
+                context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
+                  value,
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _AmountThresholdField extends StatelessWidget {
+  const _AmountThresholdField({required this.focusNode});
+
+  final FocusNode focusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    final amountThresholdInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdInput,
+    );
+    final bitcoinUnit = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+    final amountThresholdFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdFailure,
+    );
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        BullText(
+          context.swapCopyForLocale.autoswapMaxBalanceLabel,
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.text),
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            Expanded(
+              child: BullInputText(
+                value: amountThresholdInput ?? '',
+                focusNode: focusNode,
+                onlyNumbers: true,
+                rightIcon: GestureDetector(
+                  onTap: () {
+                    context.read<AutoSwapSettingsCubit>().toggleBitcoinUnit();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.appColors.surface,
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
+                      ),
+                      border: Border.all(color: context.appColors.border),
+                    ),
+                    child: BullText(
+                      bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                      style: context.bullType.body,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  context
+                      .read<AutoSwapSettingsCubit>()
+                      .onAmountThresholdChanged(value);
+                },
+              ),
+            ),
+          ],
+        ),
+        if (amountThresholdFailure != null) ...[
+          const Gap(8),
+          BullText(
+            amountThresholdFailure.toTranslated(context, unit: bitcoinUnit),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.error),
+          ),
+        ],
+        const Gap(4),
+        BullText(
+          context.swapCopyForLocale.autoswapBaseBalanceInfoText,
+          style: context.bullType.caption.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TriggerBalanceField extends StatelessWidget {
+  const _TriggerBalanceField({required this.focusNode});
+
+  final FocusNode focusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    final triggerBalanceSatsInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceSatsInput,
+    );
+    final bitcoinUnit = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+    final triggerBalanceFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceFailure,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        BullText(
+          context.swapCopyForLocale.autoswapMaximumBalanceLabel,
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.text),
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            Expanded(
+              child: BullInputText(
+                value: triggerBalanceSatsInput ?? '',
+                focusNode: focusNode,
+                onlyNumbers: true,
+                rightIcon: GestureDetector(
+                  onTap: () {
+                    context.read<AutoSwapSettingsCubit>().toggleBitcoinUnit();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.appColors.surface,
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
+                      ),
+                      border: Border.all(color: context.appColors.border),
+                    ),
+                    child: BullText(
+                      bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                      style: context.bullType.body,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  context.read<AutoSwapSettingsCubit>().onTriggerBalanceChanged(
+                    value,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        if (triggerBalanceFailure != null) ...[
+          const Gap(8),
+          BullText(
+            triggerBalanceFailure.toTranslated(context, unit: bitcoinUnit),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.error),
+          ),
+        ],
+        const Gap(4),
+        BullText(
+          context.swapCopyForLocale.autoswapTriggerAtBalanceInfoText,
+          style: context.bullType.caption.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FeeThresholdField extends StatelessWidget {
+  const _FeeThresholdField({required this.focusNode});
+
+  final FocusNode focusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    final feeThresholdInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdInput,
+    );
+    final feeThresholdFailure = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdFailure,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        BullText(
+          context.swapCopyForLocale.autoswapMaxFeeLabel,
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.text),
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            Expanded(
+              child: BullInputText(
+                value: feeThresholdInput ?? '',
+                focusNode: focusNode,
+                onlyNumbers: true,
+                rightIcon: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.appColors.surface,
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.badge,
+                    ),
+                    border: Border.all(color: context.appColors.border),
+                  ),
+                  child: BullText('%', style: context.bullType.body),
+                ),
+                onChanged: (value) {
+                  context.read<AutoSwapSettingsCubit>().onFeeThresholdChanged(
+                    value,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        if (feeThresholdFailure != null) ...[
+          const Gap(8),
+          BullText(
+            feeThresholdFailure.toTranslated(context),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.error),
+          ),
+        ],
+        const Gap(4),
+        BullText(
+          context.swapCopyForLocale.autoswapMaxFeeInfoText,
+          style: context.bullType.caption.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AlwaysBlockToggle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final alwaysBlock = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.alwaysBlock,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            BullText(
+              context.swapCopyForLocale.autoswapAlwaysBlockLabel,
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.appColors.text),
+            ),
+            BullSwitch(
+              value: alwaysBlock,
+              onChanged: (value) {
+                context
+                    .read<AutoSwapSettingsCubit>()
+                    .onAlwaysBlockToggleChanged(value);
+              },
+            ),
+          ],
+        ),
+        const Gap(4),
+        BullText(
+          alwaysBlock
+              ? context.swapCopyForLocale.autoswapAlwaysBlockInfoEnabled
+              : context.swapCopyForLocale.autoswapAlwaysBlockInfoDisabled,
+          style: context.bullType.caption.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WalletSelectionDropdown extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final availableWallets = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.availableBitcoinWallets,
+    );
+    final selectedWalletId = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.selectedBitcoinWalletId,
+    );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
+
+    final selectedWallet = availableWallets
+        .where((wallet) => wallet.id == selectedWalletId)
+        .firstOrNull;
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Row(
+          children: [
+            BullText(
+              context.swapCopyForLocale.autoswapRecipientWalletLabel,
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.appColors.text),
+            ),
+            if (enabled) ...[
+              const Gap(4),
+              BullText(
+                context.swapCopyForLocale.autoswapRecipientWalletRequired,
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: context.appColors.error),
+              ),
+            ],
+          ],
+        ),
+        const Gap(8),
+        BullDropdown<SwapWallet>(
+          items: [
+            for (final wallet in availableWallets)
+              BullPickerItem(
+                value: wallet,
+                label: wallet.swapWalletLabel(context),
+                leading: Image.asset(
+                  wallet.isLiquid
+                      ? 'assets/logos/liquid.png'
+                      : 'assets/logos/bitcoin.png',
+                  width: 20,
+                  height: 20,
+                ),
+              ),
+          ],
+          value: selectedWallet,
+          validator: enabled
+              ? (value) {
+                  if (value == null) {
+                    return context
+                        .swapCopyForLocale
+                        .autoswapRecipientWalletPlaceholderRequired;
+                  }
+                  return null;
+                }
+              : null,
+          hint: enabled
+              ? context
+                    .swapCopyForLocale
+                    .autoswapRecipientWalletPlaceholderRequired
+              : context.swapCopyForLocale.autoswapRecipientWalletPlaceholder,
+          onChanged: (wallet) {
+            context.read<AutoSwapSettingsCubit>().onWalletSelected(wallet.id);
+          },
+        ),
+        const Gap(4),
+        BullText(
+          context.swapCopyForLocale.autoswapRecipientWalletInfoText,
+          style: context.bullType.caption.copyWith(
+            color: enabled && selectedWalletId == null
+                ? context.appColors.error
+                : context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final saving = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.saving,
+    );
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
+    final selectedWalletId = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.selectedBitcoinWalletId,
+    );
+
+    final isDisabled =
+        saving || !enabled || (enabled && selectedWalletId == null);
+
+    return BullButton.primary(
+      label: context.swapCopyForLocale.autoswapSaveButton,
+      onPressed: (isDisabled)
+          ? null
+          : () => context.read<AutoSwapSettingsCubit>().updateSettings(),
+      textStyle: context.bullType.subtitle.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}

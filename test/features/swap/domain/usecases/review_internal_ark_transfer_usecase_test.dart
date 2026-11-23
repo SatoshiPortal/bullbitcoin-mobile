@@ -1,13 +1,19 @@
-import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:swap_feature/testing.dart';
 import 'package:swaps/order_swaps.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/load_internal_ark_transfer_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/review_internal_ark_transfer_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:receive/receive.dart';
 import 'package:bull_ark/bull_ark.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../internal_transfer_fixture.dart';
+
+class _Receive extends Mock implements Receive {
+  void stub(Future<Result<String, ReceiveFailure>> Function(String) read) {
+    when(() => transferAddress(any()))
+        .thenAnswer((call) => read(call.positionalArguments.single as String));
+  }
+}
 
 void main() {
   test(
@@ -19,13 +25,10 @@ void main() {
         LoadInternalArkTransferUsecase(
           () => ArkTransferFacade(() async => Ok(context)),
         ),
-        WalletFacade(
-          const Stream.empty(),
-          receiveAddress: (_) async {
-            addresses++;
-            return const Ok('destination');
-          },
-        ),
+        (_Receive()..stub((_) async {
+          addresses++;
+          return const Ok('destination');
+        })),
       );
       final result = await usecase.execute(
         InternalTransfer(
@@ -54,13 +57,10 @@ void main() {
         LoadInternalArkTransferUsecase(
           () => ArkTransferFacade(() async => Ok(context)),
         ),
-        WalletFacade(
-          const Stream.empty(),
-          receiveAddress: (id) async {
-            ids.add(id);
-            return const Ok('bcrt1publicfixture');
-          },
-        ),
+        (_Receive()..stub((id) async {
+          ids.add(id);
+          return const Ok('bcrt1publicfixture');
+        })),
       );
       final result = await usecase.execute(
         InternalTransfer(
@@ -91,13 +91,10 @@ void main() {
             () async => Ok(transferContext(source: 'changed')),
           ),
         ),
-        WalletFacade(
-          const Stream.empty(),
-          receiveAddress: (_) async {
-            addresses++;
-            return const Ok('unused');
-          },
-        ),
+        (_Receive()..stub((_) async {
+          addresses++;
+          return const Ok('unused');
+        })),
       );
       final result = await usecase.execute(
         InternalTransfer(
@@ -117,7 +114,7 @@ void main() {
         () =>
             ArkTransferFacade(() async => Ok(transferContext(minimum: 120000))),
       ),
-      const WalletFacade(Stream.empty()),
+      _Receive(),
     );
     final result = await usecase.execute(
       InternalTransfer(

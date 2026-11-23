@@ -1,0 +1,131 @@
+{
+  "@@locale": "bn",
+  "replaceByFeeErrorNoFeeRateSelected": "অনুগ্রহ করে একটি ফি রেট নির্বাচন করুন",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "এনএফসি",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "ক্যামেরা",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "সম্পন্ন",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "একটি PSBT বা ট্রান্স্যাকশন HEX পেস্ট করুন",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "ব্রডকাস্ট",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "স্বাক্ষরিত ট্রান্স্যাকশন ব্রডকাস্ট করুন",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "পরিমাণ",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "ট্রান্স্যাকশন প্রেরণ",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "ফি দ্বারা প্রতিস্থাপন করুন",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "ব্রডকাস্ট",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "নেটওয়ার্ক ফি",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "সবচেয়ে দ্রুত",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "মূল ট্রান্স্যাকশন",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "থেকে",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "আনুমানিক পৌঁছানোর সময় ~ ১০ মিনিট",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "সম্পন্ন",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "মূল ট্রান্স্যাকশনটির তুলনায় ফি রেট অন্তত 1 sat/vbyte বেশি করতে হবে",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "চালিয়ে যান",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "প্রাপক",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "আমরা আপনার লেনদেন ব্রডকাস্ট করতে পারিনি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "broadcastSignedTxErrorInvalidTransaction": "এটি একটি বৈধ স্বাক্ষরিত লেনদেন বলে মনে হচ্ছে না। নিশ্চিত করুন যে আপনি সম্পূর্ণ PSBT বা লেনদেন পেস্ট করেছেন।",
+  "broadcastSignedTxErrorInvalidPushTx": "আমরা এই ট্যাগ থেকে কোনো লেনদেন পড়তে পারিনি। অনুগ্রহ করে আবার স্ক্যান করুন।",
+  "replaceByFeeFeeRateDisplay": "ফি হার: {feeRate} sat/vbyte",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolServerStatusUnknown": "অজানা",
+  "coreScreensResolvingInputs": "লেনদেনের ইনপুট সমাধান করা হচ্ছে...",
+  "coreScreensFeeRateLabel": "ফি রেট",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "পরিবর্তন আউটপুট অজানা — সমস্ত আউটপুট সমানভাবে দেখানো হচ্ছে",
+  "coreScreensUnknown": "অজানা",
+  "coreScreensFetchFailed": "Electrum থেকে লেনদেন {txid} আনা যায়নি।",
+  "coreScreensInputResolutionFailed": "ইনপুট পাওয়া যায়নি: {parentTxId}-এর আউটপুট {vout} বিদ্যমান নেই।",
+  "coreScreensNoServersAvailable": "কোনো Electrum সার্ভার উপলব্ধ নেই।",
+  "broadcastSignedTxNfcButton": "এনএফসি",
+  "broadcastSignedTxColdcardNfcSheetTitle": "NFC-এর মাধ্যমে স্বাক্ষরিত লেনদেন গ্রহণ করতে আপনার Coldcard-এ ট্যাপ করুন",
+  "consolidationDone": "সম্পন্ন",
+  "consolidationFailedBody": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে। আপনার তহবিল নিরাপদ: কোনো লেনদেন সম্প্রচার করা হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "consolidationFailedTitle": "একত্রীকরণ ব্যর্থ",
+  "consolidationInProgress": "একত্রিত করা হচ্ছে…",
+  "consolidationRequiredTitle": "ওয়ালেট একত্রিত করুন",
+  "consolidationRequiredTitleNamed": "{walletName} ওয়ালেট একত্রিত করুন",
+  "consolidationRowAmount": "পরিমাণ",
+  "consolidationRowNetworkFees": "নেটওয়ার্ক ফি",
+  "consolidationRowOutputs": "আউটপুট",
+  "consolidationRowTransactions": "লেনদেন",
+  "consolidationScreenDescription": "অতিরিক্ত আউটপুট ওয়ালেটকে অস্থির করে তুলতে পারে। একত্রীকরণ সেগুলিকে কম সংখ্যায় একত্র করে যাতে আপনার ওয়ালেট সঠিকভাবে কাজ করে।",
+  "consolidationScreenTitle": "একত্রিত করুন",
+  "consolidationSuccessBody": "আপনার কয়েনগুলি একত্রিত করা হচ্ছে। নেটওয়ার্ক নিশ্চিত করলে এটি সম্পন্ন হবে।",
+  "consolidationSuccessTitle": "একত্রীকরণ শুরু হয়েছে",
+  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষরিত লেনদেনটি চূড়ান্ত করা যায়নি। এতে প্রয়োজনীয় সব স্বাক্ষর আছে কি না নিশ্চিত করে আবার চেষ্টা করুন।",
+  "coreScreensOutputsExceedInputs": "আউটপুট ইনপুটের চেয়ে বেশি: এই লেনদেনটি অবৈধ এবং নেটওয়ার্ক এটি প্রত্যাখ্যান করবে।",
+  "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটি ইতিমধ্যেই ব্লকচেইনে আছে। সম্প্রচার করার মতো আর কিছু নেই।",
+  "broadcastSignedTxErrorRejected": "নেটওয়ার্ক এই লেনদেনটি প্রত্যাখ্যান করেছে। এটি হয়তো সম্পূর্ণ স্বাক্ষরিত নয়, অবৈধ, অথবা অন্য একটি পেমেন্টের সাথে সাংঘর্ষিক।",
+  "broadcastSignedTxErrorOutcomeUnknown": "আপনার লেনদেন সম্প্রচারিত হয়েছে কি না আমরা নিশ্চিত করতে পারিনি। আবার চেষ্টা করার আগে একটি ব্লক এক্সপ্লোরারে দেখে নিন।",
+  "broadcastSignedTxErrorNetworkNotEnabled": "বর্তমান সেটিংসে এই নেটওয়ার্কে সম্প্রচার চালু নেই।"
+}

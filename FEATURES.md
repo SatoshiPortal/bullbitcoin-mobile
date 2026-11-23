@@ -63,7 +63,7 @@ graph TB
     ELECTRUM --> BULL_LOGGER
     NETWORK --> ELECTRUM
     NETWORK --> MEMPOOL
-    BROADCAST_SIGNED_TX --> ELECTRUM
+    SEND_TOOLS --> ELECTRUM
     CORE --> ELECTRUM
     WALLETS --> ELECTRUM
     LABELS --> SYNC
@@ -87,19 +87,16 @@ graph TB
     TRANSFER --> SPEND
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
-    BROADCAST_SIGNED_TX --> SYNC
+    SEND_TOOLS --> SYNC
     SATOSHIFIER[Satoshifier Package]
-    BROADCAST_SIGNED_TX -->|BBQR assembly| SATOSHIFIER
+    SEND_TOOLS -->|BBQR assembly| SATOSHIFIER
     SATOSHIFIER --> SYNC
     SATOSHIFIER --> BULL_LOGGER
     SEND -->|payment requests| SATOSHIFIER
-    SWAP -->|payment requests| SATOSHIFIER
+    SWAPS -->|payment requests| SATOSHIFIER
     WALLETS -->|payment requests, public extended keys| SATOSHIFIER
-    BROADCAST_SIGNED_TX --> SPEND
-    SEND -->|reviewed Payjoin original| TX_HISTORY
-    PAY -->|reviewed Payjoin original| TX_HISTORY
-    SELL -->|reviewed Payjoin original| TX_HISTORY
-    TX_HISTORY -->|write-ahead Payjoin admission| SPEND
+    SEND_TOOLS --> SPEND
+    SPEND -->|write-ahead Payjoin admission| BULL_PAYJOIN
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
@@ -239,14 +236,12 @@ graph TB
     SUPPORT[Support]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
-    BACKUPS[Backups]
-    BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
-    SWAPS[Swaps]
+    BACKUPS[Backups workspace feature<br/>Backup status and verification]
     SEND[Send]
-    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
+    SEND_TOOLS[Send workspace feature<br/>Signed transaction broadcast, Liquid consolidation and fee replacement]
     SCANNING[QR and NFC Scanning workspace member]
     IMPORT_COLDCARD[Coldcard Import]
-    BROADCAST_SIGNED_TX -->|public QR and NFC scanning| SCANNING
+    SEND_TOOLS -->|public QR and NFC scanning| SCANNING
     IMPORT_COLDCARD -->|public NFC scanning| SCANNING
     CORE -->|composes signer NFC callback| SCANNING
     SCANNING --> SIGNERS
@@ -284,6 +279,10 @@ graph TB
     ADDRESS_LABELS -->|typed wallet inventory| SECRETS
     ADDRESS_LABELS --> SYNC
     ADDRESS_LABELS --> SATOSHIFIER[Satoshifier Package]
+    ADDRESS_LABELS -->|regtest Payjoin URI| BULL_PAYJOIN
+    ADDRESS_LABELS -->|destination scanning| SCANNING
+    ADDRESS_LABELS -->|scan and clear labels| SP
+    ADDRESS_LABELS --> PREFERENCES
     PAY -->|indexed address| ADDRESS_LABELS
     RECEIVE -->|indexed address| ADDRESS_LABELS
     SELL -->|indexed address| ADDRESS_LABELS
@@ -295,16 +294,13 @@ graph TB
     RECEIVE_REQUEST --> BULL_LOGGER
     RECEIVE_REQUEST --> BULL_PRICER
     RECEIVE_REQUEST --> PREFERENCES
-    REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
     LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
     PAY[Pay]
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
-    CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
-    AUTOSWAP[Autoswap]
     SP[Silent Payments<br/>Workspace Feature]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
@@ -333,7 +329,7 @@ graph TB
     BTC_PRICE --> BULL_UI
     BTC_PRICE --> BULL_LOGGER
     BTC_PRICE --> PRIMITIVES
-    SWAPS_PKG[Swaps Package<br/>Boltz engine, swap routing and autoswap policy]
+    SWAPS_PKG[Swaps Package<br/>Boltz engine, public Exchange orders and autoswap policy]
     SWAPS_PKG --> PRIMITIVES
     SWAPS_PKG --> BULL_LOGGER
     SWAPS_PKG --> ELECTRUM
@@ -341,16 +337,21 @@ graph TB
     SWAPS_PKG --> PREFERENCES
     SWAPS_PKG --> SECRETS
     SWAPS_PKG --> SYNC
-    SWAPS -->|fresh receive address| ADDRESS_MGMT
-    SWAPS -->|wallet-relative history| TX_HISTORY
+    SWAPS[Swap and AutoSwap<br/>Workspace feature]
     SWAPS --> SWAPS_PKG
-    SWAP_SETTINGS[Swap settings<br/>Workspace feature]
-    SWAP_SETTINGS --> SWAPS_PKG
-    SWAP_SETTINGS --> BULL_UI
-    SETTINGS -->|typed settings navigation| SWAP_SETTINGS
+    SWAPS -->|order labels and navigation| TX_HISTORY
+    SWAPS -->|balance, coins and spend admission| SYNC
+    SWAPS -->|wallet inventory| SECRETS
+    SWAPS -->|fund and broadcast| SPEND
+    SWAPS -->|fees| FEES_PACKAGE
+    SWAPS -->|destination input, receive and refund addresses| ADDRESS_LABELS
+    SWAPS -->|Ark transfer recipient address| RECEIVE_REQUEST
+    SWAPS -->|hardware signer metadata| SIGNERS
+    SWAPS -->|coin selection sheet| COINS
+    SWAPS --> BULL_UI
+    SETTINGS -->|typed settings navigation| SWAPS
     SEND --> SWAPS_PKG
     RECEIVE --> SWAPS_PKG
-    AUTOSWAP --> SWAPS_PKG
     TX_HISTORY --> SWAPS_PKG
     SWAPS_PKG --> SYNC
     WALLETS --> SWAPS_PKG
@@ -404,9 +405,7 @@ graph TB
     APP_STARTUP --> ACCESS
     SETTINGS --> ACCESS
     APP_STARTUP --> LOGS
-    AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
-    AUTOSWAP --> TRANSFER
     BIP85 --> SECRETS
     BIP85 --> PREFERENCES
     BIP85 --> BULL_UI
@@ -415,15 +414,14 @@ graph TB
     WALLETS -->|signer device properties| SIGNERS
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
-    BACKUPS -->|mount backup options| BACKUP_OPTIONS
-    SETTINGS -->|start backup| BACKUP_OPTIONS
-    WALLETS -->|start backup| BACKUP_OPTIONS
-    BACKUP_OPTIONS -->|vault navigation| RECOVERBULL
-    BACKUP_OPTIONS --> BULL_UI
+    SETTINGS -->|start backup| BACKUPS
+    WALLETS -->|backup card and navigation| BACKUPS
+    BACKUPS --> BULL_UI
     BACKUPS --> SECRETS
     BACKUPS --> ACCESS
-    BACKUPS --> TOR
-    BACKUPS --> WALLETS
+    BACKUPS --> LABEL_EDITOR
+    BACKUPS --> PREFERENCES
+    BACKUPS --> SCREEN_PRIVACY
     WALLETS --> BTC_PRICE
     COINS --> BTC_PRICE
     SELL --> BTC_PRICE
@@ -434,11 +432,9 @@ graph TB
     RECEIVE --> LABELS
     SELL --> LABELS
     SETTINGS --> LABELS
-    AUTOSWAP --> LABELS
     COINS -->|public revision stream| WALLETS
     IMPORT_WALLET[Wallet Import]
     IMPORT_WALLET --> SETTINGS
-    SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> PAY
     SETTINGS --> TX_HISTORY
@@ -466,7 +462,7 @@ graph TB
     SELL -->|recipient selection and activation| BULL_EXCHANGE
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
-    SEND --> CONSOLIDATION
+    SEND -->|signed transaction handoff and consolidation status| SEND_TOOLS
     SEND --> FEES_UI
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
@@ -488,9 +484,6 @@ graph TB
     NETWORK --> RECOVERBULL
     NETWORK --> PRIMITIVES
     ONBOARDING --> NETWORK
-    SWAPS --> BULL_PAYJOIN
-    SWAPS --> SECRETS
-    SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
     SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM
@@ -501,8 +494,6 @@ graph TB
     SP --> PRIMITIVES
     SP --> BULL_UI
     SP --> BULL_LOGGER
-    SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
-    SWAPS --> UTXO_MGMT
     CORE --> TOR
     ELECTRUM --> TOR
     WALLETS --> TOR
@@ -514,15 +505,15 @@ graph TB
     RECOVERBULL --> BULL_LOGGER
     RECOVERBULL --> BULL_UI
     RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
-    TRANSFER --> CONSOLIDATION
+    SWAPS -->|consolidation status and route| SEND_TOOLS
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY -->|wallet history projections and revisions| SYNC
     WALLETS -->|wallet detail history widgets| TX_HISTORY
-    SWAPS -->|wallet transaction evidence| TX_HISTORY
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
-    WALLETS --> CONSOLIDATION
+    WALLETS -->|consolidation banner| SEND_TOOLS
+    SETTINGS -->|signed transaction reader| SEND_TOOLS
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
     WALLETS --> SECRETS
@@ -531,7 +522,6 @@ graph TB
     WALLETS -->|public orders + swap scheduling port| SWAPS
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
-    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     MEMPOOL[Mempool Package<br/>Servers, validation and explorer links]
     MEMPOOL --> PRIMITIVES
     MEMPOOL --> TOR
@@ -544,26 +534,20 @@ graph TB
     WALLETS --> MEMPOOL
     WIZARD[Wizard]
     APP_STARTUP --> SETTINGS
-    AUTOSWAP --> SPEND
-    AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
-    CONSOLIDATION --> SPEND
-    EXCHANGE -->|supplies shared destination validation and input| WALLETS
+    EXCHANGE -->|shared destination validation and input| ADDRESS_LABELS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
     PAY --> FEES_PACKAGE
     SELL --> FEES_PACKAGE
-    REPLACE_BY_FEE --> FEES_PACKAGE
-    SWAPS --> FEES_PACKAGE
-    AUTOSWAP --> FEES_PACKAGE
-    CONSOLIDATION --> FEES_PACKAGE
+    SEND_TOOLS --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
-    LIMIT_ORDERS -->|public destination input| WALLETS
+    LIMIT_ORDERS -->|public destination input| ADDRESS_LABELS
     PAY --> FEES_UI
     SEND --> SIGNERS
-    REPLACE_BY_FEE --> FEES_UI
-    REPLACE_BY_FEE --> SPEND
+    SEND_TOOLS --> FEES_UI
+    SEND_TOOLS --> BULL_UI
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
@@ -572,16 +556,14 @@ graph TB
 
     %% Wallet readers and spend preparation assigned to their app owners
     UTXO_MGMT --> SYNC
-    AUTOSWAP --> ADDRESS_LABELS
     PAY --> UTXO_MGMT
     SELL --> UTXO_MGMT
     SEND --> ADDRESS_LABELS
-    SWAPS --> ADDRESS_LABELS
     WALLETS -->|address viewer| ADDRESS_LABELS
     COINS -->|coin selection address viewer| ADDRESS_LABELS
     EXCHANGE -->|address viewer| ADDRESS_LABELS
     TX_HISTORY -->|address viewer| ADDRESS_LABELS
-    BROADCAST_SIGNED_TX -->|address viewer| ADDRESS_LABELS
+    SEND_TOOLS -->|address viewer| ADDRESS_LABELS
     IMPORT_MNEMONIC --> SYNC
 
     %% Styling
@@ -591,7 +573,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -621,9 +603,9 @@ graph TB
 
 ## Foreground synchronization
 
-Wallet owns the private foreground synchronization queue and consumes the Silent capability and the legacy swap facade. Silent receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing a Silent/swap source dependency on wallet synchronization. The swap facade keeps its direct refresh path so a queued pass never enqueues itself.
+Wallet owns the private foreground synchronization queue and consumes the Silent capability and the Swap activity capability. Silent receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing a Silent/swap source dependency on wallet synchronization. The Swap activity capability keeps its direct refresh path so a queued pass never enqueues itself.
 
-The wallet and wallet address repositories live in `lib/features/wallet/data`. Their former `core/wallet` re-exports have been removed. Silent receives an exact-network default fingerprint reader from wallet composition and no longer imports the wallet feature. Swap still imports the repository in `swap_locator.dart` and `wallet_router.dart` in `swap_in_progress_page.dart`, retaining the legacy wallet↔swap cycle. `test/architecture/foreground_sync_dependencies_test.dart` resolves feature ownership through imports and transitive exports, including public barrels, and rejects new feature edges against an explicit baseline.
+The wallet and wallet address repositories live in `lib/features/wallet/data`. Swap reads wallet selection from Secrets and wallet balances, coins and spend admission from Sync. The wallet synchronizer calls the mounted Swap activity capability to refresh orders. `test/architecture/foreground_sync_dependencies_test.dart` resolves the remaining app feature edges through imports and transitive exports.
 
 ## Core Dependencies
 
@@ -663,11 +645,11 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Core**: Foundation for all features
 - **Store vocabulary**: `packages/novlang` — the real words live in the root catalogue; `novlang` holds sparse per-store overrides (`novlang_<lang>.arb`, listed in `manifest.yaml`) and the pure `resolveNovlangPolicy(platform, isSuperuser)`. `tools/novlang_bridge.dart` (run by `make translations`) generates the `AppLocalizations` subclasses and `NovlangAppLocalizationsDelegate` that the shell composes before `AppLocalizations.delegate`. A new user-visible word a store forces is added to the manifest and to all 27 `novlang_<lang>.arb`; nothing else in the app chooses vocabulary.
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
-- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
+- **Wallets**: Used by Send, UTXO Management, Transaction History, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, Bitcoin Price
 - **Swaps** (workspace package `packages/swaps`): `Swaps.open` owns the Boltz engine, its network transitions and the provider and autoswap settings. Its stable `SwapStore`, `SwapResolver` and `BoltzSwaps` handles survive provider replacement. `SwapRouting` resolves the operator choices for Send, Receive, transfers and AutoSwap; the settings narrow view exposes typed reads and writes.
-- **Swap settings** (workspace feature `features/swap`): `SwapFeature.mount` contributes the standalone settings route and `SwapNavigation` exposes its title and navigation to Settings. Transfer and AutoSwap payment orchestration call Spend from the app.
+- **Swap and AutoSwap** (workspace feature `features/swap`): `SwapFeature.mount` contributes transfer, confirmation, progress and swap settings, and provides the AutoSwap settings route under Settings. Transfer and AutoSwap use Spend for funding and submission and use the typed order operations published by `swaps` for Exchange fallback.
 - **Recipient selection and activation**: Owned by Bull Exchange and used by Pay, Sell and Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 
@@ -675,9 +657,8 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 - **Send**: Depends on Spend, Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **Backups**: Depends on Tor and Wallets
 - **Receive and Address View capabilities**: `features/receive` owns request admission, pricing, address notes and transfer/next-unused selection. `features/address_view` mounts the Settings address history and uses the active Secrets inventory, Sync and Labels for indexed reads, address issuance and label enrichment. The app still owns the Receive routes, Lightning fallback, shared polling and incoming-payment observation.
-- **Backups**: Depends on BIP85, Tor, Wallets
+- **Backups**: Uses the Secrets wallet inventory and the RecoverBull backup facts
 
 ### Exchange-Related Features
 
@@ -720,22 +701,14 @@ The architecture test records source dependencies, including internal imports an
 | Source → owner | Provenance and reason retained | Observed import/export path |
 |---|---|---|
 | `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
-| `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
-| `autoswap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
-| `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
-| `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `replace_by_fee → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `settings → swap` | Owner relocation: Keep existing restore/rescue entry points on the swap facade. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> lib/features/swap/public/swap_facade.dart` |
-| `swap → autoswap` | Owner relocation: Keep existing autoswap settings persistence wiring in the relocated swap registration. | `lib/features/swap/swaps_core_locator.dart -> lib/features/autoswap/domain/repositories/auto_swap_settings_repository.dart` |
-| `swap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/swap/ui/pages/swap_page.dart -> lib/features/settings/domain/settings_entity.dart` |
+| `settings → swaps` | Restore and rescue use the public swap engine capability. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> package:swaps/swaps.dart` |
 | `wizard → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/wizard/ui/screens/wizard_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 
 | `app_startup → mnemonic_entry` | Restore UI uses the typed input widget to preserve explicit language selection. | `restore_default_secret_screen.dart → package:mnemonic_entry/mnemonic_entry.dart` |
@@ -747,7 +720,7 @@ Develop also removes the price chart’s shell locator import and its obsolete e
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
-RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly. Onboarding also uses the read-only Bitcoin history scan published by Wallet Import.
+RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, backups and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly. Onboarding also uses the read-only Bitcoin history scan published by Wallet Import.
 
 
 ## Regtest Electrum storage and watch-only import
@@ -818,3 +791,7 @@ Preferences owns an encrypted schema-1 settings and RecoverBull permission store
 ## Recovery phrase display
 
 Settings mounts All Seed View as a workspace route. Access supplies reauthentication, Secrets supplies the active catalog and guarded seed deletion, and Swaps supplies the sealed swap phrase widget. Wallet recovery phrases and passphrases stay in Secrets’ MnemonicView. Screen protection must succeed before the viewer builds, and neither phrase renderer contributes words to accessibility semantics.
+
+## Backup verification ownership
+
+Backups mounts the status, options and physical verification routes and provides the wallet home backup card. It reads the default Bitcoin wallet from the active Secrets inventory and the backup facts keyed by its local secret from RecoverBull. Physical Backup Verification validates the mnemonic and passphrase before Backups records completion against the verified secret in RecoverBull. Access continues to read backup eligibility for default wallets in the active environment.

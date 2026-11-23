@@ -8,33 +8,37 @@ import 'package:path/path.dart' as p;
 // Exact legacy feature imports at 982b98e90 (2026-11-06). Remove entries as their
 // consumers migrate; never extend this list to permit a new shell dependency.
 const _legacyImports = {
-  'lib/features/broadcast_signed_tx/router.dart -> locator.dart',
   'lib/features/import_mnemonic/router.dart -> locator.dart',
-  'lib/features/replace_by_fee/router.dart -> locator.dart',
   'lib/features/pay/ui/pay_router.dart -> locator.dart',
   'lib/features/send/ui/send_router.dart -> locator.dart',
-  'lib/features/backup_settings/ui/screens/backup_settings_screen.dart -> locator.dart',
   'lib/features/app_startup/ui/app_startup_widget.dart -> router.dart',
   'lib/features/limit_orders/ui/limit_orders_router.dart -> locator.dart',
-  'lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> locator.dart',
-  'lib/features/autoswap/ui/widgets/autoswap_settings.dart -> locator.dart',
-  'lib/features/test_wallet_backup/ui/test_wallet_backup_router.dart -> locator.dart',
   'lib/features/onboarding/ui/onboarding_router.dart -> locator.dart',
   'lib/features/sell/ui/sell_router.dart -> locator.dart',
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
   'lib/features/settings/ui/widgets/settings_failure_listener.dart -> router.dart',
-  'lib/features/swap/ui/swap_router.dart -> locator.dart',
-  'lib/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart -> locator.dart',
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
-  'lib/features/consolidation/ui/consolidation_router.dart -> locator.dart',
-  'lib/features/consolidation/ui/widgets/consolidation_banner.dart -> locator.dart',
   'lib/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart -> locator.dart',
 };
 
 void main() {
+  test('the Send workspace member does not import the app shell', () {
+    final sources = Directory('features/send/lib')
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.dart'));
+    for (final source in sources) {
+      expect(
+        source.readAsStringSync(),
+        isNot(contains('package:bb_mobile/')),
+        reason: source.path,
+      );
+    }
+  });
+
   test('the shell uses the wallet facade for service status', () {
     final shell = parseString(
       content: File('lib/locator.dart').readAsStringSync(),

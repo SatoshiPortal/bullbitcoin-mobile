@@ -34,7 +34,7 @@ import 'package:swaps/swaps.dart'
         SwapWatcher,
         WatchSwapUsecase;
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
@@ -60,7 +60,7 @@ class ReceiveLocator {
     );
     locator.registerFactory<CreateReceiveOrderSwapUsecase>(
       () => CreateReceiveOrderSwapUsecase(
-        locator<SwapFacade>(),
+        locator<OrderSwaps>(),
         locator<AddressView>(),
       ),
     );
@@ -84,7 +84,7 @@ class ReceiveLocator {
       ),
     );
     locator.registerFactory<WatchReceiveOrderSwapUsecase>(
-      () => WatchReceiveOrderSwapUsecase(locator<SwapFacade>()),
+      () => WatchReceiveOrderSwapUsecase(locator<OrderSwaps>()),
     );
 
     // The remaining legacy wallet reads still map exceptions before the bloc.

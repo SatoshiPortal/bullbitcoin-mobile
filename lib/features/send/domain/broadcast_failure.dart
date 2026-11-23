@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
+import 'package:spend/legacy_exceptions.dart';
 
 /// Diagnostic categories only: never use them to decide whether to retry a payment.
 enum BroadcastFailureCategory {

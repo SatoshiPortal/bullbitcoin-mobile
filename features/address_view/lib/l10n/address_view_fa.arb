@@ -79,5 +79,21 @@
   "viewerPaymentUriTab": "نشانی پرداخت",
   "addressViewErrorWalletNotFound": "این کیف پول پیدا نشد.",
   "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
-  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد",
+  "sendErrorInvalidAddressOrInvoice": "آدرس پرداخت Bitcoin یا Invoice",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "exchangeDcaAddressLabelBitcoin": "Bitcoin Address",
+  "@exchangeDcaAddressLabelBitcoin": {
+    "description": "Label for Bitcoin address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLiquid": "آدرس مایع",
+  "@exchangeDcaAddressLabelLiquid": {
+    "description": "Label for Liquid address in DCA settings"
+  },
+  "exchangeDcaAddressLabelLightning": "آدرس Lightning",
+  "@exchangeDcaAddressLabelLightning": {
+    "description": "Label for Lightning address in DCA settings"
+  }
 }

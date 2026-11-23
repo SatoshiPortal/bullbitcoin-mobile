@@ -39,7 +39,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -51,7 +51,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolut
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
@@ -202,8 +202,7 @@ class _MockPreviewBitcoinFeeUsecase extends Mock
 class _MockPreviewBitcoinFeePresetsUsecase extends Mock
     implements PreviewBitcoinFeePresetsUsecase {}
 
-class _MockCheckLiquidConsolidationUsecase extends Mock
-    implements CheckLiquidConsolidationUsecase {}
+class _MockConsolidation extends Mock implements Consolidation {}
 
 class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
@@ -283,7 +282,7 @@ class _TestSendCubit extends SendCubit {
     required super.transactions,
     required super.verifyChainSwapAmountSendUsecase,
     required super.verifyExchangePayinUsecase,
-    required super.checkLiquidConsolidationUsecase,
+    required super.consolidation,
     required super.getSendPayjoinEnabledUsecase,
     required super.validateSpRecipientForSendUsecase,
     required super.validateSpAmountForSendUsecase,
@@ -337,7 +336,7 @@ void main() {
   late _MockLabels labelsFacade;
   late _MockGetWalletUsecase getWalletUsecase;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
-  late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
+  late _MockConsolidation consolidation;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
   late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockCalculateLiquidAbsoluteFeesUsecase
@@ -356,7 +355,7 @@ void main() {
     labelsFacade = _MockLabels();
     getWalletUsecase = _MockGetWalletUsecase();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
-    checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
+    consolidation = _MockConsolidation();
     prepareLiquidSendUsecase = _MockPrepareLiquidSendUsecase();
     validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
     calculateLiquidAbsoluteFeesUsecase =
@@ -415,7 +414,7 @@ void main() {
       transactions: _MockWatchWalletTransactionByTxIdUsecase(),
       verifyChainSwapAmountSendUsecase: _MockVerifyChainSwapAmountSendUsecase(),
       verifyExchangePayinUsecase: _MockVerifyExchangePayinUsecase(),
-      checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
+      consolidation: consolidation,
       getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
       validateSpRecipientForSendUsecase:
           _MockValidateSpRecipientForSendUsecase(),
@@ -524,11 +523,8 @@ void main() {
             utxo(amountSat: frozenSat, isFrozen: true),
           ],
         );
-        when(
-          () => checkLiquidConsolidationUsecase.execute(
-            walletId: any(named: 'walletId'),
-          ),
-        ).thenAnswer((_) async => false);
+        when(() => consolidation.isRequired(any()))
+            .thenAnswer((_) async => const Ok(false));
         when(
           () => prepareLiquidSendUsecase.execute(
             walletId: any(named: 'walletId'),

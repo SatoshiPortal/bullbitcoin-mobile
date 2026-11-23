@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/fees/public/spend_fee_preview.dart';
+import 'package:spend/fee_preview.dart';
 import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';

@@ -15,6 +15,7 @@ workspace:
   - features/bitcoin_price
   - features/bull_exchange
   - features/receive
+  - features/send
   - packages/labels
   - packages/legacy_storage
   - packages/exchange
@@ -73,6 +74,7 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  send:
   all_seed_view:
   bip85:
   access:

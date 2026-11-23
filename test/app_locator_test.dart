@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+import 'package:swap_feature/swap_feature.dart';
 import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
 import 'package:preferences/testing.dart';
@@ -33,8 +35,6 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/app_database_testing.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
-import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/foreground_wallet_startup.dart';
@@ -126,10 +126,6 @@ void main() {
     });
     tearDown(() async {
       if (composed) {
-        if (locator.checkLazySingletonInstanceExists<OrderSwapWatcher>()) {
-          locator<OrderSwapWatcher>().dispose();
-          await locator<AutoswapWatcher>().dispose();
-        }
         locator<SyncCoordinator>().dispose();
       }
       await locator.reset();
@@ -218,16 +214,20 @@ void main() {
       );
       inventoryFixture.inventory.lock();
       await compose(startWatchers: true);
+      final swap = locator<SwapFeature>();
+      expect(swap.routes.map((route) => route.path), [
+        '/swap',
+        '/swap-settings',
+      ]);
+      expect(
+        swap.routes.first.routes.cast<GoRoute>().map((route) => route.path),
+        ['/swap/confirm', '/swap/in-progress'],
+      );
+      expect(swap.autoswapSettingsRoute.path, 'autoswap-settings');
 
       expect(locator<SilentFeature>().foregroundWatchersStarted, isFalse);
-      expect(
-        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
-        isFalse,
-      );
-      expect(
-        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
-        isFalse,
-      );
+      expect(locator<SwapFeature>().isWatchingOrders, isFalse);
+      expect(locator<SwapFeature>().isWatchingAutoswap, isFalse);
 
       expect(
         (await inventoryFixture.inventory.unlock(pin))
@@ -236,14 +236,8 @@ void main() {
       );
       await locator<ForegroundWalletStartup>().start();
       expect(locator<SilentFeature>().foregroundWatchersStarted, isTrue);
-      expect(
-        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
-        isTrue,
-      );
-      expect(
-        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
-        isTrue,
-      );
+      expect(locator<SwapFeature>().isWatchingOrders, isTrue);
+      expect(locator<SwapFeature>().isWatchingAutoswap, isTrue);
     });
 
     test('profile initialization cannot recreate a lost registry over surviving custody', () async {

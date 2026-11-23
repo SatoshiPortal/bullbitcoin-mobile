@@ -31,6 +31,8 @@ void main() {
       INSERT INTO wallet_metadatas VALUES
         ('test', 'bitcoinTestnet', 'local', '12345678', 1, 0, 10, NULL),
         ('reg', 'liquidRegtest', 'local', '12345678', 0, 1, NULL, 11),
+        ('shared', 'liquidTestnet', 'local', '12345678', 0, 0, NULL, NULL),
+        ('other', 'bitcoinTestnet', 'local', 'abcdef01', 0, 0, NULL, NULL),
         ('watch', 'bitcoinMainnet', 'remote', '12345678', 0, 1, NULL, 12)
     ''');
       db.close();
@@ -104,7 +106,34 @@ void main() {
       );
       expect(_ok(await reg.projection(fingerprint)).latestPhysicalBackup, 11);
       expect(await file.readAsBytes(), initialBytes);
-      expect(_ok(await main.read('test'))?.latestEncryptedBackup, 10);
+      expect(
+        await main.recordPhysicalVerification(
+          walletId: 'other',
+          fingerprint: fingerprint,
+        ),
+        isA<Err>(),
+      );
+      expect(
+        _ok(await main.projection(fingerprint)).physicalBackupTested,
+        isFalse,
+      );
+      _ok(
+        await main.recordPhysicalVerification(
+          walletId: 'test',
+          fingerprint: fingerprint,
+        ),
+      );
+      final recorded = _ok(await main.read('test'));
+      expect(recorded?.latestPhysicalBackup, isNotNull);
+      expect(recorded?.latestEncryptedBackup, 10);
+      expect(recorded?.encryptedVaultTested, isTrue);
+      expect(
+        _ok(await main.read('shared'))?.latestPhysicalBackup,
+        recorded?.latestPhysicalBackup,
+      );
+      expect(_ok(await main.read('other'))?.physicalBackupTested, isFalse);
+      expect(_ok(await main.read('watch')), watchOnly);
+      expect(_ok(await reg.read('reg'))?.latestPhysicalBackup, 11);
       _ok(await main.remove('test'));
       _ok(
         await reg.write((

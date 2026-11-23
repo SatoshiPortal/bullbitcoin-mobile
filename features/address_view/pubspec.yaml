@@ -12,7 +12,12 @@ resolution: workspace
 dependencies:
   bloc_concurrency: ^0.3.0
   bull_logger:
+  bip21_uri: ^2.2.0
+  bull_payjoin:
   bull_ui:
+  cupertino_ui: ^1.1.6
+  scanning:
+  silent:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -24,6 +29,7 @@ dependencies:
   material_ui: ^1.11.0
   mempool:
   meta: ^1.17.0
+  preferences:
   primitives:
   satoshifier:
   secrets:
