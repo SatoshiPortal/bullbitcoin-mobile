@@ -291,6 +291,42 @@ void main() {
   });
 
   test(
+    'reopening with an expired wall deadline still delays PIN comparison',
+    () async {
+      final pin = DateTime.now().microsecondsSinceEpoch.toString();
+      _value(
+        await inventory.setCredential(
+          pin,
+          backupVerification: const _VerifiedBackup(),
+        ),
+      );
+      await inventory.close();
+      final store = _value(
+        await InventoryStore.open(file, admission, existing: true),
+      );
+      await store.database.customStatement(
+        'UPDATE access_state SET failed_attempts = ?, locked_until = ?',
+        [
+          5,
+          DateTime.now()
+              .subtract(const Duration(hours: 1))
+              .millisecondsSinceEpoch,
+        ],
+      );
+      await store.close();
+
+      final reopened = _value(
+        await SecretsInventory.open(file: file, admission: admission),
+      );
+      final status = _value(await reopened.accessStatus());
+      expect(status.remaining.inSeconds, inInclusiveRange(59, 60));
+      final attempt = _value(await reopened.unlock(pin));
+      expect(attempt.accepted, isFalse);
+      expect(attempt.failedAttempts, 5);
+    },
+  );
+
+  test(
     'reservations are serial per parent and include revoked records',
     () async {
       final parent = Fingerprint('01234567');
@@ -322,6 +358,15 @@ void main() {
     final keys = Secrets(scratchDirectory: () async => directory.path);
     expect(() => keys.databaseKeys(module: 'secrets'), throwsArgumentError);
   });
+}
+
+final class _VerifiedBackup implements InventoryBackupVerification {
+  const _VerifiedBackup();
+
+  @override
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    Set<String> fingerprints,
+  ) async => const Ok(true);
 }
 
 RegisteredWallet _wallet(String id, String parent) => RegisteredWallet(
