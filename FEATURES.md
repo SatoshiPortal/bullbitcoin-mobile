@@ -204,7 +204,16 @@ graph TB
     NETWORK[Network settings and service status<br/>Workspace Feature]
     RECOVERBULL[RecoverBull<br/>Workspace Feature]
     GOOGLE_DRIVE[Google Drive Package]
-    RECOVERBULL --> GOOGLE_DRIVE
+    BACKUP_STORAGE[Backup Storage Package<br/>Session-bound byte storage]
+    BACKUP_METADATA[Backup Metadata workspace feature<br/>Backup journal and restore]
+    RECOVERBULL --> BACKUP_STORAGE
+    BACKUP_STORAGE --> GOOGLE_DRIVE
+    BACKUP_STORAGE --> PRIMITIVES
+    BACKUP_METADATA --> BACKUP_STORAGE
+    BACKUP_METADATA --> SECRETS
+    BACKUP_METADATA --> LABELS
+    BACKUP_METADATA --> PRIMITIVES
+    BACKUP_METADATA --> BULL_UI
     FILE_SYSTEM[File System Package]
     RECOVERBULL --> FILE_SYSTEM
     BULL_EXCHANGE --> FILE_SYSTEM
