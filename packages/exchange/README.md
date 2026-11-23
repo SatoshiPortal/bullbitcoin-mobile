@@ -19,3 +19,9 @@ Support chat uses the standard timeout for identity lookup and an untimed client
 `package:exchange/setup.dart` gives the app's existing access coordinator the legacy credential lifecycle. The package owns the serialized record and validation; `secrets` owns the OS keychain. This does not move stored data or change sign-out policy.
 
 `package:exchange/migration.dart` supplies the Exchange participant for the storage coordinator. It opens the owner database through `Secrets.databaseOpener` and the shared native-close admission, projects both fixed keychain records and all historical Basic Auth rows, and verifies the destination and its import or fresh receipt. The participant is not mounted until coordinator preflight and legacy writer admission are wired. It never deletes or updates either legacy source.
+
+## Dependencies
+
+- `bbx_api` supplies the authenticated transport for account, KYC, statistics, chat, notifications, funding, virtual IBANs, orders and default payouts.
+- `legacy_storage` supplies the encrypted credential import contract; `secrets` supplies the scoped database key and legacy credential lifecycle.
+- `preferences` supplies environment selection for legacy consumers.
