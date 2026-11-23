@@ -59,7 +59,24 @@ final class InventoryFixture {
     );
     final inventory =
         (opened as Ok<SecretsInventory, DatabaseOpenFailure>).value;
-    return InventoryFixture._(directory, admission, inventory, storage);
+    final fixture = InventoryFixture._(
+      directory,
+      admission,
+      inventory,
+      storage,
+    );
+    if (pin != null) {
+      final credential = await inventory.setCredential(
+        pin,
+        backupVerification: fixture.backup,
+      );
+      if (credential case Err()) {
+        await fixture.close();
+        throw StateError('inventory credential setup failed');
+      }
+      inventory.lock();
+    }
+    return fixture;
   }
 
   Future<void> close() async {

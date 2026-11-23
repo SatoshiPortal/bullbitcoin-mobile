@@ -8,7 +8,7 @@ import '../../support/inventory_fixture.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('reads the credential imported into the inventory', () async {
+  test('reads the PIN independently of the legacy key', () async {
     final fixture = await InventoryFixture.open(pin: '1234');
     addTearDown(fixture.close);
     final usecase = CheckPinCodeExistsUsecase(
