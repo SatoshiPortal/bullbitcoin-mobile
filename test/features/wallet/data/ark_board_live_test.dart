@@ -32,7 +32,7 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_inventory_setup.dart';
+import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/migration.dart';

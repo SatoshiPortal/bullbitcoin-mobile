@@ -9,7 +9,12 @@ import 'package:bull_exchange/bull_exchange.dart'
     show AccelerateTransactionListTile, BuyRoute, showSinpeReceiptBottomSheet;
 
 import 'package:backups/backups.dart';
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
+import 'package:bull_recoverbull/storage.dart';
+import 'package:startup/setup.dart';
+import 'package:startup/startup.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:swaps/swaps.dart' show SwapStartup;
 import 'package:secrets/storage.dart';
 import 'package:material_ui/material_ui.dart' show AssetImage;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -23,7 +28,6 @@ import 'package:all_seed_view/setup.dart';
 import 'package:access/access.dart' show Access;
 import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swaps/swaps.dart' show Swaps;
@@ -59,7 +63,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/address_view_setup.dart';
-import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:access/setup.dart' show AccessFeature;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -77,7 +80,6 @@ import 'package:send/send.dart' show ReplaceByFee;
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
-import 'package:bb_mobile/features/wallet/public/silent_bindings.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/features/wallet/public/boltz_swaps_setup.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
@@ -311,13 +313,27 @@ class AppLocator {
         onUnlocked: (context) async {
           await startWalletsAfterUnlock(locator);
           if (!context.mounted) return;
-          completeAppStartupUnlock(context);
+          locator<StartupFeature>().completeUnlock(context);
           context.goNamed(WalletRoute.walletHome.name);
         },
         onBackUp: BackupsNavigation.open,
       ),
     );
-    AppStartupLocator.setup(locator);
+    locator.registerLazySingleton(
+      () => StartupFeature.mount(
+        preferences: locator(),
+        secrets: locator(),
+        inventory: inventory,
+        repair: locator<DefaultWalletRepair>(),
+        backupLookup: MainnetBackupLookup(
+          inventory,
+          locator<RecoverBullWalletBackups>(),
+          () => locator<RecoverBullFacade>(),
+        ),
+        tor: locator<Tor>(),
+        swapStartup: locator<SwapStartup>(),
+      ),
+    );
     OnboardingLocator.setup(locator);
     final bip85 = inventory.bip85(locator<Secrets>());
     locator.registerSingleton<Bip85Derivations>(bip85);
@@ -338,7 +354,7 @@ class AppLocator {
     );
     final silent = AppRouter.mountSilent(
       locator: locator,
-      readDefaultFingerprint: WalletSilentBindings.reader(locator),
+      readDefaultFingerprint: readSilentDefaultFromInventory(inventory),
     );
     locator.registerSingleton<SilentFeature>(
       silent,
@@ -353,7 +369,7 @@ class AppLocator {
     setupBackgroundPreferences(
       locator,
       configureBackgroundTasks,
-      notificationChannelId: paymentNotificationChannelId,
+      notificationChannelId: PaymentNotifications.channelId,
     );
     const LogsFeature().setup(locator);
     BtcMapFeature.setup(locator);
@@ -517,7 +533,8 @@ class AppLocator {
 
     locator.registerSingleton(
       ForegroundWalletStartup(
-        initialize: () => initializeWalletRuntime(locator),
+        initialize: () =>
+            initializeWalletRuntime(locator<WalletNativeRuntime>()),
         startWatchers: () {
           locator<SilentFeature>().startForegroundWatchers();
           locator<SwapFeature>().start(

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
-import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
+import 'package:startup/setup.dart' show StartupLocalizations;
+import 'package:startup/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,7 +30,10 @@ Future<String> _translate(WidgetTester tester, AppStartupFailure f) async {
   late String message;
   await tester.pumpWidget(
     MaterialApp(
-      localizationsDelegates: appLocalizationsDelegates,
+      localizationsDelegates: const [
+        StartupLocalizations.delegate,
+        ...appLocalizationsDelegates,
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {

@@ -1,0 +1,47 @@
+{
+  "appInitErrorTitle": "აპლიკაციის გაშვება ვერ მოხერხდა",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "ჩანაწერების გაზიარება",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "გამოიყენეთ თქვენი სარეზერვო ასლი",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "თქვენი სარეზერვო ასლის წყალობით თქვენი სახსრები დაცულია.\nჯერ სცადეთ აპლიკაციის გადატვირთვა; თუ ის კვლავ არ მუშაობს, ხელახლა დააინსტალირეთ და აღადგინეთ თქვენი სარეზერვო ასლით.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "სარეზერვო ასლი არ გაქვთ?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "არ წაშალოთ აპი.\nდაუკავშირდით ჩვენს მხარდაჭერის გუნდს გადარჩენის მცდელობისთვის.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "მხარდაჭერასთან დაკავშირება",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "შეცდომის დეტალების ჩვენება",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები.",
+  "appStartupContactSupportMessage": "დაუკავშირდით მხარდაჭერას მისამართზე app.bullbitcoin.com/support",
+  "logsShareOptionExport": "ექსპორტი",
+  "logsExportedMessage": "ჟურნალები წარმატებით ექსპორტირებულია",
+  "logsExportFailedMessage": "ჟურნალების ექსპორტი ვერ მოხერხდა",
+  "retry": "ხელახლა ცდა",
+  "onboardingRecover": "აღდგენა",
+  "deleteLogsTitle": "ჟურნალების წაშლა",
+  "logsDeletedMessage": "ჟურნალები წაშლილია",
+  "errorSharingLogsMessage": "ჟურნალების გაზიარების შეცდომა: {error}",
+  "appStartupErrorTitle": "გაშვების შეცდომა",
+  "appStartupContactSupportButton": "მხარდაჭერასთან დაკავშირება",
+  "coreScreensPageNotFound": "გვერდი ვერ მოიძებნა"
+}

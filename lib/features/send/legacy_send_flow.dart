@@ -65,7 +65,7 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_fo
 import 'package:silent/silent.dart';
 import 'package:get_it/get_it.dart';
 import 'package:spend/spend.dart';
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart' show WalletConnectionPort;
@@ -81,7 +81,7 @@ abstract final class LegacySendFlow {
         walletRegistrations: locator<WalletRegistrations>(),
         secrets: locator<Secrets>(),
         wallet: locator<WalletNativeRuntime>().wallet,
-        freezesDatasource: locator<SyncFreezesDatasource>(),
+        freezesDatasource: locator<CoinFreezes>(),
       ),
     );
     _registerUsecases(locator);

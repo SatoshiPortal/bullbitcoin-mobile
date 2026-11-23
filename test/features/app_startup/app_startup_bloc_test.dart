@@ -1,10 +1,13 @@
+import 'package:swaps/swaps.dart' show SwapStartup;
+import 'package:startup/setup.dart' show StartupLocalizations;
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:access/setup.dart';
 import 'package:access/testing.dart' show PinCodeUnlockInputScreen;
-import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
+import 'package:startup/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/app_theme.dart';
@@ -14,14 +17,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
-import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:access/access.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/get_startup_pin_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -45,8 +41,7 @@ class _MockInitializeRequiredTorUsecase extends Mock
 class _MockRestoreMissingDefaultSecretUsecase extends Mock
     implements RestoreMissingDefaultSecretUsecase {}
 
-class _MockStartSwapEngineUsecase extends Mock
-    implements StartSwapEngineUsecase {}
+class _MockSwapStartup extends Mock implements SwapStartup {}
 
 void main() {
   setUpAll(() => registerFallbackValue(Language.english));
@@ -63,16 +58,16 @@ void main() {
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockInitializeRequiredTorUsecase initializeRequiredTor;
   late _MockRestoreMissingDefaultSecretUsecase restoreSecret;
-  late _MockStartSwapEngineUsecase startSwapEngine;
+  late _MockSwapStartup startSwapEngine;
 
   AppStartupBloc buildBloc([Access? access]) => AppStartupBloc(
-    getStartupPinStatusUsecase: GetStartupPinStatusUsecase(
-      access ?? checkPinCodeExists,
+    prepareWalletStartup: PrepareWalletStartupUsecase(
+      GetStartupPinStatusUsecase(access ?? checkPinCodeExists),
+      checkDefaultWallets,
+      startSwapEngine,
+      initializeRequiredTor,
     ),
-    checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
-    initializeRequiredTorUsecase: initializeRequiredTor,
     restoreMissingDefaultSecretUsecase: restoreSecret,
-    startSwapEngineUsecase: startSwapEngine,
   );
 
   setUp(() {
@@ -80,7 +75,7 @@ void main() {
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     initializeRequiredTor = _MockInitializeRequiredTorUsecase();
     restoreSecret = _MockRestoreMissingDefaultSecretUsecase();
-    startSwapEngine = _MockStartSwapEngineUsecase();
+    startSwapEngine = _MockSwapStartup();
 
     when(() => checkPinCodeExists.checkPinCodeExists())
         .thenAnswer((_) async => const Ok(false));
@@ -311,11 +306,16 @@ void main() {
           routerConfig: router,
           theme: AppTheme.themeData(AppThemeType.light),
           localizationsDelegates: const [
+            StartupLocalizations.delegate,
             ...appLocalizationsDelegates,
             bullUiLocalizationsDelegate,
           ],
           builder: (_, child) => AppStartupWidget(
             app: child ?? const SizedBox.shrink(),
+            splash: const SizedBox.shrink(),
+            openOnboarding: () {},
+            logs: () =>
+                throw StateError('The PIN gate does not render log sharing'),
             onUnlocked: () {
               unlocks++;
               return walletRuntime.future;

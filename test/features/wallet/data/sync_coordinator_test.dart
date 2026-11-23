@@ -1,8 +1,10 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show SyncReason, SyncBusyFailure, SyncConnectionFailure;
-import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 
 import 'dart:async';
@@ -11,9 +13,7 @@ import 'dart:io';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -56,7 +56,7 @@ final class _Reporter implements LoggerReporter {
 
 void main() {
   registerFallbackValue(SyncReason.auto);
-  // SyncCoordinator's constructor reads WidgetsBinding.instance and attaches
+  // SyncCoordinator<Wallet, WalletFailure>'s constructor reads WidgetsBinding.instance and attaches
   // an AppLifecycleListener, so the binding must exist.
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -64,7 +64,7 @@ void main() {
   late _MockGetWallets getWallets;
   late _MockSyncWallet syncWallet;
   late _MockSyncSwaps syncSwaps;
-  late SyncCoordinator coordinator;
+  late SyncCoordinator<Wallet, WalletFailure> coordinator;
   late Future<void> Function() spCallback;
   var revisionReads = 0;
   var network = NetworkEnv.mainnet;
@@ -78,11 +78,15 @@ void main() {
     spCallback = () async {};
     revisionReads = 0;
     network = NetworkEnv.mainnet;
-    coordinator = SyncCoordinator(
-      readWalletUsecase: readWallet,
+    coordinator = SyncCoordinator<Wallet, WalletFailure>(
+      walletKey: (wallet) =>
+          WalletKey(id: wallet.id, network: wallet.network.shared),
+      classifyFailure: (failure) =>
+          (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+      readWallet: readWallet.execute,
       readNetwork: () async => network,
-      getWalletsUsecase: getWallets,
-      syncWalletUsecase: syncWallet,
+      getWallets: getWallets.execute,
+      syncWallet: syncWallet.execute,
       syncSwaps: syncSwaps.call,
       // Deferred so a test can swap the behaviour after construction, the way
       // the composition root's lazy closure resolves the facade at call time.
@@ -1139,11 +1143,15 @@ void main() {
       clock = DateTime.utc(2026, 11, 12, 14);
       calls = [];
       failDiscovery = false;
-      coordinator = SyncCoordinator(
-        readWalletUsecase: readWallet,
+      coordinator = SyncCoordinator<Wallet, WalletFailure>(
+        walletKey: (wallet) =>
+            WalletKey(id: wallet.id, network: wallet.network.shared),
+        classifyFailure: (failure) =>
+            (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+        readWallet: readWallet.execute,
         readNetwork: () async => network,
-        getWalletsUsecase: getWallets,
-        syncWalletUsecase: syncWallet,
+        getWallets: getWallets.execute,
+        syncWallet: syncWallet.execute,
         now: () => clock,
       );
       wallet = _Wallet();

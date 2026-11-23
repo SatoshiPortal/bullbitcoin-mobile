@@ -132,7 +132,7 @@ onion-codegen:
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
 BUILD_RUNNER_MEMBERS := features/backups features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent features/address_view features/receive
 BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps features/address_view
-BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import
+BUILD_RUNNER_MEMBERS += features/wizard features/wallet_import features/startup
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -171,6 +171,7 @@ translations:
 	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
 	@(cd features/backups && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
+	@(cd features/startup && fvm flutter gen-l10n)
 	@(cd features/bip85 && fvm flutter gen-l10n)
 	@(cd features/all_seed_view && fvm flutter gen-l10n)
 	@(cd features/silent && fvm flutter gen-l10n)

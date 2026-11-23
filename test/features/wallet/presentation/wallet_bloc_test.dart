@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncBusyFailure;
@@ -11,9 +14,9 @@ import 'package:sync/sync.dart' show SyncReason;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
@@ -444,9 +447,13 @@ void main() {
             reason: any(named: 'reason'),
           ),
         ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
-        final coordinator = SyncCoordinator(
-          getWalletsUsecase: getWallets,
-          syncWalletUsecase: single,
+        final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+          walletKey: (wallet) =>
+              WalletKey(id: wallet.id, network: wallet.network.shared),
+          classifyFailure: (failure) =>
+              (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+          getWallets: getWallets.execute,
+          syncWallet: single.execute,
         );
         final bloc = WalletBloc(
           readWalletUsecase: _stubbedReadWallet(),
@@ -551,9 +558,13 @@ void main() {
         await syncGate.future;
         throw SyncWalletException('connection');
       });
-      final coordinator = SyncCoordinator(
-        getWalletsUsecase: getWallets,
-        syncWalletUsecase: single,
+      final coordinator = SyncCoordinator<Wallet, WalletFailure>(
+        walletKey: (wallet) =>
+            WalletKey(id: wallet.id, network: wallet.network.shared),
+        classifyFailure: (failure) =>
+            (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
+        getWallets: getWallets.execute,
+        syncWallet: single.execute,
       );
       final bloc = WalletBloc(
         readWalletUsecase: _stubbedReadWallet(),

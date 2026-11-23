@@ -1,0 +1,73 @@
+{
+  "appStartupErrorMessage": "Falha ao iniciar o aplicativo. Tente fechá-lo completamente e reiniciá-lo. Se o erro persistir, entre em contato com o suporte e compartilhe seus logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Recuperar",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appStartupErrorTitle": "Erro de inicialização",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupContactSupportButton": "Suporte de contato",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "Página não encontrada",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "errorSharingLogsMessage": "Registros de compartilhamento de erros: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appInitErrorTitle": "Falha ao iniciar o aplicativo",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Compartilhar registros",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Use seu backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Graças ao seu backup, seus fundos estão seguros.\nPrimeiro tente reiniciar o aplicativo; se ainda falhar, reinstale e recupere com seu backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Sem backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Não exclua o aplicativo.\nEntre em contato com nossa equipe de suporte para tentar um resgate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contatar suporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalhes do erro",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Exportar",
+  "logsExportedMessage": "Registros exportados com sucesso",
+  "logsExportFailedMessage": "Falha ao exportar os registros",
+  "deleteLogsTitle": "Excluir registros",
+  "logsDeletedMessage": "Registros excluídos"
+}

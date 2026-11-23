@@ -1,0 +1,10 @@
+name: provisioning
+description: Provisioning and repair of the default Bitcoin and Liquid accounts.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: "3.14.0"
+dependencies:
+  bull_logger:
+  primitives:
+  secrets:

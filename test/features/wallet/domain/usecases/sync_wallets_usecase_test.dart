@@ -1,15 +1,16 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncBusyFailure;
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/setup.dart';
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSyncCoordinator extends Mock implements SyncCoordinator {}
+class _MockSyncCoordinator extends Mock
+    implements SyncCoordinator<Wallet, WalletFailure> {}
 
 /// The failure an [Err] carries; an [Ok] fails the test.
 WalletFailure _failureOf(Result<void, WalletFailure> result) =>

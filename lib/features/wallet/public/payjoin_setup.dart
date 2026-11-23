@@ -1,3 +1,4 @@
+import 'package:bull_payjoin/setup.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:ark/funding.dart' show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -15,9 +16,6 @@ import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_blockchain_adapter.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_codec_adapter.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_input_reservation_adapter.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_transaction_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/migration.dart';

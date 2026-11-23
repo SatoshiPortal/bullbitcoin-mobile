@@ -26,6 +26,8 @@ workspace:
   - features/settings
   - features/signers
   - features/access
+  - features/startup
+  - features/overview
   - features/all_seed_view
   - features/bip85
   - features/silent
@@ -55,6 +57,7 @@ workspace:
   - packages/bull_tor
   - packages/mempool
   - packages/preferences
+  - packages/provisioning
   - packages/screen_privacy
   - packages/bull_reporting
   - packages/screen_awake
@@ -79,6 +82,9 @@ dependencies:
   all_seed_view:
   bip85:
   access:
+  startup:
+  overview:
+  provisioning:
   wallet_import:
   wizard:
   address_view:

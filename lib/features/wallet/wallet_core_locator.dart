@@ -7,7 +7,7 @@ import 'domain/usecases/is_tor_required_usecase.dart';
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -40,8 +40,8 @@ class WalletLocator {
   );
 
   static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<SyncFreezesDatasource>(
-      () => SyncFreezesDatasource(
+    locator.registerLazySingleton<CoinFreezes>(
+      () => CoinFreezes(
         sync: () async => WalletSyncBinding.value(
           await locator<WalletNativeRuntime>().foreground(),
         ),

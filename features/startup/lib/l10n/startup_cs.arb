@@ -1,0 +1,73 @@
+{
+  "appStartupErrorMessage": "Aplikaci se nepodařilo spustit. Zkuste ji úplně zavřít a znovu spustit. Pokud problém přetrvává, kontaktujte podporu a sdílejte své logy.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "errorSharingLogsMessage": "Protokoly sdílení chyb: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "Hledat",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "Čeština",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appStartupErrorTitle": "Chyba spuštění",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupContactSupportButton": "Podpora",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "Stránka nebyla nalezena",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appInitErrorTitle": "Aplikaci se nepodařilo spustit",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Sdílet protokoly",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Použijte svou zálohu",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Díky vaší záloze jsou vaše prostředky v bezpečí.\nNejprve zkuste restartovat aplikaci; pokud stále selhává, přeinstalujte ji a obnovte pomocí zálohy.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Žádná záloha?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Aplikaci nemazejte.\nKontaktujte náš tým podpory pro pokus o záchranu.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Kontaktovat podporu",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Zobrazit podrobnosti chyby",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Exportovat",
+  "logsExportedMessage": "Záznamy byly úspěšně exportovány",
+  "logsExportFailedMessage": "Export záznamů se nezdařil",
+  "deleteLogsTitle": "Smazat logy",
+  "logsDeletedMessage": "Logy smazány"
+}

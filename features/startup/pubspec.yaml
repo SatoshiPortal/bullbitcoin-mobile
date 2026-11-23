@@ -1,0 +1,39 @@
+name: startup
+description: Application launch, access gating and recovery screens.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+dependencies:
+  access:
+  bip39_mnemonic: ^4.1.0
+  bull_logger:
+  bull_payjoin:
+  bull_logs:
+  bull_recoverbull:
+  bull_tor:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  flutter_svg: ^2.4.0
+  freezed_annotation: ^3.1.0
+  intl: any
+  material_ui: ^1.11.0
+  meta: ^1.17.0
+  mnemonic_entry:
+  package_info_plus: ^10.2.2
+  preferences:
+  primitives:
+  provisioning:
+  screen_privacy:
+  secrets:
+  swaps:
+dev_dependencies:
+  build_runner: ^2.16.1
+  freezed: ^4.0.0
+flutter:
+  generate: true

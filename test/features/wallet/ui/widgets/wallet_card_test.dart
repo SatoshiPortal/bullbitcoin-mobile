@@ -1,5 +1,5 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_card.dart';
+import 'package:overview/overview.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';

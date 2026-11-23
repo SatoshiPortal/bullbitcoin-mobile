@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecas
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

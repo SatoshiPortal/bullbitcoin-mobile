@@ -1,8 +1,8 @@
+import 'package:bull_payjoin/setup.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/wallet/data/payjoin_codec_adapter.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_log_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' as support;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/testing.dart';

@@ -142,3 +142,4 @@ bull_logs.tsv
 /features/send/lib/generated/l10n/
 /features/wizard/lib/generated/
 /features/settings/lib/generated/l10n/
+/features/startup/lib/generated/l10n/
