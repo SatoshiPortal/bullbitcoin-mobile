@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import 'support/storage_contract.dart' show ok;
+import 'support/storage_contract.dart' show ok, storageContract;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +30,14 @@ void main() {
 
   Future<StorageSession> select() async =>
       ok(await storage.authorize(interactive: true));
+
+  group('Folder contract', () {
+    setUp(() async {
+      (await select()).dispose();
+    });
+
+    storageContract(() => storage, matchByExtension: true);
+  });
 
   Future<StoredObject> create(StorageSession session) async => ok(
     await session.create(
