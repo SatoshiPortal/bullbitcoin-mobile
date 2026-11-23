@@ -12,7 +12,6 @@ const _legacyImports = {
   'lib/features/broadcast_signed_tx/router.dart -> locator.dart',
   'lib/features/import_mnemonic/router.dart -> locator.dart',
   'lib/features/replace_by_fee/router.dart -> locator.dart',
-  'lib/features/fund_exchange/fund_exchange_router.dart -> locator.dart',
   'lib/features/dca/ui/dca_router.dart -> locator.dart',
   'lib/features/pay/ui/pay_router.dart -> locator.dart',
   'lib/features/transactions/ui/transactions_router.dart -> locator.dart',

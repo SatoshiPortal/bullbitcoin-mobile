@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_error_text.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/testing.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
+import 'package:bull_exchange/src/funding/ui/widgets/fund_exchange_error_text.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,9 +14,9 @@ const _rawReason =
 Future<void> _pump(WidgetTester tester, FundExchangeFailure failure) =>
     tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+        supportedLocales: ExchangeLocalizations.supportedLocales,
         home: Scaffold(body: FundExchangeErrorText(failure: failure)),
       ),
     );

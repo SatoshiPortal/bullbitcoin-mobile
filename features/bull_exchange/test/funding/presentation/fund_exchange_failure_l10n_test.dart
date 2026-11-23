@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
+import 'package:bull_exchange/src/funding/presentation/fund_exchange_failure_l10n.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,8 +34,8 @@ Future<String?> _translateTitle(
   late String? title;
   await tester.pumpWidget(
     MaterialApp(
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+      supportedLocales: ExchangeLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
           title = failure.toTranslatedTitle(context);
@@ -54,8 +54,8 @@ Future<String> _translate(
   late String message;
   await tester.pumpWidget(
     MaterialApp(
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+      supportedLocales: ExchangeLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
           message = failure.toTranslated(context);

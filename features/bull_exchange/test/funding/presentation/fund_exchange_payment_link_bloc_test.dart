@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/external_link_port.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_funding_details_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/list_funding_institutions_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/register_responsibility_consent_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
+import 'package:bull_exchange/src/funding/presentation/fund_exchange_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

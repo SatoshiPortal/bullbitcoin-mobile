@@ -19,7 +19,7 @@ void main() {
 
     expect(await usecase.execute(true), isA<Err<void, ExchangeFailure>>());
     expect(signOuts, 0);
-    expect(await usecase.execute(false), const Ok<void, ExchangeFailure>(null));
+    expect(await usecase.execute(false), isA<Ok<void, ExchangeFailure>>());
     expect(signOuts, 1);
   });
 

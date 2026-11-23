@@ -1,8 +1,8 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_funding_details_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/list_funding_institutions_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/register_responsibility_consent_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

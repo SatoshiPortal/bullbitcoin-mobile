@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:bull_exchange/src/funding/domain/external_link_port.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

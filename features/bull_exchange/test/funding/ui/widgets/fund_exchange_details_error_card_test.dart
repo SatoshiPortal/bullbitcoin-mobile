@@ -1,17 +1,17 @@
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/testing.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
-import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
+import 'package:bull_exchange/src/funding/domain/external_link_port.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/get_funding_details_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/list_funding_institutions_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/usecases/register_responsibility_consent_usecase.dart';
+import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
+import 'package:bull_exchange/src/funding/presentation/fund_exchange_bloc.dart';
+import 'package:bull_exchange/src/funding/ui/widgets/fund_exchange_details_error_card.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -97,9 +97,9 @@ Future<BullInfoCard> _pumpCard(
 
   await tester.pumpWidget(
     MaterialApp(
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(extensions: testBullExtensions),
+      localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+      supportedLocales: ExchangeLocalizations.supportedLocales,
       home: Scaffold(
         body: BlocProvider<FundExchangeBloc>.value(
           value: bloc,

@@ -35,6 +35,7 @@ void main() {
         home: BlocProvider<ExchangeAccessSettingsCubit>(
           create: (_) => cubit,
           child: ExchangeAccessSettingsScreen(
+            description: 'Access description',
             activationAllowed: true,
             onBack: () {},
             onAuthenticate: () async {},
@@ -82,6 +83,7 @@ void main() {
         home: BlocProvider<ExchangeAccessSettingsCubit>(
           create: (_) => cubit,
           child: ExchangeAccessSettingsScreen(
+            description: 'Access description',
             activationAllowed: true,
             onBack: () {},
             onAuthenticate: () async {},
@@ -117,6 +119,7 @@ void main() {
         home: BlocProvider<ExchangeAccessSettingsCubit>(
           create: (_) => cubit,
           child: ExchangeAccessSettingsScreen(
+            description: 'Access description',
             activationAllowed: true,
             onBack: () {},
             onAuthenticate: () async {},
@@ -164,6 +167,7 @@ void main() {
                   ExchangeLocalizations.localizationsDelegates,
               supportedLocales: ExchangeLocalizations.supportedLocales,
               home: ExchangeAccessSettingsScreen(
+                description: 'Access description',
                 activationAllowed: false,
                 onBack: () {},
                 onAuthenticate: () async {},
