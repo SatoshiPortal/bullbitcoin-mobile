@@ -6,7 +6,6 @@ import 'package:wallet_import/src/domain/watch_only/read_watch_only_network_usec
 import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
 import 'package:wallet_import/src/presentation/watch_only/import_watch_only_cubit.dart';
 import 'package:primitives/primitives.dart' show Ok;
-import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

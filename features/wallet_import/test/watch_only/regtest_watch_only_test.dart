@@ -1,11 +1,9 @@
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:wallet_import/src/domain/watch_only/parse_watch_only_input_usecase.dart';
 import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
 import 'package:wallet_import/wallet_import.dart';
 import 'package:bip32_keys/bip32_keys.dart'
     show changeVersionBytes, Slip132Format;
 import 'package:signers/signers.dart';
-import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

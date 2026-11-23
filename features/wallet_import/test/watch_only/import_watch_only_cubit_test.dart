@@ -4,7 +4,7 @@ import 'package:wallet_import/src/domain/watch_only/parse_watch_only_input_useca
 import 'package:wallet_import/src/domain/watch_only/read_watch_only_network_usecase.dart';
 import 'package:wallet_import/src/domain/watch_only/watch_only_wallet_entity.dart';
 import 'package:wallet_import/src/presentation/watch_only/import_watch_only_cubit.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +29,34 @@ class _MockWatchOnlyDescriptor extends Mock
 class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 
 void main() {
+  test('unavailable preferences prevent confirmation', () async {
+    final descriptor = _MockDescriptor();
+    final watchOnlyDescriptor = _MockWatchOnlyDescriptor();
+    when(() => watchOnlyDescriptor.descriptor).thenReturn(descriptor);
+    final wallet = WatchOnlyDescriptorEntity(
+      watchOnlyDescriptor: watchOnlyDescriptor,
+      label: 'Reviewed wallet',
+    );
+    final settings = _MockActiveEnvironmentReader();
+    when(settings.readActiveEnvironment)
+        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
+    final importer = _MockImportWatchOnlyDescriptorUsecase();
+    final cubit = ImportWatchOnlyCubit(
+      watchOnlyWallet: wallet,
+      importWatchOnlyDescriptorUsecase: importer,
+      importWatchOnlyXpubUsecase: _MockImportWatchOnlyXpubUsecase(),
+      parseWatchOnlyInputUsecase: ParseWatchOnlyInputUsecase(),
+      readNetworkUsecase: ReadWatchOnlyNetworkUsecase(settings),
+    );
+    addTearDown(cubit.close);
+
+    await cubit.import();
+
+    expect(cubit.state.failure, isA<ImportFailedFailure>());
+    expect(cubit.state.imported, isFalse);
+    verifyZeroInteractions(importer);
+  });
+
   test('successful parsing clears a previous validation failure', () async {
     final settings = _MockActiveEnvironmentReader();
     when(() => settings.readActiveEnvironment())

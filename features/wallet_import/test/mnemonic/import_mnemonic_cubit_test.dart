@@ -8,7 +8,6 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:async';
 
-import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:wallet_import/wallet_import.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';

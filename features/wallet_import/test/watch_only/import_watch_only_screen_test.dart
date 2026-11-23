@@ -8,7 +8,6 @@ import 'package:wallet_import/src/ui/watch_only/import_watch_only_screen.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:wallet_import/generated/l10n/import_localizations_en.dart';
 import 'package:material_ui/material_ui.dart';

@@ -1,15 +1,8 @@
-import 'package:wallet_import/wallet_import.dart'
-    show
-        ImportMnemonicFailure,
-        ImportMnemonicUnexpectedFailure,
-        ImportMnemonicDuplicateFailure,
-        ImportMnemonicCustodyMetadataFailure;
 import 'package:wallet_import/wallet_import.dart';
 
 import 'dart:io';
 
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Err, Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:preferences/preferences.dart';
 
 import '../../../support/inventory_fixture.dart';

@@ -1,9 +1,3 @@
-import 'package:wallet_import/wallet_import.dart'
-    show
-        ImportMnemonicFailure,
-        ImportMnemonicUnexpectedFailure,
-        ImportMnemonicDuplicateFailure,
-        ImportMnemonicCustodyMetadataFailure;
 import 'package:wallet_import/wallet_import.dart';
 import 'package:all_seed_view/testing.dart';
 
@@ -22,7 +16,6 @@ import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:secrets/custody.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

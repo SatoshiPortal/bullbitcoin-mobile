@@ -5,7 +5,6 @@ import 'package:wallet_import/src/presentation/watch_only/import_watch_only_stat
 import 'package:wallet_import/src/ui/watch_only/watch_only_details_widget.dart';
 import 'package:signers/signers.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:wallet_import/src/domain/import_failure.dart';
 import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:bull_ui/bull_ui.dart' show BullInputText;
 import 'package:material_ui/material_ui.dart';

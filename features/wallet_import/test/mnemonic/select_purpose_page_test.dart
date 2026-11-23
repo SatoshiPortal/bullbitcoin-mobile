@@ -4,8 +4,6 @@ import 'package:wallet_import/src/ui/mnemonic/select_purpose_page.dart';
 import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bull_ui/app_theme.dart';
-import 'package:wallet_import/src/domain/import_failure.dart';
-import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
