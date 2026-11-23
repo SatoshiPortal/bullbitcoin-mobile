@@ -149,6 +149,474 @@ abstract class ExchangeLocalizations {
     Locale('zh'),
   ];
 
+  /// Label for email field in account information
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get exchangeAccountInfoEmailLabel;
+
+  /// Label for first name field in account information
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get exchangeAccountInfoFirstNameLabel;
+
+  /// Label for last name field in account information
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get exchangeAccountInfoLastNameLabel;
+
+  /// Error message when account information fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load account information'**
+  String get exchangeAccountInfoLoadErrorMessage;
+
+  /// Title for the account information section
+  ///
+  /// In en, this message translates to:
+  /// **'Account information'**
+  String get exchangeAccountInfoTitle;
+
+  /// Success message when user number is copied to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'User number copied to clipboard'**
+  String get exchangeAccountInfoUserNumberCopiedMessage;
+
+  /// Label for user number field in account information
+  ///
+  /// In en, this message translates to:
+  /// **'User number'**
+  String get exchangeAccountInfoUserNumberLabel;
+
+  /// Status label for identity verified verification level
+  ///
+  /// In en, this message translates to:
+  /// **'Identity verified'**
+  String get exchangeAccountInfoVerificationIdentityVerified;
+
+  /// Label for verification level field in account information
+  ///
+  /// In en, this message translates to:
+  /// **'Verification level'**
+  String get exchangeAccountInfoVerificationLevelLabel;
+
+  /// Status label for light verification level
+  ///
+  /// In en, this message translates to:
+  /// **'Light verification'**
+  String get exchangeAccountInfoVerificationLightVerification;
+
+  /// Status label for limited verification level
+  ///
+  /// In en, this message translates to:
+  /// **'Limited verification'**
+  String get exchangeAccountInfoVerificationLimitedVerification;
+
+  /// Status label for not verified verification level
+  ///
+  /// In en, this message translates to:
+  /// **'Not verified'**
+  String get exchangeAccountInfoVerificationNotVerified;
+
+  /// Label for default currency setting in exchange app settings
+  ///
+  /// In en, this message translates to:
+  /// **'Default Currency'**
+  String get exchangeAppSettingsDefaultCurrencyLabel;
+
+  /// Description for email notifications toggle in exchange app settings
+  ///
+  /// In en, this message translates to:
+  /// **'Receive email notifications for orders and account updates'**
+  String get exchangeAppSettingsEmailNotificationsDescription;
+
+  /// Label for email notifications toggle in exchange app settings
+  ///
+  /// In en, this message translates to:
+  /// **'Email Notifications'**
+  String get exchangeAppSettingsEmailNotificationsLabel;
+
+  /// Label for preferred language setting in exchange app settings
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Language'**
+  String get exchangeAppSettingsPreferredLanguageLabel;
+
+  /// Button label for saving exchange app settings
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get exchangeAppSettingsSaveButton;
+
+  /// Success message displayed when exchange app settings are saved
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved successfully'**
+  String get exchangeAppSettingsSaveSuccessMessage;
+
+  /// Warning message when language and currency preferences are not both set
+  ///
+  /// In en, this message translates to:
+  /// **'Please set both language and currency preferences before saving.'**
+  String get exchangeAppSettingsValidationWarning;
+
+  /// Login error message
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred, please try logging in again.'**
+  String get exchangeAuthErrorMessage;
+
+  /// Title for the default Bitcoin wallets section in exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Default Bitcoin Wallets'**
+  String get exchangeBitcoinWalletsTitle;
+
+  /// Shown when the exchange API could not be reached or timed out. Same wording as recipientsErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get exchangeErrorNetwork;
+
+  /// exchange user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Your preferences could not be saved. Please try again.'**
+  String get exchangeErrorSavingPreferences;
+
+  /// Button label for uploading files in exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get exchangeFileUploadButton;
+
+  /// Title for uploading documents in exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Upload any document'**
+  String get exchangeFileUploadDocumentTitle;
+
+  /// Instructions for uploading documents in exchange
+  ///
+  /// In en, this message translates to:
+  /// **'If you need to send any other documents, upload them here.'**
+  String get exchangeFileUploadInstructions;
+
+  /// Status badge when files have been accepted
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get exchangeFileUploadStatusAccepted;
+
+  /// Status badge when files are under review
+  ///
+  /// In en, this message translates to:
+  /// **'In Review'**
+  String get exchangeFileUploadStatusInReview;
+
+  /// Short rejected-status badge shown next to a re-upload action in the secure file upload screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get exchangeFileUploadStatusRejectedBadge;
+
+  /// Success message when file is uploaded successfully
+  ///
+  /// In en, this message translates to:
+  /// **'File uploaded successfully'**
+  String get exchangeFileUploadSuccess;
+
+  /// Call-to-action shown when a rejected upload can be retried by tapping.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to re-upload'**
+  String get exchangeFileUploadTapToReupload;
+
+  /// Title for the secure file upload section in exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Secure File Upload'**
+  String get exchangeFileUploadTitle;
+
+  /// Message with link to apply for the referral program
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to join the program here'**
+  String get exchangeReferralsApplyToJoinMessage;
+
+  /// Message prompting users to contact support about the referral program
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support to learn about our referral program'**
+  String get exchangeReferralsContactSupportMessage;
+
+  /// Title encouraging users to join the referral mission
+  ///
+  /// In en, this message translates to:
+  /// **'Join the mission'**
+  String get exchangeReferralsJoinMissionTitle;
+
+  /// Link to the Bull Bitcoin mission page
+  ///
+  /// In en, this message translates to:
+  /// **'bullbitcoin.com/mission'**
+  String get exchangeReferralsMissionLink;
+
+  /// Title for the referral codes section
+  ///
+  /// In en, this message translates to:
+  /// **'Referral Codes'**
+  String get exchangeReferralsTitle;
+
+  /// Button label for accessing security settings in exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Access Settings'**
+  String get exchangeSecurityAccessSettingsButton;
+
+  /// Label for managing 2FA and password in exchange security settings
+  ///
+  /// In en, this message translates to:
+  /// **'Manage 2FA and password'**
+  String get exchangeSecurityManage2FAPasswordLabel;
+
+  /// Title for the account information section in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Account Information'**
+  String get exchangeSettingsAccountInformationTitle;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'A document has already been submitted.'**
+  String get exchangeSettingsErrorDocumentAlreadySubmitted;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'That file is empty. Choose another one.'**
+  String get exchangeSettingsErrorDocumentEmpty;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'That file is too large. Choose a smaller one.'**
+  String get exchangeSettingsErrorDocumentTooLarge;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'That file type is not accepted. Choose another one.'**
+  String get exchangeSettingsErrorDocumentTypeNotAllowed;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'That file could not be read. Choose another one.'**
+  String get exchangeSettingsErrorDocumentUnreadable;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Your account details could not be loaded. Please try again.'**
+  String get exchangeSettingsErrorLoadingAccount;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Your trading statistics could not be loaded. Please try again.'**
+  String get exchangeSettingsErrorLoadingStatistics;
+
+  /// exchange_settings user-facing failure message when the secure file upload status cannot be loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Your upload status could not be loaded. Please try again.'**
+  String get exchangeSettingsErrorLoadingUploadStatus;
+
+  /// exchange_settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'The document could not be uploaded. Please try again.'**
+  String get exchangeSettingsErrorUploadingDocument;
+
+  /// Title for the log in option in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Log In'**
+  String get exchangeSettingsLogInTitle;
+
+  /// Title for the recipients button in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Recipients'**
+  String get exchangeSettingsRecipientsTitle;
+
+  /// Title for the referrals section in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Referrals'**
+  String get exchangeSettingsReferralsTitle;
+
+  /// Title for the security settings section in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Security Settings'**
+  String get exchangeSettingsSecuritySettingsTitle;
+
+  /// Title for the transactions button in exchange settings
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get exchangeSettingsTransactionsTitle;
+
+  /// Label showing when statistics were last updated
+  ///
+  /// In en, this message translates to:
+  /// **'As of {date}'**
+  String exchangeStatisticsAsOf(String date);
+
+  /// Label for average price statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Average Price'**
+  String get exchangeStatisticsAveragePrice;
+
+  /// Title for biller statistics section
+  ///
+  /// In en, this message translates to:
+  /// **'Biller Statistics'**
+  String get exchangeStatisticsBillerStats;
+
+  /// Description for buy average price statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Average price paid per bitcoin when buying'**
+  String get exchangeStatisticsBuyAvgPriceDesc;
+
+  /// Label for buy/sell ratio statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Buy/Sell Ratio'**
+  String get exchangeStatisticsBuySellRatio;
+
+  /// Description for buy/sell ratio statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of total volume from buying vs selling'**
+  String get exchangeStatisticsBuySellRatioDesc;
+
+  /// Title for buy statistics section
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Statistics'**
+  String get exchangeStatisticsBuyStats;
+
+  /// Description for buy trade count statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Number of bitcoin purchase transactions'**
+  String get exchangeStatisticsBuyTradeCountDesc;
+
+  /// Description for buy volume statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Total amount spent buying bitcoin'**
+  String get exchangeStatisticsBuyVolumeDesc;
+
+  /// Label showing currency for biller stats
+  ///
+  /// In en, this message translates to:
+  /// **'Currency: {currency}'**
+  String exchangeStatisticsCurrency(String currency);
+
+  /// Message when no statistics are available
+  ///
+  /// In en, this message translates to:
+  /// **'No statistics available'**
+  String get exchangeStatisticsNoData;
+
+  /// Title for order statistics section
+  ///
+  /// In en, this message translates to:
+  /// **'Order Statistics'**
+  String get exchangeStatisticsOrderStats;
+
+  /// Description for sell average price statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Average price received per bitcoin when selling'**
+  String get exchangeStatisticsSellAvgPriceDesc;
+
+  /// Title for sell statistics section
+  ///
+  /// In en, this message translates to:
+  /// **'Sell Statistics'**
+  String get exchangeStatisticsSellStats;
+
+  /// Description for sell trade count statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Number of bitcoin sell transactions'**
+  String get exchangeStatisticsSellTradeCountDesc;
+
+  /// Description for sell volume statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Total amount received from selling bitcoin'**
+  String get exchangeStatisticsSellVolumeDesc;
+
+  /// Title for the statistics screen
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get exchangeStatisticsTitle;
+
+  /// Label for total amount statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get exchangeStatisticsTotalAmount;
+
+  /// Label for total trading volume statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Total Trading Volume'**
+  String get exchangeStatisticsTotalVolume;
+
+  /// Description for total trading volume statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Combined buy and sell volumes in fiat currencies'**
+  String get exchangeStatisticsTotalVolumeDesc;
+
+  /// Label for trade count statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Trade Count'**
+  String get exchangeStatisticsTradeCount;
+
+  /// Number of trades in one fiat currency on the exchange statistics screen
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}'**
+  String exchangeStatisticsTradeCountByCurrency(int count, String currency);
+
+  /// Number of trades on the exchange statistics screen when there are no trades per currency
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 trade} other{{count} trades}}'**
+  String exchangeStatisticsTradeCountValue(int count);
+
+  /// Label for volume statistic
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get exchangeStatisticsVolume;
+
   /// Accessible tooltip for the support chat file attachment button.
   ///
   /// In en, this message translates to:
@@ -257,11 +725,35 @@ abstract class ExchangeLocalizations {
   /// **'To get human support, you must first log in to your Bull Bitcoin account. It\'s 100% free and no KYC is required, only an email address.'**
   String get exchangeSupportLoginChatRequired;
 
+  /// Button to navigate to login screen
+  ///
+  /// In en, this message translates to:
+  /// **'LOGIN'**
+  String get loginButton;
+
+  /// Title for not logged in state
+  ///
+  /// In en, this message translates to:
+  /// **'You Are Not Logged in'**
+  String get notLoggedInTitle;
+
   /// Error title when something goes wrong
   ///
   /// In en, this message translates to:
   /// **'Oops! Something went wrong'**
   String get oopsSomethingWentWrong;
+
+  /// Generic retry button label
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// Title for the app settings section in the settings menu
+  ///
+  /// In en, this message translates to:
+  /// **'App Settings'**
+  String get settingsAppSettingsTitle;
 
   /// Editable support chat draft after attaching diagnostic logs.
   ///

@@ -111,6 +111,7 @@ class AppRouter {
   static final _exchangeFeature = ExchangeRouter.mount(
     _exchangeConfig,
     exchange: () => locator<Exchange>(),
+    settings: SettingsRouter.exchangeSettingsHost,
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
@@ -223,6 +224,7 @@ class AppRouter {
       ConsolidationRouter.route,
       SettingsRouter.route(
         accessRoutes: locator<AccessFeature>().routes.settings,
+        exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,
         priceRoutes: locator<BitcoinPriceFeature>().routes,

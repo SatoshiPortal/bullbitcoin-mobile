@@ -1,0 +1,36 @@
+import '../../exchange_l10n.dart';
+import '../domain/exchange_settings_failure.dart';
+
+import 'package:flutter/widgets.dart';
+
+extension ExchangeSettingsFailureL10n on ExchangeSettingsFailure {
+  String toTranslated(BuildContext context) => switch (this) {
+    ExchangeSettingsStatisticsUnavailableFailure() =>
+      context.loc.exchangeSettingsErrorLoadingStatistics,
+    ExchangeSettingsAccountUnavailableFailure() =>
+      context.loc.exchangeSettingsErrorLoadingAccount,
+    ExchangeSettingsPreferencesSaveFailure() =>
+      context.loc.exchangeErrorSavingPreferences,
+    ExchangeSettingsNetworkFailure() => context.loc.exchangeErrorNetwork,
+    ExchangeSettingsNotAuthenticatedFailure() =>
+      context.loc.exchangeAuthErrorMessage,
+    ExchangeSettingsUploadStatusUnavailableFailure() =>
+      context.loc.exchangeSettingsErrorLoadingUploadStatus,
+    ExchangeSettingsDocumentAlreadySubmittedFailure() =>
+      context.loc.exchangeSettingsErrorDocumentAlreadySubmitted,
+    ExchangeSettingsDocumentEmptyFailure() =>
+      context.loc.exchangeSettingsErrorDocumentEmpty,
+    ExchangeSettingsDocumentTooLargeFailure() =>
+      context.loc.exchangeSettingsErrorDocumentTooLarge,
+    ExchangeSettingsDocumentTypeNotAllowedFailure() =>
+      context.loc.exchangeSettingsErrorDocumentTypeNotAllowed,
+    ExchangeSettingsDocumentUnreadableFailure() =>
+      context.loc.exchangeSettingsErrorDocumentUnreadable,
+    // The exchange's own rejection sentence lives in `logMessage` and stays
+    // there; the user gets a message we wrote.
+    ExchangeSettingsDocumentUploadFailure() =>
+      context.loc.exchangeSettingsErrorUploadingDocument,
+    // Never `logMessage`.
+    ExchangeSettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+  };
+}

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/exchange/ui/exchange_kyc_navigation.dart';
-import 'package:bb_mobile/features/exchange_settings/ui/screens/security_navigation.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

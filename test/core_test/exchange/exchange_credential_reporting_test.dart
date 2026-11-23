@@ -14,9 +14,6 @@ import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_us
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_account_info_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
@@ -147,14 +144,7 @@ void main() {
     ('a foreign exception', _Thrown(Exception('unexpected server reply'))),
     ('a programmer error', _Thrown(StateError('programmer bug'))),
   ]) {
-    for (final name in [
-      'limit orders',
-      'autobuy status',
-      'autobuy update',
-      'account',
-      'preferences',
-      'upload status',
-    ]) {
+    for (final name in ['limit orders', 'autobuy status', 'autobuy update']) {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
         final summary = GetExchangeUserSummaryUsecase(
@@ -180,15 +170,7 @@ void main() {
             _Settings(),
             repo,
           ).execute(enabled: false),
-          'account' => GetAccountInfoUsecase(
-            getExchangeUserSummaryUsecase: summary,
-          ).execute(),
-          'preferences' => GetExchangePreferencesUsecase(
-            getExchangeUserSummaryUsecase: summary,
-          ).execute(),
-          _ => GetSecureFileUploadStatusUsecase(
-            getExchangeUserSummaryUsecase: summary,
-          ).execute(),
+          _ => fail('Unexpected use case name'),
         };
         if (refusal is _Thrown && refusal.isProgrammerError) {
           await expectLater(pending, throwsStateError);

@@ -11,6 +11,7 @@ dependencies:
   bull_logger:
   bull_ui:
   exchange:
+  file_system:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -27,6 +28,9 @@ dependencies:
   primitives:
   share_plus: ^13.3.1
   url_launcher: ^6.3.2
+  webview_flutter: ^4.14.1
+  webview_flutter_android: ^4.10.10
+  webview_flutter_wkwebview: ^3.23.4
 
 dev_dependencies:
   build_runner: ^2.10.4

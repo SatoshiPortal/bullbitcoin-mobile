@@ -113,6 +113,7 @@ class ExchangeRouter {
   static BullExchangeFeature mount(
     ExchangeRouterConfig config, {
     Exchange Function()? exchange,
+    ExchangeSettingsHost? settings,
   }) => BullExchangeFeature.mount(
     networkUnavailable: config.networkUnavailable,
     showWebsiteOnly: (context) =>
@@ -139,6 +140,7 @@ class ExchangeRouter {
     },
     onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
+    settings: settings,
     supportChat: exchange == null
         ? null
         : (

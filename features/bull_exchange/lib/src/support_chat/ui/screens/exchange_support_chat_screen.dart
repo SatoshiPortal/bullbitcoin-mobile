@@ -10,8 +10,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         Gap,
         BullSnackBar,
-        BullTheme,
-        BullThemeX,
         bullDateLocale,
         BullTypographyX;
 import 'package:intl/intl.dart';
@@ -27,10 +25,6 @@ import '../../domain/usecases/send_support_chat_message_usecase.dart';
 import '../../presentation/exchange_support_chat_cubit.dart';
 import '../../presentation/exchange_support_chat_failure_l10n.dart';
 import '../../presentation/exchange_support_chat_state.dart';
-
-extension on BuildContext {
-  BullTheme get appColors => bull;
-}
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({

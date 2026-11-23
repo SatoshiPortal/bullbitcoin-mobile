@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'settings/ui/exchange_settings_router.dart';
 import 'support_chat/exchange_support_chat_navigation.dart';
 import 'support_chat/ui/exchange_support_chat_router.dart';
 import 'ui/screens/exchange_landing_screen.dart';
@@ -20,8 +21,13 @@ typedef ExchangeSupportChatHost = ({
 final class BullExchangeFeature {
   final List<RouteBase> routes;
   final GoRoute? supportChatRoute;
+  final List<RouteBase> settingsRoutes;
 
-  const BullExchangeFeature._(this.routes, this.supportChatRoute);
+  const BullExchangeFeature._(
+    this.routes,
+    this.supportChatRoute,
+    this.settingsRoutes,
+  );
 
   static BullExchangeFeature mount({
     required Future<bool> Function() networkUnavailable,
@@ -32,6 +38,7 @@ final class BullExchangeFeature {
     required void Function(BuildContext) onSignIn,
     required void Function(BuildContext) onExit,
     ExchangeSupportChatHost? supportChat,
+    ExchangeSettingsHost? settings,
   }) => BullExchangeFeature._(
     List.unmodifiable([
       GoRoute(
@@ -68,5 +75,8 @@ final class BullExchangeFeature {
             loginScreenBuilder: supportChat.loginScreenBuilder,
             onExit: supportChat.onExit,
           ),
+    settings == null
+        ? const []
+        : List.unmodifiable(ExchangeSettingsRouter.routes(settings)),
   );
 }

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/exchange_settings/ui/widgets/not_logged_in_bottom_sheet.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullText;
 import 'package:material_ui/material_ui.dart';
@@ -15,7 +15,14 @@ void main() {
             theme: AppTheme.themeData(themeType),
             localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(body: NotLoggedInBottomSheet()),
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => NotLoggedInBottomSheet(
+                  message: AppLocalizations.of(context).notLoggedInMessage,
+                  onSignIn: () {},
+                ),
+              ),
+            ),
           ),
         );
 

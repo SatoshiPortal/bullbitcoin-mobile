@@ -130,6 +130,7 @@ graph TD
   bull_exchange --> bull_logger
   bull_exchange --> bull_ui
   bull_exchange --> exchange
+  bull_exchange --> file_system
   bull_exchange --> primitives
   bull_exchange -.-> preferences
   bull_logs --> bull_logger

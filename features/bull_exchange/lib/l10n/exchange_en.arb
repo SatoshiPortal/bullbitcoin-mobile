@@ -1,5 +1,340 @@
 {
   "@@locale": "en",
+  "exchangeAccountInfoEmailLabel": "Email",
+  "@exchangeAccountInfoEmailLabel": {
+    "description": "Label for email field in account information"
+  },
+  "exchangeAccountInfoFirstNameLabel": "First name",
+  "@exchangeAccountInfoFirstNameLabel": {
+    "description": "Label for first name field in account information"
+  },
+  "exchangeAccountInfoLastNameLabel": "Last name",
+  "@exchangeAccountInfoLastNameLabel": {
+    "description": "Label for last name field in account information"
+  },
+  "exchangeAccountInfoLoadErrorMessage": "Unable to load account information",
+  "@exchangeAccountInfoLoadErrorMessage": {
+    "description": "Error message when account information fails to load"
+  },
+  "exchangeAccountInfoTitle": "Account information",
+  "@exchangeAccountInfoTitle": {
+    "description": "Title for the account information section"
+  },
+  "exchangeAccountInfoUserNumberCopiedMessage": "User number copied to clipboard",
+  "@exchangeAccountInfoUserNumberCopiedMessage": {
+    "description": "Success message when user number is copied to clipboard"
+  },
+  "exchangeAccountInfoUserNumberLabel": "User number",
+  "@exchangeAccountInfoUserNumberLabel": {
+    "description": "Label for user number field in account information"
+  },
+  "exchangeAccountInfoVerificationIdentityVerified": "Identity verified",
+  "@exchangeAccountInfoVerificationIdentityVerified": {
+    "description": "Status label for identity verified verification level"
+  },
+  "exchangeAccountInfoVerificationLevelLabel": "Verification level",
+  "@exchangeAccountInfoVerificationLevelLabel": {
+    "description": "Label for verification level field in account information"
+  },
+  "exchangeAccountInfoVerificationLightVerification": "Light verification",
+  "@exchangeAccountInfoVerificationLightVerification": {
+    "description": "Status label for light verification level"
+  },
+  "exchangeAccountInfoVerificationLimitedVerification": "Limited verification",
+  "@exchangeAccountInfoVerificationLimitedVerification": {
+    "description": "Status label for limited verification level"
+  },
+  "exchangeAccountInfoVerificationNotVerified": "Not verified",
+  "@exchangeAccountInfoVerificationNotVerified": {
+    "description": "Status label for not verified verification level"
+  },
+  "exchangeAppSettingsDefaultCurrencyLabel": "Default Currency",
+  "@exchangeAppSettingsDefaultCurrencyLabel": {
+    "description": "Label for default currency setting in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Receive email notifications for orders and account updates",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Email Notifications",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsPreferredLanguageLabel": "Preferred Language",
+  "@exchangeAppSettingsPreferredLanguageLabel": {
+    "description": "Label for preferred language setting in exchange app settings"
+  },
+  "exchangeAppSettingsSaveButton": "Save",
+  "@exchangeAppSettingsSaveButton": {
+    "description": "Button label for saving exchange app settings"
+  },
+  "exchangeAppSettingsSaveSuccessMessage": "Settings saved successfully",
+  "@exchangeAppSettingsSaveSuccessMessage": {
+    "description": "Success message displayed when exchange app settings are saved"
+  },
+  "exchangeAppSettingsValidationWarning": "Please set both language and currency preferences before saving.",
+  "@exchangeAppSettingsValidationWarning": {
+    "description": "Warning message when language and currency preferences are not both set"
+  },
+  "exchangeAuthErrorMessage": "An error occurred, please try logging in again.",
+  "@exchangeAuthErrorMessage": {
+    "description": "Login error message"
+  },
+  "exchangeBitcoinWalletsTitle": "Default Bitcoin Wallets",
+  "@exchangeBitcoinWalletsTitle": {
+    "description": "Title for the default Bitcoin wallets section in exchange"
+  },
+  "exchangeErrorNetwork": "Check your internet connection and try again.",
+  "@exchangeErrorNetwork": {
+    "description": "Shown when the exchange API could not be reached or timed out. Same wording as recipientsErrorNetwork."
+  },
+  "exchangeErrorSavingPreferences": "Your preferences could not be saved. Please try again.",
+  "@exchangeErrorSavingPreferences": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeFileUploadButton": "Upload",
+  "@exchangeFileUploadButton": {
+    "description": "Button label for uploading files in exchange"
+  },
+  "exchangeFileUploadDocumentTitle": "Upload any document",
+  "@exchangeFileUploadDocumentTitle": {
+    "description": "Title for uploading documents in exchange"
+  },
+  "exchangeFileUploadInstructions": "If you need to send any other documents, upload them here.",
+  "@exchangeFileUploadInstructions": {
+    "description": "Instructions for uploading documents in exchange"
+  },
+  "exchangeFileUploadStatusAccepted": "Accepted",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusInReview": "In Review",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusRejectedBadge": "Rejected",
+  "@exchangeFileUploadStatusRejectedBadge": {
+    "description": "Short rejected-status badge shown next to a re-upload action in the secure file upload screen."
+  },
+  "exchangeFileUploadSuccess": "File uploaded successfully",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
+  "exchangeFileUploadTapToReupload": "Tap to re-upload",
+  "@exchangeFileUploadTapToReupload": {
+    "description": "Call-to-action shown when a rejected upload can be retried by tapping."
+  },
+  "exchangeFileUploadTitle": "Secure File Upload",
+  "@exchangeFileUploadTitle": {
+    "description": "Title for the secure file upload section in exchange"
+  },
+  "exchangeReferralsApplyToJoinMessage": "Apply to join the program here",
+  "@exchangeReferralsApplyToJoinMessage": {
+    "description": "Message with link to apply for the referral program"
+  },
+  "exchangeReferralsContactSupportMessage": "Contact support to learn about our referral program",
+  "@exchangeReferralsContactSupportMessage": {
+    "description": "Message prompting users to contact support about the referral program"
+  },
+  "exchangeReferralsJoinMissionTitle": "Join the mission",
+  "@exchangeReferralsJoinMissionTitle": {
+    "description": "Title encouraging users to join the referral mission"
+  },
+  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
+  "@exchangeReferralsMissionLink": {
+    "description": "Link to the Bull Bitcoin mission page"
+  },
+  "exchangeReferralsTitle": "Referral Codes",
+  "@exchangeReferralsTitle": {
+    "description": "Title for the referral codes section"
+  },
+  "exchangeSecurityAccessSettingsButton": "Access Settings",
+  "@exchangeSecurityAccessSettingsButton": {
+    "description": "Button label for accessing security settings in exchange"
+  },
+  "exchangeSecurityManage2FAPasswordLabel": "Manage 2FA and password",
+  "@exchangeSecurityManage2FAPasswordLabel": {
+    "description": "Label for managing 2FA and password in exchange security settings"
+  },
+  "exchangeSettingsAccountInformationTitle": "Account Information",
+  "@exchangeSettingsAccountInformationTitle": {
+    "description": "Title for the account information section in exchange settings"
+  },
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "A document has already been submitted.",
+  "@exchangeSettingsErrorDocumentAlreadySubmitted": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentEmpty": "That file is empty. Choose another one.",
+  "@exchangeSettingsErrorDocumentEmpty": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentTooLarge": "That file is too large. Choose a smaller one.",
+  "@exchangeSettingsErrorDocumentTooLarge": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "That file type is not accepted. Choose another one.",
+  "@exchangeSettingsErrorDocumentTypeNotAllowed": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentUnreadable": "That file could not be read. Choose another one.",
+  "@exchangeSettingsErrorDocumentUnreadable": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingAccount": "Your account details could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingAccount": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingStatistics": "Your trading statistics could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingStatistics": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingUploadStatus": "Your upload status could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingUploadStatus": {
+    "description": "exchange_settings user-facing failure message when the secure file upload status cannot be loaded"
+  },
+  "exchangeSettingsErrorUploadingDocument": "The document could not be uploaded. Please try again.",
+  "@exchangeSettingsErrorUploadingDocument": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsLogInTitle": "Log In",
+  "@exchangeSettingsLogInTitle": {
+    "description": "Title for the log in option in exchange settings"
+  },
+  "exchangeSettingsRecipientsTitle": "Recipients",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsReferralsTitle": "Referrals",
+  "@exchangeSettingsReferralsTitle": {
+    "description": "Title for the referrals section in exchange settings"
+  },
+  "exchangeSettingsSecuritySettingsTitle": "Security Settings",
+  "@exchangeSettingsSecuritySettingsTitle": {
+    "description": "Title for the security settings section in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transactions",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
+  "exchangeStatisticsAsOf": "As of {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsAveragePrice": "Average Price",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsBillerStats": "Biller Statistics",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsBuyAvgPriceDesc": "Average price paid per bitcoin when buying",
+  "@exchangeStatisticsBuyAvgPriceDesc": {
+    "description": "Description for buy average price statistic"
+  },
+  "exchangeStatisticsBuySellRatio": "Buy/Sell Ratio",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuySellRatioDesc": "Percentage of total volume from buying vs selling",
+  "@exchangeStatisticsBuySellRatioDesc": {
+    "description": "Description for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Buy Statistics",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsBuyTradeCountDesc": "Number of bitcoin purchase transactions",
+  "@exchangeStatisticsBuyTradeCountDesc": {
+    "description": "Description for buy trade count statistic"
+  },
+  "exchangeStatisticsBuyVolumeDesc": "Total amount spent buying bitcoin",
+  "@exchangeStatisticsBuyVolumeDesc": {
+    "description": "Description for buy volume statistic"
+  },
+  "exchangeStatisticsCurrency": "Currency: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsNoData": "No statistics available",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsOrderStats": "Order Statistics",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsSellAvgPriceDesc": "Average price received per bitcoin when selling",
+  "@exchangeStatisticsSellAvgPriceDesc": {
+    "description": "Description for sell average price statistic"
+  },
+  "exchangeStatisticsSellStats": "Sell Statistics",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsSellTradeCountDesc": "Number of bitcoin sell transactions",
+  "@exchangeStatisticsSellTradeCountDesc": {
+    "description": "Description for sell trade count statistic"
+  },
+  "exchangeStatisticsSellVolumeDesc": "Total amount received from selling bitcoin",
+  "@exchangeStatisticsSellVolumeDesc": {
+    "description": "Description for sell volume statistic"
+  },
+  "exchangeStatisticsTitle": "Statistics",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsTotalAmount": "Total Amount",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Total Trading Volume",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsTotalVolumeDesc": "Combined buy and sell volumes in fiat currencies",
+  "@exchangeStatisticsTotalVolumeDesc": {
+    "description": "Description for total trading volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Trade Count",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 trade ({currency})} other{{count} trades ({currency})}}",
+  "@exchangeStatisticsTradeCountByCurrency": {
+    "description": "Number of trades in one fiat currency on the exchange statistics screen",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 trade} other{{count} trades}}",
+  "@exchangeStatisticsTradeCountValue": {
+    "description": "Number of trades on the exchange statistics screen when there are no trades per currency",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
   "exchangeSupportChatAttachFileTooltip": "Attach a file",
   "@exchangeSupportChatAttachFileTooltip": {
     "description": "Accessible tooltip for the support chat file attachment button."
@@ -72,9 +407,25 @@
   "@exchangeSupportLoginChatRequired": {
     "description": "Message on chat preview overlay prompting login to access support chat"
   },
+  "loginButton": "LOGIN",
+  "@loginButton": {
+    "description": "Button to navigate to login screen"
+  },
+  "notLoggedInTitle": "You Are Not Logged in",
+  "@notLoggedInTitle": {
+    "description": "Title for not logged in state"
+  },
   "oopsSomethingWentWrong": "Oops! Something went wrong",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "settingsAppSettingsTitle": "App Settings",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
   },
   "exchangeSupportChatLogDraft": "Here are my logs",
   "@exchangeSupportChatLogDraft": {

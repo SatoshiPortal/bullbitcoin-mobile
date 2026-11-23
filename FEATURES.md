@@ -87,12 +87,11 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, order inventory, KYC uploads and stats]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing and support chat]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, account settings and support chat]
     EXCHANGE --> BULL_EXCHANGE
-    EXCHANGE_SETTINGS --> BULL_EXCHANGE
+    SETTINGS -->|mount account settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     EXCHANGE --> EXCHANGE_DOMAIN
-    EXCHANGE_SETTINGS --> EXCHANGE_DOMAIN
     BUY --> EXCHANGE_DOMAIN
     SELL --> EXCHANGE_DOMAIN
     PAY --> EXCHANGE_DOMAIN
@@ -108,7 +107,7 @@ graph TB
     EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
     EXCHANGE_DOMAIN -->|database key and legacy credential reads| SECRETS
     EXCHANGE_DOMAIN -->|account, KYC, statistics, support chat, notifications and complete order pages| BBX_API
-    BULL_EXCHANGE -->|support chat| EXCHANGE_DOMAIN
+    BULL_EXCHANGE -->|support chat, account and statistics| EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
 
     SIGNERS[Signers<br/>Workspace Feature]
