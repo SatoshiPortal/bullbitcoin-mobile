@@ -8,7 +8,6 @@ import '../domain/usecases/enable_exchange_usecase.dart';
 import '../domain/usecases/sign_out_exchange_usecase.dart';
 import '../domain/usecases/watch_exchange_access_usecase.dart';
 import '../domain/usecases/guard_exchange_trading_usecase.dart';
-import 'exchange_account.dart';
 
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
 
@@ -18,12 +17,10 @@ export '../ui/exchange_router.dart'
     show ExchangeRoute, ExchangeRouter, ExchangeRouterConfig;
 export '../ui/exchange_scope.dart'
     show ExchangeAccessBuilder, ExchangeScope, ExchangeSessionBuilder;
-export 'exchange_account.dart' show ExchangeAccount;
 
 class ExchangeFacade {
   const ExchangeFacade({
     required this._loadWebPreferences,
-    required this._loadAccount,
     required this._saveAccountPreferences,
     required ResolveExchangeAccessUsecase resolveAccess,
     required this._enable,
@@ -35,7 +32,6 @@ class ExchangeFacade {
 
   final Future<Result<ExchangeWebPreferences, ExchangeFailure>> Function()
   _loadWebPreferences;
-  final Future<Result<UserSummary, ExchangeFailure>> Function() _loadAccount;
   final Future<Result<void, ExchangeFailure>> Function({
     String? language,
     String? currency,
@@ -64,25 +60,6 @@ class ExchangeFacade {
   Future<Result<void, ExchangeFailure>> logout() => _signOut.execute();
   Future<Result<ExchangeAvailability, ExchangeFailure>> guardTradingEntry() =>
       _tradingGuard.execute();
-
-  Future<Result<ExchangeAccount, ExchangeFailure>> getAccount() async =>
-      (await _loadAccount()).map(
-        (account) => ExchangeAccount(
-          userNumber: account.userNumber,
-          firstName: account.profile.firstName,
-          lastName: account.profile.lastName,
-          email: account.email,
-          language: account.language,
-          currency: account.currency,
-          emailNotificationsEnabled: account.emailNotificationsEnabled,
-          isFullyVerifiedKycLevel: account.isFullyVerifiedKycLevel,
-          isLightKycLevel: account.isLightKycLevel,
-          isLimitedKycLevel: account.isLimitedKycLevel,
-          isFundingRestricted: account.isFundingRestricted,
-          hasConsentedScamWarning: account.hasConsentedScamWarning,
-          payjoinReceiveEnabled: account.payjoinReceiveEnabled,
-        ),
-      );
 
   Future<Result<void, ExchangeFailure>> savePreferences({
     String? language,

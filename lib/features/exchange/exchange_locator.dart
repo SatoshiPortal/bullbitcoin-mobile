@@ -77,7 +77,6 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
         loadWebPreferences: () => locator<Exchange>().loadWebPreferences(),
-        loadAccount: () => locator<Exchange>().loadCurrentAccount(),
         saveAccountPreferences:
             ({language, currency, emailNotificationsEnabled}) =>
                 locator<Exchange>().updateCurrentPreferences(

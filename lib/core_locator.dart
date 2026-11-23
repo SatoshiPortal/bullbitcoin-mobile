@@ -111,7 +111,6 @@ class CoreLocator {
 
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
-    ExchangeLocator.registerUseCases(locator);
     WalletLocator.registerUsecases(locator);
   }
 }
