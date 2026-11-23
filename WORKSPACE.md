@@ -258,7 +258,11 @@ graph TD
   bull_ui_catalogue --> primitives
   bull_ui_catalogue --> bull_ui
   coins --> bull_ui
+  coins --> bull_logger
+  coins --> labels
   coins --> primitives
+  coins --> secrets
+  coins --> sync
   electrum --> bull_logger
   electrum --> bull_tor
   electrum --> primitives
@@ -369,17 +373,30 @@ graph TD
   secrets --> rust_bindings
   secrets --> legacy_storage
   send --> address_view
+  send --> bull_ark
   send --> bull_logger
+  send --> bull_payjoin
+  send --> bull_pricer
   send --> bull_ui
+  send --> coins
   send --> electrum
   send --> fees
   send --> fees_feature
+  send --> label_editor
+  send --> labels
   send --> preferences
   send --> primitives
+  send --> receive
   send --> satoshifier
   send --> scanning
+  send --> secrets
+  send --> signers
+  send --> silent
   send --> spend
+  send --> swaps
   send --> sync
+  send --> transactions
+  send -.-> ark
   send -.-> rust_bindings
   settings --> bull_ui
   settings --> network
