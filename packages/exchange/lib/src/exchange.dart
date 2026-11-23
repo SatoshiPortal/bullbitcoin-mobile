@@ -20,6 +20,7 @@ import 'data/bbx_api_virtual_iban_repository.dart';
 import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
+import 'data/journaling_exchange_orders.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
 import 'domain/entities/btc_network.dart';
@@ -42,6 +43,7 @@ import 'domain/exchange_kyc_configuration.dart';
 import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
+import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
 import 'recipients/exchange_recipients.dart';
 import 'session/complete_exchange_authentication_usecase.dart';
@@ -123,6 +125,8 @@ typedef ExchangeWebAuthEndpoints = ({Uri mainnet, Uri testnet});
 
 enum _CompletionCheck { none, read, write }
 
+typedef _SessionPoint = ({ExchangeEnvironment environment, int epoch});
+
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
@@ -160,6 +164,9 @@ final class Exchange {
   final Preferences? _sessionPreferences;
   final ExchangeWebAuthEndpoints? _webAuthEndpoints;
   final ExchangeRecipients recipients;
+  final UnknownWriteJournal? _unknownWrites;
+  final Future<Result<_SessionPoint, ExchangeFailure>> Function()
+  _readSessionPoint;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -182,6 +189,8 @@ final class Exchange {
     this.recipients,
     this._sessionPreferences,
     this._webAuthEndpoints,
+    this._unknownWrites,
+    this._readSessionPoint,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -198,6 +207,7 @@ final class Exchange {
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
     ExchangeWebAuthEndpoints? webAuthEndpoints,
+    UnknownWriteJournal? unknownWrites,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
@@ -208,6 +218,7 @@ final class Exchange {
     access: access,
     sessionPreferences: sessionPreferences,
     webAuthEndpoints: webAuthEndpoints,
+    unknownWrites: unknownWrites,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -226,7 +237,11 @@ final class Exchange {
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
     ExchangeWebAuthEndpoints? webAuthEndpoints,
+    UnknownWriteJournal? unknownWrites,
   }) {
+    final recorder = unknownWrites == null
+        ? null
+        : UnknownWriteRecorder(unknownWrites);
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
           (session) => (
@@ -526,10 +541,40 @@ final class Exchange {
           ExchangeLimitOrderProblem.load,
           (repository) => repository.get(id),
         ),
-        create: (draft) => limitOrder(
-          ExchangeLimitOrderProblem.create,
-          (repository) => repository.create(draft),
-        ),
+        create: (draft) async {
+          final result = await limitOrder(
+            ExchangeLimitOrderProblem.create,
+            (repository) => repository.create(draft),
+          );
+          if (result
+              case Err(
+                failure: ExchangeLimitOrderFailure(
+                  problem: ExchangeLimitOrderProblem.createOutcomeUnknown,
+                ),
+              )
+              when recorder != null) {
+            if (await sessionSnapshot() case Ok(:final value)) {
+              await recorder.record(
+                UnknownWriteDraft(
+                  kind: UnknownWriteKind.limitOrderCreate,
+                  environment: value.environment,
+                  sessionEpoch: value.epoch,
+                  request: {
+                    'limitPrice': draft.limitPrice.toStringAsFixed(
+                      draft.currency.decimals,
+                    ),
+                    'fiatAmount': draft.fiatAmount.toStringAsFixed(
+                      draft.currency.decimals,
+                    ),
+                    'currency': draft.currency.code,
+                    'address': draft.address,
+                  },
+                ),
+              );
+            }
+          }
+          return result;
+        },
         cancel: (id) => limitOrder(
           ExchangeLimitOrderProblem.cancel,
           (repository) => repository.cancel(id),
@@ -595,6 +640,10 @@ final class Exchange {
       ),
       sessionPreferences,
       webAuthEndpoints,
+      unknownWrites,
+      () async => (await sessionSnapshot()).map(
+        (s) => (environment: s.environment, epoch: s.epoch),
+      ),
     );
   }
 
@@ -881,8 +930,23 @@ final class Exchange {
 
   /// Binds operations to the caller's selected backend, not to a credential.
   /// Every request checks that the active session still matches that backend.
+  ///
+  /// With a journal, a confirm, accelerate or DCA create whose outcome is
+  /// unknown is recorded before its result is returned.
   ExchangeOrders orders(ExchangeEnvironment environment) =>
-      _orders(environment);
+      switch (_unknownWrites) {
+        final journal? => JournalingExchangeOrders(
+          _orders(environment),
+          UnknownWriteRecorder(journal),
+          environment: environment,
+          readEpoch: () async => switch (await _readSessionPoint()) {
+            Ok(:final value) when value.environment == environment =>
+              value.epoch,
+            _ => null,
+          },
+        ),
+        null => _orders(environment),
+      };
 
   @useResult
   Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
@@ -890,16 +954,38 @@ final class Exchange {
 
   /// [WriteOutcomeUnknown] means the default wallet may be saved: re-read the
   /// default wallets before saving again.
+  /// With a journal, an unknown outcome is recorded before it is returned.
   @useResult
   Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
-  }) => _defaultWallets.save(
-    walletType: walletType,
-    address: address,
-    existingRecipientId: existingRecipientId,
-  );
+  }) async {
+    final write = await _defaultWallets.save(
+      walletType: walletType,
+      address: address,
+      existingRecipientId: existingRecipientId,
+    );
+    final journal = _unknownWrites;
+    if (journal == null || write is! WriteOutcomeUnknown<DefaultWallet>) {
+      return write;
+    }
+    if (await _readSessionPoint() case Ok(:final value)) {
+      await UnknownWriteRecorder(journal).record(
+        UnknownWriteDraft(
+          kind: UnknownWriteKind.defaultWalletSave,
+          environment: value.environment,
+          sessionEpoch: value.epoch,
+          request: {
+            'walletType': walletType.name,
+            'address': address,
+            'existingRecipientId': ?existingRecipientId,
+          },
+        ),
+      );
+    }
+    return write;
+  }
 
   @useResult
   Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
@@ -1007,6 +1093,12 @@ Exchange exchangeForTesting({
   ExchangeRecipients? recipients,
   ExchangeAccessLifecycle? access,
   Preferences? sessionPreferences,
+  UnknownWriteJournal? unknownWrites,
+  Future<
+    Result<({ExchangeEnvironment environment, int epoch}), ExchangeFailure>
+  >
+  Function()?
+  readSessionPoint,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -1091,16 +1183,20 @@ Exchange exchangeForTesting({
       ),
   sessionPreferences,
   null,
+  unknownWrites,
+  readSessionPoint ?? () => throw StateError('Unexpected session read'),
 );
 
 Exchange exchangeWithTransportForTesting({
   required ExchangeSessionReader readSession,
   required OpenInventoryClient openClient,
   ExchangeAccessLifecycle? access,
+  UnknownWriteJournal? unknownWrites,
 }) => Exchange._open(
   mainnetEndpoint: Uri.parse('https://mainnet.example.invalid'),
   testnetEndpoint: Uri.parse('https://testnet.example.invalid'),
   readSession: readSession,
   openClient: openClient,
   access: access,
+  unknownWrites: unknownWrites,
 );
