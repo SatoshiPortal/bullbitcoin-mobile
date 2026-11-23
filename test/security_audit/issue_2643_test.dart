@@ -10,7 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2643 error-reporting consent copy', () {
     test('copy precisely describes minimized metadata', () {
-      final localization = File('localization/app_en.arb').readAsStringSync();
+      final localization = File('features/settings/lib/l10n/settings_en.arb')
+          .readAsStringSync();
       expect(
         localization,
         contains('minimized error reports containing app version'),
