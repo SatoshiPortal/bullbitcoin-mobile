@@ -3195,4 +3195,16 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Ir al sitio web del intercambio Bull Bitcoin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'No se pudo cerrar su sesión por completo. Por favor, inténtelo de nuevo.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'No se pudieron cargar los anuncios.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'No se pudo enviar su solicitud de eliminación de cuenta. Por favor, inténtelo de nuevo.';
 }

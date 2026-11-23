@@ -1,10 +1,11 @@
 import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/src/bull_exchange_feature.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
-  final feature = BullExchangeFeature.mount(
+  final feature = mountBullExchange(
     networkUnavailable: () async => false,
     showWebsiteOnly: (_) => false,
     unavailableRedirectPath: '/wallet',

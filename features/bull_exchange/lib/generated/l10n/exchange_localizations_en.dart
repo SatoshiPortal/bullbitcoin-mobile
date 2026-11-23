@@ -3138,4 +3138,16 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Go to Bull Bitcoin exchange website';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'You could not be fully signed out. Please try again.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Announcements could not be loaded.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Your account deletion request could not be sent. Please try again.';
 }

@@ -3161,4 +3161,15 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Đến trang web sàn giao dịch Bull Bitcoin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Không thể đăng xuất hoàn toàn. Vui lòng thử lại.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'Không thể tải thông báo.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Không thể gửi yêu cầu xóa tài khoản của bạn. Vui lòng thử lại.';
 }

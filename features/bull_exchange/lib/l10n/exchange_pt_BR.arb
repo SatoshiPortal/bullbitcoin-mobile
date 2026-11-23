@@ -1576,5 +1576,8 @@
   "exchangeFeatureUnifiedHistory": "• Histórico de transações unificadas",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  }
+  },
+  "exchangeErrorSigningOut": "Não foi possível sair da conta por completo. Por favor, tente novamente.",
+  "exchangeErrorLoadingAnnouncements": "Não foi possível carregar os anúncios.",
+  "exchangeErrorRequestingAccountDeletion": "Não foi possível enviar sua solicitação de exclusão de conta. Por favor, tente novamente."
 }

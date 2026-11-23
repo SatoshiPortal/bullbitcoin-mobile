@@ -2949,4 +2949,13 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Go to Bullchange website';
+
+  @override
+  String get exchangeErrorSigningOut => '未能完全退出登录。请重试。';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => '无法加载公告。';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion => '无法发送您的账户删除请求。请重试。';
 }

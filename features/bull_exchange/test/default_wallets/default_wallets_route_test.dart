@@ -1,4 +1,5 @@
 import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/src/bull_exchange_feature.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart' show DefaultWallets;
 import 'package:exchange/testing.dart';
@@ -19,19 +20,28 @@ void main() {
           return const Ok(DefaultWallets());
         },
       );
-      final feature = BullExchangeFeature.mount(
+      final feature = mountBullExchange(
         networkUnavailable: () async => false,
         showWebsiteOnly: (_) => false,
         unavailableRedirectPath: '/wallet',
         brandAssetPath: 'unused',
         onExit: (_) {},
+        payoutFields: (
+          validate: (_, _) async => null,
+          buildField: ({
+            required type,
+            required value,
+            required hint,
+            required enabled,
+            required onChanged,
+            required onValidationChanged,
+          }) => const SizedBox.shrink(),
+        ),
         settings: ExchangeSettingsHost(
           exchange: () => exchange,
           savePreferences: ({language, currency, emailNotificationsEnabled}) =>
               fail('unexpected preference change'),
           refreshSession: (_) async {},
-          isLoggedIn: (_) => true,
-          sessionChanges: () => const Stream.empty(),
           isSuperuser: (_) => false,
           securityUrl: (_) => null,
           title: (_) => '',
@@ -43,17 +53,6 @@ void main() {
           onOpenDefaultWallets: DefaultWalletsNavigation.open,
           onOpenExchange: (_) {},
           defaultWallets: (
-            payoutFields: (
-              validate: (_, _) async => null,
-              buildField: ({
-                required type,
-                required value,
-                required hint,
-                required enabled,
-                required onChanged,
-                required onValidationChanged,
-              }) => const SizedBox.shrink(),
-            ),
             isAvailable: () async => isAvailable,
             unavailableRedirectPath: '/wallet',
           ),

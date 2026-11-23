@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../domain/onboarding_failure.dart';
 import '../../domain/onboarding_operations.dart';
-import '../../domain/scan_onboarding_wallet_usecase.dart';
+import '../../domain/usecases/scan_onboarding_wallet_usecase.dart';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';

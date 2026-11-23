@@ -3138,4 +3138,16 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Přejděte na webové stránky Bull Bitcoin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Odhlášení se nepodařilo dokončit. Zkuste to prosím znovu.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Oznámení se nepodařilo načíst.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Vaši žádost o smazání účtu se nepodařilo odeslat. Zkuste to prosím znovu.';
 }

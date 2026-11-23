@@ -143,11 +143,11 @@ class DefaultWalletProvisioning {
           existing.add(wallet);
         }
         return Ok(existing);
-      } on Exception catch (error) {
+      } on Object catch (error) {
         log.warning('Default wallet creation failed: ${error.runtimeType}');
         return const Err(DefaultWalletCreationFailure());
       }
-    } on Exception catch (error) {
+    } on Object catch (error) {
       log.warning('Default wallet setup failed: ${error.runtimeType}');
       return const Err(DefaultWalletUnexpectedFailure());
     }

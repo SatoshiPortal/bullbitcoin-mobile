@@ -860,5 +860,8 @@
   "exchangeLandingDisclaimerLegal": "Ufikiaji wa huduma za exchange utazuiliwa kwa nchi ambazo Bull Bitcoin inaweza kufanya kazi kihalali na huenda ukahitaji KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Huduma za kubadilisha sarafu za kripto hazipatikani kwenye programu ya simu ya Bull Bitcoin.",
   "exchangeLoginButton": "Ingia Au Jisajili",
-  "exchangeGoToWebsiteButton": "Nenda kwenye tovuti ya Bull Bitcoin exchange"
+  "exchangeGoToWebsiteButton": "Nenda kwenye tovuti ya Bull Bitcoin exchange",
+  "exchangeErrorSigningOut": "Haukuweza kutoka kwenye akaunti kikamilifu. Tafadhali jaribu tena.",
+  "exchangeErrorLoadingAnnouncements": "Matangazo hayakuweza kupakiwa.",
+  "exchangeErrorRequestingAccountDeletion": "Ombi lako la kufuta akaunti halikuweza kutumwa. Tafadhali jaribu tena."
 }

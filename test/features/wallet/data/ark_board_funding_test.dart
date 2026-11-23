@@ -44,8 +44,12 @@ void main() {
   late _Metadata metadata;
   late FakeSecureStoragePlatform keystore;
   late WalletNativeRuntime runtime;
-  Future<Result<void, SyncFailure>> sourceSync(WalletKey key) async =>
-      const Ok(null);
+  late _Catalog catalog;
+  Future<Result<void, SyncFailure>> Function(WalletKey) syncSource = (
+    _,
+  ) async => const Ok(null);
+  Future<Result<void, SyncFailure>> sourceSync(WalletKey key) =>
+      syncSource(key);
   WalletRegistration registration({Fingerprint? parent}) =>
       walletRegistrationForTesting(
         id: fundingWalletId,
@@ -94,8 +98,9 @@ void main() {
       documentsDirectory: () async => fixture.directory.path,
       readRevision: (_) async => const Err(SyncNotFoundFailure()),
     );
+    catalog = _Catalog();
     runtime = WalletNativeRuntime.open(
-      catalog: _Catalog(),
+      catalog: catalog,
       reserved: _Reserved(),
       inputReservations: fixture.store,
       fundingReservations: fixture.store,
@@ -108,6 +113,7 @@ void main() {
       connections: connections,
     );
     selectSource = (_) async => fundingWalletId;
+    syncSource = (_) async => const Ok(null);
     when(
       () => metadata.readWallet(any()),
     ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
@@ -257,6 +263,38 @@ void main() {
         ),
       );
       expect(selections, 0);
+      expect(keystore.reads, 0);
+      verifyZeroInteractions(client);
+    },
+  );
+  test(
+    'a failed source sync is ignored before reading the native source',
+    () async {
+      final synced = <WalletKey>[];
+      syncSource = (key) async {
+        synced.add(key);
+        return const Err(SyncBusyFailure());
+      };
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
+      final source = WalletKey(
+        id: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+      );
+      when(catalog.list).thenAnswer((_) async => const Ok([]));
+      when(() => catalog.find(source))
+          .thenAnswer((_) async => const Err(SyncStorageFailure()));
+      final result = await actor.prepare(config(account), Sats.fromInt(20000));
+      expect(synced, [source]);
+      verify(() => catalog.find(source)).called(1);
+      expect(
+        result,
+        isA<Err<ArkBoardPreparation, ArkFailure>>().having(
+          (r) => r.failure,
+          'native source failure',
+          isA<ArkFeatureStorageFailure>(),
+        ),
+      );
       expect(keystore.reads, 0);
       verifyZeroInteractions(client);
     },

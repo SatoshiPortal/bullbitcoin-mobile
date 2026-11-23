@@ -3182,6 +3182,18 @@ class ExchangeLocalizationsPt extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Ir para Bull Bitcoin site de troca';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Não foi possível terminar a sessão por completo. Por favor, tente novamente.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Não foi possível carregar os anúncios.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Não foi possível enviar o seu pedido de eliminação de conta. Por favor, tente novamente.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -6103,4 +6115,16 @@ class ExchangeLocalizationsPtBr extends ExchangeLocalizationsPt {
 
   @override
   String get exchangeGoToWebsiteButton => 'Ir para Bull Bitcoin site de troca';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Não foi possível sair da conta por completo. Por favor, tente novamente.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Não foi possível carregar os anúncios.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Não foi possível enviar sua solicitação de exclusão de conta. Por favor, tente novamente.';
 }

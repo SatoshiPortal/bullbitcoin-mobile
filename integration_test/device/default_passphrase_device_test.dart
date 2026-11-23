@@ -11,9 +11,9 @@ import 'dart:math';
 import 'package:bull_ui/app_theme.dart';
 import 'package:access/access.dart';
 import 'package:access/testing.dart';
-import 'package:bb_mobile/features/onboarding/wallet_bindings.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:onboarding/setup.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:preferences/preferences.dart' as preferences;
 import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -459,10 +459,11 @@ void registerPhysicalRecoveryTests() {
       bip39.Language.english,
     ).words;
     const phrase = 'synthetic passphrase é';
-    final wallets = bindOnboardingWallets(locator);
     final onboarding = OnboardingFeature.mount(
-      createWallet: wallets.create,
-      recoverWallet: wallets.recover,
+      defaultWallets: locator<DefaultWalletProvisioning>(),
+      records: (network) => locator<RecoverBullWalletBackups>(
+        instanceName: network.env == NetworkEnv.regtest ? 'regtest' : null,
+      ),
       walletImport: locator<ImportFeature>(),
       onWalletReady: (context) => context.goNamed(WalletRoute.walletHome.name),
       languageOf: (_) => preferences.Language.unitedStatesEnglish,

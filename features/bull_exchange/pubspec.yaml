@@ -8,6 +8,7 @@ environment:
   flutter: "3.50.0"
 
 dependencies:
+  address_view:
   bitcoin_price:
   bip21_uri: ^2.2.0
   bloc_concurrency: ^0.3.0
@@ -41,9 +42,11 @@ dependencies:
   satoshifier:
   secrets:
   share_plus: ^13.3.1
+  shared_preferences: ^2.3.0
   shimmer: ^4.0.0
   spend:
   sync:
+  transactions:
   url_launcher: ^6.3.2
   webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10

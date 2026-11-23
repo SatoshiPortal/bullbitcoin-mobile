@@ -5690,6 +5690,24 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Go to Bull Bitcoin exchange website'**
   String get exchangeGoToWebsiteButton;
+
+  /// exchange user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'You could not be fully signed out. Please try again.'**
+  String get exchangeErrorSigningOut;
+
+  /// exchange user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements could not be loaded.'**
+  String get exchangeErrorLoadingAnnouncements;
+
+  /// exchange user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Your account deletion request could not be sent. Please try again.'**
+  String get exchangeErrorRequestingAccountDeletion;
 }
 
 class _ExchangeLocalizationsDelegate

@@ -38,6 +38,7 @@ export 'src/sell/ui/screens/sell_send_payment_screen.dart'
     show SellSendPaymentScreen;
 export 'src/sell/ui/sell_router.dart' show SellRouter;
 export 'src/ui/screens/exchange_landing_screen.dart' show ExchangeLandingScreen;
+export 'src/auth/exchange_auth_host.dart' show exchangeAuthHost;
 export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthScreen;
 export 'src/auth/exchange_exit_on_back.dart' show ExchangeExitOnBack;
 export 'src/dashboard/exchange_home_screen.dart' show ExchangeHomeScreen;

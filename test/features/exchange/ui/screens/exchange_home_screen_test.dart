@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
@@ -86,8 +84,8 @@ ExchangeHomeScreen _dashboard({
   Future<void> Function()? refreshAccount,
 }) => ExchangeHomeScreen(
   watchDashboard: ExchangeSessionScope.watchDashboard,
-  exchange: ExchangeScope.exchange,
-  preferences: ExchangeScope.preferences,
+  exchange: () => locator<Exchange>(),
+  preferences: () => locator<Preferences>(),
   brandAsset: Assets.logos.bbLogoSmall.path,
   settingsAsset: Assets.icons.settingsLine.path,
   refreshAccount: refreshAccount ?? () async {},

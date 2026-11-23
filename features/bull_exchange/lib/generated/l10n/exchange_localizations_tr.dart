@@ -3149,4 +3149,15 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Bull Bitcoin exchange web sitesine gidin';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Oturumunuz tamamen kapatılamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'Duyurular yüklenemedi.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Hesap silme talebiniz gönderilemedi. Lütfen tekrar deneyin.';
 }

@@ -3195,4 +3195,16 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Go to Bull Bitcoin ανταλλακτήρια';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Δεν ήταν δυνατή η πλήρης αποσύνδεσή σας. Παρακαλώ δοκιμάστε ξανά.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Δεν ήταν δυνατή η φόρτωση των ανακοινώσεων.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Δεν ήταν δυνατή η αποστολή του αιτήματος διαγραφής του λογαριασμού σας. Παρακαλώ δοκιμάστε ξανά.';
 }

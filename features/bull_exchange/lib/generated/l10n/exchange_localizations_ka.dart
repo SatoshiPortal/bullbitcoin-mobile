@@ -3171,4 +3171,16 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'გადადით Bull Bitcoin-ის გაცვლის ვებგვერდზე';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'სისტემიდან სრულად გამოსვლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'განცხადებების ჩატვირთვა ვერ მოხერხდა.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'თქვენი ანგარიშის წაშლის მოთხოვნის გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.';
 }

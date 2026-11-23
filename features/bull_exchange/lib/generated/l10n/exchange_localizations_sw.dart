@@ -3157,4 +3157,16 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Nenda kwenye tovuti ya Bull Bitcoin exchange';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Haukuweza kutoka kwenye akaunti kikamilifu. Tafadhali jaribu tena.';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Matangazo hayakuweza kupakiwa.';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Ombi lako la kufuta akaunti halikuweza kutumwa. Tafadhali jaribu tena.';
 }

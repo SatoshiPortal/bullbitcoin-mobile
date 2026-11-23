@@ -3169,4 +3169,16 @@ class ExchangeLocalizationsHy extends ExchangeLocalizations {
 
   @override
   String get exchangeGoToWebsiteButton => 'Անցնել Bull Bitcoin փոխանակման կայք';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'Չհաջողվեց ամբողջությամբ դուրս գալ համակարգից։ Խնդրում ենք փորձել կրկին։';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements =>
+      'Չհաջողվեց բեռնել հայտարարությունները։';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'Չհաջողվեց ուղարկել հաշվի ջնջման ձեր հարցումը։ Խնդրում ենք փորձել կրկին։';
 }

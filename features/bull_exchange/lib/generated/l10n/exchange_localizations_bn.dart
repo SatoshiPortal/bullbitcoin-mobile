@@ -3159,4 +3159,15 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'Bull Bitcoin এক্সচেঞ্জ ওয়েবসাইটে যান';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'আপনাকে সম্পূর্ণরূপে সাইন আউট করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'ঘোষণাগুলি লোড করা যায়নি।';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'আপনার অ্যাকাউন্ট মুছে ফেলার অনুরোধ পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।';
 }

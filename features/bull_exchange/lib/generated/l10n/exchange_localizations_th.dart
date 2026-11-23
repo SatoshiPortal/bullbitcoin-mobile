@@ -3096,4 +3096,15 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
   @override
   String get exchangeGoToWebsiteButton =>
       'ไปที่ Google Bitcoin แลกเปลี่ยนเว็บไซต์';
+
+  @override
+  String get exchangeErrorSigningOut =>
+      'ไม่สามารถออกจากระบบได้อย่างสมบูรณ์ โปรดลองอีกครั้ง';
+
+  @override
+  String get exchangeErrorLoadingAnnouncements => 'ไม่สามารถโหลดประกาศได้';
+
+  @override
+  String get exchangeErrorRequestingAccountDeletion =>
+      'ไม่สามารถส่งคำขอลบบัญชีของคุณได้ โปรดลองอีกครั้ง';
 }
