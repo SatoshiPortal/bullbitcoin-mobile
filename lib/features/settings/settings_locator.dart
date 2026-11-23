@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
@@ -38,7 +37,7 @@ class SettingsLocator {
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
           exchange: locator<Exchange>(),
           networkUnavailable: () =>
-              locator<ExchangeFacade>().networkUnavailable(),
+              locator<Exchange>().networkUnavailable(),
           settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<Settings>().watchSuperuser().map(
@@ -70,7 +69,7 @@ class SettingsLocator {
     GetIt locator, {
     required bool onlyWhileOff,
   }) => WatchExchangeActivationOfferUsecase(
-    exchange: locator<ExchangeFacade>(),
+    exchange: locator<Exchange>(),
     platformAllowed: () => !Platform.isIOS || locator<Settings>().isSuperuser,
     platformChanges: locator<Settings>().watchSuperuser().map(
       (value) => !Platform.isIOS || value,

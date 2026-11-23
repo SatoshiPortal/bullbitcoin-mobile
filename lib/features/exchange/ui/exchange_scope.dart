@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
@@ -29,7 +29,7 @@ abstract final class ExchangeScope {
     testnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthTestUrl),
     returnUrl: Uri.parse(ExchangeDefaults.bbAppUrl),
     testnetKycUrl: Uri.parse(ExchangeDefaults.bbKycTestUrl),
-    currentAccess: () => locator<ExchangeFacade>().currentAccess,
+    currentAccess: () => locator<Exchange>().currentAccess,
     watchAccess: ExchangeScope.accessChanges,
     accountSignedInChanges: ExchangeSessionScope.accountChanges,
     retryAccess: (_) async {
@@ -38,17 +38,17 @@ abstract final class ExchangeScope {
   );
 
   static bool isLoggedIn(BuildContext context) =>
-      _signedIn(locator<ExchangeFacade>().currentAccess);
+      _signedIn(locator<Exchange>().currentAccess);
 
   static Exchange exchange() => locator<Exchange>();
 
   static Preferences preferences() => locator<Preferences>();
 
   static ExchangeAccess currentAccess() =>
-      locator<ExchangeFacade>().currentAccess;
+      locator<Exchange>().currentAccess;
 
   static Stream<ExchangeAccess> accessChanges() =>
-      locator<ExchangeFacade>().watchAccess();
+      locator<Exchange>().watchAccess();
 
   static Stream<bool> signedInChanges() => accessChanges().map(_signedIn);
 }
@@ -76,7 +76,7 @@ class ExchangeAccessBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final access = locator<ExchangeFacade>();
+    final access = locator<Exchange>();
     return StreamBuilder<ExchangeAccess>(
       stream: access.watchAccess(),
       initialData: access.currentAccess,

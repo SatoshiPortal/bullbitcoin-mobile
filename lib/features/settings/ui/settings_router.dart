@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:bull_ui/bull_ui.dart' show SizedBox, Widget;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_exchange/bull_exchange.dart';
@@ -37,7 +39,7 @@ class SettingsRouter {
   static final exchangeSettingsHost = ExchangeSettingsHost(
     exchange: () => locator<Exchange>(),
     savePreferences: ({language, currency, emailNotificationsEnabled}) =>
-        locator<ExchangeFacade>().savePreferences(
+        locator<Exchange>().updateCurrentPreferences(
           language: language,
           currency: currency,
           emailNotificationsEnabled: emailNotificationsEnabled,
@@ -67,11 +69,11 @@ class SettingsRouter {
         context.goNamed(ExchangeRoute.exchangeHome.name),
     access: (
       actions: (
-        current: () => locator<ExchangeFacade>().currentAccess,
-        watch: () => locator<ExchangeFacade>().watchAccess(),
-        enable: () => locator<ExchangeFacade>().enable(),
-        signOut: () => locator<ExchangeFacade>().logout(),
-        resolve: () => locator<ExchangeFacade>().resolveAccess(),
+        current: () => locator<Exchange>().currentAccess,
+        watch: () => locator<Exchange>().watchAccess(),
+        enable: () => locator<Exchange>().enableAccess(),
+        signOut: () => locator<Exchange>().signOut(),
+        resolve: () => locator<Exchange>().resolveAccess(),
       ),
       platform: Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
       description: (context) => context.loc.exchangeAccessSettingsDescription,

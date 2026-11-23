@@ -1,16 +1,11 @@
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_contract;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -54,41 +49,6 @@ class ExchangeLocator {
               ExchangeAccessLifecycle.preferenceKey,
               value,
             ),
-      ),
-    );
-    locator.registerFactory<ResolveExchangeAccessUsecase>(
-      () => ResolveExchangeAccessUsecase(locator<ExchangeAccessLifecycle>()),
-    );
-    locator.registerFactory<EnableExchangeUsecase>(
-      () => EnableExchangeUsecase(locator<ExchangeAccessLifecycle>()),
-    );
-    locator.registerFactory<SignOutExchangeUsecase>(
-      () => SignOutExchangeUsecase(locator<ExchangeAccessLifecycle>()),
-    );
-    locator.registerFactory<WatchExchangeAccessUsecase>(
-      () => WatchExchangeAccessUsecase(locator<ExchangeAccessLifecycle>()),
-    );
-    locator.registerFactory<GuardExchangeTradingUsecase>(
-      () => GuardExchangeTradingUsecase(
-        locator<ExchangeAccessLifecycle>(),
-        platformAllowed,
-      ),
-    );
-    locator.registerLazySingleton<ExchangeFacade>(
-      () => ExchangeFacade(
-        loadWebPreferences: () => locator<Exchange>().loadWebPreferences(),
-        saveAccountPreferences:
-            ({language, currency, emailNotificationsEnabled}) =>
-                locator<Exchange>().updateCurrentPreferences(
-                  language: language,
-                  currency: currency,
-                  emailNotificationsEnabled: emailNotificationsEnabled,
-                ),
-        resolveAccess: locator<ResolveExchangeAccessUsecase>(),
-        enable: locator<EnableExchangeUsecase>(),
-        signOut: locator<SignOutExchangeUsecase>(),
-        watchAccess: locator<WatchExchangeAccessUsecase>(),
-        tradingGuard: locator<GuardExchangeTradingUsecase>(),
       ),
     );
   }

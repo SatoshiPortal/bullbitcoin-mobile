@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show Err, NetworkEnv, Result;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
 import 'package:backups/backups.dart';
@@ -41,7 +41,8 @@ import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
     show SwapFeature, SwapNavigation;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
@@ -94,7 +95,7 @@ class AppRouter {
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
   static final _exchangeConfig = ExchangeRouterConfig(
-    networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
+    networkUnavailable: () => locator<Exchange>().networkUnavailable(),
     loadKyc: () => locator<Exchange>().loadKyc(),
     isSuperuser: (context) => Settings.readEnvironment(context).isSuperuser,
     homePath: WalletRoute.walletHome.path,
@@ -127,7 +128,7 @@ class AppRouter {
       case QuickAction.pay:
         context.pushNamed(PayRoute.pay.name);
       case QuickAction.exchange:
-        if (locator<ExchangeFacade>().currentAccess is ExchangeAccessDisabled) {
+        if (locator<Exchange>().currentAccess is ExchangeAccessDisabled) {
           unawaited(_activateExchange(context));
         } else {
           context.pushNamed(ExchangeRoute.exchangeHome.name);
@@ -142,7 +143,7 @@ class AppRouter {
     _activatingExchange = true;
     final Result<void, ExchangeFailure> result;
     try {
-      result = await locator<ExchangeFacade>().enable();
+      result = await locator<Exchange>().enableAccess();
     } finally {
       _activatingExchange = false;
     }
@@ -152,7 +153,7 @@ class AppRouter {
       return;
     }
     final signedIn = ExchangeAvailability.canManageAccount(
-      locator<ExchangeFacade>().currentAccess,
+      locator<Exchange>().currentAccess,
     );
     if (signedIn) {
       context.pushNamed(ExchangeRoute.exchangeHome.name);
@@ -199,8 +200,8 @@ class AppRouter {
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
       navigatorKey: rootNavigatorKey,
-      checkAvailability: locator<ExchangeFacade>().guardTradingEntry,
-      resolveAccess: locator<ExchangeFacade>().resolveAccess,
+      checkAvailability: locator<Exchange>().guardTradingEntry,
+      resolveAccess: locator<Exchange>().resolveAccess,
     ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the

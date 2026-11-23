@@ -25,7 +25,6 @@ import 'package:preferences/preferences.dart';
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
@@ -127,7 +126,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         child: locator<StartupFeature>().scope(
           onWalletsReady: (context) async {
             context.read<WalletBloc>().add(const WalletStarted());
-            final _ = await locator<ExchangeFacade>().resolveAccess();
+            final _ = await locator<Exchange>().resolveAccess();
           },
           child: ExchangeSessionScope(
             exchange: () => locator<Exchange>(),
@@ -145,7 +144,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       locator<ArkForegroundHost>().invalidate();
                     }
                     context.read<WalletBloc>().add(const WalletStarted());
-                    final _ = await locator<ExchangeFacade>().resolveAccess();
+                    final _ = await locator<Exchange>().resolveAccess();
                   },
                 ),
               ],

@@ -5,7 +5,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:address_view/address_view.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 
 import 'dart:async';
 
@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart' show Result;
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
