@@ -79,6 +79,7 @@ export 'package:flutter/widgets.dart'
         PageController,
         PageScrollPhysics,
         PageView,
+        PlaceholderAlignment,
         Positioned,
         PopScope,
         Radius,
@@ -101,6 +102,7 @@ export 'package:flutter/widgets.dart'
         TextDirection,
         TextEditingController,
         TextOverflow,
+        TextSpan,
         TextStyle,
         ValueChanged,
         ValueKey,
@@ -109,6 +111,7 @@ export 'package:flutter/widgets.dart'
         Widget,
         WidgetsBinding,
         WidgetsBindingObserver,
+        WidgetSpan,
         Wrap,
         WrapCrossAlignment;
 

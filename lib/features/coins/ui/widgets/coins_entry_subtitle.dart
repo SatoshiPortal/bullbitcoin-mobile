@@ -1,7 +1,17 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAmount, BullTypographyX;
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BuildContext,
+        BullAmount,
+        BullThemeX,
+        BullTypographyX,
+        PlaceholderAlignment,
+        StatelessWidget,
+        Text,
+        TextBaseline,
+        TextSpan,
+        Widget,
+        WidgetSpan;
 import 'package:primitives/primitives.dart' show Sats;
 
 /// `{n} UTXOs · {frozen} frozen`, the frozen clause omitted when nothing is
@@ -23,7 +33,7 @@ class CoinsEntrySubtitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = context.bullType.caption.copyWith(
-      color: context.appColors.textMuted,
+      color: context.bull.textMuted,
     );
     final count = context.loc.walletCoinsEntryUtxoCount(utxoCount);
     if (frozenSat <= BigInt.zero) return Text(count, style: style);
