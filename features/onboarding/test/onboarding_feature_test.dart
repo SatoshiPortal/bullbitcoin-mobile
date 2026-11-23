@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/app_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +51,9 @@ void main() {
         home: Builder(builder: feature.buildLoadingSplash),
       ),
     );
+    // The store delegate loads asynchronously, and the loading spinner never
+    // settles. Pump a second frame instead of waiting for all animations.
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.textContaining('Bitcoin-only services'), findsOneWidget);
     expect(find.text('Create New Wallet'), findsNothing);
     expect(commands, 0);

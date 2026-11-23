@@ -39,7 +39,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:receive/setup.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
