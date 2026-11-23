@@ -1,7 +1,7 @@
 import 'package:swaps/swaps.dart';
-import 'package:primitives/primitives.dart' show FormatAmount;
+import 'package:primitives/primitives.dart' show FormatAmount, LiquidNetwork;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -141,14 +141,14 @@ class _WalletSelector extends StatelessWidget {
           color: context.bull.text,
         ),
         const Gap(8),
-        BullDropdown<Wallet>(
+        BullDropdown<WalletRegistration>(
           value: selected,
           hint: context.loc.swapRescueWalletHint,
           items: [
             for (final wallet in state.wallets)
               BullPickerItem(
                 value: wallet,
-                label: wallet.displayLabel(context),
+                label: _displayLabel(context, wallet),
               ),
           ],
           onChanged: (wallet) =>
@@ -156,5 +156,12 @@ class _WalletSelector extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _displayLabel(BuildContext context, WalletRegistration wallet) {
+    if (!wallet.isDefault) return wallet.label ?? wallet.id;
+    return wallet.network is LiquidNetwork
+        ? context.loc.globalDefaultLiquidWalletLabel
+        : context.loc.globalDefaultBitcoinWalletLabel;
   }
 }

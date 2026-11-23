@@ -429,7 +429,9 @@ graph TB
     SEND --> LABELS
     RECEIVE --> LABELS
     SETTINGS --> LABELS
-    COINS -->|public revision stream| WALLETS
+    COINS -->|public revision stream and coins| SYNC
+    COINS -->|authorized wallet identity| SECRETS
+    COINS -->|legacy foreground refresh| WALLETS
     SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> TX_HISTORY
@@ -459,6 +461,7 @@ graph TB
     SEND -->|public coin management route| COINS
     SEND -->|public spend admission and revisions| WALLETS
     SETTINGS -->|public wallet discovery| WALLETS
+    SETTINGS -->|swap rescue wallet choices| SECRETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL

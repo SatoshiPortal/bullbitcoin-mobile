@@ -43,7 +43,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mod
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 class SettingsLocator {
@@ -54,8 +54,8 @@ class SettingsLocator {
     );
     locator.registerFactory<GetSwapRescueWalletsUsecase>(
       () => GetSwapRescueWalletsUsecase(
-        walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<Preferences>(),
+        inventory: locator<SecretsInventory>(),
+        environment: locator<ActiveEnvironmentReader>(),
       ),
     );
     locator.registerLazySingleton<QuickActionsCubit>(

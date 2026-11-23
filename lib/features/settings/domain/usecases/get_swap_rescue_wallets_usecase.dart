@@ -1,38 +1,36 @@
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:meta/meta.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:swaps/swaps.dart';
 
-/// The wallets a rescued swap can pay into: those on the chain the swap acts
-/// on, in the active environment.
+/// The admitted accounts a rescued swap can pay into on its destination chain.
 class GetSwapRescueWalletsUsecase {
-  final WalletRepository _walletRepository;
-  final Preferences _settingsRepository;
+  final WalletInventory _inventory;
+  final ActiveEnvironmentReader _environment;
 
   const GetSwapRescueWalletsUsecase({
-    required this._walletRepository,
-    required this._settingsRepository,
+    required this._inventory,
+    required this._environment,
   });
 
   @useResult
-  Future<Result<List<Wallet>, WalletFailure>> execute({
+  Future<Result<List<WalletRegistration>, SwapsFailure>> execute({
     required bool actsOnLiquid,
   }) async {
-    final Environment environment;
-    try {
-      environment = ((await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      )).environment;
-    } catch (e) {
-      return Err(WalletStorageFailure('settings fetch: ${e.runtimeType}'));
+    final settings = await _environment.readActiveEnvironment();
+    if (settings case Err(:final failure)) {
+      return Err(SwapsUnexpectedFailure('Environment: ${failure.runtimeType}'));
     }
-    return _walletRepository.getWallets(
-      environment: environment,
-      onlyBitcoin: !actsOnLiquid,
-      onlyLiquid: actsOnLiquid,
-    );
+    final environment = (settings as Ok<Environment, PreferencesFailure>).value;
+    final network = actsOnLiquid
+        ? LiquidNetwork.fromName(environment.name)
+        : BitcoinNetwork.fromName(environment.name);
+    return (await _inventory.walletsForNetwork(network))
+        .map((selection) => selection.wallets)
+        .mapErr(
+          (failure) =>
+              SwapsUnexpectedFailure('Inventory: ${failure.runtimeType}'),
+        );
   }
 }

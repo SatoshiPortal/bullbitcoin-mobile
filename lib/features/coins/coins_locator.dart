@@ -2,7 +2,7 @@ import 'public/coins.dart';
 
 import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:sync/sync.dart' show CoinFreezes;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:preferences/preferences.dart'
     show AmountDisplayPreferencesReader;
@@ -29,7 +29,7 @@ class CoinsLocator {
     );
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
-        walletRegistrations: locator<WalletRegistrations>(),
+        inventory: locator<SecretsInventory>(),
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
         freezesDatasource: locator<CoinFreezes>(),
         labelsFacade: locator<Labels>(),
@@ -66,7 +66,7 @@ class CoinsLocator {
           locator<AmountDisplayPreferencesReader>(),
         ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-          locator<WalletFacade>(),
+          locator<WalletNativeRuntime>().changes,
         ),
         walletId: walletId,
         getUtxosUsecase: locator<GetUtxosUsecase>(),
