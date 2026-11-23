@@ -269,10 +269,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "exchangeLandingRecommendedExchange": "Bitcoin 교환",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "receiveConfirming": "확인... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -1894,10 +1890,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "· 고객 지원",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "결제하기",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -2749,10 +2741,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency 교환 서비스는 Bull Bitcoin 모바일 애플리케이션에서 사용할 수 없습니다.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "주문 수수료율",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2885,10 +2873,6 @@
   "walletDetailsSignerDeviceNotSupported": "지원되지 않음",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
-  },
-  "exchangeLandingDisclaimerLegal": "교환 서비스에 대한 액세스는 Bull Bitcoin이 합법적으로 작동 할 수있는 국가에 제한되며 KYC가 필요할 수 있습니다.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "backupWalletEncryptedVaultTitle": "암호화된 vault",
   "@backupWalletEncryptedVaultTitle": {
@@ -3603,10 +3587,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• Bitcoin을 Self-custody로 구매하십시오",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "금액은 최대를 초과",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -4001,10 +3981,6 @@
   "backupSettingsKeyWarningBold": "경고: 백업 키를 저장하는 것을 조심하십시오.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "exchangeLandingConnectAccount": "Bull Bitcoin 교환 계정 연결",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "recoverYourWalletTitle": "지갑을 복구",
   "@recoverYourWalletTitle": {
@@ -4656,10 +4632,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "• Bitcoin을 판매, Bitcoin으로 지불",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "비밀번호",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4746,10 +4718,6 @@
   "sendFastFee": "빠른 속도",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "비트 코인",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "통계 없음",
   "@exchangeStatisticsNoData": {
@@ -5896,10 +5864,6 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "· 은행 송금 및 지불 청구서 발송",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "즉시 결제",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
@@ -6019,10 +5983,6 @@
   "googleAppleCloudRecommendation": "Google 또는 애플 클라우드: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "Bull Bitcoin 교환 웹 사이트로 이동",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "테스트 {walletName}",
   "@testWalletTitle": {
@@ -6680,10 +6640,6 @@
   "coreScreensPageNotFound": "사이트 맵",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "exchangeFeatureDcaOrders": "• DCA, 제한 주문 및 자동 구매",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
   },
   "payIban": "아이반",
   "@payIban": {
@@ -7354,10 +7310,6 @@
   "payPaymentHistory": "지불 역사",
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
-  },
-  "exchangeFeatureUnifiedHistory": "• 통합된 거래 내역",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "payViewDetails": "더 보기",
   "@payViewDetails": {

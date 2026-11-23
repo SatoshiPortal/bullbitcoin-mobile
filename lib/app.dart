@@ -2,6 +2,7 @@ import 'package:send/setup.dart' show SendLocalizations;
 import 'package:send/send.dart' show Consolidation;
 import 'package:spend/spend.dart' show Spend;
 import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_bull_exchange_localizations.dart';
 import 'package:bip85/bip85.dart';
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:backups/backups.dart';
@@ -9,8 +10,7 @@ import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_receive_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
-import 'package:bull_exchange/bull_exchange.dart'
-    show ExchangeLocalizations, ExchangeSessionScope;
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeSessionScope;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
@@ -223,8 +223,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           novlangPolicy,
                         ),
                         NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
+                        NovlangExchangeLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
-                        ExchangeLocalizations.delegate,
                         LogsLocalizations.delegate,
                         NetworkLocalizations.delegate,
                         BtcMapFeature.localizationsDelegate,

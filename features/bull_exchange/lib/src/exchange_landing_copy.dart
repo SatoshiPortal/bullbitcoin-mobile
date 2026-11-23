@@ -1,4 +1,8 @@
-/// Localized copy supplied by the app's store-aware catalogue during migration.
+import 'package:flutter/widgets.dart';
+
+import 'exchange_l10n.dart';
+
+/// Localized copy for the exchange landing.
 final class ExchangeLandingCopy {
   final String brandName;
   final String connectAccount;
@@ -29,4 +33,23 @@ final class ExchangeLandingCopy {
     required this.signIn,
     required this.openWebsite,
   });
+
+  factory ExchangeLandingCopy.of(BuildContext context) {
+    final loc = context.loc;
+    return ExchangeLandingCopy(
+      brandName: loc.exchangeBrandName,
+      connectAccount: loc.exchangeLandingConnectAccount,
+      recommendedExchange: loc.exchangeLandingRecommendedExchange,
+      selfCustody: loc.exchangeFeatureSelfCustody,
+      recurringOrders: loc.exchangeFeatureDcaOrders,
+      sellBitcoin: loc.exchangeFeatureSellBitcoin,
+      bankTransfers: loc.exchangeFeatureBankTransfers,
+      customerSupport: loc.exchangeFeatureCustomerSupport,
+      unifiedHistory: loc.exchangeFeatureUnifiedHistory,
+      legalDisclaimer: loc.exchangeLandingDisclaimerLegal,
+      unavailableDisclaimer: loc.exchangeLandingDisclaimerNotAvailable,
+      signIn: loc.exchangeLoginButton,
+      openWebsite: loc.exchangeGoToWebsiteButton,
+    );
+  }
 }

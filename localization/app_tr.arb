@@ -269,10 +269,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "exchangeLandingRecommendedExchange": "Önerilen Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "receiveConfirming": "Onaylanıyor... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -1886,10 +1882,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "• • Müşteri desteği ile Sohbet",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "Lütfen bu faturayı ödeme",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -2729,10 +2721,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "Cryptocurrency değişim hizmetleri, Bull Bitcoin mobil uygulamasında mevcut değildir.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "Özel Ücret Puanı",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2865,10 +2853,6 @@
   "walletDetailsSignerDeviceNotSupported": "Desteklenmedi",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
-  },
-  "exchangeLandingDisclaimerLegal": "Değişim servislerine erişim, Bull Bitcoin'in yasal olarak çalışabileceği ülkelerle sınırlandırılacak ve KC'yi gerektirebilir.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "backupWalletEncryptedVaultTitle": "Encrypted to",
   "@backupWalletEncryptedVaultTitle": {
@@ -3575,10 +3559,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• Bitcoin'i doğrudan kendi kendine özgü olarak satın alın",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "Para maksimumları aşıyor",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -3973,10 +3953,6 @@
   "backupSettingsKeyWarningBold": "Uyarı: Yedek anahtarını nereden kurtardığınızı dikkatli olun.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "exchangeLandingConnectAccount": "Your Bull Bitcoin exchange account",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "recoverYourWalletTitle": "Cüzdanını yeniden keşfedin",
   "@recoverYourWalletTitle": {
@@ -4606,10 +4582,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "• Bitcoin satmak, Bitcoin ile ödeme yapmak",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4692,10 +4664,6 @@
   "sendFastFee": "Hızlı",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "Mevcut istatistikler mevcut değildir",
   "@exchangeStatisticsNoData": {
@@ -5821,10 +5789,6 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "• • Banka transferlerini gönderin ve faturaları öder",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "Anında ödeme",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
@@ -5944,10 +5908,6 @@
   "googleAppleCloudRecommendation": "Google veya Google Apple cloud: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "Bull Bitcoin exchange web sitesine gidin",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "Test {walletName}",
   "@testWalletTitle": {
@@ -6602,10 +6562,6 @@
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
   },
-  "exchangeFeatureDcaOrders": "• DCA, Limit emirleri ve Auto-buy",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
   "payIban": "IBAN",
   "@payIban": {
     "description": "Label for IBAN field"
@@ -7245,10 +7201,6 @@
   "payPaymentHistory": "Ödeme Tarihi",
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
-  },
-  "exchangeFeatureUnifiedHistory": "• Birleşik İşlem Tarihi",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "payViewDetails": "View details",
   "@payViewDetails": {

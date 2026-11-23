@@ -113,7 +113,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy, DCA, Sell and Pay]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy, DCA, Sell, Pay and Limit Orders]
     EXCHANGE --> BULL_EXCHANGE
     BULL_EXCHANGE -->|order details navigation and receipt labels| TX_HISTORY
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
@@ -121,18 +121,18 @@ graph TB
     BULL_EXCHANGE --> BULL_UI
     BULL_EXCHANGE -->|dashboard price display| BTC_PRICE
     BULL_EXCHANGE -->|authorized payout and payin wallets| SECRETS
-    BULL_EXCHANGE -->|receive issuance, fee-estimation addresses, and unspent coins| SYNC
+    BULL_EXCHANGE -->|receive issuance, indexed payout and fee-estimation addresses, and unspent coins| SYNC
     BULL_EXCHANGE -->|Buy receive and Sell and Pay send sessions| BULL_PAYJOIN
     BULL_EXCHANGE -->|quotes| BULL_PRICER
     BULL_EXCHANGE -->|spending wallet cards and home navigation| WALLETS
-    BULL_EXCHANGE -->|address viewer supplied by the host| ADDRESS_LABELS
+    BULL_EXCHANGE -->|address viewer and destination input supplied by the host| ADDRESS_LABELS
     BULL_EXCHANGE --> LABELS
     BULL_EXCHANGE --> FEES_UI
+    BULL_EXCHANGE -->|Lightning address parsing| SATOSHIFIER
     BULL_EXCHANGE --> FEES_PACKAGE
     BULL_EXCHANGE --> PREFERENCES
     EXCHANGE --> EXCHANGE_DOMAIN
     WITHDRAW --> EXCHANGE_DOMAIN
-    LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
     TX_HISTORY --> EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN --> PRIMITIVES
@@ -280,7 +280,6 @@ graph TB
     RECEIVE --> BULL_PRICER
     RECEIVE --> PREFERENCES
     BG_TASKS[Background Tasks Package]
-    LIMIT_ORDERS[Limit Orders]
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
@@ -419,12 +418,9 @@ graph TB
     SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> TX_HISTORY
-    LIMIT_ORDERS --> EXCHANGE
     EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
-    LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
-    LIMIT_ORDERS -->|opens order details| BULL_EXCHANGE
     HW_WALLETS --> CORE
     CORE --> LABELS
     RECEIVE --> BULL_PAYJOIN
@@ -510,7 +506,6 @@ graph TB
     SEND --> FEES_PACKAGE
     SEND_TOOLS --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
-    LIMIT_ORDERS -->|public destination input| ADDRESS_LABELS
     SEND --> SIGNERS
     SEND_TOOLS --> FEES_UI
     SEND_TOOLS --> BULL_UI
@@ -539,7 +534,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
+    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
 ```
 
 ## About Package Dependency Diagrams

@@ -859,7 +859,6 @@
   "rbfFastest": "Швидке",
   "dcaLightningAddressInvalidError": "Будь ласка, введіть дійсну адресу Lightning",
   "hwKrux": "Кошик",
-  "exchangeLandingRecommendedExchange": "Bitcoin у USD",
   "receiveConfirming": "Підтвердження... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -1187,7 +1186,6 @@
   "payCoinjoinInProgress": "CoinJoin в прогрес ...",
   "testBackupAllWordsSelected": "Ви вибрали всі слова",
   "backupSettingsError": "Помилка",
-  "exchangeFeatureCustomerSupport": "• Чат з підтримкою клієнтів",
   "fundExchangeMethodCanadaPost": "Особистий готівковий або дебет в Канаді",
   "payInvoiceDecoded": "Войце декодовано успішно",
   "coreScreensAmountLabel": "Сума",
@@ -1311,7 +1309,6 @@
   "pinStatusCheckingDescription": "Перевірка стану PIN",
   "coreScreensConfirmButton": "Підтвердження",
   "autoswapTriggerAtBalanceInfoText": "Автообмін ініціюватиметься, коли ваш баланс перевищить цей максимальний баланс.",
-  "exchangeLandingDisclaimerNotAvailable": "Послуги обміну криптовалют не доступні в додатку Bull Bitcoin.",
   "sendCustomFeeRate": "Спеціальна ціна",
   "swapErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "receiveInsufficientInboundLiquidity": "Недостатня вантажопідйомність",
@@ -1330,7 +1327,6 @@
   "addressViewBalance": "Посилання",
   "hwPassport": "Паспорт Фундації",
   "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €30,000",
-  "exchangeLandingDisclaimerLegal": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
   "mempoolNetworkLiquidMainnet": "Головна",
   "exchangeDcaFrequencyWeek": "тиждень",
@@ -1467,7 +1463,6 @@
   "logoutButton": "Зареєструватися",
   "payReplaceByFee": "Заміна-By-Fee (RBF)",
   "pinButtonCreate": "Створення PIN",
-  "exchangeFeatureSelfCustody": "• Купити Біткойн прямо на самоктоди",
   "payAmountTooHigh": "Сума перевищує максимальну кількість",
   "sellBankTransfer": "Банківський переказ",
   "replaceByFeeFastestTitle": "Швидке",
@@ -1545,7 +1540,6 @@
   "sendSwapInProgressBitcoin": "Ведуться ковпа. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "buySelfie": "Селфі з ID",
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
-  "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
   "swapTransferRefundInProgressMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
   "fundExchangeMethodCanadaPostSubtitle": "Найкращі для тих, хто віддає перевагу оплаті",
   "importColdcardMultisigPrompt": "Для багатосигових гаманців сканування дескриптора гаманця QR коду",
@@ -1680,7 +1674,6 @@
   "transactionHistoryTitle": "Історія транзакцій",
   "exportTransactionsDescription": "Експортуйте всі транзакції вашого гаманця (Bitcoin, Liquid, Lightning і свопи) як файл CSV. За бажанням відфільтруйте за діапазоном дат.",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",
-  "exchangeFeatureSellBitcoin": "• Продати Bitcoin, оплачується з Bitcoin",
   "hwSeedSigner": "НасінняСинер",
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
@@ -1709,7 +1702,6 @@
   },
   "leaveYourPhone": "залишити свій телефон і ",
   "sendFastFee": "Швидкий",
-  "exchangeBrandName": "БУЛ БІТКОІН",
   "dcaConfirmTitle": "Підтвердження Купити",
   "backupSettingsPhysicalBackup": "Фізичний фон",
   "importColdcardDescription": "Імпорт сканера гаманця QR-коду від вашого Coldcard Q",
@@ -1930,7 +1922,6 @@
       }
     }
   },
-  "exchangeFeatureBankTransfers": "• Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "usePasswordInsteadButton": "{pinOrPassword} замість >>",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -1971,7 +1962,6 @@
     }
   },
   "googleAppleCloudRecommendation": "Українська Хмара яблука: ",
-  "exchangeGoToWebsiteButton": "Перейти на сайт Bull Біткойн",
   "backupWalletSuccessTestButton": "Тест резервного копіювання",
   "replaceByFeeErrorFeeRateTooLow": "Ви повинні збільшити плату за принаймні 1 sat/vbyte порівняно з оригінальною угодою",
   "payPriority": "Головна",
@@ -2107,7 +2097,6 @@
   "importColdcardImporting": "Імпортування холодної картки гаманець ...",
   "exchangeDcaHideSettings": "Приховати налаштування",
   "coreScreensPageNotFound": "Не знайдено",
-  "exchangeFeatureDcaOrders": "• DCA, Обмеження замовлень та автокупе",
   "swapInfoDescription": "Обмінюйте Bitcoin між своїми гаманцями без зайвих зусиль. Тримайте кошти на гаманці миттєвих платежів лише для щоденних витрат.",
   "autoswapSaveButton": "Зберегти",
   "sendConfirmSend": "Підтвердження",
@@ -2289,7 +2278,6 @@
   },
   "swapProgressRefunded": "Кошти за обміном повернено",
   "payPaymentHistory": "Історія оплати",
-  "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "importWatchOnlyCancel": "Зареєструватися",

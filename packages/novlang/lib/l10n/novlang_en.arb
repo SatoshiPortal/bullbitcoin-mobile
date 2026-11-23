@@ -814,16 +814,16 @@
   "@app__autoswapAlwaysBlockDisabledInfo_apple": {
     "description": "Apple (App Store) wording for the root catalogue key autoswapAlwaysBlockDisabledInfo."
   },
-  "app__exchangeLandingConnectAccount_apple": "Connect your Bull Bitcoin account",
-  "@app__exchangeLandingConnectAccount_apple": {
+  "bull_exchange__exchangeLandingConnectAccount_apple": "Connect your Bull Bitcoin account",
+  "@bull_exchange__exchangeLandingConnectAccount_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeLandingConnectAccount."
   },
-  "app__exchangeLandingRecommendedExchange_apple": "Recommended Bitcoin Account",
-  "@app__exchangeLandingRecommendedExchange_apple": {
+  "bull_exchange__exchangeLandingRecommendedExchange_apple": "Recommended Bitcoin Account",
+  "@bull_exchange__exchangeLandingRecommendedExchange_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeLandingRecommendedExchange."
   },
-  "app__exchangeGoToWebsiteButton_apple": "Go to the Bull Bitcoin website",
-  "@app__exchangeGoToWebsiteButton_apple": {
+  "bull_exchange__exchangeGoToWebsiteButton_apple": "Go to the Bull Bitcoin website",
+  "@bull_exchange__exchangeGoToWebsiteButton_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeGoToWebsiteButton."
   },
   "app__exchangeSupportChatWalletIssuesInfo_apple": "This chat is only for account related issues in Funding/Buy/Sell/Withdraw/Pay.\nFor wallet related issues, join the telegram group by clicking here.",

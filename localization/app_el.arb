@@ -241,10 +241,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "exchangeLandingRecommendedExchange": "Προτεινόμενο Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "receiveConfirming": "Επιβεβαίωση ... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -1653,10 +1649,6 @@
   "backupSettingsError": "Error",
   "@backupSettingsError": {
     "description": "Header text for error message display"
-  },
-  "exchangeFeatureCustomerSupport": "• • · Chat με την υποστήριξη πελατών",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
   },
   "sellPleasePayInvoice": "Πληρώστε αυτό το τιμολόγιο",
   "@sellPleasePayInvoice": {
@@ -3123,10 +3115,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• Αγοράστε Bitcoin απευθείας στην αυτο-κατηγορία",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "Ποσό υπερβαίνει το μέγιστο",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -3479,10 +3467,6 @@
   "backupSettingsKeyWarningBold": "Προειδοποίηση: Να είστε προσεκτικοί όπου εξοικονομείτε το κλειδί ασφαλείας.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "exchangeLandingConnectAccount": "Συνδεθείτε το λογαριασμό ανταλλαγής Bitcoin σας",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις",
   "@settingsAppSettingsTitle": {
@@ -4028,10 +4012,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "• Πώληση Bitcoin, πληρώνεται με Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4106,10 +4086,6 @@
   "sendFastFee": "Fast",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "Καμία στατιστική δεν είναι διαθέσιμη",
   "@exchangeStatisticsNoData": {
@@ -5041,10 +5017,6 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "• • · Στείλε τραπεζικές μεταφορές και λογαριασμούς πληρωμών",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "Instant πληρωμές",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
@@ -5665,10 +5637,6 @@
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
   },
-  "exchangeFeatureDcaOrders": "DCA, εντολές περιορισμού και αυτόματη αγορά",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
   "payIban": "IBAN",
   "@payIban": {
     "description": "Label for IBAN field"
@@ -6254,10 +6222,6 @@
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
   },
-  "exchangeFeatureUnifiedHistory": "• Απροσδιόριστη ιστορία συναλλαγών",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
-  },
   "payViewDetails": "Δείτε λεπτομέρειες",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -6644,10 +6608,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "Οι υπηρεσίες ανταλλαγής Cryptocurrency δεν είναι διαθέσιμες στην εφαρμογή κινητών τηλεφώνων Bull Bitcoin.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "autoswapWarningCardTitle": "Autoswap είναι ενεργοποιημένη",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
@@ -6655,10 +6615,6 @@
   "physicalBackupRecommendation": "Φυσικό αντίγραφο ασφαλείας: ",
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
-  },
-  "exchangeLandingDisclaimerLegal": "Η πρόσβαση σε υπηρεσίες ανταλλαγής θα περιορίζεται σε χώρες όπου το Bull Bitcoin μπορεί να λειτουργήσει νόμιμα και μπορεί να απαιτήσει KYC.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "automaticallyFetchKeyButton": "Αυτόματα Fetch key»",
   "@automaticallyFetchKeyButton": {
@@ -7165,10 +7121,6 @@
   "googleAppleCloudRecommendation": "Google ή Google Apple Cloud: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "Go to Bull Bitcoin ανταλλακτήρια",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "backupWalletSuccessTestButton": "Backup Test Backup Test Backup",
   "@backupWalletSuccessTestButton": {

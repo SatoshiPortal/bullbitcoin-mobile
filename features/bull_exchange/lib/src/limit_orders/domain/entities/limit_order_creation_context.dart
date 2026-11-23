@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:secrets/secrets.dart';
 
 enum LimitOrderWalletType { bitcoin, lightning, liquid }
 
@@ -26,7 +26,7 @@ final class LimitOrderCreationContext {
   final FiatCurrency selectedCurrency;
   final LimitOrderRate rate;
   final List<LimitOrderWallet> wallets;
-  final List<Wallet> appWallets;
+  final List<WalletRegistration> appWallets;
 
   const LimitOrderCreationContext({
     required this.balances,

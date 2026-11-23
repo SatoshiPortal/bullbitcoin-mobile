@@ -10,7 +10,6 @@ import 'package:path/path.dart' as p;
 const _legacyImports = {
   'lib/features/send/ui/send_router.dart -> locator.dart',
   'lib/features/app_startup/ui/app_startup_widget.dart -> router.dart',
-  'lib/features/limit_orders/ui/limit_orders_router.dart -> locator.dart',
   'lib/features/onboarding/ui/onboarding_router.dart -> locator.dart',
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
   'lib/features/settings/ui/widgets/settings_failure_listener.dart -> router.dart',

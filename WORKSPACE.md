@@ -212,6 +212,7 @@ graph TD
   bull_exchange --> labels
   bull_exchange --> preferences
   bull_exchange --> primitives
+  bull_exchange --> satoshifier
   bull_exchange --> secrets
   bull_exchange --> spend
   bull_exchange --> sync

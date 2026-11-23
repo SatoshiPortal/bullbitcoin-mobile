@@ -48,8 +48,6 @@ void main() {
           showWebsiteOnly: (_) => false,
           unavailableRedirectPath: '/home',
           brandAssetPath: 'unused',
-          copy: (_) => fail('unexpected landing route'),
-          onSignIn: (_) {},
           onExit: (_) {},
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,
@@ -133,8 +131,6 @@ void main() {
         showWebsiteOnly: (_) => false,
         unavailableRedirectPath: '/home',
         brandAssetPath: 'unused',
-        copy: (_) => fail('unexpected landing route'),
-        onSignIn: (_) {},
         onExit: (_) {},
       ).settingsRoutes,
       appSettingsRoutes: const [],
@@ -235,8 +231,6 @@ void main() {
           showWebsiteOnly: (_) => false,
           unavailableRedirectPath: '/home',
           brandAssetPath: 'unused',
-          copy: (_) => fail('unexpected landing route'),
-          onSignIn: (_) {},
           onExit: (_) {},
         ).settingsRoutes.whereType<GoRoute>().singleWhere(
           (route) => route.name == ExchangeAccessSettingsNavigation.name,

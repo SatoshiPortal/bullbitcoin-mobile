@@ -1,14 +1,11 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mocktail/mocktail.dart';
-
-class _Exchange extends Mock implements ExchangeFacade {}
+import 'package:primitives/primitives.dart';
 
 void main() {
   for (final path in [
@@ -22,21 +19,20 @@ void main() {
     testWidgets('$path stays on Home until access can be retried', (
       tester,
     ) async {
-      final exchange = _Exchange();
-      var available = false;
-      when(exchange.guardTradingEntry).thenAnswer(
-        (_) async => Ok(
-          available
-              ? ExchangeAvailability.ready
-              : ExchangeAvailability.unavailable,
-        ),
-      );
-      when(exchange.resolveAccess).thenAnswer((_) async {
-        available = true;
-        return const Ok(null);
-      });
+      var retries = 0;
       final key = GlobalKey<NavigatorState>();
-      final guard = ExchangeTradingGuard(exchange, key);
+      final guard = ExchangeTradingGuard(
+        navigatorKey: key,
+        checkAvailability: () async => Ok(
+          retries == 0
+              ? ExchangeAvailability.unavailable
+              : ExchangeAvailability.ready,
+        ),
+        resolveAccess: () async {
+          retries++;
+          return const Ok(null);
+        },
+      );
       late final GoRouter router;
       router = GoRouter(
         navigatorKey: key,
@@ -63,8 +59,8 @@ void main() {
         MaterialApp.router(
           routerConfig: router,
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+          supportedLocales: ExchangeLocalizations.supportedLocales,
         ),
       );
       await tester.pumpAndSettle();
@@ -75,7 +71,7 @@ void main() {
       expect(find.text('Trading is unavailable.'), findsOneWidget);
       await tester.tap(find.text('Retry'));
       await tester.pumpAndSettle();
-      verify(exchange.resolveAccess).called(1);
+      expect(retries, 1);
       expect(find.text('Trade target'), findsOneWidget);
       BullSnackBar.dismiss();
       await tester.pumpAndSettle();
