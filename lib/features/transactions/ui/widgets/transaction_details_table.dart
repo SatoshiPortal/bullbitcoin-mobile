@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:exchange/exchange.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/transactions/presentation/swap_l10n_x.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;

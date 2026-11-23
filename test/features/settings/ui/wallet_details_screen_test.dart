@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade;
 import 'package:primitives/primitives.dart' show Ok, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';

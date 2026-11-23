@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';

@@ -3,7 +3,7 @@ import 'package:mempool/mempool.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTransactionViewer;
 import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
 import 'package:exchange/exchange.dart';

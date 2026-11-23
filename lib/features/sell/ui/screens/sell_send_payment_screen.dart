@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
 import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';

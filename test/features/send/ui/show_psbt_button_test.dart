@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';

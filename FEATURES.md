@@ -14,6 +14,7 @@ graph TB
     ARK[Ark]
     ARK_PROTOCOL[Ark Protocol Package]
     BULL_UI[Bull UI Package]
+    APP_STARTUP -->|app theme| BULL_UI
     WALLETS --> ARK
     SETTINGS --> ARK
     SEND --> ARK

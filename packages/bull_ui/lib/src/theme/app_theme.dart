@@ -1,13 +1,16 @@
-import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
+
+import '../controls/bull_switch.dart';
+import 'app_colors.dart';
+import 'bull_shapes.dart';
+import 'bull_theme.dart';
+import 'bull_typography.dart';
+import 'bull_ui_extensions.dart';
 
 enum AppThemeType { light, dark }
 
-/// Builds the `bull_ui` [BullTheme] colour extension from an [AppColors]
-/// palette. `bull_ui` is brightness-agnostic — the app hands it the right
-/// palette per brightness, so `AppColors` stays the single source of truth.
+/// Builds the [BullTheme] colour extension from the app's [AppColors] palette.
 BullTheme _bullThemeFrom(AppColors colors) {
   return BullTheme(
     primary: colors.primary,

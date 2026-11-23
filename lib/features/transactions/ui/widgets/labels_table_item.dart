@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart';
 import 'package:labels/labels.dart';
 import 'package:label_editor/label_editor.dart';

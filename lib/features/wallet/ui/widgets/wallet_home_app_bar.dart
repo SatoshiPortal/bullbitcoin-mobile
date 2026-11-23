@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, BullSpacing;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'

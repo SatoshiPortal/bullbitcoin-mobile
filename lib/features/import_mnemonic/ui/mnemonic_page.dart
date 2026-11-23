@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';

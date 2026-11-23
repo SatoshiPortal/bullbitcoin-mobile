@@ -183,7 +183,7 @@ This is fields-first on purpose: our domain, value, and error types are defined 
 
 ## UI Kit — reuse first, build the kit as you go
 
-The shared design-system package is [`bull_ui`](packages/bull_ui/README.md). Its reusable components use the `Bull*` prefix and are published by `package:bull_ui/bull_ui.dart`. Use the kit barrel for widget imports in features built on the kit. The app supplies its theme tokens from [`lib/core/themes/`](lib/core/themes/).
+The shared design-system package is [`bull_ui`](packages/bull_ui/README.md). Its reusable components use the `Bull*` prefix and are published by `package:bull_ui/bull_ui.dart`. Use the kit barrel for widget imports in features built on the kit. The app selects its theme from `package:bull_ui/app_theme.dart`.
 
 1. **Search `packages/bull_ui` first.** Reuse an existing component. Add a variant when the same component needs another supported presentation.
 2. **Put genuinely shared UI in `bull_ui`.** Give the component localized copy, app assets and actions through parameters. Keep feature services, state and navigation with the caller.

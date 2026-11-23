@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_continue_button.dart';

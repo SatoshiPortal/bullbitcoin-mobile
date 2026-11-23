@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter/services.dart';

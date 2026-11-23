@@ -5,7 +5,7 @@ import 'package:bull_ui/bull_ui.dart' show BullTransactionListItem;
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';

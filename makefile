@@ -62,7 +62,7 @@ bull-ui-check: typography-check
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
-	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
+	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 	@echo "🧱 text sizes (typography roles, never a typed-in font size)"
 	@if grep -rnE "fontSize:[^,;]*([^A-Za-z0-9_.]|^)[0-9]+(\.[0-9]+)?([^A-Za-z0-9_]|$$)" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/bull_typography.dart:" | grep -vE "$(FONT_SIZE_ALLOWLIST)"; then echo "Read a text size from context.bullType.<role> (or BullText(role: ...)), changing only its weight or colour; size a keypad glyph from BullKeypadMetrics.glyphSize. The numbers live only in BullTypography.standard"; exit 1; fi
 	@if grep -rnE "fontSize: *$$" lib features packages --include='*.dart' | grep -v "/test/"; then echo "Keep a fontSize on one line so the typed-in size check can read it"; exit 1; fi

@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';

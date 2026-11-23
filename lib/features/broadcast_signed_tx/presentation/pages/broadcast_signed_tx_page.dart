@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork, NetworkEnv;
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';

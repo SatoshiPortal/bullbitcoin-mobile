@@ -3,7 +3,7 @@ import 'package:bull_ui/bull_ui.dart' show BullBorderedTile;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_settings_page.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
