@@ -34,6 +34,7 @@ import 'package:signers/storage.dart' show SignerDevices;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
+import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -46,7 +47,6 @@ import 'package:electrum/setup.dart'
         RegtestElectrumProfile;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
-import 'package:settings/setup.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';

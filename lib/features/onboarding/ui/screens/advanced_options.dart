@@ -1,7 +1,6 @@
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:settings/settings.dart' show TranslationWarningBottomSheet;
 import 'package:network/network.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:settings/settings.dart';

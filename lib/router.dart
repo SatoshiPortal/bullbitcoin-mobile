@@ -275,7 +275,7 @@ class AppRouter {
       _sendRoutes.consolidation,
       SettingsFeature.mount(
         menuScope: SettingsRouter.menuScope,
-        settings: locator<Settings>,
+        settings: locator.call<Settings>,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
