@@ -7,7 +7,7 @@ import 'package:background_tasks/native_sync.dart';
 import 'dart:async';
 
 import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:all_seed_view/testing.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
