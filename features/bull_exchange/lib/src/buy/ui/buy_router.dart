@@ -23,6 +23,11 @@ enum BuyRoute {
   const BuyRoute(this.path);
 }
 
+/// A confirmed order goes to the success screen, which follows it, even when
+/// its payin is not completed yet.
+bool _isPastConfirmation(BuyState state) =>
+    state.isOrderConfirmed || state.buyOrder?.isPayinCompleted == true;
+
 class BuyRouter {
   static List<RouteBase> routes({
     required BuyBloc Function() createBloc,
@@ -59,8 +64,8 @@ class BuyRouter {
               builder: (context, state) {
                 return BlocListener<BuyBloc, BuyState>(
                   listenWhen: (previous, current) =>
-                      previous.buyOrder?.isPayinCompleted != true &&
-                      current.buyOrder?.isPayinCompleted == true,
+                      !_isPastConfirmation(previous) &&
+                      _isPastConfirmation(current),
                   listener: (context, state) {
                     context.goNamed(
                       BuyRoute.buySuccess.name,

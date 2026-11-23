@@ -189,6 +189,7 @@ class BuyConfirmScreen extends StatelessWidget {
                     onPressed:
                         (buyOrder == null ||
                             isConfirmingOrder ||
+                            state.isOrderConfirmed ||
                             isRefreshingOrder ||
                             isLoading)
                         ? null

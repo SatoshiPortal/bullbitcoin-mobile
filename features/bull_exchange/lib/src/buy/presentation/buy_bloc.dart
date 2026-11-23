@@ -76,10 +76,6 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   int _orderCreationGeneration = 0;
   Environment? _payoutEnvironment;
 
-  /// Set once the order is confirmed at its quote: later reads of the order
-  /// (the success screen polls it) carry a deadline that no longer matters.
-  bool _isQuoteConfirmed = false;
-
   /// Asks for a fresh quote when the order's price lock lapses, and keeps
   /// asking at a bounded pace while the exchange hands back lapsed ones. The
   /// countdown on screen is display only; this is the single trigger.
@@ -259,9 +255,18 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     bool isCurrent() => generation == _orderCreationGeneration && !emit.isDone;
     // Navigation starts with this emission, before cleanup, address lookup or
     // the exchange request. The confirmation screen owns the pending result.
-    emit(state.copyWith(isCreatingOrder: true, buyOrder: null, failure: null));
+    emit(
+      state.copyWith(
+        isCreatingOrder: true,
+        buyOrder: null,
+        isOrderConfirmed: false,
+        failure: null,
+      ),
+    );
     try {
-      await _cancelAbandonedPayjoin(input.buyOrder);
+      if (!input.isOrderConfirmed) {
+        await _cancelAbandonedPayjoin(input.buyOrder);
+      }
       if (!isCurrent()) return;
       final wallet = input.selectedWallet;
       String toAddress;
@@ -316,8 +321,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
             order: value,
             destinationWalletId: wallet?.id,
           );
-          emit(state.copyWith(buyOrder: value));
-          _isQuoteConfirmed = false;
+          emit(state.copyWith(buyOrder: value, isOrderConfirmed: false));
           _quoteScheduler.track(value.confirmationDeadline);
         case Err(:final failure):
           // Already logged at the boundary.
@@ -335,12 +339,13 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyOrderCreationAbandoned event,
     Emitter<BuyState> emit,
   ) async {
-    if (state.isConfirmingOrder || state.buyOrder?.isPayinCompleted == true) {
+    if (state.isConfirmingOrder ||
+        state.isOrderConfirmed ||
+        state.buyOrder?.isPayinCompleted == true) {
       return;
     }
     final abandonedOrder = state.buyOrder;
     ++_orderCreationGeneration;
-    _isQuoteConfirmed = false;
     _quoteScheduler.cancel();
     emit(
       state.copyWith(
@@ -400,7 +405,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       final refreshResult = await _refreshBuyOrderUsecase.execute(
         orderId: orderId,
-        confirmed: _isQuoteConfirmed,
+        confirmed: state.isOrderConfirmed,
       );
       if (!isCurrent()) return;
       final BuyOrder refreshedOrder;
@@ -411,7 +416,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           emit(state.copyWith(failure: failure));
           // Only a quote awaiting confirmation is worth retrying: a confirmed
           // order, or one read by id with nothing on screen, has none.
-          if (!_isQuoteConfirmed && state.buyOrder != null) {
+          if (!state.isOrderConfirmed && state.buyOrder != null) {
             _quoteScheduler.refreshFailed();
           }
           return;
@@ -439,7 +444,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // confirmation, so the order's own status has to say so. Otherwise a
       // lapsed lock coming back is a retry, not a new quote: the scheduler
       // paces it rather than asking again at the speed of the response.
-      if (_isQuoteConfirmed || order.isPayinCompleted || order.isExpired()) {
+      if (state.isOrderConfirmed ||
+          order.isPayinCompleted ||
+          order.isExpired()) {
         _quoteScheduler.cancel();
       } else {
         _quoteScheduler.track(order.confirmationDeadline);
@@ -455,7 +462,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyQuoteRefreshGaveUp event,
     Emitter<BuyState> emit,
   ) {
-    if (_isQuoteConfirmed ||
+    if (state.isOrderConfirmed ||
         state.isConfirmingOrder ||
         state.buyOrder?.isPayinCompleted == true) {
       return;
@@ -469,7 +476,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   ) async {
     if (state.isCreatingOrder ||
         state.isRefreshingOrder ||
-        state.isConfirmingOrder) {
+        state.isConfirmingOrder ||
+        state.isOrderConfirmed) {
       return;
     }
     final orderId = state.buyOrder?.orderId;
@@ -518,10 +526,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           : confirmedOrder;
 
       _syncBuyReceiptUsecase.execute(order: order);
-      emit(state.copyWith(buyOrder: order));
-      // Confirmed at this quote; there is nothing left to refresh.
-      _isQuoteConfirmed = true;
+      // Confirmed at this quote; there is nothing left to refresh. The payin
+      // may still be pending: the success screen follows it from here.
       _quoteScheduler.cancel();
+      emit(state.copyWith(buyOrder: order, isOrderConfirmed: true));
     } finally {
       emit(state.copyWith(isConfirmingOrder: false));
     }
@@ -543,7 +551,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     ++_orderCreationGeneration;
     _quoteScheduler.dispose();
     await _displayBitcoinUnitSubscription?.cancel();
-    await _cancelAbandonedPayjoin(state.buyOrder);
+    if (!state.isOrderConfirmed) await _cancelAbandonedPayjoin(state.buyOrder);
     return super.close();
   }
 

@@ -379,6 +379,63 @@ void main() {
       });
     });
 
+    group('a confirmed order whose payin is not completed (BUY-1)', () {
+      late BuyOrder live;
+
+      setUp(() {
+        live = order.copyWith(
+          confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
+        );
+        bloc.seed(BuyState(buyOrder: live));
+        when(() => confirm.execute(orderId: 'quote-order'))
+            .thenAnswer((_) async => Ok(live));
+      });
+
+      test('is a confirmed state, not a re-armed Confirm', () async {
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+
+        expect(bloc.state.isOrderConfirmed, isTrue);
+        expect(bloc.state.isConfirmingOrder, isFalse);
+        expect(bloc.state.buyOrder?.isPayinCompleted, isFalse);
+      });
+
+      test('cannot be confirmed a second time', () async {
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+
+        verify(() => confirm.execute(orderId: 'quote-order')).called(1);
+      });
+
+      test('back neither resets the flow nor cancels its payjoin', () async {
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+        bloc.add(const BuyEvent.orderCreationAbandoned());
+        await pumpEventQueue();
+
+        expect(bloc.state.isOrderConfirmed, isTrue);
+        expect(bloc.state.buyOrder?.orderId, 'quote-order');
+        verifyNever(() => cancel.execute(any()));
+      });
+
+      test('closing the flow does not cancel its payjoin', () async {
+        bloc.add(const BuyEvent.confirmOrder());
+        await pumpEventQueue();
+        await bloc.close();
+
+        verifyNever(() => cancel.execute(any()));
+      });
+
+      test('an unconfirmed order is still cancelled on back', () async {
+        bloc.add(const BuyEvent.orderCreationAbandoned());
+        await pumpEventQueue();
+
+        verify(() => cancel.execute(live)).called(1);
+      });
+    });
+
     test('an expired order read without a confirmation is not refreshed', () {
       // The accelerate route builds a fresh bloc and only reads the order.
       when(refreshCall).thenAnswer(

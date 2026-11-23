@@ -18,6 +18,10 @@ sealed class BuyState with _$BuyState {
     @Default(false) bool isCreatingOrder,
     @Default(false) bool isRefreshingOrder,
     @Default(false) bool isConfirmingOrder,
+    // The exchange confirmed [buyOrder] at its quote. From here the flow
+    // follows the order on the success screen: it is never confirmed again
+    // and leaving it never cancels its payjoin, whatever its payin status.
+    @Default(false) bool isOrderConfirmed,
     BuyOrder? buyOrder,
     @Default(false) bool payjoinGloballyEnabled,
     @Default(true) bool isPayjoinEnabled,
