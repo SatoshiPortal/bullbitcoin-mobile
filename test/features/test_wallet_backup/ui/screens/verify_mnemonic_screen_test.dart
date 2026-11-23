@@ -1,6 +1,8 @@
 import 'package:all_seed_view/testing.dart';
 import 'package:all_seed_view/setup.dart';
 import 'package:swaps/swaps.dart';
+import 'package:backups/testing.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 
 import 'dart:async';
 import 'dart:io';
@@ -11,21 +13,12 @@ import 'package:bull_ui/bull_ui.dart' show BullButton, BullPinPad;
 
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:primitives/primitives.dart'
+    show Err, Ok, Result, BitcoinNetwork, Fingerprint;
+import 'package:physical_backup_verification/physical_backup_verification.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +33,19 @@ class _AllCubit extends Mock implements AllSeedViewCubit {}
 class _SwapEngine extends Mock implements BoltzSwaps {}
 
 class _MockCompleteBackupVerificationUsecase extends Mock
-    implements CompleteBackupVerificationUsecase {}
+    implements CompleteBackupVerificationUsecase {
+  int calls = 0;
+  Result<void, TestWalletBackupFailure> result = const Ok(null);
+
+  @override
+  Future<Result<void, TestWalletBackupFailure>> execute(
+    BackupWallet wallet,
+    PhysicalBackupProof proof,
+  ) async {
+    calls++;
+    return result;
+  }
+}
 
 class _MockLoadWalletsForNetworkUsecase extends Mock
     implements LoadWalletsForNetworkUsecase {}
@@ -98,28 +103,20 @@ const _wordsB = [
   'above',
 ];
 
-Wallet _wallet(String fingerprint) => Wallet(
-  origin: 'origin-$fingerprint',
-  label: 'Wallet $fingerprint',
-  network: Network.bitcoinMainnet,
+BackupWallet _wallet(String fingerprint) => BackupWallet(
+  id: 'origin-$fingerprint',
+  label: 'BackupWallet $fingerprint',
+  network: BitcoinNetwork.mainnet,
   isDefault: false,
-  masterFingerprint: fingerprint,
-  xpubFingerprint: fingerprint,
-  scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.zero,
+  fingerprint: Fingerprint(fingerprint),
 );
 
 late Secret _secretA;
 late Secret _secretB;
-late Wallet _walletA;
-late Wallet _walletB;
+late BackupWallet _walletA;
+late BackupWallet _walletB;
 
-TestWalletBackupState _selected(Wallet wallet) => TestWalletBackupState(
+TestWalletBackupState _selected(BackupWallet wallet) => TestWalletBackupState(
   wallets: [_walletA, _walletB],
   selectedWallet: wallet,
 );
@@ -154,8 +151,6 @@ void main() {
 
     getSecretUsecase = _MockGetSecretFromFingerprintUsecase();
     completeUsecase = _MockCompleteBackupVerificationUsecase();
-    when(() => completeUsecase.execute())
-        .thenAnswer((_) async => const Ok(null));
     bloc = _SeedableTestWalletBackupBloc(
       completeBackupVerificationUsecase: completeUsecase,
       loadWalletsForNetworkUsecase: _MockLoadWalletsForNetworkUsecase(),
@@ -239,7 +234,10 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<TestWalletBackupBloc>.value(
         value: bloc,
-        child: VerifyMnemonicScreen(onTestSucceeded: (_) {}),
+        child: VerifyMnemonicScreen(
+          onTestSucceeded: (_) {},
+          successImage: AssetImage(Assets.animations.successTick.path),
+        ),
       ),
     ),
   );
@@ -264,8 +262,8 @@ void main() {
   // The words are sealed inside `MnemonicChallenge` and carry no text the
   // test could look for: which wallet is on screen is read from the
   // challenge's key, which is that wallet's fingerprint.
-  void expectChallengeFor(Wallet wallet, Matcher matcher) => expect(
-    find.byKey(ValueKey<String?>(wallet.masterFingerprint)),
+  void expectChallengeFor(BackupWallet wallet, Matcher matcher) => expect(
+    find.byKey(ValueKey<String?>(wallet.fingerprint?.hex)),
     matcher,
     reason: wallet.label,
   );
@@ -342,14 +340,14 @@ void main() {
     await tester.tap(find.text('Continue'));
     await flush(tester, until: incorrectPassphrase.tryEvaluate);
     expect(incorrectPassphrase, findsOneWidget);
-    verifyNever(() => completeUsecase.execute());
+    expect(completeUsecase.calls, 0);
 
     final success = find.byType(BackupTestSuccessScreen);
     await tester.enterText(find.byType(TextField), ' Mixed ');
     await tester.tap(find.text('Continue'));
     await flush(tester, until: success.tryEvaluate);
     expect(success, findsOneWidget);
-    verify(() => completeUsecase.execute()).called(1);
+    expect(completeUsecase.calls, 1);
   });
 
   testWidgets('only the sealed verdict records a backup', (tester) async {
@@ -362,7 +360,7 @@ void main() {
     );
     challenge.onProgress?.call(12, 12);
     await tester.pump();
-    verifyNever(() => completeUsecase.execute());
+    expect(completeUsecase.calls, 0);
 
     challenge.onSolved();
     await flush(
@@ -370,7 +368,7 @@ void main() {
       until: find.byType(BackupTestSuccessScreen).tryEvaluate,
     );
     expect(find.byType(BackupTestSuccessScreen), findsOneWidget);
-    verify(() => completeUsecase.execute()).called(1);
+    expect(completeUsecase.calls, 1);
   });
 
   testWidgets('drops a verdict after the wallet selection is cleared', (
@@ -388,7 +386,7 @@ void main() {
     challenge.onSolved();
     await tester.pump();
     expect(find.byType(BackupTestSuccessScreen), findsNothing);
-    verifyNever(() => completeUsecase.execute());
+    expect(completeUsecase.calls, 0);
     await drainSnackBar(tester);
   });
 
@@ -407,22 +405,20 @@ void main() {
     challenge.onSolved();
     await tester.pump();
     expect(find.byType(BackupTestSuccessScreen), findsNothing);
-    verifyNever(() => completeUsecase.execute());
+    expect(completeUsecase.calls, 0);
     await drainSnackBar(tester);
   });
 
   testWidgets('a failed write does not report success', (tester) async {
     stubSecret(_secretA);
-    when(
-      () => completeUsecase.execute(),
-    ).thenAnswer((_) async => const Err(TestWalletBackupCompletionFailure()));
+    completeUsecase.result = const Err(TestWalletBackupCompletionFailure());
     bloc.seed(_selected(_walletA));
     await pumpScreen(tester);
     await flush(tester);
     tester.widget<MnemonicChallenge>(find.byType(MnemonicChallenge)).onSolved();
     await tester.pump();
     expect(find.byType(BackupTestSuccessScreen), findsNothing);
-    verify(() => completeUsecase.execute()).called(1);
+    expect(completeUsecase.calls, 1);
     await drainSnackBar(tester);
   });
 
@@ -453,7 +449,10 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TestWalletBackupBloc>.value(
           value: bloc,
-          child: ShowMnemonicScreen(onTestSucceeded: (_) {}),
+          child: ShowMnemonicScreen(
+            successImage: AssetImage(Assets.animations.successTick.path),
+            onTestSucceeded: (_) {},
+          ),
         ),
       ),
     );
@@ -629,8 +628,7 @@ void main() {
 
     expect(spinner, findsNothing);
     expectChallengeFor(_walletA, findsOneWidget);
-    verify(() => getSecretUsecase.execute(_walletA.masterFingerprint))
-        .called(1);
+    verify(() => getSecretUsecase.execute(_secretA.id.hex)).called(1);
   });
 
   testWidgets('reloads the words when the selected wallet changes', (
@@ -663,8 +661,7 @@ void main() {
     );
     await flush(tester);
 
-    verify(() => getSecretUsecase.execute(_walletA.masterFingerprint))
-        .called(1);
+    verify(() => getSecretUsecase.execute(_secretA.id.hex)).called(1);
     expectChallengeFor(_walletA, findsOneWidget);
     await drainSnackBar(tester);
   });
@@ -672,10 +669,10 @@ void main() {
   testWidgets('drops a load overtaken by a later wallet switch', (
     tester,
   ) async {
-    // Wallet A's read is held open until after wallet B's has landed, so the
+    // BackupWallet A's read is held open until after wallet B's has landed, so the
     // stale result arrives last and must not replace B's words.
     final slowReadOfA = Completer<_SecretResult>();
-    when(() => getSecretUsecase.execute(_walletA.masterFingerprint))
+    when(() => getSecretUsecase.execute(_secretA.id.hex))
         .thenAnswer((_) => slowReadOfA.future);
     stubSecret(_secretB);
 
@@ -699,7 +696,7 @@ void main() {
     tester,
   ) async {
     stubSecret(_secretA);
-    when(() => getSecretUsecase.execute(_walletB.masterFingerprint)).thenAnswer(
+    when(() => getSecretUsecase.execute(_secretB.id.hex)).thenAnswer(
       (_) async => const Err(TestWalletBackupSeedUnavailableFailure()),
     );
     bloc.seed(_selected(_walletA));
@@ -709,7 +706,7 @@ void main() {
     bloc.seed(_selected(_walletB));
     await flush(tester);
 
-    // Wallet A's challenge must not sit under wallet B's name, and the screen
+    // BackupWallet A's challenge must not sit under wallet B's name, and the screen
     // must not fall back to the spinner either.
     expectChallengeFor(_walletA, findsNothing);
     expect(spinner, findsNothing);

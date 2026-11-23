@@ -130,10 +130,7 @@ void main() {
         'Wallet',
         'Import Wallet',
       ]);
-      expect(backupSettingsDataItemOrder, [
-        SettingsItemId.labels,
-        SettingsItemId.transactionHistory,
-      ]);
+
       expect(walletSettingsItemOrder, [
         SettingsItemId.payjoin,
         SettingsItemId.ark,

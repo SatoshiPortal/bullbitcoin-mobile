@@ -1,29 +1,18 @@
-import 'package:primitives/primitives.dart' show SignerEntity;
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/backup_settings/domain/read_backup_status_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'dart:io';
+
+import 'package:backups/testing.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, Result, ScriptType;
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart';
 
-class _Settings extends Mock implements Preferences {}
+import '../../support/inventory_fixture.dart';
 
-final class _Wallets extends Fake implements GetWalletsUsecase {
-  final Wallet wallet;
-
-  _Wallets(this.wallet);
-
+class _Settings implements ActiveEnvironmentReader {
   @override
-  Future<Result<List<Wallet>, WalletFailure>> execute({
-    bool? onlyDefaults,
-    bool? onlyBitcoin,
-    bool? onlyLiquid,
-    bool sync = false,
-  }) async => Ok([wallet]);
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async => const Ok(Environment.testnet);
 }
 
 void main() {
@@ -32,43 +21,53 @@ void main() {
 
   Future<BackupStatusSummary> summary(
     rb.BackupStatus status, {
-    Network network = Network.bitcoinTestnet,
+    BitcoinNetwork network = BitcoinNetwork.testnet,
     bool physicalVerified = false,
     void Function(rb.VaultContext)? onReadVault,
   }) async {
-    final settings = _Settings();
-    when(() => settings.fetch()).thenAnswer(
-      (_) async => Ok(
-        const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
+    final directory = await Directory.systemTemp.createTemp('backup-status-');
+    addTearDown(() => directory.delete(recursive: true));
+    final fixture = await InventoryFixture.open(directory);
+    addTearDown(fixture.close);
+    final registered = await fixture.inventory.registerWallet(
+      RegisteredWallet(
+        id: 'default',
+        secretFingerprint: 'deadbeef',
+        masterFingerprint: 'deadbeef',
+        signer: 'local',
+        network: network == BitcoinNetwork.testnet
+            ? 'bitcoinTestnet'
+            : 'bitcoinMainnet',
+        xpub: 'unused-fixture',
+        externalDescriptor: 'wpkh([deadbeef/84h/1h/0h]unused-fixture/0/*)',
+        internalDescriptor: 'wpkh([deadbeef/84h/1h/0h]unused-fixture/1/*)',
+        label: null,
+        birthday: null,
+        isDefault: true,
       ),
+      prepareProperties: () async => const Ok(null),
     );
-    final wallet = Wallet(
-      origin: "test/84'/1'/0'",
-      network: network,
-      masterFingerprint: 'deadbeef',
-      xpubFingerprint: 'test-fixture',
-      scriptType: ScriptType.bip84,
-      xpub: 'unused-fixture',
-      externalPublicDescriptor: 'unused-fixture',
-      internalPublicDescriptor: 'unused-fixture',
-      signer: SignerEntity.local,
-      signerDevice: null,
-      balanceSat: BigInt.zero,
-      isDefault: true,
-      isPhysicalBackupTested: physicalVerified,
-      latestPhysicalBackup: physicalVerified ? physicalDate : null,
-      latestEncryptedBackup: legacyDate,
-    );
-    final result = await ReadBackupStatusUsecase(_Wallets(wallet), settings, (
-      context,
-    ) async {
-      onReadVault?.call(context);
-      return Ok(status);
-    }).execute();
+    expect(registered, isA<Ok>());
+    final result = await ReadBackupStatusUsecase(
+      fixture.inventory,
+      _Settings(),
+      (network, fingerprint) async {
+        expect(network, BitcoinNetwork.testnet);
+        expect(fingerprint.hex, 'deadbeef');
+        return Ok((
+          physicalBackupTested: physicalVerified,
+          encryptedVaultTested: false,
+          latestEncryptedBackup: legacyDate.millisecondsSinceEpoch,
+          latestPhysicalBackup: physicalVerified
+              ? physicalDate.millisecondsSinceEpoch
+              : null,
+        ));
+      },
+      (context) async {
+        onReadVault?.call(context);
+        return Ok(status);
+      },
+    ).execute();
     return switch (result) {
       Ok(:final value) => value,
       Err(:final failure) => fail('$failure'),
@@ -117,7 +116,7 @@ void main() {
   test('a default on another network cannot contribute backup facts', () async {
     final status = await summary(
       const rb.BackupStatus(),
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       physicalVerified: true,
       onReadVault: (_) => fail('A different network must not open a vault'),
     );
