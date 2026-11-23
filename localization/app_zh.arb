@@ -3931,5 +3931,6 @@
   "permissionsTitle": "权限",
   "settingsSearchPermissionsKeywords": "通知|后台任务|电池|提醒",
   "wizardBackgroundTasksDescription": "在应用关闭时检查付款。",
-  "wizardNotificationsDescription": "收到付款时通知您。"
+  "wizardNotificationsDescription": "收到付款时通知您。",
+  "sendErrorInvoiceExpiryTooShort": "该发票即将过期，剩余时间不足。请向收款人索取新的发票。"
 }

@@ -9539,5 +9539,6 @@
   "permissionsTitle": "สิทธิ์",
   "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
   "wizardBackgroundTasksDescription": "ตรวจสอบการชำระเงินขณะปิดแอป",
-  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า"
+  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า",
+  "sendErrorInvoiceExpiryTooShort": "ใบแจ้งหนี้นี้จะหมดอายุเร็วเกินไป โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ"
 }

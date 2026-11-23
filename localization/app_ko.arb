@@ -9535,5 +9535,6 @@
   "permissionsTitle": "권한",
   "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
   "wizardBackgroundTasksDescription": "앱이 닫혀 있어도 결제를 확인합니다.",
-  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다."
+  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다.",
+  "sendErrorInvoiceExpiryTooShort": "이 인보이스는 너무 빨리 만료됩니다. 수취인에게 새 인보이스를 요청하세요."
 }

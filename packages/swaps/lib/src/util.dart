@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:crypto/crypto.dart';
@@ -233,6 +235,22 @@ class BoltzApiException implements Exception {
     null => kind == 'HTTP' || kind == 'IO' || kind == 'WebSocket',
     final code => code >= 500 || code == 418,
   };
+
+  bool get isInvoiceExpiryTooShort {
+    if (statusCode != 400) return false;
+
+    // boltz-client appends the JSON response after the HTTP status.
+    final separator = message.indexOf(',');
+    if (separator == -1) return false;
+    try {
+      return switch (jsonDecode(message.substring(separator + 1))) {
+        {'error': 'invoice expiry too short'} => true,
+        _ => false,
+      };
+    } on FormatException {
+      return false;
+    }
+  }
 
   @override
   String toString() => message;

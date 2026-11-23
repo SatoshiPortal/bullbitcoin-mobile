@@ -4114,5 +4114,6 @@
   "permissionsTitle": "Berechtigungen",
   "settingsSearchPermissionsKeywords": "Benachrichtigungen|Hintergrundaufgaben|Akku|Hinweise",
   "wizardBackgroundTasksDescription": "Prüft Zahlungen bei geschlossener App.",
-  "wizardNotificationsDescription": "Erfahren Sie, wann eine Zahlung eingeht."
+  "wizardNotificationsDescription": "Erfahren Sie, wann eine Zahlung eingeht.",
+  "sendErrorInvoiceExpiryTooShort": "Diese Invoice läuft zu früh ab. Bitten Sie den Empfänger um eine neue Invoice."
 }

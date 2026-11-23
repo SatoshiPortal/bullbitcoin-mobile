@@ -55,6 +55,12 @@ final class SwapsBoltzRejectedFailure extends SwapsFailure {
   const SwapsBoltzRejectedFailure([super.logMessage]);
 }
 
+/// Boltz requires more time before the invoice expires.
+final class SwapsInvoiceExpiryTooShortFailure
+    extends SwapsBoltzRejectedFailure {
+  const SwapsInvoiceExpiryTooShortFailure();
+}
+
 /// The amount is outside what Boltz currently accepts for this swap type.
 final class SwapsAmountOutOfLimitsFailure extends SwapsFailure {
   final int minSat;
@@ -117,6 +123,9 @@ SwapsFailure classifySwapCreationFailure(Object error) {
     );
   }
   if (error is BoltzApiException) {
+    if (error.isInvoiceExpiryTooShort) {
+      return const SwapsInvoiceExpiryTooShortFailure();
+    }
     return error.isUnreachable
         ? SwapsBoltzUnavailableFailure(error.message)
         : SwapsBoltzRejectedFailure(error.message);

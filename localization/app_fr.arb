@@ -4181,5 +4181,6 @@
   "receiveEditAmount": "Modifier le montant",
   "receiveRecipientMessageHint": "Facultatif, visible par le payeur",
   "receiveVerifyBitbox": "Vérifier sur BitBox",
-  "receiveFeeDetails": "Détail des frais"
+  "receiveFeeDetails": "Détail des frais",
+  "sendErrorInvoiceExpiryTooShort": "Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire."
 }

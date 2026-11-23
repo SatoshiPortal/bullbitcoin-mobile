@@ -3033,5 +3033,6 @@
   "permissionsTitle": "Ruhusa",
   "settingsSearchPermissionsKeywords": "arifa|kazi za chinichini|betri|tahadhari",
   "wizardBackgroundTasksDescription": "Hukagua malipo programu ikiwa imefungwa.",
-  "wizardNotificationsDescription": "Jua malipo yanapofika."
+  "wizardNotificationsDescription": "Jua malipo yanapofika.",
+  "sendErrorInvoiceExpiryTooShort": "Muda wa ankara hii unaisha mapema mno. Muombe mpokeaji ankara mpya."
 }

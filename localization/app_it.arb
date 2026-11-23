@@ -4047,5 +4047,6 @@
   "permissionsTitle": "Autorizzazioni",
   "settingsSearchPermissionsKeywords": "notifiche|attività in background|batteria|avvisi",
   "wizardBackgroundTasksDescription": "Controlla i pagamenti ad app chiusa.",
-  "wizardNotificationsDescription": "Sappi quando arriva un pagamento."
+  "wizardNotificationsDescription": "Sappi quando arriva un pagamento.",
+  "sendErrorInvoiceExpiryTooShort": "Questa fattura scade troppo presto. Chiedi al destinatario una nuova fattura."
 }

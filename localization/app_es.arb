@@ -4375,5 +4375,6 @@
   "sendLeavePaymentTitle": "¿Salir de este pago?",
   "sendLeavePaymentDescription": "Se borrarán el destinatario y el importe. Se abrirá la página de UTXO para elegir cuáles gastar.",
   "sendOpenCoins": "Abrir UTXO",
-  "sendSecureWalletDescription": "Monedero Bitcoin seguro"
+  "sendSecureWalletDescription": "Monedero Bitcoin seguro",
+  "sendErrorInvoiceExpiryTooShort": "Esta factura caduca demasiado pronto. Solicite una nueva factura al destinatario."
 }

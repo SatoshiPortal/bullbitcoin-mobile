@@ -18,6 +18,10 @@ final class SendInvoiceExpiredFailure extends SendFailure {
   const SendInvoiceExpiredFailure([super.logMessage]);
 }
 
+final class SendInvoiceExpiryTooShortFailure extends SendFailure {
+  const SendInvoiceExpiryTooShortFailure();
+}
+
 final class SendInvoiceAmountRequiredFailure extends SendFailure {
   const SendInvoiceAmountRequiredFailure([super.logMessage]);
 }

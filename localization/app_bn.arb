@@ -9718,5 +9718,6 @@
   "permissionsTitle": "অনুমতি",
   "settingsSearchPermissionsKeywords": "বিজ্ঞপ্তি|ব্যাকগ্রাউন্ড কাজ|ব্যাটারি|সতর্কতা",
   "wizardBackgroundTasksDescription": "অ্যাপ বন্ধ থাকলেও পেমেন্ট দেখে।",
-  "wizardNotificationsDescription": "পেমেন্ট এলে জানুন।"
+  "wizardNotificationsDescription": "পেমেন্ট এলে জানুন।",
+  "sendErrorInvoiceExpiryTooShort": "এই চালানের মেয়াদ খুব শিগগিরই শেষ হবে। প্রাপকের কাছে নতুন একটি চালান চান।"
 }

@@ -3024,5 +3024,6 @@
   "permissionsTitle": "Quyền",
   "settingsSearchPermissionsKeywords": "thông báo|tác vụ nền|pin|cảnh báo",
   "wizardBackgroundTasksDescription": "Kiểm tra thanh toán khi ứng dụng đóng.",
-  "wizardNotificationsDescription": "Biết khi có khoản thanh toán đến."
+  "wizardNotificationsDescription": "Biết khi có khoản thanh toán đến.",
+  "sendErrorInvoiceExpiryTooShort": "Hóa đơn này hết hạn quá sớm. Hãy yêu cầu người nhận gửi hóa đơn mới."
 }

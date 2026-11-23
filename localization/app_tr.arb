@@ -9535,5 +9535,6 @@
   "permissionsTitle": "İzinler",
   "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
   "wizardBackgroundTasksDescription": "Uygulama kapalıyken ödemeleri kontrol eder.",
-  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun."
+  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun.",
+  "sendErrorInvoiceExpiryTooShort": "Bu faturanın süresi çok erken doluyor. Alıcıdan yeni bir fatura isteyin."
 }

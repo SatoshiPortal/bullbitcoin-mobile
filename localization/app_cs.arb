@@ -9535,5 +9535,6 @@
   "permissionsTitle": "Oprávnění",
   "settingsSearchPermissionsKeywords": "oznámení|úlohy na pozadí|baterie|upozornění",
   "wizardBackgroundTasksDescription": "Kontroluje platby při zavřené aplikaci.",
-  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba."
+  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba.",
+  "sendErrorInvoiceExpiryTooShort": "Platnost této faktury vyprší příliš brzy. Požádejte příjemce o novou fakturu."
 }

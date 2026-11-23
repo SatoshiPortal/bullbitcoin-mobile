@@ -3913,5 +3913,6 @@
   "permissionsTitle": "Käyttöoikeudet",
   "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
   "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
-  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu."
+  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu.",
+  "sendErrorInvoiceExpiryTooShort": "Tämä lasku vanhenee liian pian. Pyydä vastaanottajalta uusi lasku."
 }

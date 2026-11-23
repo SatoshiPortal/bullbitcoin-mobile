@@ -9538,5 +9538,6 @@
   "permissionsTitle": "الأذونات",
   "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
-  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة.",
+  "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة."
 }

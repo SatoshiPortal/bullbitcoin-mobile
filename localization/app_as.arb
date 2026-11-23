@@ -7029,5 +7029,6 @@
   "permissionsTitle": "অনুমতি",
   "settingsSearchPermissionsKeywords": "জাননী|নেপথ্যৰ কাম|বেটাৰী|সতৰ্কবাণী",
   "wizardBackgroundTasksDescription": "এপ বন্ধ থাকিলেও পেমেণ্ট পৰীক্ষা কৰে।",
-  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।"
+  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।",
+  "sendErrorInvoiceExpiryTooShort": "এই invoice ৰ মেয়াদ অতি সোনকালে উকলিব। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।"
 }

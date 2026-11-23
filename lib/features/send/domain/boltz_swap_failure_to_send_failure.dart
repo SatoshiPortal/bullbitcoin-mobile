@@ -3,6 +3,8 @@ import 'package:swaps/swaps.dart';
 
 extension BoltzSwapFailureToSendFailure on SwapsFailure {
   SendFailure toSendFailure({required int amountSat}) => switch (this) {
+    SwapsInvoiceExpiryTooShortFailure() =>
+      const SendInvoiceExpiryTooShortFailure(),
     final SwapsAmountOutOfLimitsFailure limits => SendAmountOutOfBoundsFailure(
       minimumSat: limits.isBelowMinimum(amountSat)
           ? BigInt.from(limits.minSat)
