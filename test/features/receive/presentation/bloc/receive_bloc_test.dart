@@ -257,6 +257,8 @@ void main() {
     bool withPresetWallet = true,
     Transactions? observation,
     Preferences? settings,
+    Future<Result<ReceiveWallet, ReceiveFailure>> Function(ReceiveWallet)?
+    resolveEntry,
   }) {
     if (settings != null) {
       final operations = Receive.open(
@@ -282,7 +284,7 @@ void main() {
     return ReceiveBloc(
       getReceiveSwapLimitsUsecase: getSwapLimits,
       getReceiveWalletsUsecase: getWallets,
-      resolveEntry: (wallet) async => Ok(wallet),
+      resolveEntry: resolveEntry ?? (wallet) async => Ok(wallet),
       refreshAfterLightningPayment: () async {
         lightningRefreshes++;
       },
@@ -678,6 +680,30 @@ void main() {
     expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
     verify(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
         .called(1);
+  });
+
+  test('Lightning admission refusal clears a stale admitted state', () async {
+    final entry = _testWallet();
+    final admission = Completer<Result<ReceiveWallet, ReceiveFailure>>();
+    final bloc = buildBloc(
+      wallet: entry,
+      resolveEntry: (_) => admission.future,
+    );
+    addTearDown(bloc.close);
+
+    bloc.add(const ReceiveLightningStarted());
+    await pumpEventQueue();
+    expect(bloc.state.type, ReceiveType.lightning);
+
+    // Exercise the refusal's postcondition independently of the start reset.
+    bloc.emit(bloc.state.copyWith(wallet: entry, walletAdmitted: true));
+    const failure = ReceiveUnsupportedNetworkFailure();
+    admission.complete(const Err(failure));
+    await pumpEventQueue();
+
+    expect(bloc.state.failure, same(failure));
+    expect(bloc.state.wallet, isNull);
+    expect(bloc.state.walletAdmitted, isFalse);
   });
 
   group('redesigned Lightning limits', () {
