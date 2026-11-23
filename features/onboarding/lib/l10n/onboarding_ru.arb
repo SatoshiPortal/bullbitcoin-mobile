@@ -1,0 +1,31 @@
+{
+  "@@locale": "ru",
+  "onboardingRecoverYourWallet": "Восстановление кошелька",
+  "onboardingEncryptedVaultDescription": "Восстановите резервное копирование через облако с помощью PIN.",
+  "onboardingSplashDescription": "Суверенная самоопека Bitcoin кошелёк и сервис обмена только Bitcoin.",
+  "onboardingEncryptedVault": "Зашифрованное хранилище",
+  "onboardingCreateNewWallet": "Создать новый кошелек",
+  "onboardingPhysicalBackupDescription": "Восстановите свой кошелек через 12 слов.",
+  "settingsLanguageTitle": "Язык",
+  "onboardingRecover": "Восстановление",
+  "onboardingBullBitcoin": "Bitcoin",
+  "onboardingOwnYourMoney": "Иметь свои деньги",
+  "onboardingRecoverWallet": "Recover Wallet",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "onboardingPhysicalBackup": "Физическая резервная копия",
+  "onboardingRecoverWalletButton": "Recover Wallet",
+  "continueButton": "Продолжить",
+  "torSettingsTitle": "Параметры Tor",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "walletSetupErrorTryAgain": "Что-то пошло не так при настройке кошелька. Пожалуйста, попробуйте снова.",
+  "onboardingAdvancedOptionsTitle": "Расширенные настройки",
+  "onboardingAdvancedOptionsDescription": "Настройте расширенные параметры перед созданием или восстановлением кошелька",
+  "onboardingAdvancedOptionsCustomElectrum": "Пользовательский сервер Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Пользовательский сервер Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Пользовательский сервер Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Вы можете изменить эти настройки позже в настройках приложения",
+  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова."
+}

@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "ანგარიშის პარამეტრები",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet ანგარიშის სერთიფიკატები",
   "app__walletDeletionErrorOngoingSwaps_apple": "მიმდინარე გადარიცხვების მქონე საფულის წაშლა შეუძლებელია.",
-  "app__onboardingSplashDescription_apple": "სუვერენული თვითდაცვის Bitcoin საფულე და მხოლოდ Bitcoin-ის სერვისები.",
+  "onboarding__onboardingSplashDescription_apple": "სუვერენული თვითდაცვის Bitcoin საფულე და მხოლოდ Bitcoin-ის სერვისები.",
   "wizard__onboardingSplashDescription_apple": "სუვერენული თვითდაცვის Bitcoin საფულე და მხოლოდ Bitcoin-ის სერვისები.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin გადარიცხვებს დასადასტურებლად დრო დასჭირდება.",
   "app__receiveSwapID_apple": "გადარიცხვის ID",

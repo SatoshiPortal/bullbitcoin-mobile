@@ -15,6 +15,7 @@ import 'package:fees/fees.dart';
 import 'package:electrum/electrum.dart' show Electrum, ElectrumTransactions;
 import 'package:electrum/setup.dart' show ElectrumServersPort;
 import 'package:wallet_import/wallet_import.dart';
+import 'package:onboarding/setup.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
@@ -39,7 +40,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:receive/setup.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
@@ -332,6 +333,25 @@ void main() {
           orderSwapUnderReview: (_) => const SizedBox(),
         ),
       );
+      const unusedImage = AssetImage('unused.png');
+      locator.registerSingleton(
+        OnboardingFeature.mount(
+          createWallet: () => throw StateError('Unexpected wallet creation'),
+          recoverWallet: ({
+            required mnemonicWords,
+            required language,
+            required passphrase,
+          }) => throw StateError('Unexpected wallet recovery'),
+          walletImport: locator<ImportFeature>(),
+          onWalletReady: (_) {},
+          languageOf: (_) => Language.unitedStatesEnglish,
+          changeLanguage: (_, _) {},
+          logo: const SizedBox.shrink(),
+          background: unusedImage,
+          encryptedBackupIcon: unusedImage,
+          physicalBackupIcon: unusedImage,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -358,6 +378,7 @@ void main() {
         await locator.unregister<ActiveEnvironmentReader>();
         await locator.unregister<SwapFeature>();
         await locator.unregister<ImportFeature>();
+        await locator.unregister<OnboardingFeature>();
         await locator.unregister<BitcoinPriceFeature>();
         await locator.unregister<CoinsFeature>();
         await locator.unregister<SilentFeature>();

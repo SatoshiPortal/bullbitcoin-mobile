@@ -1,5 +1,3 @@
-# Onboarding
+# Onboarding wallet bindings
 
-## Dependencies
-
-- `mnemonic_entry` supplies typed recovery input with explicit language selection; `wallet_import` supplies the read-only Bitcoin history scan. `bull_recoverbull` supplies public recovery navigation.
+The app binds the [Onboarding member](../../../features/onboarding) to wallet creation, recovery and physical-backup verification. These bindings remain here while they depend on the legacy wallet catalogue.

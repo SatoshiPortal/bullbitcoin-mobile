@@ -2,10 +2,8 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
+import 'package:onboarding/onboarding.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
@@ -24,8 +22,6 @@ class _Wallets extends Mock implements WalletRepository {}
 
 class _Wallet extends Mock implements Wallet {}
 
-class _Create extends Mock implements CreateOnboardingWalletUsecase {}
-
 class _Verification extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
 
@@ -39,7 +35,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late s.Secrets secrets;
   late List<s.Secret> created;
-  late OnboardingBloc bloc;
+  late RecoverOnboardingWalletUsecase usecase;
 
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
@@ -87,43 +83,29 @@ void main() {
     });
     final verification = _Verification();
     when(verification.execute).thenAnswer((_) async {});
-    bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: RecoverOnboardingWalletUsecase(
-        defaultWallets: DefaultWalletsFacade(
-          CreateDefaultWalletsUsecase(
-            secrets: secrets,
-            settingsRepository: settings,
-            walletRepository: wallets,
-          ),
+    usecase = RecoverOnboardingWalletUsecase(
+      defaultWallets: DefaultWalletsFacade(
+        CreateDefaultWalletsUsecase(
+          secrets: secrets,
+          settingsRepository: settings,
+          walletRepository: wallets,
         ),
-        completePhysicalBackupVerificationUsecase: verification,
       ),
+      completePhysicalBackupVerificationUsecase: verification,
     );
   });
 
-  tearDown(() => bloc.close());
-
-  Future<OnboardingState> recover(
+  Future<p.Result<void, OnboardingFailure>> recover(
     List<String> words,
     bip39.Language language,
-  ) async {
-    bloc.add(
-      OnboardingRecoverWalletClicked(
-        mnemonic: (label: '', passphrase: '', words: words, language: language),
-      ),
-    );
-    return bloc.stream.firstWhere(
-      (state) => state.onboardingStepStatus != OnboardingStepStatus.loading,
-    );
-  }
+  ) => usecase.execute(mnemonicWords: words, language: language);
 
   test(
     'a French phrase restores the default wallets from its BIP39 seed',
     () async {
       final state = await recover(_french.words, bip39.Language.french);
 
-      expect(state.onboardingStepStatus, OnboardingStepStatus.success);
+      expect(state, isA<Ok<void, OnboardingFailure>>());
       expect(created, hasLength(2));
       final secret = created.first;
       expect(created.last.id, secret.id);
@@ -161,7 +143,11 @@ void main() {
 
     final state = await recover(_french.words, bip39.Language.english);
 
-    expect(state.failure, isA<OnboardingWalletSetupFailure>());
+    expect(state, isA<p.Err<void, OnboardingFailure>>());
+    expect(
+      (state as p.Err<void, OnboardingFailure>).failure,
+      isA<OnboardingWalletSetupFailure>(),
+    );
     expect(created, isEmpty);
     expect(storage.entries, isEmpty);
   });
@@ -181,7 +167,11 @@ void main() {
 
       final state = await recover(words, bip39.Language.french);
 
-      expect(state.failure, isA<OnboardingWalletSetupFailure>());
+      expect(state, isA<p.Err<void, OnboardingFailure>>());
+      expect(
+        (state as p.Err<void, OnboardingFailure>).failure,
+        isA<OnboardingWalletSetupFailure>(),
+      );
       expect(created, isEmpty);
       expect(storage.entries, isEmpty);
     },

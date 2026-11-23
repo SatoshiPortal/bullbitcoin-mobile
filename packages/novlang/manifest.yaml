@@ -66,6 +66,10 @@ catalogues:
   settings:
     path: features/settings
     description: settings navigation and preferences
+  onboarding:
+    path: features/onboarding
+    output-dir: features/onboarding/lib/generated/novlang
+    description: wallet onboarding and recovery
 entries:
   - {catalogue: receive, key: receiveTransferFee, store: apple, word: swap, euphemism: transfer}
   - {catalogue: receive, key: swapErrorAmountBelowMinimum, store: apple, word: swap, euphemism: transfer}
@@ -113,7 +117,7 @@ entries:
   - {catalogue: app, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
+  - {catalogue: onboarding, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: wizard, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: sendSlowPaymentWarningDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: receiveSwapID, store: apple, word: swap, euphemism: transfer}

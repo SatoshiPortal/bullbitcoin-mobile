@@ -1,0 +1,34 @@
+{
+  "@@locale": "as",
+  "walletSetupErrorTryAgain": "আপোনাৰ wallet ছেট আপ কৰোঁতে কিবা ভুল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "settingsLanguageTitle": "ভাষা",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "onboardingRecoverYourWallet": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰক",
+  "onboardingEncryptedVault": "এনক্ৰিপ্টেড vault",
+  "onboardingEncryptedVaultDescription": "আপোনাৰ PIN ব্যৱহাৰ কৰি cloud-ৰ জৰিয়তে আপোনাৰ বেকআপ পুনৰুদ্ধাৰ কৰক।",
+  "onboardingPhysicalBackup": "ভৌতিক বেকআপ",
+  "onboardingPhysicalBackupDescription": "12 শব্দৰ জৰিয়তে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰক।",
+  "onboardingRecover": "পুনৰুদ্ধাৰ কৰক",
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "onboardingOwnYourMoney": "আপোনাৰ ধনৰ মালিক হওক",
+  "onboardingSplashDescription": "সার্বভৌম self-custody Bitcoin wallet আৰু Bitcoin-only exchange সেৱা।",
+  "onboardingRecoverWallet": "Wallet পুনৰুদ্ধাৰ কৰক",
+  "onboardingRecoverWalletButton": "Wallet পুনৰুদ্ধাৰ কৰক",
+  "onboardingCreateNewWallet": "নতুন Wallet তৈয়াৰ কৰক",
+  "continueButton": "অব্যাহত ৰাখক",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "torSettingsTitle": "Tor ছেটিংছ",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "onboardingAdvancedOptionsTitle": "উন্নত বিকল্প",
+  "onboardingAdvancedOptionsDescription": "আপোনাৰ ৱালেট সৃষ্টি বা পুনৰুদ্ধাৰ কৰাৰ আগতে উন্নত ছেটিংছ কনফিগাৰ কৰক",
+  "onboardingAdvancedOptionsCustomElectrum": "কাষ্টম Electrum চাৰ্ভাৰ",
+  "onboardingAdvancedOptionsCustomMempool": "কাষ্টম Mempool চাৰ্ভাৰ",
+  "onboardingAdvancedOptionsCustomRecoverbull": "কাষ্টম Recoverbull চাৰ্ভাৰ",
+  "onboardingAdvancedOptionsFooter": "আপুনি পিছত App Settings ত এই ছেটিংছ সলনি কৰিব পাৰে",
+  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+}

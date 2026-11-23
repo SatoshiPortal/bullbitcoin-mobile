@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "একাউন্ট ছেটিংছ",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet একাউন্টৰ ক্ৰেডেনশ্বিয়েল",
   "app__walletDeletionErrorOngoingSwaps_apple": "চলি থকা ট্ৰান্সফাৰ থকা ৱালেট মচিব নোৱাৰি।",
-  "app__onboardingSplashDescription_apple": "সার্বভৌম স্ব-হেফাজতৰ Bitcoin ৱালেট আৰু কেৱল Bitcoin সেৱা।",
+  "onboarding__onboardingSplashDescription_apple": "সার্বভৌম স্ব-হেফাজতৰ Bitcoin ৱালেট আৰু কেৱল Bitcoin সেৱা।",
   "wizard__onboardingSplashDescription_apple": "সার্বভৌম স্ব-হেফাজতৰ Bitcoin ৱালেট আৰু কেৱল Bitcoin সেৱা।",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin ট্ৰান্সফাৰ নিশ্চিত হ'বলৈ সময় লাগিব।",
   "app__receiveSwapID_apple": "ট্ৰান্সফাৰ আইডি",

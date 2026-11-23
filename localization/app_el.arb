@@ -169,10 +169,6 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "onboardingRecoverYourWallet": "Ανακαλύψτε το πορτοφόλι σας",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Επιλέξτε ένα επιτόκιο χρέωσης",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -180,10 +176,6 @@
   "coreScreensTransferFeeLabel": "Τέλος ανταλλαγής",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "Ανακαλύψτε το εφεδρικό σας μέσω cloud χρησιμοποιώντας το PIN σας.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Swap status",
   "@transactionSwapStatusSwapStatus": {
@@ -1442,10 +1434,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "Κυρίαρχο πορτοφόλι Bitcoin και υπηρεσία ανταλλαγής Bitcoin μόνο.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2160,10 +2148,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "Δημιουργήστε νέο Wallet",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "Λάβετε Bitcoin αμέσως μετά την πληρωμή",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -2563,10 +2547,6 @@
   "sendSwapDetails": "Λεπτομέρειες Swap",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "Ανακαλύψτε το πορτοφόλι σας μέσω 12 λέξεων.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "Φόρτωση Φόρου",
   "@pinStatusLoading": {
@@ -4029,10 +4009,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "Το δικό σας χρήμα",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4114,10 +4090,6 @@
   "coldcardInstructionsTitle": "Coldcard Q Οδηγίες",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "Ανακαλύψτε το Wallet",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "backupWalletHowToDecide": "Πώς να αποφασίσετε?",
   "@backupWalletHowToDecide": {
@@ -4887,10 +4859,6 @@
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
-  "onboardingPhysicalBackup": "Φυσικό backup",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "Από",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -4967,10 +4935,6 @@
   "sellSendPaymentInstantPayments": "Instant πληρωμές",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "Ανακαλύψτε το Wallet",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "coreSwapsLnSendFailedRefunding": "Το Swap θα επιστραφεί σύντομα.",
   "@coreSwapsLnSendFailedRefunding": {
@@ -7367,7 +7331,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Κάτι πήγε στραβά κατά τη ρύθμιση του πορτοφολιού σας. Παρακαλώ δοκιμάστε ξανά.",
   "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
   "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7515,12 +7478,6 @@
   "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα.",
   "autoswapTargetBalanceLabel": "Στόχος υπολοίπου άμεσου πορτοφολιού",
   "autoswapMaximumBalanceLabel": "Μέγιστο υπόλοιπο άμεσου πορτοφολιού",
-  "onboardingAdvancedOptionsTitle": "Σύνθετες επιλογές",
-  "onboardingAdvancedOptionsDescription": "Διαμορφώστε τις σύνθετες ρυθμίσεις πριν δημιουργήσετε ή ανακτήσετε το πορτοφόλι σας",
-  "onboardingAdvancedOptionsCustomElectrum": "Προσαρμοσμένος διακομιστής Electrum",
-  "onboardingAdvancedOptionsCustomMempool": "Προσαρμοσμένος διακομιστής Mempool",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Προσαρμοσμένος διακομιστής Recoverbull",
-  "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
@@ -7636,7 +7593,6 @@
   "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
   "sendSwapExpiredTitle": "Η παραγγελία έληξε",
   "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας.",
-  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
   "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",

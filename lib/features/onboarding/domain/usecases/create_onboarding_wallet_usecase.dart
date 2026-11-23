@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
+import 'package:onboarding/onboarding.dart';
 import 'package:meta/meta.dart';
 
 class CreateOnboardingWalletUsecase {
@@ -9,9 +9,9 @@ class CreateOnboardingWalletUsecase {
   CreateOnboardingWalletUsecase({required this._defaultWallets});
 
   @useResult
-  Future<Result<List<Wallet>, OnboardingFailure>> execute() async {
+  Future<Result<void, OnboardingFailure>> execute() async {
     return switch (await _defaultWallets.create()) {
-      Ok(:final value) => Ok(value),
+      Ok() => const Ok(null),
       Err() => const Err(OnboardingWalletSetupFailure()),
     };
   }

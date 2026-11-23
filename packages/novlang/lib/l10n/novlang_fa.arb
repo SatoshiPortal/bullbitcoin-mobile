@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "تنظیمات حساب",
   "app__exchangeTestnetBasicAuthTitle_apple": "اعتبارنامه‌های حساب testnet",
   "app__walletDeletionErrorOngoingSwaps_apple": "شما نمی‌توانید کیف پولی را که انتقال‌های در حال انجام دارد حذف کنید.",
-  "app__onboardingSplashDescription_apple": "کیف پول Bitcoin با نگهداری شخصی و مستقل، و خدمات فقط Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "کیف پول Bitcoin با نگهداری شخصی و مستقل، و خدمات فقط Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "کیف پول Bitcoin با نگهداری شخصی و مستقل، و خدمات فقط Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "تأیید انتقال‌های بیت‌کوین زمان می‌برد.",
   "app__receiveSwapID_apple": "شناسه انتقال",

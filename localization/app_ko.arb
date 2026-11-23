@@ -193,10 +193,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "지갑을 복구",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "요금 선택",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -208,10 +204,6 @@
   "coreScreensTransferFeeLabel": "스왑 수수료",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "PIN을 사용하여 클라우드를 통해 백업을 복구합니다.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Swap 상태",
   "@transactionSwapStatusSwapStatus": {
@@ -1646,10 +1638,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "Sovereign 자체 custody Bitcoin 지갑과 Bitcoin 전용 교환 서비스.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2486,10 +2474,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "새 지갑 만들기",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "지불 후에 즉시 Bitcoin를 받으십시오",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -2949,10 +2933,6 @@
   "sendSwapDetails": "Swap 세부사항",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "12 단어를 통해 지갑을 복구.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "pinStatusLoading": "제품정보",
   "@pinStatusLoading": {
@@ -4657,10 +4637,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "당신의 돈을 소유",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "씨 뷰어",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4750,10 +4726,6 @@
   "coldcardInstructionsTitle": "Coldcard Q 지침",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "지갑 복구",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "참고 번호",
   "@transactionOrderLabelReferenceNumber": {
@@ -5730,10 +5702,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "물리적 백업",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "내 계정",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5814,10 +5782,6 @@
   "sellSendPaymentInstantPayments": "즉시 결제",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "지갑 복구",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "{pinOrPassword} 대신 >>",
   "@usePasswordInsteadButton": {
@@ -7378,7 +7342,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "지갑을 설정하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
   "coreScreensFeeRateLabel": "수수료율",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7415,12 +7378,6 @@
   "backupCardSubtitle": "지금 지갑을 백업하세요.",
   "autoswapTargetBalanceLabel": "목표 즉시 지갑 잔액",
   "autoswapMaximumBalanceLabel": "최대 즉시 지갑 잔액",
-  "onboardingAdvancedOptionsTitle": "고급 옵션",
-  "onboardingAdvancedOptionsDescription": "지갑을 생성하거나 복구하기 전에 고급 설정을 구성하세요",
-  "onboardingAdvancedOptionsCustomElectrum": "사용자 지정 Electrum 서버",
-  "onboardingAdvancedOptionsCustomMempool": "사용자 지정 Mempool 서버",
-  "onboardingAdvancedOptionsCustomRecoverbull": "사용자 지정 Recoverbull 서버",
-  "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
@@ -7647,7 +7604,6 @@
   "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",
   "sendSwapExpiredTitle": "주문 만료",
   "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다.",
-  "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
   "sendErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sendErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
   "sendErrorExchangeOrderMismatch": "이 결제가 주문과 더 이상 일치하지 않습니다. 결제를 다시 시작하세요.",

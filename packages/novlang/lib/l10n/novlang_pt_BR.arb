@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "Configurações da conta",
   "app__exchangeTestnetBasicAuthTitle_apple": "Credenciais da conta testnet",
   "app__walletDeletionErrorOngoingSwaps_apple": "Você não pode excluir uma carteira com transferências em andamento.",
-  "app__onboardingSplashDescription_apple": "Carteira Bitcoin com autocustódia soberana e serviços exclusivamente Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "Carteira Bitcoin com autocustódia soberana e serviços exclusivamente Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "Carteira Bitcoin com autocustódia soberana e serviços exclusivamente Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "As transferências Bitcoin levarão tempo para serem confirmadas.",
   "app__receiveSwapID_apple": "ID da transferência",

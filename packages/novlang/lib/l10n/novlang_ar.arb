@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "إعدادات الحساب",
   "app__exchangeTestnetBasicAuthTitle_apple": "بيانات اعتماد حساب testnet",
   "app__walletDeletionErrorOngoingSwaps_apple": "لا يمكنك حذف محفظة بها تحويلات جارية.",
-  "app__onboardingSplashDescription_apple": "محفظة Bitcoin ذاتية الحفظ وذات سيادة، وخدمات Bitcoin فقط.",
+  "onboarding__onboardingSplashDescription_apple": "محفظة Bitcoin ذاتية الحفظ وذات سيادة، وخدمات Bitcoin فقط.",
   "wizard__onboardingSplashDescription_apple": "محفظة Bitcoin ذاتية الحفظ وذات سيادة، وخدمات Bitcoin فقط.",
   "app__sendSlowPaymentWarningDescription_apple": "ستستغرق تحويلات Bitcoin وقتاً للتأكيد.",
   "app__receiveSwapID_apple": "معرّف التحويل",

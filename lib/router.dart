@@ -43,7 +43,7 @@ import 'package:swap_feature/swap_feature.dart'
     show SwapFeature, SwapNavigation;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:wallet_import/setup.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
@@ -263,7 +263,7 @@ class AppRouter {
       ),
       ?_exchangeFeature.authRoute,
       ?_exchangeFeature.supportChatRoute,
-      OnboardingRouter.route,
+      locator<OnboardingFeature>().route,
       ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(
         scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,

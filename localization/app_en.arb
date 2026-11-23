@@ -806,25 +806,9 @@
   "@addressCardBalanceLabel": {
     "description": "Label for the balance field in address card"
   },
-  "onboardingRecoverYourWallet": "Recover your wallet",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "onboardingEncryptedVault": "Encrypted vault",
   "@onboardingEncryptedVault": {
     "description": "Title for the encrypted vault recovery option in onboarding"
-  },
-  "onboardingEncryptedVaultDescription": "Recover your backup via cloud using your PIN.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "onboardingPhysicalBackup": "Physical backup",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
-  "onboardingPhysicalBackupDescription": "Recover your wallet via 12 words.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "onboardingRecover": "Recover",
   "@onboardingRecover": {
@@ -833,26 +817,6 @@
   "onboardingBullBitcoin": "Bull Bitcoin",
   "@onboardingBullBitcoin": {
     "description": "Brand name displayed in onboarding"
-  },
-  "onboardingOwnYourMoney": "Own your Money",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
-  "onboardingSplashDescription": "Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
-  "onboardingRecoverWallet": "Recover Wallet",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
-  },
-  "onboardingRecoverWalletButton": "Recover Wallet",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
-  },
-  "onboardingCreateNewWallet": "Create New Wallet",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
   },
   "sendTitle": "Send",
   "@sendTitle": {
@@ -7815,10 +7779,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "@walletSetupErrorTryAgain": {
-    "description": "Generic error shown when default-wallet creation or recovery fails."
-  },
   "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
   "@transactionSwapOpenWithin24h": {
     "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
@@ -8324,30 +8284,6 @@
   "@autoswapMaximumBalanceLabel": {
     "description": "Label for the maximum instant wallet balance setting in autoswap"
   },
-  "onboardingAdvancedOptionsTitle": "Advanced Options",
-  "@onboardingAdvancedOptionsTitle": {
-    "description": "Title of the advanced options screen shown during onboarding"
-  },
-  "onboardingAdvancedOptionsDescription": "Configure advanced settings before creating or recovering your wallet",
-  "@onboardingAdvancedOptionsDescription": {
-    "description": "Description on the onboarding advanced options screen"
-  },
-  "onboardingAdvancedOptionsCustomElectrum": "Custom Electrum Server",
-  "@onboardingAdvancedOptionsCustomElectrum": {
-    "description": "Entry to configure a custom Electrum server in advanced options"
-  },
-  "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
-  "@onboardingAdvancedOptionsCustomMempool": {
-    "description": "Entry to configure a custom mempool server in advanced options"
-  },
-  "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
-  "@onboardingAdvancedOptionsCustomRecoverbull": {
-    "description": "Entry to configure a custom Recoverbull server in advanced options"
-  },
-  "onboardingAdvancedOptionsFooter": "You can change these settings later in App Settings",
-  "@onboardingAdvancedOptionsFooter": {
-    "description": "Footer note on the onboarding advanced options screen"
-  },
   "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
   "@appStartupContactSupportMessage": {
     "description": "Message shown on the app startup error screen pointing to support"
@@ -8677,10 +8613,6 @@
   "settingsWalletSettingsTitle": "Wallet Settings",
   "@settingsWalletSettingsTitle": {
     "description": "Title of the wallet settings screen"
-  },
-  "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
-  "@onboardingBackupVerificationError": {
-    "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
   },
   "sendErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
   "@sendErrorFeeBelowRelayFloor": {
@@ -9981,26 +9913,8 @@
   "@passphraseBackupPrompt": {},
   "passphraseIncorrect": "Incorrect passphrase.",
   "@passphraseIncorrect": {},
-  "emptyWalletTitle": "This wallet looks empty",
-  "@emptyWalletTitle": {},
-  "emptyWalletMessage": "This wallet looks empty. The passphrase may be wrong.",
-  "@emptyWalletMessage": {},
   "correct": "Correct",
   "@correct": {},
-  "emptyWalletBitcoinOnly": "No Bitcoin transaction history was found. Liquid has not been checked.",
-  "@emptyWalletBitcoinOnly": {},
-  "onboardingScanUnavailableTitle": "Could not check Bitcoin transaction history.",
-  "@onboardingScanUnavailableTitle": {
-    "description": "Title shown when the pre-recovery Bitcoin history scan fails."
-  },
-  "onboardingScanUnavailableMessage": "Your Bitcoin history could not be checked. You can retry or continue without checking.",
-  "@onboardingScanUnavailableMessage": {
-    "description": "Explains the choices when the pre-recovery Bitcoin history scan fails."
-  },
-  "onboardingContinueWithoutChecking": "Continue without checking",
-  "@onboardingContinueWithoutChecking": {
-    "description": "Continue recovering a wallet when the history scan failed."
-  },
   "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."

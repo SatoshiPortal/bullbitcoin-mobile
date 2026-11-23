@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "Paramètres du compte",
   "app__exchangeTestnetBasicAuthTitle_apple": "Identifiants du compte testnet",
   "app__walletDeletionErrorOngoingSwaps_apple": "Vous ne pouvez pas supprimer un portefeuille avec des transferts en cours.",
-  "app__onboardingSplashDescription_apple": "Portefeuille Bitcoin à auto-garde souveraine et services exclusivement Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "Portefeuille Bitcoin à auto-garde souveraine et services exclusivement Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "Portefeuille Bitcoin à auto-garde souveraine et services exclusivement Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Les transferts Bitcoin prendront du temps pour être confirmés.",
   "app__receiveSwapID_apple": "ID de transfert",

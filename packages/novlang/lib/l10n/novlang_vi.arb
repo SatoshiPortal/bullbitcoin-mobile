@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "Cài đặt tài khoản",
   "app__exchangeTestnetBasicAuthTitle_apple": "Thông tin đăng nhập tài khoản testnet",
   "app__walletDeletionErrorOngoingSwaps_apple": "Bạn không thể xóa ví đang có khoản chuyển đang thực hiện.",
-  "app__onboardingSplashDescription_apple": "Ví Bitcoin tự quản có chủ quyền và các dịch vụ chỉ dành cho Bitcoin.",
+  "onboarding__onboardingSplashDescription_apple": "Ví Bitcoin tự quản có chủ quyền và các dịch vụ chỉ dành cho Bitcoin.",
   "wizard__onboardingSplashDescription_apple": "Ví Bitcoin tự quản có chủ quyền và các dịch vụ chỉ dành cho Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Chuyển khoản Bitcoin sẽ mất thời gian để xác nhận.",
   "app__receiveSwapID_apple": "Mã chuyển khoản",

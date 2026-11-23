@@ -2,8 +2,6 @@ import 'package:send/setup.dart' show SendLocalizations;
 import 'package:coins/setup.dart' show CoinsLocalizations;
 import 'package:send/send.dart' show Consolidation;
 import 'package:spend/spend.dart' show Spend;
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:startup/setup.dart';
 import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_bull_exchange_localizations.dart';
@@ -49,6 +47,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:novlang/novlang.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/setup.dart';
 
 @visibleForTesting
 void resumePayjoinsOnAppResume(
@@ -199,6 +199,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
                         NovlangSettingsLocalizationsDelegate(novlangPolicy),
                         NovlangExchangeLocalizationsDelegate(novlangPolicy),
+                        NovlangOnboardingLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
                         LogsLocalizations.delegate,
                         NetworkLocalizations.delegate,
@@ -226,10 +227,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                               onContactSupport: Support.contactSupport,
                               child: locator<StartupFeature>().gate(
                                 logs: () => locator<LogsFacade>(),
-                                splash: const OnboardingSplash(loading: true),
-                                openOnboarding: () => AppRouter.router.go(
-                                  OnboardingRoute.onboarding.path,
-                                ),
+                                splash: locator<OnboardingFeature>()
+                                    .buildLoadingSplash(context),
+                                openOnboarding: () =>
+                                    OnboardingNavigation.go(AppRouter.router),
                                 onUnlocked: () =>
                                     AppLocator.startWalletsAfterUnlock(locator),
                                 app: locator<RecoverBullFeature>().withAlerts(

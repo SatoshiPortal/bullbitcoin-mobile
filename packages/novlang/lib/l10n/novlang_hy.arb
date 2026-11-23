@@ -37,7 +37,7 @@
   "app__settingsExchangeSettingsTitle_apple": "Հաշվի կարգավորումներ",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet հաշվի հավատարմագրեր",
   "app__walletDeletionErrorOngoingSwaps_apple": "Դուք չեք կարող ջնջել ընթացիկ փոխանցումներ ունեցող դրամապանակը։",
-  "app__onboardingSplashDescription_apple": "Ինքնիշխան ինքնապահպանվող Bitcoin դրամապանակ և միայն Bitcoin ծառայություններ։",
+  "onboarding__onboardingSplashDescription_apple": "Ինքնիշխան ինքնապահպանվող Bitcoin դրամապանակ և միայն Bitcoin ծառայություններ։",
   "wizard__onboardingSplashDescription_apple": "Ինքնիշխան ինքնապահպանվող Bitcoin դրամապանակ և միայն Bitcoin ծառայություններ։",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin փոխանցումները ժամանակ կխլեն հաստատվելու համար։",
   "app__receiveSwapID_apple": "Փոխանցման ID",

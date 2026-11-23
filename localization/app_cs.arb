@@ -310,10 +310,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "onboardingRecoverYourWallet": "Obnovit peněženku",
-  "@onboardingRecoverYourWallet": {
-    "description": "Title for the recover wallet section in onboarding"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Prosím vyberte poplatek",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -325,10 +321,6 @@
   "coreScreensTransferFeeLabel": "Poplatek za swap",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
-  },
-  "onboardingEncryptedVaultDescription": "Obnovení zálohování přes cloud pomocí PINu.",
-  "@onboardingEncryptedVaultDescription": {
-    "description": "Description for the encrypted vault recovery option in onboarding"
   },
   "transactionSwapStatusSwapStatus": "Stav Swapu",
   "@transactionSwapStatusSwapStatus": {
@@ -1731,10 +1723,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "Sovereign vlastní úschovu Bitcoin peněženku a Bitcoin-only směnárna služby.",
-  "@onboardingSplashDescription": {
-    "description": "Description of the app displayed in onboarding splash screen"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "Čeština Fondy budou přidány do zůstatku na účtu.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2526,10 +2514,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "onboardingCreateNewWallet": "Vytvořit novou peněženku",
-  "@onboardingCreateNewWallet": {
-    "description": "Button label for creating a new wallet in onboarding"
-  },
   "buyExpressWithdrawalDesc": "Získejte Bitcoin okamžitě po zaplacení",
   "@buyExpressWithdrawalDesc": {
     "description": "Explanation of express withdrawal feature"
@@ -2961,10 +2945,6 @@
   "sendSwapDetails": "Detaily Swapu",
   "@sendSwapDetails": {
     "description": "Section header for swap information"
-  },
-  "onboardingPhysicalBackupDescription": "Obnovit peněženku přes 12 slov.",
-  "@onboardingPhysicalBackupDescription": {
-    "description": "Description for the physical backup recovery option in onboarding"
   },
   "payTitle": "Čeština",
   "payDescriptionLabel": "Popis platby (volitelné)",
@@ -4596,10 +4576,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "onboardingOwnYourMoney": "Vlastní peníze",
-  "@onboardingOwnYourMoney": {
-    "description": "Tagline displayed in onboarding splash screen"
-  },
   "allSeedViewTitle": "Semena Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4685,10 +4661,6 @@
   "coldcardInstructionsTitle": "Coldcard Q Pokyny",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
-  },
-  "onboardingRecoverWallet": "Obnovit peněženku",
-  "@onboardingRecoverWallet": {
-    "description": "Title for the recover wallet screen in onboarding"
   },
   "transactionOrderLabelReferenceNumber": "Referenční číslo",
   "@transactionOrderLabelReferenceNumber": {
@@ -5629,10 +5601,6 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "Fyzická záloha",
-  "@onboardingPhysicalBackup": {
-    "description": "Title for the physical backup recovery option in onboarding"
-  },
   "swapFromLabel": "Odhlásit se",
   "@swapFromLabel": {
     "description": "Label for source wallet dropdown"
@@ -5713,10 +5681,6 @@
   "sellSendPaymentInstantPayments": "Okamžité platby",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
-  },
-  "onboardingRecoverWalletButton": "Obnovit peněženku",
-  "@onboardingRecoverWalletButton": {
-    "description": "Button label for recovering a wallet in onboarding"
   },
   "usePasswordInsteadButton": "Použití {pinOrPassword} namísto >>",
   "@usePasswordInsteadButton": {
@@ -7366,7 +7330,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
   "coreScreensResolvingInputs": "Načítání vstupů transakce...",
   "coreScreensFeeRateLabel": "Sazba poplatku",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7514,12 +7477,6 @@
   "backupCardSubtitle": "Zazálohujte si peněženku hned teď.",
   "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
   "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
-  "onboardingAdvancedOptionsTitle": "Pokročilé možnosti",
-  "onboardingAdvancedOptionsDescription": "Před vytvořením nebo obnovením peněženky nakonfigurujte pokročilá nastavení",
-  "onboardingAdvancedOptionsCustomElectrum": "Vlastní server Electrum",
-  "onboardingAdvancedOptionsCustomMempool": "Vlastní server Mempool",
-  "onboardingAdvancedOptionsCustomRecoverbull": "Vlastní server Recoverbull",
-  "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
   "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu",
   "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
@@ -7635,7 +7592,6 @@
   "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
   "sendSwapExpiredTitle": "Objednávka vypršela",
   "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno.",
-  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
   "sendErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sendErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",

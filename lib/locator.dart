@@ -17,7 +17,7 @@ import 'package:startup/startup.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:swaps/swaps.dart' show SwapStartup;
 import 'package:secrets/storage.dart';
-import 'package:material_ui/material_ui.dart' show AssetImage;
+import 'package:material_ui/material_ui.dart' show AssetImage, Image;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:labels/labels.dart';
@@ -85,7 +85,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_s
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
+import 'package:bb_mobile/features/onboarding/wallet_bindings.dart';
+import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -102,7 +103,7 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:spend/setup.dart' show SpendCatalog;
 import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
@@ -348,7 +349,27 @@ class AppLocator {
         swapStartup: locator<SwapStartup>(),
       ),
     );
-    OnboardingLocator.setup(locator);
+    locator.registerLazySingleton(() {
+      final wallets = bindOnboardingWallets(locator);
+      return OnboardingFeature.mount(
+        createWallet: wallets.create,
+        recoverWallet: wallets.recover,
+        walletImport: locator<ImportFeature>(),
+        onWalletReady: (context) {
+          context.read<WalletBloc>().add(const WalletStarted());
+          context.goNamed(WalletRoute.walletHome.name);
+        },
+        languageOf: (context) =>
+            Settings.languageOf(context) ?? Language.unitedStatesEnglish,
+        changeLanguage: Settings.changeLanguage,
+        logo: SuperuserTapUnlocker(
+          child: Image.asset(Assets.logos.bbLogoWhite.path, height: 127),
+        ),
+        background: AssetImage(Assets.backgrounds.bgLong.path),
+        encryptedBackupIcon: AssetImage(Assets.misc.encryptedVault.path),
+        physicalBackupIcon: AssetImage(Assets.misc.physicalBackup.path),
+      );
+    });
     final bip85 = inventory.bip85(locator<Secrets>());
     locator.registerSingleton<Bip85Derivations>(bip85);
     locator.registerSingleton(
