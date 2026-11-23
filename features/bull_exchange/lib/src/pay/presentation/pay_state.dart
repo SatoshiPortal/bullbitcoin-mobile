@@ -107,11 +107,10 @@ sealed class PayState with _$PayState {
   FiatCurrency get currency => switch (this) {
     PayRecipientSelectionState(:final userSummary) =>
       ExchangeCatalog.legacyCurrencyOrFallback(userSummary?.currency),
-    PayAmountInputState(:final selectedRecipient) =>
-      ExchangeCatalog.legacyCurrencyOrFallback(selectedRecipient.currencyCode),
+    PayAmountInputState(:final selectedRecipient) => selectedRecipient.currency,
     PayPreparingPaymentState(:final input) => input.currency,
     PayWalletSelectionState(:final selectedRecipient) =>
-      ExchangeCatalog.legacyCurrencyOrFallback(selectedRecipient.currencyCode),
+      selectedRecipient.currency,
     PayPaymentState(:final payOrder) =>
       ExchangeCatalog.legacyCurrencyOrFallback(payOrder.payoutCurrency),
     PaySuccessState(:final payOrder) =>

@@ -1,4 +1,5 @@
 import '../../../domain/catalog/jurisdiction.dart';
+import '../../../domain/entities/order.dart';
 
 /// VALUE OBJECT: recipient type
 /// Value objects are immutable and defined by their attributes
@@ -52,32 +53,24 @@ enum RecipientType {
     RecipientType.nequiColombia => Jurisdiction.colombia,
   };
 
-  String get currencyCode {
-    switch (this) {
-      case RecipientType.interacEmailCad:
-      case RecipientType.billPaymentCad:
-      case RecipientType.bankTransferCad:
-        return 'CAD';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return 'EUR';
-      case RecipientType.speiClabeMxn:
-      case RecipientType.speiSmsMxn:
-      case RecipientType.speiCardMxn:
-        return 'MXN';
-      case RecipientType.sinpeIbanUsd:
-        return 'USD';
-      case RecipientType.sinpeIbanCrc:
-      case RecipientType.sinpeMovilCrc:
-        return 'CRC';
-      case RecipientType.bankAccountArgentina:
-        return 'ARS';
-      case RecipientType.pseColombia:
-        return 'COP';
-      case RecipientType.nequiColombia:
-        return 'COP';
-    }
-  }
+  FiatCurrency get currency => switch (this) {
+    RecipientType.interacEmailCad ||
+    RecipientType.billPaymentCad ||
+    RecipientType.bankTransferCad => FiatCurrency.cad,
+    RecipientType.sepaEur ||
+    RecipientType.confidentialSepaEur => FiatCurrency.eur,
+    RecipientType.speiClabeMxn ||
+    RecipientType.speiSmsMxn ||
+    RecipientType.speiCardMxn => FiatCurrency.mxn,
+    RecipientType.sinpeIbanUsd => FiatCurrency.usd,
+    RecipientType.sinpeIbanCrc ||
+    RecipientType.sinpeMovilCrc => FiatCurrency.crc,
+    RecipientType.bankAccountArgentina => FiatCurrency.ars,
+    RecipientType.pseColombia ||
+    RecipientType.nequiColombia => FiatCurrency.cop,
+  };
+
+  String get currencyCode => currency.code;
 
   /// Confidential SEPA depends on the user's eligibility, so a flow must
   /// request it explicitly.

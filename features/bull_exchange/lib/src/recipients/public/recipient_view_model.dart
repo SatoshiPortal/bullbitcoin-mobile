@@ -35,6 +35,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
   const RecipientViewModel._();
 
   Jurisdiction get jurisdiction => type.jurisdiction;
+  FiatCurrency get currency => type.currency;
   String get currencyCode => type.currencyCode;
   bool get requiresInteracSecurityDetails =>
       type == RecipientType.interacEmailCad;
