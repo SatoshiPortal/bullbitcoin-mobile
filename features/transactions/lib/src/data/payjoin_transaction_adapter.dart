@@ -30,13 +30,11 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     this._wallets,
     this._transactions,
     this._connections, {
-    required Future<Result<void, SyncFailure>> Function(WalletKey) synchronize,
-    required Stream<WalletKey> finished,
-    required Future<bool> Function(String, String) protectSpend,
+    required this._synchronize,
+    required this._finished,
+    required this._protectSpend,
     this.reconcileDelay = const Duration(seconds: 5),
-  }) : _synchronize = synchronize,
-       _finished = finished,
-       _protectSpend = protectSpend;
+  });
 
   @override
   Future<bool> protectObservedSpend({
