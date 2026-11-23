@@ -8,6 +8,7 @@ export 'src/domain/catalog/jurisdiction.dart';
 export 'src/domain/catalog/kyc_policy.dart';
 export 'src/domain/catalog/market.dart';
 export 'src/domain/entities/announcement.dart';
+export 'src/domain/entities/btc_network.dart';
 export 'src/domain/entities/confidential_sepa_availability.dart';
 export 'src/domain/entities/dca.dart';
 export 'src/domain/entities/default_wallet.dart';
