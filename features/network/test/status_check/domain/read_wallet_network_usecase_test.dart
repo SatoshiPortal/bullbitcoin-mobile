@@ -42,7 +42,14 @@ void main() {
       preferences,
       (_) => throw StateError('Unexpected backup read'),
     );
-    expect(await read.defaultNetwork(), const Ok(NetworkEnv.testnet));
+    expect(
+      await read.defaultNetwork(),
+      isA<Ok<NetworkEnv?, NetworkFailure>>().having(
+        (result) => result.value,
+        'network',
+        NetworkEnv.testnet,
+      ),
+    );
   });
 
   test('refuses to infer absence from an incomplete selection', () async {
@@ -54,7 +61,14 @@ void main() {
       preferences,
       (_) => throw StateError('Unexpected backup read'),
     );
-    expect(await read.defaultNetwork(), const Err(NetworkUnexpectedFailure()));
+    expect(
+      await read.defaultNetwork(),
+      isA<Err<NetworkEnv?, NetworkFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<NetworkUnexpectedFailure>(),
+      ),
+    );
   });
 
   for (final timestamp in <int?>[null, 1000]) {
@@ -87,7 +101,14 @@ void main() {
           );
           return Ok(usage);
         });
-        expect(await read.requiresTor(), Ok(timestamp != null));
+        expect(
+          await read.requiresTor(),
+          isA<Ok<bool, NetworkFailure>>().having(
+            (result) => result.value,
+            'requires Tor',
+            timestamp != null,
+          ),
+        );
       },
     );
   }
