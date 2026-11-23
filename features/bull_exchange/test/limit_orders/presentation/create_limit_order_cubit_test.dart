@@ -2,17 +2,9 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -33,8 +25,6 @@ class MockResolveWalletAddressUsecase extends Mock
 
 class MockValidateLightningAddressUsecase extends Mock
     implements ValidateLightningAddressUsecase {}
-
-class _MockWallet extends Mock implements Wallet {}
 
 void main() {
   late MockLoadLimitOrderCreationUsecase loadCreation;
@@ -289,12 +279,19 @@ void main() {
     },
   );
 
-  Wallet appWallet(String id, Network network) {
-    final wallet = _MockWallet();
-    when(() => wallet.id).thenReturn(id);
-    when(() => wallet.network).thenReturn(network);
-    return wallet;
-  }
+  final bitcoinRegistration = walletRegistrationForTesting(
+    id: 'w-btc',
+    network: Network.bitcoinMainnet,
+  );
+  final liquidRegistration = walletRegistrationForTesting(
+    id: 'w-lbtc',
+    network: Network.liquidMainnet,
+  );
+
+  WalletRegistration appWallet(String id, Network network) =>
+      network == Network.bitcoinMainnet
+      ? bitcoinRegistration
+      : liquidRegistration;
 
   for (final fails in [false, true]) {
     test('keeps the confirmed default destination after a stale app-wallet '
@@ -302,7 +299,7 @@ void main() {
       final pending = Completer<Result<String, LimitOrdersFailure>>();
       when(() => loadCreation.execute())
           .thenAnswer((_) async => Ok(creationContext));
-      when(() => resolveAddress.execute('w-btc'))
+      when(() => resolveAddress.execute(bitcoinRegistration))
           .thenAnswer((_) => pending.future);
       when(
         () => create.execute(
@@ -367,7 +364,7 @@ void main() {
       'validation', () async {
     final pendingWallet = Completer<Result<String, LimitOrdersFailure>>();
     final pendingLightning = Completer<String?>();
-    when(() => resolveAddress.execute('w-btc'))
+    when(() => resolveAddress.execute(bitcoinRegistration))
         .thenAnswer((_) => pendingWallet.future);
     when(() => validateLnAddress.execute('new@example.com'))
         .thenAnswer((_) => pendingLightning.future);
@@ -408,7 +405,7 @@ void main() {
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'selectAppWallet derives a receive address and sets the destination',
     setUp: () =>
-        when(() => resolveAddress.execute('w-btc'))
+        when(() => resolveAddress.execute(bitcoinRegistration))
             .thenAnswer((_) async => const Ok('bc1qderived')),
     build: buildCubit,
     act: (cubit) =>
@@ -424,7 +421,7 @@ void main() {
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'selectAppWallet surfaces a derive failure and clears the selection',
     setUp: () => when(
-      () => resolveAddress.execute('w-lbtc'),
+      () => resolveAddress.execute(liquidRegistration),
     ).thenAnswer((_) async => const Err(LimitOrdersUnexpectedFailure('boom'))),
     build: buildCubit,
     act: (cubit) =>

@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';

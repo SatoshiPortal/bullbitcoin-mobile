@@ -25,8 +25,6 @@ void main() {
       showWebsiteOnly: (_) => false,
       unavailableRedirectPath: '/wallet',
       brandAssetPath: 'unused',
-      copy: (_) => fail('unexpected landing'),
-      onSignIn: (_) {},
       onExit: (_) {},
       limitOrders: () => exchange,
     );

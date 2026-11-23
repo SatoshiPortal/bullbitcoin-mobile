@@ -8,14 +8,12 @@ import 'purchase_test_support.dart';
 Never _unexpected() => throw StateError('Mount must not open services');
 
 void main() {
-  test('mount preserves the public Buy and DCA route locations', () {
+  test('mount preserves Buy, DCA and limit-order creation locations', () {
     final feature = BullExchangeFeature.mount(
       networkUnavailable: () async => false,
       showWebsiteOnly: (_) => false,
       unavailableRedirectPath: '/',
       brandAssetPath: '',
-      copy: (_) => _unexpected(),
-      onSignIn: (_) {},
       onExit: (_) {},
       purchases: (
         exchange: _unexpected,
@@ -42,10 +40,15 @@ void main() {
         GoRoute(path: '/', builder: (_, _) => const SizedBox.shrink()),
         ...feature.buyRoutes,
         ?feature.dcaRoute,
+        ?feature.limitOrderCreate,
       ],
     );
     addTearDown(router.dispose);
     expect(router.namedLocation(BuyRoute.buy.name), '/buy');
+    expect(
+      router.namedLocation(LimitOrdersNavigation.createName),
+      '/limit-orders/create',
+    );
     expect(
       router.namedLocation(
         BuyRoute.buyAccelerate.name,
