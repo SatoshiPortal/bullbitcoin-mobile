@@ -33,7 +33,8 @@ import 'package:startup/startup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/background_setup.dart';
+import 'package:background_tasks/background_tasks.dart'
+    show configureBackgroundTasks;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
@@ -367,7 +368,7 @@ class Bull {
       await prepareBackgroundWalletStores(
         openNotifications: () => locator<PaymentNotificationStore>().open(),
       );
-      await configureBackgroundTasks();
+      await configureBackgroundTasks(backgroundTasksHandler);
 
       await Report.recordMigration();
       initialized = true;

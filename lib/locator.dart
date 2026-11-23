@@ -44,7 +44,9 @@ import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Err, Failure;
 import 'package:electrum/setup.dart'
     show ElectrumServersPort, ReadElectrumPreferences, RegtestElectrumProfile;
-import 'package:bb_mobile/background_setup.dart';
+import 'package:background_tasks/background_tasks.dart'
+    show configureBackgroundTasks;
+import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
@@ -380,7 +382,7 @@ class AppLocator {
     SettingsLocator.setup(locator);
     setupBackgroundPreferences(
       locator,
-      configureBackgroundTasks,
+      () => configureBackgroundTasks(backgroundTasksHandler),
       notificationChannelId: PaymentNotifications.channelId,
     );
     const LogsFeature().setup(locator);
