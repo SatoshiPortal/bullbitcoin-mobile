@@ -11,7 +11,15 @@ T ok<T>(Result<T, BackupStorageFailure> result) => switch (result) {
 
 /// Every backend can reuse this suite with an isolated, empty storage per test.
 /// Native backends can supply a fake platform; Drive supplies mocked HTTP.
-void storageContract(BackupStorage Function() createStorage) {
+void storageContract(
+  BackupStorage Function() createStorage, {
+  bool matchByExtension = false,
+}) {
+  final prefix = matchByExtension ? "contract-'" : "contract-'\\";
+  final extension = matchByExtension ? '.bip138' : '.bin';
+  final mimeType = matchByExtension
+      ? 'application/vnd.bull.backup+bip138'
+      : 'application/octet-stream';
   late StorageSession session;
   setUp(() async {
     session = ok(await createStorage().authorize(interactive: false));
@@ -23,35 +31,29 @@ void storageContract(BackupStorage Function() createStorage) {
     final bytes = Uint8List.fromList([0, 255, 1, 13, 10]);
     final object = ok(
       await session.create(
-        name: "contract-'\\.bin",
-        mimeType: 'application/octet-stream',
+        name: '$prefix$extension',
+        mimeType: mimeType,
         bytes: bytes,
       ),
     );
     expect(object.id, isNotEmpty);
     expect(ok(await session.read(object, maxBytes: 5)), bytes);
     final listed = ok(
-      await session.list(
-        mimeType: 'application/octet-stream',
-        namePrefix: "contract-'\\",
-      ),
+      await session.list(mimeType: mimeType, namePrefix: prefix),
     );
     expect(listed.map((item) => item.id), contains(object.id));
-    expect(ok(await session.list(mimeType: 'application/json')), isEmpty);
+    final otherMime = ok(await session.list(mimeType: 'application/json'));
+    if (matchByExtension) {
+      expect(otherMime.map((item) => item.id), contains(object.id));
+    } else {
+      expect(otherMime, isEmpty);
+    }
     expect(
-      ok(
-        await session.list(
-          mimeType: 'application/octet-stream',
-          namePrefix: 'absent-',
-        ),
-      ),
+      ok(await session.list(mimeType: mimeType, namePrefix: 'absent-')),
       isEmpty,
     );
     ok(await session.delete(object));
-    expect(
-      ok(await session.list(mimeType: 'application/octet-stream')),
-      isEmpty,
-    );
+    expect(ok(await session.list(mimeType: mimeType)), isEmpty);
     expect(
       await session.read(object, maxBytes: 5),
       isA<Err<Uint8List, BackupStorageFailure>>(),
@@ -61,8 +63,8 @@ void storageContract(BackupStorage Function() createStorage) {
   test('read cap rejects oversized bytes', () async {
     final object = ok(
       await session.create(
-        name: 'large.bin',
-        mimeType: 'application/octet-stream',
+        name: 'large$extension',
+        mimeType: mimeType,
         bytes: Uint8List.fromList([1, 2, 3]),
       ),
     );
