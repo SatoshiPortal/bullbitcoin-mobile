@@ -6,7 +6,6 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:access/access.dart';
 import 'package:access/testing.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
@@ -48,6 +47,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 
 import '../secrets_derivation_vectors_test.dart' as vectors;
 
@@ -433,14 +433,22 @@ void registerPhysicalRecoveryTests() {
   testWidgets('physical default recovery and backup passphrase on device', (
     tester,
   ) async {
-    final wallets = locator<WalletRepository>();
-    final existing = await wallets.getWallets(onlyDefaults: true);
-    final prior = switch (existing) {
-      Ok(:final value) => value,
-      Err(:final failure) => fail(
-        'default wallet read failed: ${failure.runtimeType}',
-      ),
-    };
+    final inventory = locator<SecretsInventory>();
+    Future<List<WalletRegistration>> readDefaults() async {
+      final wallets = requireValue(
+        await inventory.listWallets(),
+        'read the wallet inventory',
+      );
+      return [
+        for (final wallet in wallets.where((wallet) => wallet.isDefault))
+          requireValue(
+            await inventory.readWallet(wallet.id),
+            'read the default wallet',
+          ),
+      ];
+    }
+
+    final prior = await readDefaults();
     // This test creates persistent defaults; never touch a populated app.
     expect(prior.isEmpty, isTrue, reason: 'requires a dedicated empty app');
 
@@ -518,24 +526,24 @@ void registerPhysicalRecoveryTests() {
         tester,
         () => find.text('DEVICE_WALLET_READY').evaluate().isNotEmpty,
       );
-      final read = await wallets.getWallets(onlyDefaults: true);
-      final created = switch (read) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail(
-          'wallet read failed: ${failure.runtimeType}',
-        ),
-      };
-      expect(created.length, 2);
-      expect(created.where((wallet) => wallet.network.isBitcoin).length, 1);
-      expect(created.where((wallet) => wallet.network.isLiquid).length, 1);
+      final created = await readDefaults();
+      expect(created, hasLength(2));
       expect(
-        created.map((wallet) => wallet.masterFingerprint).toSet().length,
-        1,
+        created.where((wallet) => wallet.network is BitcoinNetwork),
+        hasLength(1),
       );
+      expect(
+        created.where((wallet) => wallet.network is LiquidNetwork),
+        hasLength(1),
+      );
+      final fingerprints = created
+          .map((wallet) => wallet.masterFingerprint)
+          .toSet();
+      expect(fingerprints, hasLength(1));
+      final fingerprint =
+          fingerprints.single ?? fail('missing wallet fingerprint');
       final secrets = locator<Secrets>();
-      final secret = custodyValue(
-        await secrets.fetch(Fingerprint(created.first.masterFingerprint)),
-      );
+      final secret = custodyValue(await secrets.fetch(fingerprint));
       expect(secret.info.hasPassphrase, isTrue);
       expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
 
