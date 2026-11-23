@@ -1,24 +1,22 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bull_exchange/bull_exchange.dart';
+import '../exchange_l10n.dart';
+import '../exchange_landing_navigation.dart';
+
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ExchangeHomeKycCard extends StatelessWidget {
-  const ExchangeHomeKycCard({super.key});
+  const ExchangeHomeKycCard({
+    required this.isKycLight,
+    required this.isKycLimited,
+    super.key,
+  });
+
+  final bool isKycLight;
+  final bool isKycLimited;
 
   @override
   Widget build(BuildContext context) {
-    final isKycLight = context.select(
-      (ExchangeCubit cubit) => cubit.state.isLightKycLevel,
-    );
-    final isKycLimited = context.select(
-      (ExchangeCubit cubit) => cubit.state.isLimitedKycLevel,
-    );
-
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       tileColor: context.appColors.secondaryFixed,

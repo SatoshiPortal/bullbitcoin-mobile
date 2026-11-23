@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
 import 'autobuy/autobuy_mount.dart';
+import 'dashboard/exchange_dashboard_route.dart';
 import 'auth/exchange_auth_route.dart';
 import 'auth/exchange_auth_screen.dart';
 import 'exchange_landing_copy.dart';
@@ -36,6 +37,7 @@ final class BullExchangeFeature {
   final List<RouteBase> fundingRoutes;
   final GoRoute? autoBuy;
   final GoRoute? authRoute;
+  final GoRoute? dashboardRoute;
 
   const BullExchangeFeature._(
     this.routes,
@@ -45,6 +47,7 @@ final class BullExchangeFeature {
     this.fundingRoutes,
     this.autoBuy,
     this.authRoute,
+    this.dashboardRoute,
   );
 
   static BullExchangeFeature mount({
@@ -61,67 +64,82 @@ final class BullExchangeFeature {
     ExchangeFundingHost? funding,
     AutoBuyHost? autoBuy,
     ExchangeAuthHost? auth,
-  }) => BullExchangeFeature._(
-    List.unmodifiable([
-      GoRoute(
-        name: BullExchangeNavigation.landingName,
-        path: BullExchangeNavigation.landingPath,
-        redirect: (_, _) async =>
-            await networkUnavailable() ? unavailableRedirectPath : null,
-        pageBuilder: (context, state) {
-          final labels = copy(context);
-          void exit() => onExit(context);
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: showWebsiteOnly(context)
-                ? ExchangeLandingScreenV2(
-                    copy: labels,
-                    brandAssetPath: brandAssetPath,
-                    onExit: exit,
-                  )
-                : ExchangeLandingScreen(
-                    copy: labels,
-                    brandAssetPath: brandAssetPath,
-                    onSignIn: () => onSignIn(context),
-                    onExit: exit,
-                  ),
-          );
-        },
-      ),
-    ]),
-    supportChat == null
-        ? null
-        : ExchangeSupportChatRouter.route(
-            exchange: supportChat.exchange,
-            isLoggedIn: supportChat.isLoggedIn,
-            enableLogin: supportChat.enableLogin,
-            onLogin: supportChat.onLogin,
-            loginLabel: supportChat.loginLabel,
-            failureMessage: supportChat.failureMessage,
-            onExit: supportChat.onExit,
-          ),
-    kyc == null
+    ExchangeDashboardHost? dashboard,
+  }) {
+    final kycRoute = kyc == null
         ? null
         : GoRoute(
             name: BullExchangeNavigation.kycName,
             path: 'kyc',
             builder: (_, _) => ExchangeKycScreen(host: kyc),
-          ),
-    settings == null
-        ? const []
-        : List.unmodifiable(ExchangeSettingsRouter.routes(settings)),
-    funding == null
-        ? const []
-        : List.unmodifiable(FundExchangeRouter.routes(funding)),
-    autoBuy == null ? null : autoBuyRoute(autoBuy),
-    auth == null
-        ? null
-        : exchangeAuthRoute(
-            host: auth,
-            networkUnavailable: networkUnavailable,
-            showWebsiteOnly: showWebsiteOnly,
-            homePath: unavailableRedirectPath,
-            onExit: onExit,
-          ),
-  );
+          );
+    return BullExchangeFeature._(
+      List.unmodifiable([
+        GoRoute(
+          name: BullExchangeNavigation.landingName,
+          path: BullExchangeNavigation.landingPath,
+          redirect: (_, _) async =>
+              await networkUnavailable() ? unavailableRedirectPath : null,
+          pageBuilder: (context, state) {
+            final labels = copy(context);
+            void exit() => onExit(context);
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: showWebsiteOnly(context)
+                  ? ExchangeLandingScreenV2(
+                      copy: labels,
+                      brandAssetPath: brandAssetPath,
+                      onExit: exit,
+                    )
+                  : ExchangeLandingScreen(
+                      copy: labels,
+                      brandAssetPath: brandAssetPath,
+                      onSignIn: () => onSignIn(context),
+                      onExit: exit,
+                    ),
+            );
+          },
+        ),
+      ]),
+      supportChat == null
+          ? null
+          : ExchangeSupportChatRouter.route(
+              exchange: supportChat.exchange,
+              isLoggedIn: supportChat.isLoggedIn,
+              enableLogin: supportChat.enableLogin,
+              onLogin: supportChat.onLogin,
+              loginLabel: supportChat.loginLabel,
+              failureMessage: supportChat.failureMessage,
+              onExit: supportChat.onExit,
+            ),
+      kycRoute,
+      settings == null
+          ? const []
+          : List.unmodifiable(ExchangeSettingsRouter.routes(settings)),
+      funding == null
+          ? const []
+          : List.unmodifiable(FundExchangeRouter.routes(funding)),
+      autoBuy == null ? null : autoBuyRoute(autoBuy),
+      auth == null
+          ? null
+          : exchangeAuthRoute(
+              host: auth,
+              networkUnavailable: networkUnavailable,
+              showWebsiteOnly: showWebsiteOnly,
+              homePath: unavailableRedirectPath,
+              onExit: onExit,
+            ),
+      dashboard == null
+          ? null
+          : exchangeDashboardRoute(
+              host: dashboard,
+              kycRoute: kycRoute,
+              networkUnavailable: networkUnavailable,
+              showWebsiteOnly: showWebsiteOnly,
+              homePath: unavailableRedirectPath,
+              brandAsset: brandAssetPath,
+              onExit: onExit,
+            ),
+    );
+  }
 }

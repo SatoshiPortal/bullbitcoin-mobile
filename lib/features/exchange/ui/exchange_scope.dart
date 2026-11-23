@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -56,6 +57,28 @@ class ExchangeScope extends StatelessWidget {
 
   static bool isLoggedIn(BuildContext context) =>
       _signedIn(locator<ExchangeFacade>().currentAccess);
+
+  static Exchange exchange() => locator<Exchange>();
+
+  static Preferences preferences() => locator<Preferences>();
+
+  static ExchangeAccess currentAccess() =>
+      locator<ExchangeFacade>().currentAccess;
+
+  static ExchangeDashboardState watchDashboard(BuildContext context) =>
+      context.select((ExchangeCubit cubit) {
+        final state = cubit.state;
+        return (
+          summary: state.userSummary,
+          displayBalances: state.displayBalances,
+          summaryFailure: state.getUserSummaryFailure,
+          stopDcaFailure: state.stopDcaFailure,
+          announcements: state.announcements,
+        );
+      });
+
+  static Future<void> stopDca(BuildContext context) =>
+      context.read<ExchangeCubit>().stopDca();
 
   static Stream<ExchangeAccess> accessChanges() =>
       locator<ExchangeFacade>().watchAccess();

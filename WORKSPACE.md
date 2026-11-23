@@ -127,6 +127,7 @@ graph TD
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
   bull_ark --> notifications
+  bull_exchange --> bitcoin_price
   bull_exchange --> bull_logger
   bull_exchange --> bull_ui
   bull_exchange --> exchange

@@ -1,30 +1,48 @@
+import '../exchange_l10n.dart';
+import '../autobuy/autobuy_mount.dart';
+import '../funding/fund_exchange_router.dart';
+import 'announcement_banner.dart';
+import 'dca_list_tile.dart';
+import 'exchange_home_actions.dart';
+import 'exchange_home_kyc_card.dart';
+import 'exchange_home_top_section.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
-import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullErrorState, BullPullableBody, BullSupportButton, Gap;
+    show
+        BullButton,
+        BullErrorState,
+        BullInfoCard,
+        BullPullableBody,
+        BullSupportButton,
+        Gap;
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+typedef ExchangeDashboardState = ({
+  UserSummary? summary,
+  List<UserBalance> displayBalances,
+  ExchangeFailure? summaryFailure,
+  ExchangeFailure? stopDcaFailure,
+  List<Announcement> announcements,
+});
+
 class ExchangeHomeScreen extends StatelessWidget {
+  final ExchangeDashboardState Function(BuildContext) watchDashboard;
+  final Exchange Function() exchange;
+  final Preferences Function() preferences;
+  final String brandAsset;
+  final String settingsAsset;
+  final Future<void> Function() refreshAccount;
+  final Future<void> Function() stopDca;
+  final VoidCallback onOpenDca;
+  final VoidCallback onWithdraw;
+  final VoidCallback onHistory;
+  final String Function(BuildContext, ExchangeFailure) failureMessage;
   final List<Widget> homeCards;
   final VoidCallback onHomeRefresh;
   final VoidCallback onOpenSettings;
@@ -32,6 +50,17 @@ class ExchangeHomeScreen extends StatelessWidget {
   final VoidCallback onExit;
 
   const ExchangeHomeScreen({
+    required this.watchDashboard,
+    required this.exchange,
+    required this.preferences,
+    required this.brandAsset,
+    required this.settingsAsset,
+    required this.refreshAccount,
+    required this.stopDca,
+    required this.onOpenDca,
+    required this.onWithdraw,
+    required this.onHistory,
+    required this.failureMessage,
     required this.homeCards,
     required this.onHomeRefresh,
     required this.onOpenSettings,
@@ -42,30 +71,15 @@ class ExchangeHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFetchingUserSummary = context.select(
-      (ExchangeCubit cubit) => cubit.state.isFetchingUserSummary,
-    );
-    final notLoggedIn = context.select(
-      (ExchangeCubit cubit) => cubit.state.notLoggedIn,
-    );
-    final isFullyVerified = context.select(
-      (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
-    );
-    final getUserSummaryFailure = context.select(
-      (ExchangeCubit cubit) => cubit.state.getUserSummaryFailure,
-    );
-    final stopDcaFailure = context.select(
-      (ExchangeCubit cubit) => cubit.state.stopDcaFailure,
-    );
-    final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
-    final hasDcaActive = dca?.isActive ?? false;
-    final autoBuy = context.select(
-      (ExchangeCubit cubit) => cubit.state.userSummary?.autoBuy,
-    );
-    final isFundingRestricted = context.select(
-      (ExchangeCubit cubit) =>
-          cubit.state.userSummary?.isFundingRestricted ?? true,
-    );
+    final state = watchDashboard(context);
+    final summary = state.summary;
+    final notLoggedIn = summary == null;
+    final getUserSummaryFailure = state.summaryFailure;
+    final stopDcaFailure = state.stopDcaFailure;
+    final isFullyVerified = summary?.isFullyVerifiedKycLevel ?? false;
+    final dca = summary?.dca;
+    final autoBuy = summary?.autoBuy;
+    final isFundingRestricted = summary?.isFundingRestricted ?? true;
 
     if (notLoggedIn && getUserSummaryFailure != null) {
       return _WithExit(
@@ -74,16 +88,16 @@ class ExchangeHomeScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: BullErrorState(
-              message: getUserSummaryFailure.toTranslated(context),
+              message: failureMessage(context, getUserSummaryFailure),
               retryLabel: context.loc.retry,
-              onRetry: () => context.read<ExchangeCubit>().fetchUserSummary(),
+              onRetry: refreshAccount,
             ),
           ),
         ),
       );
     }
 
-    if (isFetchingUserSummary || notLoggedIn) {
+    if (notLoggedIn) {
       return _WithExit(
         onExit: onExit,
         child: const Center(child: CircularProgressIndicator()),
@@ -95,11 +109,14 @@ class ExchangeHomeScreen extends StatelessWidget {
         BullPullableBody(
           onRefresh: () async {
             onHomeRefresh();
-            await context.read<ExchangeCubit>().fetchUserSummary();
+            await refreshAccount();
           },
           slivers: [
             PinnedHeaderSliver(
-              child: ExchangeHomeTopSection(onAction: onAction),
+              child: ExchangeHomeTopSection(
+                onAction: onAction,
+                balances: state.displayBalances,
+              ),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -110,37 +127,50 @@ class ExchangeHomeScreen extends StatelessWidget {
                     // A refresh that fails leaves stale data on screen; say
                     // so instead of letting it look current.
                     if (getUserSummaryFailure != null) ...[
-                      ExchangeFailureBanner(
-                        failure: getUserSummaryFailure,
-                        onRetry: () =>
-                            context.read<ExchangeCubit>().fetchUserSummary(),
+                      BullInfoCard(
+                        description: failureMessage(
+                          context,
+                          getUserSummaryFailure,
+                        ),
+                        tagColor: context.appColors.error,
+                        bgColor: context.appColors.errorContainer,
+                        onTap: refreshAccount,
                       ),
                       const Gap(12),
                     ],
                     if (stopDcaFailure != null) ...[
-                      ExchangeFailureBanner(
-                        failure: stopDcaFailure,
-                        onRetry: () => context.read<ExchangeCubit>().stopDca(),
+                      BullInfoCard(
+                        description: failureMessage(context, stopDcaFailure),
+                        tagColor: context.appColors.error,
+                        bgColor: context.appColors.errorContainer,
+                        onTap: stopDca,
                       ),
                       const Gap(12),
                     ],
                     if (!isFullyVerified) ...[
-                      const ExchangeHomeKycCard(),
+                      ExchangeHomeKycCard(
+                        isKycLight: summary.isLightKycLevel,
+                        isKycLimited: summary.isLimitedKycLevel,
+                      ),
                       const Gap(12),
                     ],
-                    DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
+                    DcaListTile(
+                      hasDcaActive: dca?.isActive ?? false,
+                      dca: dca,
+                      onActivate: onOpenDca,
+                      onDeactivate: stopDca,
+                    ),
                     const Gap(12),
                     ExchangeAutoBuyCard(
-                      exchange: () => locator<Exchange>(),
-                      preferences: () => locator<Preferences>(),
+                      exchange: exchange,
+                      preferences: preferences,
                       isActive: autoBuy?.isActive ?? false,
                       isRestricted: isFundingRestricted,
-                      onStatusChanged: () =>
-                          context.read<ExchangeCubit>().fetchUserSummary(),
+                      onStatusChanged: refreshAccount,
                     ),
                     const Gap(12),
                     for (final card in homeCards) ...[card, const Gap(12)],
-                    if (!notLoggedIn) const AnnouncementBanner(),
+                    AnnouncementBanner(announcements: state.announcements),
                   ],
                 ),
               ),
@@ -165,8 +195,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     iconData: Icons.arrow_upward,
                     label: context.loc.exchangeHomeWithdrawButton,
                     iconFirst: true,
-                    onPressed: () =>
-                        context.pushNamed(WithdrawRoute.withdraw.name),
+                    onPressed: onWithdraw,
                   ),
                 ),
               ],
@@ -187,7 +216,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                 centerTitle: true,
                 title: showChart
                     ? null
-                    : Assets.logos.bbLogoSmall.image(width: 40, height: 40),
+                    : Image.asset(brandAsset, width: 40, height: 40),
                 leading: Padding(
                   // 48 dp targets keep the back arrow where it was at 16.
                   padding: EdgeInsets.only(left: showChart ? 16.0 : 4.0),
@@ -251,11 +280,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     : [
                         IconButton(
                           tooltip: context.loc.transactionHistoryTitle,
-                          onPressed: () {
-                            context.pushNamed(
-                              TransactionsRoute.transactions.name,
-                            );
-                          },
+                          onPressed: onHistory,
                           color: context.appColors.onPrimary,
                           iconSize: 32,
                           icon: const Icon(Icons.history),
@@ -265,7 +290,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           tooltip: context.loc.settingsScreenTitle,
                           onPressed: onOpenSettings,
                           icon: Image.asset(
-                            Assets.icons.settingsLine.path,
+                            settingsAsset,
                             width: 32,
                             height: 32,
                             color: context.appColors.onPrimary,

@@ -8,6 +8,7 @@ environment:
   flutter: "3.50.0"
 
 dependencies:
+  bitcoin_price:
   bloc_concurrency: ^0.3.0
   bull_logger:
   bull_ui:

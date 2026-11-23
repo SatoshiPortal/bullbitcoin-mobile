@@ -1,16 +1,23 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
+import '../exchange_l10n.dart';
+
+import 'package:exchange/exchange.dart' show UserBalance;
+
+import 'exchange_home_actions.dart';
+
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullText, BullQuickActionBar, Gap, BullTypographyX;
 
 class ExchangeHomeTopSection extends StatelessWidget {
-  const ExchangeHomeTopSection({required this.onAction, super.key});
+  const ExchangeHomeTopSection({
+    required this.onAction,
+    required this.balances,
+    super.key,
+  });
 
   final void Function(ExchangeHomeAction) onAction;
+  final List<UserBalance> balances;
 
   /// Height of the dark balance area.
   static const double _balanceAreaHeight = 264 + 78;
@@ -22,9 +29,6 @@ class ExchangeHomeTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balances = context.select(
-      (ExchangeCubit cubit) => cubit.state.displayBalances,
-    );
     final balanceTextStyle = switch (balances.length) {
       0 => context.bullType.display,
       1 => context.bullType.display,
@@ -103,7 +107,7 @@ class _BalancesView extends StatelessWidget {
     required this.topGap,
   });
 
-  final List<dynamic> balances;
+  final List<UserBalance> balances;
   final TextStyle? balanceTextStyle;
   final double topGap;
 

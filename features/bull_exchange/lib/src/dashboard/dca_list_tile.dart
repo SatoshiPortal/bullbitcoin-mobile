@@ -1,20 +1,24 @@
+import '../exchange_l10n.dart';
+
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart' show DcaRoute;
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullConfirmDialog, BullSwitch, BullTypographyX, Gap;
-import 'package:go_router/go_router.dart';
 
 class DcaListTile extends StatefulWidget {
-  const DcaListTile({super.key, required this.hasDcaActive, required this.dca});
+  const DcaListTile({
+    super.key,
+    required this.hasDcaActive,
+    required this.dca,
+    required this.onActivate,
+    required this.onDeactivate,
+  });
 
   final bool hasDcaActive;
   final UserDca? dca;
+  final VoidCallback onActivate;
+  final Future<void> Function() onDeactivate;
 
   @override
   State<DcaListTile> createState() => _DcaListTileState();
@@ -24,11 +28,16 @@ class _DcaListTileState extends State<DcaListTile> {
   bool _showSettings = false;
 
   Widget? _buildDcaContent(UserDca dca, BuildContext context) {
-    if (dca.amount == null ||
-        dca.currency == null ||
-        dca.frequency == null ||
-        dca.network == null ||
-        dca.address == null) {
+    final amount = dca.amount;
+    final currency = dca.currency;
+    final frequency = dca.frequency;
+    final network = dca.network;
+    final address = dca.address;
+    if (amount == null ||
+        currency == null ||
+        frequency == null ||
+        network == null ||
+        address == null) {
       return Text(
         context.loc.exchangeDcaUnableToGetConfig,
         style: TextStyle(
@@ -38,16 +47,17 @@ class _DcaListTileState extends State<DcaListTile> {
     }
 
     return DcaSettingsContent(
-      amount: dca.amount!,
-      currency: dca.currency!,
-      frequency: dca.frequency!,
-      network: dca.network!,
-      address: dca.address!,
+      amount: amount,
+      currency: currency,
+      frequency: frequency,
+      network: network,
+      address: address,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final dca = widget.dca;
     return ListTile(
       title: Row(
         children: [
@@ -63,8 +73,9 @@ class _DcaListTileState extends State<DcaListTile> {
                 ),
                 if (widget.hasDcaActive) ...[
                   const Gap(4),
-                  GestureDetector(
-                    onTap: () => setState(() => _showSettings = !_showSettings),
+                  TextButton(
+                    onPressed: () =>
+                        setState(() => _showSettings = !_showSettings),
                     child: Text(
                       _showSettings
                           ? context.loc.exchangeDcaHideSettings
@@ -87,7 +98,7 @@ class _DcaListTileState extends State<DcaListTile> {
             onChanged: (value) {
               if (value) {
                 // Activate DCA
-                context.pushNamed(DcaRoute.dca.name);
+                widget.onActivate();
               } else {
                 // Deactivate DCA - show confirmation dialog
                 _confirmStopDca(context);
@@ -96,10 +107,10 @@ class _DcaListTileState extends State<DcaListTile> {
           ),
         ],
       ),
-      subtitle: widget.hasDcaActive && _showSettings
+      subtitle: widget.hasDcaActive && _showSettings && dca != null
           ? Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: _buildDcaContent(widget.dca!, context),
+              child: _buildDcaContent(dca, context),
             )
           : null,
     );
@@ -115,7 +126,7 @@ class _DcaListTileState extends State<DcaListTile> {
       destructive: true,
     );
     if (confirmed && context.mounted) {
-      await context.read<ExchangeCubit>().stopDca();
+      await widget.onDeactivate();
     }
   }
 }

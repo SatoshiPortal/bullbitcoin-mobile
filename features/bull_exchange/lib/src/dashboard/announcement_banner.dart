@@ -1,8 +1,7 @@
+import '../exchange_l10n.dart';
+
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullText,
@@ -14,14 +13,11 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX;
 
 class AnnouncementBanner extends StatelessWidget {
-  const AnnouncementBanner({super.key});
+  const AnnouncementBanner({required this.announcements, super.key});
+  final List<Announcement> announcements;
 
   @override
   Widget build(BuildContext context) {
-    final announcements = context.select(
-      (ExchangeCubit cubit) => cubit.state.announcements,
-    );
-
     if (announcements.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -45,7 +41,7 @@ class _AnnouncementItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return GestureDetector(
+    return InkWell(
       onTap: () => _AnnouncementBottomSheet.show(context, announcement),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),

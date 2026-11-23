@@ -1,5 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeHomeAction;
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';

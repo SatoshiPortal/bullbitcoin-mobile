@@ -5,6 +5,9 @@ export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthHost;
 export 'src/autobuy/autobuy_mount.dart'
     show AutoBuyHost, AutoBuyNavigation, ExchangeAutoBuyCard;
 export 'src/bull_exchange_feature.dart' show BullExchangeFeature;
+export 'src/dashboard/exchange_dashboard_route.dart' show ExchangeDashboardHost;
+export 'src/dashboard/exchange_home_actions.dart' show ExchangeHomeAction;
+export 'src/dashboard/exchange_home_screen.dart' show ExchangeDashboardState;
 export 'src/default_wallets/default_wallets_payout_fields.dart'
     show DefaultWalletsPayoutFields;
 export 'src/default_wallets/ui/default_wallets_router.dart'

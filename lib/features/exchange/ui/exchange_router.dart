@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/dca/public/dca_facade.dart' show DcaRoute;
+import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart'
+    show WithdrawRoute;
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart'
+    show TransactionsRoute;
 import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -12,7 +17,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart'
     show VirtualIbanFundingScreen;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -62,52 +66,7 @@ class ExchangeRouter {
     BullExchangeFeature? exchangeFeature,
   }) {
     final feature = exchangeFeature ?? mount(config);
-    return [
-      GoRoute(
-        name: ExchangeRoute.exchangeHome.name,
-        path: ExchangeRoute.exchangeHome.path,
-        redirect: (context, state) async {
-          if (await config.networkUnavailable()) return config.homePath;
-          if (!context.mounted) return null;
-          final notLoggedIn = !ExchangeScope.isLoggedIn(context);
-          if (notLoggedIn) {
-            return BullExchangeNavigation.landingPath;
-          }
-          if (Platform.isIOS && !config.isSuperuser(context)) {
-            return config.homePath;
-          }
-          return null;
-        },
-        pageBuilder: (context, state) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            // Redirects run only on navigation: a session that ends while Trade
-            // is open must still leave it. Sign-in is offered only while access
-            // stays enabled; sign-out turns access off and returns home.
-            child: ExchangeSessionListener(
-              listenWhen: (wasLoggedIn, isLoggedIn) =>
-                  wasLoggedIn && !isLoggedIn,
-              listener: (context, _) {
-                if (ExchangeScope.isEnabled(context)) {
-                  BullExchangeNavigation.goToLanding(context);
-                } else {
-                  config.onExit(context);
-                }
-              },
-              child: ExchangeHomeScreen(
-                homeCards: config.buildHomeCards(),
-                onHomeRefresh: config.onHomeRefresh,
-                onOpenSettings: () => config.onOpenSettings(context),
-                onAction: (action) => config.onAction(context, action),
-                onExit: () => config.onExit(context),
-              ),
-            ),
-          );
-        },
-        routes: [?feature.kycRoute],
-      ),
-      ...feature.routes,
-    ];
+    return [?feature.dashboardRoute, ...feature.routes];
   }
 
   static BullExchangeFeature mount(
@@ -143,6 +102,25 @@ class ExchangeRouter {
     onExit: config.onExit,
     settings: settings,
     auth: ExchangeScope.authHost,
+    dashboard: (
+      exchange: exchange ?? ExchangeScope.exchange,
+      preferences: preferences ?? ExchangeScope.preferences,
+      currentAccess: ExchangeScope.currentAccess,
+      watchAccess: ExchangeScope.accessChanges,
+      watchDashboard: ExchangeScope.watchDashboard,
+      refreshAccount: ExchangeScope.refreshSession,
+      stopDca: ExchangeScope.stopDca,
+      buildHomeCards: config.buildHomeCards,
+      onHomeRefresh: config.onHomeRefresh,
+      onOpenSettings: config.onOpenSettings,
+      onOpenDca: (context) => context.pushNamed(DcaRoute.dca.name),
+      onWithdraw: (context) => context.pushNamed(WithdrawRoute.withdraw.name),
+      onHistory: (context) =>
+          context.pushNamed(TransactionsRoute.transactions.name),
+      onAction: config.onAction,
+      failureMessage: (context, failure) => failure.toTranslated(context),
+      settingsAsset: Assets.icons.settingsLine.path,
+    ),
     autoBuy: exchange == null || preferences == null
         ? null
         : (

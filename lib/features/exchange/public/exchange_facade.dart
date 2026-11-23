@@ -24,7 +24,6 @@ export '../ui/exchange_scope.dart'
         ExchangeScope,
         ExchangeSessionBuilder,
         ExchangeSessionListener;
-export '../ui/widgets/exchange_home_actions.dart' show ExchangeHomeAction;
 export '../ui/widgets/exchange_account_sheets.dart' show ExchangeAccountSheets;
 export '../ui/widgets/exchange_account_actions.dart'
     show ExchangeAccountActions;
