@@ -141,19 +141,19 @@ class _EditorContent extends StatelessWidget {
               ],
               _WalletAddressField(
                 payoutFields: payoutFields,
-                type: WalletAddressType.bitcoin,
+                type: BtcNetwork.bitcoin,
                 label: context.loc.exchangeBitcoinWalletsBitcoinAddressLabel,
               ),
               const SizedBox(height: 24),
               _WalletAddressField(
                 payoutFields: payoutFields,
-                type: WalletAddressType.lightning,
+                type: BtcNetwork.lightning,
                 label: context.loc.exchangeBitcoinWalletsLightningAddressLabel,
               ),
               const SizedBox(height: 24),
               _WalletAddressField(
                 payoutFields: payoutFields,
-                type: WalletAddressType.liquid,
+                type: BtcNetwork.liquid,
                 label: context.loc.exchangeBitcoinWalletsLiquidAddressLabel,
               ),
               if (footerBuilder case final builder?) ...[
@@ -177,7 +177,7 @@ class _EditorContent extends StatelessWidget {
 }
 
 class _WalletAddressField extends StatefulWidget {
-  final WalletAddressType type;
+  final BtcNetwork type;
   final String label;
   final DefaultWalletsPayoutFields payoutFields;
 
@@ -194,7 +194,7 @@ class _WalletAddressField extends StatefulWidget {
 class _WalletAddressFieldState extends State<_WalletAddressField> {
   bool _isValid = false;
 
-  WalletAddressType get type => widget.type;
+  BtcNetwork get type => widget.type;
   String get label => widget.label;
 
   @override

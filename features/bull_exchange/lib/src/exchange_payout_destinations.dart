@@ -5,15 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'default_wallets/default_wallets_payout_fields.dart';
 
 /// Exchange forms use the same parser, scanner and viewer as Wallet and Send.
-PaymentDestinationType _destinationType(WalletAddressType type) =>
-    switch (type) {
-      WalletAddressType.bitcoin => PaymentDestinationType.bitcoin,
-      WalletAddressType.liquid => PaymentDestinationType.liquid,
-      WalletAddressType.lightning => PaymentDestinationType.lightningAddress,
-    };
+PaymentDestinationType _destinationType(BtcNetwork type) => switch (type) {
+  BtcNetwork.bitcoin => PaymentDestinationType.bitcoin,
+  BtcNetwork.liquid => PaymentDestinationType.liquid,
+  BtcNetwork.lightning => PaymentDestinationType.lightningAddress,
+};
 
-TextInputType _keyboard(WalletAddressType type) =>
-    type == WalletAddressType.lightning
+TextInputType _keyboard(BtcNetwork type) => type == BtcNetwork.lightning
     ? TextInputType.emailAddress
     : TextInputType.text;
 
@@ -45,7 +43,7 @@ final DefaultWalletsPayoutFields exchangePayoutFields = (
 /// Buy, DCA and limit-order destinations; LNURL is accepted for every
 /// payout type.
 Widget exchangePurchasePayoutField({
-  required WalletAddressType type,
+  required BtcNetwork type,
   required String value,
   required String label,
   required String hint,

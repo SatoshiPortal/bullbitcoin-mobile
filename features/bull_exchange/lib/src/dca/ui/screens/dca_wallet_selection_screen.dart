@@ -133,7 +133,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     value: _lightningAddressInput,
                     label: context.loc.dcaEnterLightningAddressLabel,
                     hint: context.loc.limitOrdersLightningAddressHint,
-                    type: WalletAddressType.lightning,
+                    type: BtcNetwork.lightning,
                     enabled: !_useDefaultLightningAddress,
                     onChanged: (value) => setState(() {
                       _lightningAddressInput = value;
@@ -221,11 +221,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                           context.loc.dcaEnterBitcoinAddressLabel,
                       },
                       hint: context.loc.exchangeBitcoinWalletsEnterAddressHint,
-                      type: switch (rail) {
-                        BtcNetwork.liquid => WalletAddressType.liquid,
-                        BtcNetwork.bitcoin ||
-                        BtcNetwork.lightning => WalletAddressType.bitcoin,
-                      },
+                      type: rail,
                       enabled: true,
                       onChanged: (value) => setState(() {
                         _typedAddressInput = value;

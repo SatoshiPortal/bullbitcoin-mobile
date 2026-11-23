@@ -19,6 +19,7 @@ import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/btc_network.dart';
 import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
 import 'domain/entities/notification_message.dart';
@@ -62,14 +63,14 @@ typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
 typedef _DefaultWalletOperations = ({
   Future<Result<DefaultWallets, ExchangeFailure>> Function() get,
   Future<Result<DefaultWallet, ExchangeFailure>> Function({
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   })
   save,
   Future<Result<void, ExchangeFailure>> Function({
     required String recipientId,
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
   })
   delete,
@@ -877,7 +878,7 @@ final class Exchange {
 
   @useResult
   Future<Result<DefaultWallet, ExchangeFailure>> saveDefaultWallet({
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   }) => _defaultWallets.save(
@@ -889,7 +890,7 @@ final class Exchange {
   @useResult
   Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
     required String recipientId,
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
   }) => _defaultWallets.delete(
     recipientId: recipientId,
@@ -970,14 +971,14 @@ Exchange exchangeForTesting({
   saveUserPreference,
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
   Future<Result<DefaultWallet, ExchangeFailure>> Function({
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   })?
   saveDefaultWallet,
   Future<Result<void, ExchangeFailure>> Function({
     required String recipientId,
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
   })?
   deleteDefaultWallet,

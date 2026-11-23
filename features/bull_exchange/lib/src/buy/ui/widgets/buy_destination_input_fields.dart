@@ -78,7 +78,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
             value: _addressInput,
             label: context.loc.buyEnterBitcoinAddress,
             hint: context.loc.buyBitcoinAddressHint,
-            type: WalletAddressType.bitcoin,
+            type: BtcNetwork.bitcoin,
             enabled: true,
             onChanged: (value) {
               setState(() => _addressInput = value);

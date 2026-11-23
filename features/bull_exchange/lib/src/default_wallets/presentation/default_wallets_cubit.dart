@@ -58,7 +58,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     }
   }
 
-  void startEditing(WalletAddressType type) {
+  void startEditing(BtcNetwork type) {
     _destinationGeneration++;
     emit(state.copyWith(editingWalletType: type, saveError: null));
   }
@@ -91,18 +91,18 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     emit(state.copyWith(liquidAddressInput: value));
   }
 
-  void updateAddress(WalletAddressType type, String value) {
+  void updateAddress(BtcNetwork type, String value) {
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         updateBitcoinAddress(value);
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         updateLightningAddress(value);
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         updateLiquidAddress(value);
     }
   }
 
-  Future<void> saveWallet(WalletAddressType type) async {
+  Future<void> saveWallet(BtcNetwork type) async {
     if (state.isSaving) return;
     if (state.saveError != null || state.saveSuccess) {
       emit(state.copyWith(saveError: null, saveSuccess: false));
@@ -191,7 +191,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     }
   }
 
-  Future<void> deleteWallet(WalletAddressType type) async {
+  Future<void> deleteWallet(BtcNetwork type) async {
     final existingWallet = state.defaultWallets?.getWallet(type);
 
     final recipientId = existingWallet?.recipientId;
@@ -233,34 +233,31 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     emit(state.copyWith(saveError: null, loadError: null));
   }
 
-  DefaultWallets _updateWalletInState(
-    WalletAddressType type,
-    DefaultWallet wallet,
-  ) {
+  DefaultWallets _updateWalletInState(BtcNetwork type, DefaultWallet wallet) {
     final current = state.defaultWallets ?? const DefaultWallets();
 
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         return current.copyWith(bitcoin: wallet);
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         return current.copyWith(lightning: wallet);
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         return current.copyWith(liquid: wallet);
     }
   }
 
-  DefaultWallets _removeWalletFromState(WalletAddressType type) {
+  DefaultWallets _removeWalletFromState(BtcNetwork type) {
     final current = state.defaultWallets ?? const DefaultWallets();
 
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         return DefaultWallets(
           lightning: current.lightning,
           liquid: current.liquid,
         );
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         return DefaultWallets(bitcoin: current.bitcoin, liquid: current.liquid);
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         return DefaultWallets(
           bitcoin: current.bitcoin,
           lightning: current.lightning,
@@ -268,13 +265,13 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     }
   }
 
-  void _clearInputForType(WalletAddressType type) {
+  void _clearInputForType(BtcNetwork type) {
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         emit(state.copyWith(bitcoinAddressInput: ''));
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         emit(state.copyWith(lightningAddressInput: ''));
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         emit(state.copyWith(liquidAddressInput: ''));
     }
   }

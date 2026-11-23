@@ -307,7 +307,7 @@ void main() {
         );
         final result = await exchange.deleteDefaultWallet(
           recipientId: 'synthetic',
-          walletType: WalletAddressType.bitcoin,
+          walletType: BtcNetwork.bitcoin,
           address: 'synthetic-address',
         );
         expect(result, isA<Ok<void, ExchangeFailure>>());

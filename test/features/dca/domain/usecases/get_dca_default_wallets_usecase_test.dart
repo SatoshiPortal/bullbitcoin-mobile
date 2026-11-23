@@ -14,7 +14,7 @@ void main() {
   test('returns the exchange default wallets', () async {
     const wallets = DefaultWallets(
       bitcoin: DefaultWallet(
-        walletType: WalletAddressType.bitcoin,
+        walletType: BtcNetwork.bitcoin,
         address: 'tb1qdefault',
       ),
     );

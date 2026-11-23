@@ -11,7 +11,7 @@ final class SaveDefaultWalletUsecase {
 
   @useResult
   Future<Result<DefaultWallet, DefaultWalletsFailure>> execute({
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   }) async => (await _exchange.saveDefaultWallet(

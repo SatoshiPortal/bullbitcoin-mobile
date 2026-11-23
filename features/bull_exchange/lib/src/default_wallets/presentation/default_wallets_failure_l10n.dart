@@ -10,10 +10,9 @@ extension DefaultWalletsFailureL10n on DefaultWalletsFailure {
       context.loc.exchangeBitcoinWalletsAddressEmpty,
     DefaultWalletsInvalidAddressFailure(:final type) =>
       context.loc.destinationExpectedType(switch (type) {
-        WalletAddressType.bitcoin => context.loc.exchangeDcaAddressLabelBitcoin,
-        WalletAddressType.liquid => context.loc.exchangeDcaAddressLabelLiquid,
-        WalletAddressType.lightning =>
-          context.loc.exchangeDcaAddressLabelLightning,
+        BtcNetwork.bitcoin => context.loc.exchangeDcaAddressLabelBitcoin,
+        BtcNetwork.liquid => context.loc.exchangeDcaAddressLabelLiquid,
+        BtcNetwork.lightning => context.loc.exchangeDcaAddressLabelLightning,
       }),
     DefaultWalletsSaveFailure() => context.loc.exchangeBitcoinWalletsSaveFailed,
     DefaultWalletsDeleteFailure() =>

@@ -39,13 +39,13 @@ WalletRegistration _wallet(String id, Network network) =>
 const _wallets = DefaultWallets(
   bitcoin: DefaultWallet(
     recipientId: 'r1',
-    walletType: WalletAddressType.bitcoin,
+    walletType: BtcNetwork.bitcoin,
     address: 'bc1qexample',
     isDefault: true,
   ),
   liquid: DefaultWallet(
     recipientId: 'r2',
-    walletType: WalletAddressType.liquid,
+    walletType: BtcNetwork.liquid,
     address: 'lq1qexample',
     isDefault: true,
   ),

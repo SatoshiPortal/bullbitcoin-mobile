@@ -10,7 +10,7 @@ abstract class DefaultWalletsState with _$DefaultWalletsState {
     DefaultWallets? defaultWallets,
     @Default(false) bool isLoading,
     @Default(false) bool isSaving,
-    WalletAddressType? editingWalletType,
+    BtcNetwork? editingWalletType,
     @Default('') String bitcoinAddressInput,
     @Default('') String lightningAddressInput,
     @Default('') String liquidAddressInput,
@@ -29,24 +29,24 @@ abstract class DefaultWalletsState with _$DefaultWalletsState {
 
   bool get isEditing => editingWalletType != null;
 
-  String getInputValue(WalletAddressType type) {
+  String getInputValue(BtcNetwork type) {
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         return bitcoinAddressInput;
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         return lightningAddressInput;
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         return liquidAddressInput;
     }
   }
 
-  String getCurrentAddress(WalletAddressType type) {
+  String getCurrentAddress(BtcNetwork type) {
     switch (type) {
-      case WalletAddressType.bitcoin:
+      case BtcNetwork.bitcoin:
         return currentBitcoinAddress;
-      case WalletAddressType.lightning:
+      case BtcNetwork.lightning:
         return currentLightningAddress;
-      case WalletAddressType.liquid:
+      case BtcNetwork.liquid:
         return currentLiquidAddress;
     }
   }

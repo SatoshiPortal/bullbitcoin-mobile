@@ -60,7 +60,7 @@ final _restrictedSummary = _summaryWithGroups([
 const _wallets = DefaultWallets(
   bitcoin: DefaultWallet(
     recipientId: 'r1',
-    walletType: WalletAddressType.bitcoin,
+    walletType: BtcNetwork.bitcoin,
     address: 'bc1qexample',
     isDefault: true,
   ),

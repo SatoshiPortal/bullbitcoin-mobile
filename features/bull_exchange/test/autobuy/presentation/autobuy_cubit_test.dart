@@ -22,7 +22,7 @@ void main() {
 
   const wallets = DefaultWallets(
     bitcoin: DefaultWallet(
-      walletType: WalletAddressType.bitcoin,
+      walletType: BtcNetwork.bitcoin,
       address: 'bc1qaddress',
     ),
   );

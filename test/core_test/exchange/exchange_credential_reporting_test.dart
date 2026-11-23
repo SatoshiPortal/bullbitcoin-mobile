@@ -115,7 +115,7 @@ void main() {
   setUpAll(() async {
     await BullSdk.init();
     registerFallbackValue(StackTrace.empty);
-    registerFallbackValue(WalletAddressType.bitcoin);
+    registerFallbackValue(BtcNetwork.bitcoin);
   });
   tearDownAll(BullSdk.dispose);
   setUp(() {
@@ -212,7 +212,7 @@ void main() {
                     DefaultWallets(
                       bitcoin: DefaultWallet(
                         recipientId: 'recipient',
-                        walletType: WalletAddressType.bitcoin,
+                        walletType: BtcNetwork.bitcoin,
                         address: address,
                       ),
                     ),
@@ -231,9 +231,9 @@ void main() {
         );
         addTearDown(cubit.close);
         await cubit.loadDefaultWallets();
-        await cubit.saveWallet(WalletAddressType.bitcoin);
+        await cubit.saveWallet(BtcNetwork.bitcoin);
         expect(cubit.state.saveError, isNotNull);
-        await cubit.deleteWallet(WalletAddressType.bitcoin);
+        await cubit.deleteWallet(BtcNetwork.bitcoin);
         expect(cubit.state.saveError, isNotNull);
         failLoad = true;
         await cubit.loadDefaultWallets();

@@ -21,7 +21,7 @@ const DcaStartData _startData = (
 );
 
 const _bitcoinDefault = DefaultWallet(
-  walletType: WalletAddressType.bitcoin,
+  walletType: BtcNetwork.bitcoin,
   address: 'tb1qexchangedefault',
 );
 

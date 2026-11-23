@@ -105,7 +105,7 @@ Future<Result<void, AutoBuyFailure>> disableAutoBuyForTesting(
 
 DefaultWalletsCubit defaultWalletsCubitForTesting({
   required Exchange exchange,
-  required Future<String?> Function(WalletAddressType, String) validate,
+  required Future<String?> Function(BtcNetwork, String) validate,
 }) => DefaultWalletsCubit(
   exchange: exchange,
   validateDestination: ValidateDefaultWalletDestinationUsecase(validate),

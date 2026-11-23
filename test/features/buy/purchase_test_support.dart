@@ -2,7 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 
 Widget emptyPurchaseField({
-  required WalletAddressType type,
+  required BtcNetwork type,
   required String value,
   required String label,
   required String hint,

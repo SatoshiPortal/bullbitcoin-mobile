@@ -436,7 +436,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           const Gap(8),
         ],
         widget.payoutField(
-          type: WalletAddressType.lightning,
+          type: BtcNetwork.lightning,
           value: state.lightningAddressInput,
           label: context.loc.limitOrdersLightningAddressLabel,
           hint: context.loc.limitOrdersLightningAddressHint,

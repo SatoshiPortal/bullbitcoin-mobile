@@ -12,7 +12,7 @@ final class DeleteDefaultWalletUsecase {
   @useResult
   Future<Result<void, DefaultWalletsFailure>> execute({
     required String recipientId,
-    required WalletAddressType walletType,
+    required BtcNetwork walletType,
     required String address,
   }) async => (await _exchange.deleteDefaultWallet(
     recipientId: recipientId,

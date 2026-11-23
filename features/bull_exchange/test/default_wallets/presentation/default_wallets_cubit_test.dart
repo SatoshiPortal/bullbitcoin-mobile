@@ -38,13 +38,10 @@ void main() {
 
   const savedWallets = DefaultWallets(
     bitcoin: DefaultWallet(
-      walletType: WalletAddressType.bitcoin,
+      walletType: BtcNetwork.bitcoin,
       address: 'bc1qaddress',
     ),
-    liquid: DefaultWallet(
-      walletType: WalletAddressType.liquid,
-      address: 'lq1address',
-    ),
+    liquid: DefaultWallet(walletType: BtcNetwork.liquid, address: 'lq1address'),
   );
 
   blocTest<DefaultWalletsCubit, DefaultWalletsState>(
@@ -72,14 +69,14 @@ void main() {
     seed: () => const DefaultWalletsState(
       defaultWallets: DefaultWallets(
         bitcoin: DefaultWallet(
-          walletType: WalletAddressType.bitcoin,
+          walletType: BtcNetwork.bitcoin,
           address: 'bc1qsaved',
         ),
       ),
       bitcoinAddressInput: 'bc1qsaved',
     ),
     act: (cubit) {
-      cubit.startEditing(WalletAddressType.bitcoin);
+      cubit.startEditing(BtcNetwork.bitcoin);
       cubit.updateBitcoinAddress('bc1qchanged');
       cubit.cancelEditing();
     },
@@ -87,27 +84,27 @@ void main() {
       DefaultWalletsState(
         defaultWallets: DefaultWallets(
           bitcoin: DefaultWallet(
-            walletType: WalletAddressType.bitcoin,
+            walletType: BtcNetwork.bitcoin,
             address: 'bc1qsaved',
           ),
         ),
-        editingWalletType: WalletAddressType.bitcoin,
+        editingWalletType: BtcNetwork.bitcoin,
         bitcoinAddressInput: 'bc1qsaved',
       ),
       DefaultWalletsState(
         defaultWallets: DefaultWallets(
           bitcoin: DefaultWallet(
-            walletType: WalletAddressType.bitcoin,
+            walletType: BtcNetwork.bitcoin,
             address: 'bc1qsaved',
           ),
         ),
-        editingWalletType: WalletAddressType.bitcoin,
+        editingWalletType: BtcNetwork.bitcoin,
         bitcoinAddressInput: 'bc1qchanged',
       ),
       DefaultWalletsState(
         defaultWallets: DefaultWallets(
           bitcoin: DefaultWallet(
-            walletType: WalletAddressType.bitcoin,
+            walletType: BtcNetwork.bitcoin,
             address: 'bc1qsaved',
           ),
         ),
@@ -119,7 +116,7 @@ void main() {
   blocTest<DefaultWalletsCubit, DefaultWalletsState>(
     'rejects an empty address without calling the save use case',
     build: buildCubit,
-    act: (cubit) => cubit.saveWallet(WalletAddressType.bitcoin),
+    act: (cubit) => cubit.saveWallet(BtcNetwork.bitcoin),
     expect: () => const [
       DefaultWalletsState(saveError: DefaultWalletsEmptyAddressFailure()),
     ],
@@ -132,15 +129,13 @@ void main() {
     'rejects a destination from the wrong payment rail before saving',
     () async {
       when(
-        () => validateDestination.execute(
-          WalletAddressType.bitcoin,
-          'user@example.com',
-        ),
+        () =>
+            validateDestination.execute(BtcNetwork.bitcoin, 'user@example.com'),
       ).thenAnswer((_) async => null);
       final cubit = buildCubit();
-      cubit.startEditing(WalletAddressType.bitcoin);
+      cubit.startEditing(BtcNetwork.bitcoin);
       cubit.updateBitcoinAddress('user@example.com');
-      await cubit.saveWallet(WalletAddressType.bitcoin);
+      await cubit.saveWallet(BtcNetwork.bitcoin);
       expect(cubit.state.saveError, isA<DefaultWalletsInvalidAddressFailure>());
       expect(cubit.state.isSaving, isFalse);
       expect(saveCalls, 0);
@@ -152,11 +147,11 @@ void main() {
     'does not save a validation result after the destination changes',
     () async {
       final pending = Completer<String?>();
-      when(() => validateDestination.execute(WalletAddressType.bitcoin, 'old'))
+      when(() => validateDestination.execute(BtcNetwork.bitcoin, 'old'))
           .thenAnswer((_) => pending.future);
       final cubit = buildCubit();
       cubit.updateBitcoinAddress('old');
-      final saving = cubit.saveWallet(WalletAddressType.bitcoin);
+      final saving = cubit.saveWallet(BtcNetwork.bitcoin);
       cubit.updateBitcoinAddress('new');
       pending.complete('normalized-old');
       await saving;
@@ -168,12 +163,12 @@ void main() {
   );
   test('cancelling editing invalidates a pending validation', () async {
     final pending = Completer<String?>();
-    when(() => validateDestination.execute(WalletAddressType.bitcoin, 'old'))
+    when(() => validateDestination.execute(BtcNetwork.bitcoin, 'old'))
         .thenAnswer((_) => pending.future);
     final cubit = buildCubit();
-    cubit.startEditing(WalletAddressType.bitcoin);
+    cubit.startEditing(BtcNetwork.bitcoin);
     cubit.updateBitcoinAddress('old');
-    final saving = cubit.saveWallet(WalletAddressType.bitcoin);
+    final saving = cubit.saveWallet(BtcNetwork.bitcoin);
     cubit.cancelEditing();
     pending.complete('normalized-old');
     await saving;

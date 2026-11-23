@@ -42,7 +42,7 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
 ];
 
-(String?, WalletAddressType, String, bool) _fields(DefaultWallet? wallet) {
+(String?, BtcNetwork, String, bool) _fields(DefaultWallet? wallet) {
   if (wallet == null) {
     fail('Expected a default wallet');
   }
@@ -71,22 +71,22 @@ void main() {
         <String, Future<void> Function(BbxApiExchangeRecipientRepository)>{
           'getDefaultWallets': (r) => r.getDefaultWallets(),
           'saveDefaultWallet, new': (r) => r.saveDefaultWallet(
-            walletType: WalletAddressType.lightning,
+            walletType: BtcNetwork.lightning,
             address: 'sat@example.com',
           ),
           'saveDefaultWallet, empty id': (r) => r.saveDefaultWallet(
-            walletType: WalletAddressType.liquid,
+            walletType: BtcNetwork.liquid,
             address: 'lq1address',
             existingRecipientId: '',
           ),
           'saveDefaultWallet, existing': (r) => r.saveDefaultWallet(
-            walletType: WalletAddressType.bitcoin,
+            walletType: BtcNetwork.bitcoin,
             address: 'bc1qaddress',
             existingRecipientId: 'btc',
           ),
           'deleteDefaultWallet': (r) => r.deleteDefaultWallet(
             recipientId: 'btc',
-            walletType: WalletAddressType.bitcoin,
+            walletType: BtcNetwork.bitcoin,
             address: 'bc1qaddress',
           ),
         };
@@ -128,7 +128,7 @@ void main() {
       );
 
       await _repository(http).saveDefaultWallet(
-        walletType: WalletAddressType.bitcoin,
+        walletType: BtcNetwork.bitcoin,
         address: 'bc1qaddress',
         existingRecipientId: 'btc',
       );
@@ -156,22 +156,49 @@ void main() {
 
       expect(_fields(wallets.bitcoin), (
         'btc',
-        WalletAddressType.bitcoin,
+        BtcNetwork.bitcoin,
         'bc1qaddress',
         true,
       ));
       expect(_fields(wallets.lightning), (
         'ln',
-        WalletAddressType.lightning,
+        BtcNetwork.lightning,
         'sat@example.com',
         true,
       ));
       expect(_fields(wallets.liquid), (
         'lq',
-        WalletAddressType.liquid,
+        BtcNetwork.liquid,
         'lq1address',
         false,
       ));
+    });
+
+    test('a listed recipient of an unknown type is skipped, not read as '
+        'Bitcoin', () async {
+      final wallets = _value(
+        await _repository(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'elements': [
+                  {
+                    'recipientId': 'x',
+                    'recipientType': 'OUT_OTHER',
+                    'address': 'other',
+                    'isDefault': true,
+                  },
+                  _liquid,
+                ],
+              },
+            },
+          ),
+        ).getDefaultWallets(),
+      );
+
+      expect(wallets.bitcoin, isNull);
+      expect(wallets.lightning, isNull);
+      expect(wallets.liquid?.address, 'lq1address');
     });
 
     test('no element list is no default wallet', () async {
@@ -186,31 +213,19 @@ void main() {
     });
 
     test(
-      'an unknown type without an address is an empty Bitcoin wallet',
+      'a saved wallet keeps the rail it was saved on, whatever type comes back',
       () async {
-        final wallet =
-            await _repository(
-              FakeBbxHttp(
-                body: {
-                  'result': {
-                    'element': {
-                      'recipientId': 'x',
-                      'recipientType': 'OUT_OTHER',
-                    },
-                  },
-                },
-              ),
-            ).saveDefaultWallet(
-              walletType: WalletAddressType.bitcoin,
-              address: 'a',
-            );
+        final wallet = await _repository(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'element': {'recipientId': 'x', 'recipientType': 'OUT_OTHER'},
+              },
+            },
+          ),
+        ).saveDefaultWallet(walletType: BtcNetwork.liquid, address: 'a');
 
-        expect(_fields(_value(wallet)), (
-          'x',
-          WalletAddressType.bitcoin,
-          '',
-          false,
-        ));
+        expect(_fields(_value(wallet)), ('x', BtcNetwork.liquid, '', false));
       },
     );
   });
@@ -251,7 +266,7 @@ void main() {
 
       expect(
         await repository.saveDefaultWallet(
-          walletType: WalletAddressType.bitcoin,
+          walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
         _failure<DefaultWallet>(isA<ExchangeUnexpectedFailure>()),
@@ -259,7 +274,7 @@ void main() {
       expect(
         await repository.deleteDefaultWallet(
           recipientId: 'btc',
-          walletType: WalletAddressType.bitcoin,
+          walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
         _failure<void>(isA<ExchangeUnexpectedFailure>()),
@@ -288,7 +303,7 @@ void main() {
 
       expect(
         await repository.saveDefaultWallet(
-          walletType: WalletAddressType.bitcoin,
+          walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
         _failure<DefaultWallet>(isA<ExchangeApiKeyStorageFailure>()),

@@ -22,7 +22,7 @@ final class DefaultWalletsDeleteFailure extends DefaultWalletsFailure {
 }
 
 final class DefaultWalletsInvalidAddressFailure extends DefaultWalletsFailure {
-  final WalletAddressType type;
+  final BtcNetwork type;
 
   const DefaultWalletsInvalidAddressFailure(this.type);
 }
