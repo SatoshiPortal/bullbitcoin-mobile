@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
+import 'dart:math' show Random;
 import 'dart:typed_data';
 
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -96,11 +97,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       final parent = metadata.secretFingerprint;
       if (parent == null) throw const _HostFailure(ArkAccountRecoveryFailure());
       _require(parent == config.id.parent);
-      _sync(
-        await _sourceSync(
-          sync.WalletKey(id: metadata.id, network: metadata.network),
-        ),
-      );
+      await _refreshSource(metadata);
       final handle = _sync(
         await _runtime.wallet(
           sync.WalletKey(id: metadata.id, network: metadata.network),
@@ -468,11 +465,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           );
       final metadata = await _eligible(key.id, expected: binding);
       _require(metadata.secretFingerprint == parent);
-      _sync(
-        await _sourceSync(
-          sync.WalletKey(id: metadata.id, network: metadata.network),
-        ),
-      );
+      await _refreshSource(metadata);
       final handle = _sync(
         await _runtime.wallet(
           sync.WalletKey(id: metadata.id, network: metadata.network),
@@ -603,6 +596,16 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           funding.expiryHeight == review.display.expiryHeight,
     );
     return operation;
+  }
+
+  /// Best-effort refresh: the native revision checks that follow decide.
+  Future<void> _refreshSource(WalletRegistration metadata) async {
+    final refreshed = await _sourceSync(
+      sync.WalletKey(id: metadata.id, network: metadata.network),
+    );
+    if (refreshed case Err(:final failure)) {
+      log.warning('Ark Board source sync failed: ${failure.runtimeType}');
+    }
   }
 
   Future<WalletRegistration> _eligible(
