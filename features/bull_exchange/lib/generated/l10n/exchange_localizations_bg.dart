@@ -2460,4 +2460,538 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Продайте биткойн';
+
+  @override
+  String get sellSelectWallet => 'Изберете портфейл';
+
+  @override
+  String get sellWhichWalletQuestion => 'От кой портфейл искате да продавате?';
+
+  @override
+  String get sellExternalWallet => 'Външен портфейл';
+
+  @override
+  String get sellFromAnotherWallet => 'Продайте от друг биткойн портфейл';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Опитвате се да продадете над максималната сума, която може да се продаде с този портфейл.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Опитвате се да продадете под минималната сума, която може да се продаде с този портфейл.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за продажба.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Не сте удостоверени. Моля, влезте, за да продължите.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Поръчката за продажба не беше намерена. Моля, опитайте отново.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Тази поръчка за продажба вече е потвърдена.';
+
+  @override
+  String get sellSelectNetwork => 'Изберете мрежа';
+
+  @override
+  String get sellHowToPayInvoice => 'Как искате да платите тази фактура?';
+
+  @override
+  String get sellBitcoinOnChain => 'Биткойн в блокчейна';
+
+  @override
+  String get sellLightningNetwork => 'Лайтнинг мрежа';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid мрежа';
+
+  @override
+  String get sellConfirmPayment => 'Потвърдете плащането';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Цената ще се обнови след ';
+
+  @override
+  String get sellOrderNumber => 'Номер на поръчка';
+
+  @override
+  String get sellPayoutRecipient => 'Получател на изплащане';
+
+  @override
+  String get sellCadBalance => 'Баланс CAD';
+
+  @override
+  String get sellCrcBalance => 'Баланс CRC';
+
+  @override
+  String get sellEurBalance => 'Баланс EUR';
+
+  @override
+  String get sellUsdBalance => 'Баланс USD';
+
+  @override
+  String get sellMxnBalance => 'Баланс MXN';
+
+  @override
+  String get sellArsBalance => 'Баланс ARS';
+
+  @override
+  String get sellCopBalance => 'Баланс COP';
+
+  @override
+  String get sellPayinAmount => 'Входяща сума';
+
+  @override
+  String get sellPayoutAmount => 'Сума за изплащане';
+
+  @override
+  String get sellExchangeRate => 'Курс на обмен';
+
+  @override
+  String get sellPayFromWallet => 'Плати от портфейла';
+
+  @override
+  String get sellInstantPayments => 'Моментални плащания';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Сигурен портфейл за Биткойн';
+
+  @override
+  String get sellFeePriority => 'Приоритет на таксата';
+
+  @override
+  String get sellFastest => 'Най-бързият';
+
+  @override
+  String get sellAdvancedSettings => 'Разширени настройки';
+
+  @override
+  String get sellAdvancedOptions => 'Разширени настройки';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee е активирана';
+
+  @override
+  String get sellSelectCoinsManually => 'Изберете монетите ръчно';
+
+  @override
+  String get sellDone => 'Готово';
+
+  @override
+  String get sellPleasePayInvoice => 'Моля, платете тази фактура.';
+
+  @override
+  String get sellBitcoinAmount => 'Сума в биткойни';
+
+  @override
+  String get sellCopyInvoice => 'Копирай инвойс';
+
+  @override
+  String get sellShowQrCode => 'Покажете QR кода';
+
+  @override
+  String get sellQrCode => 'QR код';
+
+  @override
+  String get sellNoInvoiceData => 'Няма налични данни за фактура';
+
+  @override
+  String get sellInProgress => 'Продажбата е в ход...';
+
+  @override
+  String get sellGoHome => 'Отиди на началната страница';
+
+  @override
+  String get sellOrderCompleted => 'Поръчката е завършена!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Балансът ви ще бъде кредитиран, след като вашата транзакция получи 1 потвърждение в блокчейн.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Плати';
+
+  @override
+  String get payDescriptionLabel => 'Описание на плащането (по избор)';
+
+  @override
+  String get payDescriptionHint => 'Добавете бележка към това плащане';
+
+  @override
+  String get payPaymentDescription => 'Описание на плащането';
+
+  @override
+  String get payRecipientType => 'Тип получател';
+
+  @override
+  String get payRecipientName => 'Име на получателя';
+
+  @override
+  String get payRecipientDetails => 'Детайли за получателя';
+
+  @override
+  String get payNoDetailsAvailable => 'Няма налични детайли';
+
+  @override
+  String get paySelectWallet => 'Изберете портфейл';
+
+  @override
+  String get payExternalWallet => 'Външен портфейл';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Максималната сума, която можете да платите с този портфейл, е $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Минималната сума, която можете да платите с този портфейл, е $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за плащане.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Не сте удостоверени. Моля, влезте, за да продължите.';
+
+  @override
+  String get paySelectNetwork => 'Изберете мрежа';
+
+  @override
+  String get payHowToPayInvoice => 'Как искате да платите тази фактура?';
+
+  @override
+  String get payLightningNetwork => 'Лайтнинг мрежа';
+
+  @override
+  String get payLiquidNetwork => 'Liquid мрежа';
+
+  @override
+  String get payConfirmPayment => 'Потвърди плащането';
+
+  @override
+  String get payOrderNumber => 'Номер на поръчка';
+
+  @override
+  String get payPayinAmount => 'Входяща сума';
+
+  @override
+  String get payPayoutAmount => 'Сума за изплащане';
+
+  @override
+  String get payExchangeRate => 'Курс на обмен';
+
+  @override
+  String get payPayFromWallet => 'Плати от портфейла';
+
+  @override
+  String get payInstantPayments => 'Моментални плащания';
+
+  @override
+  String get paySecureBitcoinWallet => 'Сигурен портфейл за Биткойн';
+
+  @override
+  String get payFeePriority => 'Приоритет на таксата';
+
+  @override
+  String get payFastest => 'Най-бързият';
+
+  @override
+  String get payNetworkFees => 'Такси за мрежата';
+
+  @override
+  String get payAdvancedSettings => 'Разширени настройки';
+
+  @override
+  String get payAdvancedOptions => 'Разширени настройки';
+
+  @override
+  String get paySelectCoinsManually => 'Изберете монетите ръчно';
+
+  @override
+  String get payDone => 'Готово';
+
+  @override
+  String get payContinue => 'Продължи';
+
+  @override
+  String get payPleasePayInvoice => 'Моля, платете тази фактура.';
+
+  @override
+  String get payBitcoinAmount => 'Сума в биткойни';
+
+  @override
+  String get payBitcoinPrice => 'Цена на Биткойн';
+
+  @override
+  String get payCopyInvoice => 'Копирайте фактурата';
+
+  @override
+  String get payShowQrCode => 'Покажете QR кода';
+
+  @override
+  String get payQrCode => 'QR код';
+
+  @override
+  String get payNoInvoiceData => 'Няма налични данни за фактура';
+
+  @override
+  String get payInvalidState => 'Невалидно състояние';
+
+  @override
+  String get payViewDetails => 'Виж подробности';
+
+  @override
+  String get paySinpeReceipt => 'SINPE разписка';
+
+  @override
+  String get payCompleted => 'Плащането завършено!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE изпратено!';
+
+  @override
+  String get payOrderDetails => 'Детайли за поръчката';
+
+  @override
+  String get paySinpeMonto => 'Сума';
+
+  @override
+  String get paySinpeNumeroOrden => 'Номер на поръчка';
+
+  @override
+  String get paySinpeNumeroComprobante =>
+      '==WEBLATE_PART==\nРеференционен номер';
+
+  @override
+  String get paySinpeBeneficiario => 'Получател';
+
+  @override
+  String get paySinpeOrigen => 'Произход';
+
+  @override
+  String get payNotAvailable => 'Н/А';
+
+  @override
+  String get payBitcoinOnchain => 'Биткойн в блокчейна';
+
+  @override
+  String get payPaymentInProgress => 'Плащането е в процес на обработка!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Цената ще се обнови след ';
+
+  @override
+  String get payWhichWallet => 'От кой портфейл искате да платите?';
+
+  @override
+  String get payExternalWalletDescription => 'Платете от друг биткойн портфейл';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee е активирана';
+
+  @override
+  String get copyDialogButton => 'Копирай';
+
+  @override
+  String get closeDialogButton => 'Затвори';
+
+  @override
+  String get sellCompleteKYC => 'Завършете KYC верификацията';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Мрежови такси';
+
+  @override
+  String get sellSendPaymentContinue => 'Продължи';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Цена на Bitcoin';
+
+  @override
+  String get sellViewDetailsButton => 'Виж детайлите';
+
+  @override
+  String get sellKycPendingTitle =>
+      'Изчаква се проверка на самоличността (KYC)';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Първо трябва да завършите проверка на самоличността';
+
+  @override
+  String get sellLoadingGeneric => 'Зареждане...';
+
+  @override
+  String get viewerTapToCopy => 'Натиснете за копиране';
+
+  @override
+  String get invoiceViewerTitle => 'Фактура';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Мрежовата такса е твърде ниска. Изберете по-висока такса.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Копирано в клипборда';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Добавяне към баланса по моята сметка';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Тегленията се показват като изпратени от Leonod';
+
+  @override
+  String get sellPayoutTitle => 'Избор на получател';
+
+  @override
+  String get sellPayoutNewBadge => 'НОВО';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Избраните UTXO не покриват необходимата сума';
+
+  @override
+  String get selectAmountTitle => 'Изберете сума';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Заявена сума: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Адрес: ';
+
+  @override
+  String get typeLabel => 'Тип: ';
+
+  @override
+  String get coinsKeychainReceive => 'Получаване';
+
+  @override
+  String get coinsKeychainChange => 'Ресто';
 }

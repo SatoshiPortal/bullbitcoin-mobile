@@ -63,6 +63,7 @@ class ExchangeRouter {
     Preferences Function()? preferences,
     ExchangeSettingsHost? settings,
     ExchangePurchaseHost? purchases,
+    ExchangePayinHost? payins,
   }) => BullExchangeFeature.mount(
     networkUnavailable: config.networkUnavailable,
     showWebsiteOnly: (context) =>
@@ -91,6 +92,7 @@ class ExchangeRouter {
     onExit: config.onExit,
     settings: settings,
     purchases: purchases,
+    payins: payins,
     auth: ExchangeScope.authHost,
     limitOrders: exchange,
     withdrawal: exchange == null || preferences == null

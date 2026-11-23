@@ -357,7 +357,9 @@ Buy and DCA mount at their existing root routes in `bull_exchange`. They use the
 
 Withdrawal is mounted in the same feature and reuses its recipient selection and activation. A completed withdrawal is not invalidated by failing to update Interac defaults. The host opens the existing transaction detail route and preserves its return to Exchange.
 
-The Exchange amount and currency controls are intentionally reusable widgets. DCA and Withdrawal use them within `bull_exchange`; Limit Orders, Sell and Pay import them from its public library.
+The Exchange amount and currency controls are intentionally reusable widgets. DCA, Withdrawal, Sell and Pay use them within `bull_exchange`; Limit Orders imports them from its public library.
+
+Sell and Pay mount at their original root routes. Exchange owns order reads and writes, Secrets and Sync check the selected local wallet's exact key, and Sync supplies non-issuing fee-estimation addresses and the current unspent coins to the Coins selection sheet. Spend retains the reviewed preparation through estimation, signing and broadcast. Its Payjoin integration signs that same preparation and admits the session with its persistence callback; only Payjoin publishes the payment after admission.
 
 Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
 

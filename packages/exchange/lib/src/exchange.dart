@@ -548,11 +548,17 @@ final class Exchange {
       }, completionCheck: _CompletionCheck.read),
       access,
       ExchangeRecipientsImpl(
-        <T>(environment, operation) => withClient<T>(
+        read: <T>(environment, operation) => withClient<T>(
           (client, _) => operation(client),
           environment: environment,
           untimed: true,
           completionCheck: _CompletionCheck.read,
+        ),
+        write: <T>(environment, operation) => withClient<T>(
+          (client, _) => operation(client),
+          environment: environment,
+          untimed: true,
+          completionCheck: _CompletionCheck.write,
         ),
       ),
       sessionPreferences,
@@ -996,7 +1002,8 @@ Exchange exchangeForTesting({
   access,
   recipients ??
       ExchangeRecipientsImpl(
-        <T>(_, _) => throw StateError('Unexpected fiat recipient operation'),
+        read: <T>(_, _) => throw StateError('Unexpected fiat recipient read'),
+        write: <T>(_, _) => throw StateError('Unexpected fiat recipient write'),
       ),
   sessionPreferences,
   null,

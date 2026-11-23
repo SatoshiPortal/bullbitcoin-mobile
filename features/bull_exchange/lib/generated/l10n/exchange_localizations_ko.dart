@@ -2315,4 +2315,524 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => '비트코인';
+
+  @override
+  String get sellSelectWallet => '지갑 선택';
+
+  @override
+  String get sellWhichWalletQuestion => '어떤 지갑에서 판매하고 싶습니까?';
+
+  @override
+  String get sellExternalWallet => '외부 지갑';
+
+  @override
+  String get sellFromAnotherWallet => '다른 Bitcoin 지갑에서 판매';
+
+  @override
+  String get sellAboveMaxAmountError => '이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.';
+
+  @override
+  String get sellBelowMinAmountError => '이 지갑과 함께 판매 할 수있는 최소 금액 아래 판매하려고합니다.';
+
+  @override
+  String get sellInsufficientBalanceError => '선택한 지갑에 충분한 잔액이 이 판매 주문을 완료합니다.';
+
+  @override
+  String get sellUnauthenticatedError => '인증되지 않습니다. 자주 묻는 질문.';
+
+  @override
+  String get sellOrderNotFoundError => '판매 주문은 찾을 수 없습니다. 다시 시도하십시오.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError => '이 판매 순서는 이미 확인되었습니다.';
+
+  @override
+  String get sellSelectNetwork => '네트워크';
+
+  @override
+  String get sellHowToPayInvoice => '이 청구서를 지불하려면 어떻게해야합니까?';
+
+  @override
+  String get sellBitcoinOnChain => '비트코인';
+
+  @override
+  String get sellLightningNetwork => 'Lightning 네트워크';
+
+  @override
+  String get sellLiquidNetwork => '액체 네트워크';
+
+  @override
+  String get sellConfirmPayment => '결제방법';
+
+  @override
+  String get sellPriceWillRefreshIn => '가격은 상쾌합니다 ';
+
+  @override
+  String get sellOrderNumber => '주문 번호';
+
+  @override
+  String get sellPayoutRecipient => 'Payout 수신자';
+
+  @override
+  String get sellCadBalance => '자료실 (주)';
+
+  @override
+  String get sellCrcBalance => '사이트맵 (주)';
+
+  @override
+  String get sellEurBalance => 'EUR 유로 (주)';
+
+  @override
+  String get sellUsdBalance => '100원 (주)';
+
+  @override
+  String get sellMxnBalance => '비트 코인 (주)';
+
+  @override
+  String get sellArsBalance => 'ARS 밸런스';
+
+  @override
+  String get sellCopBalance => '제품정보 (주)';
+
+  @override
+  String get sellPayinAmount => 'Payin 금액';
+
+  @override
+  String get sellPayoutAmount => '결제 금액';
+
+  @override
+  String get sellExchangeRate => '환율';
+
+  @override
+  String get sellPayFromWallet => '지갑에서 지불';
+
+  @override
+  String get sellInstantPayments => '즉시 결제';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Bitcoin 지갑 보안';
+
+  @override
+  String get sellFeePriority => '요금 우선';
+
+  @override
+  String get sellFastest => '빠른 속도';
+
+  @override
+  String get sellAdvancedSettings => '고급 설정';
+
+  @override
+  String get sellAdvancedOptions => '고급 옵션';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee 활성화';
+
+  @override
+  String get sellSelectCoinsManually => '동전을 수동으로';
+
+  @override
+  String get sellDone => '한국어';
+
+  @override
+  String get sellPleasePayInvoice => '결제하기';
+
+  @override
+  String get sellBitcoinAmount => '비트 코인 금액';
+
+  @override
+  String get sellCopyInvoice => '복사 송장';
+
+  @override
+  String get sellShowQrCode => 'QR 코드 보기';
+
+  @override
+  String get sellQrCode => 'QR 코드';
+
+  @override
+  String get sellNoInvoiceData => '사용 가능한 청구서';
+
+  @override
+  String get sellInProgress => '진행 중...';
+
+  @override
+  String get sellGoHome => '오시는 길';
+
+  @override
+  String get sellOrderCompleted => '주문 완료!';
+
+  @override
+  String get sellBalanceWillBeCredited => '귀하의 계정 잔액은 거래가 1 확인 onchain을받습니다.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => '결제하기';
+
+  @override
+  String get payDescriptionLabel => '결제 설명 (선택 사항)';
+
+  @override
+  String get payDescriptionHint => '이 결제에 대한 메모를 추가하세요';
+
+  @override
+  String get payPaymentDescription => '결제 설명';
+
+  @override
+  String get payRecipientType => '관련 제품';
+
+  @override
+  String get payRecipientName => '이름 *';
+
+  @override
+  String get payRecipientDetails => '자주 묻는 질문';
+
+  @override
+  String get payNoDetailsAvailable => '자주 묻는 질문';
+
+  @override
+  String get paySelectWallet => '지갑 선택';
+
+  @override
+  String get payExternalWallet => '외부 지갑';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return '이 지갑으로 결제할 수 있는 최대 금액은 $amount입니다.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return '이 지갑으로 결제할 수 있는 최소 금액은 $amount입니다.';
+  }
+
+  @override
+  String get payInsufficientBalanceError => '선택한 지갑에 충분한 잔액이 이 지불 순서를 완료합니다.';
+
+  @override
+  String get payUnauthenticatedError => '인증되지 않습니다. 자주 묻는 질문.';
+
+  @override
+  String get paySelectNetwork => '네트워크';
+
+  @override
+  String get payHowToPayInvoice => '이 청구서를 지불하려면 어떻게해야합니까?';
+
+  @override
+  String get payLightningNetwork => 'Lightning 네트워크';
+
+  @override
+  String get payLiquidNetwork => '액체 네트워크';
+
+  @override
+  String get payConfirmPayment => '결제방법';
+
+  @override
+  String get payOrderNumber => '주문 번호';
+
+  @override
+  String get payPayinAmount => 'Payin 금액';
+
+  @override
+  String get payPayoutAmount => '결제 금액';
+
+  @override
+  String get payExchangeRate => '환율';
+
+  @override
+  String get payPayFromWallet => '지갑에서 지불';
+
+  @override
+  String get payInstantPayments => '즉시 결제';
+
+  @override
+  String get paySecureBitcoinWallet => 'Bitcoin 지갑 보안';
+
+  @override
+  String get payFeePriority => '요금 우선';
+
+  @override
+  String get payFastest => '빠른 속도';
+
+  @override
+  String get payNetworkFees => '네트워크 수수료';
+
+  @override
+  String get payAdvancedSettings => '고급 설정';
+
+  @override
+  String get payAdvancedOptions => '고급 옵션';
+
+  @override
+  String get paySelectCoinsManually => '동전을 수동으로';
+
+  @override
+  String get payDone => '한국어';
+
+  @override
+  String get payContinue => '계속하기';
+
+  @override
+  String get payPleasePayInvoice => '결제하기';
+
+  @override
+  String get payBitcoinAmount => '비트 코인 금액';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin 가격';
+
+  @override
+  String get payCopyInvoice => '복사 송장';
+
+  @override
+  String get payShowQrCode => 'QR 코드 보기';
+
+  @override
+  String get payQrCode => 'QR 코드';
+
+  @override
+  String get payNoInvoiceData => '사용 가능한 청구서';
+
+  @override
+  String get payInvalidState => '잘못된 상태';
+
+  @override
+  String get payViewDetails => '더 보기';
+
+  @override
+  String get paySinpeReceipt => 'SINPE 영수증';
+
+  @override
+  String get payCompleted => '결제 완료!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE 엔비 아도!';
+
+  @override
+  String get payOrderDetails => '주문 세부 사항';
+
+  @override
+  String get paySinpeMonto => '계정 정보';
+
+  @override
+  String get paySinpeNumeroOrden => '주문 번호';
+
+  @override
+  String get paySinpeNumeroComprobante => '참고 번호';
+
+  @override
+  String get paySinpeBeneficiario => '한국어';
+
+  @override
+  String get paySinpeOrigen => '주요 특징';
+
+  @override
+  String get payNotAvailable => '사이트맵';
+
+  @override
+  String get payBitcoinOnchain => '비트코인';
+
+  @override
+  String get payPaymentInProgress => '결제 진행 중!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => '가격은 상쾌합니다 ';
+
+  @override
+  String get payWhichWallet => '어떤 지갑에서 지불 하시겠습니까?';
+
+  @override
+  String get payExternalWalletDescription => '다른 Bitcoin 지갑에서 지불';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee 활성화';
+
+  @override
+  String get copyDialogButton => '관련 기사';
+
+  @override
+  String get closeDialogButton => '뚱 베어';
+
+  @override
+  String get sellCompleteKYC => '완료 KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => '네트워크 수수료';
+
+  @override
+  String get sellSendPaymentContinue => '계속하기';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin 가격';
+
+  @override
+  String get sellViewDetailsButton => '더 보기';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID 검증 완료';
+
+  @override
+  String get sellKycPendingDescription => '먼저 ID 검증을 완료해야 합니다';
+
+  @override
+  String get sellLoadingGeneric => '로드 중 ...';
+
+  @override
+  String get viewerTapToCopy => '복사하려면 탭하세요';
+
+  @override
+  String get invoiceViewerTitle => '인보이스';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      '판매 주문을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      '네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      '네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => '클립보드에 복사되었습니다';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => '내 계정 잔액에 추가';
+
+  @override
+  String get sellPayoutSepaDescription => '출금 내역의 송금인이 Leonod로 표시됩니다';
+
+  @override
+  String get sellPayoutTitle => '수신자 선택';
+
+  @override
+  String get sellPayoutNewBadge => '신규';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      '거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.';
+
+  @override
+  String get sendSelectedUtxosInsufficient => '선택된 utxos는 필요한 금액을 커버하지 않습니다';
+
+  @override
+  String get selectAmountTitle => '선택 금액';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return '요청 수량 : $amount';
+  }
+
+  @override
+  String get addressLabel => '주소: ';
+
+  @override
+  String get typeLabel => '유형: ';
+
+  @override
+  String get coinsKeychainReceive => '받기';
+
+  @override
+  String get coinsKeychainChange => '잔돈';
 }

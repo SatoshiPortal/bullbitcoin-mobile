@@ -2425,4 +2425,536 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Prodej Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'Vybrat Peněženka';
+
+  @override
+  String get sellWhichWalletQuestion => 'Která peněženka chcete prodat?';
+
+  @override
+  String get sellExternalWallet => 'Externí peněženka';
+
+  @override
+  String get sellFromAnotherWallet => 'Prodej z jiné Bitcoin peněženky';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'S touto peněženkou se snažíte prodat nad maximální částku, která může být prodána.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'S touto peněženkou se snažíte prodat minimální částku, která může být prodána.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Nedostatečná vyváženost v zvolené peněžence dokončit tuto prodejní objednávku.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Nejste autentická. Přihlaste se a pokračujte.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Prodejní objednávka nebyla nalezena. Prosím, zkuste to znovu.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Tato objednávka byla potvrzena.';
+
+  @override
+  String get sellSelectNetwork => 'Vyberte síť';
+
+  @override
+  String get sellHowToPayInvoice => 'Jak chcete zaplatit tuto fakturu?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Bleskové sítě';
+
+  @override
+  String get sellLiquidNetwork => 'Tekutý síť';
+
+  @override
+  String get sellConfirmPayment => 'Potvrzení platby';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Cena bude obnovena v ';
+
+  @override
+  String get sellOrderNumber => 'Číslo objednávky';
+
+  @override
+  String get sellPayoutRecipient => 'Výplatní příjemce';
+
+  @override
+  String get sellCadBalance => 'Čeština Čeština';
+
+  @override
+  String get sellCrcBalance => 'Čeština Čeština';
+
+  @override
+  String get sellEurBalance => 'Kč Čeština';
+
+  @override
+  String get sellUsdBalance => 'Kč Čeština';
+
+  @override
+  String get sellMxnBalance => 'Čeština Čeština';
+
+  @override
+  String get sellArsBalance => 'ARS Bilance';
+
+  @override
+  String get sellCopBalance => 'Čeština Čeština';
+
+  @override
+  String get sellPayinAmount => 'Payin částka';
+
+  @override
+  String get sellPayoutAmount => 'Výplatní částka';
+
+  @override
+  String get sellExchangeRate => 'Směnný kurz';
+
+  @override
+  String get sellPayFromWallet => 'Platit z peněženky';
+
+  @override
+  String get sellInstantPayments => 'Okamžité platby';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Secure Bitcoin peněženku';
+
+  @override
+  String get sellFeePriority => 'Prioritní priority';
+
+  @override
+  String get sellFastest => 'Čeština';
+
+  @override
+  String get sellAdvancedSettings => 'Pokročilé nastavení';
+
+  @override
+  String get sellAdvancedOptions => 'Pokročilé možnosti';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Nahradit aktivovaný';
+
+  @override
+  String get sellSelectCoinsManually => 'Vyberte mince ručně';
+
+  @override
+  String get sellDone => 'Čeština';
+
+  @override
+  String get sellPleasePayInvoice => 'Tuto fakturu prosím vyplňte';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin částka';
+
+  @override
+  String get sellCopyInvoice => 'Kopírovat fakturu';
+
+  @override
+  String get sellShowQrCode => 'Zobrazit QR kód';
+
+  @override
+  String get sellQrCode => 'QR kód';
+
+  @override
+  String get sellNoInvoiceData => 'Nejsou k dispozici žádné fakturační údaje';
+
+  @override
+  String get sellInProgress => 'Prodej v průběhu...';
+
+  @override
+  String get sellGoHome => 'Přejděte domů';
+
+  @override
+  String get sellOrderCompleted => 'Objednávky dokončeno!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Vaše zůstatek na účtu bude připsána po přijetí transakce na klíč.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Čeština';
+
+  @override
+  String get payDescriptionLabel => 'Popis platby (volitelné)';
+
+  @override
+  String get payDescriptionHint => 'Přidejte poznámku k této platbě';
+
+  @override
+  String get payPaymentDescription => 'Popis platby';
+
+  @override
+  String get payRecipientType => 'Typ příjemce';
+
+  @override
+  String get payRecipientName => 'Název příjemce';
+
+  @override
+  String get payRecipientDetails => 'Podrobnosti o pomoc';
+
+  @override
+  String get payNoDetailsAvailable => 'Žádné podrobnosti';
+
+  @override
+  String get paySelectWallet => 'Vybrat Peněženka';
+
+  @override
+  String get payExternalWallet => 'Externí peněženka';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Maximální částka, kterou můžete touto peněženkou zaplatit, je $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Minimální částka, kterou můžete touto peněženkou zaplatit, je $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Nejste autentická. Přihlaste se a pokračujte.';
+
+  @override
+  String get paySelectNetwork => 'Vyberte síť';
+
+  @override
+  String get payHowToPayInvoice => 'Jak chcete zaplatit tuto fakturu?';
+
+  @override
+  String get payLightningNetwork => 'Bleskové sítě';
+
+  @override
+  String get payLiquidNetwork => 'Tekutý síť';
+
+  @override
+  String get payConfirmPayment => 'Potvrzení platby';
+
+  @override
+  String get payOrderNumber => 'Číslo objednávky';
+
+  @override
+  String get payPayinAmount => 'Payin částka';
+
+  @override
+  String get payPayoutAmount => 'Výplatní částka';
+
+  @override
+  String get payExchangeRate => 'Směnný kurz';
+
+  @override
+  String get payPayFromWallet => 'Platit z peněženky';
+
+  @override
+  String get payInstantPayments => 'Okamžité platby';
+
+  @override
+  String get paySecureBitcoinWallet => 'Secure Bitcoin peněženku';
+
+  @override
+  String get payFeePriority => 'Prioritní priority';
+
+  @override
+  String get payFastest => 'Čeština';
+
+  @override
+  String get payNetworkFees => 'Síťové poplatky';
+
+  @override
+  String get payAdvancedSettings => 'Pokročilé nastavení';
+
+  @override
+  String get payAdvancedOptions => 'Pokročilé možnosti';
+
+  @override
+  String get paySelectCoinsManually => 'Vyberte mince ručně';
+
+  @override
+  String get payDone => 'Čeština';
+
+  @override
+  String get payContinue => 'Pokračovat';
+
+  @override
+  String get payPleasePayInvoice => 'Tuto fakturu prosím vyplňte';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin částka';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin Cena';
+
+  @override
+  String get payCopyInvoice => 'Kopírovat fakturu';
+
+  @override
+  String get payShowQrCode => 'Zobrazit QR kód';
+
+  @override
+  String get payQrCode => 'QR kód';
+
+  @override
+  String get payNoInvoiceData => 'Nejsou k dispozici žádné fakturační údaje';
+
+  @override
+  String get payInvalidState => 'Neplatný stav';
+
+  @override
+  String get payViewDetails => 'Zobrazit podrobnosti';
+
+  @override
+  String get paySinpeReceipt => 'Účtenka SINPE';
+
+  @override
+  String get payCompleted => 'Platba dokončena!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'Detaily objednávky';
+
+  @override
+  String get paySinpeMonto => 'Množství';
+
+  @override
+  String get paySinpeNumeroOrden => 'Číslo objednávky';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Referenční číslo';
+
+  @override
+  String get paySinpeBeneficiario => 'Čeština';
+
+  @override
+  String get paySinpeOrigen => 'Čeština';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'Platba v postupu!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Cena bude obnovena v ';
+
+  @override
+  String get payWhichWallet => 'Která peněženka chcete platit?';
+
+  @override
+  String get payExternalWalletDescription => 'Platit z jiné Bitcoin peněženky';
+
+  @override
+  String get payRbfActivated => 'Nahradit aktivovaný';
+
+  @override
+  String get copyDialogButton => 'Čeština';
+
+  @override
+  String get closeDialogButton => 'Zavřít';
+
+  @override
+  String get sellCompleteKYC => 'Kompletní KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Síťové poplatky';
+
+  @override
+  String get sellSendPaymentContinue => 'Pokračovat';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin Cena';
+
+  @override
+  String get sellViewDetailsButton => 'Zobrazit podrobnosti';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID Ověřování';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Musíte dokončit ověření totožnosti nejprve';
+
+  @override
+  String get sellLoadingGeneric => 'Nahrávání ...';
+
+  @override
+  String get viewerTapToCopy => 'Klepněte pro kopírování';
+
+  @override
+  String get invoiceViewerTitle => 'Faktura';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Zkopírováno do schránky';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Přidat k zůstatku mého účtu';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Výběry se zobrazují jako odeslané společností Leonod';
+
+  @override
+  String get sellPayoutTitle => 'Vybrat příjemce';
+
+  @override
+  String get sellPayoutNewBadge => 'NOVÉ';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Vybrané utxos nepokrývá požadovaná částka';
+
+  @override
+  String get selectAmountTitle => 'Vyberte částku';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Požadovaná částka: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Adresa: ';
+
+  @override
+  String get typeLabel => 'Typ: ';
+
+  @override
+  String get coinsKeychainReceive => 'Příjem';
+
+  @override
+  String get coinsKeychainChange => 'Výdaj';
 }

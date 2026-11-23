@@ -2429,4 +2429,536 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Myy bitcoinia';
+
+  @override
+  String get sellSelectWallet => 'Valitse lompakko';
+
+  @override
+  String get sellWhichWalletQuestion => 'Mistä lompakosta haluat myydä?';
+
+  @override
+  String get sellExternalWallet => 'Ulkoinen lompakko';
+
+  @override
+  String get sellFromAnotherWallet => 'Myy toisesta Bitcoin-lompakosta';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Yrität myydä isomman määrän kuin tästä lompakosta on mahdollista.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Myyntisi on alle tämän lompakon minimi määrän.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Valitun lompakon saldo ei riitä tämän myyntitilauksen suorittamiseen.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'Myyntitilausta ei löytynyt. Yritä uudelleen.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Tämä myyntitilaus on jo vahvistettu.';
+
+  @override
+  String get sellSelectNetwork => 'Valitse verkko';
+
+  @override
+  String get sellHowToPayInvoice => 'Kuinka haluat maksaa tämän laskun?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Lightning-verkko';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid-verkko';
+
+  @override
+  String get sellConfirmPayment => 'Vahvista maksu';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Hinta päivittyy ';
+
+  @override
+  String get sellOrderNumber => 'Tilausnumero';
+
+  @override
+  String get sellPayoutRecipient => 'Maksun saaja';
+
+  @override
+  String get sellCadBalance => 'CAD-saldo';
+
+  @override
+  String get sellCrcBalance => 'CRC-saldo';
+
+  @override
+  String get sellEurBalance => 'EUR-saldo';
+
+  @override
+  String get sellUsdBalance => 'USD-saldo';
+
+  @override
+  String get sellMxnBalance => 'MXN-saldo';
+
+  @override
+  String get sellArsBalance => 'ARS-saldo';
+
+  @override
+  String get sellCopBalance => 'COP-saldo';
+
+  @override
+  String get sellPayinAmount => 'Maksun määrä';
+
+  @override
+  String get sellPayoutAmount => 'Saantimäärä';
+
+  @override
+  String get sellExchangeRate => 'Vaihtokurssi';
+
+  @override
+  String get sellPayFromWallet => 'Maksa lompakosta';
+
+  @override
+  String get sellInstantPayments => 'Välittömät maksut';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Turvallinen Bitcoin-lompakko';
+
+  @override
+  String get sellFeePriority => 'Prioriteetin kulut';
+
+  @override
+  String get sellFastest => 'Nopein';
+
+  @override
+  String get sellAdvancedSettings => 'Lisäasetukset';
+
+  @override
+  String get sellAdvancedOptions => 'Lisäasetukset';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee aktivoitu';
+
+  @override
+  String get sellSelectCoinsManually => 'Valitse kolikot manuaalisesti';
+
+  @override
+  String get sellDone => 'Valmis';
+
+  @override
+  String get sellPleasePayInvoice => 'Maksa tämä lasku';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin-määrä';
+
+  @override
+  String get sellCopyInvoice => 'Kopioi lasku';
+
+  @override
+  String get sellShowQrCode => 'Näytä QR-koodi';
+
+  @override
+  String get sellQrCode => 'QR-koodi';
+
+  @override
+  String get sellNoInvoiceData => 'Laskutietoja ei saatavilla';
+
+  @override
+  String get sellInProgress => 'Myynti käynnissä...';
+
+  @override
+  String get sellGoHome => 'Siirry etusivulle';
+
+  @override
+  String get sellOrderCompleted => 'Tilaus valmis!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Tilisi saldoa päivittyy, kun transaktio vahvistetaan lohkoketjussa.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Maksa';
+
+  @override
+  String get payDescriptionLabel => 'Maksun kuvaus (valinnainen)';
+
+  @override
+  String get payDescriptionHint => 'Lisää muistiinpano tähän maksuun';
+
+  @override
+  String get payPaymentDescription => 'Maksun kuvaus';
+
+  @override
+  String get payRecipientType => 'Vastaanottajan tyyppi';
+
+  @override
+  String get payRecipientName => 'Vastaanottajan nimi';
+
+  @override
+  String get payRecipientDetails => 'Vastaanottajan tiedot';
+
+  @override
+  String get payNoDetailsAvailable => 'Tietoja ei saatavilla';
+
+  @override
+  String get paySelectWallet => 'Valitse lompakko';
+
+  @override
+  String get payExternalWallet => 'Ulkoinen lompakko';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Suurin summa, jonka voit maksaa tällä lompakolla, on $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Pienin summa, jonka voit maksaa tällä lompakolla, on $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Valitussa lompakossa ei ole tarpeeksi saldoa tämän maksun suorittamiseen.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Et ole tunnistautunut. Kirjaudu sisään jatkaaksesi.';
+
+  @override
+  String get paySelectNetwork => 'Valitse verkko';
+
+  @override
+  String get payHowToPayInvoice => 'Miten haluat maksaa tämän laskun?';
+
+  @override
+  String get payLightningNetwork => 'Lightning-verkko';
+
+  @override
+  String get payLiquidNetwork => 'Liquid-verkko';
+
+  @override
+  String get payConfirmPayment => 'Vahvista maksu';
+
+  @override
+  String get payOrderNumber => 'Tilausnumero';
+
+  @override
+  String get payPayinAmount => 'Maksun määrä';
+
+  @override
+  String get payPayoutAmount => 'Ulosmaksun määrä';
+
+  @override
+  String get payExchangeRate => 'Vaihtokurssi';
+
+  @override
+  String get payPayFromWallet => 'Maksa lompakosta';
+
+  @override
+  String get payInstantPayments => 'Välittömät maksut';
+
+  @override
+  String get paySecureBitcoinWallet => 'Turvallinen Bitcoin-lompakko';
+
+  @override
+  String get payFeePriority => 'Kulujen prioriteetti';
+
+  @override
+  String get payFastest => 'Nopein';
+
+  @override
+  String get payNetworkFees => 'Verkkokulut';
+
+  @override
+  String get payAdvancedSettings => 'Lisäasetukset';
+
+  @override
+  String get payAdvancedOptions => 'Lisävalinnat';
+
+  @override
+  String get paySelectCoinsManually => 'Valitse kolikot manuaalisesti';
+
+  @override
+  String get payDone => 'Valmis';
+
+  @override
+  String get payContinue => 'Jatka';
+
+  @override
+  String get payPleasePayInvoice => 'Maksa tämä lasku';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin-määrä';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin-kurssi';
+
+  @override
+  String get payCopyInvoice => 'Kopioi lasku';
+
+  @override
+  String get payShowQrCode => 'Näytä QR-koodi';
+
+  @override
+  String get payQrCode => 'QR-koodi';
+
+  @override
+  String get payNoInvoiceData => 'Laskun tietoja ei ole saatavilla';
+
+  @override
+  String get payInvalidState => 'Virheellinen tila';
+
+  @override
+  String get payViewDetails => 'Näytä tiedot';
+
+  @override
+  String get paySinpeReceipt => 'SINPE-kuitti';
+
+  @override
+  String get payCompleted => 'Maksu suoritettu!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE LÄHETETTY!';
+
+  @override
+  String get payOrderDetails => 'Tilaustiedot';
+
+  @override
+  String get paySinpeMonto => 'Määrä';
+
+  @override
+  String get paySinpeNumeroOrden => 'Tilausnumero';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Viitenumero';
+
+  @override
+  String get paySinpeBeneficiario => 'Saaja';
+
+  @override
+  String get paySinpeOrigen => 'Lähde';
+
+  @override
+  String get payNotAvailable => 'Ei saatavilla';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'Maksu käynnissä!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Hinta päivittyy ';
+
+  @override
+  String get payWhichWallet => 'Mistä lompakosta haluat maksaa?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'Maksa toisesta Bitcoin-lompakosta';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee aktivoitu';
+
+  @override
+  String get copyDialogButton => 'Kopioi';
+
+  @override
+  String get closeDialogButton => 'Sulje';
+
+  @override
+  String get sellCompleteKYC => 'Suorita KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Verkkomaksut';
+
+  @override
+  String get sellSendPaymentContinue => 'Jatka';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoinin hinta';
+
+  @override
+  String get sellViewDetailsButton => 'Näytä tiedot';
+
+  @override
+  String get sellKycPendingTitle => 'KYC-vahvistus kesken';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Sinun on ensin suoritettava henkilöllisyyden varmistus';
+
+  @override
+  String get sellLoadingGeneric => 'Ladataan...';
+
+  @override
+  String get viewerTapToCopy => 'Kopioi napauttamalla';
+
+  @override
+  String get invoiceViewerTitle => 'Lasku';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Verkkomaksu on liian pieni. Valitse suurempi maksu.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Kopioitu leikepöydälle';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'Lisää tilini saldoon';
+
+  @override
+  String get sellPayoutSepaDescription => 'Nostot näkyvät Leonodin lähettäminä';
+
+  @override
+  String get sellPayoutTitle => 'Valitse vastaanottaja';
+
+  @override
+  String get sellPayoutNewBadge => 'UUSI';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Valitut UTXO:t eivät kata vaadittua määrää';
+
+  @override
+  String get selectAmountTitle => 'Valitse määrä';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Pyydetty määrä: $amount';
+  }
+
+  @override
+  String get addressLabel => 'Osoite: ';
+
+  @override
+  String get typeLabel => 'Tyyppi: ';
+
+  @override
+  String get coinsKeychainReceive => 'Vastaanota';
+
+  @override
+  String get coinsKeychainChange => 'Vaihtoraha';
 }

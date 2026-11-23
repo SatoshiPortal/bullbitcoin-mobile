@@ -121,6 +121,60 @@ void main() {
     });
   }
 
+  for (final write in [false, true]) {
+    test('a recipient ${write ? 'write' : 'read'} completes as the session '
+        'changes', () async {
+      var epoch = 0;
+      final http = _HeldResponse();
+      final exchange = exchangeWithTransportForTesting(
+        readSession: () async => Ok((
+          environment: ExchangeEnvironment.testnet,
+          epoch: epoch,
+          apiKey: 'synthetic-session-key',
+        )),
+        openClient: (endpoint, readKey) => bbxForTesting(
+          endpoint: endpoint.toString(),
+          adapter: http,
+          readActiveApiKey: readKey,
+        ),
+      );
+      final pending = write
+          ? exchange.recipients.updateInteracSecurityDetails(
+              recipientId: 'synthetic-recipient',
+              email: 'test@example.invalid',
+              securityQuestion: null,
+              securityAnswer: null,
+              isTestnet: true,
+            )
+          : exchange.recipients.checkSinpe(
+              phoneNumber: '88888888',
+              isTestnet: true,
+            );
+      await http.started.future;
+      epoch++;
+      http.response.complete(
+        ResponseBody.fromString(
+          write ? '{"result":null}' : '{"result":{"ownerName":"Test Owner"}}',
+          200,
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
+        ),
+      );
+      expect(
+        await pending,
+        write
+            ? isA<Ok<void, RecipientsFailure>>()
+            : isA<Err<String, RecipientsFailure>>().having(
+                (result) => result.failure.logMessage,
+                'failure',
+                'ExchangeOperationStaleFailure',
+              ),
+      );
+      expect(http.requests, hasLength(1));
+    });
+  }
+
   for (final changeSession in [false, true]) {
     test('confirmed withdrawal preserves success when the Interac update '
         '${changeSession ? 'would cross a session' : 'is refused'}', () async {

@@ -2441,4 +2441,539 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Bitcoin বিক্রি করুন';
+
+  @override
+  String get sellSelectWallet => 'ওয়ালেট নির্বাচন করুন';
+
+  @override
+  String get sellWhichWalletQuestion =>
+      'আপনি কোন ওয়ালেট থেকে বিক্রি করতে চান?';
+
+  @override
+  String get sellExternalWallet => 'বাহ্যিক ওয়ালেট';
+
+  @override
+  String get sellFromAnotherWallet =>
+      'অন্য একটি Bitcoin ওয়ালেট থেকে বিক্রি করুন';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বোচ্চ পরিমাণের বেশি বিক্রি করার চেষ্টা করছেন।';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বনিম্ন পরিমাণের কম বিক্রি করার চেষ্টা করছেন।';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'এই বিক্রয় অর্ডার সম্পন্ন করতে নির্বাচিত ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই।';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'আপনি প্রমাণীকৃত নন। অনুগ্রহ করে চালিয়ে যেতে লগ ইন করুন।';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'বিক্রয় অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'এই বিক্রয় অর্ডারটি ইতিমধ্যে নিশ্চিত করা হয়েছে।';
+
+  @override
+  String get sellSelectNetwork => 'নেটওয়ার্ক নির্বাচন করুন';
+
+  @override
+  String get sellHowToPayInvoice => 'আপনি কীভাবে এই ইনভয়েস পরিশোধ করতে চান?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin অন-চেইন';
+
+  @override
+  String get sellLightningNetwork => 'Lightning Network';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid Network';
+
+  @override
+  String get sellConfirmPayment => 'পেমেন্ট নিশ্চিত করুন';
+
+  @override
+  String get sellPriceWillRefreshIn => 'মূল্য রিফ্রেশ হবে ';
+
+  @override
+  String get sellOrderNumber => 'অর্ডার নম্বর';
+
+  @override
+  String get sellPayoutRecipient => 'পেআউট প্রাপক';
+
+  @override
+  String get sellCadBalance => 'CAD ব্যালেন্স';
+
+  @override
+  String get sellCrcBalance => 'CRC ব্যালেন্স';
+
+  @override
+  String get sellEurBalance => 'EUR ব্যালেন্স';
+
+  @override
+  String get sellUsdBalance => 'USD ব্যালেন্স';
+
+  @override
+  String get sellMxnBalance => 'MXN ব্যালেন্স';
+
+  @override
+  String get sellArsBalance => 'ARS ব্যালেন্স';
+
+  @override
+  String get sellCopBalance => 'COP ব্যালেন্স';
+
+  @override
+  String get sellPayinAmount => 'পেইন পরিমাণ';
+
+  @override
+  String get sellPayoutAmount => 'পেআউট পরিমাণ';
+
+  @override
+  String get sellExchangeRate => 'বিনিময় হার';
+
+  @override
+  String get sellPayFromWallet => 'ওয়ালেট থেকে পরিশোধ করুন';
+
+  @override
+  String get sellInstantPayments => 'তাৎক্ষণিক পেমেন্ট';
+
+  @override
+  String get sellSecureBitcoinWallet => 'নিরাপদ Bitcoin ওয়ালেট';
+
+  @override
+  String get sellFeePriority => 'ফি অগ্রাধিকার';
+
+  @override
+  String get sellFastest => 'সবচেয়ে দ্রুত';
+
+  @override
+  String get sellAdvancedSettings => 'উন্নত সেটিংস';
+
+  @override
+  String get sellAdvancedOptions => 'উন্নত বিকল্পসমূহ';
+
+  @override
+  String get sellReplaceByFeeActivated => 'রিপ্লেস-বাই-ফি সক্রিয়';
+
+  @override
+  String get sellSelectCoinsManually => 'ম্যানুয়ালি কয়েন নির্বাচন করুন';
+
+  @override
+  String get sellDone => 'সম্পন্ন';
+
+  @override
+  String get sellPleasePayInvoice => 'অনুগ্রহ করে এই ইনভয়েস পরিশোধ করুন';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin পরিমাণ';
+
+  @override
+  String get sellCopyInvoice => 'ইনভয়েস কপি করুন';
+
+  @override
+  String get sellShowQrCode => 'QR code দেখুন';
+
+  @override
+  String get sellQrCode => 'QR Code';
+
+  @override
+  String get sellNoInvoiceData => 'কোনো ইনভয়েস ডেটা পাওয়া যায়নি';
+
+  @override
+  String get sellInProgress => 'বিক্রয় চলছে...';
+
+  @override
+  String get sellGoHome => 'হোমে যান';
+
+  @override
+  String get sellOrderCompleted => 'অর্ডার সম্পন্ন!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'আপনার লেনদেন অনচেইনে 1টি নিশ্চিতকরণ পাওয়ার পর আপনার অ্যাকাউন্ট ব্যালেন্স জমা হবে।';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'পরিশোধ করুন';
+
+  @override
+  String get payDescriptionLabel => 'পেমেন্টের বিবরণ (ঐচ্ছিক)';
+
+  @override
+  String get payDescriptionHint => 'এই পেমেন্টের জন্য একটি নোট যোগ করুন';
+
+  @override
+  String get payPaymentDescription => 'পেমেন্টের বিবরণ';
+
+  @override
+  String get payRecipientType => 'প্রাপকের ধরন';
+
+  @override
+  String get payRecipientName => 'প্রাপকের নাম';
+
+  @override
+  String get payRecipientDetails => 'প্রাপকের বিবরণ';
+
+  @override
+  String get payNoDetailsAvailable => 'কোনো তথ্য উপলব্ধ নয়';
+
+  @override
+  String get paySelectWallet => 'ওয়ালেট নির্বাচন করুন';
+
+  @override
+  String get payExternalWallet => 'বহিরাগত ওয়ালেট';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'এই ওয়ালেট দিয়ে আপনি সর্বোচ্চ $amount পরিশোধ করতে পারেন।';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'এই ওয়ালেট দিয়ে আপনি সর্বনিম্ন $amount পরিশোধ করতে পারেন।';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'নির্বাচিত ওয়ালেটে এই পেমেন্ট অর্ডারটি সম্পূর্ণ করতে পর্যাপ্ত টাকা নেই।';
+
+  @override
+  String get payUnauthenticatedError =>
+      'আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।';
+
+  @override
+  String get paySelectNetwork => 'নেটওয়ার্ক নির্বাচন করুন';
+
+  @override
+  String get payHowToPayInvoice => 'এই চালানটি আপনি কীভাবে পরিশোধ করতে চান?';
+
+  @override
+  String get payLightningNetwork => 'লাইটনিং নেটওয়ার্ক';
+
+  @override
+  String get payLiquidNetwork => 'লিকুইড নেটওয়ার্ক';
+
+  @override
+  String get payConfirmPayment => 'পেমেন্ট নিশ্চিত করুন';
+
+  @override
+  String get payOrderNumber => 'অর্ডার নম্বর';
+
+  @override
+  String get payPayinAmount => 'পে-ইন পরিমাণ';
+
+  @override
+  String get payPayoutAmount => 'পাওআউট পরিমাণ';
+
+  @override
+  String get payExchangeRate => 'বিনিময় হার';
+
+  @override
+  String get payPayFromWallet => 'ওয়ালেট থেকে পরিশোধ করুন';
+
+  @override
+  String get payInstantPayments => 'তাত্ক্ষণিক লেনদেন';
+
+  @override
+  String get paySecureBitcoinWallet => 'নিরাপদ বিটকয়েন ওয়ালেট';
+
+  @override
+  String get payFeePriority => 'শুল্কার অগ্রাধিকার';
+
+  @override
+  String get payFastest => 'সবচেয়ে দ্রুত';
+
+  @override
+  String get payNetworkFees => 'নেটওয়ার্ক ফি';
+
+  @override
+  String get payAdvancedSettings => 'উন্নত সেটিংস';
+
+  @override
+  String get payAdvancedOptions => 'উন্নত বিকল্পসমূহ';
+
+  @override
+  String get paySelectCoinsManually => 'কয়েনগুলো নিজে থেকে নির্বাচন করুন';
+
+  @override
+  String get payDone => 'সম্পন্ন';
+
+  @override
+  String get payContinue => 'চালিয়ে যান';
+
+  @override
+  String get payPleasePayInvoice => 'এই চালানটি পরিশোধ করুন';
+
+  @override
+  String get payBitcoinAmount => 'বিটকয়েন পরিমাণ';
+
+  @override
+  String get payBitcoinPrice => 'বিটকয়েন মূল্য';
+
+  @override
+  String get payCopyInvoice => 'চালান অনুলিপি করুন';
+
+  @override
+  String get payShowQrCode => 'QR কোড দেখান';
+
+  @override
+  String get payQrCode => 'QR কোড';
+
+  @override
+  String get payNoInvoiceData => 'চালান তথ্য উপলব্ধ নয়';
+
+  @override
+  String get payInvalidState => 'অবৈধ অবস্থা';
+
+  @override
+  String get payViewDetails => 'বিস্তারিত দেখুন';
+
+  @override
+  String get paySinpeReceipt => 'SINPE Receipt';
+
+  @override
+  String get payCompleted => 'পেমেন্ট সম্পূর্ণ হয়েছে!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE পাঠানো!';
+
+  @override
+  String get payOrderDetails => 'আদেশের বিবরণ';
+
+  @override
+  String get paySinpeMonto => 'পরিমাণ';
+
+  @override
+  String get paySinpeNumeroOrden => 'অর্ডার নম্বর';
+
+  @override
+  String get paySinpeNumeroComprobante => 'রেফারেন্স নম্বর';
+
+  @override
+  String get paySinpeBeneficiario => 'উপকারভোগী';
+
+  @override
+  String get paySinpeOrigen => 'উৎস';
+
+  @override
+  String get payNotAvailable => 'প্রযোজ্য নয়';
+
+  @override
+  String get payBitcoinOnchain => 'চেইন-ভিত্তিক বিটকয়েন';
+
+  @override
+  String get payPaymentInProgress => 'পেমেন্ট চলছে!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'দাম আপডেট হবে ';
+
+  @override
+  String get payWhichWallet => 'আপনি কোন ওয়ালেট থেকে পেমেন্ট করতে চান?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'অন্য একটি বিটকয়েন ওয়ালেট থেকে পেমেন্ট করুন';
+
+  @override
+  String get payRbfActivated => 'ফি দ্বারা প্রতিস্থাপন সক্রিয় হয়েছে';
+
+  @override
+  String get copyDialogButton => 'কপি';
+
+  @override
+  String get closeDialogButton => 'বন্ধ';
+
+  @override
+  String get sellCompleteKYC => 'KYC সম্পূর্ণ করুন';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'নেটওয়ার্ক ফি';
+
+  @override
+  String get sellSendPaymentContinue => 'চালিয়ে যান';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'বিটকয়েন মূল্য';
+
+  @override
+  String get sellViewDetailsButton => 'বিস্তারিত দেখুন';
+
+  @override
+  String get sellKycPendingTitle => 'KYC ID যাচাই প্রক্রিয়াধীন';
+
+  @override
+  String get sellKycPendingDescription =>
+      'প্রথমে আপনাকে পরিচয় যাচাই সম্পূর্ণ করতে হবে';
+
+  @override
+  String get sellLoadingGeneric => 'লোড হচ্ছে..।';
+
+  @override
+  String get viewerTapToCopy => 'কপি করতে ট্যাপ করুন';
+
+  @override
+  String get invoiceViewerTitle => 'চালান';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'ক্লিপবোর্ডে কপি করা হয়েছে';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'আমার অ্যাকাউন্ট ব্যালেন্সে যোগ করুন';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'উত্তোলনগুলি Leonod থেকে পাঠানো হিসেবে দেখায়';
+
+  @override
+  String get sellPayoutTitle => 'প্রাপক নির্বাচন করুন';
+
+  @override
+  String get sellPayoutNewBadge => 'নতুন';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'আপনার লেনদেন সম্প্রচারিত হয়েছে কি না আমরা নিশ্চিত করতে পারিনি। আবার চেষ্টা করার আগে একটি ব্লক এক্সপ্লোরারে দেখে নিন।';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'নির্বাচিত UTXO প্রয়োজনীয় পরিমাণ কভার করে না';
+
+  @override
+  String get selectAmountTitle => 'পরিমাণ নির্বাচন করুন';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'অনুরোধকৃত পরিমাণ: $amount';
+  }
+
+  @override
+  String get addressLabel => 'ঠিকানা: ';
+
+  @override
+  String get typeLabel => 'ধরন: ';
+
+  @override
+  String get coinsKeychainReceive => 'গ্রহণ';
+
+  @override
+  String get coinsKeychainChange => 'চেঞ্জ';
 }

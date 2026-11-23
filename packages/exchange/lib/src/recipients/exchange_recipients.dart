@@ -76,14 +76,16 @@ abstract interface class ExchangeRecipients {
 }
 
 final class ExchangeRecipientsImpl implements ExchangeRecipients {
-  final RunRecipientOperation _run;
+  final RunRecipientOperation _read;
+  final RunRecipientOperation _write;
 
-  const ExchangeRecipientsImpl(this._run);
+  const ExchangeRecipientsImpl({required this._read, required this._write});
 
   Future<Result<T, RecipientsFailure>> _execute<T>(
+    RunRecipientOperation run,
     ExchangeEnvironment environment,
     Future<Result<T, RecipientsFailure>> Function(Bbx) operation,
-  ) async => (await _run<T>(environment, operation)).mapErr((failure) {
+  ) async => (await run<T>(environment, operation)).mapErr((failure) {
     return switch (failure) {
       RecipientsFailure() => failure,
       ExchangeNotAuthenticatedFailure() =>
@@ -101,6 +103,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
     bool isFiatRecipient = true,
     required bool isTestnet,
   }) => _execute(
+    _write,
     _environment(isTestnet),
     (client) => BbxApiRecipientsRepository(api: client).saveRecipient(
       details,
@@ -119,6 +122,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
     bool? isOwner,
     String? search,
   }) => _execute(
+    _read,
     _environment(isTestnet),
     (client) => BbxApiRecipientsRepository(api: client).listRecipients(
       isTestnet: isTestnet,
@@ -136,6 +140,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
     required String phoneNumber,
     required bool isTestnet,
   }) => _execute(
+    _read,
     _environment(isTestnet),
     (client) =>
         BbxApiRecipientsRepository(api: client)
@@ -147,6 +152,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
     required String searchTerm,
     required bool isTestnet,
   }) => _execute(
+    _read,
     _environment(isTestnet),
     (client) =>
         BbxApiRecipientsRepository(api: client)
@@ -171,6 +177,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
         return Err(failure);
       case Ok(value: final details):
         return _execute(
+          _write,
           _environment(isTestnet),
           (client) =>
               BbxApiRecipientsRepository(api: client)
@@ -190,6 +197,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
     required String recipientId,
     required bool isTestnet,
   }) => _execute(
+    _write,
     _environment(isTestnet),
     (client) => BbxApiSepaVirtualPayeeRepository(
       mainnet: client,
@@ -202,6 +210,7 @@ final class ExchangeRecipientsImpl implements ExchangeRecipients {
     required String recipientId,
     required bool isTestnet,
   }) => _execute(
+    _read,
     _environment(isTestnet),
     (client) => BbxApiSepaVirtualPayeeRepository(
       mainnet: client,
