@@ -76,20 +76,19 @@ void mountPayjoin(GetIt locator, {bool startRecovery = true}) {
             built,
             owner,
             replacing,
-          }) async =>
-              switch (payjoinBroadcastWallet(
-                await locator<SecretsInventory>().readWallet(id),
-              )) {
-                Ok(:final value) => locator<WalletNativeRuntime>().broadcast(
-                  value,
-                  transaction,
-                  network: network,
-                  built: built,
-                  owner: owner,
-                  replacing: replacing,
-                ),
-                Err(:final failure) => Err(failure),
-              },
+          }) async => switch (payjoinBroadcastWallet(
+            await locator<SecretsInventory>().readWallet(id),
+          )) {
+            Ok(:final value) => locator<WalletNativeRuntime>().broadcast(
+              value,
+              transaction,
+              network: network,
+              built: built,
+              owner: owner,
+              replacing: replacing,
+            ),
+            Err(:final failure) => Err(failure),
+          },
         ),
       ),
       fees: locator<Fees>().payjoin,

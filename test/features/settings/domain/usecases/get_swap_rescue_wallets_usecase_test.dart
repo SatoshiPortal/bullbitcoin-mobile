@@ -51,6 +51,42 @@ void main() {
     });
   }
 
+  test('a watch-only account is offered as a rescue destination', () async {
+    final watchOnly = walletRegistrationForTesting(
+      id: 'watch-only',
+      network: BitcoinNetwork.testnet,
+    );
+    expect(watchOnly.signer, WalletSigner.none);
+    when(() => wallets.walletsForNetwork(BitcoinNetwork.testnet))
+        .thenAnswer((_) async => Ok(walletSelectionForTesting([watchOnly])));
+
+    expect(
+      await usecase.execute(actsOnLiquid: false),
+      isA<Ok<List<WalletRegistration>, SwapsFailure>>().having(
+        (result) => result.value,
+        'wallets',
+        [watchOnly],
+      ),
+    );
+  });
+
+  test('an incomplete inventory fails instead of offering fewer accounts',
+      () async {
+    final readable = walletRegistrationForTesting(
+      id: 'readable',
+      network: BitcoinNetwork.testnet,
+    );
+    when(() => wallets.walletsForNetwork(BitcoinNetwork.testnet)).thenAnswer(
+      (_) async =>
+          Ok(walletSelectionForTesting([readable], isComplete: false)),
+    );
+
+    expect(
+      await usecase.execute(actsOnLiquid: false),
+      isA<Err<List<WalletRegistration>, SwapsFailure>>(),
+    );
+  });
+
   test('unavailable inventory fails before offering a destination', () async {
     when(() => wallets.walletsForNetwork(LiquidNetwork.testnet))
         .thenAnswer((_) async => const Err(UnreadableWalletFailure()));
