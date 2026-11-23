@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:ark/ark.dart' show ArkWalletFailure;
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -9,6 +10,16 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:sync/sync.dart';
 
 import 'ark_funding_test_fixture.dart';
+
+Future<Result<void, ArkWalletFailure>> _admit(
+  ArkFundingSigningGuard guard,
+  WalletKey key, {
+  String unsignedPsbt = publicFundingPsbt,
+}) => guard.admit(
+  walletId: key.id,
+  network: key.network,
+  unsignedPsbt: unsignedPsbt,
+);
 
 // Separate isolate/SQLite connections start together; no signer or wallet opens.
 Future<void> raceOrdinaryReservation((String, bool, SendPort) args) async {
@@ -56,10 +67,10 @@ void main() {
     test(
       'unavailable authority admits only explicit non-Ark Bitcoin $network',
       () async {
-        const guard = ArkFundingSigningGuard(Err(SyncStorageFailure()));
-        final result = await guard.admit(
-          key: WalletKey(id: 'ordinary', network: network),
-          unsignedPsbt: publicFundingPsbt,
+        const guard = ArkFundingSigningGuard(authority: null);
+        final result = await _admit(
+          guard,
+          WalletKey(id: 'ordinary', network: network),
         );
         switch (network) {
           case BitcoinNetwork.mainnet:
@@ -69,13 +80,13 @@ void main() {
               NetworkCapabilities.supports(network, NetworkCapability.ark),
               isFalse,
             );
-            expect(result, isA<Ok<void, SyncFailure>>());
+            expect(result, isA<Ok<void, ArkWalletFailure>>());
           case BitcoinNetwork.regtest:
             expect(
               NetworkCapabilities.supports(network, NetworkCapability.ark),
               isTrue,
             );
-            expect(result, isA<Err<void, SyncFailure>>());
+            expect(result, isA<Err<void, ArkWalletFailure>>());
         }
       },
     );
@@ -84,13 +95,10 @@ void main() {
     test(
       'non-Bitcoin $network does not gain the ordinary Bitcoin exception',
       () async {
-        const guard = ArkFundingSigningGuard(Err(SyncStorageFailure()));
+        const guard = ArkFundingSigningGuard(authority: null);
         expect(
-          await guard.admit(
-            key: WalletKey(id: 'not-bitcoin', network: network),
-            unsignedPsbt: publicFundingPsbt,
-          ),
-          isA<Err<void, SyncFailure>>(),
+          await _admit(guard, WalletKey(id: 'not-bitcoin', network: network)),
+          isA<Err<void, ArkWalletFailure>>(),
         );
       },
     );
@@ -98,10 +106,10 @@ void main() {
   test(
     'unavailable configured inventory refuses instead of an empty lookup',
     () async {
-      const guard = ArkFundingSigningGuard(Err(SyncStorageFailure()));
+      const guard = ArkFundingSigningGuard(authority: null);
       expect(
-        await guard.admit(key: fundingKey, unsignedPsbt: publicFundingPsbt),
-        isA<Err<void, SyncFailure>>(),
+        await _admit(guard, fundingKey),
+        isA<Err<void, ArkWalletFailure>>(),
       );
     },
   );
@@ -183,10 +191,8 @@ void main() {
   test(
     'ordinary handoff is durable and prevents later exact funding reservation',
     () async {
-      final guard = ArkFundingSigningGuard(Ok(fixture.store));
-      sourceOk(
-        await guard.admit(key: fundingKey, unsignedPsbt: publicFundingPsbt),
-      );
+      final guard = ArkFundingSigningGuard(authority: fixture.store);
+      expect(await _admit(guard, fundingKey), isA<Ok>());
       final reopened = sourceOk(
         SqliteArkFundingReservations.open(fixture.path, foreground: false),
       );
@@ -227,15 +233,12 @@ void main() {
   );
   test('Ark wins first: exact transaction and wallet alias refuse ordinary handoff', () async {
     await fixture.reserve('ark-first');
-    final guard = ArkFundingSigningGuard(Ok(fixture.store));
+    final guard = ArkFundingSigningGuard(authority: fixture.store);
     for (final key in [
       fundingKey,
       WalletKey(id: 'alias', network: BitcoinNetwork.regtest),
     ]) {
-      expect(
-        await guard.admit(key: key, unsignedPsbt: publicFundingPsbt),
-        isA<Err>(),
-      );
+      expect(await _admit(guard, key), isA<Err>());
     }
     final db = sqlite3.open(fixture.path);
     try {
@@ -255,9 +258,12 @@ void main() {
       decodeBitcoinPsbt(other).inputs,
       decodeBitcoinPsbt(publicFundingPsbt).inputs,
     );
-    sourceOk(
-      await ArkFundingSigningGuard(Ok(fixture.store))
-          .admit(key: fundingKey, unsignedPsbt: publicFundingPsbt),
+    expect(
+      await _admit(
+        ArkFundingSigningGuard(authority: fixture.store),
+        fundingKey,
+      ),
+      isA<Ok>(),
     );
     await fixture.reserve('different-exact-transaction', psbt: other);
     expect(sourceOk(await fixture.store.reservations()), hasLength(1));
@@ -266,10 +272,11 @@ void main() {
     'active input overlap and corrupt unrelated inventory refuse admission',
     () async {
       await fixture.reserve('active');
-      final guard = ArkFundingSigningGuard(Ok(fixture.store));
+      final guard = ArkFundingSigningGuard(authority: fixture.store);
       expect(
-        await guard.admit(
-          key: fundingKey,
+        await _admit(
+          guard,
+          fundingKey,
           unsignedPsbt: otherUnsignedTransaction(),
         ),
         isA<Err>(),
@@ -280,24 +287,20 @@ void main() {
       } finally {
         db.close();
       }
-      expect(
-        await guard.admit(key: fundingKey, unsignedPsbt: publicFundingPsbt),
-        isA<Err>(),
-      );
+      expect(await _admit(guard, fundingKey), isA<Err>());
     },
   );
   test(
     'ordinary marker retries are idempotent while scopes remain network-wide',
     () async {
-      final guard = ArkFundingSigningGuard(Ok(fixture.store));
-      sourceOk(
-        await guard.admit(key: fundingKey, unsignedPsbt: publicFundingPsbt),
-      );
-      sourceOk(
-        await guard.admit(
-          key: WalletKey(id: 'alias', network: BitcoinNetwork.regtest),
-          unsignedPsbt: publicFundingPsbt,
+      final guard = ArkFundingSigningGuard(authority: fixture.store);
+      expect(await _admit(guard, fundingKey), isA<Ok>());
+      expect(
+        await _admit(
+          guard,
+          WalletKey(id: 'alias', network: BitcoinNetwork.regtest),
         ),
+        isA<Ok>(),
       );
       final db = sqlite3.open(fixture.path);
       try {
@@ -314,8 +317,10 @@ void main() {
       try {
         other.execute('BEGIN IMMEDIATE');
         expect(
-          await ArkFundingSigningGuard(Ok(fixture.store))
-              .admit(key: fundingKey, unsignedPsbt: publicFundingPsbt),
+          await _admit(
+            ArkFundingSigningGuard(authority: fixture.store),
+            fundingKey,
+          ),
           isA<Err>(),
         );
         other.execute('ROLLBACK');

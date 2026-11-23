@@ -32,58 +32,66 @@ void main() {
     signerDevice: null,
     balanceSat: BigInt.zero,
   );
-  for (final confirm in [true, false]) {
-    testWidgets(
-      'Send ${confirm ? 'retains its original PSBT and wallet on confirmation' : 'does not open the reader on cancellation'}',
-      (tester) async {
-        final cubit = _Send();
-        when(() => cubit.state).thenReturn(
-          SendState(
-            selectedWallet: SendWalletBitcoin(wallet),
-            unsignedPsbt: 'original',
+  for (final (confirm, stale) in [
+    (true, false),
+    (true, true),
+    (false, false),
+  ]) {
+    testWidgets('Send signature reader: confirmed=$confirm stale=$stale', (
+      tester,
+    ) async {
+      final cubit = _Send();
+      when(() => cubit.state).thenReturn(
+        SendState(
+          selectedWallet: SendWalletBitcoin(wallet),
+          unsignedPsbt: 'original',
+        ),
+      );
+      when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      when(() => cubit.updateSignedBitcoinTx('signed'))
+          .thenAnswer((_) async => true);
+      final requests = <(String, Wallet?)>[];
+      final services = GetIt.asNewInstance();
+      addTearDown(services.reset);
+      final feature = SignersFeature.mount(
+        services: services,
+        writeNfc: (_, _, _, _) async {},
+      );
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(body: ShowPsbtButton()),
           ),
-        );
-        when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-        final requests = <(String, Wallet?)>[];
-        final services = GetIt.asNewInstance();
-        addTearDown(services.reset);
-        final feature = SignersFeature.mount(
-          services: services,
-          writeNfc: (_, _, _, _) async {},
-        );
-        final router = GoRouter(
-          routes: [
-            GoRoute(
-              path: '/',
-              builder: (_, _) => const Scaffold(body: ShowPsbtButton()),
-            ),
-            ...feature.routes,
-          ],
-        );
-        addTearDown(router.dispose);
-        await tester.pumpWidget(
-          BlocProvider<SendCubit>.value(
-            value: cubit,
-            child: SendPsbtHandoff(
-              openReader: (_, psbt, source) async {
-                requests.add((psbt, source));
-              },
-              child: MaterialApp.router(
-                routerConfig: router,
-                theme: ThemeData(extensions: testBullExtensions),
-                localizationsDelegates: const [
-                  bullUiLocalizationsDelegate,
-                  ...appLocalizationsDelegates,
-                ],
-                supportedLocales: AppLocalizations.supportedLocales,
-              ),
+          ...feature.routes,
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        BlocProvider<SendCubit>.value(
+          value: cubit,
+          child: SendPsbtHandoff(
+            openReader: (_, psbt, source) async {
+              requests.add((psbt, source));
+              return 'signed';
+            },
+            child: MaterialApp.router(
+              routerConfig: router,
+              theme: ThemeData(extensions: testBullExtensions),
+              localizationsDelegates: const [
+                bullUiLocalizationsDelegate,
+                ...appLocalizationsDelegates,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
             ),
           ),
-        );
-        final context = tester.element(find.byType(ShowPsbtButton));
-        final loc = AppLocalizations.of(context);
-        await tester.tap(find.text(loc.sendShowPsbt));
-        await tester.pumpAndSettle();
+        ),
+      );
+      final context = tester.element(find.byType(ShowPsbtButton));
+      final loc = AppLocalizations.of(context);
+      await tester.tap(find.text(loc.sendShowPsbt));
+      await tester.pumpAndSettle();
+      if (stale) {
         when(() => cubit.state).thenReturn(
           SendState(
             selectedWallet: SendWalletBitcoin(
@@ -92,17 +100,22 @@ void main() {
             unsignedPsbt: 'changed',
           ),
         );
-        if (confirm) {
-          await tester.tap(
-            find.text(SignersLocalizations.of(context).psbtFlowDone),
-          );
-        } else {
-          router.pop();
-        }
-        await tester.pumpAndSettle();
-        expect(requests, confirm ? [('original', wallet)] : isEmpty);
-        expect(tester.takeException(), isNull);
-      },
-    );
+      }
+      if (confirm) {
+        await tester.tap(
+          find.text(SignersLocalizations.of(context).psbtFlowDone),
+        );
+      } else {
+        router.pop();
+      }
+      await tester.pumpAndSettle();
+      expect(requests, confirm ? [('original', wallet)] : isEmpty);
+      if (confirm && !stale) {
+        verify(() => cubit.updateSignedBitcoinTx('signed')).called(1);
+      } else {
+        verifyNever(() => cubit.updateSignedBitcoinTx('signed'));
+      }
+      expect(tester.takeException(), isNull);
+    });
   }
 }

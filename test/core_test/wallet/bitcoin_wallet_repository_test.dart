@@ -1,10 +1,9 @@
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart'
     show
         BitcoinSpendStatus,
         SyncFailure,
-        SyncStorageFailure,
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure,
         UnsignedSpend,
@@ -133,7 +132,7 @@ void main() {
       spender: spender,
     );
     repository = BitcoinWalletRepository(
-      arkFundingGuard: const ArkFundingSigningGuard(Err(SyncStorageFailure())),
+      arkFundingGuard: const ArkFundingSigningGuard(authority: null),
       walletRegistrations: metadataDatasource,
       // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
       secrets: Secrets(scratchDirectory: () async => '/tmp'),

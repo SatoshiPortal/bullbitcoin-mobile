@@ -78,10 +78,11 @@ void main() {
             body: BlocProvider<SendCubit>.value(
               value: cubit,
               child: SendPsbtHandoff(
-                openReader: (context, psbt, wallet) => context.pushNamed<void>(
-                  BroadcastSignedTxRoute.broadcastHome.name,
-                  extra: (psbt: psbt, wallet: wallet),
-                ),
+                openReader: (context, psbt, wallet) =>
+                    context.pushNamed<String>(
+                      BroadcastSignedTxRoute.broadcastHome.name,
+                      extra: (psbt: psbt, wallet: wallet),
+                    ),
                 child: const ShowPsbtButton(),
               ),
             ),

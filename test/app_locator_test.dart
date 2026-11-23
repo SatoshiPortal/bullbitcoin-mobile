@@ -3,6 +3,7 @@ import 'package:electrum/testing.dart';
 import 'package:preferences/testing.dart';
 import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
+import 'package:ark/funding.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -412,7 +413,8 @@ void main() {
         await compose();
         expect(
           await locator<ArkFundingSigningGuard>().admit(
-            key: fundingKey,
+            walletId: fundingKey.id,
+            network: fundingKey.network,
             unsignedPsbt: publicFundingPsbt,
           ),
           isA<Ok>(),

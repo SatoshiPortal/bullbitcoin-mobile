@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -70,7 +70,7 @@ void main() {
     metadata = _Metadata();
     nativeAccesses = 0;
     keystore = FakeSecureStoragePlatform().install();
-    guard = ArkFundingSigningGuard(Ok(fixture.store));
+    guard = ArkFundingSigningGuard(authority: fixture.store);
     when(() => metadata.fetch(any())).thenAnswer(
       (i) async =>
           fundingMetadata.copyWith(id: i.positionalArguments.single as String),
@@ -108,7 +108,7 @@ void main() {
   test(
     'unavailable authority blocks both signers rather than bypassing the guard',
     () async {
-      guard = const ArkFundingSigningGuard(Err(SyncStorageFailure()));
+      guard = const ArkFundingSigningGuard(authority: null);
       await expectLater(
         generic().signPsbt(publicFundingPsbt, walletId: fundingWalletId),
         throwsA(isA<WalletSpendBlockedException>()),

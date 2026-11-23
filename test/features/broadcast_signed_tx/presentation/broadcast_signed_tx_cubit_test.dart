@@ -271,51 +271,48 @@ void main() {
   const secondSignedTrimmedPsbt =
       'cHNidP8BAKQCAAAAA6DLc9RAdKwWQb/7Nrq1FyAtDQ3e0w5E4LkLpcrwBL0aAAAAAAD9////78NG2vqjywKaa0QHfo6C44o1+odXeWZ43FfHy4bLdxABAAAAAP3///8rhueJha90HzgJ6alnJ1uvi0Zbq0JQoXnwDb0Cjn79DwAAAAAA/f///wHWCBAAAAAAABYAFDraKFKubXzlSvRQy8V4X+TwKhLXAAAAAAAiAgIv4ZP089Gh3DcLFcr/Om6kI99LFHsT5XO9/AqiYPn5S0cwRAIgMJcGjoczA/ht/oTuE30a5StXa9l72t5+jayaURudfnECIGw+ymYS2RDszHL+KXRuoiNjvAUiIIKE7wa7+RKORevBAQAiAgJnXJ8+nIC4cTUtC795s+zlThrpxrAJRLHpGYkEQyw1x0cwRAIgH5pFuC079UUXzPJU1ya57Lak9Yc4NkAttmOEsNphd/cCIBnVkzO/wVfD5dxWKXbqdHazwUirh2zcY1MIH1skRqkbAQAiAgMUAdnwr2UVz6AhNBI5j6an4wHRGVX3uhSLaWy2qS70xkcwRAIgVrv+vZ9iG1njv8wrSCuhhLIlkMRqk4lxnHBRMHTzVWUCIELRLHVXUTyL0rFWA8aNADWjkOB/pepeQst7u2GryIylAQAA';
 
-  test('finalizes a SeedSigner-trimmed PSBT before broadcasting', () async {
-    final signedTrimmedPsbt = bdk.Psbt(psbtBase64: firstSignedTrimmedPsbt)
-        .combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt))
-        .serialize();
-    final broadcast = _MockBroadcastBitcoinTransactionUsecase();
-    when(
-      () => broadcast.execute(
-        any(),
-        isPsbt: any(named: 'isPsbt'),
+  test(
+    'returns a finalized SeedSigner transaction without broadcasting',
+    () async {
+      final signedTrimmedPsbt = bdk.Psbt(psbtBase64: firstSignedTrimmedPsbt)
+          .combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt))
+          .serialize();
+      final broadcast = _MockBroadcastBitcoinTransactionUsecase();
+      final cubit = BroadcastSignedTxCubit(
         network: app.Network.bitcoinMainnet,
-      ),
-    ).thenAnswer((_) async => 'txid');
-    final cubit = BroadcastSignedTxCubit(
-      network: app.Network.bitcoinMainnet,
-      broadcastBitcoinTransactionUsecase: broadcast,
-      verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-        SendFacade(
-          bitcoin: _unusedBitcoinBroadcast,
-          liquid: _unusedLiquidBroadcast,
-          verifySignedTxUsecase: VerifySignedTxUsecase(),
+        broadcastBitcoinTransactionUsecase: broadcast,
+        verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
+          SendFacade(
+            bitcoin: _unusedBitcoinBroadcast,
+            liquid: _unusedLiquidBroadcast,
+            verifySignedTxUsecase: VerifySignedTxUsecase(),
+          ),
         ),
-      ),
-      unsignedPsbt: unsignedPsbt,
-    );
-    addTearDown(cubit.close);
+        unsignedPsbt: unsignedPsbt,
+      );
+      addTearDown(cubit.close);
 
-    await cubit.onQrScanned(signedTrimmedPsbt);
+      await cubit.onQrScanned(signedTrimmedPsbt);
 
-    expect(cubit.state.failure, isNull);
-    expect(cubit.state.transaction?.format, TxFormat.hex);
-    final finalizedTransaction = cubit.state.transaction!.data;
-    expect(finalizedTransaction, startsWith('02000000000103'));
-    expect(finalizedTransaction.length, greaterThan(500));
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.transaction?.format, TxFormat.hex);
+      final finalizedTransaction = cubit.state.transaction!.data;
+      expect(finalizedTransaction, startsWith('02000000000103'));
+      expect(finalizedTransaction.length, greaterThan(500));
 
-    await cubit.broadcastTransaction();
+      await cubit.broadcastTransaction();
 
-    verify(
-      () => broadcast.execute(
-        finalizedTransaction,
-        isPsbt: false,
-        network: app.Network.bitcoinMainnet,
-      ),
-    ).called(1);
-    expect(cubit.state.isBroadcasted, isTrue);
-  });
+      verifyNever(
+        () => broadcast.execute(
+          finalizedTransaction,
+          isPsbt: false,
+          network: app.Network.bitcoinMainnet,
+        ),
+      );
+      expect(cubit.state.isBroadcasted, isFalse);
+      expect(await cubit.signedForSend(), finalizedTransaction);
+    },
+  );
 
   test('rejects a combined PSBT that cannot be finalized', () async {
     final cubit = BroadcastSignedTxCubit(
