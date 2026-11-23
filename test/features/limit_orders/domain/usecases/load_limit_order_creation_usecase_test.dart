@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
@@ -19,7 +19,11 @@ class MockLimitOrderRepository extends Mock implements ExchangeLimitOrders {}
 class MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
-class MockDefaultWalletsFacade extends Mock implements DefaultWalletsFacade {}
+abstract interface class _DefaultWalletReader {
+  Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets();
+}
+
+class MockDefaultWalletReader extends Mock implements _DefaultWalletReader {}
 
 class MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
@@ -50,7 +54,7 @@ const _wallets = DefaultWallets(
 void main() {
   late MockLimitOrderRepository repository;
   late MockGetExchangeUserSummaryUsecase getUserSummary;
-  late MockDefaultWalletsFacade defaultWallets;
+  late MockDefaultWalletReader defaultWallets;
   late MockGetWalletsUsecase getWallets;
   late LoadLimitOrderCreationUsecase usecase;
 
@@ -65,18 +69,18 @@ void main() {
   setUp(() {
     repository = MockLimitOrderRepository();
     getUserSummary = MockGetExchangeUserSummaryUsecase();
-    defaultWallets = MockDefaultWalletsFacade();
+    defaultWallets = MockDefaultWalletReader();
     getWallets = MockGetWalletsUsecase();
     usecase = LoadLimitOrderCreationUsecase(
       getUserSummary,
-      defaultWallets,
+      exchangeForTesting(getDefaultWallets: defaultWallets.getDefaultWallets),
       getWallets,
       repository,
     );
     when(() => repository.getRate(any()))
         .thenAnswer((_) async => Ok(limitOrderRate()));
     when(() => defaultWallets.getDefaultWallets())
-        .thenAnswer((_) async => _wallets);
+        .thenAnswer((_) async => const Ok(_wallets));
     when(() => getWallets.execute()).thenAnswer((_) async => Ok([]));
   });
 
@@ -186,7 +190,7 @@ void main() {
   test('maps an unreadable default wallet list to the catch-all', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
     when(() => defaultWallets.getDefaultWallets())
-        .thenThrow(Exception('recipient request failed'));
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
 
     expect(
       failureOf(await usecase.execute()),

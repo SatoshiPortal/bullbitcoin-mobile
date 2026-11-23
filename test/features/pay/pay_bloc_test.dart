@@ -1,9 +1,10 @@
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
@@ -22,9 +23,7 @@ import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:mocktail/mocktail.dart';
@@ -57,9 +56,6 @@ class _MockLoadPayWalletUtxosUsecase extends Mock
 class _MockLoadPayNetworkFeesUsecase extends Mock
     implements LoadPayNetworkFeesUsecase {}
 
-class _MockCalculatePayAbsoluteFeesUsecase extends Mock
-    implements CalculatePayAbsoluteFeesUsecase {}
-
 class _MockGetPayPayinAddressUsecase extends Mock
     implements GetPayPayinAddressUsecase {}
 
@@ -79,12 +75,6 @@ class _MockBroadcastPayjoinOriginalUsecase extends Mock
 class _MockGetVisiblePayjoinTransactionUsecase extends Mock
     implements GetVisiblePayjoinTransactionUsecase {}
 
-class _MockPreviewBitcoinFeeUsecase extends Mock
-    implements PreviewBitcoinFeeUsecase {}
-
-class _MockPreviewBitcoinFeePresetsUsecase extends Mock
-    implements PreviewBitcoinFeePresetsUsecase {}
-
 class _MockWallet extends Mock implements Wallet {}
 
 /// Exposes [emit] so a test can put the bloc on the state under test instead of
@@ -102,7 +92,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.broadcastPayPayinUsecase,
     required super.loadPayWalletUtxosUsecase,
     required super.loadPayNetworkFeesUsecase,
-    required super.calculatePayAbsoluteFeesUsecase,
+
     required super.getPayPayinAddressUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
@@ -110,8 +100,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.broadcastPayjoinOriginalUsecase,
     required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
-    required super.previewBitcoinFeeUsecase,
-    required super.previewBitcoinFeePresetsUsecase,
+    required super.spend,
   });
 
   void seed(PayState state) => emit(state);
@@ -161,7 +150,10 @@ const _recipient = RecipientViewModel(
 
 class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
 
+class _MockSpend extends Mock implements Spend {}
+
 void main() {
+  final spend = _MockSpend();
   late _MockPreparePayLiquidPayinUsecase prepareLiquidPayin;
   late _MockSignPayPayinUsecase signPayin;
   late _MockBroadcastPayPayinUsecase broadcastPayin;
@@ -187,14 +179,26 @@ void main() {
         _MockGetVisiblePayjoinTransactionUsecase(),
     retryPayjoinProposalUsecase: _MockRetryPayjoin(),
     loadPayNetworkFeesUsecase: _MockLoadPayNetworkFeesUsecase(),
-    calculatePayAbsoluteFeesUsecase: _MockCalculatePayAbsoluteFeesUsecase(),
+
     getPayPayinAddressUsecase: _MockGetPayPayinAddressUsecase(),
     getPayOrderUsecase: getOrder,
-    previewBitcoinFeeUsecase: _MockPreviewBitcoinFeeUsecase(),
-    previewBitcoinFeePresetsUsecase: _MockPreviewBitcoinFeePresetsUsecase(),
+    spend: spend,
   );
 
   setUpAll(() {
+    registerFallbackValue(
+      SpendFixtures.preparedBitcoin(unsignedPsbt: '', fee: Sats.zero),
+    );
+    registerFallbackValue(
+      SpendFixtures.preparedLiquid(
+        unsignedPset: '',
+        fee: Sats.zero,
+        amountSent: Sats.zero,
+      ),
+    );
+    registerFallbackValue(SpendFixtures.signedBitcoin(''));
+    registerFallbackValue(SpendFixtures.signedLiquid(''));
+
     registerFallbackValue(const RelativeFee(25));
   });
 
@@ -227,14 +231,18 @@ void main() {
         amountSat: any(named: 'amountSat'),
         feeRate: any(named: 'feeRate'),
       ),
-    ).thenAnswer((_) async => const Ok<String, PayFailure>('pset'));
-    when(
-      () => signPayin.liquid(
-        pset: any(named: 'pset'),
-        walletId: any(named: 'walletId'),
+    ).thenAnswer(
+      (_) async => Ok(
+        SpendFixtures.preparedLiquid(
+          unsignedPset: 'pset',
+          fee: Sats.zero,
+          amountSent: Sats.fromInt(1),
+        ),
       ),
-    ).thenAnswer((_) async => const Ok<String, PayFailure>('signed-pset'));
-    when(() => broadcastPayin.liquid(any(), walletId: any(named: 'walletId')))
+    );
+    when(() => signPayin.liquid(any()))
+        .thenAnswer((_) async => Ok(SpendFixtures.signedLiquid('signed-pset')));
+    when(() => broadcastPayin.liquid(any()))
         .thenAnswer((_) async => const Ok<String, PayFailure>('txid'));
   });
 

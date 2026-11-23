@@ -1,17 +1,11 @@
-import 'package:primitives/primitives.dart';
 import 'package:access/src/domain/access_failure.dart';
-import 'package:secrets/secrets.dart';
+import 'package:access/src/domain/access_inventory.dart';
+import 'package:primitives/primitives.dart';
 
 class CheckPinCodeExistsUsecase {
-  final AccessKeychain _accessKeychain;
+  final AccessInventory _inventory;
 
-  CheckPinCodeExistsUsecase({required this._accessKeychain});
+  CheckPinCodeExistsUsecase({required this._inventory});
 
-  Future<Result<bool, AccessFailure>> execute() async =>
-      (await _accessKeychain.isPinSet()).mapErr(
-        (failure) => switch (failure) {
-          KeystoreLockedFailure() => const AccessUnlockKeychainLockedFailure(),
-          _ => const AccessPinCheckFailure(),
-        },
-      );
+  Future<Result<bool, AccessFailure>> execute() => _inventory.isProtected();
 }

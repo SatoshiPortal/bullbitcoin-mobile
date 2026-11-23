@@ -34,4 +34,5 @@ export 'package:secrets/src/domain/domain.dart'
         UnreadableWalletFailure,
         UseSecretFailure,
         VaultKey,
+        WalletAlreadyRegisteredFailure,
         WalletRegistrationNotFoundFailure;

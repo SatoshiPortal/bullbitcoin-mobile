@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "ลบมนีโมนิกสำหรับการโอนหรือไม่?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "การดำเนินการนี้จะลบมาสเตอร์คีย์ของการโอนออกจากที่เก็บข้อมูลที่ปลอดภัย ระบบจะสร้างคีย์ขึ้นใหม่จาก seed ของกระเป๋าเงินเมื่อแอปต้องการใช้ครั้งถัดไป โดยมีลายนิ้วมือ (fingerprint) เหมือนเดิม การโอนที่กำลังดำเนินการอยู่จะไม่ได้รับผลกระทบ",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "มนีโมนิกสำหรับการโอน",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ลบมนีโมนิกสำหรับการโอนหรือไม่?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "การดำเนินการนี้จะลบมาสเตอร์คีย์ของการโอนออกจากที่เก็บข้อมูลที่ปลอดภัย ระบบจะสร้างคีย์ขึ้นใหม่จาก seed ของกระเป๋าเงินเมื่อแอปต้องการใช้ครั้งถัดไป โดยมีลายนิ้วมือ (fingerprint) เหมือนเดิม การโอนที่กำลังดำเนินการอยู่จะไม่ได้รับผลกระทบ"
 }

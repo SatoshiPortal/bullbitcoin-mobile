@@ -1,0 +1,11 @@
+{
+  "@@locale": "ko",
+  "save": "제품 정보",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';

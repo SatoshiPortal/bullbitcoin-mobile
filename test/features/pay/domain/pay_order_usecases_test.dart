@@ -1,7 +1,6 @@
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/pay/domain/place_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
@@ -11,8 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -24,12 +22,11 @@ class _MockPayOrder extends Mock implements FiatPaymentOrder {}
 
 /// The raw text the exchange and Dio actually produce. Every assertion below
 /// proves it is confined to `logMessage`.
-const _rawReason = 'DioException 500 apiKey=live_secret_abc';
 
 void main() {
   var spendStatus = BitcoinSpendStatus.ready;
-  late _MockExchangeOrderRepository mainnet;
-  late _MockExchangeOrderRepository testnet;
+  late _MockExchangeOrders mainnet;
+  late _MockExchangeOrders testnet;
   late _MockSettingsRepository settings;
   late _MockPayjoinPolicy payjoinPolicy;
 
@@ -40,8 +37,8 @@ void main() {
 
   setUp(() {
     spendStatus = BitcoinSpendStatus.ready;
-    mainnet = _MockExchangeOrderRepository();
-    testnet = _MockExchangeOrderRepository();
+    mainnet = _MockExchangeOrders();
+    testnet = _MockExchangeOrders();
     settings = _MockSettingsRepository();
     payjoinPolicy = _MockPayjoinPolicy();
 
@@ -59,15 +56,19 @@ void main() {
       const Stream.empty(),
       spendStatus: (_, {replacing}) async => spendStatus,
     ),
-    mainnetExchangeOrderRepository: mainnet,
-    testnetExchangeOrderRepository: testnet,
+    exchange: exchangeForTesting(
+      orders: (environment) =>
+          environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+    ),
     settingsRepository: settings,
     payjoinPolicy: payjoinPolicy,
   );
 
   RefreshPayOrderUsecase buildRefresh() => RefreshPayOrderUsecase(
-    mainnetExchangeOrderRepository: mainnet,
-    testnetExchangeOrderRepository: testnet,
+    exchange: exchangeForTesting(
+      orders: (environment) =>
+          environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+    ),
     settingsRepository: settings,
   );
 
@@ -154,7 +155,7 @@ void main() {
           paymentDescription: any(named: 'paymentDescription'),
           usePayjoin: any(named: 'usePayjoin'),
         ),
-      ).thenAnswer((_) async => _MockPayOrder());
+      ).thenAnswer((_) async => Ok(_MockPayOrder()));
 
       final _ = await buildPlace().execute(
         walletId: 'wallet-1',
@@ -204,7 +205,7 @@ void main() {
             paymentDescription: any(named: 'paymentDescription'),
             usePayjoin: any(named: 'usePayjoin'),
           ),
-        ).thenThrow(ApiKeyException(_rawReason));
+        ).thenAnswer((_) async => const Err(ExchangeSessionRejectedFailure()));
 
         final result = await place();
 
@@ -227,8 +228,14 @@ void main() {
           paymentDescription: any(named: 'paymentDescription'),
           usePayjoin: any(named: 'usePayjoin'),
         ),
-      ).thenThrow(
-        BullBitcoinApiMinAmountException(minAmount: 25.0, currency: 'CAD'),
+      ).thenAnswer(
+        (_) async => const Err(
+          ExchangeOrderLimitFailure(
+            ExchangeOrderAmountBound.minimum,
+            25.0,
+            'CAD',
+          ),
+        ),
       );
 
       final failure =
@@ -248,14 +255,13 @@ void main() {
           paymentDescription: any(named: 'paymentDescription'),
           usePayjoin: any(named: 'usePayjoin'),
         ),
-      ).thenThrow(Exception(_rawReason));
+      ).thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       final failure =
           (await place() as Err<FiatPaymentOrder, PayFailure>).failure;
 
       expect(failure, isA<PayUnexpectedFailure>());
-      // The reason survives for the logs, and only for the logs.
-      expect(failure.logMessage, contains(_rawReason));
+      expect(failure.logMessage, isNull);
     });
   });
 
@@ -263,7 +269,8 @@ void main() {
     test('a deposit address that moved is refused, not returned', () async {
       final order = _MockPayOrder();
       when(() => order.toAddress).thenReturn('bc1qattacker');
-      when(() => mainnet.refreshPayOrder(any())).thenAnswer((_) async => order);
+      when(() => mainnet.refreshPayOrder(any()))
+          .thenAnswer((_) async => Ok(order));
 
       final result = await buildRefresh().execute(
         orderId: 'order-1',
@@ -279,7 +286,8 @@ void main() {
     test('the unchanged address is adopted', () async {
       final order = _MockPayOrder();
       when(() => order.toAddress).thenReturn('bc1qoriginal');
-      when(() => mainnet.refreshPayOrder(any())).thenAnswer((_) async => order);
+      when(() => mainnet.refreshPayOrder(any()))
+          .thenAnswer((_) async => Ok(order));
 
       final result = await buildRefresh().execute(
         orderId: 'order-1',
@@ -289,9 +297,9 @@ void main() {
       expect((result as Ok<FiatPaymentOrder, PayFailure>).value, same(order));
     });
 
-    test('a refresh failure is sanitized, reason kept for logs only', () async {
+    test('a refresh failure contains no foreign diagnostic text', () async {
       when(() => mainnet.refreshPayOrder(any()))
-          .thenThrow(Exception(_rawReason));
+          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       final failure = (await buildRefresh().execute(
         orderId: 'order-1',
@@ -299,7 +307,7 @@ void main() {
       ) as Err<FiatPaymentOrder, PayFailure>).failure;
 
       expect(failure, isA<PayUnexpectedFailure>());
-      expect(failure.logMessage, contains(_rawReason));
+      expect(failure.logMessage, isNull);
     });
   });
 

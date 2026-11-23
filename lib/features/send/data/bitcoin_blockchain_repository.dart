@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

@@ -1,14 +1,16 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-
-export 'package:bb_mobile/features/sp/public/sp_facade.dart' show SpFailure;
+import 'package:silent/silent.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 /// Wallet feature's own use case wrapping the Silent Payments facade, so the
-/// `WalletBloc` never calls `SpFacade` directly (AGENTS.md rule #4).
+/// `WalletBloc` never calls `Silent` directly (AGENTS.md rule #4).
 class CheckSpWalletSetupForWalletUsecase {
-  final SpFacade _spFacade;
+  final Silent _silent;
 
-  CheckSpWalletSetupForWalletUsecase({required this._spFacade});
+  CheckSpWalletSetupForWalletUsecase({required this._silent});
 
-  Future<Result<bool, SpFailure>> execute() => _spFacade.isSetUp();
+  Future<Result<bool, WalletFailure>> execute() async =>
+      (await _silent.isSetUp()).mapErr(
+        (_) => const WalletStorageFailure('Silent setup read failed'),
+      );
 }

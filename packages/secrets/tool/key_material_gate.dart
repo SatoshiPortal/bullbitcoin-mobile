@@ -499,7 +499,7 @@ bool _isException(String path, AstNode node, String symbol) {
   }
   // This adapter replaces version bytes with the public xpub version before
   // decoding. Elsewhere this mixed decoder could import private extended keys.
-  if (path == 'lib/core/utils/bip32_derivation.dart' &&
+  if (path == 'packages/satoshifier/lib/bip32_derivation.dart' &&
       owner == 'Bip32Derivation' &&
       function == 'getBip32Xpub' &&
       member == 'Bip32Keys.fromBase58') {

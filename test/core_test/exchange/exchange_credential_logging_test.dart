@@ -2,16 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bbx_api/bbx_api_testing.dart';
-import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:dio/dio.dart';
-import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
@@ -87,7 +82,7 @@ void main() {
   late Directory directory;
   late _Reporter reporter;
   late FakeSecureStoragePlatform storage;
-  late ExchangeApiKeyRepositoryImpl repository;
+  late ExchangeCredentials repository;
   setUp(() async {
     directory = await Directory.systemTemp.createTemp(
       'credential-diagnostics-',
@@ -95,9 +90,8 @@ void main() {
     reporter = _Reporter();
     log = Logger.replace(directory: directory, reporter: reporter);
     storage = FakeSecureStoragePlatform().install();
-    repository = ExchangeApiKeyRepositoryImpl(
-      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-          .exchangeKeychain,
+    repository = ExchangeCredentials.open(
+      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
     );
   });
   tearDown(() async {
@@ -109,19 +103,12 @@ void main() {
     'an order action refuses unavailable credentials without reporting',
     () async {
       storage.scripted.add(Exception(_sensitive));
-      final orders = BbxApiOrderRepository(
-        api: bbxForTesting(
-          endpoint: testBbxEndpoint,
-          adapter: _NoRequest(),
-          readActiveApiKey: bbxCredentialRead(
-            () => repository.readActiveApiKey(isTestnet: true),
-          ),
-        ),
-        isTestnet: true,
-      );
       final operation = RefreshBuyOrderUsecase(
-        mainnetExchangeOrderRepository: orders,
-        testnetExchangeOrderRepository: orders,
+        exchange: testExchange(
+          _NoRequest(),
+          isTestnet: true,
+          readApiKey: () => repository.readActiveApiKey(isTestnet: true),
+        ),
         settingsRepository: _Settings(),
       );
       final result = await operation.execute(orderId: 'synthetic-order');
@@ -150,7 +137,7 @@ void main() {
     );
     expect(
       await exchange.getOrderStats(),
-      isA<Err<OrderStatsResponse, ExchangeFailure>>(),
+      isA<Err<OrderStatistics, ExchangeFailure>>(),
     );
     expect(reporter.calls, 0);
   });
@@ -188,8 +175,8 @@ void main() {
         }
         for (var attempt = 0; attempt < 3; attempt++) {
           expect(
-            await repository.readActiveApiKey(isTestnet: true) is Err,
-            isTrue,
+            await repository.readActiveApiKey(isTestnet: true),
+            isA<Err<String?, ExchangeFailure>>(),
           );
         }
         storage.entries['exchange_api_key_testnet'] = jsonEncode({
@@ -198,8 +185,8 @@ void main() {
         });
         for (var attempt = 0; attempt < 2; attempt++) {
           expect(
-            await repository.readActiveApiKey(isTestnet: true) is Ok,
-            isTrue,
+            await repository.readActiveApiKey(isTestnet: true),
+            isA<Ok<String?, ExchangeFailure>>(),
           );
         }
         final rows = (await log.readLogs())
@@ -217,8 +204,8 @@ void main() {
     storage.scripted.addAll(List.filled(4, Exception(_sensitive)));
     for (final environment in [false, true, false, true]) {
       expect(
-        await repository.readActiveApiKey(isTestnet: environment) is Err,
-        isTrue,
+        await repository.readActiveApiKey(isTestnet: environment),
+        isA<Err<String?, ExchangeFailure>>(),
       );
     }
     final rows = (await log.readLogs())
@@ -231,10 +218,13 @@ void main() {
   test('recoverable write and delete failures persist without invoking the reporter', () async {
     storage.scriptedWrites.addAll(List.filled(2, Exception(_sensitive)));
     expect(
-      await repository.saveApiKey(_credential(), isTestnet: true) is Err,
-      isTrue,
+      await repository.saveApiKey(_credential(), isTestnet: true),
+      isA<Err<void, ExchangeFailure>>(),
     );
-    expect(await repository.deleteApiKey(isTestnet: true) is Err, isTrue);
+    expect(
+      await repository.deleteApiKey(isTestnet: true),
+      isA<Err<void, ExchangeFailure>>(),
+    );
     final rows = (await log.readLogs())
         .map((line) => line.split('\t'))
         .toList();

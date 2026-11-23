@@ -1,0 +1,29 @@
+{
+  "@@locale": "cs",
+  "bip85NextMnemonic": "Další Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "Experimentální\nZálohování vašich derivačních cest ručně",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "Hledat",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 determinační entropies",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "Další HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "bip85NoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copiedToClipboard": "Zkopírováno do schránky"
+}

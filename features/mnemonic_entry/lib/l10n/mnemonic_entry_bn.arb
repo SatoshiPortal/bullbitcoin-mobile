@@ -1,0 +1,28 @@
+{
+  "@@locale": "bn",
+  "passphraseLabel": "গোপন বাক্য",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "optionalPassphraseHint": "ঐচ্ছিক পাসফ্রেজ",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "লেবেল",
+  "requiredHint": "আবশ্যক",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "জমা দিন",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "emptyMnemonicWordsError": "আপনার mnemonic-এর সব শব্দ লিখুন",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

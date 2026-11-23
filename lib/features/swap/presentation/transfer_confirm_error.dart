@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 
 const selectedCoinsUnavailableCode = 'selected_coins_unavailable';
 const selectedCoinsInsufficientCode = 'selected_coins_insufficient';

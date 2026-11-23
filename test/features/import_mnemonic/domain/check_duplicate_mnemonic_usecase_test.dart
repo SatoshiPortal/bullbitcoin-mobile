@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+
+import '../../../support/inventory_fixture.dart';
+
 import 'package:mocktail/mocktail.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:unorm_dart/unorm_dart.dart' show nfc;
@@ -12,11 +15,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 /// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
-class _Metadata extends Mock implements WalletMetadataDatasource {}
-
 class _Settings extends Mock implements Preferences {}
-
-class _Row extends Mock implements WalletMetadataModel {}
 
 void main() {
   const words = [
@@ -37,14 +36,19 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late CheckDuplicateMnemonicUsecase usecase;
-  late _Metadata metadata;
+  late InventoryFixture fixture;
+  late _Settings settings;
 
-  setUp(() {
+  setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
-    metadata = _Metadata();
-    final settings = _Settings();
-    when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+    final directory = await Directory.systemTemp.createTemp(
+      'import-duplicate-',
+    );
+    addTearDown(() => directory.delete(recursive: true));
+    fixture = await InventoryFixture.open(directory);
+    addTearDown(fixture.close);
+    secrets = Secrets(scratchDirectory: () async => directory.path);
+    settings = _Settings();
     when(() => settings.fetch()).thenAnswer(
       (_) async => Ok(
         const SettingsEntity(
@@ -56,7 +60,7 @@ void main() {
     );
     usecase = CheckDuplicateMnemonicUsecase(
       secrets: secrets,
-      metadata: metadata,
+      inventory: fixture.inventory,
       settings: settings,
     );
   });
@@ -75,10 +79,7 @@ void main() {
           Ok(:final value) => value,
           Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
         };
-        final row = _Row();
-        when(() => row.masterFingerprint).thenReturn(secret.id.hex);
-        when(() => row.networkCode).thenReturn('bitcoinMainnet');
-        when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+        await fixture.registerMnemonic(secret);
         final duplicate = await usecase.execute(
           mnemonicWords: words.map(nfc).toList(),
           language: language,
@@ -125,15 +126,12 @@ void main() {
     });
 
     test('rejects a referenced secret only on the target network', () async {
-      expect(
-        await secrets.import(words: words, language: bip39.Language.english),
-        isA<Ok>(),
+      final imported = await secrets.import(
+        words: words,
+        language: bip39.Language.english,
       );
-      final row = _Row();
-      when(() => row.masterFingerprint).thenReturn('73c5da0a');
-      when(() => row.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
-      when(() => row.networkCode).thenReturn('bitcoinMainnet');
-      when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+      final secret = (imported as Ok<Secret, SecretFailure>).value;
+      await fixture.registerMnemonic(secret);
       expect(
         await usecase.execute(
           mnemonicWords: words,
@@ -145,8 +143,15 @@ void main() {
           isA<ImportMnemonicDuplicateFailure>(),
         ),
       );
-      when(() => row.id).thenReturn('wpkh([73c5da0a/84h/1h/0h])');
-      when(() => row.networkCode).thenReturn('bitcoinTestnet');
+      when(settings.fetch).thenAnswer(
+        (_) async => const Ok(
+          SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        ),
+      );
       expect(
         await usecase.execute(
           mnemonicWords: words,
@@ -159,15 +164,12 @@ void main() {
     test(
       'unresolved catalog networks do not block orphan import preflight',
       () async {
-        expect(
-          await secrets.import(words: words, language: bip39.Language.english),
-          isA<Ok>(),
+        final imported = await secrets.import(
+          words: words,
+          language: bip39.Language.english,
         );
-        final invalid = _Row();
-        when(() => invalid.masterFingerprint).thenReturn('73c5da0a');
-        when(() => invalid.id).thenReturn('invalid origin');
-        when(() => invalid.networkCode).thenReturn('unresolved');
-        when(() => metadata.fetchAll()).thenAnswer((_) async => [invalid]);
+        final secret = (imported as Ok<Secret, SecretFailure>).value;
+        await fixture.registerMnemonic(secret, unresolvedNetwork: 'unresolved');
         expect(
           await usecase.execute(
             mnemonicWords: words,
@@ -175,12 +177,7 @@ void main() {
           ),
           isA<Ok<void, ImportMnemonicFailure>>(),
         );
-        final valid = _Row();
-        when(() => valid.masterFingerprint).thenReturn('73c5da0a');
-        when(() => valid.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
-        when(() => valid.networkCode).thenReturn('bitcoinMainnet');
-        when(() => metadata.fetchAll())
-            .thenAnswer((_) async => [invalid, valid]);
+        await fixture.registerMnemonic(secret);
         expect(
           await usecase.execute(
             mnemonicWords: words,
@@ -194,6 +191,59 @@ void main() {
         );
       },
     );
+
+    test('refuses orphan recovery from an incomplete selection', () async {
+      final matching = await secrets.import(
+        words: words,
+        language: bip39.Language.english,
+      );
+      final unrelated = await secrets.import(
+        words: words,
+        language: bip39.Language.english,
+        passphrase: 'unrelated test wallet',
+      );
+      await fixture.registerMnemonic(
+        (matching as Ok<Secret, SecretFailure>).value,
+        internalDescriptor: 'unreadable',
+      );
+      await fixture.registerMnemonic(
+        (unrelated as Ok<Secret, SecretFailure>).value,
+      );
+
+      expect(
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
+        isA<Err<void, ImportMnemonicFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ImportMnemonicUnexpectedFailure>(),
+        ),
+      );
+    });
+
+    test('refuses to decide when the wallet inventory is locked', () async {
+      final imported = await secrets.import(
+        words: words,
+        language: bip39.Language.english,
+      );
+      final secret = (imported as Ok<Secret, SecretFailure>).value;
+      await fixture.registerMnemonic(secret);
+      fixture.inventory.lock();
+
+      expect(
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
+        isA<Err<void, ImportMnemonicFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ImportMnemonicUnexpectedFailure>(),
+        ),
+      );
+    });
 
     test('a passphrase makes a different secret, not a duplicate', () async {
       expect(

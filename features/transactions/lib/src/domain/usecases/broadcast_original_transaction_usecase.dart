@@ -1,0 +1,54 @@
+import 'package:primitives/primitives.dart';
+import 'package:transactions/src/domain/transaction_failure.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
+
+class BroadcastOriginalTransactionUsecase {
+  final PayjoinSender _sender;
+
+  const BroadcastOriginalTransactionUsecase(this._sender);
+
+  /// `Ok(false)` is a settled "not now"; an `Err` means the check itself
+  /// failed and is worth retrying.
+  @useResult
+  Future<Result<bool, TransactionFailure>> canExecute(
+    PayjoinSession payjoin,
+  ) async {
+    return switch (await _sender.canBroadcastOriginal(payjoin.id)) {
+      Ok(:final value) => Ok(value),
+      Err(failure: PayjoinFallbackUnavailableFailure()) => const Ok(false),
+      Err(failure: PayjoinUnavailableFailure()) => const Err(
+        TransactionPayjoinVerificationFailure(
+          'Could not verify competing transactions',
+        ),
+      ),
+      Err(:final failure) => Err(
+        TransactionPayjoinBroadcastFailure(
+          'canBroadcastOriginal failed: ${failure.runtimeType}',
+        ),
+      ),
+    };
+  }
+
+  @useResult
+  Future<Result<PayjoinSession, TransactionFailure>> execute(
+    PayjoinSession payjoin,
+  ) async {
+    return switch (await _sender.broadcastOriginal(payjoin.id)) {
+      Ok(:final value) => Ok(value),
+      Err(failure: PayjoinFallbackUnavailableFailure()) => const Err(
+        TransactionPayjoinFallbackUnavailableFailure(),
+      ),
+      Err(failure: PayjoinUnavailableFailure()) => const Err(
+        TransactionPayjoinVerificationFailure(
+          'Could not verify competing transactions',
+        ),
+      ),
+      Err(:final failure) => Err(
+        TransactionPayjoinBroadcastFailure(
+          'broadcastOriginal failed: ${failure.runtimeType}',
+        ),
+      ),
+    };
+  }
+}

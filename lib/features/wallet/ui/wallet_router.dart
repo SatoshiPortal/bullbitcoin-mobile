@@ -56,6 +56,7 @@ class WalletRouter {
   );
 
   static GoRoute walletDetailRoute({
+    required Widget Function(String walletId, Widget child) scopeWalletHistory,
     required Future<void> Function(BuildContext context, Wallet wallet)
     onOpenCoins,
     required Future<Result<CoinSummary, CoinsFailure>> Function(String)
@@ -72,6 +73,7 @@ class WalletRouter {
         walletId: walletId,
         onOpenCoins: onOpenCoins,
         loadCoinSummary: loadCoinSummary,
+        scopeWalletHistory: scopeWalletHistory,
       );
     },
   );

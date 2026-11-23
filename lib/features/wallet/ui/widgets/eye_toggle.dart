@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';

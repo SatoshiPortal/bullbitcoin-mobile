@@ -1,10 +1,9 @@
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart'
     show
         BitcoinSpendStatus,
         SyncFailure,
-        SyncStorageFailure,
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure,
         UnsignedSpend,
@@ -30,18 +29,17 @@ import 'dart:typed_data';
 import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWalletMetadataDatasource extends Mock
-    implements WalletMetadataDatasource {}
+class _MockWalletRegistrations extends Mock implements WalletRegistrations {}
 
 class _Spender extends Mock implements WalletSpender {}
 
@@ -75,7 +73,7 @@ String _destination([bdk.Network network = bdk.Network.testnet, int fill = 1]) {
 }
 
 void main() {
-  late _MockWalletMetadataDatasource metadataDatasource;
+  late _MockWalletRegistrations metadataDatasource;
   late _Spender spender;
   late sync.Wallet wallet;
   late _MockValues values;
@@ -115,7 +113,7 @@ void main() {
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
-    metadataDatasource = _MockWalletMetadataDatasource();
+    metadataDatasource = _MockWalletRegistrations();
     spender = _Spender();
     values = _MockValues();
     built = Ok(
@@ -134,8 +132,8 @@ void main() {
       spender: spender,
     );
     repository = BitcoinWalletRepository(
-      arkFundingGuard: const ArkFundingSigningGuard(Err(SyncStorageFailure())),
-      walletMetadataDatasource: metadataDatasource,
+      arkFundingGuard: const ArkFundingSigningGuard(authority: null),
+      walletRegistrations: metadataDatasource,
       // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
       wallet: (_) async => Ok(wallet),

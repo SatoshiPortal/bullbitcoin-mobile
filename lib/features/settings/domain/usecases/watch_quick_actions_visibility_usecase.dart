@@ -1,19 +1,21 @@
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 
 /// Whether the trading actions can be used: a signed-in exchange session
 /// within the platform and network restrictions.
 class WatchQuickActionsVisibilityUsecase {
   const WatchQuickActionsVisibilityUsecase({
     required this._exchange,
+    required this._networkUnavailable,
     required this._settings,
     required this._platformChanges,
     required this._isIOS,
   });
 
-  final ExchangeFacade _exchange;
+  final Exchange _exchange;
+  final Future<bool> Function() _networkUnavailable;
   final Preferences _settings;
   final Stream<bool> _platformChanges;
   final bool _isIOS;
@@ -52,7 +54,7 @@ class WatchQuickActionsVisibilityUsecase {
     void checkNetwork() {
       final check = ++networkCheck;
       unawaited(() async {
-        final unavailable = await _exchange.networkUnavailable();
+        final unavailable = await _networkUnavailable();
         if (check != networkCheck || !active || controller.isClosed) return;
         networkAllowed = !unavailable;
         publish();

@@ -1,0 +1,46 @@
+{
+  "@@locale": "hi_Latn",
+  "scanningProgressLabel": "Scan ho raha hai: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR ke {parts} parts process ho chuke hain",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Scanning poori hui",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR decoding fail hua",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR processing fail hua",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "NFC Scan Karo",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "NFC connection toot gaya. Apna device NFC tag ke paas rakho aur phir try karo.",
+  "nfcWriteFailed": "NFC transfer fail ho gaya. Kripya phir try karo.",
+  "nfcDisabled": "NFC disabled hai. Settings mein ise enable karo.",
+  "nfcNotAvailable": "NFC is device par supported nahi hai",
+  "nfcFailed": "Oops! Kuch galat ho gaya",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "Koi supported NFC data nahi mila"
+}

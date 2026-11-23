@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 
 /// Whether the platform and the network let the user reach the exchange, or,
 /// with [onlyWhileOff], whether it is switched off there and could be

@@ -2,7 +2,7 @@ import 'package:preferences/testing.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
@@ -18,7 +18,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:secrets/testing.dart';
 
-import '../../../migrations_test/bull_database/generated/schema_v15.dart'
+import '../../../../packages/legacy_storage/test/migrations_test/bull_database/generated/schema_v15.dart'
     as v15;
 
 class _Datasource extends Mock implements PreferencesDao {}

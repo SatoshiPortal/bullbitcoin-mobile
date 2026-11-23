@@ -1,5 +1,8 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:material_ui/material_ui.dart' show Scaffold, Center, Text;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+import 'package:primitives/primitives.dart' as primitives;
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:material_ui/material_ui.dart'
+    show BuildContext, Scaffold, Center, Text;
 import 'package:bb_mobile/features/replace_by_fee/domain/replacement_target.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
@@ -19,6 +22,29 @@ enum ReplaceByFeeRoute {
 }
 
 class ReplaceByFeeRouter {
+  static void openForTransaction(
+    BuildContext context, {
+    required String walletId,
+    required String txId,
+    required primitives.Network network,
+    required int feeSat,
+    required int vsize,
+  }) {
+    context.pushNamed(
+      ReplaceByFeeRoute.replaceByFeeFlow.name,
+      extra: (
+        walletId: walletId,
+        txId: txId,
+        network: Network.fromEnvironment(
+          environment: network.env,
+          isLiquid: network is primitives.LiquidNetwork,
+        ),
+        feeSat: feeSat,
+        vsize: vsize,
+      ),
+    );
+  }
+
   static final route = GoRoute(
     name: ReplaceByFeeRoute.replaceByFeeFlow.name,
     path: ReplaceByFeeRoute.replaceByFeeFlow.path,

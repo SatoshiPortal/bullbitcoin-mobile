@@ -1,10 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/delete_transaction_note_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_label_policy.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

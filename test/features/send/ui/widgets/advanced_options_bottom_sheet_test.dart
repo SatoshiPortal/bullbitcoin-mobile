@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';

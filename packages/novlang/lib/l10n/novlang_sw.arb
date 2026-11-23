@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Futa mnemoniki ya uhamisho?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Hii inaondoa ufunguo mkuu wa uhamisho kutoka kwenye hifadhi salama. Utatolewa upya kutoka kwenye seed ya pochi yako wakati ujao programu itakapouhitaji, ukiwa na alama ya kidole ile ile. Uhamisho unaoendelea hauathiriwi.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemoniki ya uhamisho",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Futa mnemoniki ya uhamisho?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Hii inaondoa ufunguo mkuu wa uhamisho kutoka kwenye hifadhi salama. Utatolewa upya kutoka kwenye seed ya pochi yako wakati ujao programu itakapouhitaji, ukiwa na alama ya kidole ile ile. Uhamisho unaoendelea hauathiriwi."
 }

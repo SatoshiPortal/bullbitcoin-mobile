@@ -1,9 +1,9 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:primitives/primitives.dart';
 
 class SyncSpForWalletUsecase {
-  final SpFacade _sp;
+  final Silent _sp;
 
   const SyncSpForWalletUsecase(this._sp);
 

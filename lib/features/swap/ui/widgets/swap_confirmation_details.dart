@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer;
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';

@@ -1,0 +1,60 @@
+{
+  "@@locale": "th",
+  "save": "บันทึก",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "คัดลอก",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "ลบ",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "โหลดการทําธุรกรรม ...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "รหัส QR",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "ยกเลิก",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "สิ้นสุด",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "สุดท้าย",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "วันนี้",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "จํานวน",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "แตะเพื่อคัดลอก",
+  "viewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
+  "transactionViewerTitle": "รหัสธุรกรรม",
+  "viewerCopyLink": "คัดลอกลิงก์",
+  "coinsTitle": "เหรียญ",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว"
+}

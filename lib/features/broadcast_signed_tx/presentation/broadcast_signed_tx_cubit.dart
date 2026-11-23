@@ -1,13 +1,10 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
-
 import 'dart:convert';
 
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
+import 'package:satoshifier/bbqr.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_imported_bitcoin_usecase.dart';
 import 'package:sync/sync.dart' show BitcoinTx;
-import 'package:primitives/primitives.dart' hide Network;
-import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_failure_for_category.dart';
+import 'package:primitives/primitives.dart';
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
@@ -15,7 +12,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sync/sync.dart'
     show SyncNotFinalizableFailure, finalizeBitcoinPsbts;
-import 'package:bitcoin_base/bitcoin_base.dart';
+import 'package:bitcoin_base/bitcoin_base.dart' show Psbt, PsbtBuilder;
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,19 +20,26 @@ import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
-  final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
-  final Future<Network> capturedNetwork;
+  final BroadcastImportedBitcoinUsecase _broadcastImportedBitcoin;
+  final Future<BitcoinNetwork?> capturedNetwork;
   final VerifyBroadcastSignedTxUsecase _verifySignedTxUsecase;
+  final PreparedBitcoinSpend? _prepared;
 
   BroadcastSignedTxCubit({
-    required this._broadcastBitcoinTransactionUsecase,
+    required this._broadcastImportedBitcoin,
     required this._verifySignedTxUsecase,
-    String? unsignedPsbt,
-    Network? network,
-  }) : capturedNetwork = network != null
+    PreparedBitcoinSpend? prepared,
+    BitcoinNetwork? network,
+  }) : _prepared = prepared,
+       capturedNetwork = network != null
            ? Future.value(network)
-           : _broadcastBitcoinTransactionUsecase.captureNetwork(),
-       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+           : _broadcastImportedBitcoin.captureNetwork(),
+       super(
+         BroadcastSignedTxState(
+           bbqr: Bbqr(),
+           unsignedPsbt: prepared?.unsignedPsbt,
+         ),
+       );
 
   Future<void> onQrScanned(String payload) async {
     try {
@@ -162,11 +166,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> pushTxUri() async {
-    if (state.pushTxUri == null) return;
+    final uri = state.pushTxUri;
+    if (uri == null || state.unsignedPsbt != null) return;
 
     try {
       final launched = await launchUrl(
-        state.pushTxUri!,
+        uri,
         mode: LaunchMode.externalApplication,
       );
       if (!launched) {
@@ -251,6 +256,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       signedTransaction: signedTransaction,
       isPsbt: isPsbt,
     );
+    if (isClosed || state.unsignedPsbt != unsignedPsbt) return false;
     switch (result) {
       case Ok():
         return true;
@@ -265,39 +271,67 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> broadcastTransaction() async {
+    final transaction = state.transaction;
     if (state.isBroadcasting ||
         state.isBroadcasted ||
-        state.transaction == null) {
+        transaction == null ||
+        state.unsignedPsbt != null) {
       return;
     }
     // Clear any error from a previous failed attempt so the stale message
     // doesn't linger under the spinner while the retry is in flight.
     emit(state.copyWith(isBroadcasting: true, failure: null));
-    try {
-      await _broadcastBitcoinTransactionUsecase.execute(
-        state.transaction!.data,
-        isPsbt: state.transaction!.format == TxFormat.psbt,
-        network: await capturedNetwork,
-      );
-      emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
-    } catch (e, st) {
-      // Keep the raw infra detail (Electrum server / node rejection) in the
-      // logs instead of leaking it to the UI; the screen shows a localized
-      // message chosen from the failure's diagnostic category. A rejected
-      // broadcast is an expected user-facing condition (already confirmed,
-      // fee too low, server down), so this is a warning, not a
-      // Sentry-reported severe.
-      log.warning(
-        'Failed to broadcast signed transaction',
-        error: e,
-        trace: st,
-      );
-      emit(
-        state.copyWith(
-          failure: broadcastSignedTxFailureFor(BroadcastFailureCategory.of(e)),
-          isBroadcasting: false,
-        ),
-      );
+    final result = await _broadcastImportedBitcoin.execute(
+      transaction: transaction.data,
+      isPsbt: transaction.format == TxFormat.psbt,
+      network: await capturedNetwork,
+    );
+    if (isClosed) return;
+    switch (result) {
+      case Ok():
+        emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
+      case Err(:final failure):
+        log.warning(
+          'Signed transaction broadcast failed category=${failure.runtimeType}',
+        );
+        emit(state.copyWith(failure: failure, isBroadcasting: false));
+    }
+  }
+
+  /// The Send reader never broadcasts. Finalize the signed transaction, then
+  /// verify it again before returning it to the owner of the original PSBT.
+  Future<String?> signedForSend() async {
+    final prepared = _prepared;
+    final transaction = state.transaction;
+    if (prepared == null || transaction == null) return null;
+    final String signed;
+    if (transaction.format == TxFormat.psbt) {
+      switch (finalizeBitcoinPsbts(
+        unsignedBase64: prepared.unsignedPsbt,
+        signedBase64: transaction.data,
+      )) {
+        case Ok(:final value):
+          signed = hex.encode(value.bytes);
+        case Err():
+          emit(state.copyWith(failure: const PsbtFinalizationFailure()));
+          return null;
+      }
+    } else {
+      signed = transaction.data;
+    }
+    final verified = await _verifySignedTxUsecase.verifyPrepared(
+      prepared: prepared,
+      signedTransaction: signed,
+    );
+    if (isClosed || !identical(state.transaction, transaction)) {
+      return null;
+    }
+    switch (verified) {
+      case Ok():
+        return signed;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return null;
     }
   }
 }

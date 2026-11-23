@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/primitives/payment_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
+import 'package:swaps/order_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

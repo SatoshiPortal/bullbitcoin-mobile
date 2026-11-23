@@ -10,9 +10,9 @@ import '../../../../lib/features/send/ui/widgets/send_whole_balance_dialog.dart'
 // The legacy screen already has a public shell import target.
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 import 'package:primitives/primitives.dart' show Sats, ScriptType;
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';

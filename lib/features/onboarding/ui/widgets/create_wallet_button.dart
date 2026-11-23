@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

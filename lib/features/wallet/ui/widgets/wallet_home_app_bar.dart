@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSpacing;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SuperuserTapUnlocker;

@@ -1,0 +1,27 @@
+name: settings
+description: Settings home and search.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+flutter:
+  uses-material-design: true
+
+dependencies:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  go_router: ^18.1.4
+  material_ui: ^1.11.0
+  network:
+  primitives:
+  unorm_dart: ^0.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

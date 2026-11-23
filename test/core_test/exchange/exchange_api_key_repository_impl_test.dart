@@ -1,9 +1,8 @@
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-
-import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
@@ -47,13 +46,12 @@ ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
 
 void main() {
   late _Storage storage;
-  late ExchangeApiKeyRepositoryImpl repository;
+  late ExchangeCredentials repository;
 
   setUp(() {
     storage = _Storage()..install();
-    repository = ExchangeApiKeyRepositoryImpl(
-      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-          .exchangeKeychain,
+    repository = ExchangeCredentials.open(
+      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
     );
   });
 
@@ -65,15 +63,11 @@ void main() {
     });
     expect(
       await repository.readActiveApiKey(isTestnet: false),
-      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
-        (r) => r.value,
-        'key',
-        _key,
-      ),
+      isA<Ok<String?, ExchangeFailure>>().having((r) => r.value, 'key', _key),
     );
     expect(
       await repository.readActiveApiKey(isTestnet: true),
-      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+      isA<Ok<String?, ExchangeFailure>>().having(
         (r) => r.value,
         'key',
         'test-only',
@@ -85,7 +79,7 @@ void main() {
     });
     expect(
       await repository.readActiveApiKey(isTestnet: false),
-      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+      isA<Ok<String?, ExchangeFailure>>().having(
         (r) => r.value,
         'key',
         'replacement',
@@ -94,11 +88,7 @@ void main() {
     storage.entries.remove('exchange_api_key');
     expect(
       await repository.readActiveApiKey(isTestnet: false),
-      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
-        (r) => r.value,
-        'key',
-        isNull,
-      ),
+      isA<Ok<String?, ExchangeFailure>>().having((r) => r.value, 'key', isNull),
     );
     expect(storage.readKeys, [
       'exchange_api_key',
@@ -121,7 +111,7 @@ void main() {
       }
       expect(
         await repository.readActiveApiKey(isTestnet: false),
-        isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+        isA<Ok<String?, ExchangeFailure>>().having(
           (r) => r.value,
           'key',
           isNull,
@@ -141,11 +131,7 @@ void main() {
       });
       expect(
         await repository.readActiveApiKey(isTestnet: false),
-        isA<Ok<String?, ExchangeApiKeyFailure>>().having(
-          (r) => r.value,
-          'key',
-          _key,
-        ),
+        isA<Ok<String?, ExchangeFailure>>().having((r) => r.value, 'key', _key),
       );
     },
   );
@@ -164,7 +150,7 @@ void main() {
         final result = await repository.readActiveApiKey(isTestnet: false);
         expect(
           result,
-          isA<Err<String?, ExchangeApiKeyFailure>>().having(
+          isA<Err<String?, ExchangeFailure>>().having(
             (r) => r.failure,
             'failure',
             isA<ExchangeApiKeyInvalidFailure>(),
@@ -183,10 +169,10 @@ void main() {
       final result = await repository.readActiveApiKey(isTestnet: false);
       expect(
         result,
-        isA<Err<String?, ExchangeApiKeyFailure>>().having(
+        isA<Err<String?, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<ExchangeApiKeyReadFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
       if (result case Err(:final failure)) {
@@ -209,7 +195,7 @@ void main() {
       });
       final result = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        result is Err<String?, ExchangeApiKeyFailure>,
+        result is Err<String?, ExchangeFailure>,
         isTrue,
         reason: 'invalid stored credentials must fail before reaching HTTP',
       );
@@ -219,7 +205,7 @@ void main() {
   test('saves a domain credential in the existing JSON format', () async {
     expect(
       await repository.saveApiKey(_credential(), isTestnet: true),
-      isA<Ok<void, ExchangeApiKeyFailure>>(),
+      isA<Ok<void, ExchangeFailure>>(),
     );
     expect(storage.entries.keys, ['exchange_api_key_testnet']);
     expect(jsonDecode(storage.entries['exchange_api_key_testnet'] ?? ''), {
@@ -234,7 +220,7 @@ void main() {
     final saved = await repository.saveApiKey(_credential(), isTestnet: false);
     expect(
       saved,
-      isA<Err<void, ExchangeApiKeyFailure>>().having(
+      isA<Err<void, ExchangeFailure>>().having(
         (r) => r.failure,
         'failure',
         isA<ExchangeApiKeySaveFailure>(),
@@ -246,7 +232,7 @@ void main() {
     storage.scriptedWrites.add(Exception(_key));
     expect(
       await repository.deleteApiKey(isTestnet: false),
-      isA<Err<void, ExchangeApiKeyFailure>>().having(
+      isA<Err<void, ExchangeFailure>>().having(
         (r) => r.failure,
         'failure',
         isA<ExchangeApiKeyDeleteFailure>(),
@@ -259,7 +245,7 @@ void main() {
     storage.entries['exchange_api_key_testnet'] = jsonEncode(_fields);
     expect(
       await repository.deleteApiKey(isTestnet: true),
-      isA<Ok<void, ExchangeApiKeyFailure>>(),
+      isA<Ok<void, ExchangeFailure>>(),
     );
     expect(storage.entries.keys, ['exchange_api_key']);
   });

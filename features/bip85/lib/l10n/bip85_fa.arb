@@ -1,0 +1,29 @@
+{
+  "@@locale": "fa",
+  "bip85NextMnemonic": "بعدی Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "تجربی\nراه های انگیزشی خود را به صورت دستی پشتیبان گیری کنید",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 تعیین کننده Entropies",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "بعدی HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "bip85NoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+}

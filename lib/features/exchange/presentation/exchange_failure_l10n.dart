@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 
@@ -32,7 +32,15 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeNetworkFailure() => context.loc.exchangeErrorNetwork,
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
+    RecipientsFailure() ||
     ExchangeUnexpectedFailure() ||
+    ExchangeApiKeyInvalidFailure() ||
+    ExchangeApiKeySaveFailure() ||
+    ExchangeApiKeyDeleteFailure() ||
+    ExchangeOrderLimitFailure() ||
+    ExchangeConfidentialSepaInactiveFailure() ||
+    ExchangeOrderRejectedFailure() ||
+    ExchangeOrderLoadFailure() ||
     ExchangeCredentialReadFailure() ||
     ExchangeStatisticsUnavailableFailure() ||
     ExchangeDocumentUploadFailure() ||

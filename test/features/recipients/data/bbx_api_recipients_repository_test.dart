@@ -1,14 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/recipient_details_input.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -799,7 +793,8 @@ void main() {
           final http = FakeBbxHttp(body: {'result': <String, Object?>{}});
           final repository = BbxApiRecipientsRepository(
             api: http.client(
-              readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+              readApiKey: () async =>
+                  const Err(ExchangeCredentialReadFailure()),
             ),
           );
 

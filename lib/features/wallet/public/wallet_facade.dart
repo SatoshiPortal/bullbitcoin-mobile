@@ -4,16 +4,12 @@ export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 export '../ui/widgets/wallet_detail_balance_card.dart'
     show WalletDetailBalanceCard;
 
-export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
-    show SeedReferences;
-
 export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
 
 import 'package:sync/sync.dart';
 
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BroadcastSpend;
+import 'package:sync/write.dart' show BroadcastSpend;
 
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show NetworkEnv, Result, Err;

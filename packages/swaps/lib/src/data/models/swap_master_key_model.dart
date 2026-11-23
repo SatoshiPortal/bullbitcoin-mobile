@@ -71,13 +71,22 @@ class SwapMasterKeyModel {
   }
 
   factory SwapMasterKeyModel.fromJson(Map<String, dynamic> json) {
-    return SwapMasterKeyModel(
-      xprv: json['xprv'] as String,
-      xpub: json['xpub'] as String,
-      network: json['network'] as String,
-      mnemonic: json['mnemonic'] as String,
-      fingerprint: json['fingerprint'] as String,
-    );
+    if (json case {
+      'xprv': final String privateKey,
+      'xpub': final String publicKey,
+      'network': final String network,
+      'mnemonic': final String mnemonic,
+      'fingerprint': final String fingerprint,
+    }) {
+      return SwapMasterKeyModel(
+        xprv: privateKey,
+        xpub: publicKey,
+        network: network,
+        mnemonic: mnemonic,
+        fingerprint: fingerprint,
+      );
+    }
+    throw const FormatException('Unreadable swap key record');
   }
 
   Map<String, dynamic> toJson() => {

@@ -1,0 +1,28 @@
+{
+  "@@locale": "hi",
+  "passphraseLabel": "पैसफल",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "optionalPassphraseHint": "वैकल्पिक Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "लेबल",
+  "requiredHint": "आवश्यक",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "जमा करना",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "emptyMnemonicWordsError": "अपने Mnemonic के सभी शब्दों में प्रवेश करें",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

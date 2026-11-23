@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
@@ -17,7 +16,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaim
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -66,7 +65,9 @@ class SettingsLocator {
             ? QuickActionsLayout.iosDefaults
             : QuickActionsLayout.defaults,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
-          exchange: locator<ExchangeFacade>(),
+          exchange: locator<Exchange>(),
+          networkUnavailable: () =>
+              locator<ExchangeFacade>().networkUnavailable(),
           settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<SettingsCubit>().stream
@@ -83,21 +84,6 @@ class SettingsLocator {
         offered: _exchangeActivationOffer(locator, onlyWhileOff: true),
       ),
       dispose: (cubit) => cubit.close(),
-    );
-    locator.registerFactory<WatchSettingsExchangeAccessUsecase>(
-      () => WatchSettingsExchangeAccessUsecase(locator<ExchangeFacade>()),
-    );
-    locator.registerFactory<SetSettingsExchangeAccessUsecase>(
-      () => SetSettingsExchangeAccessUsecase(
-        locator<ExchangeFacade>(),
-        locator<Preferences>(),
-      ),
-    );
-    locator.registerFactory<ExchangeAccessSettingsCubit>(
-      () => ExchangeAccessSettingsCubit(
-        locator<WatchSettingsExchangeAccessUsecase>(),
-        locator<SetSettingsExchangeAccessUsecase>(),
-      ),
     );
     locator.registerFactory<DiscoverWalletUsecase>(
       () => DiscoverWalletUsecase(locator<WalletFacade>()),
@@ -206,11 +192,11 @@ class SettingsLocator {
     );
 
     locator.registerFactory<RevokeSpWalletForSettingsUsecase>(
-      () => RevokeSpWalletForSettingsUsecase(spFacade: locator<SpFacade>()),
+      () => RevokeSpWalletForSettingsUsecase(silent: locator<Silent>()),
     );
 
     locator.registerFactory<CheckSpWalletSetupForSettingsUsecase>(
-      () => CheckSpWalletSetupForSettingsUsecase(spFacade: locator<SpFacade>()),
+      () => CheckSpWalletSetupForSettingsUsecase(silent: locator<Silent>()),
     );
 
     // Blocs

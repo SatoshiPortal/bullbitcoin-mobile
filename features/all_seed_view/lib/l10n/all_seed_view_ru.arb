@@ -1,0 +1,45 @@
+{
+  "allSeedViewSecurityWarningMessage": "Отображение семенных фраз - это риск безопасности. Любой, кто видит вашу семенную фразу, может получить доступ к вашим средствам. Убедитесь, что вы находитесь в частном месте и что никто не может увидеть ваш экран.",
+  "cancel": "Отмена",
+  "allSeedViewLoadingMessage": "Это может занять некоторое время, если у вас есть много семян на этом устройстве.",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "allSeedViewNoSeedsFound": "Семена не нашли.",
+  "allSeedViewSecurityWarningTitle": "Предупреждение",
+  "allSeedViewPassphraseLabel": "Пасфаза:",
+  "allSeedViewOldWallets": "Old Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Я понимаю",
+  "allSeedViewDeleteWarningTitle": "УХОДИ!",
+  "allSeedViewDeleteWarningMessage": "Удаление семян является необратимым действием. Только сделайте это, если у вас есть безопасное резервное копирование этого семени или связанных с ним кошельков были полностью истощены.",
+  "delete": "Удалить",
+  "allSeedViewErrorDelete": "Не удалось удалить сид-фразу. Пожалуйста, попробуйте снова.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Не удалось загрузить сид-фразы. Пожалуйста, попробуйте снова.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Показать семена",
+  "allSeedViewTitle": "Вид",
+  "allSeedViewExistingWallets": "Существующие кошельки ({count}",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

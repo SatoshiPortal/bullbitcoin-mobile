@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
 import 'dart:typed_data';
 
@@ -15,11 +15,7 @@ class SyncWalletValuesDatasource {
   SyncWalletValuesDatasource({required this._load});
 
   Future<sync.Balances> getBalance({required sync.WalletKey key}) async =>
-      WalletCatalogPortImpl.value((await _load(key)).balances.now.latest);
-
-  /// Number of L-BTC coins, the count that matters for LWK's input limit.
-  Future<int> getLbtcUtxoCount({required sync.WalletKey key}) async =>
-      WalletCatalogPortImpl.value((await _load(key)).coins.now.latest).length;
+      WalletSyncBinding.value((await _load(key)).balances.now.latest);
 
   /// The unspent coins exactly at the latest committed revision, for a
   /// protocol decision. Retries briefly while the writer is busy.

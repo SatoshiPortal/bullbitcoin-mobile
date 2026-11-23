@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/internal_transfer_form.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';

@@ -1,0 +1,83 @@
+{
+  "addressViewTransactions": "Transações",
+  "@addressViewTransactions": {
+    "description": "Label for number of transactions"
+  },
+  "addressViewNoAddressesFound": "Nenhum endereço encontrado",
+  "@addressViewNoAddressesFound": {
+    "description": "Empty state message when no addresses are available"
+  },
+  "okButton": "ESTÁ BEM",
+  "@okButton": {
+    "description": "Button to dismiss coming soon message"
+  },
+  "addressViewBalance": "Balanço",
+  "@addressViewBalance": {
+    "description": "Label for address balance"
+  },
+  "addressViewAddress": "Endereço",
+  "@addressViewAddress": {
+    "description": "Label for address field"
+  },
+  "addressViewShowQR": "Mostrar código QR",
+  "@addressViewShowQR": {
+    "description": "Button to display address as QR code"
+  },
+  "addressViewAddressesTitle": "Endereços",
+  "@addressViewAddressesTitle": {
+    "description": "Title for the addresses section in wallet options"
+  },
+  "addressViewChangeAddressesComingSoon": "Mudar endereços em breve",
+  "@addressViewChangeAddressesComingSoon": {
+    "description": "Empty state message for change addresses feature that is coming soon"
+  },
+  "addressCardUsedLabel": "Usado",
+  "@addressCardUsedLabel": {
+    "description": "Label indicating an address has been used"
+  },
+  "addressCardUnusedLabel": "Não utilizado",
+  "@addressCardUnusedLabel": {
+    "description": "Label indicating an address has not been used"
+  },
+  "addressCardBalanceLabel": "Balança: ",
+  "@addressCardBalanceLabel": {
+    "description": "Label for the balance field in address card"
+  },
+  "addressViewCopyAddress": "Endereço de cópia",
+  "@addressViewCopyAddress": {
+    "description": "Button to copy address to clipboard"
+  },
+  "addressCardIndexLabel": "Índice: ",
+  "@addressCardIndexLabel": {
+    "description": "Label for the address index field in address card"
+  },
+  "addressViewChangeType": "Variação",
+  "@addressViewChangeType": {
+    "description": "Address type label for internal/change addresses"
+  },
+  "addressViewReceiveType": "Receber",
+  "@addressViewReceiveType": {
+    "description": "Address type label for external/receive addresses"
+  },
+  "addressViewChangeAddressesDescription": "Carteira de exibição Alterar endereços",
+  "@addressViewChangeAddressesDescription": {
+    "description": "Description for the coming soon dialog when trying to view change addresses"
+  },
+  "addressViewTitle": "Detalhes do endereço",
+  "@addressViewTitle": {
+    "description": "AppBar title for address details screen"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "addressViewerTitle": "Endereço",
+  "viewerTapToCopy": "Toque para copiar",
+  "viewerViewInExplorer": "Ver no explorador",
+  "viewerCopyLink": "Copiar link",
+  "viewerAddressTab": "Endereço",
+  "viewerPaymentUriTab": "URI de pagamento",
+  "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
+  "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
+  "copiedToClipboard": "Copiado para a área de transferência"
+}

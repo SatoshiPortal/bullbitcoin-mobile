@@ -1,45 +1,36 @@
-import 'package:preferences/preferences.dart' hide Language;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:meta/meta.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:secrets/secrets.dart';
 
 class CheckDuplicateMnemonicUsecase {
   final Secrets _secrets;
-
-  final WalletMetadataDatasource _metadata;
+  final WalletInventory _inventory;
   final Preferences _settings;
-  int _invalidCount = 0;
 
   CheckDuplicateMnemonicUsecase({
     required this._secrets,
-    required this._metadata,
+    required this._inventory,
     required this._settings,
   });
 
-  Future<bool> isReferenced(Fingerprint id, Network network) async {
-    var referenced = false;
-    var invalid = 0;
-    for (final row in await _metadata.fetchAll()) {
-      // An unresolved persisted network cannot establish a duplicate on this
-      // network. The catalog row remains available for secret protection.
-      try {
-        if (row.seedFingerprint == id && row.network == network) {
-          referenced = true;
-        }
-      } on FormatException {
-        invalid++;
-      }
-    }
-    if (invalid != _invalidCount) {
-      _invalidCount = invalid;
-      log.warning('Import catalog validation invalid_count=$invalid');
-    }
-    return referenced;
+  @useResult
+  Future<Result<bool, ImportMnemonicFailure>> isReferenced(
+    Fingerprint id,
+    Network network,
+  ) async {
+    return switch (await _inventory.walletsForNetwork(network.bitcoin)) {
+      Ok(:final value)
+          when value.wallets.any((wallet) => wallet.secretFingerprint == id) =>
+        const Ok(true),
+      Ok(value: WalletSelection(isComplete: true)) => const Ok(false),
+      Ok() || Err() => const Err(
+        ImportMnemonicUnexpectedFailure('Wallet inventory unavailable'),
+      ),
+    };
   }
 
   @useResult
@@ -48,38 +39,40 @@ class CheckDuplicateMnemonicUsecase {
     required Language language,
     String passphrase = '',
   }) async {
-    try {
-      final existing = await _secrets.find(
-        words: mnemonicWords,
-        language: language,
-        passphrase: passphrase,
-      );
-      switch (existing) {
-        case Err(:final failure):
-          return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
-        case Ok(value: final secret?):
-          final settings = (await _settings.fetch()).fold(
-            (value) => value,
-            (failure) => throw Exception('Preferences read failed'),
+    final existing = await _secrets.find(
+      words: mnemonicWords,
+      language: language,
+      passphrase: passphrase,
+    );
+    switch (existing) {
+      case Err(:final failure):
+        return Err(
+          ImportMnemonicUnexpectedFailure(failure.runtimeType.toString()),
+        );
+      case Ok(value: null):
+        return const Ok(null);
+      case Ok(value: final secret?):
+        final settings = await _settings.fetch();
+        if (settings is! Ok<SettingsEntity, PreferencesFailure>) {
+          return const Err(
+            ImportMnemonicUnexpectedFailure('Preferences unavailable'),
           );
-          final network = Network.fromEnvironment(
-            environment: settings.environment.networkEnv,
-            isLiquid: false,
+        }
+        final environment = settings.value.environment.networkEnv;
+        if (environment == NetworkEnv.signet) {
+          return const Err(
+            ImportMnemonicUnexpectedFailure('Unsupported network'),
           );
-          if (await isReferenced(secret.id, network)) {
-            return const Err(ImportMnemonicDuplicateFailure());
-          }
-          return const Ok(null);
-        case Ok():
-          return const Ok(null);
-      }
-    } catch (e) {
-      log.severe(
-        message: 'Duplicate mnemonic check failed',
-        error: e.runtimeType,
-        trace: StackTrace.empty,
-      );
-      return Err(ImportMnemonicUnexpectedFailure(e.toString()));
+        }
+        final network = Network.fromEnvironment(
+          environment: environment,
+          isLiquid: false,
+        );
+        return switch (await isReferenced(secret.id, network)) {
+          Ok(value: true) => const Err(ImportMnemonicDuplicateFailure()),
+          Ok(value: false) => const Ok(null),
+          Err(:final failure) => Err(failure),
+        };
     }
   }
 }

@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_refresh_batch.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 
 class RefreshPendingOrderSwapsUsecase {
   final OrderSwapRepository _repository;

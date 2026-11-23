@@ -1,0 +1,8 @@
+{
+  "@@locale": "ka",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "save": "შენახვა",
+  "@save": {
+    "description": "Generic save button label"
+  }
+}

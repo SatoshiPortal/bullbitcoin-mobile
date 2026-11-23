@@ -1,20 +1,32 @@
 name: legacy_storage
-description: Transactional imports from the retired application SQLite database.
+description: Historical application SQLite database and transactional owner imports.
 version: 0.1.0
 publish_to: none
 
 environment:
   sdk: "3.14.0"
+  flutter: "3.50.0"
 
 resolution: workspace
 
 dependencies:
-  ffi: ^2.2.0
+  bull_logger:
+  bull_reporting:
   drift: ^2.35.4
+  drift_flutter: ^0.3.1
+  ffi: ^2.2.0
+  flutter:
+    sdk: flutter
   meta: ^1.17.0
+  path: ^1.9.1
+  path_provider: ^2.1.5
   primitives:
   sqlite3: ^3.9.1
 
 dev_dependencies:
+  build_runner: ^2.16.1
+  drift_dev: ^2.35.3
+  flutter_test:
+    sdk: flutter
   lints: ^6.0.0
   test: ^1.26.3

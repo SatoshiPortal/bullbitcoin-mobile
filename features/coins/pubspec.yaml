@@ -1,0 +1,17 @@
+name: coins
+description: Reusable wallet coin selection.
+publish_to: none
+version: 0.1.0
+environment:
+  sdk: "3.14.0"
+resolution: workspace
+dependencies:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  primitives:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true

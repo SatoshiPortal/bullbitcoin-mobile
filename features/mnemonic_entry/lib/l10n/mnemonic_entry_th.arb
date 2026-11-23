@@ -1,0 +1,28 @@
+{
+  "@@locale": "th",
+  "passphraseLabel": "บัตร",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "optionalPassphraseHint": "เลือกข้อความ",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "ป้ายกำกับ",
+  "requiredHint": "ข้อกําหนดที่จําเป็น",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "ติดต่อ",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "emptyMnemonicWordsError": "ใส่คําพูดของ mnemonic",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

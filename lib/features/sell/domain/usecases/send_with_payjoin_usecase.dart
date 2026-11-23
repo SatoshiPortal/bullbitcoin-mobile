@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/transactions/public/prepare_payjoin_original.dart';
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -7,7 +9,9 @@ import 'package:primitives/primitives.dart';
 class SendWithPayjoinUsecase {
   final PayjoinSender _sender;
 
-  const SendWithPayjoinUsecase(this._sender);
+  final Spend _spend;
+
+  const SendWithPayjoinUsecase(this._sender, this._spend);
 
   /// Starts the payjoin payin for a sell order.
   @useResult
@@ -15,7 +19,7 @@ class SendWithPayjoinUsecase {
     required String walletId,
     required BitcoinNetwork network,
     required String bip21,
-    required String unsignedOriginalPsbt,
+    required PreparedBitcoinSpend prepared,
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
@@ -23,12 +27,27 @@ class SendWithPayjoinUsecase {
     if (!NetworkCapabilities.supports(network, NetworkCapability.payjoin)) {
       return const Err(SellUnexpectedFailure('unsupported network'));
     }
+    final PreparedPayjoinOriginal original;
+    switch (await preparePayjoinOriginal(
+      spend: _spend,
+      prepared: prepared,
+      walletId: walletId,
+      network: network,
+    )) {
+      case Ok(:final value):
+        original = value;
+      case Err(failure: SpendUnavailableFailure(:final busy)):
+        return Err(SellSpendBlockedFailure(busy: busy));
+      case Err():
+        return const Err(SellUnexpectedFailure());
+    }
     final result = await _sender.start(
       StartPayjoinSender(
         walletId: walletId,
         network: network,
         bip21Uri: bip21,
-        unsignedOriginalPsbt: unsignedOriginalPsbt,
+        unsignedOriginalPsbt: prepared.unsignedPsbt,
+        preparedOriginal: original,
         amount: Sats.fromInt(amountSat),
         feeRate: FeeRate(networkFeesSatPerVb),
         expiresAt: expireAfterSec == null
@@ -41,6 +60,8 @@ class SendWithPayjoinUsecase {
         return Ok(value);
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return Err(SellSpendBlockedFailure(busy: busy));
+      case Err(failure: PayjoinPublicationUnknownFailure(:final originalTxId)):
+        return Err(SellPayinOutcomeUnknownFailure(originalTxId: originalTxId));
       case Err(failure: PayjoinSenderKeptFailure(:final logMessage)):
         log.warning(
           'Sell Payjoin post failed; the session is kept',

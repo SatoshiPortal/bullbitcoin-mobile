@@ -1,0 +1,29 @@
+{
+  "@@locale": "tr",
+  "bip85NextMnemonic": "Sonraki Mnemonik",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "Deneysel\nTürleme yollarınızı manuel olarak yedekleme",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 Deterministik Entropiler",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "Sonraki HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "bip85NoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copiedToClipboard": "Panoya kopyalandı"
+}

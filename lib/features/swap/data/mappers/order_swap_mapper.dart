@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/swap/data/models/order_swap_model.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_amount_codec.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:swaps/order_swaps.dart';
 
 extension OrderSwapMapper on OrderSwapModel {
   OrderSwap toEntity() => OrderSwap(

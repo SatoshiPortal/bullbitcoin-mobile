@@ -1,5 +1,6 @@
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
@@ -23,9 +24,7 @@ class WizardLocator {
     locator.registerFactory<ApplyPendingWizardChoicesUsecase>(
       () => ApplyPendingWizardChoicesUsecase(
         applyExchangeAccess: (enabled) async {
-          final result = await locator<ExchangeFacade>().enable(
-            initialChoice: enabled,
-          );
+          final result = await locator<Exchange>().applyInitialChoice(enabled);
           return result is Ok;
         },
         wizardRepository: locator<WizardRepository>(),

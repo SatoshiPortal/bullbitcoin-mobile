@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import 'entities/limit_order.dart';
@@ -7,11 +8,17 @@ import 'exchange_failure.dart';
 
 /// Limit-order queries and commands. The Exchange session selects the backend.
 abstract interface class ExchangeLimitOrders {
+  @useResult
   Future<Result<List<LimitOrder>, ExchangeFailure>> listActive();
+  @useResult
   Future<Result<LimitOrder, ExchangeFailure>> get(String id);
+  @useResult
   Future<Result<LimitOrder, ExchangeFailure>> create(LimitOrderDraft draft);
+  @useResult
   Future<Result<LimitOrder, ExchangeFailure>> cancel(String id);
+  @useResult
   Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll();
+  @useResult
   Future<Result<LimitOrderRate, ExchangeFailure>> getRate(String currencyCode);
 }
 

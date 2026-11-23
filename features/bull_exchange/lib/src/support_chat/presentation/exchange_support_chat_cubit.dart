@@ -26,10 +26,14 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required this._resolveUserIdUsecase,
     required this._createLogAttachmentUsecase,
     required this._pickImageAttachmentsUsecase,
-    required Stream<NotificationMessage> notifications,
+    required Stream<Result<NotificationMessage, ExchangeFailure>> notifications,
   }) : super(const ExchangeSupportChatState()) {
     _notificationSubscription = notifications
-        .where((message) => message.kind == NotificationMessageKind.message)
+        .where(
+          (event) =>
+              event is Ok<NotificationMessage, ExchangeFailure> &&
+              event.value.kind == NotificationMessageKind.message,
+        )
         .listen((_) => loadMessages(page: 1));
   }
 
@@ -39,7 +43,8 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   final ResolveSupportChatUserIdUsecase _resolveUserIdUsecase;
   final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
   final PickImageAttachmentsUsecase _pickImageAttachmentsUsecase;
-  StreamSubscription<NotificationMessage>? _notificationSubscription;
+  StreamSubscription<Result<NotificationMessage, ExchangeFailure>>?
+  _notificationSubscription;
 
   bool _limitFetchingOlderMessages = false;
 

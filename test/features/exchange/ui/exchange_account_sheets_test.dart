@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/localizations.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,6 +91,7 @@ void main() {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.themeData(theme),
             localizationsDelegates: const [
+              ExchangeLocalizations.delegate,
               bullUiLocalizationsDelegate,
               ...appLocalizationsDelegates,
             ],

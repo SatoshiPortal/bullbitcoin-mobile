@@ -1,12 +1,12 @@
 import 'package:bb_mobile/features/wallet/data/catalog_wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 // Network/origin getters intentionally absent: even an unresolved catalog row
 // can reference custody used on another chain, and must not be decoded here.

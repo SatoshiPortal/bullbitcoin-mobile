@@ -1,0 +1,29 @@
+{
+  "allSeedViewSecurityWarningMessage": "Показването на seed фразите представлява риск за сигурността. Всеки, който види вашата seed фраза, може да получи достъп до средствата ви. Уверете се, че сте на уединено място и никой не може да вижда екрана ви.",
+  "cancel": "Отказ",
+  "allSeedViewLoadingMessage": "Зареждането може да отнеме известно време, ако имате много seed фрази на това устройство.",
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "allSeedViewNoSeedsFound": "Не са намерени seed фрази.",
+  "allSeedViewSecurityWarningTitle": "Предупреждение за сигурност",
+  "allSeedViewPassphraseLabel": "Паролна фраза:",
+  "allSeedViewOldWallets": "Стари портфейли ({count})",
+  "allSeedViewIUnderstandButton": "Разбирам",
+  "allSeedViewDeleteWarningTitle": "ПРЕДУПРЕЖДЕНИЕ!",
+  "allSeedViewDeleteWarningMessage": "Изтриването на seed фразата е необратимо действие. Направете това само ако имате сигурни резервни копия на тази seed фраза или свързаните портфейли са напълно изпразнени.",
+  "delete": "Изтрий",
+  "allSeedViewErrorDelete": "Неуспешно изтриване на семето. Моля, опитайте отново.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Покажи seed фразите",
+  "allSeedViewTitle": "Преглед на seed фразите",
+  "allSeedViewExistingWallets": "Съществуващи портфейли ({count})"
+}

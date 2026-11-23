@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 
 class SignBitcoinTxUsecase {

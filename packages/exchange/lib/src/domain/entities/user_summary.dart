@@ -140,6 +140,8 @@ sealed class UserSummary with _$UserSummary {
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
   bool get isCorporate => groups.contains('KYC_IS_CORPORATE');
   bool get isEuropeanJurisdiction => groups.contains('JURI_EU');
+  bool get isEligibleForConfidentialSepa =>
+      isFullyVerifiedKycLevel && !isCorporate && isEuropeanJurisdiction;
   bool get hasConsentedScamWarning => groups.contains('CONSENT_SCAM_WARNING');
 
   static const _fundingRestrictedGroups = {

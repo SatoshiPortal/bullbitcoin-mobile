@@ -393,6 +393,97 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
+  test(
+    'sender and receiver cannot reserve the same input concurrently',
+    () async {
+      final entering = Completer<void>();
+      final release = Completer<void>();
+      final current = generation(bitcoin.key);
+      var receiverWrites = 0;
+      final sender = stores.spend.reservePayjoinInputs(
+        bitcoin.key,
+        current,
+        {_a},
+        owner.session,
+        () async {
+          entering.complete();
+          await release.future;
+          reservations.held = [reservation(_a, owner)];
+        },
+      );
+      await entering.future;
+      final receiver = stores.spend.reservePayjoinInputs(
+        bitcoin.key,
+        current,
+        {_a},
+        other.session,
+        () async {
+          receiverWrites++;
+        },
+      );
+      try {
+        expect(
+          WriterLock.acquire(dir.path, bitcoin.key),
+          isA<Err<WriterLock, SyncFailure>>(),
+        );
+        expect(receiverWrites, 0);
+      } finally {
+        release.complete();
+      }
+      ok(await sender);
+      expect(err(await receiver), isA<SyncProtectedInputsFailure>());
+      expect(receiverWrites, 0);
+      expect(transport.sent, isEmpty);
+    },
+  );
+
+  test('stale and frozen Payjoin inputs never reach session storage', () async {
+    final current = generation(bitcoin.key);
+    Future<void> unexpected() async => fail('Reservation must not be stored');
+    expect(
+      err(
+        await stores.spend.reservePayjoinInputs(
+          bitcoin.key,
+          current + 1,
+          {_a},
+          owner.session,
+          unexpected,
+        ),
+      ),
+      isA<SyncNotFoundFailure>(),
+    );
+    ok(await stores.freezes.freeze([FrozenOutpoint(_a, origin: 'user')]));
+    expect(
+      err(
+        await stores.spend.reservePayjoinInputs(
+          bitcoin.key,
+          current,
+          {_a},
+          owner.session,
+          unexpected,
+        ),
+      ),
+      isA<SyncProtectedInputsFailure>(),
+    );
+  });
+
+  test(
+    'an acknowledged write must expose the expected owner and outpoints',
+    () async {
+      final current = generation(bitcoin.key);
+      final result = await stores.spend.reservePayjoinInputs(
+        bitcoin.key,
+        current,
+        {_a, _b},
+        owner.session,
+        () async {
+          reservations.held = [reservation(_a, owner), reservation(_b, other)];
+        },
+      );
+      expect(err(result), isA<SyncProtectedInputsFailure>());
+    },
+  );
+
   group('prepareFunding', () {
     final arkOwner = SpendOwner(protocol: 'ark', session: 'board-1');
     const context = '{"output":0,"expiryHeight":1008}';

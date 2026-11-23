@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_scan_facade.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/scan_onboarding_wallet_usecase.dart';
 
 class OnboardingLocator {
@@ -22,7 +22,7 @@ class OnboardingLocator {
     );
 
     locator.registerFactory<ScanOnboardingWalletUsecase>(
-      () => ScanOnboardingWalletUsecase(locator<ImportMnemonicScanFacade>()),
+      () => ScanOnboardingWalletUsecase(locator<ImportFeature>()),
     );
 
     // Usecases

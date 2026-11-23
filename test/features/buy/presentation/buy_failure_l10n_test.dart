@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

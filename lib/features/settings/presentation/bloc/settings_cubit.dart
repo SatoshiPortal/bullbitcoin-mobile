@@ -313,7 +313,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     // If disabling dev mode, revoke the SP wallet first
     if (!isEnabled && settings?.isDevModeEnabled == true) {
       // The revoke use case disposes the live session, deletes the wallet, and
-      // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
+      // emits SilentSetupChanged; the WalletBloc observes that and refreshes itself,
       // so settings never drives the wallet for SP.
       if (await _revokeSpWalletUsecase.execute() case Err()) {
         // The SP owner reports the failure; this only records the refused change.

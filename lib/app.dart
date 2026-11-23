@@ -1,7 +1,11 @@
+import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.dart';
+import 'package:bip85/bip85.dart';
+import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
-import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
+import 'package:bull_exchange/bull_exchange.dart'
+    show ExchangeLocalizations, ExchangeSessionScope;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
@@ -12,8 +16,8 @@ import 'package:mempool/mempool.dart';
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:exchange/exchange.dart' show Exchange;
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -30,6 +34,7 @@ import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -46,10 +51,10 @@ import 'package:novlang/novlang.dart';
 @visibleForTesting
 void resumePayjoinsOnAppResume(
   AppLifecycleState state,
-  PayjoinLifecycle lifecycle,
+  ForegroundWalletStartup startup,
 ) {
   if (state == AppLifecycleState.resumed) {
-    unawaited(lifecycle.resume());
+    startup.resumePayjoins();
   }
 }
 
@@ -90,8 +95,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   // AppLifecycleListener — see lib/features/wallet/data/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
-    if (locator.isRegistered<PayjoinLifecycle>()) {
-      resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
+    if (locator.isRegistered<ForegroundWalletStartup>()) {
+      resumePayjoinsOnAppResume(state, locator<ForegroundWalletStartup>());
     }
     if (state == AppLifecycleState.resumed &&
         locator.isRegistered<ArkForegroundHost>()) {
@@ -122,7 +127,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),
       ],
-      child: ExchangeScope(
+      child: ExchangeSessionScope(
+        exchange: () => locator<Exchange>(),
+        preferences: () => locator<Preferences>(),
         child: MultiBlocListener(
           listeners: [
             SettingsFailureListener(),
@@ -130,7 +137,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               listenWhen: (previous, current) =>
                   previous != current &&
                   current is AppStartupSuccess &&
-                  current.hasDefaultWallets,
+                  current.hasDefaultWallets &&
+                  !current.isPinCodeSet,
               listener: (context, settings) async {
                 // If wallets exist and the app has started successfully,
                 // we can start the wallet bloc to fetch the wallets.
@@ -195,6 +203,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       theme: AppTheme.themeData(appThemeType),
                       locale: language?.locale,
                       localizationsDelegates: [
+                        AddressViewLocalizations.delegate,
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
                         NovlangAnnouncementsLocalizationsDelegate(
                           novlangPolicy,
@@ -209,6 +218,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           novlangPolicy,
                           const QuickActionsFallbackDelegate(),
                         ),
+                        Bip85Localizations.delegate,
+                        NovlangAllSeedViewLocalizationsDelegate(novlangPolicy),
                         bullUiLocalizationsDelegate,
                         ...RecoverBullFeature.localizationsDelegates,
                       ],
@@ -224,6 +235,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                             child: BullSupportScope(
                               onContactSupport: SupportFacade.contactSupport,
                               child: AppStartupWidget(
+                                onUnlocked: () =>
+                                    AppLocator.startWalletsAfterUnlock(locator),
                                 app: locator<RecoverBullFeature>().withAlerts(
                                   child,
                                   onOpen: () => AppRouter.router.pushNamed(

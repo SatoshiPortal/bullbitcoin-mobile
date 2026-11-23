@@ -12,15 +12,16 @@ import 'package:sync/sync.dart' as sync;
 import 'package:sync/write.dart';
 
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
+import 'package:legacy_storage/app_database.dart' show Signer;
 
 import '../domain/network_x.dart';
 import '../domain/wallet.dart' as wallet;
 import 'foreground_wallet_sync.dart';
 import 'models/wallet_metadata_model.dart';
-import 'sqlite_ark_funding_reservations.dart';
-import 'wallet_metadata_datasource.dart';
+
+import 'package:bull_ark/ark_wallet_setup.dart';
+
+import 'wallet_registrations.dart';
 
 /// Main-wallet Board funding. No Bark key, raw PSBT or data binding leaves here.
 /// Every ambiguous signer/delivery result retains the original operation/holds.
@@ -28,7 +29,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   final ArkClient _client;
   final WalletNativeRuntime _runtime;
   final SqliteArkFundingReservations _authority;
-  final WalletMetadataDatasource _metadata;
+  final WalletRegistrations _metadata;
   final ForegroundWalletSync _sourceSync;
   final Secrets _secrets;
   final Fees _fees;

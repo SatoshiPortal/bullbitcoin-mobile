@@ -1,5 +1,25 @@
 import 'package:primitives/primitives.dart';
 
+import 'payjoin_failure.dart';
+
+/// Write-ahead admission for an original signed from a reviewed spend.
+/// The caller must hold the wallet's admission through [persist].
+typedef PayjoinOriginalAdmission =
+    Future<Result<void, PayjoinFailure>> Function({
+      required String sessionId,
+      required Future<void> Function() persist,
+    });
+
+final class PreparedPayjoinOriginal {
+  final String signedPsbt;
+  final PayjoinOriginalAdmission admit;
+
+  const PreparedPayjoinOriginal({
+    required this.signedPsbt,
+    required this.admit,
+  });
+}
+
 final class StartPayjoinSender {
   final String walletId;
   final BitcoinNetwork network;
@@ -8,6 +28,7 @@ final class StartPayjoinSender {
   final Sats amount;
   final FeeRate feeRate;
   final DateTime? expiresAt;
+  final PreparedPayjoinOriginal? preparedOriginal;
 
   StartPayjoinSender({
     required this.walletId,
@@ -17,6 +38,7 @@ final class StartPayjoinSender {
     required this.amount,
     required this.feeRate,
     this.expiresAt,
+    this.preparedOriginal,
   }) {
     _requireNotBlank(walletId, 'walletId');
     _requireSupportedNetwork(network);

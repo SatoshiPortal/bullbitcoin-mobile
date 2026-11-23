@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Удалить мнемонику переводов?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Это удаляет мастер-ключ переводов из защищённого хранилища. При следующем обращении приложения он будет заново получен из сида вашего кошелька с тем же отпечатком. Текущие переводы не затрагиваются.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоника переводов",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Удалить мнемонику переводов?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Это удаляет мастер-ключ переводов из защищённого хранилища. При следующем обращении приложения он будет заново получен из сида вашего кошелька с тем же отпечатком. Текущие переводы не затрагиваются."
 }

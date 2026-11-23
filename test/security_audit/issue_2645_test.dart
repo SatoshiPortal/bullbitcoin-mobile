@@ -8,18 +8,31 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Security audit #2645 network-specific default wallet', () {
-    test('derive-next requests defaults without filtering environment', () {
-      final source = File(
-        'lib/features/wallet/domain/read_default_bip85_parent_usecase.dart',
-      ).readAsStringSync();
-      final call = source.substring(
-        source.indexOf('walletRepository.getWallets'),
-        source.indexOf(');', source.indexOf('walletRepository.getWallets')) + 2,
-      );
-
-      expect(call, contains('onlyDefaults: true'));
-      expect(call, contains('onlyBitcoin: true'));
-      expect(call, contains('environment:'));
-    });
+    test(
+      'derive-next reads the default Bitcoin wallet on the active network',
+      () {
+        final source = File(
+          'features/bip85/lib/src/domain/manage_bip85_usecase.dart',
+        ).readAsStringSync();
+        expect(source, contains('nextHex() => _forDefault('));
+        expect(source, matches(RegExp(r'nextMnemonic\(\) =>\s*_forDefault\(')));
+        final selection = source.substring(source.indexOf('_forDefault<T>'));
+        expect(
+          selection,
+          contains('await _preferences.readActiveEnvironment()'),
+        );
+        for (final environment in ['mainnet', 'testnet', 'regtest']) {
+          expect(
+            selection,
+            contains('Environment.$environment => BitcoinNetwork.$environment'),
+          );
+        }
+        expect(
+          selection,
+          contains('await _inventory.walletsForNetwork(network)'),
+        );
+        expect(selection, contains('value.defaults.firstOrNull'));
+      },
+    );
   });
 }

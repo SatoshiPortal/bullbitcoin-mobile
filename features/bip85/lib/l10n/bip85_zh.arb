@@ -1,0 +1,14 @@
+{
+  "@@locale": "zh",
+  "bip85NextMnemonic": "接下来的Mnemonic",
+  "bip85ExperimentalWarning": "试验\n• 人工支持你的衍生途径",
+  "bip85Title": "BIP85 决定因素",
+  "bip85NextHex": "下次 HEX",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "bip85NoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "已复制到剪贴板"
+}

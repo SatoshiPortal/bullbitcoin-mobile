@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 
 /// A wallet transaction whose wallet-owned input signatures fail
 /// verification. It cannot have been produced by this wallet's keys and was

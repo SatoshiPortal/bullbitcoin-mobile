@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+import 'package:receive/receive.dart';
 
 extension WalletReceiveExtension on Wallet {
   List<ReceiveNetworkType> get availableReceiveNetworks {

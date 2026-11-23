@@ -1,0 +1,29 @@
+{
+  "@@locale": "hi",
+  "bip85NextMnemonic": "अगला Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "प्रायोगिक\nअपने विचलन पथ को मैन्युअल रूप से बैकअप करें",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 निर्धारक एन्ट्रॉपी",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "आगामी HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "bip85NoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया"
+}

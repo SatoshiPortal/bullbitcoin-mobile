@@ -1,7 +1,7 @@
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';

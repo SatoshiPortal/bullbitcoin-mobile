@@ -1,16 +1,12 @@
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
-import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 class _MockSettingsFacade extends Mock implements SettingsFacade {}
-
-class _MockLabels extends Mock implements Labels {}
 
 const _rawReason = 'Bad state: No element (settings stream closed)';
 
@@ -111,46 +107,6 @@ void main() {
       ).execute(true, requestConsent: () async => true);
 
       expect((result as Ok<bool, ReceiveFailure>).value, isTrue);
-    });
-  });
-
-  group('FetchReceiveNoteSuggestionsUsecase', () {
-    test('converts a throw into a sanitized failure', () async {
-      final labels = _MockLabels();
-      when(() => labels.suggestions(type: any(named: 'type')))
-          .thenThrow(Exception('drift: no such table labels'));
-
-      final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
-
-      switch (result) {
-        case Ok():
-          fail('a throw must not be reported as suggestions');
-        case Err(:final failure):
-          expect(failure, isA<ReceiveUnexpectedFailure>());
-          expect(failure.logMessage, contains('no such table'));
-      }
-    });
-
-    test('uses no suggestions when the address label query fails', () async {
-      final labels = _MockLabels();
-      when(() => labels.suggestions(type: LabelType.address))
-          .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
-
-      final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
-
-      expect((result as Ok<Set<String>, ReceiveFailure>).value, isEmpty);
-    });
-
-    test('scopes suggestions to address labels — a transaction label is '
-        'private and must never become a BIP21 message=', () async {
-      final labels = _MockLabels();
-      when(() => labels.suggestions(type: any(named: 'type')))
-          .thenAnswer((_) async => Ok({'lunch'}));
-
-      final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
-      expect(result, isA<Ok<Set<String>, ReceiveFailure>>());
-
-      verify(() => labels.suggestions(type: LabelType.address)).called(1);
     });
   });
 }

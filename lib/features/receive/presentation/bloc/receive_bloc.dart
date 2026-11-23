@@ -1,11 +1,8 @@
-import '../../domain/receive_live_amount.dart';
-import '../../domain/receive_advanced_options.dart';
-import '../../domain/receive_lightning_limits.dart';
-import '../../domain/usecases/get_receive_swap_limits_usecase.dart';
-import '../../domain/receive_amount_conversion.dart';
-import '../../domain/usecases/get_receive_amount_quotes_usecase.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:receive/receive.dart';
 
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+import '../../domain/usecases/get_receive_swap_limits_usecase.dart';
+
 import 'package:primitives/primitives.dart'
     show
         BitcoinUnit,
@@ -21,29 +18,22 @@ import 'dart:async';
 
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:primitives/primitives.dart'
+    show AssetConstants, ConversionConstants;
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:clock/clock.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/boltz_swap_failure_to_receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
@@ -51,7 +41,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_s
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,8 +54,7 @@ part 'receive_state.dart';
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
     required this._getReceiveWalletsUsecase,
-    required this._getReceiveSettingsUsecase,
-    required this._convertReceiveAmountUsecase,
+    required this._receive,
     required this._prepareReceiveAddressUsecase,
     required this._createReceiveOrderSwapUsecase,
     required this._getReceiveSwapRouteUsecase,
@@ -74,17 +63,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._receiveWithPayjoinUsecase,
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
-    required this._watchWalletTransactionByAddressUsecase,
+    required this._transactions,
     required this._watchReceiveOrderSwapUsecase,
-    required this._loadReceiveAddressLabelUsecase,
-    required this._saveReceiveAddressLabelUsecase,
-    required this._fetchReceiveNoteSuggestionsUsecase,
     required this._watchReceivePayjoinEnabledUsecase,
     required this._watchReceivePayjoinMinAmountUsecase,
     required this._getReceivePayjoinPolicyUsecase,
     required this._setReceivePayjoinEnabledUsecase,
     this._wallet,
-    this._getReceiveAmountQuotesUsecase,
+    bool pollAmountQuotes = true,
     this._getReceiveSwapLimitsUsecase,
   }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
@@ -151,7 +137,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         });
     on<ReceiveOrderSwapUpdated>(_onOrderSwapUpdated);
     on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
-    if (_getReceiveAmountQuotesUsecase != null) {
+    if (pollAmountQuotes) {
       add(const ReceiveAmountQuotesRequested());
       _amountQuoteTimer = Timer.periodic(const Duration(minutes: 1), (_) {
         if (!isClosed) add(const ReceiveAmountQuotesRequested());
@@ -159,12 +145,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
-  final GetReceiveAmountQuotesUsecase? _getReceiveAmountQuotesUsecase;
+  final Receive _receive;
   Timer? _amountQuoteTimer;
   final GetReceiveSwapLimitsUsecase? _getReceiveSwapLimitsUsecase;
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
-  final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
-  final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
   final PrepareReceiveAddressUsecase _prepareReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final BroadcastOriginalTransactionUsecase
@@ -174,12 +158,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final CreateBoltzReceiveSwapUsecase _createBoltzReceiveSwapUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final WatchWalletTransactionByAddressUsecase
-  _watchWalletTransactionByAddressUsecase;
+  final Transactions _transactions;
   final WatchReceiveOrderSwapUsecase _watchReceiveOrderSwapUsecase;
-  final LoadReceiveAddressLabelUsecase _loadReceiveAddressLabelUsecase;
-  final SaveReceiveAddressLabelUsecase _saveReceiveAddressLabelUsecase;
-  final FetchReceiveNoteSuggestionsUsecase _fetchReceiveNoteSuggestionsUsecase;
   final WatchReceivePayjoinEnabledUsecase _watchReceivePayjoinEnabledUsecase;
   final WatchReceivePayjoinMinAmountUsecase
   _watchReceivePayjoinMinAmountUsecase;
@@ -404,7 +384,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the bitcoin unit is not set yet, we need to get it from the settings
       // And set the input amount currency code to the bitcoin unit code
       // if no other currency code was selected yet.
-      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      final settingsResult = await _receive.settings();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (settingsResult) {
         case Ok(:final value):
@@ -424,7 +404,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.fiatCurrencyCode.isEmpty) {
       // If the fiat currency code is not set yet, we need to get it from the settings
-      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      final settingsResult = await _receive.settings();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (settingsResult) {
         case Ok(:final value):
@@ -556,7 +536,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
-      final priceResult = await _convertReceiveAmountUsecase.execute();
+      final priceResult = await _receive.convertAmount();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (priceResult) {
         case Ok(:final value):
@@ -612,7 +592,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     {
       // Admission is checked on every entry, including restored routes.
-      final settingsResult = await _getReceiveSettingsUsecase.execute(
+      final settingsResult = await _receive.settings(
         mode: ReceiveNetworkType.lightning,
         selectedNetwork: (state.wallet ?? _wallet)?.network.shared,
       );
@@ -635,7 +615,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.fiatCurrencyCode.isEmpty) {
       // If the fiat currency code is not set yet, we need to get it from the settings
-      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      final settingsResult = await _receive.settings();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (settingsResult) {
         case Ok(:final value):
@@ -702,7 +682,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
-      final priceResult = await _convertReceiveAmountUsecase.execute();
+      final priceResult = await _receive.convertAmount();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (priceResult) {
         case Ok(:final value):
@@ -751,7 +731,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     {
       // Admission is checked on every entry, including restored routes.
-      final settingsResult = await _getReceiveSettingsUsecase.execute(
+      final settingsResult = await _receive.settings(
         mode: ReceiveNetworkType.liquid,
         selectedNetwork: (state.wallet ?? _wallet)?.network.shared,
       );
@@ -780,7 +760,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.fiatCurrencyCode.isEmpty) {
       // If the fiat currency code is not set yet, we need to get it from the settings
-      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      final settingsResult = await _receive.settings();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (settingsResult) {
         case Ok(:final value):
@@ -876,7 +856,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
-      final priceResult = await _convertReceiveAmountUsecase.execute();
+      final priceResult = await _receive.convertAmount();
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (priceResult) {
         case Ok(:final value):
@@ -895,9 +875,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountQuotesRequested event,
     Emitter<ReceiveState> emit,
   ) async {
-    final quotes = _getReceiveAmountQuotesUsecase;
-    if (quotes == null || state.creatingSwap) return;
-    final result = await quotes.execute();
+    if (state.creatingSwap) return;
+    final result = await _receive.amountQuotes();
     if (emit.isDone) return;
     switch (result) {
       case Ok(:final value):
@@ -1053,9 +1032,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
       //  the current exchange rate and fiat currency code.
       fiatCurrencyCode = event.currencyCode;
-      switch (await _convertReceiveAmountUsecase.execute(
-        currencyCode: event.currencyCode,
-      )) {
+      switch (await _receive.convertAmount(currencyCode: event.currencyCode)) {
         case Ok(:final value):
           exchangeRate = value;
         // No price for that currency: stay on the current one, or a fiat
@@ -1069,14 +1046,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      switch (await _receive.settings()) {
         case Ok(:final value):
           fiatCurrencyCode = value.currencyCode;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
       }
-      switch (await _convertReceiveAmountUsecase.execute()) {
+      switch (await _receive.convertAmount()) {
         case Ok(:final value):
           exchangeRate = value;
         // Bitcoin units work without a price: no fiat value is shown.
@@ -1211,7 +1188,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     };
     if (address == null) return;
 
-    final result = await _saveReceiveAddressLabelUsecase.execute(
+    final result = await _receive.saveAddressNote(
       address: address.address,
       walletId: address.walletId,
       note: state.note,
@@ -1600,7 +1577,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     final tx = event.tx;
     if (event.generation != _receiveGeneration ||
         tx.walletId != state.wallet?.id ||
-        tx.network != state.wallet?.network) {
+        tx.network != state.wallet?.network.shared) {
       return;
     }
     emit(state.copyWith(tx: tx));
@@ -1683,7 +1660,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             address: receiveAddress,
           );
           if (note.isNotEmpty) {
-            final _ = await _saveReceiveAddressLabelUsecase.execute(
+            final _ = await _receive.saveAddressNote(
               address: receiveAddress,
               walletId: wallet.id,
               note: note,
@@ -1754,7 +1731,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// missing pre-fill is a cosmetic loss, and blocking the receive screen
   /// over it would be worse than the problem.
   Future<String> _loadAddressLabel(String address) async {
-    final result = await _loadReceiveAddressLabelUsecase.execute(address);
+    final result = await _receive.loadAddressNote(address);
     return switch (result) {
       Ok(:final value) => value,
       Err() => '',
@@ -1764,7 +1741,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// Suggestion chips for the note bottom sheet. Degrades to no suggestions
   /// on failure, for the same reason as [_loadAddressLabel].
   Future<Set<String>> fetchDistinctLabels() async {
-    final result = await _fetchReceiveNoteSuggestionsUsecase.execute();
+    final result = await _receive.addressNoteSuggestions();
     return switch (result) {
       Ok(:final value) => value,
       Err() => <String>{},
@@ -1815,8 +1792,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }) {
     final generation = _receiveGeneration;
     _walletTransactionSubscription?.cancel();
-    _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
-        .execute(walletId: walletId, toAddress: address)
+    _walletTransactionSubscription = _transactions
+        .watchWalletTransactionByAddress(walletId: walletId, toAddress: address)
         .listen((tx) {
           // See _watchPayjoin's guard above for why this is needed.
           if (isClosed) return;

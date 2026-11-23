@@ -1,0 +1,86 @@
+{
+  "allSeedViewSecurityWarningMessage": "نمایش عبارات بذر یک خطر امنیتی است. هرکسی که عبارت بذر شما را ببیند می تواند به وجوه شما دسترسی داشته باشد. اطمینان حاصل کنید که در یک مکان خصوصی هستید و هیچ کس نمی تواند صفحه نمایش شما را ببیند.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "cancel": "لغو",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "allSeedViewLoadingMessage": "این ممکن است مدتی طول بکشد تا بارگذاری شود اگر دانه های زیادی روی این دستگاه دارید.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "allSeedViewNoSeedsFound": "هیچ بذری یافت نشد.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewSecurityWarningTitle": "هشدار امنیتی",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "allSeedViewOldWallets": "Old Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "درک می کنم",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "هشدار!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "دفع بذر یک عمل برگشت ناپذیر است. فقط این کار را انجام دهید اگر پشتیبان های امن از این بذر یا کیف پول های مرتبط به طور کامل تخلیه شده باشند.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "delete": "حذف",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "allSeedViewErrorDelete": "حذف سید ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "بارگذاری سیدها ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "نشان دادن دانه ها",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewExistingWallets": "کیف پول‌های موجود ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

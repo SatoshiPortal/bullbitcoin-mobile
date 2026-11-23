@@ -1,0 +1,141 @@
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullThemeX, BullTypographyX, Gap;
+import 'package:silent/src/presentation/silent_l10n.dart';
+import 'package:primitives/primitives.dart';
+import 'package:silent/src/presentation/sp_backend_form_state.dart';
+import 'package:silent/src/presentation/sp_failure_l10n.dart';
+import 'package:silent/src/ui/widgets/sp_backend_url_field.dart';
+import 'package:material_ui/material_ui.dart';
+
+/// The backend-config form shared by the setup and settings pages: the
+/// (page-supplied) network field, the regtest-defaults button, the two backend
+/// URL fields, the (page-supplied) submit action, and the inline error. Reads
+/// values through the [SpBackendFormState] mixin and drives edits through the
+/// page-supplied callbacks (like sibling [SpBackendUrlField]), so it never
+/// holds a cubit reference.
+///
+/// It owns the two URL [TextEditingController]s: a user edit already matches the
+/// state, so a programmatic URL change (defaults loaded, network switched) is
+/// the only case where the field text is pushed back in, from [didUpdateWidget].
+class SpBackendConfigForm<S extends SpBackendFormState<S>>
+    extends StatefulWidget {
+  const SpBackendConfigForm({
+    super.key,
+    required this.networkField,
+    required this.state,
+    required this.isBusy,
+    required this.onFetchDefaults,
+    required this.onBlindbitChanged,
+    required this.onTestBlindbit,
+    required this.onElectrumChanged,
+    required this.onTestElectrum,
+    this.extraFields,
+    required this.submit,
+  });
+
+  /// Network selector: editable at setup, read-only in settings.
+  final Widget networkField;
+
+  final S state;
+
+  /// True while creating/saving; disables the fetch button and URL fields.
+  final bool isBusy;
+
+  final VoidCallback onFetchDefaults;
+  final ValueChanged<String> onBlindbitChanged;
+  final VoidCallback onTestBlindbit;
+  final ValueChanged<String> onElectrumChanged;
+  final VoidCallback onTestElectrum;
+
+  final Widget? extraFields;
+
+  /// The submit action (Create at setup, Save in settings).
+  final Widget submit;
+
+  @override
+  State<SpBackendConfigForm<S>> createState() => _SpBackendConfigFormState<S>();
+}
+
+class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
+    extends State<SpBackendConfigForm<S>> {
+  late final TextEditingController _blindbitController;
+  late final TextEditingController _electrumController;
+
+  @override
+  void initState() {
+    super.initState();
+    _blindbitController = TextEditingController(text: widget.state.blindbitUrl);
+    _electrumController = TextEditingController(text: widget.state.electrumUrl);
+  }
+
+  @override
+  void didUpdateWidget(covariant SpBackendConfigForm<S> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncField(_blindbitController, widget.state.blindbitUrl);
+    _syncField(_electrumController, widget.state.electrumUrl);
+  }
+
+  // Push a programmatic URL change into the field. A user edit already left the
+  // controller matching the state, so this only fires for changes that did not
+  // come from typing (defaults loaded, network switched).
+  void _syncField(TextEditingController controller, String url) {
+    if (controller.text != url) controller.text = url;
+  }
+
+  @override
+  void dispose() {
+    _blindbitController.dispose();
+    _electrumController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        widget.networkField,
+        const Gap(16),
+        if (state.network == BitcoinNetwork.regtest) ...[
+          BullButton.secondary(
+            onPressed: (state.isFetchingDefaults || widget.isBusy)
+                ? null
+                : widget.onFetchDefaults,
+            label: context.silentLoc.silentFetchRegtestDefaults,
+          ),
+          const Gap(16),
+        ],
+        SpBackendUrlField(
+          label: context.silentLoc.silentBlindbitUrlLabel,
+          controller: _blindbitController,
+          onChanged: widget.onBlindbitChanged,
+          test: state.blindbitStatus,
+          testError: state.blindbitStatusError,
+          onTest: widget.onTestBlindbit,
+          enabled: !widget.isBusy,
+        ),
+        const Gap(12),
+        SpBackendUrlField(
+          label: context.silentLoc.silentElectrumUrlLabel,
+          controller: _electrumController,
+          onChanged: widget.onElectrumChanged,
+          test: state.electrumStatus,
+          testError: state.electrumStatusError,
+          onTest: widget.onTestElectrum,
+          enabled: !widget.isBusy,
+        ),
+        if (widget.extraFields != null) ...[const Gap(16), widget.extraFields!],
+        const Gap(24),
+        widget.submit,
+        if (state.error != null) ...[
+          const Gap(16),
+          Text(
+            state.error!.toTranslated(context),
+            style: context.bullType.body.copyWith(color: context.bull.error),
+          ),
+        ],
+      ],
+    );
+  }
+}

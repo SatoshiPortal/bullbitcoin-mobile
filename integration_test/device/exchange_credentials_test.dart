@@ -1,3 +1,4 @@
+import 'package:exchange/setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
@@ -5,18 +6,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
     as core_exchange;
-import 'package:bb_mobile/features/exchange/exchange_locator.dart'
-    as feature_exchange;
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxCredentialUnavailableFailure, BbxFailure;
@@ -32,7 +26,7 @@ void main() {
     final locator = GetIt.asNewInstance();
     late ExchangeKeychain storage;
     late ExchangeKeychainProbe probe;
-    late ExchangeApiKeyRepositoryImpl repository;
+    late ExchangeCredentials repository;
     Future<void> storeCredential(
       String value, {
       required bool isTestnet,
@@ -56,7 +50,7 @@ void main() {
       locator.registerSingleton<Secrets>(secrets);
       probe = ExchangeKeychainProbe()..install();
       storage = secrets.exchangeKeychain;
-      repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+      repository = ExchangeCredentials.open(storage);
     });
 
     setUp(() async {
@@ -94,7 +88,7 @@ void main() {
       (tester) async {
         final absent = await repository.readActiveApiKey(isTestnet: true);
         expect(
-          absent is Ok<String?, ExchangeApiKeyFailure> && absent.value == null,
+          absent is Ok<String?, ExchangeFailure> && absent.value == null,
           isTrue,
         );
         await storeCredential(
@@ -103,8 +97,7 @@ void main() {
         );
         final inactive = await repository.readActiveApiKey(isTestnet: true);
         expect(
-          inactive is Ok<String?, ExchangeApiKeyFailure> &&
-              inactive.value == null,
+          inactive is Ok<String?, ExchangeFailure> && inactive.value == null,
           isTrue,
         );
       },
@@ -123,7 +116,7 @@ void main() {
       );
       final first = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        first is Ok<String?, ExchangeApiKeyFailure> &&
+        first is Ok<String?, ExchangeFailure> &&
             first.value == 'test-synthetic',
         isTrue,
       );
@@ -133,22 +126,22 @@ void main() {
       );
       final rotated = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        rotated is Ok<String?, ExchangeApiKeyFailure> &&
+        rotated is Ok<String?, ExchangeFailure> &&
             rotated.value == 'rotated-synthetic',
         isTrue,
       );
       expect(
         await repository.deleteApiKey(isTestnet: true),
-        isA<Ok<void, ExchangeApiKeyFailure>>(),
+        isA<Ok<void, ExchangeFailure>>(),
       );
       final revoked = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        revoked is Ok<String?, ExchangeApiKeyFailure> && revoked.value == null,
+        revoked is Ok<String?, ExchangeFailure> && revoked.value == null,
         isTrue,
       );
       final mainnet = await repository.readActiveApiKey(isTestnet: false);
       expect(
-        mainnet is Ok<String?, ExchangeApiKeyFailure> &&
+        mainnet is Ok<String?, ExchangeFailure> &&
             mainnet.value == 'main-synthetic',
         isTrue,
       );
@@ -167,8 +160,7 @@ void main() {
       );
       final value = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        value is Ok<String?, ExchangeApiKeyFailure> &&
-            value.value == 'synthetic',
+        value is Ok<String?, ExchangeFailure> && value.value == 'synthetic',
         isTrue,
       );
     });
@@ -180,7 +172,7 @@ void main() {
       await storeCredential(corrupt, isTestnet: true);
       final invalid = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        invalid is Err<String?, ExchangeApiKeyFailure> &&
+        invalid is Err<String?, ExchangeFailure> &&
             invalid.failure is ExchangeApiKeyInvalidFailure,
         isTrue,
       );
@@ -194,8 +186,8 @@ void main() {
       probe.refuseReads = true;
       final unavailable = await repository.readActiveApiKey(isTestnet: true);
       expect(
-        unavailable is Err<String?, ExchangeApiKeyFailure> &&
-            unavailable.failure is ExchangeApiKeyReadFailure,
+        unavailable is Err<String?, ExchangeFailure> &&
+            unavailable.failure is ExchangeCredentialReadFailure,
         isTrue,
       );
       probe.refuseReads = false;
@@ -294,10 +286,31 @@ void main() {
     testWidgets(
       'the real WebView result crosses the production authentication graph',
       (tester) async {
-        final graph = GetIt.asNewInstance();
-        graph.registerSingleton<ExchangeApiKeyRepository>(repository);
-        feature_exchange.ExchangeLocator.registerUsecases(graph);
-        addTearDown(graph.reset);
+        String? preference;
+        final access = ExchangeAccessLifecycle.open(
+          apiKeyRepository: repository,
+          readEnvironment: () async => true,
+          platformAllowed: () async => true,
+          disconnectNotifications: () async {},
+          clearCookies: () async {},
+          readPreference: () async => preference,
+          writePreference: (value) async {
+            preference = value;
+            return true;
+          },
+        );
+        expect(await access.enable(), isA<Ok>());
+        final exchange = Exchange.open(
+          mainnetEndpoint: Uri.parse(ExchangeDefaults.bbApiUrl),
+          testnetEndpoint: Uri.parse(ExchangeDefaults.bbApiTestUrl),
+          readSession: () async => fail('unexpected Exchange API request'),
+          access: access,
+          webAuthEndpoints: (
+            mainnet: Uri.parse(ExchangeDefaults.bbAuthUrl),
+            testnet: Uri.parse(ExchangeDefaults.bbAuthTestUrl),
+          ),
+        );
+        addTearDown(exchange.close);
         final loaded = Completer<void>();
         final controller = WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -337,8 +350,10 @@ void main() {
       window.__credentialProbeMockReady = true;
       </script></body></html>''');
         await loaded.future.timeout(const Duration(seconds: 20));
-        final operation = graph<CompleteExchangeAuthenticationUsecase>(
-          param1: (String script) async {
+        final result = await exchange.authenticateWebSession(
+          isTestnet: true,
+          isCurrent: () => true,
+          evaluateJavaScript: (script) async {
             final ready = await controller.runJavaScriptReturningResult(
               'window.__credentialProbeMockReady === true',
             );
@@ -347,9 +362,7 @@ void main() {
             }
             return controller.runJavaScriptReturningResult(script);
           },
-          param2: (isTestnet: true, isOpen: () => true),
         );
-        final result = await operation.execute(isCurrent: () => true);
         expect(
           result is Ok,
           isTrue,
@@ -357,7 +370,7 @@ void main() {
         );
         final credential = await repository.readActiveApiKey(isTestnet: true);
         expect(
-          credential is Ok<String?, ExchangeApiKeyFailure> &&
+          credential is Ok<String?, ExchangeFailure> &&
               credential.value == 'webview-synthetic',
           isTrue,
         );
@@ -373,19 +386,18 @@ void main() {
           try {
             core_exchange.ExchangeLocator.registerDatasources(locator);
             core_exchange.ExchangeLocator.registerRepositories(locator);
-            final credentials = locator<ExchangeApiKeyRepository>();
+            final credentials = locator<ExchangeCredentials>();
             final before = await credentials.readActiveApiKey(isTestnet: true);
             final authenticated =
-                before is Ok<String?, ExchangeApiKeyFailure> &&
-                before.value != null;
+                before is Ok<String?, ExchangeFailure> && before.value != null;
             expect(
               authenticated,
               isTrue,
               reason: 'requires an existing preprod session',
             );
             final exchange = Exchange.open(
-              mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
-              testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
+              mainnetEndpoint: Uri.parse(ExchangeDefaults.bbApiUrl),
+              testnetEndpoint: Uri.parse(ExchangeDefaults.bbApiTestUrl),
               readSession: () async {
                 final credential = await credentials.readActiveApiKey(
                   isTestnet: true,
@@ -409,9 +421,9 @@ void main() {
               isTrue,
               reason: 'preprod account read must succeed',
             );
-            final orders = await locator<ExchangeOrderRepository>(
-              instanceName: 'testnetExchangeOrderRepository',
-            ).getOrders();
+            final orders = await exchange
+                .orders(ExchangeEnvironment.testnet)
+                .getOrders();
             expect(
               orders is Ok,
               isTrue,
@@ -437,8 +449,7 @@ void main() {
               reason: 'read-only probes must preserve the credential',
             );
             expect(
-              after is Ok<String?, ExchangeApiKeyFailure> &&
-                  after.value != null,
+              after is Ok<String?, ExchangeFailure> && after.value != null,
               isTrue,
               reason: 'read-only probes must not clear the existing session',
             );

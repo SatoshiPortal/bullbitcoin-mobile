@@ -21,7 +21,7 @@ import 'support/bdk_test_store.dart';
 
 import 'support/wallet_model.dart';
 
-import 'package:bb_mobile/features/transactions/data/models/wallet_transaction_model.dart';
+import 'package:transactions/testing.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -227,19 +227,19 @@ void main() {
           .address
           .toString();
       wallet.dispose();
-      final matches = await datasource.getTransactions(
+      final matches = (await datasource.getTransactions(
         key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
         toAddress: second,
-      );
+      )).fold((value) => value, (failure) => fail(failure.logCode));
       expect(matches.map((tx) => tx.txId), contains(fundingTxId));
       expect(
-        await datasource.getTransactions(
+        (await datasource.getTransactions(
           key: WalletKey(
             id: walletModel.id,
             network: walletModel.network.shared,
           ),
           toAddress: _externalTestnetAddress,
-        ),
+        )).fold((value) => value, (failure) => fail(failure.logCode)),
         isEmpty,
       );
     },
@@ -274,13 +274,13 @@ void main() {
     );
     await BdkTestStore.saveWallet(wallet, walletModel.hexId);
 
-    final transactions = await BdkTestStore.history(walletModel)
-        .getTransactions(
+    final transactions =
+        (await BdkTestStore.history(walletModel).getTransactions(
           key: WalletKey(
             id: walletModel.id,
             network: walletModel.network.shared,
           ),
-        );
+        )).fold((value) => value, (failure) => fail(failure.logCode));
     return transactions.firstWhere(
       (transaction) => transaction.txId == tx.computeTxid().toString(),
     );
@@ -367,13 +367,13 @@ void main() {
   });
 
   test('an incoming transaction is unaffected', () async {
-    final transactions = await BdkTestStore.history(walletModel)
-        .getTransactions(
+    final transactions =
+        (await BdkTestStore.history(walletModel).getTransactions(
           key: WalletKey(
             id: walletModel.id,
             network: walletModel.network.shared,
           ),
-        );
+        )).fold((value) => value, (failure) => fail(failure.logCode));
     final funding = transactions.firstWhere((tx) => tx.txId == fundingTxId);
 
     expect(funding.isToSelf, isFalse);

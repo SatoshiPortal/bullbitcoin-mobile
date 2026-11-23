@@ -1,0 +1,7 @@
+{
+  "@@locale": "fr",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "save": "Sauvegarder",
+  "networkFeatureUnavailable": "Cette fonctionnalité est indisponible sur le réseau sélectionné.",
+  "swapServerBusyError": "Terminez vos swaps en cours avant de changer de serveur de swap."
+}

@@ -1,17 +1,11 @@
-import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
+import 'package:swaps/order_swaps.dart';
+import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' as bb;
-import 'package:bb_mobile/features/swap/public/swap_facade.dart'
-    show OrderSwapRecord;
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -25,8 +19,7 @@ class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockGetTransactionOrderSwapsUsecase extends Mock
     implements GetTransactionOrderSwapsUsecase {}
@@ -45,8 +38,8 @@ void main() {
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
-  late _MockExchangeOrderRepository mainnetOrderRepository;
-  late _MockExchangeOrderRepository testnetOrderRepository;
+  late _MockExchangeOrders mainnetOrderRepository;
+  late _MockExchangeOrders testnetOrderRepository;
   late _MockGetTransactionOrderSwapsUsecase getTransactionOrderSwapsUsecase;
   late GetTransactionsByTxIdUsecase usecase;
 
@@ -55,16 +48,19 @@ void main() {
     walletTransactionRepository = _MockWalletTransactionRepository();
     swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
-    mainnetOrderRepository = _MockExchangeOrderRepository();
-    testnetOrderRepository = _MockExchangeOrderRepository();
+    mainnetOrderRepository = _MockExchangeOrders();
+    testnetOrderRepository = _MockExchangeOrders();
     getTransactionOrderSwapsUsecase = _MockGetTransactionOrderSwapsUsecase();
     usecase = GetTransactionsByTxIdUsecase(
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
       swapStore: swapStore,
       payjoinSessions: payjoinSessions,
-      mainnetExchangeOrderRepository: mainnetOrderRepository,
-      testnetExchangeOrderRepository: testnetOrderRepository,
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? testnetOrderRepository
+            : mainnetOrderRepository,
+      ),
       getTransactionOrderSwapsUsecase: getTransactionOrderSwapsUsecase,
     );
 
@@ -75,7 +71,7 @@ void main() {
         txId: any(named: 'txId'),
         environment: any(named: 'environment'),
       ),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer((_) async => Ok([]));
     when(() => swapStore.byTxId(any())).thenAnswer((_) async => const Ok(null));
     when(() => getTransactionOrderSwapsUsecase.execute()).thenAnswer(
       (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
@@ -99,7 +95,7 @@ void main() {
           txId: _txId,
           environment: Environment.regtest,
         ),
-      ).thenAnswer((_) async => []);
+      ).thenAnswer((_) async => Ok([]));
       expect(unwrap(await usecase.execute(_txId)), isEmpty);
       verify(
         () => walletTransactionRepository.getWalletTransactions(
@@ -122,7 +118,7 @@ void main() {
       when(() => payjoinSessions.byTransactionId(_txId))
           .thenAnswer((_) async => Ok([payjoin]));
       when(() => mainnetOrderRepository.getOrderByTxId(_txId))
-          .thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+          .thenAnswer((_) async => const Err(ExchangeCredentialReadFailure()));
       final transactions = unwrap(await usecase.execute(_txId));
       expect(transactions, hasLength(1));
       expect(transactions.single.payjoin, payjoin);

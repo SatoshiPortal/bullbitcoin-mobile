@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +17,7 @@ import 'package:sync/sync.dart';
 
 import 'ark_funding_test_fixture.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -48,7 +48,7 @@ void main() {
   int nativeAccesses = 0;
 
   BitcoinWalletRepository generic() => BitcoinWalletRepository(
-    walletMetadataDatasource: metadata,
+    walletRegistrations: metadata,
     secrets: Secrets(scratchDirectory: () async => fixture.directory.path),
     wallet: (_) async => throw StateError('no native access expected'),
     walletValuesDatasource: _Values(),
@@ -70,7 +70,7 @@ void main() {
     metadata = _Metadata();
     nativeAccesses = 0;
     keystore = FakeSecureStoragePlatform().install();
-    guard = ArkFundingSigningGuard(Ok(fixture.store));
+    guard = ArkFundingSigningGuard(authority: fixture.store);
     when(() => metadata.fetch(any())).thenAnswer(
       (i) async =>
           fundingMetadata.copyWith(id: i.positionalArguments.single as String),
@@ -108,7 +108,7 @@ void main() {
   test(
     'unavailable authority blocks both signers rather than bypassing the guard',
     () async {
-      guard = const ArkFundingSigningGuard(Err(SyncStorageFailure()));
+      guard = const ArkFundingSigningGuard(authority: null);
       await expectLater(
         generic().signPsbt(publicFundingPsbt, walletId: fundingWalletId),
         throwsA(isA<WalletSpendBlockedException>()),

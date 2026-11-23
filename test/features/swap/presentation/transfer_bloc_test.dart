@@ -7,11 +7,17 @@ import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
 import '../../../frozen_outpoints_fixture.dart';
 
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
-import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
+import 'package:primitives/primitives.dart' as primitives;
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
+import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
+import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 
 import 'package:sync/sync.dart' as native;
 
@@ -21,37 +27,30 @@ import 'dart:typed_data';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
-import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_usecase.dart';
@@ -67,7 +66,6 @@ import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:material_ui/material_ui.dart'
@@ -135,16 +133,11 @@ class _MockWatchOrder extends Mock implements WatchOrderSwapUsecase {}
 
 class _MockDetectBitcoin extends Mock implements DetectBitcoinStringUsecase {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockGetUtxos extends Mock implements GetWalletUtxosUsecase {}
 
 class _MockGetExchangeRate extends Mock implements GetSwapExchangeRateUsecase {}
-
-class _MockPreviewFee extends Mock implements PreviewBitcoinFeeUsecase {}
-
-class _MockPreviewPresets extends Mock
-    implements PreviewBitcoinFeePresetsUsecase {}
 
 class _MockCheckConsolidation extends Mock
     implements CheckLiquidConsolidationUsecase {}
@@ -212,6 +205,7 @@ void main() {
   late WalletFacade admissionWallet;
   late _MockMarkBroadcast markBroadcast;
   late _MockBroadcastBitcoin broadcastBitcoin;
+  BitcoinSpendPreview? preview;
   late _MockRefreshOrder refreshOrder;
   late _MockGetPendingOrders getPendingOrders;
   late _MockGetSettings getSettings;
@@ -244,52 +238,58 @@ void main() {
   TransferBloc buildBloc({
     BroadcastBitcoinTransactionUsecase? bitcoinBroadcast,
     GetSwapAmountQuotesUsecase? amountQuotes,
-  }) => TransferBloc(
-    loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
-    getSwapAmountQuotesUsecase: amountQuotes,
-    getWalletsUsecase: getWallets,
-    loadNetworkFeesUsecase: LoadTransferNetworkFeesUsecase(
-      fees: getNetworkFees,
-    ),
-    prepareBitcoinSendUsecase: prepareBitcoin,
-    validateBitcoinSelectionUsecase: validateBitcoinSelection,
-    prepareLiquidSendUsecase: prepareLiquid,
-    calculateBitcoinAbsoluteFeesUsecase: calculateBitcoin,
-    calculateLiquidAbsoluteFeesUsecase: calculateLiquid,
-    getWalletUsecase: getWallet,
-    signBitcoinTxUsecase: signBitcoin,
-    signLiquidTxUsecase: signLiquid,
-    broadcastBitcoinTxUsecase: bitcoinBroadcast ?? broadcastBitcoin,
-    broadcastLiquidTxUsecase: broadcastLiquid,
-    verifyChainSwapAmountSendUsecase: verifyChain,
-    getOrderSwapQuoteUsecase: getQuote,
-    getPendingOrderSwapsUsecase: getPendingOrders,
-    createOrderSwapUsecase: createOrder,
-    checkSwapSpendAdmissionUsecase: CheckSwapSpendAdmissionUsecase(
-      admissionWallet,
-    ),
-    savePreparedOrderSwapPayinUsecase: _MockSavePrepared(),
-    replacePreparedOrderSwapPayinUsecase: replacePrepared,
-    refreshOrderSwapUsecase: refreshOrder,
-    markOrderSwapBroadcastUnknownUsecase: markUnknown,
-    markOrderSwapPayinBroadcastUsecase: markBroadcast,
-    watchOrderSwapUsecase: watchOrder,
-    detectBitcoinStringUsecase: detectBitcoin,
-    getReceiveAddressUsecase: getReceiveAddress,
-    getWalletUtxosUsecase: getUtxos,
-    getSwapExchangeRateUsecase: getExchangeRate,
-    previewBitcoinFeeUsecase: _MockPreviewFee(),
-    previewBitcoinFeePresetsUsecase: _MockPreviewPresets(),
-    checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
-    getSwapRouteUsecase: getSwapRoute,
-    getSwapLimitsAndFeesUsecase: getLimitsAndFees,
-    createBitcoinToLiquidSwapUsecase: createBitcoinToLiquid,
-    createLiquidToBitcoinSwapUsecase: createLiquidToBitcoin,
-    recordSwapLockupUsecase: recordLockup,
-    recordPendingSwapLockupUsecase: recordPendingLockup,
-    dropPendingSwapLockupUsecase: dropPendingLockup,
-    watchSwapUsecase: watchSwap,
-  );
+  }) {
+    late final TransferBloc flow;
+    flow = TransferBloc(
+      loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
+      getSwapAmountQuotesUsecase: amountQuotes,
+      getWalletsUsecase: getWallets,
+      loadNetworkFeesUsecase: LoadTransferNetworkFeesUsecase(
+        fees: getNetworkFees,
+      ),
+      spend: _SwapSpend(
+        read: () => flow.state,
+        btc: prepareBitcoin,
+        selection: validateBitcoinSelection,
+        lbtc: prepareLiquid,
+        btcFees: calculateBitcoin,
+        liquidFees: calculateLiquid,
+        btcSign: signBitcoin,
+        liquidSign: signLiquid,
+        btcBroadcast: bitcoinBroadcast ?? broadcastBitcoin,
+        liquidBroadcast: broadcastLiquid,
+        readPreview: () => preview,
+      ),
+      getWalletUsecase: getWallet,
+      verifyChainSwapAmountSendUsecase: verifyChain,
+      getOrderSwapQuoteUsecase: getQuote,
+      getPendingOrderSwapsUsecase: getPendingOrders,
+      createOrderSwapUsecase: createOrder,
+      checkSwapSpendAdmissionUsecase: CheckSwapSpendAdmissionUsecase(
+        admissionWallet,
+      ),
+      savePreparedOrderSwapPayinUsecase: _MockSavePrepared(),
+      replacePreparedOrderSwapPayinUsecase: replacePrepared,
+      refreshOrderSwapUsecase: refreshOrder,
+      markOrderSwapBroadcastUnknownUsecase: markUnknown,
+      markOrderSwapPayinBroadcastUsecase: markBroadcast,
+      watchOrderSwapUsecase: watchOrder,
+      detectBitcoinStringUsecase: detectBitcoin,
+      getReceiveAddressUsecase: getReceiveAddress,
+      getWalletUtxosUsecase: getUtxos,
+      getSwapExchangeRateUsecase: getExchangeRate,
+      checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
+      getSwapRouteUsecase: getSwapRoute,
+      getSwapLimitsAndFeesUsecase: getLimitsAndFees,
+      createBitcoinToLiquidSwapUsecase: createBitcoinToLiquid,
+      createLiquidToBitcoinSwapUsecase: createLiquidToBitcoin,
+      recordSwapLockupUsecase: recordLockup,
+      recordPendingSwapLockupUsecase: recordPendingLockup,
+      dropPendingSwapLockupUsecase: dropPendingLockup,
+      watchSwapUsecase: watchSwap,
+    );
+    return flow;
+  }
 
   setUp(() {
     prepareLiquid = _MockPrepareLiquid();
@@ -308,6 +308,7 @@ void main() {
     );
     markBroadcast = _MockMarkBroadcast();
     broadcastBitcoin = _MockBroadcastBitcoin();
+    preview = null;
     refreshOrder = _MockRefreshOrder();
     getPendingOrders = _MockGetPendingOrders();
     getSettings = _MockGetSettings();
@@ -320,6 +321,10 @@ void main() {
     validateBitcoinSelection = _MockValidateBitcoinSelection();
     calculateBitcoin = _MockCalculateBitcoin();
     calculateLiquid = _MockCalculateLiquid();
+    when(() => calculateBitcoin.execute(psbt: any(named: 'psbt')))
+        .thenAnswer((_) async => 200);
+    when(() => calculateLiquid.execute(pset: any(named: 'pset')))
+        .thenAnswer((_) async => 200);
     getReceiveAddress = _MockGetReceiveAddress();
     getUtxos = _MockGetUtxos();
     signBitcoin = _MockSignBitcoin();
@@ -355,16 +360,19 @@ void main() {
         selectedInputs: any(named: 'selectedInputs'),
       ),
     ).thenAnswer((_) async => []);
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer(
-          (_) async => WalletAddress(
-            walletId: 'wallet-2',
-            index: 0,
-            address: 'destination',
-            createdAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          ),
-        );
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async => Ok(
+        WalletAddress(
+          walletId: 'wallet-2',
+          index: 0,
+          address: 'destination',
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
 
     bloc = buildBloc();
   });
@@ -466,7 +474,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => const PaymentRequest.bip21(
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
         uri: 'bitcoin:fixture?amount=0.00000001',
         address: 'tb1qfixture',
         amountSat: 1,
@@ -492,7 +500,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => const PaymentRequest.bip21(
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
         uri: 'bitcoin:fixture?amount=0.000025',
         address: 'tb1qfixture',
         amountSat: 2500,
@@ -599,7 +607,7 @@ void main() {
 
   for (final sameChain in [true, false]) {
     test(
-      'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet facade',
+      'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet',
       () async {
         final blockchain = _Blockchain();
         final settings = _Preferences();
@@ -662,6 +670,9 @@ void main() {
             fromWallet: _wallet(),
             toWallet: sameChain ? _destinationWallet() : null,
             signedPsbt: 'signed-psbt',
+            bitcoinSignature: sameChain
+                ? SpendFixtures.signedBitcoin('signed-psbt')
+                : null,
             orderSwap: sameChain ? null : prepared,
             swap: sameChain ? null : _swap(),
           ),
@@ -695,6 +706,9 @@ void main() {
             fromWallet: _wallet(),
             toWallet: sameChain ? _destinationWallet() : null,
             signedPsbt: 'signed-psbt',
+            bitcoinSignature: sameChain
+                ? SpendFixtures.signedBitcoin('signed-psbt')
+                : null,
             orderSwap: sameChain ? null : prepared,
             swap: sameChain ? null : _swap(),
           ),
@@ -740,15 +754,18 @@ void main() {
 
   test('blocked source refuses before creating an exchange order', () async {
     spendStatus = BitcoinSpendStatus.pending;
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        index: 0,
-        address: 'fallback',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-1',
+              index: 0,
+              address: 'fallback',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => getQuote.execute(
         environment: OrderSwapEnvironment.testnet,
@@ -807,16 +824,19 @@ void main() {
   void stubLiquidCreation(
     Future<Result<String, SendFailure>> Function() prepare,
   ) {
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer(
-          (_) async => WalletAddress(
-            walletId: 'wallet-1',
-            address: 'destination',
-            index: 0,
-            createdAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          ),
-        );
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async => Ok(
+        WalletAddress(
+          walletId: 'wallet-1',
+          address: 'destination',
+          index: 0,
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
     when(
       () => getQuote.execute(
         environment: OrderSwapEnvironment.testnet,
@@ -1140,6 +1160,14 @@ void main() {
         selectedInputs: [selected],
       ),
     ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+    preview = (
+      fee: Sats.fromInt(250),
+      prepared: SpendFixtures.preparedBitcoin(
+        unsignedPsbt: 'cached-unsigned-psbt',
+        fee: Sats.fromInt(250),
+        txSize: 100,
+      ),
+    );
     bloc.emit(
       TransferState(
         fromWallet: _wallet(balanceSat: BigInt.from(100000)),
@@ -1148,16 +1176,14 @@ void main() {
         amount: '1000',
         selectedUtxos: [selected],
         bitcoinNetworkFees: _feeOptions(),
-        feePreviewCache: const BitcoinFeePreviewCache(
-          fastest: BitcoinFeePreviewSlot(
-            feeSat: 250,
-            unsignedPsbt: 'cached-unsigned-psbt',
-            txSize: 100,
-          ),
-        ),
       ),
     );
 
+    final priced = bloc.stream.firstWhere(
+      (state) => state.feePreviewCache.fastest.feeSat == 250,
+    );
+    bloc.add(const TransferEvent.presetFeesPreviewRequested());
+    await priced;
     bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.fastest));
     await bloc.stream.firstWhere(
       (state) => state.buildTransactionException != null,
@@ -1284,15 +1310,18 @@ void main() {
       amountSat: BigInt.from(30000),
       address: 'tb1qselected',
     );
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        index: 0,
-        address: 'tb1qreceive',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-1',
+              index: 0,
+              address: 'tb1qreceive',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -1343,15 +1372,18 @@ void main() {
       amountSat: BigInt.from(30000),
       address: 'tb1qselected',
     );
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        index: 0,
-        address: 'tb1qreceive',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-1',
+              index: 0,
+              address: 'tb1qreceive',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -1402,15 +1434,18 @@ void main() {
         amountSat: BigInt.from(1000),
         address: 'tb1qselected',
       );
-      when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-        (_) async => WalletAddress(
-          walletId: 'wallet-1',
-          index: 0,
-          address: 'tb1qreceive',
-          createdAt: DateTime.utc(2026),
-          updatedAt: DateTime.utc(2026),
-        ),
-      );
+      when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+          .thenAnswer(
+            (_) async => Ok(
+              WalletAddress(
+                walletId: 'wallet-1',
+                index: 0,
+                address: 'tb1qreceive',
+                createdAt: DateTime.utc(2026),
+                updatedAt: DateTime.utc(2026),
+              ),
+            ),
+          );
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -1880,15 +1915,18 @@ void main() {
 
   test('a same-chain transfer pays the current destination wallet, never a '
       'receive address left by an earlier transfer', () async {
-    when(() => getReceiveAddress.execute(walletId: 'wallet-2')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-2',
-        index: 0,
-        address: 'tb1qwallet2',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-2'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-2',
+              index: 0,
+              address: 'tb1qwallet2',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -2677,7 +2715,7 @@ void main() {
         () =>
             signBitcoin.execute(walletId: 'wallet-1', psbt: 'lockup-unsigned'),
       ).thenAnswer((_) async => (signedPsbt: 'lockup-signed', txSize: 100));
-      when(() => calculateBitcoin.execute(psbt: 'lockup-signed'))
+      when(() => calculateBitcoin.execute(psbt: 'lockup-unsigned'))
           .thenAnswer((_) async => 1200);
     }
 
@@ -2982,16 +3020,20 @@ void main() {
           SwapsAmountOutOfLimitsFailure(minSat: 25000, maxSat: 1000000),
         ),
       );
-      when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-          .thenAnswer(
-            (_) async => WalletAddress(
-              walletId: 'wallet-2',
-              index: 0,
-              address: 'lq1destination',
-              createdAt: DateTime.utc(2026),
-              updatedAt: DateTime.utc(2026),
-            ),
-          );
+      when(
+        () =>
+            getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+      ).thenAnswer(
+        (_) async => Ok(
+          WalletAddress(
+            walletId: 'wallet-2',
+            index: 0,
+            address: 'lq1destination',
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026),
+          ),
+        ),
+      );
       when(
         () => getQuote.execute(
           environment: any(named: 'environment'),
@@ -3153,6 +3195,7 @@ void main() {
         crossChain().copyWith(
           swap: _swap(),
           signedPsbt: 'lockup-signed',
+          bitcoinSignature: SpendFixtures.signedBitcoin('lockup-signed'),
           bitcoinAbsoluteFeesSat: 1200,
         ),
       );
@@ -3174,6 +3217,7 @@ void main() {
       TransferState confirming({ChainSwap? swap}) => crossChain().copyWith(
         swap: swap ?? _swap(),
         signedPsbt: 'lockup-signed',
+        bitcoinSignature: SpendFixtures.signedBitcoin('lockup-signed'),
         bitcoinAbsoluteFeesSat: 1200,
       );
 
@@ -3264,6 +3308,47 @@ void main() {
 
         verifyNever(() => dropPendingLockup.execute(any()));
       });
+
+      for (final (category, dropsLockup) in [
+        (BroadcastFailureCategory.connection, false),
+        (BroadcastFailureCategory.authorization, true),
+      ]) {
+        test('Liquid lockup after ${category.name}', () async {
+          final swap = _swap().copyWith(type: SwapType.liquidToBitcoin);
+          final pending = swap.copyWith(pendingLockupTx: 'lockup-signed');
+          when(
+            () => recordPendingLockup.execute(
+              swapId: swap.id,
+              signedTx: 'lockup-signed',
+            ),
+          ).thenAnswer((_) async => Ok(pending));
+          when(() => broadcastLiquid.execute('lockup-signed'))
+              .thenThrow(CategorizedBroadcastException(category));
+          bloc.emit(
+            confirming(swap: swap).copyWith(
+              fromWallet: _liquidWallet(),
+              toWallet: _destinationWallet(),
+              bitcoinSignature: null,
+              liquidSignature: SpendFixtures.signedLiquid('lockup-signed'),
+            ),
+          );
+
+          final finished = bloc.stream.firstWhere(
+            (state) => !state.isConfirming && state.swapFailure != null,
+          );
+          bloc.add(const TransferEvent.confirmed());
+          await finished;
+
+          verify(() => broadcastLiquid.execute('lockup-signed')).called(1);
+          if (dropsLockup) {
+            verify(() => dropPendingLockup.execute(swap.id)).called(1);
+          } else {
+            verifyNever(() => dropPendingLockup.execute(swap.id));
+            expect(bloc.state.swap?.pendingLockupTx, 'lockup-signed');
+            expect(bloc.state.swapFailure, isA<SwapLockupPendingFailure>());
+          }
+        });
+      }
 
       test('a lockup still being confirmed refuses a rebuild', () async {
         bloc.emit(
@@ -3397,7 +3482,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinRegtest,
+          network: BitcoinNetwork.regtest,
           uri: 'bitcoin:bcrt1fixture',
           address: 'bcrt1fixture',
         ),
@@ -3452,7 +3537,7 @@ void main() {
           ),
         ).thenAnswer(
           (_) async => PaymentRequest.bip21(
-            network: destination,
+            network: destination.shared,
             uri: 'public-fixture',
             address: 'public-fixture',
           ),
@@ -3610,3 +3695,258 @@ FeeOptions _feeOptions() => const FeeOptions(
   slow: RelativeFee(250),
   minRelay: RelativeFee(25),
 );
+
+final class _SwapSpend extends FakeSpend {
+  final TransferState Function() read;
+  final PrepareBitcoinSendUsecase btc;
+  final ValidateBitcoinSelectionUsecase selection;
+  final PrepareLiquidSendUsecase lbtc;
+  final CalculateBitcoinAbsoluteFeesUsecase btcFees;
+  final CalculateLiquidAbsoluteFeesUsecase liquidFees;
+  final SignBitcoinTxUsecase btcSign;
+  final SignLiquidTxUsecase liquidSign;
+  final BroadcastBitcoinTransactionUsecase btcBroadcast;
+  final BroadcastLiquidTransactionUsecase liquidBroadcast;
+  final BitcoinSpendPreview? Function() readPreview;
+
+  _SwapSpend({
+    required this.read,
+    required this.btc,
+    required this.selection,
+    required this.lbtc,
+    required this.btcFees,
+    required this.liquidFees,
+    required this.btcSign,
+    required this.liquidSign,
+    required this.btcBroadcast,
+    required this.liquidBroadcast,
+    required this.readPreview,
+  });
+
+  List<WalletUtxo>? coins(Set<primitives.Outpoint>? requested) =>
+      requested == null || requested.isEmpty
+      ? null
+      : [
+          for (final coin in read().selectedUtxos)
+            if (requested.contains(coin.outpoint)) coin,
+        ];
+
+  @override
+  Future<Result<void, SpendFailure>> validateBitcoinSelection({
+    required String walletId,
+    Set<primitives.Outpoint>? selectedInputs,
+  }) async {
+    try {
+      await selection.execute(
+        walletId: walletId,
+        selectedInputs: coins(selectedInputs),
+      );
+      return const Ok(null);
+    } on ValidateBitcoinSelectionException {
+      return const Err(SpendUnavailableFailure());
+    } on Exception {
+      return const Err(SpendSelectedInputsUnavailableFailure());
+    }
+  }
+
+  @override
+  Future<Result<PreparedBitcoinSpend, SpendFailure>> prepareBitcoin({
+    required String walletId,
+    required List<primitives.BitcoinTransactionRecipient> recipients,
+    required NetworkFee networkFee,
+    Set<primitives.Outpoint>? selectedInputs,
+    bool selectedOnly = false,
+    bool replaceByFee = true,
+  }) async {
+    try {
+      final result = await btc.execute(
+        walletId: walletId,
+        recipients: recipients,
+        networkFee: networkFee,
+        selectedInputs:
+            networkFee == read().selectedFee || selectedInputs == null
+            ? coins(selectedInputs)
+            : coins(selectedInputs) ?? const [],
+        replaceByFee: replaceByFee,
+        selectedOnly: selectedOnly,
+      );
+      if (result case Ok(:final value)) {
+        return Ok(
+          SpendFixtures.preparedBitcoin(
+            unsignedPsbt: value.unsignedPsbt,
+            fee: Sats.fromInt(await btcFees.execute(psbt: value.unsignedPsbt)),
+            txSize: value.txSize,
+            isToSelf: value.isToSelf,
+            recipientAmountsSat: value.recipientAmountsSat,
+          ),
+        );
+      }
+      return Err(
+        switch ((result as Err<PreparedBitcoinSend, WalletFailure>).failure) {
+          WalletInsufficientFundsFailure() =>
+            const SpendInsufficientFundsFailure(),
+          WalletNoSpendableInputsFailure() =>
+            const SpendNoSpendableInputsFailure(),
+          WalletSelectedInputsUnavailableFailure() =>
+            const SpendSelectedInputsUnavailableFailure(),
+          _ => const SpendBuildRefusedFailure(),
+        },
+      );
+    } on WalletSpendBlockedException catch (blocked) {
+      return Err(
+        SpendUnavailableFailure(
+          busy: blocked.status == BitcoinSpendStatus.busy,
+        ),
+      );
+    } on InsufficientFundsException {
+      return const Err(SpendInsufficientFundsFailure());
+    } on NoSpendableUtxoException {
+      return const Err(SpendNoSpendableInputsFailure());
+    }
+  }
+
+  @override
+  Future<Result<Map<FeeSelection, BitcoinSpendPreview?>, SpendFailure>>
+  previewBitcoinFeePresets({
+    required String walletId,
+    required List<BitcoinTransactionRecipient> recipients,
+    required FeeOptions presets,
+    required bool replaceByFee,
+    required Set<primitives.Outpoint> selectedInputs,
+    bool selectedOnly = false,
+  }) async => Ok({FeeSelection.fastest: readPreview()});
+
+  @override
+  Future<Result<PreparedLiquidSpend, SpendFailure>> prepareLiquid({
+    required String walletId,
+    required String address,
+    required RelativeFee feeRate,
+    int? amountSat,
+    bool drain = false,
+    Set<primitives.Outpoint>? selectedInputs,
+  }) async {
+    final result = await lbtc.execute(
+      walletId: walletId,
+      address: address,
+      feeRate: feeRate,
+      amountSat: amountSat,
+      drain: drain,
+      selectedInputs: selectedInputs,
+    );
+    return switch (result) {
+      Ok(value: final pset) => Ok(
+        SpendFixtures.preparedLiquid(
+          unsignedPset: pset,
+          fee: Sats.fromInt(await liquidFees.execute(pset: pset)),
+          amountSent: Sats.fromInt(amountSat ?? 0),
+        ),
+      ),
+      Err(failure: SendConsolidationRequiredFailure()) => const Err(
+        SpendConsolidationRequiredFailure(),
+      ),
+      Err(failure: SendInsufficientBalanceFailure()) => const Err(
+        SpendInsufficientFundsFailure(),
+      ),
+      Err() => const Err(SpendBuildRefusedFailure()),
+    };
+  }
+
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin({
+    required PreparedBitcoinSpend prepared,
+  }) async {
+    final source = read().fromWallet;
+    if (source == null) return const Err(SpendInvalidRequestFailure());
+    final signed = await btcSign.execute(
+      walletId: source.id,
+      psbt: prepared.unsignedPsbt,
+    );
+    return Ok(
+      SpendFixtures.signedBitcoin(signed.signedPsbt, txSize: signed.txSize),
+    );
+  }
+
+  @override
+  Future<Result<SignedLiquidSpend, SpendFailure>> signLiquid({
+    required PreparedLiquidSpend prepared,
+  }) async {
+    final source = read().fromWallet;
+    if (source == null) return const Err(SpendInvalidRequestFailure());
+    return Ok(
+      SpendFixtures.signedLiquid(
+        await liquidSign.execute(
+          walletId: source.id,
+          pset: prepared.unsignedPset,
+        ),
+      ),
+    );
+  }
+
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> _send(
+    Future<String> Function() action, {
+    required bool guarded,
+  }) async {
+    try {
+      return Ok((txid: await action(), guarded: guarded, durable: guarded));
+    } on WalletSpendBlockedException catch (blocked) {
+      return Err(
+        SpendUnavailableFailure(
+          busy: blocked.status == BitcoinSpendStatus.busy,
+        ),
+      );
+    } on BroadcastTransactionException catch (error) {
+      return Err(switch (BroadcastFailureCategory.of(error)) {
+        BroadcastFailureCategory.rejected =>
+          const SpendBroadcastRejectedFailure(
+            SpendBroadcastRejection.nodeRejected,
+          ),
+        BroadcastFailureCategory.authorization =>
+          const SpendDeveloperAuthorizationFailure(),
+        BroadcastFailureCategory.connection when !guarded =>
+          const SpendBroadcastConnectionFailure(),
+        _ => const SpendBroadcastOutcomeUnknownFailure(),
+      });
+    }
+  }
+
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> broadcastBitcoin(
+    SignedBitcoinSpend signed,
+  ) async {
+    final source = read().fromWallet;
+    if (source == null) return const Err(SpendInvalidRequestFailure());
+    return _send(
+      () => btcBroadcast.execute(
+        signed.signedTransaction,
+        network: source.network,
+        isPsbt: true,
+        walletId: source.id,
+      ),
+      guarded: true,
+    );
+  }
+
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> broadcastLiquid(
+    SignedLiquidSpend signed,
+  ) => _send(() => liquidBroadcast.execute(signed.signedPset), guarded: false);
+
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resumeBitcoinPayin({
+    required String signedPsbt,
+    required String walletId,
+    required primitives.BitcoinNetwork network,
+    required String address,
+    required primitives.Sats amount,
+    bool isPsbt = true,
+  }) => broadcastBitcoin(SpendFixtures.signedBitcoin(signedPsbt));
+
+  @override
+  Future<Result<SpendBroadcastReceipt, SpendFailure>> resumeLiquidPayin({
+    required String signedPset,
+    required String walletId,
+    required primitives.LiquidNetwork network,
+    required String address,
+    required primitives.Sats amount,
+  }) => broadcastLiquid(SpendFixtures.signedLiquid(signedPset));
+}

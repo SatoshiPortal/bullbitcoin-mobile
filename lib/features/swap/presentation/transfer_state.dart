@@ -16,6 +16,8 @@ SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
 @freezed
 sealed class TransferState with _$TransferState {
   const factory TransferState({
+    SignedBitcoinSpend? bitcoinSignature,
+    SignedLiquidSpend? liquidSignature,
     @Default(false) bool isStarting,
     SwapFailure? startError,
     @Default([]) List<Wallet> wallets,

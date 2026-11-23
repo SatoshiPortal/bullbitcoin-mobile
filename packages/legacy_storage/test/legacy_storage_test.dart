@@ -8,6 +8,7 @@ import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
+import 'support/dart_executable.dart';
 import 'support/import_fixture.dart';
 
 void main() {
@@ -167,7 +168,7 @@ void main() {
       () async {
         createLegacy(source).close();
         final child = await Process.start(
-          Platform.resolvedExecutable,
+          dartExecutable,
           [
             'run',
             'test/support/import_child.dart',

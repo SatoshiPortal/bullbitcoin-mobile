@@ -33,7 +33,7 @@ extension SendMonoActions on SendCubit {
     _recipientPreviewTimer?.cancel();
     final epoch = ++_bitcoinPreviewEpoch;
     final snapshot = state;
-    final slot = await _previewBitcoinFeeUsecase.execute(
+    final slot = await _previewBitcoin(
       walletId: wallet.id,
       recipients: [
         BitcoinTransactionRecipient.remainder(

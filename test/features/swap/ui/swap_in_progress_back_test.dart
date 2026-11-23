@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';

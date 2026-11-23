@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Ջնջե՞լ փոխանցման mnemonic-ը",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Փոխանցման mnemonic",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Ջնջե՞լ փոխանցման mnemonic-ը",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։"
 }

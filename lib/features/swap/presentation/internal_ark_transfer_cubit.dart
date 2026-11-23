@@ -3,7 +3,9 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_ark/bull_ark.dart';
 
 import '../domain/entities/internal_transfer.dart';
-import '../domain/swap_failure.dart';
+
+import 'package:swaps/order_swaps.dart';
+
 import '../domain/usecases/load_internal_ark_transfer_usecase.dart';
 import '../domain/usecases/review_internal_ark_transfer_usecase.dart';
 

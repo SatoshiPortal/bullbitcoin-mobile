@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/transactions/public/prepare_payjoin_original.dart';
+import 'package:spend/spend.dart';
 import 'package:primitives/primitives.dart' as core;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -8,14 +10,16 @@ import 'package:primitives/primitives.dart';
 class SendWithPayjoinUsecase {
   final PayjoinSender _sender;
 
-  const SendWithPayjoinUsecase(this._sender);
+  final Spend _spend;
+
+  const SendWithPayjoinUsecase(this._sender, this._spend);
 
   @useResult
   Future<core.Result<PayjoinSenderSession, SendFailure>> execute({
     required String walletId,
     required BitcoinNetwork network,
     required String bip21,
-    required String unsignedOriginalPsbt,
+    required PreparedBitcoinSpend prepared,
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
@@ -25,12 +29,27 @@ class SendWithPayjoinUsecase {
         SendTransactionConfirmationFailure(logMessage: 'unsupported network'),
       );
     }
+    final PreparedPayjoinOriginal original;
+    switch (await preparePayjoinOriginal(
+      spend: _spend,
+      prepared: prepared,
+      walletId: walletId,
+      network: network,
+    )) {
+      case Ok(:final value):
+        original = value;
+      case Err(failure: SpendUnavailableFailure(:final busy)):
+        return Err(SendSpendBlockedFailure(busy: busy));
+      case Err():
+        return const Err(SendTransactionConfirmationFailure());
+    }
     final result = await _sender.start(
       StartPayjoinSender(
         walletId: walletId,
         network: network,
         bip21Uri: bip21,
-        unsignedOriginalPsbt: unsignedOriginalPsbt,
+        unsignedOriginalPsbt: prepared.unsignedPsbt,
+        preparedOriginal: original,
         amount: Sats.fromInt(amountSat),
         feeRate: FeeRate(networkFeesSatPerVb),
         expiresAt: expireAfterSec == null
@@ -45,6 +64,13 @@ class SendWithPayjoinUsecase {
         return core.Err(SendPayjoinUnavailableFailure(logMessage));
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return core.Err(SendSpendBlockedFailure(busy: busy));
+      case Err(failure: PayjoinPublicationUnknownFailure(:final originalTxId)):
+        return core.Err(
+          SendTransactionConfirmationFailure(
+            keptPayjoinOriginalTxId: originalTxId,
+            payjoinPublicationUnknown: true,
+          ),
+        );
       case Err(
         failure: PayjoinSenderKeptFailure(
           :final originalTxId,

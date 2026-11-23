@@ -1,0 +1,26 @@
+{
+  "allSeedViewSecurityWarningMessage": "Սերմնաբառերի ցուցադրումը անվտանգության ռիսկ է։ Ցանկացած ոք, ով տեսնի ձեր սերմնաբառը, կարող է հասանելիություն ունենալ ձեր միջոցներին։ Համոզվեք, որ գտնվում եք մասնավոր վայրում, և ոչ ոք չի կարող տեսնել ձեր էկրանը։",
+  "cancel": "Չեղարկել",
+  "allSeedViewLoadingMessage": "Սա կարող է որոշ ժամանակ խլել բեռնվելու համար, եթե այս սարքում ունեք բազմաթիվ սերմեր։",
+  "retry": "Կրկին փորձել",
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "allSeedViewNoSeedsFound": "Սերմեր չեն գտնվել։",
+  "allSeedViewSecurityWarningTitle": "Անվտանգության նախազգուշացում",
+  "allSeedViewPassphraseLabel": "Passphrase.",
+  "allSeedViewOldWallets": "Հին դրամապանակներ ({count})",
+  "allSeedViewIUnderstandButton": "Ես հասկանում եմ",
+  "allSeedViewDeleteWarningTitle": "ՆԱԽԱԶԳՈՒՇԱՑՈՒՄ!",
+  "allSeedViewDeleteWarningMessage": "Սերմը ջնջելը անդառնալի գործողություն է։ Կատարեք սա միայն այն դեպքում, եթե ունեք այս սերմի անվտանգ պահուստներ, կամ կապակցված դրամապանակներն ամբողջությամբ դատարկված են։",
+  "delete": "Ջնջել",
+  "allSeedViewErrorDelete": "Չհաջողվեց ջնջել սերմը։ Խնդրում ենք կրկին փորձել։",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Չհաջողվեց բեռնել սերմերը։ Խնդրում ենք կրկին փորձել։",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Ցուցադրել սերմերը",
+  "allSeedViewTitle": "Սերմերի դիտիչ",
+  "allSeedViewExistingWallets": "Առկա դրամապանակներ ({count})"
+}

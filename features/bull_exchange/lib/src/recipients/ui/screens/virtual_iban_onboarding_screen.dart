@@ -1,0 +1,447 @@
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/recipients/presentation/virtual_iban_onboarding_cubit.dart';
+import 'package:bull_exchange/src/recipients/recipients_scope.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+/// Where the user started Confidential SEPA, which decides the wording once
+/// the virtual IBAN is active.
+enum VirtualIbanOnboardingPurpose { withdraw, funding }
+
+/// Creates the user's virtual IBAN, which Confidential SEPA needs.
+/// [onActivated] continues once it is active. [onUseRegularSepa] lets the
+/// user continue with regular SEPA while it is still being created.
+class VirtualIbanOnboardingScreen extends StatelessWidget {
+  const VirtualIbanOnboardingScreen({
+    super.key,
+    required this.onActivated,
+    required this.onUseRegularSepa,
+    this.onReturnHome,
+    this.purpose = VirtualIbanOnboardingPurpose.withdraw,
+  });
+
+  final VoidCallback onActivated;
+  final VoidCallback onUseRegularSepa;
+
+  /// Leaves the flow for the app home while activation continues in the
+  /// background. When null, the button is not shown.
+  final VoidCallback? onReturnHome;
+  final VirtualIbanOnboardingPurpose purpose;
+
+  static Future<RecipientType?> showForWithdraw(BuildContext context) {
+    final scope = RecipientsScope.read(context);
+    return Navigator.of(context).push<RecipientType>(
+      MaterialPageRoute(
+        builder: (onboardingContext) => RecipientsScope.withServices(
+          services: scope,
+          child: VirtualIbanOnboardingScreen(
+            onActivated: () =>
+                Navigator.of(onboardingContext)
+                    .pop(RecipientType.confidentialSepaEur),
+            onUseRegularSepa: () =>
+                Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          RecipientsScope.read(context).createVirtualIbanCubit()..start(),
+      child: VirtualIbanOnboardingView(
+        onActivated: onActivated,
+        onUseRegularSepa: onUseRegularSepa,
+        onReturnHome: onReturnHome,
+        purpose: purpose,
+      ),
+    );
+  }
+}
+
+class VirtualIbanOnboardingView extends StatelessWidget {
+  const VirtualIbanOnboardingView({
+    super.key,
+    required this.onActivated,
+    required this.onUseRegularSepa,
+    this.onReturnHome,
+    this.purpose = VirtualIbanOnboardingPurpose.withdraw,
+  });
+
+  final VoidCallback onActivated;
+  final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
+  final VirtualIbanOnboardingPurpose purpose;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<VirtualIbanOnboardingCubit>().state;
+    final isWorking =
+        state.failure == null &&
+        (state.step == VirtualIbanOnboardingStep.loading ||
+            state.step == VirtualIbanOnboardingStep.activating ||
+            state.isCreating);
+
+    return BullScaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: .stretch,
+          children: [
+            BullTopBar(
+              title: context.loc.recipientsTypeConfidentialSepa,
+              onBack: () => Navigator.of(context).maybePop(),
+            ),
+            BullFadingLinearProgress(trigger: isWorking),
+            Expanded(
+              child: switch (state.step) {
+                VirtualIbanOnboardingStep.loading => _LoadingStep(state: state),
+                VirtualIbanOnboardingStep.intro => _IntroStep(state: state),
+                VirtualIbanOnboardingStep.activating => _ActivatingStep(
+                  state: state,
+                  onUseRegularSepa: onUseRegularSepa,
+                  onReturnHome: onReturnHome,
+                ),
+                VirtualIbanOnboardingStep.active => _ActiveStep(
+                  onActivated: onActivated,
+                  purpose: purpose,
+                ),
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingStep extends StatelessWidget {
+  const _LoadingStep({required this.state});
+
+  final VirtualIbanOnboardingState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final failure = state.failure;
+    if (failure == null) return const SizedBox.shrink();
+    return _StatusLayout(
+      title: failure.toTranslated(context),
+      buttons: [_RetryButton()],
+    );
+  }
+}
+
+class _IntroStep extends StatefulWidget {
+  const _IntroStep({required this.state});
+
+  final VirtualIbanOnboardingState state;
+
+  @override
+  State<_IntroStep> createState() => _IntroStepState();
+}
+
+class _IntroStepState extends State<_IntroStep> {
+  bool _nameConfirmed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    final state = widget.state;
+    final failure = state.failure;
+
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Expanded(
+          child: BullScrollableColumn(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            crossAxisAlignment: .stretch,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: BullText(
+                      context.loc.recipientsVirtualIbanIntroTitle,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                      color: colors.text,
+                    ),
+                  ),
+                  const Gap(8),
+                  BullBadge(
+                    label: context.loc.recipientsVirtualIbanNewBadge,
+                    background: colors.tertiaryContainer,
+                    foreground: colors.onTertiary,
+                    uppercase: true,
+                  ),
+                ],
+              ),
+              const Gap(12),
+              BullText(
+                context.loc.recipientsVirtualIbanIntroDescription,
+                style: context.bullType.body,
+                color: colors.text,
+              ),
+              const Gap(16),
+              _Bullet(context.loc.recipientsVirtualIbanIntroSelfTransfer),
+              _Bullet(context.loc.recipientsVirtualIbanIntroNoTransferCode),
+              const Gap(16),
+              BullInfoCard(
+                title: context.loc.recipientsVirtualIbanNameWarningTitle,
+                description:
+                    context.loc.recipientsVirtualIbanNameWarningDescription,
+                bgColor: colors.warningContainer,
+                tagColor: colors.warning,
+              ),
+              const Gap(20),
+              BullText(
+                context.loc.recipientsVirtualIbanAccountOwnerName,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                color: colors.text,
+              ),
+              const Gap(8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: colors.border),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
+                  color: colors.surface,
+                ),
+                child: BullText(
+                  state.accountOwnerName ?? '',
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: colors.text,
+                ),
+              ),
+              const Gap(16),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _nameConfirmed = !_nameConfirmed),
+                child: Row(
+                  children: [
+                    BullCheckbox(
+                      checked: _nameConfirmed,
+                      onChanged: (value) =>
+                          setState(() => _nameConfirmed = value),
+                    ),
+                    const Gap(12),
+                    Expanded(
+                      child: BullText(
+                        context.loc.recipientsVirtualIbanNameConfirmation,
+                        style: context.bullType.body,
+                        color: colors.text,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (failure != null) ...[
+                const Gap(16),
+                BullText(
+                  failure.toTranslated(context),
+                  style: context.bullType.body,
+                  color: colors.error,
+                ),
+              ],
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: BullButton.primary(
+            label: context.loc.recipientsVirtualIbanActivate,
+            onPressed: (!_nameConfirmed || state.isCreating)
+                ? null
+                : () => context.read<VirtualIbanOnboardingCubit>().activate(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActivatingStep extends StatelessWidget {
+  const _ActivatingStep({
+    required this.state,
+    required this.onUseRegularSepa,
+    this.onReturnHome,
+  });
+
+  final VirtualIbanOnboardingState state;
+  final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    final failure = state.failure;
+    final onReturnHome = this.onReturnHome;
+    return _StatusLayout(
+      icon: BullIcon(BullIcons.schedule, size: 48, color: colors.text),
+      title: context.loc.recipientsVirtualIbanActivatingTitle,
+      description: context.loc.recipientsVirtualIbanActivatingDescription,
+      error: failure?.toTranslated(context),
+      buttons: [
+        if (failure != null) ...[_RetryButton(), const Gap(12)],
+        BullButton.secondary(
+          label: context.loc.recipientsConfidentialSepaUseRegularSepa,
+          onPressed: onUseRegularSepa,
+        ),
+        if (onReturnHome != null) ...[
+          const Gap(12),
+          BullButton.secondary(
+            label: context.loc.recipientsReturnHome,
+            onPressed: onReturnHome,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ActiveStep extends StatelessWidget {
+  const _ActiveStep({required this.onActivated, required this.purpose});
+
+  final VoidCallback onActivated;
+  final VirtualIbanOnboardingPurpose purpose;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    return _StatusLayout(
+      icon: BullIcon(BullIcons.checkCircle, size: 48, color: colors.success),
+      title: context.loc.recipientsVirtualIbanActivatedTitle,
+      description: switch (purpose) {
+        VirtualIbanOnboardingPurpose.withdraw =>
+          context.loc.recipientsVirtualIbanActivatedDescription,
+        VirtualIbanOnboardingPurpose.funding =>
+          context.loc.recipientsVirtualIbanActivatedFundingDescription,
+      },
+      buttons: [
+        BullButton.primary(
+          label: switch (purpose) {
+            VirtualIbanOnboardingPurpose.withdraw =>
+              context.loc.recipientsContinue,
+            VirtualIbanOnboardingPurpose.funding =>
+              context.loc.recipientsVirtualIbanShowDetails,
+          },
+          onPressed: onActivated,
+        ),
+      ],
+    );
+  }
+}
+
+class _StatusLayout extends StatelessWidget {
+  const _StatusLayout({
+    this.icon,
+    required this.title,
+    this.description,
+    this.error,
+    required this.buttons,
+  });
+
+  final Widget? icon;
+  final String title;
+  final String? description;
+  final String? error;
+  final List<Widget> buttons;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Expanded(
+          child: BullScrollableColumn(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+            crossAxisAlignment: .stretch,
+            children: [
+              if (icon != null) ...[icon!, const Gap(16)],
+              BullText(
+                title,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
+                color: colors.text,
+                textAlign: .center,
+              ),
+              if (description != null) ...[
+                const Gap(12),
+                BullText(
+                  description!,
+                  style: context.bullType.body,
+                  color: colors.textMuted,
+                  textAlign: .center,
+                ),
+              ],
+              if (error != null) ...[
+                const Gap(16),
+                BullText(
+                  error!,
+                  style: context.bullType.body,
+                  color: colors.error,
+                  textAlign: .center,
+                ),
+              ],
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Column(crossAxisAlignment: .stretch, children: buttons),
+        ),
+      ],
+    );
+  }
+}
+
+class _RetryButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BullButton.primary(
+      label: context.loc.retry,
+      onPressed: () => context.read<VirtualIbanOnboardingCubit>().start(),
+    );
+  }
+}
+
+class _Bullet extends StatelessWidget {
+  const _Bullet(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: .start,
+        children: [
+          BullText('•', style: context.bullType.body, color: colors.text),
+          const Gap(8),
+          Expanded(
+            child: BullText(
+              text,
+              style: context.bullType.body,
+              color: colors.text,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

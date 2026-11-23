@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/features/pay/domain/map_pay_order_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -10,15 +9,13 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class PlacePayOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
   final PayjoinPolicyAccess _payjoinPolicy;
   final WalletFacade _wallet;
 
   PlacePayOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
     required this._payjoinPolicy,
     required this._wallet,
@@ -44,10 +41,13 @@ class PlacePayOrderUsecase {
           );
         }
       }
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(PayUnexpectedFailure('Preferences read failed'));
+      }
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,
@@ -59,9 +59,9 @@ class PlacePayOrderUsecase {
         Err() => false,
       };
       final isTestnet = settings.environment.requireHistoricalTestnet();
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
+      final repo = _exchange.orders(
+        isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
+      );
 
       final resolvedUsePayjoin =
           usePayjoin &&
@@ -72,55 +72,32 @@ class PlacePayOrderUsecase {
         'sellEnabled=$payjoinEnabled, '
         'network=${network.value}, sent=$resolvedUsePayjoin',
       );
-      final order = await repo.placePayOrder(
+      final FiatPaymentOrder order;
+      switch (await repo.placePayOrder(
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,
         paymentDescription: paymentDescription,
         usePayjoin: resolvedUsePayjoin,
-      );
+      )) {
+        case Ok(:final value):
+          order = value;
+        case Err(:final failure):
+          return Err(mapPayOrderFailure(failure));
+      }
       log.fine(
         'Pay Payjoin order response: requested=$resolvedUsePayjoin, '
         'bip21Present=${order.bip21URI != null}',
       );
 
       return Ok(order);
-    } on ExchangeCredentialUnavailableException {
-      log.warning('Exchange order unavailable: credential read refused');
-      return const Err(PayUnexpectedFailure());
-    } on ApiKeyException catch (e, st) {
-      // A missing or expired session is recoverable, including mid-flow.
-      log.warning(
-        'Pay order rejected: not authenticated',
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'Failed to place the pay order',
         error: e.runtimeType,
         trace: st,
       );
-      return const Err(PayUnauthenticatedFailure());
-    } on BullBitcoinApiMinAmountException catch (e) {
-      // The two amount bounds are expected user input errors, so they are
-      // logged at info rather than severe. The bound is carried on the failure
-      // for the day payBelowMinAmountError takes a placeholder; today's string
-      // has none, so nothing reads it yet.
-      log.info('Pay order below the minimum: ${e.message}');
-      return Err(
-        PayBelowMinAmountFailure(
-          minAmount: e.minAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      log.info('Pay order above the maximum: ${e.message}');
-      return Err(
-        PayAboveMaxAmountFailure(
-          maxAmount: e.maxAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } catch (e, st) {
-      log.severe(message: 'Failed to place the pay order', error: e, trace: st);
-      return Err(PayUnexpectedFailure('$e'));
+      return Err(PayUnexpectedFailure(e.runtimeType.toString()));
     }
   }
 }

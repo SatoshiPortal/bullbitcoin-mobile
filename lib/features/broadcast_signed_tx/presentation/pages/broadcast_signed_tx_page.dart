@@ -1,10 +1,9 @@
-import 'package:primitives/primitives.dart' show BitcoinNetwork, NetworkEnv;
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
@@ -174,10 +173,13 @@ class _BroadcastActions extends StatelessWidget {
     final isBroadcasting = context.select(
       (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
     );
+    final forSend = context.select(
+      (BroadcastSignedTxCubit c) => c.state.unsignedPsbt != null,
+    );
 
     return Row(
       children: [
-        if (pushTxUri != null)
+        if (pushTxUri != null && !forSend)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -191,8 +193,19 @@ class _BroadcastActions extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: BullButton.primary(
-              label: context.loc.broadcastSignedTxBroadcast,
-              onPressed: (isBroadcasting) ? null : cubit.broadcastTransaction,
+              label: forSend
+                  ? context.loc.continueButton
+                  : context.loc.broadcastSignedTxBroadcast,
+              onPressed: isBroadcasting
+                  ? null
+                  : forSend
+                  ? () async {
+                      final signed = await cubit.signedForSend();
+                      if (signed != null && context.mounted) {
+                        context.pop(signed);
+                      }
+                    }
+                  : cubit.broadcastTransaction,
             ),
           ),
         ),
@@ -248,14 +261,7 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
     super.initState();
     context.read<TransactionReviewCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
-      network: context.read<BroadcastSignedTxCubit>().capturedNetwork.then(
-        (network) => switch (network.environment) {
-          NetworkEnv.mainnet when network.isBitcoin => BitcoinNetwork.mainnet,
-          NetworkEnv.testnet when network.isBitcoin => BitcoinNetwork.testnet,
-          NetworkEnv.regtest when network.isBitcoin => BitcoinNetwork.regtest,
-          _ => null,
-        },
-      ),
+      network: context.read<BroadcastSignedTxCubit>().capturedNetwork,
     );
   }
 

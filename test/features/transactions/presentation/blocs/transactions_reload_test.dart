@@ -1,21 +1,15 @@
+import 'package:transactions/testing.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sync/sync.dart' hide Wallet;
@@ -23,10 +17,6 @@ import 'package:sync/sync.dart' hide Wallet;
 class _Read extends Mock implements GetTransactionsUsecase {}
 
 class _Labels extends Mock implements RefreshTransactionLabelsUsecase {}
-
-class _Started extends Mock implements WatchStartedWalletSyncsUsecase {}
-
-class _Finished extends Mock implements WatchFinishedWalletSyncsUsecase {}
 
 class _Wallets extends Mock implements GetWalletsUsecase {}
 
@@ -42,19 +32,13 @@ void main() {
     tester,
   ) async {
     final read = _Read();
-    final started = _Started();
-    final finished = _Finished();
     final revisions = StreamController<WalletRevisionState>.broadcast();
     final finishes = StreamController<Wallet>.broadcast();
-    final facade = WalletFacade(revisions.stream);
+    final facade = walletHistoryEvents(revisions.stream);
     final a = _Wallet();
     final b = _Wallet();
     when(() => a.id).thenReturn('a');
     when(() => b.id).thenReturn('b');
-    when(() => started.execute(walletId: 'a'))
-        .thenAnswer((_) => const Stream.empty());
-    when(() => finished.execute(walletId: 'a'))
-        .thenAnswer((_) => finishes.stream.where((wallet) => wallet.id == 'a'));
     var reads = 0;
     when(() => read.execute(walletId: 'a')).thenAnswer((_) async {
       reads++;
@@ -64,8 +48,10 @@ void main() {
       walletId: 'a',
       getTransactionsUsecase: read,
       refreshTransactionLabelsUsecase: _Labels(),
-      watchStartedWalletSyncsUsecase: started,
-      watchFinishedWalletSyncsUsecase: finished,
+      watchStartedWalletSyncsUsecase: const Stream.empty(),
+      watchFinishedWalletSyncsUsecase: finishes.stream.map(
+        (wallet) => wallet.id,
+      ),
       watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(facade),
       watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(facade),
     );
@@ -91,8 +77,6 @@ void main() {
     tester,
   ) async {
     final read = _Read();
-    final started = _Started();
-    final finished = _Finished();
     final wallets = _Wallets();
     final sync = _Sync();
     final a = _Wallet();
@@ -105,7 +89,7 @@ void main() {
       getWalletsUsecase: wallets,
       syncWalletUsecase: sync,
     );
-    final facade = WalletFacade(
+    final facade = walletHistoryEvents(
       revisions.stream,
       syncFinished: finishes.stream.map((_) {}),
       syncPassActivity: coordinator.syncPassActivity,
@@ -130,14 +114,11 @@ void main() {
         finishes.add(entry.$1);
       });
     }
-    when(() => started.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => const Stream.empty());
     var finishSubscriptions = 0;
-    when(() => finished.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) {
-          finishSubscriptions++;
-          return finishes.stream;
-        });
+    final legacyFinishes = StreamController<String>.broadcast(
+      onListen: () => finishSubscriptions++,
+    );
+    addTearDown(legacyFinishes.close);
     var reads = 0;
     when(() => read.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) async {
@@ -147,8 +128,8 @@ void main() {
     final cubit = TransactionsCubit(
       getTransactionsUsecase: read,
       refreshTransactionLabelsUsecase: _Labels(),
-      watchStartedWalletSyncsUsecase: started,
-      watchFinishedWalletSyncsUsecase: finished,
+      watchStartedWalletSyncsUsecase: const Stream.empty(),
+      watchFinishedWalletSyncsUsecase: legacyFinishes.stream,
       watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(facade),
       watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(facade),
     );

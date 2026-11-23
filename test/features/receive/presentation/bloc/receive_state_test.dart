@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

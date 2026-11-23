@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Poistetaanko siirron mnemoninen lause?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Tämä poistaa siirron pääavaimen suojatusta tallennustilasta. Se johdetaan uudelleen lompakkosi siemenestä seuraavalla kerralla, kun sovellus tarvitsee sitä, samalla sormenjäljellä. Käynnissä olevat siirrot eivät vaikuta.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Siirron mnemoninen lause",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Poistetaanko siirron mnemoninen lause?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Tämä poistaa siirron pääavaimen suojatusta tallennustilasta. Se johdetaan uudelleen lompakkosi siemenestä seuraavalla kerralla, kun sovellus tarvitsee sitä, samalla sormenjäljellä. Käynnissä olevat siirrot eivät vaikuta."
 }

@@ -528,6 +528,8 @@ class PdkPayjoinDatasource {
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required Future<String> Function(String psbt) signPsbt,
+    required Future<void> Function(PayjoinReceiverModel model)
+    persistBeforePost,
   }) async {
     final persister = InMemoryJsonReceiverSessionPersister.fromJson(
       receiverModel.receiver,
@@ -535,7 +537,7 @@ class PdkPayjoinDatasource {
     );
     final state = replayReceiverEventLog(persister: persister).state();
 
-    final result = await processReceiveSession(
+    final proposal = await _prepareReceiveProposal(
       state: state,
       persister: persister,
       ownsOutpoint: ownsOutpoint,
@@ -545,15 +547,17 @@ class PdkPayjoinDatasource {
       signPsbt: signPsbt,
     );
 
-    // Update the model with the proposal psbt so it can be known a proposal has
-    //  been sent
-    final proposalPsbt = result.psbt;
-
-    final updatedModel = receiverModel.copyWith(
+    final proposalPsbt = proposal.psbt();
+    final pendingModel = receiverModel.copyWith(
       receiver: persister.toJson(),
       proposalPsbt: proposalPsbt,
       txId: _codec.decodePsbt(proposalPsbt).txid,
     );
+
+    // A published signature cannot be revoked. The receiver's contribution
+    // must be reserved even if this process dies during the request.
+    await persistBeforePost(pendingModel);
+    await _sendPayjoinProposal(proposal, persister, pendingModel);
 
     _log.fine(
       code: PayjoinLogCode.proposalSent,
@@ -561,7 +565,31 @@ class PdkPayjoinDatasource {
       sessionRef: receiverModel.id,
     );
 
-    return updatedModel;
+    return pendingModel.copyWith(receiver: persister.toJson());
+  }
+
+  /// A write-ahead proposal that never recorded a successful POST response.
+  /// The sender may still hold it; an original broadcast spends the same
+  /// sender inputs, so at most one payment can confirm.
+  bool receiverProposalNeedsFallback(PayjoinReceiverModel model) {
+    if (model.proposalPsbt == null) return false;
+    final persister = InMemoryJsonReceiverSessionPersister.fromJson(
+      model.receiver,
+      log: _log,
+    );
+    // PDK replay refuses expired event logs. Inspect the final journal event
+    // instead: a successful response advances FinalizedProposal to
+    // PostedPayjoinProposal. An unreadable log is not proof of a failed POST.
+    final last = persister.events.lastOrNull;
+    if (last == null) return false;
+    try {
+      return switch (jsonDecode(last)) {
+        {'FinalizedProposal': Object _} => true,
+        _ => false,
+      };
+    } on FormatException {
+      return false;
+    }
   }
 
   /// Formally cancels a receiver session that was declined below the
@@ -612,7 +640,7 @@ class PdkPayjoinDatasource {
     return persister.toJson();
   }
 
-  Future<({Monitor monitor, String psbt})> processReceiveSession({
+  Future<PayjoinProposal> _prepareReceiveProposal({
     required ReceiveSession state,
     required InMemoryJsonReceiverSessionPersister persister,
     required bool Function(Outpoint) ownsOutpoint,
@@ -683,14 +711,9 @@ class PdkPayjoinDatasource {
       case WantsFeeRangeReceiveSession():
         return _applyFeeRange(state.inner, persister, receiverModel, signPsbt);
       case ProvisionalProposalReceiveSession():
-        return _finalizeProposal(
-          state.inner,
-          persister,
-          receiverModel,
-          signPsbt,
-        );
+        return _finalizeProposal(state.inner, persister, signPsbt);
       case PayjoinProposalReceiveSession():
-        return _sendPayjoinProposal(state.inner, persister, receiverModel);
+        return state.inner;
       case HasReplyableExceptionReceiveSession():
         throw StateError('Receive session has a replyable exception');
       case MonitorReceiveSession():
@@ -704,7 +727,7 @@ class PdkPayjoinDatasource {
     }
   }
 
-  Future<({Monitor monitor, String psbt})> _checkProposal(
+  Future<PayjoinProposal> _checkProposal(
     UncheckedOriginalPayload inner,
     InMemoryJsonReceiverSessionPersister persister,
     bool Function(Outpoint) ownsOutpoint,
@@ -725,7 +748,7 @@ class PdkPayjoinDatasource {
     );
   }
 
-  Future<({Monitor monitor, String psbt})> _checkInputsNotOwned(
+  Future<PayjoinProposal> _checkInputsNotOwned(
     MaybeInputsOwned inner,
     InMemoryJsonReceiverSessionPersister persister,
     bool Function(Outpoint) ownsOutpoint,
@@ -747,7 +770,7 @@ class PdkPayjoinDatasource {
     );
   }
 
-  Future<({Monitor monitor, String psbt})> _checkNoInputsSeenBefore(
+  Future<PayjoinProposal> _checkNoInputsSeenBefore(
     MaybeInputsSeen inner,
     InMemoryJsonReceiverSessionPersister persister,
     bool Function(Uint8List) hasReceiverOutput,
@@ -768,7 +791,7 @@ class PdkPayjoinDatasource {
     );
   }
 
-  Future<({Monitor monitor, String psbt})> _identifyReceiverOutputs(
+  Future<PayjoinProposal> _identifyReceiverOutputs(
     OutputsUnknown inner,
     InMemoryJsonReceiverSessionPersister persister,
     bool Function(Uint8List) hasReceiverOutput,
@@ -784,7 +807,7 @@ class PdkPayjoinDatasource {
     return _commitOutputs(next, persister, inputPairs, receiverModel, signPsbt);
   }
 
-  Future<({Monitor monitor, String psbt})> _commitOutputs(
+  Future<PayjoinProposal> _commitOutputs(
     WantsOutputs inner,
     InMemoryJsonReceiverSessionPersister persister,
     List<PayjoinInputPairModel> inputPairs,
@@ -801,7 +824,7 @@ class PdkPayjoinDatasource {
     );
   }
 
-  Future<({Monitor monitor, String psbt})> _contributeInputs(
+  Future<PayjoinProposal> _contributeInputs(
     WantsInputs inner,
     InMemoryJsonReceiverSessionPersister persister,
     List<PayjoinInputPairModel> inputPairs,
@@ -827,7 +850,7 @@ class PdkPayjoinDatasource {
     return _applyFeeRange(next, persister, receiverModel, signPsbt);
   }
 
-  Future<({Monitor monitor, String psbt})> _applyFeeRange(
+  Future<PayjoinProposal> _applyFeeRange(
     WantsFeeRange inner,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
@@ -839,31 +862,29 @@ class PdkPayjoinDatasource {
           maxEffectiveFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb.toInt(),
         )
         .save(persister: persister);
-    return _finalizeProposal(next, persister, receiverModel, signPsbt);
+    return _finalizeProposal(next, persister, signPsbt);
   }
 
-  Future<({Monitor monitor, String psbt})> _finalizeProposal(
+  Future<PayjoinProposal> _finalizeProposal(
     ProvisionalProposal inner,
     InMemoryJsonReceiverSessionPersister persister,
-    PayjoinReceiverModel receiverModel,
     Future<String> Function(String psbt) signPsbt,
   ) async {
     // Two steps, because the PDK's callback is synchronous and signing is not: the PSBT the PDK will ask for is computed first — deterministically, the proposal with the sender's signatures cleared — and signed; the callback then only hands back that result. Anything else it is asked to sign is refused, so no signature leaves for a PSBT the receiver did not see.
     final unsigned = inner.psbtToSign();
     final signed = await signPsbt(unsigned);
-    final next = inner
+    return inner
         .finalizeProposal(processPsbt: _ProcessPsbt(unsigned, signed))
         .save(persister: persister);
-    return _sendPayjoinProposal(next, persister, receiverModel);
   }
 
-  Future<({Monitor monitor, String psbt})> _sendPayjoinProposal(
+  Future<void> _sendPayjoinProposal(
     PayjoinProposal proposal,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
   ) async {
     try {
-      return await _throughSessionRelays(receiverModel.pjUri, (relay) async {
+      await _throughSessionRelays(receiverModel.pjUri, (relay) async {
         final req = proposal.createPostRequest(ohttpRelay: relay);
         final body = await postBytes(
           _dio,
@@ -871,12 +892,9 @@ class PdkPayjoinDatasource {
           req.request.body,
           req.request.contentType,
         );
-        // Capture the proposal PSBT here, as it's not available on the monitor typestate.
-        final psbt = proposal.psbt();
-        final monitor = proposal
+        proposal
             .processResponse(body: body, ohttpContext: req.clientResponse)
             .save(persister: persister);
-        return (monitor: monitor, psbt: psbt);
       });
     } on ReceiverCreateRequestException catch (e) {
       if (e.isExpired()) {

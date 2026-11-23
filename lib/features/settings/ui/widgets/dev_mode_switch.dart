@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart';

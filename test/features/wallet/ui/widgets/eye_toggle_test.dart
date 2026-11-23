@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';

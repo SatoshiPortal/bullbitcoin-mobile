@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
 
 sealed class SendFailure extends Failure {
   const SendFailure([super.logMessage]);
@@ -16,6 +16,10 @@ final class SendInvalidPaymentRequestFailure extends SendFailure {
 
 final class SendInvoiceExpiredFailure extends SendFailure {
   const SendInvoiceExpiredFailure([super.logMessage]);
+}
+
+final class SendInvoiceExpiryTooShortFailure extends SendFailure {
+  const SendInvoiceExpiryTooShortFailure();
 }
 
 final class SendInvoiceAmountRequiredFailure extends SendFailure {
@@ -120,10 +124,12 @@ final class SendTransactionConfirmationFailure extends SendFailure {
   /// persisted and armed the session: the stored row carrying this original
   /// is this payment's and can be settled with it right away.
   final String? keptPayjoinOriginalTxId;
+  final bool payjoinPublicationUnknown;
 
   const SendTransactionConfirmationFailure({
     this.isBroadcastFailure = false,
     this.keptPayjoinOriginalTxId,
+    this.payjoinPublicationUnknown = false,
     String? logMessage,
   }) : super(logMessage);
 }

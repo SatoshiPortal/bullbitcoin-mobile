@@ -1,8 +1,8 @@
-import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_success_screen.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../success_screen_back_harness.dart';
@@ -21,7 +21,10 @@ void main() {
       homePath: WalletRoute.walletHome.path,
       screen: BlocProvider<BuyBloc>.value(
         value: bloc,
-        child: const BuyAccelerateSuccessScreen(),
+        child: BuyAccelerateSuccessScreen(
+          onClose: (context) => context.goNamed(WalletRoute.walletHome.name),
+          openOrder: (_, _) {},
+        ),
       ),
     );
   });

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
