@@ -393,10 +393,6 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
   String get exchangeAccessSettingsLabel => 'Exchange features';
 
   @override
-  String get exchangeAccessSettingsDescription =>
-      'Show Buy, Sell and Pay on the home screen. Swap remains available.';
-
-  @override
   String get exchangeAccessSettingsOffHint =>
       'Enable to sign in or create a Bull Bitcoin account.';
 
@@ -432,4 +428,615 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
 
   @override
   String get exchangeAccessRetryLogout => 'Finish signing out';
+
+  @override
+  String get fundExchangeTitle => 'Χρηματοδότηση';
+
+  @override
+  String get fundExchangeAccountTitle => 'Χρηματοδότηση του λογαριασμού σας';
+
+  @override
+  String get fundExchangeAccountSubtitle =>
+      'Επιλέξτε τη χώρα και τη μέθοδο πληρωμής';
+
+  @override
+  String get fundExchangeRestrictedTitle =>
+      'Η χρηματοδότηση δεν είναι διαθέσιμη';
+
+  @override
+  String get fundExchangeRestrictedMessage =>
+      'Η χρηματοδότηση δεν είναι διαθέσιμη στον λογαριασμό σας. Επικοινωνήστε με την υποστήριξη για περισσότερες πληροφορίες.';
+
+  @override
+  String get fundExchangeWarningTitle => 'Παρακολουθήστε τους απατεώνες';
+
+  @override
+  String get fundExchangeWarningDescription =>
+      'Αν κάποιος σας ζητάει να αγοράσετε Bitcoin ή να «βοηθήσετε», να είστε προσεκτικοί, μπορεί να προσπαθείτε να σας εξαπατήσετε!';
+
+  @override
+  String get fundExchangeWarningTacticsTitle => 'Κοινές τακτικές απατεώνες';
+
+  @override
+  String get fundExchangeWarningTactic1 =>
+      'Είναι υποσχόμενες επιστροφές στις επενδύσεις';
+
+  @override
+  String get fundExchangeWarningTactic2 => 'Σας προσφέρουν δάνειο';
+
+  @override
+  String get fundExchangeWarningTactic3 =>
+      'Λένε ότι εργάζονται για το χρέος ή τη συλλογή φόρων';
+
+  @override
+  String get fundExchangeWarningTactic4 =>
+      'Ζητούν να στείλουν Bitcoin στη διεύθυνση τους';
+
+  @override
+  String get fundExchangeWarningTactic5 =>
+      'Ζητούν να στείλουν Bitcoin σε άλλη πλατφόρμα';
+
+  @override
+  String get fundExchangeWarningTactic6 =>
+      'Θέλουν να μοιραστείτε την οθόνη σας';
+
+  @override
+  String get fundExchangeWarningTactic7 =>
+      'Σας λένε να μην ανησυχείτε για αυτή την προειδοποίηση';
+
+  @override
+  String get fundExchangeWarningTactic8 => 'Σας πιέζουν να ενεργήσετε γρήγορα';
+
+  @override
+  String get fundExchangeWarningConfirmation =>
+      'Επιβεβαιώνω ότι δεν μου ζητείται να αγοράσω Bitcoin από κάποιον άλλο.';
+
+  @override
+  String get fundExchangeContinueButton => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get fundExchangeScamConsentError =>
+      'Αποτυχία καταγραφής της συγκατάθεσής σας. Δοκιμάστε ξανά.';
+
+  @override
+  String get fundExchangeDoneButton => 'Έγινε';
+
+  @override
+  String get fundExchangeJurisdictionCanada => 'Καναδάς';
+
+  @override
+  String get fundExchangeJurisdictionEurope => '🇪🇺 Europe (SEPA)';
+
+  @override
+  String get fundExchangeJurisdictionMexico => 'Μεξικό';
+
+  @override
+  String get fundExchangeJurisdictionCostaRica =>
+      '🇨🇷 Costa Costa Costa Costa Λιβερία';
+
+  @override
+  String get fundExchangeJurisdictionArgentina => 'Αργεντινή';
+
+  @override
+  String get fundExchangeJurisdictionColombia => '🇨🇴 Κολομβία';
+
+  @override
+  String get fundExchangeMethodEmailETransfer => 'Email E-Transfer';
+
+  @override
+  String get fundExchangeMethodEmailETransferSubtitle =>
+      'Η πιο ευτυχισμένη και ταχύτερη μέθοδος (σταθερή)';
+
+  @override
+  String get fundExchangeMethodBankTransferWire =>
+      'Τράπεζα Μεταφοράς (Wire ή EFT)';
+
+  @override
+  String get fundExchangeMethodBankTransferWireSubtitle =>
+      'Καλύτερη και πιο αξιόπιστη επιλογή για μεγαλύτερες ποσότητες (same ή την επόμενη ημέρα)';
+
+  @override
+  String get fundExchangeMethodOnlineBillPayment => 'Online Bill Payment';
+
+  @override
+  String get fundExchangeMethodOnlineBillPaymentSubtitle =>
+      'Η πιο αργή επιλογή, αλλά μπορεί να γίνει μέσω online banking (3-4 εργάσιμες ημέρες)';
+
+  @override
+  String get fundExchangeMethodCanadaPost =>
+      'Σε μετρητά προσώπου ή χρέωση στον Καναδά Post';
+
+  @override
+  String get fundExchangeMethodCanadaPostSubtitle =>
+      'Καλύτερα για όσους προτιμούν να πληρώνουν σε άτομο';
+
+  @override
+  String get fundExchangeMethodInstantSepa =>
+      'Άμεση και κανονική μεταφορά SEPA';
+
+  @override
+  String get fundExchangeMethodInstantSepaSubtitle =>
+      'Fastest - Μόνο για συναλλαγές κάτω από €30.000';
+
+  @override
+  String get fundExchangeMethodRegularSepa => 'Τακτικό SEPA';
+
+  @override
+  String get fundExchangeMethodRegularSepaSubtitle =>
+      'Μόνο χρήση για μεγαλύτερες συναλλαγές άνω των €30.000';
+
+  @override
+  String get fundExchangeBankTransferWireTitle => 'Τραπεζική μεταφορά (wire)';
+
+  @override
+  String get fundExchangeBankTransferWireDescription =>
+      'Στείλτε μια μεταφορά καλωδίων από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις λεπτομέρειες της τράπεζας του Bull Bitcoin παρακάτω. Η τράπεζά σας μπορεί να απαιτεί μόνο μερικά μέρη αυτών των λεπτομερειών.';
+
+  @override
+  String get fundExchangeBankTransferWireTimeframe =>
+      'Κάθε κεφάλαια που στέλνετε θα προστεθεί στο Bitcoin της Bull μέσα σε 1-2 εργάσιμες ημέρες.';
+
+  @override
+  String get fundExchangeLabelBeneficiaryName => 'Υποχρεωτικό όνομα';
+
+  @override
+  String get fundExchangeHelpBeneficiaryName =>
+      'Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeLabelTransferCode =>
+      'Κωδικός μεταφοράς (προσθέτως αυτό ως περιγραφή πληρωμής)';
+
+  @override
+  String get fundExchangeHelpTransferCode =>
+      'Προσθέστε αυτό ως το λόγο για τη μεταφορά';
+
+  @override
+  String get fundExchangeInfoTransferCode =>
+      'Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως το \"message\" ή \"reason\" όταν κάνετε την πληρωμή.';
+
+  @override
+  String get fundExchangeLabelBankAccountDetails =>
+      'Οι λεπτομέρειες λογαριασμού της Τράπεζας';
+
+  @override
+  String get fundExchangeLabelSwiftCode => 'Κωδικός SWIFT';
+
+  @override
+  String get fundExchangeLabelInstitutionNumber => 'Αριθμός ιδρύματος';
+
+  @override
+  String get fundExchangeLabelTransitNumber => 'Αριθμός διαμετακόμισης';
+
+  @override
+  String get fundExchangeLabelRoutingNumber => 'Αριθμός Routing';
+
+  @override
+  String get fundExchangeLabelBeneficiaryAddress => 'Υποχρεωτική διεύθυνση';
+
+  @override
+  String get fundExchangeLabelBankName => 'Bank name Bank';
+
+  @override
+  String get fundExchangeLabelBankAddress => 'Διεύθυνση της τράπεζάς μας';
+
+  @override
+  String get fundExchangeETransferTitle => 'E-Transfer λεπτομέρειες';
+
+  @override
+  String get fundExchangeETransferDescription =>
+      'Κάθε ποσό που στέλνετε από την τράπεζά σας μέσω ηλεκτρονικού ταχυδρομείου E-Transfer χρησιμοποιώντας τις παρακάτω πληροφορίες θα πιστωθεί στην ισορροπία λογαριασμού σας Bull Bitcoin μέσα σε λίγα λεπτά.';
+
+  @override
+  String get fundExchangeETransferLabelBeneficiaryName =>
+      'Χρησιμοποιήστε αυτό ως δικαιούχο όνομα ηλεκτρονικού ταχυδρομείου';
+
+  @override
+  String get fundExchangeETransferLabelEmail =>
+      'Στείλτε την μεταφορά E σε αυτό το email';
+
+  @override
+  String get fundExchangeETransferLabelSecretQuestion => 'Μυστική ερώτηση';
+
+  @override
+  String get fundExchangeETransferLabelSecretAnswer => 'Μυστική απάντηση';
+
+  @override
+  String get fundExchangeOnlineBillPaymentTitle => 'Online Bill Payment';
+
+  @override
+  String get fundExchangeOnlineBillPaymentDescription =>
+      'Κάθε ποσό που στέλνετε μέσω του online λογαριασμού πληρωμής της τράπεζάς σας χρησιμοποιώντας τις παρακάτω πληροφορίες θα πιστωθεί στην ισορροπία λογαριασμού σας Bull Bitcoin εντός 3-4 εργάσιμων ημερών.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelBillerName =>
+      'Αναζητήστε τον κατάλογο των τιμητών της τράπεζάς σας για αυτό το όνομα';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpBillerName =>
+      'Προσθέστε αυτή την εταιρεία ως payee - είναι ο επεξεργαστής πληρωμών της Bull Bitcoin';
+
+  @override
+  String get fundExchangeCanadaPostTitle =>
+      'Σε μετρητά προσώπου ή χρέωση στον Καναδά Post';
+
+  @override
+  String get fundExchangeCanadaPostStep1 =>
+      '1. Πηγαίνετε σε οποιαδήποτε τοποθεσία Canada Post';
+
+  @override
+  String get fundExchangeCanadaPostStep2 =>
+      '2. 2. 2. 2. Ζητήστε από τα ταμειακά ταμεία να σαρώσουν τον κωδικό \"Loadhub\" QR';
+
+  @override
+  String get fundExchangeCanadaPostStep3 =>
+      '3. Tell the Cashier το ποσό που θέλετε να φορτώσετε';
+
+  @override
+  String get fundExchangeCanadaPostStep4 =>
+      '4. Το ταμείο θα ζητήσει να δει ένα κομμάτι της κυβερνητικής ταυτότητας και να επαληθεύσει ότι το όνομα στο ID σας ταιριάζει με το λογαριασμό Bitcoin της Bull σας';
+
+  @override
+  String get fundExchangeCanadaPostStep5 =>
+      '5. Πληρώστε με μετρητά ή χρεωστική κάρτα';
+
+  @override
+  String get fundExchangeCanadaPostStep6 =>
+      '6. Το ταμείο θα σας παραδώσει μια παραλαβή, κρατήστε το ως απόδειξη πληρωμής σας';
+
+  @override
+  String get fundExchangeCanadaPostStep7 =>
+      '7. Τα κεφάλαια θα προστεθούν στην ισορροπία λογαριασμού σας Bull Bitcoin μέσα σε 30 λεπτά';
+
+  @override
+  String get fundExchangeCanadaPostQrCodeLabel => 'Φόρος QR κωδικός';
+
+  @override
+  String get fundExchangeSepaTitle => 'Μεταφορά SEPA';
+
+  @override
+  String get fundExchangeSepaDescription =>
+      'Στείλτε μια μεταφορά SEPA από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ';
+
+  @override
+  String get fundExchangeSepaDescriptionExactly => 'ακριβώς.';
+
+  @override
+  String get fundExchangeInstantSepaInfo =>
+      'Μόνο χρήση για συναλλαγές κάτω από 20.000 ευρώ. Για μεγαλύτερες συναλλαγές, χρησιμοποιήστε την τακτική επιλογή SEPA.';
+
+  @override
+  String get fundExchangeRegularSepaInfo =>
+      'Μόνο χρήση για συναλλαγές άνω των 20.000 ευρώ. Για μικρότερες συναλλαγές, χρησιμοποιήστε την επιλογή Instant SEPA.';
+
+  @override
+  String get fundExchangeLabelIban => 'IBAN Αριθμός λογαριασμού';
+
+  @override
+  String get fundExchangeLabelBicCode => 'Κωδικός BIC';
+
+  @override
+  String get fundExchangeLabelBankAccountCountry => 'Τράπεζα λογαριασμού χώρα';
+
+  @override
+  String get fundExchangeInfoBankCountryUk =>
+      'Η τραπεζική μας χώρα είναι το Ηνωμένο Βασίλειο.';
+
+  @override
+  String get fundExchangeInfoBeneficiaryNameLeonod =>
+      'Το όνομα του δικαιούχου πρέπει να είναι LEONOD. Εάν βάλετε οτιδήποτε άλλο, η πληρωμή σας θα απορριφθεί.';
+
+  @override
+  String get fundExchangeInfoPaymentDescription =>
+      'Στην περιγραφή πληρωμής, προσθέστε τον κωδικό μεταφοράς σας.';
+
+  @override
+  String get fundExchangeHelpBeneficiaryAddress =>
+      'Η επίσημη διεύθυνση μας, σε περίπτωση που αυτό απαιτείται από την τράπεζά σας';
+
+  @override
+  String get fundExchangeLabelRecipientName => 'Μαθητές όνομα';
+
+  @override
+  String get fundExchangeLabelBankCountry => 'Τράπεζα';
+
+  @override
+  String get fundExchangeLabelRecipientAddress => 'Μαθητική διεύθυνση';
+
+  @override
+  String get fundExchangeSpeiTitle => 'Μεταφορά SPEI';
+
+  @override
+  String get fundExchangeSpeiDescription =>
+      'Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE';
+
+  @override
+  String get fundExchangeSpeiInfo =>
+      'Κάντε μια κατάθεση χρησιμοποιώντας τη μεταφορά SPEI (σταθερή).';
+
+  @override
+  String get fundExchangeLabelClabe => 'CLABE';
+
+  @override
+  String get fundExchangeLabelMemo => 'Memo';
+
+  @override
+  String get fundExchangeSinpeTitle => 'SINPE Transfer';
+
+  @override
+  String get fundExchangeSinpeDescription =>
+      'Μεταφορά Αποικιών χρησιμοποιώντας SINPE';
+
+  @override
+  String get fundExchangeCrIbanCrcTitle => 'Τραπεζική Μεταφορά (CRC)';
+
+  @override
+  String get fundExchangeCrIbanUsdTitle => 'Τραπεζική Μεταφορά (USD)';
+
+  @override
+  String get fundExchangeArsBankTransferTitle => 'Τράπεζα Μεταφοράς';
+
+  @override
+  String get fundExchangeArsBankTransferDescription =>
+      'Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις ακριβείς λεπτομέρειες της τράπεζας της Αργεντινής παρακάτω.';
+
+  @override
+  String get fundExchangeLabelRecipientNameArs => 'Μαθητές Όνομα';
+
+  @override
+  String get fundExchangeLabelCvu => 'CVU';
+
+  @override
+  String get fundExchangeErrorLoadingDetails =>
+      'Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.';
+
+  @override
+  String get fundExchangeErrorTitleOrdPo404 =>
+      'Η επιλογή πληρωμής δεν είναι διαθέσιμη';
+
+  @override
+  String get fundExchangeErrorOrdPo404 =>
+      'Δεν υπάρχει διαθέσιμη επιλογή πληρωμής';
+
+  @override
+  String get fundExchangeErrorTitleRcpPo404 =>
+      'Η επιλογή πληρωμής δεν είναι διαθέσιμη';
+
+  @override
+  String get fundExchangeErrorRcpPo404 =>
+      'Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας';
+
+  @override
+  String get fundExchangeErrorTitleRcpPosinpe404 =>
+      'Το SINPE δεν είναι διαθέσιμο';
+
+  @override
+  String get fundExchangeErrorRcpPosinpe404 =>
+      'Για πρόσβαση σε αυτή την επιλογή χρηματοδότησης, ο αριθμός τηλεφώνου σας πρέπει να είναι εγγεγραμμένος στο δίκτυο SINPE στην Κόστα Ρίκα.';
+
+  @override
+  String get fundExchangeErrorTitleOrdKyc400 => 'Λείπουν απαιτήσεις KYC';
+
+  @override
+  String get fundExchangeErrorOrdKyc400 =>
+      'Δεν έχετε τις απαιτήσεις KYC για αυτή την ενέργεια';
+
+  @override
+  String get fundExchangeErrorTitleOrdCop400 =>
+      'Μη έγκυρα δεδομένα χρηματοδότησης COP';
+
+  @override
+  String get fundExchangeErrorOrdCop400 =>
+      'Μη έγκυρα δεδομένα αιτήματος για χρηματοδότηση COP';
+
+  @override
+  String get fundExchangeErrorOpeningPaymentLink =>
+      'Δεν ήταν δυνατό το άνοιγμα του συνδέσμου πληρωμής. Παρακαλώ δοκιμάστε ξανά.';
+
+  @override
+  String get fundExchangeErrorTitleOrdCsrcp400 =>
+      'Η εικονική πληρωμή δεν έχει ενεργοποιηθεί';
+
+  @override
+  String get fundExchangeErrorOrdCsrcp400 =>
+      'Ενεργοποιήστε την επιλογή εικονικής πληρωμής για αυτόν τον παραλήπτη SEPA';
+
+  @override
+  String get fundExchangeErrorTitleRcp400 => 'Μη έγκυρο αίτημα';
+
+  @override
+  String get fundExchangeErrorRcp400 => 'Μη έγκυρο αίτημα';
+
+  @override
+  String get fundExchangeErrorFetchingBankCodes =>
+      'Σφάλμα κατά τη λήψη τραπεζικών κωδικών. Δοκιμάστε ξανά αργότερα.';
+
+  @override
+  String get fundExchangeSinpeDescriptionBold => 'θα απορριφθεί.';
+
+  @override
+  String get fundExchangeSinpeAddedToBalance =>
+      'Μόλις αποσταλεί η πληρωμή, θα προστεθεί στην ισορροπία λογαριασμού σας.';
+
+  @override
+  String get fundExchangeSinpeLabelPhone =>
+      'Στείλε σε αυτόν τον αριθμό τηλεφώνου';
+
+  @override
+  String get fundExchangeSinpeLabelRecipientName => 'Μαθητές Όνομα';
+
+  @override
+  String get fundExchangeCrIbanCrcDescription =>
+      'Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionBold => 'ακριβώς';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionEnd =>
+      '. Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelIban =>
+      'IBAN Account Number (Colones Only)';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelPaymentDescription =>
+      'Περιγραφή πληρωμής';
+
+  @override
+  String get fundExchangeCrIbanCrcPaymentDescriptionHelp =>
+      'Ο κωδικός μεταφοράς σας.';
+
+  @override
+  String get fundExchangeCrIbanCrcTransferCodeWarning =>
+      'Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"διαγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να συμπεριλάβετε αυτόν τον κώδικα, η πληρωμή σας μπορεί να απορριφθεί.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelRecipientName => 'Μαθητές Όνομα';
+
+  @override
+  String get fundExchangeCrIbanCrcRecipientNameHelp =>
+      'Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelCedulaJuridica => 'Cédula Jurídica';
+
+  @override
+  String get fundExchangeCrIbanUsdDescription =>
+      'Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionBold => 'ακριβώς';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionEnd =>
+      '. Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelIban =>
+      'IBAN Account Number (μόνο δολάρια ΗΠΑ)';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelPaymentDescription =>
+      'Περιγραφή πληρωμής';
+
+  @override
+  String get fundExchangeCrIbanUsdPaymentDescriptionHelp =>
+      'Ο κωδικός μεταφοράς σας.';
+
+  @override
+  String get fundExchangeCrIbanUsdTransferCodeWarning =>
+      'Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"διαγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να συμπεριλάβετε αυτόν τον κώδικα, η πληρωμή σας μπορεί να απορριφθεί.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelRecipientName => 'Μαθητές Όνομα';
+
+  @override
+  String get fundExchangeCrIbanUsdRecipientNameHelp =>
+      'Χρησιμοποιήστε το επίσημο εταιρικό μας όνομα. Μην χρησιμοποιείτε το \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelCedulaJuridica => 'Cédula Jurídica';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeTitle => 'SINPE Móvil';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeSubtitle =>
+      'Μεταφορά Αποικιών χρησιμοποιώντας SINPE';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcTitle => 'IBAN Costa Rica (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcSubtitle =>
+      'Μεταφορά κεφαλαίων στην Costa Rican Colón (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdTitle => 'IBAN Costa Rica (USD)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdSubtitle =>
+      'Μεταφορά κεφαλαίων σε δολάρια ΗΠΑ (USD)';
+
+  @override
+  String get doneButton => 'Έγινε';
+
+  @override
+  String get fundExchangeSpeiTransfer => 'Μεταφορά SPEI';
+
+  @override
+  String get fundExchangeSpeiSubtitle =>
+      'Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE';
+
+  @override
+  String get fundExchangeBankTransfer => 'Τράπεζα Μεταφοράς';
+
+  @override
+  String get fundExchangeBankTransferSubtitle =>
+      'Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας';
+
+  @override
+  String get fundExchangeCopDailyLimitWarning =>
+      'Αν υπερβείτε το ημερήσιο όριο συναλλαγών σας, η συναλλαγή θα αποτύχει. Θα χρειαστεί να επικοινωνήσετε με την υποστήριξη πελατών.';
+
+  @override
+  String get fundExchangeCopSenderName => 'Όνομα αποστολέα';
+
+  @override
+  String get fundExchangeCopIssuingBank => 'Τράπεζα έκδοσης';
+
+  @override
+  String get fundExchangeCopSelectBankError => 'Επιλέξτε μια τράπεζα έκδοσης';
+
+  @override
+  String get fundExchangeCopAmount => 'Ποσό';
+
+  @override
+  String get fundExchangeCopEnterAmountError => 'Εισάγετε ένα ποσό';
+
+  @override
+  String get fundExchangeCopValidAmountError => 'Εισάγετε ένα έγκυρο ποσό';
+
+  @override
+  String get fundExchangeCopGeneratePaymentLink =>
+      'Δημιουργία συνδέσμου πληρωμής';
+
+  @override
+  String get fundExchangeCopRedirectMessage =>
+      'Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.';
+
+  @override
+  String get fundExchangeCopOpenPaymentLink => 'Άνοιγμα συνδέσμου πληρωμής';
+
+  @override
+  String get fundExchangeErrorNetwork =>
+      'Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.';
+
+  @override
+  String get fundExchangeMethodConfidentialSepa => 'Εμπιστευτικό SEPA';
+
+  @override
+  String get fundExchangeMethodConfidentialSepaSubtitle =>
+      'Ένα προσωπικό εικονικό IBAN για ιδιωτική κατάθεση χρημάτων';
+
+  @override
+  String get networkFeatureUnavailable =>
+      'This feature is unavailable on the selected network.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelAccountNumber =>
+      'Προσθέστε αυτό ως τον αριθμό λογαριασμού';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpAccountNumber =>
+      'Αυτός ο μοναδικός αριθμός λογαριασμού δημιουργείται μόνο για εσάς';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoin => 'Μην βάζεις';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoinDescription =>
+      ' τη λέξη \"Bitcoin\" ή \"Crypto\" στην περιγραφή πληρωμής. Αυτό θα εμποδίσει την πληρωμή σας.';
 }

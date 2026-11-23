@@ -391,10 +391,6 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   String get exchangeAccessSettingsLabel => 'Exchange features';
 
   @override
-  String get exchangeAccessSettingsDescription =>
-      'Show Buy, Sell and Pay on the home screen. Swap remains available.';
-
-  @override
   String get exchangeAccessSettingsOffHint =>
       'Enable to sign in or create a Bull Bitcoin account.';
 
@@ -430,4 +426,604 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
 
   @override
   String get exchangeAccessRetryLogout => 'Finish signing out';
+
+  @override
+  String get fundExchangeTitle => 'Ufadhili';
+
+  @override
+  String get fundExchangeAccountTitle => 'Weka fedha kwenye akaunti yako';
+
+  @override
+  String get fundExchangeAccountSubtitle =>
+      'Chagua nchi yako na njia ya malipo';
+
+  @override
+  String get fundExchangeRestrictedTitle => 'Ufadhili haupatikani';
+
+  @override
+  String get fundExchangeRestrictedMessage =>
+      'Ufadhili haupatikani kwenye akaunti yako. Tafadhali wasiliana na usaidizi kwa maelezo zaidi.';
+
+  @override
+  String get fundExchangeWarningTitle => 'Jihadhari na walaghai';
+
+  @override
+  String get fundExchangeWarningDescription =>
+      'Ikiwa mtu anakuomba kununua Bitcoin au \"anakusaidia\", kuwa mwangalifu, huenda anajaribu kukulaghai!';
+
+  @override
+  String get fundExchangeWarningTacticsTitle => 'Mbinu za kawaida za walaghai';
+
+  @override
+  String get fundExchangeWarningTactic1 => 'Wanaahidi faida kwenye uwekezaji';
+
+  @override
+  String get fundExchangeWarningTactic2 => 'Wanakupa mkopo';
+
+  @override
+  String get fundExchangeWarningTactic3 =>
+      'Wanasema wanafanya kazi ya ukusanyaji wa deni au kodi';
+
+  @override
+  String get fundExchangeWarningTactic4 =>
+      'Wanaomba utume Bitcoin kwenye anwani yao';
+
+  @override
+  String get fundExchangeWarningTactic5 =>
+      'Wanaomba utume Bitcoin kwenye jukwaa lingine';
+
+  @override
+  String get fundExchangeWarningTactic6 => 'Wanataka ushiriki skrini yako';
+
+  @override
+  String get fundExchangeWarningTactic7 => 'Wanakuambia usijali onyo hili';
+
+  @override
+  String get fundExchangeWarningTactic8 => 'Wanakubana ufanye haraka';
+
+  @override
+  String get fundExchangeWarningConfirmation =>
+      'Ninathibitisha kuwa sinaombwa na mtu mwingine kununua Bitcoin.';
+
+  @override
+  String get fundExchangeContinueButton => 'Endelea';
+
+  @override
+  String get fundExchangeScamConsentError =>
+      'Imeshindwa kusajili idhini yako. Tafadhali jaribu tena.';
+
+  @override
+  String get fundExchangeDoneButton => 'Imekamilika';
+
+  @override
+  String get fundExchangeJurisdictionCanada => '🇨🇦 Kanada';
+
+  @override
+  String get fundExchangeJurisdictionEurope => '🇪🇺 Ulaya (SEPA)';
+
+  @override
+  String get fundExchangeJurisdictionMexico => '🇲🇽 Meksiko';
+
+  @override
+  String get fundExchangeJurisdictionCostaRica => '🇨🇷 Costa Rica';
+
+  @override
+  String get fundExchangeJurisdictionArgentina => '🇦🇷 Ajentina';
+
+  @override
+  String get fundExchangeJurisdictionColombia => '🇨🇴 Kolombia';
+
+  @override
+  String get fundExchangeMethodEmailETransfer => 'E-Transfer ya Barua Pepe';
+
+  @override
+  String get fundExchangeMethodEmailETransferSubtitle =>
+      'Njia rahisi na ya haraka zaidi (papo hapo)';
+
+  @override
+  String get fundExchangeMethodBankTransferWire =>
+      'Uhamisho wa Benki (Wire au EFT)';
+
+  @override
+  String get fundExchangeMethodBankTransferWireSubtitle =>
+      'Chaguo bora na la kuaminika zaidi kwa kiasi kikubwa (siku hiyo hiyo au inayofuata)';
+
+  @override
+  String get fundExchangeMethodOnlineBillPayment => 'Malipo ya Bili Mtandaoni';
+
+  @override
+  String get fundExchangeMethodOnlineBillPaymentSubtitle =>
+      'Chaguo la polepole zaidi, lakini linaweza kufanywa kupitia benki mtandaoni (siku 3-4 za kazi)';
+
+  @override
+  String get fundExchangeMethodCanadaPost =>
+      'Fedha taslimu au debit ana kwa ana katika Canada Post';
+
+  @override
+  String get fundExchangeMethodCanadaPostSubtitle =>
+      'Bora kwa wale wanaopendelea kulipa ana kwa ana';
+
+  @override
+  String get fundExchangeMethodInstantSepa =>
+      'Uhawilishaji wa SEPA wa haraka na wa kawaida';
+
+  @override
+  String get fundExchangeMethodInstantSepaSubtitle =>
+      'Haraka zaidi - Kwa miamala chini ya €30,000 pekee';
+
+  @override
+  String get fundExchangeMethodRegularSepa => 'SEPA ya Kawaida';
+
+  @override
+  String get fundExchangeMethodRegularSepaSubtitle =>
+      'Tumia tu kwa miamala mikubwa zaidi ya €30,000';
+
+  @override
+  String get fundExchangeBankTransferWireTitle => 'Uhamisho wa benki (wire)';
+
+  @override
+  String get fundExchangeBankTransferWireDescription =>
+      'Tuma uhamisho wa wire kutoka akaunti yako ya benki ukitumia maelezo ya benki ya Bull Bitcoin hapa chini. Benki yako huenda ikahitaji sehemu tu za maelezo haya.';
+
+  @override
+  String get fundExchangeBankTransferWireTimeframe =>
+      'Fedha zozote utakazotuma zitaongezwa kwenye akaunti yako ya Bull Bitcoin ndani ya siku 1-2 za kazi.';
+
+  @override
+  String get fundExchangeLabelBeneficiaryName => 'Jina la mnufaika';
+
+  @override
+  String get fundExchangeHelpBeneficiaryName =>
+      'Tumia jina letu rasmi la kampuni. Usitumie \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeLabelTransferCode =>
+      'Msimbo wa uhamisho (ongeza hii kama maelezo ya malipo)';
+
+  @override
+  String get fundExchangeHelpTransferCode =>
+      'Ongeza hii kama sababu ya uhamisho';
+
+  @override
+  String get fundExchangeInfoTransferCode =>
+      'Lazima uongeze msimbo wa uhamisho kama \"ujumbe\" au \"sababu\" unapofanya malipo.';
+
+  @override
+  String get fundExchangeLabelBankAccountDetails =>
+      'Maelezo ya akaunti ya benki';
+
+  @override
+  String get fundExchangeLabelSwiftCode => 'Msimbo wa SWIFT';
+
+  @override
+  String get fundExchangeLabelInstitutionNumber => 'Nambari ya taasisi';
+
+  @override
+  String get fundExchangeLabelTransitNumber => 'Nambari ya transit';
+
+  @override
+  String get fundExchangeLabelRoutingNumber => 'Nambari ya routing';
+
+  @override
+  String get fundExchangeLabelBeneficiaryAddress => 'Anwani ya mnufaika';
+
+  @override
+  String get fundExchangeLabelBankName => 'Jina la benki';
+
+  @override
+  String get fundExchangeLabelBankAddress => 'Anwani ya benki yetu';
+
+  @override
+  String get fundExchangeETransferTitle => 'Maelezo ya E-Transfer';
+
+  @override
+  String get fundExchangeETransferDescription =>
+      'Kiasi chochote utakachotuma kutoka benki yako kupitia E-Transfer ya Barua Pepe ukitumia maelezo hapa chini kitaongezwa kwenye salio la akaunti yako ya Bull Bitcoin ndani ya dakika chache.';
+
+  @override
+  String get fundExchangeETransferLabelBeneficiaryName =>
+      'Tumia hii kama jina la mnufaika la E-transfer';
+
+  @override
+  String get fundExchangeETransferLabelEmail =>
+      'Tuma E-transfer kwenye barua pepe hii';
+
+  @override
+  String get fundExchangeETransferLabelSecretQuestion => 'Swali la siri';
+
+  @override
+  String get fundExchangeETransferLabelSecretAnswer => 'Jibu la siri';
+
+  @override
+  String get fundExchangeOnlineBillPaymentTitle => 'Malipo ya Bili Mtandaoni';
+
+  @override
+  String get fundExchangeOnlineBillPaymentDescription =>
+      'Kiasi chochote utakachotuma kupitia kipengele cha malipo ya bili mtandaoni cha benki yako ukitumia maelezo hapa chini kitaongezwa kwenye salio la akaunti yako ya Bull Bitcoin ndani ya siku 3-4 za kazi.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelBillerName =>
+      'Tafuta jina hili kwenye orodha ya wanaolipwa bili ya benki yako';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpBillerName =>
+      'Ongeza kampuni hii kama mlipwaji - ni mchakataji wa malipo wa Bull Bitcoin';
+
+  @override
+  String get fundExchangeCanadaPostTitle =>
+      'Fedha taslimu au debit ana kwa ana katika Canada Post';
+
+  @override
+  String get fundExchangeCanadaPostStep1 =>
+      '1. Nenda kwenye eneo lolote la Canada Post';
+
+  @override
+  String get fundExchangeCanadaPostStep2 =>
+      '2. Muombe mhudumu wa fedha achanganue msimbo wa QR wa \"Loadhub\"';
+
+  @override
+  String get fundExchangeCanadaPostStep3 =>
+      '3. Mwambie mhudumu kiasi unachotaka kuweka';
+
+  @override
+  String get fundExchangeCanadaPostStep4 =>
+      '4. Mhudumu ataomba kuona kitambulisho kilichotolewa na serikali na kuthibitisha kuwa jina lililo kwenye kitambulisho chako linalingana na akaunti yako ya Bull Bitcoin';
+
+  @override
+  String get fundExchangeCanadaPostStep5 =>
+      '5. Lipa kwa fedha taslimu au kadi ya debit';
+
+  @override
+  String get fundExchangeCanadaPostStep6 =>
+      '6. Mhudumu atakupa risiti, iweke kama uthibitisho wako wa malipo';
+
+  @override
+  String get fundExchangeCanadaPostStep7 =>
+      '7. Fedha zitaongezwa kwenye salio la akaunti yako ya Bull Bitcoin ndani ya dakika 30';
+
+  @override
+  String get fundExchangeCanadaPostQrCodeLabel => 'Msimbo wa QR wa Loadhub';
+
+  @override
+  String get fundExchangeSepaTitle => 'Uhamisho wa SEPA';
+
+  @override
+  String get fundExchangeSepaDescription =>
+      'Tuma uhamisho wa SEPA kutoka akaunti yako ya benki ukitumia maelezo hapa chini ';
+
+  @override
+  String get fundExchangeSepaDescriptionExactly => 'kwa usahihi kabisa.';
+
+  @override
+  String get fundExchangeInstantSepaInfo =>
+      'Tumia tu kwa miamala chini ya €20,000. Kwa miamala mikubwa zaidi, tumia chaguo la SEPA ya Kawaida.';
+
+  @override
+  String get fundExchangeRegularSepaInfo =>
+      'Tumia tu kwa miamala zaidi ya €20,000. Kwa miamala midogo zaidi, tumia chaguo la SEPA ya Papo Hapo.';
+
+  @override
+  String get fundExchangeLabelIban => 'Nambari ya akaunti ya IBAN';
+
+  @override
+  String get fundExchangeLabelBicCode => 'Msimbo wa BIC';
+
+  @override
+  String get fundExchangeLabelBankAccountCountry => 'Nchi ya akaunti ya benki';
+
+  @override
+  String get fundExchangeInfoBankCountryUk =>
+      'Nchi ya benki yetu ni Uingereza.';
+
+  @override
+  String get fundExchangeInfoBeneficiaryNameLeonod =>
+      'Jina la mnufaika linapaswa kuwa LEONOD. Ukiweka jina lingine lolote, malipo yako yatakataliwa.';
+
+  @override
+  String get fundExchangeInfoPaymentDescription =>
+      'Kwenye maelezo ya malipo, ongeza msimbo wako wa uhamisho.';
+
+  @override
+  String get fundExchangeHelpBeneficiaryAddress =>
+      'Anwani yetu rasmi, endapo benki yako inaihitaji';
+
+  @override
+  String get fundExchangeLabelRecipientName => 'Jina la mpokeaji';
+
+  @override
+  String get fundExchangeLabelBankCountry => 'Nchi ya benki';
+
+  @override
+  String get fundExchangeLabelRecipientAddress => 'Anwani ya mpokeaji';
+
+  @override
+  String get fundExchangeSpeiTitle => 'Uhamisho wa SPEI';
+
+  @override
+  String get fundExchangeSpeiDescription => 'Hamisha fedha ukitumia CLABE yako';
+
+  @override
+  String get fundExchangeSpeiInfo =>
+      'Fanya amana ukitumia uhamisho wa SPEI (papo hapo).';
+
+  @override
+  String get fundExchangeLabelClabe => 'CLABE';
+
+  @override
+  String get fundExchangeLabelMemo => 'Memo';
+
+  @override
+  String get fundExchangeSinpeTitle => 'Uhamisho wa SINPE';
+
+  @override
+  String get fundExchangeSinpeDescription => 'Hamisha Colones ukitumia SINPE';
+
+  @override
+  String get fundExchangeCrIbanCrcTitle => 'Uhamisho wa Benki (CRC)';
+
+  @override
+  String get fundExchangeCrIbanUsdTitle => 'Uhamisho wa Benki (USD)';
+
+  @override
+  String get fundExchangeArsBankTransferTitle => 'Uhamisho wa Benki';
+
+  @override
+  String get fundExchangeArsBankTransferDescription =>
+      'Tuma uhamisho wa benki kutoka akaunti yako ya benki ukitumia maelezo sahihi ya benki ya Ajentina hapa chini.';
+
+  @override
+  String get fundExchangeLabelRecipientNameArs => 'Jina la Mpokeaji';
+
+  @override
+  String get fundExchangeLabelCvu => 'CVU';
+
+  @override
+  String get fundExchangeErrorLoadingDetails =>
+      'Maelezo ya malipo hayakuweza kupakiwa kwa sasa. Tafadhali rudi nyuma na ujaribu tena, chagua njia nyingine ya malipo au urudi baadaye.';
+
+  @override
+  String get fundExchangeErrorTitleOrdPo404 => 'Chaguo la Malipo Halipatikani';
+
+  @override
+  String get fundExchangeErrorOrdPo404 =>
+      'Hakuna chaguo la malipo linalopatikana';
+
+  @override
+  String get fundExchangeErrorTitleRcpPo404 => 'Chaguo la Malipo Halipatikani';
+
+  @override
+  String get fundExchangeErrorRcpPo404 =>
+      'Huna ruhusa zinazohitajika kufikia chaguo hili la ufadhili. KYC yako haitoshi au chaguo hili halipatikani kwa akaunti yako';
+
+  @override
+  String get fundExchangeErrorTitleRcpPosinpe404 => 'SINPE Haipatikani';
+
+  @override
+  String get fundExchangeErrorRcpPosinpe404 =>
+      'Ili kufikia chaguo hili la ufadhili, nambari yako ya simu lazima iwe imesajiliwa kwenye mtandao wa SINPE nchini Costa Rica.';
+
+  @override
+  String get fundExchangeErrorTitleOrdKyc400 => 'Mahitaji ya KYC Yamekosekana';
+
+  @override
+  String get fundExchangeErrorOrdKyc400 =>
+      'Huna mahitaji ya KYC kwa ajili ya kitendo hiki';
+
+  @override
+  String get fundExchangeErrorTitleOrdCop400 =>
+      'Data ya Ufadhili wa COP si Sahihi';
+
+  @override
+  String get fundExchangeErrorOrdCop400 =>
+      'Data ya ombi si sahihi kwa ufadhili wa COP';
+
+  @override
+  String get fundExchangeErrorOpeningPaymentLink =>
+      'Kiungo cha malipo hakikuweza kufunguliwa. Tafadhali jaribu tena.';
+
+  @override
+  String get fundExchangeErrorTitleOrdCsrcp400 =>
+      'Malipo ya Mtandaoni Hayajawashwa';
+
+  @override
+  String get fundExchangeErrorOrdCsrcp400 =>
+      'Tafadhali washa chaguo la malipo ya mtandaoni kwa mpokeaji huyu wa SEPA';
+
+  @override
+  String get fundExchangeErrorTitleRcp400 => 'Ombi si Sahihi';
+
+  @override
+  String get fundExchangeErrorRcp400 => 'Ombi si sahihi';
+
+  @override
+  String get fundExchangeErrorFetchingBankCodes =>
+      'Hitilafu katika kupata misimbo ya benki. Tafadhali jaribu tena baadaye.';
+
+  @override
+  String get fundExchangeSinpeDescriptionBold => 'yatakataliwa.';
+
+  @override
+  String get fundExchangeSinpeAddedToBalance =>
+      'Mara malipo yanapotumwa, yataongezwa kwenye salio la akaunti yako.';
+
+  @override
+  String get fundExchangeSinpeLabelPhone => 'Tuma kwenye nambari hii ya simu';
+
+  @override
+  String get fundExchangeSinpeLabelRecipientName => 'Jina la Mpokeaji';
+
+  @override
+  String get fundExchangeCrIbanCrcDescription =>
+      'Tuma uhamisho wa benki kutoka akaunti yako ya benki ukitumia maelezo hapa chini ';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionBold => 'kwa usahihi kabisa';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionEnd =>
+      '. Fedha zitaongezwa kwenye salio la akaunti yako.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelIban =>
+      'Nambari ya Akaunti ya IBAN (Colones pekee)';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelPaymentDescription =>
+      'Maelezo ya Malipo';
+
+  @override
+  String get fundExchangeCrIbanCrcPaymentDescriptionHelp =>
+      'Msimbo wako wa uhamisho.';
+
+  @override
+  String get fundExchangeCrIbanCrcTransferCodeWarning =>
+      'Lazima uongeze msimbo wa uhamisho kama \"ujumbe\" au \"sababu\" au \"maelezo\" unapofanya malipo. Ukisahau kuujumuisha msimbo huu, malipo yako yanaweza kukataliwa.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelRecipientName => 'Jina la Mpokeaji';
+
+  @override
+  String get fundExchangeCrIbanCrcRecipientNameHelp =>
+      'Tumia jina letu rasmi la kampuni. Usitumie \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelCedulaJuridica => 'Cédula Jurídica';
+
+  @override
+  String get fundExchangeCrIbanUsdDescription =>
+      'Tuma uhamisho wa benki kutoka akaunti yako ya benki ukitumia maelezo hapa chini ';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionBold => 'kwa usahihi kabisa';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionEnd =>
+      '. Fedha zitaongezwa kwenye salio la akaunti yako.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelIban =>
+      'Nambari ya Akaunti ya IBAN (dola za Marekani pekee)';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelPaymentDescription =>
+      'Maelezo ya Malipo';
+
+  @override
+  String get fundExchangeCrIbanUsdPaymentDescriptionHelp =>
+      'Msimbo wako wa uhamisho.';
+
+  @override
+  String get fundExchangeCrIbanUsdTransferCodeWarning =>
+      'Lazima uongeze msimbo wa uhamisho kama \"ujumbe\" au \"sababu\" au \"maelezo\" unapofanya malipo. Ukisahau kuujumuisha msimbo huu, malipo yako yanaweza kukataliwa.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelRecipientName => 'Jina la Mpokeaji';
+
+  @override
+  String get fundExchangeCrIbanUsdRecipientNameHelp =>
+      'Tumia jina letu rasmi la kampuni. Usitumie \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelCedulaJuridica => 'Cédula Jurídica';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeTitle => 'SINPE Móvil';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeSubtitle =>
+      'Hamisha Colones ukitumia SINPE';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcTitle => 'IBAN Costa Rica (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcSubtitle =>
+      'Hamisha fedha kwa Colón ya Costa Rica (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdTitle => 'IBAN Costa Rica (USD)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdSubtitle =>
+      'Hamisha fedha kwa Dola za Marekani (USD)';
+
+  @override
+  String get doneButton => 'Imekamilika';
+
+  @override
+  String get fundExchangeSpeiTransfer => 'Uhamisho wa SPEI';
+
+  @override
+  String get fundExchangeSpeiSubtitle => 'Hamisha fedha ukitumia CLABE yako';
+
+  @override
+  String get fundExchangeBankTransfer => 'Uhamisho wa Benki';
+
+  @override
+  String get fundExchangeBankTransferSubtitle =>
+      'Tuma uhamisho wa benki kutoka akaunti yako ya benki';
+
+  @override
+  String get fundExchangeCopDailyLimitWarning =>
+      'Ukizidi kikomo chako cha kila siku cha muamala, muamala utashindwa. Utahitajika kuwasiliana na huduma kwa wateja.';
+
+  @override
+  String get fundExchangeCopSenderName => 'Jina la Mtumaji';
+
+  @override
+  String get fundExchangeCopIssuingBank => 'Benki Inayotoa';
+
+  @override
+  String get fundExchangeCopSelectBankError =>
+      'Tafadhali chagua benki inayotoa';
+
+  @override
+  String get fundExchangeCopAmount => 'Kiasi';
+
+  @override
+  String get fundExchangeCopEnterAmountError => 'Tafadhali weka kiasi';
+
+  @override
+  String get fundExchangeCopValidAmountError => 'Tafadhali weka kiasi halali';
+
+  @override
+  String get fundExchangeCopGeneratePaymentLink =>
+      'Tengeneza Kiungo cha Malipo';
+
+  @override
+  String get fundExchangeCopRedirectMessage =>
+      'Utaelekezwa kwenye ukurasa wa nje ili kufanya malipo.';
+
+  @override
+  String get fundExchangeCopOpenPaymentLink => 'Fungua Kiungo cha Malipo';
+
+  @override
+  String get fundExchangeErrorNetwork =>
+      'Angalia muunganisho wako wa intaneti na ujaribu tena.';
+
+  @override
+  String get fundExchangeMethodConfidentialSepa => 'SEPA ya Siri';
+
+  @override
+  String get fundExchangeMethodConfidentialSepaSubtitle =>
+      'IBAN pepe ya binafsi ya kuweka pesa kwa siri';
+
+  @override
+  String get networkFeatureUnavailable =>
+      'This feature is unavailable on the selected network.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelAccountNumber =>
+      'Ongeza hii kama nambari ya akaunti';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpAccountNumber =>
+      'Nambari hii ya kipekee ya akaunti imeundwa kwa ajili yako pekee';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoin => 'Usiweke';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoinDescription =>
+      ' neno \"Bitcoin\" au \"Crypto\" kwenye maelezo ya malipo. Hii itazuia malipo yako.';
 }

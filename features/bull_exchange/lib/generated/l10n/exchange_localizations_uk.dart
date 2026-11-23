@@ -398,10 +398,6 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
   String get exchangeAccessSettingsLabel => 'Exchange features';
 
   @override
-  String get exchangeAccessSettingsDescription =>
-      'Show Buy, Sell and Pay on the home screen. Swap remains available.';
-
-  @override
   String get exchangeAccessSettingsOffHint =>
       'Enable to sign in or create a Bull Bitcoin account.';
 
@@ -437,4 +433,603 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
 
   @override
   String get exchangeAccessRetryLogout => 'Finish signing out';
+
+  @override
+  String get fundExchangeTitle => 'Фінансування';
+
+  @override
+  String get fundExchangeAccountTitle => 'Оберіть Ваш рахунок';
+
+  @override
+  String get fundExchangeAccountSubtitle => 'Оберіть країну та спосіб оплати';
+
+  @override
+  String get fundExchangeRestrictedTitle => 'Поповнення недоступне';
+
+  @override
+  String get fundExchangeRestrictedMessage =>
+      'Поповнення недоступне для вашого облікового запису. Будь ласка, зверніться до служби підтримки для отримання додаткової інформації.';
+
+  @override
+  String get fundExchangeWarningTitle => 'Дивитися для шампанів';
+
+  @override
+  String get fundExchangeWarningDescription =>
+      'Якщо хтось запитує вас купити Біткойн або \"допомоги вам\", будьте обережні, вони можуть бути намагатися з вами!';
+
+  @override
+  String get fundExchangeWarningTacticsTitle => 'Поширена тактика шампана';
+
+  @override
+  String get fundExchangeWarningTactic1 =>
+      'Вони перспективні повернення інвестицій';
+
+  @override
+  String get fundExchangeWarningTactic2 => 'Ми пропонуємо Вам кредит';
+
+  @override
+  String get fundExchangeWarningTactic3 =>
+      'Повідомляємо, що вони працюють за боргу або податкову збірку';
+
+  @override
+  String get fundExchangeWarningTactic4 =>
+      'Вони просять надсилати Біткойн на свою адресу';
+
+  @override
+  String get fundExchangeWarningTactic5 =>
+      'Вони просять надсилати Біткойн на іншій платформі';
+
+  @override
+  String get fundExchangeWarningTactic6 =>
+      'Вони хочуть поділитися своїм екраном';
+
+  @override
+  String get fundExchangeWarningTactic7 => 'Не хвилюйтеся про це попередження';
+
+  @override
+  String get fundExchangeWarningTactic8 => 'Натискаємо, щоб діяти швидко';
+
+  @override
+  String get fundExchangeWarningConfirmation =>
+      'Я підтверджу, що я не зажадав купити Біткойн іншим.';
+
+  @override
+  String get fundExchangeContinueButton => 'Продовжити';
+
+  @override
+  String get fundExchangeScamConsentError =>
+      'Не вдалося зареєструвати вашу згоду. Будь ласка, спробуйте ще раз.';
+
+  @override
+  String get fundExchangeDoneButton => 'Сонце';
+
+  @override
+  String get fundExchangeJurisdictionCanada => 'Українська';
+
+  @override
+  String get fundExchangeJurisdictionEurope => '浜у 涓 蹇';
+
+  @override
+  String get fundExchangeJurisdictionMexico => 'Українська';
+
+  @override
+  String get fundExchangeJurisdictionCostaRica => 'й Костел Зірки';
+
+  @override
+  String get fundExchangeJurisdictionArgentina => 'й';
+
+  @override
+  String get fundExchangeJurisdictionColombia => '🇨🇴 Колумбія';
+
+  @override
+  String get fundExchangeMethodEmailETransfer => 'Електронна пошта';
+
+  @override
+  String get fundExchangeMethodEmailETransferSubtitle =>
+      'Найвищий і найшвидший метод (інстант)';
+
+  @override
+  String get fundExchangeMethodBankTransferWire =>
+      'Банківський переказ (Wire або EFT)';
+
+  @override
+  String get fundExchangeMethodBankTransferWireSubtitle =>
+      'Кращий і найнадійніший варіант для збільшення кількості (наприклад, або наступного дня)';
+
+  @override
+  String get fundExchangeMethodOnlineBillPayment => 'Онлайн платіж';
+
+  @override
+  String get fundExchangeMethodOnlineBillPaymentSubtitle =>
+      'Найменший варіант, але можна зробити через онлайн-банкінг (3-4 робочих днів)';
+
+  @override
+  String get fundExchangeMethodCanadaPost =>
+      'Особистий готівковий або дебет в Канаді';
+
+  @override
+  String get fundExchangeMethodCanadaPostSubtitle =>
+      'Найкращі для тих, хто віддає перевагу оплаті';
+
+  @override
+  String get fundExchangeMethodInstantSepa =>
+      'Миттєвий і стандартний SEPA-переказ';
+
+  @override
+  String get fundExchangeMethodInstantSepaSubtitle =>
+      'Найшвидший - Тільки для операцій нижче €30,000';
+
+  @override
+  String get fundExchangeMethodRegularSepa => 'Звичайна СПА';
+
+  @override
+  String get fundExchangeMethodRegularSepaSubtitle =>
+      'Тільки для збільшення операцій над €30,000';
+
+  @override
+  String get fundExchangeBankTransferWireTitle => 'Банківський переказ';
+
+  @override
+  String get fundExchangeBankTransferWireDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації. Введіть номер мобільного, який Ви вказали при укладаннi договору.';
+
+  @override
+  String get fundExchangeBankTransferWireTimeframe =>
+      'Будь-які кошти, які ви надішлемо, будуть додані до Біткойн протягом 1-2 робочих днів.';
+
+  @override
+  String get fundExchangeLabelBeneficiaryName => 'Ім\'я одержувача';
+
+  @override
+  String get fundExchangeHelpBeneficiaryName =>
+      'Використовуйте нашу офіційну назву компанії. Не використовуйте \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeLabelTransferCode =>
+      'Поштовий індекс (за умови оплати)';
+
+  @override
+  String get fundExchangeHelpTransferCode => 'Додати це з причини передачі';
+
+  @override
+  String get fundExchangeInfoTransferCode =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.';
+
+  @override
+  String get fundExchangeLabelBankAccountDetails =>
+      'Деталі банківського рахунку';
+
+  @override
+  String get fundExchangeLabelSwiftCode => 'SWIFT код';
+
+  @override
+  String get fundExchangeLabelInstitutionNumber => 'Номер установи';
+
+  @override
+  String get fundExchangeLabelTransitNumber => 'Кількість переходів';
+
+  @override
+  String get fundExchangeLabelRoutingNumber => 'Номер маршрутизації';
+
+  @override
+  String get fundExchangeLabelBeneficiaryAddress => 'Адреса отримувача';
+
+  @override
+  String get fundExchangeLabelBankName => 'Назва банку';
+
+  @override
+  String get fundExchangeLabelBankAddress => 'Адреса банку';
+
+  @override
+  String get fundExchangeETransferTitle => 'Деталі E-Transfer';
+
+  @override
+  String get fundExchangeETransferDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.';
+
+  @override
+  String get fundExchangeETransferLabelBeneficiaryName =>
+      'Використовуйте це як доменне ім\'я E-transfer';
+
+  @override
+  String get fundExchangeETransferLabelEmail =>
+      'Надіслати E-переказ на електронну пошту';
+
+  @override
+  String get fundExchangeETransferLabelSecretQuestion => 'Таємне питання';
+
+  @override
+  String get fundExchangeETransferLabelSecretAnswer => 'Секрет відповіді';
+
+  @override
+  String get fundExchangeOnlineBillPaymentTitle => 'Онлайн платіж';
+
+  @override
+  String get fundExchangeOnlineBillPaymentDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelBillerName =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpBillerName =>
+      'Додайте цю компанію як Payee - це Біткойн-процесор';
+
+  @override
+  String get fundExchangeCanadaPostTitle =>
+      'Особистий готівковий або дебет в Канаді';
+
+  @override
+  String get fundExchangeCanadaPostStep1 =>
+      '1,1 км Перейти на будь-яке місцезнаходження Канади';
+
+  @override
+  String get fundExchangeCanadaPostStep2 =>
+      '2,2 км Запитайте касіра для сканування QR-коду «Loadhub»';
+
+  @override
+  String get fundExchangeCanadaPostStep3 =>
+      '3. У Розкажіть касіра суму, яку ви хочете завантажити';
+
+  @override
+  String get fundExchangeCanadaPostStep4 =>
+      '4. У Касира попросить бачити шматок державної ідентифікаційної особи та перевірити, що ім\'я на Ваш ідентифікатор відповідає обліковому запису Bull Bitcoin';
+
+  @override
+  String get fundExchangeCanadaPostStep5 =>
+      '5. Умань Оплата готівкою або дебетовою карткою';
+
+  @override
+  String get fundExchangeCanadaPostStep6 =>
+      '6. Жнівень При отриманні грошового посередника ви зможете отримати квитанцію, зберігати її як підтвердження платежу';
+
+  @override
+  String get fundExchangeCanadaPostStep7 =>
+      '7. Про нас Кошти будуть додані в баланс облікового запису Bull Bitcoin протягом 30 хвилин';
+
+  @override
+  String get fundExchangeCanadaPostQrCodeLabel => 'Код товару:';
+
+  @override
+  String get fundExchangeSepaTitle => 'Передача СПА';
+
+  @override
+  String get fundExchangeSepaDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації ';
+
+  @override
+  String get fundExchangeSepaDescriptionExactly => 'точно.';
+
+  @override
+  String get fundExchangeInstantSepaInfo =>
+      'Тільки використовуйте для операцій нижче 20 000 євро. Для збільшення операцій використовуйте звичайний варіант СПА.';
+
+  @override
+  String get fundExchangeRegularSepaInfo =>
+      'Тільки для операцій над €20,000. Для менших операцій використовуйте варіант СПА.';
+
+  @override
+  String get fundExchangeLabelIban => 'Номер рахунку IBAN';
+
+  @override
+  String get fundExchangeLabelBicCode => 'Код BIC';
+
+  @override
+  String get fundExchangeLabelBankAccountCountry =>
+      'Країна банківського рахунку';
+
+  @override
+  String get fundExchangeInfoBankCountryUk =>
+      'EnglishDeutschPусский简体中文中國傳統EspañolالعربيةFrançaisελληνικάDanskАнглійскаябългарски.';
+
+  @override
+  String get fundExchangeInfoBeneficiaryNameLeonod =>
+      'Назва бенефіціара повинна бути LEONOD. Якщо ви поставите щось інше, то ваш платіж буде відхилений.';
+
+  @override
+  String get fundExchangeInfoPaymentDescription =>
+      'У описі платежу додайте код переказу.';
+
+  @override
+  String get fundExchangeHelpBeneficiaryAddress =>
+      'Наша офіційна адреса, якщо це необхідно для Вашого банку';
+
+  @override
+  String get fundExchangeLabelRecipientName => 'Ім\'я одержувача';
+
+  @override
+  String get fundExchangeLabelBankCountry => 'Банк країни';
+
+  @override
+  String get fundExchangeLabelRecipientAddress => 'Адреса одержувача';
+
+  @override
+  String get fundExchangeSpeiTitle => 'Трансфер SPEI';
+
+  @override
+  String get fundExchangeSpeiDescription =>
+      'Перерахування коштів за допомогою CLABE';
+
+  @override
+  String get fundExchangeSpeiInfo =>
+      'Зробіть депозит за допомогою SPEI переказу (вхід).';
+
+  @override
+  String get fundExchangeLabelClabe => 'КЛАБ';
+
+  @override
+  String get fundExchangeLabelMemo => 'Мамо';
+
+  @override
+  String get fundExchangeSinpeTitle => 'Трансфер SINPE';
+
+  @override
+  String get fundExchangeSinpeDescription =>
+      'Трансфер Колони за допомогою SINPE';
+
+  @override
+  String get fundExchangeCrIbanCrcTitle => 'Банківський переказ (CRC)';
+
+  @override
+  String get fundExchangeCrIbanUsdTitle => 'Банківський переказ (USD)';
+
+  @override
+  String get fundExchangeArsBankTransferTitle => 'Банківський переказ';
+
+  @override
+  String get fundExchangeArsBankTransferDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.';
+
+  @override
+  String get fundExchangeLabelRecipientNameArs => 'Ім\'я одержувача';
+
+  @override
+  String get fundExchangeLabelCvu => 'КВУ';
+
+  @override
+  String get fundExchangeErrorLoadingDetails =>
+      'У зв\'язку з тим, що платіж не може бути завантажений. Будь ласка, поверніть і спробуйте знову, оберіть інший спосіб оплати або поверніть пізніше.';
+
+  @override
+  String get fundExchangeErrorTitleOrdPo404 => 'Спосіб оплати недоступний';
+
+  @override
+  String get fundExchangeErrorOrdPo404 => 'Немає доступного способу оплати';
+
+  @override
+  String get fundExchangeErrorTitleRcpPo404 => 'Спосіб оплати недоступний';
+
+  @override
+  String get fundExchangeErrorRcpPo404 =>
+      'У вас немає необхідних дозволів для доступу до цього способу поповнення. Або ваш KYC недостатній, або цей спосіб недоступний для вашого облікового запису';
+
+  @override
+  String get fundExchangeErrorTitleRcpPosinpe404 => 'SINPE недоступний';
+
+  @override
+  String get fundExchangeErrorRcpPosinpe404 =>
+      'Щоб отримати доступ до цього способу поповнення, ваш номер телефону має бути зареєстрований у мережі SINPE в Коста-Риці.';
+
+  @override
+  String get fundExchangeErrorTitleOrdKyc400 => 'Відсутні вимоги KYC';
+
+  @override
+  String get fundExchangeErrorOrdKyc400 => 'У вас немає вимог KYC для цієї дії';
+
+  @override
+  String get fundExchangeErrorTitleOrdCop400 =>
+      'Невірні дані для поповнення в COP';
+
+  @override
+  String get fundExchangeErrorOrdCop400 =>
+      'Невірні дані запиту для поповнення в COP';
+
+  @override
+  String get fundExchangeErrorOpeningPaymentLink =>
+      'Не вдалося відкрити платіжне посилання. Будь ласка, спробуйте ще раз.';
+
+  @override
+  String get fundExchangeErrorTitleOrdCsrcp400 =>
+      'Віртуальний платіж не активовано';
+
+  @override
+  String get fundExchangeErrorOrdCsrcp400 =>
+      'Будь ласка, активуйте опцію віртуального платежу для цього отримувача SEPA';
+
+  @override
+  String get fundExchangeErrorTitleRcp400 => 'Невірний запит';
+
+  @override
+  String get fundExchangeErrorRcp400 => 'Невірний запит';
+
+  @override
+  String get fundExchangeErrorFetchingBankCodes =>
+      'Помилка під час отримання банківських кодів. Будь ласка, спробуйте пізніше.';
+
+  @override
+  String get fundExchangeSinpeDescriptionBold => 'вона буде відхилена.';
+
+  @override
+  String get fundExchangeSinpeAddedToBalance =>
+      'Після того, як платіж буде відправлено, він буде додано до Вашого балансу рахунку.';
+
+  @override
+  String get fundExchangeSinpeLabelPhone => 'Надіслати номер телефону';
+
+  @override
+  String get fundExchangeSinpeLabelRecipientName => 'Ім\'я одержувача';
+
+  @override
+  String get fundExchangeCrIbanCrcDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації ';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionBold => 'до';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionEnd =>
+      'й Кошти будуть додані в баланс Вашого рахунку.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelIban =>
+      'Номер облікового запису IBAN (тільки лишеклони)';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelPaymentDescription => 'Опис платежу';
+
+  @override
+  String get fundExchangeCrIbanCrcPaymentDescriptionHelp => 'Поштовий індекс.';
+
+  @override
+  String get fundExchangeCrIbanCrcTransferCodeWarning =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації. Якщо ви забуваєте включити цей код, ваш платіж може бути відхилений.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelRecipientName => 'Ім\'я одержувача';
+
+  @override
+  String get fundExchangeCrIbanCrcRecipientNameHelp =>
+      'Використовуйте нашу офіційну назву компанії. Не використовуйте \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelCedulaJuridica => 'Кедула Юрійівна';
+
+  @override
+  String get fundExchangeCrIbanUsdDescription =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації ';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionBold => 'до';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionEnd =>
+      'й Кошти будуть додані в баланс Вашого рахунку.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelIban =>
+      'Номер рахунку IBAN (тільки тільки США)';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelPaymentDescription => 'Опис платежу';
+
+  @override
+  String get fundExchangeCrIbanUsdPaymentDescriptionHelp => 'Поштовий індекс.';
+
+  @override
+  String get fundExchangeCrIbanUsdTransferCodeWarning =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації. Якщо ви забуваєте включити цей код, ваш платіж може бути відхилений.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelRecipientName => 'Ім\'я одержувача';
+
+  @override
+  String get fundExchangeCrIbanUsdRecipientNameHelp =>
+      'Використовуйте нашу офіційну назву компанії. Не використовуйте \"Bull Bitcoin\".';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelCedulaJuridica => 'Кедула Юрійівна';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeTitle => 'СИНПО Мохол';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeSubtitle =>
+      'Трансфер Колони за допомогою SINPE';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcTitle => 'IBAN Коста-Рика (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcSubtitle =>
+      'Трансфер кошти в Коста-Рикан Колон (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdTitle => 'IBAN Коста-Рика (USD)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdSubtitle =>
+      'Перерахування коштів у доларах США (USD)';
+
+  @override
+  String get doneButton => 'Сонце';
+
+  @override
+  String get fundExchangeSpeiTransfer => 'Трансфер SPEI';
+
+  @override
+  String get fundExchangeSpeiSubtitle =>
+      'Перерахування коштів за допомогою CLABE';
+
+  @override
+  String get fundExchangeBankTransfer => 'Банківський переказ';
+
+  @override
+  String get fundExchangeBankTransferSubtitle =>
+      'Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації';
+
+  @override
+  String get fundExchangeCopDailyLimitWarning =>
+      'Якщо ви перевищите денний ліміт транзакцій, транзакція не вдасться. Вам доведеться звернутися до служби підтримки.';
+
+  @override
+  String get fundExchangeCopSenderName => 'Ім\'я відправника';
+
+  @override
+  String get fundExchangeCopIssuingBank => 'Банк-емітент';
+
+  @override
+  String get fundExchangeCopSelectBankError =>
+      'Будь ласка, виберіть банк-емітент';
+
+  @override
+  String get fundExchangeCopAmount => 'Сума';
+
+  @override
+  String get fundExchangeCopEnterAmountError => 'Будь ласка, введіть суму';
+
+  @override
+  String get fundExchangeCopValidAmountError =>
+      'Будь ласка, введіть дійсну суму';
+
+  @override
+  String get fundExchangeCopGeneratePaymentLink =>
+      'Створити посилання на оплату';
+
+  @override
+  String get fundExchangeCopRedirectMessage =>
+      'Вас буде перенаправлено на зовнішню сторінку для здійснення оплати.';
+
+  @override
+  String get fundExchangeCopOpenPaymentLink => 'Відкрити посилання на оплату';
+
+  @override
+  String get fundExchangeErrorNetwork =>
+      'Перевірте підключення до Інтернету та спробуйте ще раз.';
+
+  @override
+  String get fundExchangeMethodConfidentialSepa => 'Конфіденційний SEPA';
+
+  @override
+  String get fundExchangeMethodConfidentialSepaSubtitle =>
+      'Особистий віртуальний IBAN для конфіденційного поповнення';
+
+  @override
+  String get networkFeatureUnavailable =>
+      'This feature is unavailable on the selected network.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelAccountNumber =>
+      'Додати це як номер облікового запису';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpAccountNumber =>
+      'Цей унікальний номер облікового запису створений для вас';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoin => 'Не покласти';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoinDescription =>
+      ' слово \"Bitcoin\" або \"Crypto\" в описі платежу. Заблокувати платіж.';
 }

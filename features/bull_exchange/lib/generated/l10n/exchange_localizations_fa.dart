@@ -387,10 +387,6 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   String get exchangeAccessSettingsLabel => 'Exchange features';
 
   @override
-  String get exchangeAccessSettingsDescription =>
-      'Show Buy, Sell and Pay on the home screen. Swap remains available.';
-
-  @override
   String get exchangeAccessSettingsOffHint =>
       'Enable to sign in or create a Bull Bitcoin account.';
 
@@ -426,4 +422,593 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
 
   @override
   String get exchangeAccessRetryLogout => 'Finish signing out';
+
+  @override
+  String get fundExchangeTitle => 'بودجه';
+
+  @override
+  String get fundExchangeAccountTitle => 'بودجه حساب شما';
+
+  @override
+  String get fundExchangeAccountSubtitle =>
+      'کشور و روش پرداخت خود را انتخاب کنید';
+
+  @override
+  String get fundExchangeRestrictedTitle => 'تأمین وجه در دسترس نیست';
+
+  @override
+  String get fundExchangeRestrictedMessage =>
+      'تأمین وجه برای حساب شما در دسترس نیست. لطفاً برای کسب اطلاعات بیشتر با پشتیبانی تماس بگیرید.';
+
+  @override
+  String get fundExchangeWarningTitle => 'مراقب کلاهبرداران باشید';
+
+  @override
+  String get fundExchangeWarningDescription =>
+      'اگر کسی از شما می خواهد بیت کوین بخرید یا به شما کمک کند، دقت کنید، ممکن است سعی کنند شما را فریب دهند!';
+
+  @override
+  String get fundExchangeWarningTacticsTitle => 'تاکتیک های رایج کلاهبردار';
+
+  @override
+  String get fundExchangeWarningTactic1 =>
+      'بازگشت امیدوار کننده به سرمایه گذاری';
+
+  @override
+  String get fundExchangeWarningTactic2 => 'به شما وام می دهند';
+
+  @override
+  String get fundExchangeWarningTactic3 =>
+      'آنها می گویند که برای جمع آوری بدهی یا مالیات کار می کنند';
+
+  @override
+  String get fundExchangeWarningTactic4 =>
+      'آنها می خواهند بیت کوین را به آدرس خود ارسال کنند';
+
+  @override
+  String get fundExchangeWarningTactic5 =>
+      'آنها می خواهند بیت کوین را در پلتفرم دیگری ارسال کنند';
+
+  @override
+  String get fundExchangeWarningTactic6 =>
+      'آنها می خواهند شما صفحه نمایش خود را به اشتراک بگذارید';
+
+  @override
+  String get fundExchangeWarningTactic7 =>
+      'به شما می گویند نگران این هشدار نباشید';
+
+  @override
+  String get fundExchangeWarningTactic8 =>
+      'آنها به شما فشار می دهند که سریع عمل کنید';
+
+  @override
+  String get fundExchangeWarningConfirmation =>
+      'من تایید می کنم که از من خواسته نمی شود که بیت کوین را توسط شخص دیگری خریداری کنم.';
+
+  @override
+  String get fundExchangeContinueButton => 'ادامه';
+
+  @override
+  String get fundExchangeScamConsentError =>
+      'ثبت رضایت شما ممکن نشد. لطفاً دوباره امتحان کنید.';
+
+  @override
+  String get fundExchangeDoneButton => 'انجام کارها';
+
+  @override
+  String get fundExchangeJurisdictionCanada => 'کانادا';
+
+  @override
+  String get fundExchangeJurisdictionEurope => 'اروپا (SEPA)';
+
+  @override
+  String get fundExchangeJurisdictionMexico => 'مکزیک';
+
+  @override
+  String get fundExchangeJurisdictionCostaRica =>
+      '🇨🇷 🇨🇷 کاستاریکا کاستاریکا';
+
+  @override
+  String get fundExchangeJurisdictionArgentina => 'آرژانتین';
+
+  @override
+  String get fundExchangeJurisdictionColombia => '🇨🇴 کلمبیا';
+
+  @override
+  String get fundExchangeMethodEmailETransfer => 'ایمیل E-Transfer';
+
+  @override
+  String get fundExchangeMethodEmailETransferSubtitle =>
+      'سریعترین و سریع ترین روش (Stant)';
+
+  @override
+  String get fundExchangeMethodBankTransferWire => 'انتقال بانک (Wire or EFT)';
+
+  @override
+  String get fundExchangeMethodBankTransferWireSubtitle =>
+      'بهترین و قابل اعتماد ترین گزینه برای مقادیر بزرگتر (من یا روز بعد)';
+
+  @override
+  String get fundExchangeMethodOnlineBillPayment => 'پرداخت آنلاین';
+
+  @override
+  String get fundExchangeMethodOnlineBillPaymentSubtitle =>
+      'آهسته ترین گزینه، اما می تواند از طریق بانکداری آنلاین (3-4 روز کسب و کار)';
+
+  @override
+  String get fundExchangeMethodCanadaPost => 'پول نقد یا بدهی شخصی در کانادا';
+
+  @override
+  String get fundExchangeMethodCanadaPostSubtitle =>
+      'بهترین برای کسانی که ترجیح می دهند به صورت شخصی پرداخت کنند';
+
+  @override
+  String get fundExchangeMethodInstantSepa => 'انتقال فوری و عادی SEPA';
+
+  @override
+  String get fundExchangeMethodInstantSepaSubtitle =>
+      'سریع ترین - فقط برای معاملات زیر 30،000 یورو';
+
+  @override
+  String get fundExchangeMethodRegularSepa => 'منظم SEPA';
+
+  @override
+  String get fundExchangeMethodRegularSepaSubtitle =>
+      'فقط برای معاملات بزرگتر بالای 30،000 یورو استفاده کنید';
+
+  @override
+  String get fundExchangeBankTransferWireTitle => 'انتقال بانک (wire)';
+
+  @override
+  String get fundExchangeBankTransferWireDescription =>
+      'ارسال یک انتقال سیم از حساب بانکی خود با استفاده از جزئیات بانک بیت کوین در زیر. بانک شما ممکن است فقط به برخی از این جزئیات نیاز داشته باشد.';
+
+  @override
+  String get fundExchangeBankTransferWireTimeframe =>
+      'هرگونه پولی که ارسال می کنید به بیت کوین بول شما در عرض ۱ تا ۱ روز اضافه خواهد شد.';
+
+  @override
+  String get fundExchangeLabelBeneficiaryName => 'نام Benefici';
+
+  @override
+  String get fundExchangeHelpBeneficiaryName =>
+      'از نام رسمی شرکت ما استفاده کنید. از “Bull Bitcoin” استفاده نکنید.';
+
+  @override
+  String get fundExchangeLabelTransferCode =>
+      'کد انتقال (این را به عنوان شرح پرداخت اضافه کنید)';
+
+  @override
+  String get fundExchangeHelpTransferCode =>
+      'این را به عنوان دلیل انتقال اضافه کنید';
+
+  @override
+  String get fundExchangeInfoTransferCode =>
+      'شما باید کد انتقال را به عنوان \"پیام\" یا \"منطق\" در هنگام پرداخت اضافه کنید.';
+
+  @override
+  String get fundExchangeLabelBankAccountDetails => 'جزئیات حساب بانکی';
+
+  @override
+  String get fundExchangeLabelSwiftCode => 'کد SWIFT';
+
+  @override
+  String get fundExchangeLabelInstitutionNumber => 'شماره موسسه';
+
+  @override
+  String get fundExchangeLabelTransitNumber => 'شماره ترانزیت';
+
+  @override
+  String get fundExchangeLabelRoutingNumber => 'Routing Number';
+
+  @override
+  String get fundExchangeLabelBeneficiaryAddress => 'آدرس Beneficiary';
+
+  @override
+  String get fundExchangeLabelBankName => 'نام بانک';
+
+  @override
+  String get fundExchangeLabelBankAddress => 'آدرس بانک ما';
+
+  @override
+  String get fundExchangeETransferTitle => 'جزئیات E-Transfer';
+
+  @override
+  String get fundExchangeETransferDescription =>
+      'هر مبلغی که از بانک خود از طریق ایمیل E-Transfer ارسال می کنید با استفاده از اطلاعات زیر به تعادل حساب Bitcoin Bull شما در عرض چند دقیقه اعتبار خواهد داد.';
+
+  @override
+  String get fundExchangeETransferLabelBeneficiaryName =>
+      'استفاده از این به عنوان نام سود آور E-Transfer';
+
+  @override
+  String get fundExchangeETransferLabelEmail => 'ارسال E-Transfer به این ایمیل';
+
+  @override
+  String get fundExchangeETransferLabelSecretQuestion => 'سوال محرمانه';
+
+  @override
+  String get fundExchangeETransferLabelSecretAnswer => 'پاسخ مخفی';
+
+  @override
+  String get fundExchangeOnlineBillPaymentTitle => 'پرداخت آنلاین';
+
+  @override
+  String get fundExchangeOnlineBillPaymentDescription =>
+      'هر مبلغی که شما از طریق ویژگی پرداخت صورتحساب آنلاین بانک خود با استفاده از اطلاعات زیر ارسال می کنید به تعادل حساب بول بیت کوین در عرض 3-4 روز کسب و کار اعتبار خواهد داشت.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelBillerName =>
+      'فهرست صورتحساب های بانک خود را برای این نام جستجو کنید';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpBillerName =>
+      'این شرکت را به عنوان یک پرداخت کننده اضافه کنید – این پردازنده پرداخت Bitcoin است';
+
+  @override
+  String get fundExchangeCanadaPostTitle => 'پول نقد یا بدهی شخصی در کانادا';
+
+  @override
+  String get fundExchangeCanadaPostStep1 => '1. به هر مکان پست کانادا بروید';
+
+  @override
+  String get fundExchangeCanadaPostStep2 =>
+      '2. از صندوقدار بخواهید کد QR “Loadhub” را اسکن کند';
+
+  @override
+  String get fundExchangeCanadaPostStep3 =>
+      '3. به پول نقد، مبلغی که می خواهید بارگیری کنید';
+
+  @override
+  String get fundExchangeCanadaPostStep4 =>
+      '4. پول نقد از شما خواهد خواست تا یک قطعه از شناسه دولتی را ببینید و تأیید کنید که نام موجود در ID شما با حساب Bitcoin Bull شما مطابقت دارد';
+
+  @override
+  String get fundExchangeCanadaPostStep5 =>
+      '5. پرداخت با پول نقد یا کارت اعتباری';
+
+  @override
+  String get fundExchangeCanadaPostStep6 =>
+      '6. پول نقد به شما یک رسید می دهد، آن را به عنوان اثبات پرداخت خود نگه دارید';
+
+  @override
+  String get fundExchangeCanadaPostStep7 =>
+      '7. این وجوه در 30 دقیقه به حساب Bitcoin بول شما اضافه خواهد شد';
+
+  @override
+  String get fundExchangeCanadaPostQrCodeLabel => 'کد Loadhub QR';
+
+  @override
+  String get fundExchangeSepaTitle => 'انتقال SEPA';
+
+  @override
+  String get fundExchangeSepaDescription =>
+      'ارسال یک انتقال SEPA از حساب بانکی خود با استفاده از جزئیات زیر ';
+
+  @override
+  String get fundExchangeSepaDescriptionExactly => 'درست است.';
+
+  @override
+  String get fundExchangeInstantSepaInfo =>
+      'فقط برای معاملات زیر 20،000 یورو استفاده کنید. برای معاملات بزرگتر، از گزینه معمولی SEPA استفاده کنید.';
+
+  @override
+  String get fundExchangeRegularSepaInfo =>
+      'فقط برای معاملات بالای 20،000 یورو استفاده کنید. برای معاملات کوچکتر، از گزینه Instant SEPA استفاده کنید.';
+
+  @override
+  String get fundExchangeLabelIban => 'شماره حساب IBAN';
+
+  @override
+  String get fundExchangeLabelBicCode => 'کد BIC';
+
+  @override
+  String get fundExchangeLabelBankAccountCountry => 'بانک کشور';
+
+  @override
+  String get fundExchangeInfoBankCountryUk => 'کشور بانکی ما انگلستان است.';
+
+  @override
+  String get fundExchangeInfoBeneficiaryNameLeonod =>
+      'نام ذینفع باید LEONOD باشد. اگر شما هر چیز دیگری را انجام دهید، پرداخت شما رد خواهد شد.';
+
+  @override
+  String get fundExchangeInfoPaymentDescription =>
+      'در شرح پرداخت، کد انتقال خود را اضافه کنید.';
+
+  @override
+  String get fundExchangeHelpBeneficiaryAddress =>
+      'آدرس رسمی ما، اگر این مورد توسط بانک شما لازم باشد';
+
+  @override
+  String get fundExchangeLabelRecipientName => 'نام اضطراری';
+
+  @override
+  String get fundExchangeLabelBankCountry => 'بانک کشور';
+
+  @override
+  String get fundExchangeLabelRecipientAddress => 'Recipient Address';
+
+  @override
+  String get fundExchangeSpeiTitle => 'انتقال';
+
+  @override
+  String get fundExchangeSpeiDescription => 'انتقال وجوه با استفاده از CLABE';
+
+  @override
+  String get fundExchangeSpeiInfo =>
+      'پس انداز را با استفاده از انتقال (Stant) انجام دهید.';
+
+  @override
+  String get fundExchangeLabelClabe => 'CLABE';
+
+  @override
+  String get fundExchangeLabelMemo => 'Memo';
+
+  @override
+  String get fundExchangeSinpeTitle => 'SINPE Transfer';
+
+  @override
+  String get fundExchangeSinpeDescription => 'انتقال کولون با استفاده از SINPE';
+
+  @override
+  String get fundExchangeCrIbanCrcTitle => 'انتقال بانک (CRC)';
+
+  @override
+  String get fundExchangeCrIbanUsdTitle => 'انتقال بانک (USD)';
+
+  @override
+  String get fundExchangeArsBankTransferTitle => 'انتقال بانک';
+
+  @override
+  String get fundExchangeArsBankTransferDescription =>
+      'ارسال یک انتقال بانکی از حساب بانکی خود با استفاده از جزئیات دقیق بانک آرژانتین در زیر.';
+
+  @override
+  String get fundExchangeLabelRecipientNameArs => 'نام اضطراری';
+
+  @override
+  String get fundExchangeLabelCvu => 'CVU';
+
+  @override
+  String get fundExchangeErrorLoadingDetails =>
+      'جزئیات پرداخت را نمی توان در این لحظه بارگذاری کرد. لطفاً برگردید و دوباره امتحان کنید، روش پرداخت دیگری را انتخاب کنید یا بعداً برگردید.';
+
+  @override
+  String get fundExchangeErrorTitleOrdPo404 => 'گزینه پرداخت در دسترس نیست';
+
+  @override
+  String get fundExchangeErrorOrdPo404 => 'گزینه پرداختی در دسترس نیست';
+
+  @override
+  String get fundExchangeErrorTitleRcpPo404 => 'گزینه پرداخت موجود نیست';
+
+  @override
+  String get fundExchangeErrorRcpPo404 =>
+      'شما مجوزهای لازم برای دسترسی به این گزینه تأمین مالی را ندارید. یا KYC شما کافی نیست یا این گزینه برای حساب شما در دسترس نیست';
+
+  @override
+  String get fundExchangeErrorTitleRcpPosinpe404 => 'SINPE در دسترس نیست';
+
+  @override
+  String get fundExchangeErrorRcpPosinpe404 =>
+      'برای دسترسی به این گزینه تأمین مالی، شماره تلفن شما باید در شبکه SINPE در کاستاریکا ثبت شده باشد.';
+
+  @override
+  String get fundExchangeErrorTitleOrdKyc400 => 'الزامات KYC ناقص است';
+
+  @override
+  String get fundExchangeErrorOrdKyc400 =>
+      'شما الزامات KYC لازم برای این عمل را ندارید';
+
+  @override
+  String get fundExchangeErrorTitleOrdCop400 =>
+      'داده‌های تأمین مالی COP نامعتبر است';
+
+  @override
+  String get fundExchangeErrorOrdCop400 =>
+      'داده‌های درخواست برای تأمین مالی COP نامعتبر است';
+
+  @override
+  String get fundExchangeErrorOpeningPaymentLink =>
+      'لینک پرداخت باز نشد. لطفاً دوباره تلاش کنید.';
+
+  @override
+  String get fundExchangeErrorTitleOrdCsrcp400 => 'پرداخت مجازی فعال نشده است';
+
+  @override
+  String get fundExchangeErrorOrdCsrcp400 =>
+      'لطفاً گزینه پرداخت مجازی را برای این گیرنده SEPA فعال کنید';
+
+  @override
+  String get fundExchangeErrorTitleRcp400 => 'درخواست نامعتبر';
+
+  @override
+  String get fundExchangeErrorRcp400 => 'درخواست نامعتبر';
+
+  @override
+  String get fundExchangeErrorFetchingBankCodes =>
+      'خطا در دریافت کدهای بانکی. لطفاً بعداً دوباره تلاش کنید.';
+
+  @override
+  String get fundExchangeSinpeDescriptionBold => 'رد خواهد شد.';
+
+  @override
+  String get fundExchangeSinpeAddedToBalance =>
+      'هنگامی که پرداخت ارسال شود، به حساب شما اضافه خواهد شد.';
+
+  @override
+  String get fundExchangeSinpeLabelPhone => 'ارسال به این شماره تلفن';
+
+  @override
+  String get fundExchangeSinpeLabelRecipientName => 'نام اضطراری';
+
+  @override
+  String get fundExchangeCrIbanCrcDescription =>
+      'ارسال یک انتقال بانکی از حساب بانکی خود با استفاده از جزئیات زیر ';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionBold => 'دقیقاً';
+
+  @override
+  String get fundExchangeCrIbanCrcDescriptionEnd =>
+      '... وجوه به حساب شما اضافه خواهد شد.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelIban => 'شماره حساب IBAN (فقط Colones)';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelPaymentDescription => 'توضیحات پرداخت';
+
+  @override
+  String get fundExchangeCrIbanCrcPaymentDescriptionHelp => 'کد انتقال شما.';
+
+  @override
+  String get fundExchangeCrIbanCrcTransferCodeWarning =>
+      'شما باید کد انتقال را به عنوان “message” یا “منطق” یا “description” در هنگام پرداخت اضافه کنید. اگر فراموش نکنید که این کد را اضافه کنید، پرداخت شما ممکن است رد شود.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelRecipientName => 'نام اضطراری';
+
+  @override
+  String get fundExchangeCrIbanCrcRecipientNameHelp =>
+      'از نام رسمی شرکت ما استفاده کنید. از “Bull Bitcoin” استفاده نکنید.';
+
+  @override
+  String get fundExchangeCrIbanCrcLabelCedulaJuridica => 'Cédulaídica';
+
+  @override
+  String get fundExchangeCrIbanUsdDescription =>
+      'ارسال یک انتقال بانکی از حساب بانکی خود با استفاده از جزئیات زیر ';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionBold => 'دقیقاً';
+
+  @override
+  String get fundExchangeCrIbanUsdDescriptionEnd =>
+      '... وجوه به حساب شما اضافه خواهد شد.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelIban =>
+      'شماره حساب IBAN (فقط دلار آمریکا)';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelPaymentDescription => 'توضیحات پرداخت';
+
+  @override
+  String get fundExchangeCrIbanUsdPaymentDescriptionHelp => 'کد انتقال شما.';
+
+  @override
+  String get fundExchangeCrIbanUsdTransferCodeWarning =>
+      'شما باید کد انتقال را به عنوان “message” یا “منطق” یا “description” در هنگام پرداخت اضافه کنید. اگر فراموش نکنید که این کد را اضافه کنید، پرداخت شما ممکن است رد شود.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelRecipientName => 'نام اضطراری';
+
+  @override
+  String get fundExchangeCrIbanUsdRecipientNameHelp =>
+      'از نام رسمی شرکت ما استفاده کنید. از “Bull Bitcoin” استفاده نکنید.';
+
+  @override
+  String get fundExchangeCrIbanUsdLabelCedulaJuridica => 'Cédulaídica';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeTitle => 'SINPE Móvil';
+
+  @override
+  String get fundExchangeCostaRicaMethodSinpeSubtitle =>
+      'انتقال کولون با استفاده از SINPE';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcTitle => 'IBAN کاستاریکا (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanCrcSubtitle =>
+      'انتقال وجوه در کاستاریکا کولون (CRC)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdTitle => 'IBAN کاستاریکا (USD)';
+
+  @override
+  String get fundExchangeCostaRicaMethodIbanUsdSubtitle =>
+      'انتقال وجوه در دلار آمریکا (USD)';
+
+  @override
+  String get doneButton => 'انجام کارها';
+
+  @override
+  String get fundExchangeSpeiTransfer => 'انتقال';
+
+  @override
+  String get fundExchangeSpeiSubtitle => 'انتقال وجوه با استفاده از CLABE';
+
+  @override
+  String get fundExchangeBankTransfer => 'انتقال بانک';
+
+  @override
+  String get fundExchangeBankTransferSubtitle =>
+      'ارسال یک انتقال بانکی از حساب بانکی شما';
+
+  @override
+  String get fundExchangeCopDailyLimitWarning =>
+      'اگر از سقف تراکنش روزانه‌ی خود فراتر بروید، تراکنش ناموفق خواهد بود. در این صورت باید با پشتیبانی مشتریان تماس بگیرید.';
+
+  @override
+  String get fundExchangeCopSenderName => 'نام فرستنده';
+
+  @override
+  String get fundExchangeCopIssuingBank => 'بانک صادرکننده';
+
+  @override
+  String get fundExchangeCopSelectBankError =>
+      'لطفاً یک بانک صادرکننده را انتخاب کنید';
+
+  @override
+  String get fundExchangeCopAmount => 'مبلغ';
+
+  @override
+  String get fundExchangeCopEnterAmountError => 'لطفاً یک مبلغ وارد کنید';
+
+  @override
+  String get fundExchangeCopValidAmountError => 'لطفاً یک مبلغ معتبر وارد کنید';
+
+  @override
+  String get fundExchangeCopGeneratePaymentLink => 'ایجاد لینک پرداخت';
+
+  @override
+  String get fundExchangeCopRedirectMessage =>
+      'برای انجام پرداخت به یک صفحه‌ی خارجی هدایت خواهید شد.';
+
+  @override
+  String get fundExchangeCopOpenPaymentLink => 'باز کردن لینک پرداخت';
+
+  @override
+  String get fundExchangeErrorNetwork =>
+      'اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.';
+
+  @override
+  String get fundExchangeMethodConfidentialSepa => 'SEPA محرمانه';
+
+  @override
+  String get fundExchangeMethodConfidentialSepaSubtitle =>
+      'یک IBAN مجازی شخصی برای واریز خصوصی پول';
+
+  @override
+  String get networkFeatureUnavailable =>
+      'This feature is unavailable on the selected network.';
+
+  @override
+  String get fundExchangeOnlineBillPaymentLabelAccountNumber =>
+      'اضافه کردن این به عنوان شماره حساب';
+
+  @override
+  String get fundExchangeOnlineBillPaymentHelpAccountNumber =>
+      'این شماره حساب منحصر به فرد فقط برای شما ایجاد شده است';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoin => 'قرار ندهید';
+
+  @override
+  String get fundExchangeSinpeWarningNoBitcoinDescription =>
+      ' کلمه “Bitcoin” یا “Crypto” در شرح پرداخت. این کار پرداخت شما را مسدود خواهد کرد.';
 }

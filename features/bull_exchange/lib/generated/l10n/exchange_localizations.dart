@@ -788,12 +788,6 @@ abstract class ExchangeLocalizations {
   /// Optional exchange access or wallet quick action setting.
   ///
   /// In en, this message translates to:
-  /// **'Show Buy, Sell and Pay on the home screen. Swap remains available.'**
-  String get exchangeAccessSettingsDescription;
-
-  /// Optional exchange access or wallet quick action setting.
-  ///
-  /// In en, this message translates to:
   /// **'Enable to sign in or create a Bull Bitcoin account.'**
   String get exchangeAccessSettingsOffHint;
 
@@ -856,6 +850,1032 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Finish signing out'**
   String get exchangeAccessRetryLogout;
+
+  /// AppBar title for funding screen
+  ///
+  /// In en, this message translates to:
+  /// **'Funding'**
+  String get fundExchangeTitle;
+
+  /// Main title on the fund exchange account screen
+  ///
+  /// In en, this message translates to:
+  /// **'Fund your account'**
+  String get fundExchangeAccountTitle;
+
+  /// Subtitle on fund exchange account screen prompting user to select country and payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Select your country and payment method'**
+  String get fundExchangeAccountSubtitle;
+
+  /// Title shown when a restricted or prohibited user is blocked from funding
+  ///
+  /// In en, this message translates to:
+  /// **'Funding unavailable'**
+  String get fundExchangeRestrictedTitle;
+
+  /// Message shown when a restricted or prohibited user is blocked from funding
+  ///
+  /// In en, this message translates to:
+  /// **'Funding is not available on your account. Please contact support for more information.'**
+  String get fundExchangeRestrictedMessage;
+
+  /// Title of the scammer warning screen
+  ///
+  /// In en, this message translates to:
+  /// **'Watch out for scammers'**
+  String get fundExchangeWarningTitle;
+
+  /// Warning message about potential scammers when funding account
+  ///
+  /// In en, this message translates to:
+  /// **'If someone is asking you to buy Bitcoin or \"helping you\", be careful, they may be trying to scam you!'**
+  String get fundExchangeWarningDescription;
+
+  /// Title for the list of common scammer tactics
+  ///
+  /// In en, this message translates to:
+  /// **'Common scammer tactics'**
+  String get fundExchangeWarningTacticsTitle;
+
+  /// First scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They are promising returns on investment'**
+  String get fundExchangeWarningTactic1;
+
+  /// Second scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They are offering you a loan'**
+  String get fundExchangeWarningTactic2;
+
+  /// Third scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They say they work for debt or tax collection'**
+  String get fundExchangeWarningTactic3;
+
+  /// Fourth scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They ask to send Bitcoin to their address'**
+  String get fundExchangeWarningTactic4;
+
+  /// Fifth scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They ask to send Bitcoin on another platform'**
+  String get fundExchangeWarningTactic5;
+
+  /// Sixth scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They want you to share your screen'**
+  String get fundExchangeWarningTactic6;
+
+  /// Seventh scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They tell you not to worry about this warning'**
+  String get fundExchangeWarningTactic7;
+
+  /// Eighth scammer tactic warning
+  ///
+  /// In en, this message translates to:
+  /// **'They are pressuring you to act quickly'**
+  String get fundExchangeWarningTactic8;
+
+  /// Confirmation checkbox text that user is not being coerced to buy Bitcoin
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm that I am not being asked to buy Bitcoin by someone else.'**
+  String get fundExchangeWarningConfirmation;
+
+  /// Button label to continue from warning screen to payment method details
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get fundExchangeContinueButton;
+
+  /// Error message shown when the scam warning consent API call fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to register your consent. Please try again.'**
+  String get fundExchangeScamConsentError;
+
+  /// Button label to finish and exit the funding flow
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get fundExchangeDoneButton;
+
+  /// Dropdown option for Canada jurisdiction
+  ///
+  /// In en, this message translates to:
+  /// **'🇨🇦 Canada'**
+  String get fundExchangeJurisdictionCanada;
+
+  /// Dropdown option for Europe SEPA jurisdiction
+  ///
+  /// In en, this message translates to:
+  /// **'🇪🇺 Europe (SEPA)'**
+  String get fundExchangeJurisdictionEurope;
+
+  /// Dropdown option for Mexico jurisdiction
+  ///
+  /// In en, this message translates to:
+  /// **'🇲🇽 Mexico'**
+  String get fundExchangeJurisdictionMexico;
+
+  /// Dropdown option for Costa Rica jurisdiction
+  ///
+  /// In en, this message translates to:
+  /// **'🇨🇷 Costa Rica'**
+  String get fundExchangeJurisdictionCostaRica;
+
+  /// Dropdown option for Argentina jurisdiction
+  ///
+  /// In en, this message translates to:
+  /// **'🇦🇷 Argentina'**
+  String get fundExchangeJurisdictionArgentina;
+
+  /// Dropdown option for Colombia jurisdiction
+  ///
+  /// In en, this message translates to:
+  /// **'🇨🇴 Colombia'**
+  String get fundExchangeJurisdictionColombia;
+
+  /// Payment method: Email E-Transfer (Canada)
+  ///
+  /// In en, this message translates to:
+  /// **'Email E-Transfer'**
+  String get fundExchangeMethodEmailETransfer;
+
+  /// Subtitle for Email E-Transfer payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Easiest and fastest method (instant)'**
+  String get fundExchangeMethodEmailETransferSubtitle;
+
+  /// Payment method: Bank Transfer Wire or EFT (Canada)
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer (Wire or EFT)'**
+  String get fundExchangeMethodBankTransferWire;
+
+  /// Subtitle for Bank Transfer Wire payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Best and most reliable option for larger amounts (same or next day)'**
+  String get fundExchangeMethodBankTransferWireSubtitle;
+
+  /// Payment method: Online Bill Payment (Canada)
+  ///
+  /// In en, this message translates to:
+  /// **'Online Bill Payment'**
+  String get fundExchangeMethodOnlineBillPayment;
+
+  /// Subtitle for Online Bill Payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Slowest option, but can be done via online banking (3-4 business days)'**
+  String get fundExchangeMethodOnlineBillPaymentSubtitle;
+
+  /// Payment method: In-person at Canada Post
+  ///
+  /// In en, this message translates to:
+  /// **'In-person cash or debit at Canada Post'**
+  String get fundExchangeMethodCanadaPost;
+
+  /// Subtitle for Canada Post payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Best for those who prefer to pay in person'**
+  String get fundExchangeMethodCanadaPostSubtitle;
+
+  /// Payment method: Instant & Regular SEPA (Europe)
+  ///
+  /// In en, this message translates to:
+  /// **'Instant & Regular SEPA'**
+  String get fundExchangeMethodInstantSepa;
+
+  /// Subtitle for Instant SEPA payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest - Only for transactions below €30,000'**
+  String get fundExchangeMethodInstantSepaSubtitle;
+
+  /// Payment method: Regular SEPA (Europe)
+  ///
+  /// In en, this message translates to:
+  /// **'Regular SEPA'**
+  String get fundExchangeMethodRegularSepa;
+
+  /// Subtitle for Regular SEPA payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Only use for larger transactions above €30,000'**
+  String get fundExchangeMethodRegularSepaSubtitle;
+
+  /// Screen title for bank transfer wire payment details
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer (wire)'**
+  String get fundExchangeBankTransferWireTitle;
+
+  /// Description of how to use bank transfer wire method
+  ///
+  /// In en, this message translates to:
+  /// **'Send a wire transfer from your bank account using Bull Bitcoin\'s bank details below. Your bank may require only some parts of these details.'**
+  String get fundExchangeBankTransferWireDescription;
+
+  /// Timeframe for bank transfer wire funds to be credited
+  ///
+  /// In en, this message translates to:
+  /// **'Any funds you send will be added to your Bull Bitcoin within 1-2 business days.'**
+  String get fundExchangeBankTransferWireTimeframe;
+
+  /// Label for beneficiary name field
+  ///
+  /// In en, this message translates to:
+  /// **'Beneficiary name'**
+  String get fundExchangeLabelBeneficiaryName;
+
+  /// Help text for beneficiary name field
+  ///
+  /// In en, this message translates to:
+  /// **'Use our official corporate name. Do not use \"Bull Bitcoin\".'**
+  String get fundExchangeHelpBeneficiaryName;
+
+  /// Label for transfer code field
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer code (add this as payment description)'**
+  String get fundExchangeLabelTransferCode;
+
+  /// Help text for transfer code field
+  ///
+  /// In en, this message translates to:
+  /// **'Add this as the reason for the transfer'**
+  String get fundExchangeHelpTransferCode;
+
+  /// Info card message about transfer code importance
+  ///
+  /// In en, this message translates to:
+  /// **'You must add the transfer code as the \"message\" or \"reason\" when making the payment.'**
+  String get fundExchangeInfoTransferCode;
+
+  /// Label for bank account details field
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account details'**
+  String get fundExchangeLabelBankAccountDetails;
+
+  /// Label for SWIFT code field
+  ///
+  /// In en, this message translates to:
+  /// **'SWIFT code'**
+  String get fundExchangeLabelSwiftCode;
+
+  /// Label for institution number field
+  ///
+  /// In en, this message translates to:
+  /// **'Institution number'**
+  String get fundExchangeLabelInstitutionNumber;
+
+  /// Label for transit number field
+  ///
+  /// In en, this message translates to:
+  /// **'Transit number'**
+  String get fundExchangeLabelTransitNumber;
+
+  /// Label for routing number field
+  ///
+  /// In en, this message translates to:
+  /// **'Routing number'**
+  String get fundExchangeLabelRoutingNumber;
+
+  /// Label for beneficiary address field
+  ///
+  /// In en, this message translates to:
+  /// **'Beneficiary address'**
+  String get fundExchangeLabelBeneficiaryAddress;
+
+  /// Label for bank name field
+  ///
+  /// In en, this message translates to:
+  /// **'Bank name'**
+  String get fundExchangeLabelBankName;
+
+  /// Label for bank address field
+  ///
+  /// In en, this message translates to:
+  /// **'Address of our bank'**
+  String get fundExchangeLabelBankAddress;
+
+  /// Screen title for E-Transfer payment details
+  ///
+  /// In en, this message translates to:
+  /// **'E-Transfer details'**
+  String get fundExchangeETransferTitle;
+
+  /// Description of how E-Transfer works and timeframe
+  ///
+  /// In en, this message translates to:
+  /// **'Any amount you send from your bank via Email E-Transfer using the information below will be credited to your Bull Bitcoin account balance within a few minutes.'**
+  String get fundExchangeETransferDescription;
+
+  /// Label for E-transfer beneficiary name
+  ///
+  /// In en, this message translates to:
+  /// **'Use this as the E-transfer beneficiary name'**
+  String get fundExchangeETransferLabelBeneficiaryName;
+
+  /// Label for E-transfer recipient email
+  ///
+  /// In en, this message translates to:
+  /// **'Send the E-transfer to this email'**
+  String get fundExchangeETransferLabelEmail;
+
+  /// Label for E-transfer security question
+  ///
+  /// In en, this message translates to:
+  /// **'Secret question'**
+  String get fundExchangeETransferLabelSecretQuestion;
+
+  /// Label for E-transfer security answer
+  ///
+  /// In en, this message translates to:
+  /// **'Secret answer'**
+  String get fundExchangeETransferLabelSecretAnswer;
+
+  /// Screen title for Online Bill Payment details
+  ///
+  /// In en, this message translates to:
+  /// **'Online Bill Payment'**
+  String get fundExchangeOnlineBillPaymentTitle;
+
+  /// Description of how online bill payment works and timeframe
+  ///
+  /// In en, this message translates to:
+  /// **'Any amount you send via your bank\'s online bill payment feature using the information below will be credited to your Bull Bitcoin account balance within 3-4 business days.'**
+  String get fundExchangeOnlineBillPaymentDescription;
+
+  /// Label for biller name in online bill payment
+  ///
+  /// In en, this message translates to:
+  /// **'Search your bank\'s list of billers for this name'**
+  String get fundExchangeOnlineBillPaymentLabelBillerName;
+
+  /// Help text for biller name field
+  ///
+  /// In en, this message translates to:
+  /// **'Add this company as a payee - it\'s Bull Bitcoin\'s payment processor'**
+  String get fundExchangeOnlineBillPaymentHelpBillerName;
+
+  /// Screen title for Canada Post payment method
+  ///
+  /// In en, this message translates to:
+  /// **'In-person cash or debit at Canada Post'**
+  String get fundExchangeCanadaPostTitle;
+
+  /// Step 1 for Canada Post payment process
+  ///
+  /// In en, this message translates to:
+  /// **'1. Go to any Canada Post location'**
+  String get fundExchangeCanadaPostStep1;
+
+  /// Step 2 for Canada Post payment process
+  ///
+  /// In en, this message translates to:
+  /// **'2. Ask the cashier to scan the \"Loadhub\" QR code'**
+  String get fundExchangeCanadaPostStep2;
+
+  /// Step 3 for Canada Post payment process
+  ///
+  /// In en, this message translates to:
+  /// **'3. Tell the cashier the amount you want to load'**
+  String get fundExchangeCanadaPostStep3;
+
+  /// Step 4 for Canada Post payment process - ID verification
+  ///
+  /// In en, this message translates to:
+  /// **'4. The cashier will ask to see a piece of government-issued ID and verify that the name on your ID matches your Bull Bitcoin account'**
+  String get fundExchangeCanadaPostStep4;
+
+  /// Step 5 for Canada Post payment process
+  ///
+  /// In en, this message translates to:
+  /// **'5. Pay with cash or debit card'**
+  String get fundExchangeCanadaPostStep5;
+
+  /// Step 6 for Canada Post payment process
+  ///
+  /// In en, this message translates to:
+  /// **'6. The cashier will hand you a receipt, keep it as your proof of payment'**
+  String get fundExchangeCanadaPostStep6;
+
+  /// Step 7 for Canada Post payment process - timeframe
+  ///
+  /// In en, this message translates to:
+  /// **'7. The funds will be added to your Bull Bitcoin account balance within 30 minutes'**
+  String get fundExchangeCanadaPostStep7;
+
+  /// Label for the Loadhub QR code display
+  ///
+  /// In en, this message translates to:
+  /// **'Loadhub QR code'**
+  String get fundExchangeCanadaPostQrCodeLabel;
+
+  /// Screen title for SEPA transfer payment details
+  ///
+  /// In en, this message translates to:
+  /// **'SEPA transfer'**
+  String get fundExchangeSepaTitle;
+
+  /// Description for SEPA transfer (first part, before 'exactly')
+  ///
+  /// In en, this message translates to:
+  /// **'Send a SEPA transfer from your bank account using the details below '**
+  String get fundExchangeSepaDescription;
+
+  /// Emphasized word 'exactly' in SEPA description
+  ///
+  /// In en, this message translates to:
+  /// **'exactly.'**
+  String get fundExchangeSepaDescriptionExactly;
+
+  /// Info message for Instant SEPA transaction limits
+  ///
+  /// In en, this message translates to:
+  /// **'Only use for transactions below €20,000. For larger transactions, use the Regular SEPA option.'**
+  String get fundExchangeInstantSepaInfo;
+
+  /// Info message for Regular SEPA transaction limits
+  ///
+  /// In en, this message translates to:
+  /// **'Only use for transactions above €20,000. For smaller transactions, use the Instant SEPA option.'**
+  String get fundExchangeRegularSepaInfo;
+
+  /// Label for IBAN account number field
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN account number'**
+  String get fundExchangeLabelIban;
+
+  /// Label for BIC code field
+  ///
+  /// In en, this message translates to:
+  /// **'BIC code'**
+  String get fundExchangeLabelBicCode;
+
+  /// Label for bank account country field
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account country'**
+  String get fundExchangeLabelBankAccountCountry;
+
+  /// Info message that bank country is United Kingdom
+  ///
+  /// In en, this message translates to:
+  /// **'Our bank country is the United Kingdom.'**
+  String get fundExchangeInfoBankCountryUk;
+
+  /// Critical info about beneficiary name being LEONOD
+  ///
+  /// In en, this message translates to:
+  /// **'The name of the beneficiary should be LEONOD. If you put anything else, your payment will be rejected.'**
+  String get fundExchangeInfoBeneficiaryNameLeonod;
+
+  /// Info about adding transfer code to payment description
+  ///
+  /// In en, this message translates to:
+  /// **'In the payment description, add your transfer code.'**
+  String get fundExchangeInfoPaymentDescription;
+
+  /// Help text for beneficiary address field
+  ///
+  /// In en, this message translates to:
+  /// **'Our official address, in case this is required by your bank'**
+  String get fundExchangeHelpBeneficiaryAddress;
+
+  /// Label for recipient name field (alternative to beneficiary name)
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient name'**
+  String get fundExchangeLabelRecipientName;
+
+  /// Label for bank country field
+  ///
+  /// In en, this message translates to:
+  /// **'Bank country'**
+  String get fundExchangeLabelBankCountry;
+
+  /// Label for recipient address field
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient address'**
+  String get fundExchangeLabelRecipientAddress;
+
+  /// Screen title for SPEI transfer (Mexico)
+  ///
+  /// In en, this message translates to:
+  /// **'SPEI transfer'**
+  String get fundExchangeSpeiTitle;
+
+  /// Description for SPEI transfer method
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer funds using your CLABE'**
+  String get fundExchangeSpeiDescription;
+
+  /// Info message about SPEI transfer being instant
+  ///
+  /// In en, this message translates to:
+  /// **'Make a deposit using SPEI transfer (instant).'**
+  String get fundExchangeSpeiInfo;
+
+  /// Label for CLABE number field (Mexico)
+  ///
+  /// In en, this message translates to:
+  /// **'CLABE'**
+  String get fundExchangeLabelClabe;
+
+  /// Label for memo/reference field
+  ///
+  /// In en, this message translates to:
+  /// **'Memo'**
+  String get fundExchangeLabelMemo;
+
+  /// Screen title for SINPE transfer (Costa Rica)
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE Transfer'**
+  String get fundExchangeSinpeTitle;
+
+  /// Description for SINPE transfer method
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Colones using SINPE'**
+  String get fundExchangeSinpeDescription;
+
+  /// Screen title for Costa Rica bank transfer in Colones
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer (CRC)'**
+  String get fundExchangeCrIbanCrcTitle;
+
+  /// Screen title for Costa Rica bank transfer in US Dollars
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer (USD)'**
+  String get fundExchangeCrIbanUsdTitle;
+
+  /// Screen title for Argentina bank transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get fundExchangeArsBankTransferTitle;
+
+  /// Description for Argentina bank transfer method
+  ///
+  /// In en, this message translates to:
+  /// **'Send a bank transfer from your bank account using the exact Argentina bank details below.'**
+  String get fundExchangeArsBankTransferDescription;
+
+  /// Label for recipient name in Argentina transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient Name'**
+  String get fundExchangeLabelRecipientNameArs;
+
+  /// Label for CVU (Clave Virtual Uniforme) number in Argentina
+  ///
+  /// In en, this message translates to:
+  /// **'CVU'**
+  String get fundExchangeLabelCvu;
+
+  /// Error message when funding details fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'The payment details could not be loaded at this moment. Please go back and try again, pick another payment method or come back later.'**
+  String get fundExchangeErrorLoadingDetails;
+
+  /// bb-exchange errorTitleOrdPo404
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Option Unavailable'**
+  String get fundExchangeErrorTitleOrdPo404;
+
+  /// bb-exchange errorMsgOrdPo404
+  ///
+  /// In en, this message translates to:
+  /// **'No payment option available'**
+  String get fundExchangeErrorOrdPo404;
+
+  /// bb-exchange errorTitleRcpPo404
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Option Not Available'**
+  String get fundExchangeErrorTitleRcpPo404;
+
+  /// bb-exchange errorMsgRcpPo404
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account'**
+  String get fundExchangeErrorRcpPo404;
+
+  /// bb-exchange errorTitleRcpPosinpe404
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE Not Available'**
+  String get fundExchangeErrorTitleRcpPosinpe404;
+
+  /// bb-exchange errorMsgRcpPosinpe404
+  ///
+  /// In en, this message translates to:
+  /// **'To access this funding option, your phone number must be registered with the SINPE network in Costa Rica.'**
+  String get fundExchangeErrorRcpPosinpe404;
+
+  /// bb-exchange errorTitleOrdKyc400
+  ///
+  /// In en, this message translates to:
+  /// **'KYC Requirements Missing'**
+  String get fundExchangeErrorTitleOrdKyc400;
+
+  /// bb-exchange errorMsgOrdKyc400. The API names the missing fields in messageData.missingFields; that is backend-controlled text, kept to logs only (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have the KYC requirements for this action'**
+  String get fundExchangeErrorOrdKyc400;
+
+  /// bb-exchange errorTitleOrdCop400
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid COP Funding Data'**
+  String get fundExchangeErrorTitleOrdCop400;
+
+  /// bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid request data for COP funding'**
+  String get fundExchangeErrorOrdCop400;
+
+  /// bb-exchange: shown when the COP payment link cannot be handed to a browser (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'The payment link could not be opened. Please try again.'**
+  String get fundExchangeErrorOpeningPaymentLink;
+
+  /// bb-exchange errorTitleOrdCsrcp400
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual Payment Not Activated'**
+  String get fundExchangeErrorTitleOrdCsrcp400;
+
+  /// bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Copy deliberately omits the IBAN, so it carries no placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Please activate the virtual payment option for this SEPA recipient'**
+  String get fundExchangeErrorOrdCsrcp400;
+
+  /// bb-exchange errorTitleRcp400
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Request'**
+  String get fundExchangeErrorTitleRcp400;
+
+  /// bb-exchange errorMsgRcp400
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid request'**
+  String get fundExchangeErrorRcp400;
+
+  /// bb-exchange FundingCubit._loadBankCodesCopBitso empty-list error
+  ///
+  /// In en, this message translates to:
+  /// **'Error fetching bank codes. Please try again later.'**
+  String get fundExchangeErrorFetchingBankCodes;
+
+  /// Bold text warning that payment from wrong number will be rejected
+  ///
+  /// In en, this message translates to:
+  /// **'it will be rejected.'**
+  String get fundExchangeSinpeDescriptionBold;
+
+  /// Message explaining that payment will be added to account balance
+  ///
+  /// In en, this message translates to:
+  /// **'Once the payment is sent, it will be added to your account balance.'**
+  String get fundExchangeSinpeAddedToBalance;
+
+  /// Label for SINPE Móvil phone number field
+  ///
+  /// In en, this message translates to:
+  /// **'Send to this phone number'**
+  String get fundExchangeSinpeLabelPhone;
+
+  /// Label for recipient name in SINPE transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient Name'**
+  String get fundExchangeSinpeLabelRecipientName;
+
+  /// First part of description for CR IBAN CRC transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Send a bank transfer from your bank account using the details below '**
+  String get fundExchangeCrIbanCrcDescription;
+
+  /// Bold emphasis word for CR IBAN transfer instructions
+  ///
+  /// In en, this message translates to:
+  /// **'exactly'**
+  String get fundExchangeCrIbanCrcDescriptionBold;
+
+  /// End of description for CR IBAN CRC transfer
+  ///
+  /// In en, this message translates to:
+  /// **'. Funds will be added to your account balance.'**
+  String get fundExchangeCrIbanCrcDescriptionEnd;
+
+  /// Label for IBAN number field for CRC (Colones) only
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN Account Number (Colones only)'**
+  String get fundExchangeCrIbanCrcLabelIban;
+
+  /// Label for payment description field in CR IBAN transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Description'**
+  String get fundExchangeCrIbanCrcLabelPaymentDescription;
+
+  /// Help text explaining payment description is the transfer code
+  ///
+  /// In en, this message translates to:
+  /// **'Your transfer code.'**
+  String get fundExchangeCrIbanCrcPaymentDescriptionHelp;
+
+  /// Warning about including transfer code in payment
+  ///
+  /// In en, this message translates to:
+  /// **'You must add the transfer code as \"message\" or \"reason\" or \"description\" when making the payment. If you forget to include this code, your payment may be rejected.'**
+  String get fundExchangeCrIbanCrcTransferCodeWarning;
+
+  /// Label for recipient name in CR IBAN CRC transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient Name'**
+  String get fundExchangeCrIbanCrcLabelRecipientName;
+
+  /// Help text for recipient name field explaining to use corporate name
+  ///
+  /// In en, this message translates to:
+  /// **'Use our official corporate name. Do not use \"Bull Bitcoin\".'**
+  String get fundExchangeCrIbanCrcRecipientNameHelp;
+
+  /// Label for Cédula Jurídica (legal ID number in Costa Rica)
+  ///
+  /// In en, this message translates to:
+  /// **'Cédula Jurídica'**
+  String get fundExchangeCrIbanCrcLabelCedulaJuridica;
+
+  /// First part of description for CR IBAN USD transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Send a bank transfer from your bank account using the details below '**
+  String get fundExchangeCrIbanUsdDescription;
+
+  /// Bold emphasis word for CR IBAN USD transfer instructions
+  ///
+  /// In en, this message translates to:
+  /// **'exactly'**
+  String get fundExchangeCrIbanUsdDescriptionBold;
+
+  /// End of description for CR IBAN USD transfer
+  ///
+  /// In en, this message translates to:
+  /// **'. Funds will be added to your account balance.'**
+  String get fundExchangeCrIbanUsdDescriptionEnd;
+
+  /// Label for IBAN number field for USD only
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN Account Number (US dollars only)'**
+  String get fundExchangeCrIbanUsdLabelIban;
+
+  /// Label for payment description field in CR IBAN USD transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Description'**
+  String get fundExchangeCrIbanUsdLabelPaymentDescription;
+
+  /// Help text explaining payment description is the transfer code
+  ///
+  /// In en, this message translates to:
+  /// **'Your transfer code.'**
+  String get fundExchangeCrIbanUsdPaymentDescriptionHelp;
+
+  /// Warning about including transfer code in payment for USD transfers
+  ///
+  /// In en, this message translates to:
+  /// **'You must add the transfer code as \"message\" or \"reason\" or \"description\" when making the payment. If you forget to include this code, your payment may be rejected.'**
+  String get fundExchangeCrIbanUsdTransferCodeWarning;
+
+  /// Label for recipient name in CR IBAN USD transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient Name'**
+  String get fundExchangeCrIbanUsdLabelRecipientName;
+
+  /// Help text for recipient name field explaining to use corporate name
+  ///
+  /// In en, this message translates to:
+  /// **'Use our official corporate name. Do not use \"Bull Bitcoin\".'**
+  String get fundExchangeCrIbanUsdRecipientNameHelp;
+
+  /// Label for Cédula Jurídica (legal ID number in Costa Rica) for USD
+  ///
+  /// In en, this message translates to:
+  /// **'Cédula Jurídica'**
+  String get fundExchangeCrIbanUsdLabelCedulaJuridica;
+
+  /// Payment method title for SINPE Móvil in method list
+  ///
+  /// In en, this message translates to:
+  /// **'SINPE Móvil'**
+  String get fundExchangeCostaRicaMethodSinpeTitle;
+
+  /// Subtitle description for SINPE Móvil payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Colones using SINPE'**
+  String get fundExchangeCostaRicaMethodSinpeSubtitle;
+
+  /// Payment method title for IBAN CRC in method list
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN Costa Rica (CRC)'**
+  String get fundExchangeCostaRicaMethodIbanCrcTitle;
+
+  /// Subtitle description for IBAN CRC payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer funds in Costa Rican Colón (CRC)'**
+  String get fundExchangeCostaRicaMethodIbanCrcSubtitle;
+
+  /// Payment method title for IBAN USD in method list
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN Costa Rica (USD)'**
+  String get fundExchangeCostaRicaMethodIbanUsdTitle;
+
+  /// Subtitle description for IBAN USD payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer funds in US Dollars (USD)'**
+  String get fundExchangeCostaRicaMethodIbanUsdSubtitle;
+
+  /// Button to close advanced options bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get doneButton;
+
+  /// SPEI transfer method title (Mexico)
+  ///
+  /// In en, this message translates to:
+  /// **'SPEI transfer'**
+  String get fundExchangeSpeiTransfer;
+
+  /// SPEI transfer subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer funds using your CLABE'**
+  String get fundExchangeSpeiSubtitle;
+
+  /// Bank transfer method title
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get fundExchangeBankTransfer;
+
+  /// Bank transfer subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Send a bank transfer from your bank account'**
+  String get fundExchangeBankTransferSubtitle;
+
+  /// Warning about daily transaction limit for COP bank transfer
+  ///
+  /// In en, this message translates to:
+  /// **'If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.'**
+  String get fundExchangeCopDailyLimitWarning;
+
+  /// Label for sender name field in COP bank transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Sender Name'**
+  String get fundExchangeCopSenderName;
+
+  /// Label for issuing bank dropdown in COP bank transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Issuing Bank'**
+  String get fundExchangeCopIssuingBank;
+
+  /// Validation error when no bank is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an issuing bank'**
+  String get fundExchangeCopSelectBankError;
+
+  /// Label for amount field in COP bank transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get fundExchangeCopAmount;
+
+  /// Validation error when amount is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an amount'**
+  String get fundExchangeCopEnterAmountError;
+
+  /// Validation error when amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get fundExchangeCopValidAmountError;
+
+  /// Button label to generate COP payment link
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Payment Link'**
+  String get fundExchangeCopGeneratePaymentLink;
+
+  /// Message about redirect to external payment page
+  ///
+  /// In en, this message translates to:
+  /// **'You will be redirected to an external page to make the payment.'**
+  String get fundExchangeCopRedirectMessage;
+
+  /// Button label to open COP payment link
+  ///
+  /// In en, this message translates to:
+  /// **'Open Payment Link'**
+  String get fundExchangeCopOpenPaymentLink;
+
+  /// Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get fundExchangeErrorNetwork;
+
+  /// Title of the Confidential SEPA funding method
+  ///
+  /// In en, this message translates to:
+  /// **'Confidential SEPA'**
+  String get fundExchangeMethodConfidentialSepa;
+
+  /// Subtitle of the Confidential SEPA funding method
+  ///
+  /// In en, this message translates to:
+  /// **'A personal virtual IBAN to deposit money privately'**
+  String get fundExchangeMethodConfidentialSepaSubtitle;
+
+  /// Refusal when a service does not support the active network
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is unavailable on the selected network.'**
+  String get networkFeatureUnavailable;
+
+  /// Label for account number in online bill payment
+  ///
+  /// In en, this message translates to:
+  /// **'Add this as the account number'**
+  String get fundExchangeOnlineBillPaymentLabelAccountNumber;
+
+  /// Help text for account number field
+  ///
+  /// In en, this message translates to:
+  /// **'This unique account number is created just for you'**
+  String get fundExchangeOnlineBillPaymentHelpAccountNumber;
+
+  /// Bold warning text at start of bitcoin warning message
+  ///
+  /// In en, this message translates to:
+  /// **'Do not put'**
+  String get fundExchangeSinpeWarningNoBitcoin;
+
+  /// Warning that including Bitcoin or Crypto in description will block payment
+  ///
+  /// In en, this message translates to:
+  /// **' the word \"Bitcoin\" or \"Crypto\" in the payment description. This will block your payment.'**
+  String get fundExchangeSinpeWarningNoBitcoinDescription;
 }
 
 class _ExchangeLocalizationsDelegate

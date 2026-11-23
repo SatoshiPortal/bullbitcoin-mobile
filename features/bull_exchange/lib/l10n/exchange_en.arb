@@ -447,10 +447,6 @@
   "@exchangeAccessSettingsLabel": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Swap remains available.",
-  "@exchangeAccessSettingsDescription": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
   "exchangeAccessSettingsOffHint": "Enable to sign in or create a Bull Bitcoin account.",
   "@exchangeAccessSettingsOffHint": {
     "description": "Optional exchange access or wallet quick action setting."
@@ -494,5 +490,689 @@
   "exchangeAccessRetryLogout": "Finish signing out",
   "@exchangeAccessRetryLogout": {
     "description": "Exchange access recovery and navigation"
+  },
+  "fundExchangeTitle": "Funding",
+  "@fundExchangeTitle": {
+    "description": "AppBar title for funding screen"
+  },
+  "fundExchangeAccountTitle": "Fund your account",
+  "@fundExchangeAccountTitle": {
+    "description": "Main title on the fund exchange account screen"
+  },
+  "fundExchangeAccountSubtitle": "Select your country and payment method",
+  "@fundExchangeAccountSubtitle": {
+    "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
+  },
+  "fundExchangeRestrictedTitle": "Funding unavailable",
+  "@fundExchangeRestrictedTitle": {
+    "description": "Title shown when a restricted or prohibited user is blocked from funding"
+  },
+  "fundExchangeRestrictedMessage": "Funding is not available on your account. Please contact support for more information.",
+  "@fundExchangeRestrictedMessage": {
+    "description": "Message shown when a restricted or prohibited user is blocked from funding"
+  },
+  "fundExchangeWarningTitle": "Watch out for scammers",
+  "@fundExchangeWarningTitle": {
+    "description": "Title of the scammer warning screen"
+  },
+  "fundExchangeWarningDescription": "If someone is asking you to buy Bitcoin or \"helping you\", be careful, they may be trying to scam you!",
+  "@fundExchangeWarningDescription": {
+    "description": "Warning message about potential scammers when funding account"
+  },
+  "fundExchangeWarningTacticsTitle": "Common scammer tactics",
+  "@fundExchangeWarningTacticsTitle": {
+    "description": "Title for the list of common scammer tactics"
+  },
+  "fundExchangeWarningTactic1": "They are promising returns on investment",
+  "@fundExchangeWarningTactic1": {
+    "description": "First scammer tactic warning"
+  },
+  "fundExchangeWarningTactic2": "They are offering you a loan",
+  "@fundExchangeWarningTactic2": {
+    "description": "Second scammer tactic warning"
+  },
+  "fundExchangeWarningTactic3": "They say they work for debt or tax collection",
+  "@fundExchangeWarningTactic3": {
+    "description": "Third scammer tactic warning"
+  },
+  "fundExchangeWarningTactic4": "They ask to send Bitcoin to their address",
+  "@fundExchangeWarningTactic4": {
+    "description": "Fourth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic5": "They ask to send Bitcoin on another platform",
+  "@fundExchangeWarningTactic5": {
+    "description": "Fifth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic6": "They want you to share your screen",
+  "@fundExchangeWarningTactic6": {
+    "description": "Sixth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic7": "They tell you not to worry about this warning",
+  "@fundExchangeWarningTactic7": {
+    "description": "Seventh scammer tactic warning"
+  },
+  "fundExchangeWarningTactic8": "They are pressuring you to act quickly",
+  "@fundExchangeWarningTactic8": {
+    "description": "Eighth scammer tactic warning"
+  },
+  "fundExchangeWarningConfirmation": "I confirm that I am not being asked to buy Bitcoin by someone else.",
+  "@fundExchangeWarningConfirmation": {
+    "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
+  },
+  "fundExchangeContinueButton": "Continue",
+  "@fundExchangeContinueButton": {
+    "description": "Button label to continue from warning screen to payment method details"
+  },
+  "fundExchangeScamConsentError": "Failed to register your consent. Please try again.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
+  "fundExchangeDoneButton": "Done",
+  "@fundExchangeDoneButton": {
+    "description": "Button label to finish and exit the funding flow"
+  },
+  "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
+  "@fundExchangeJurisdictionCanada": {
+    "description": "Dropdown option for Canada jurisdiction"
+  },
+  "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@fundExchangeJurisdictionEurope": {
+    "description": "Dropdown option for Europe SEPA jurisdiction"
+  },
+  "fundExchangeJurisdictionMexico": "🇲🇽 Mexico",
+  "@fundExchangeJurisdictionMexico": {
+    "description": "Dropdown option for Mexico jurisdiction"
+  },
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@fundExchangeJurisdictionCostaRica": {
+    "description": "Dropdown option for Costa Rica jurisdiction"
+  },
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "@fundExchangeJurisdictionArgentina": {
+    "description": "Dropdown option for Argentina jurisdiction"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
+  },
+  "fundExchangeMethodEmailETransfer": "Email E-Transfer",
+  "@fundExchangeMethodEmailETransfer": {
+    "description": "Payment method: Email E-Transfer (Canada)"
+  },
+  "fundExchangeMethodEmailETransferSubtitle": "Easiest and fastest method (instant)",
+  "@fundExchangeMethodEmailETransferSubtitle": {
+    "description": "Subtitle for Email E-Transfer payment method"
+  },
+  "fundExchangeMethodBankTransferWire": "Bank Transfer (Wire or EFT)",
+  "@fundExchangeMethodBankTransferWire": {
+    "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
+  },
+  "fundExchangeMethodBankTransferWireSubtitle": "Best and most reliable option for larger amounts (same or next day)",
+  "@fundExchangeMethodBankTransferWireSubtitle": {
+    "description": "Subtitle for Bank Transfer Wire payment method"
+  },
+  "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
+  "@fundExchangeMethodOnlineBillPayment": {
+    "description": "Payment method: Online Bill Payment (Canada)"
+  },
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Slowest option, but can be done via online banking (3-4 business days)",
+  "@fundExchangeMethodOnlineBillPaymentSubtitle": {
+    "description": "Subtitle for Online Bill Payment method"
+  },
+  "fundExchangeMethodCanadaPost": "In-person cash or debit at Canada Post",
+  "@fundExchangeMethodCanadaPost": {
+    "description": "Payment method: In-person at Canada Post"
+  },
+  "fundExchangeMethodCanadaPostSubtitle": "Best for those who prefer to pay in person",
+  "@fundExchangeMethodCanadaPostSubtitle": {
+    "description": "Subtitle for Canada Post payment method"
+  },
+  "fundExchangeMethodInstantSepa": "Instant & Regular SEPA",
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant & Regular SEPA (Europe)"
+  },
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
+  "@fundExchangeMethodInstantSepaSubtitle": {
+    "description": "Subtitle for Instant SEPA payment method"
+  },
+  "fundExchangeMethodRegularSepa": "Regular SEPA",
+  "@fundExchangeMethodRegularSepa": {
+    "description": "Payment method: Regular SEPA (Europe)"
+  },
+  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €30,000",
+  "@fundExchangeMethodRegularSepaSubtitle": {
+    "description": "Subtitle for Regular SEPA payment method"
+  },
+  "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
+  "@fundExchangeBankTransferWireTitle": {
+    "description": "Screen title for bank transfer wire payment details"
+  },
+  "fundExchangeBankTransferWireDescription": "Send a wire transfer from your bank account using Bull Bitcoin's bank details below. Your bank may require only some parts of these details.",
+  "@fundExchangeBankTransferWireDescription": {
+    "description": "Description of how to use bank transfer wire method"
+  },
+  "fundExchangeBankTransferWireTimeframe": "Any funds you send will be added to your Bull Bitcoin within 1-2 business days.",
+  "@fundExchangeBankTransferWireTimeframe": {
+    "description": "Timeframe for bank transfer wire funds to be credited"
+  },
+  "fundExchangeLabelBeneficiaryName": "Beneficiary name",
+  "@fundExchangeLabelBeneficiaryName": {
+    "description": "Label for beneficiary name field"
+  },
+  "fundExchangeHelpBeneficiaryName": "Use our official corporate name. Do not use \"Bull Bitcoin\".",
+  "@fundExchangeHelpBeneficiaryName": {
+    "description": "Help text for beneficiary name field"
+  },
+  "fundExchangeLabelTransferCode": "Transfer code (add this as payment description)",
+  "@fundExchangeLabelTransferCode": {
+    "description": "Label for transfer code field"
+  },
+  "fundExchangeHelpTransferCode": "Add this as the reason for the transfer",
+  "@fundExchangeHelpTransferCode": {
+    "description": "Help text for transfer code field"
+  },
+  "fundExchangeInfoTransferCode": "You must add the transfer code as the \"message\" or \"reason\" when making the payment.",
+  "@fundExchangeInfoTransferCode": {
+    "description": "Info card message about transfer code importance"
+  },
+  "fundExchangeLabelBankAccountDetails": "Bank account details",
+  "@fundExchangeLabelBankAccountDetails": {
+    "description": "Label for bank account details field"
+  },
+  "fundExchangeLabelSwiftCode": "SWIFT code",
+  "@fundExchangeLabelSwiftCode": {
+    "description": "Label for SWIFT code field"
+  },
+  "fundExchangeLabelInstitutionNumber": "Institution number",
+  "@fundExchangeLabelInstitutionNumber": {
+    "description": "Label for institution number field"
+  },
+  "fundExchangeLabelTransitNumber": "Transit number",
+  "@fundExchangeLabelTransitNumber": {
+    "description": "Label for transit number field"
+  },
+  "fundExchangeLabelRoutingNumber": "Routing number",
+  "@fundExchangeLabelRoutingNumber": {
+    "description": "Label for routing number field"
+  },
+  "fundExchangeLabelBeneficiaryAddress": "Beneficiary address",
+  "@fundExchangeLabelBeneficiaryAddress": {
+    "description": "Label for beneficiary address field"
+  },
+  "fundExchangeLabelBankName": "Bank name",
+  "@fundExchangeLabelBankName": {
+    "description": "Label for bank name field"
+  },
+  "fundExchangeLabelBankAddress": "Address of our bank",
+  "@fundExchangeLabelBankAddress": {
+    "description": "Label for bank address field"
+  },
+  "fundExchangeETransferTitle": "E-Transfer details",
+  "@fundExchangeETransferTitle": {
+    "description": "Screen title for E-Transfer payment details"
+  },
+  "fundExchangeETransferDescription": "Any amount you send from your bank via Email E-Transfer using the information below will be credited to your Bull Bitcoin account balance within a few minutes.",
+  "@fundExchangeETransferDescription": {
+    "description": "Description of how E-Transfer works and timeframe"
+  },
+  "fundExchangeETransferLabelBeneficiaryName": "Use this as the E-transfer beneficiary name",
+  "@fundExchangeETransferLabelBeneficiaryName": {
+    "description": "Label for E-transfer beneficiary name"
+  },
+  "fundExchangeETransferLabelEmail": "Send the E-transfer to this email",
+  "@fundExchangeETransferLabelEmail": {
+    "description": "Label for E-transfer recipient email"
+  },
+  "fundExchangeETransferLabelSecretQuestion": "Secret question",
+  "@fundExchangeETransferLabelSecretQuestion": {
+    "description": "Label for E-transfer security question"
+  },
+  "fundExchangeETransferLabelSecretAnswer": "Secret answer",
+  "@fundExchangeETransferLabelSecretAnswer": {
+    "description": "Label for E-transfer security answer"
+  },
+  "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
+  "@fundExchangeOnlineBillPaymentTitle": {
+    "description": "Screen title for Online Bill Payment details"
+  },
+  "fundExchangeOnlineBillPaymentDescription": "Any amount you send via your bank's online bill payment feature using the information below will be credited to your Bull Bitcoin account balance within 3-4 business days.",
+  "@fundExchangeOnlineBillPaymentDescription": {
+    "description": "Description of how online bill payment works and timeframe"
+  },
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Search your bank's list of billers for this name",
+  "@fundExchangeOnlineBillPaymentLabelBillerName": {
+    "description": "Label for biller name in online bill payment"
+  },
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Add this company as a payee - it's Bull Bitcoin's payment processor",
+  "@fundExchangeOnlineBillPaymentHelpBillerName": {
+    "description": "Help text for biller name field"
+  },
+  "fundExchangeCanadaPostTitle": "In-person cash or debit at Canada Post",
+  "@fundExchangeCanadaPostTitle": {
+    "description": "Screen title for Canada Post payment method"
+  },
+  "fundExchangeCanadaPostStep1": "1. Go to any Canada Post location",
+  "@fundExchangeCanadaPostStep1": {
+    "description": "Step 1 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep2": "2. Ask the cashier to scan the \"Loadhub\" QR code",
+  "@fundExchangeCanadaPostStep2": {
+    "description": "Step 2 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep3": "3. Tell the cashier the amount you want to load",
+  "@fundExchangeCanadaPostStep3": {
+    "description": "Step 3 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep4": "4. The cashier will ask to see a piece of government-issued ID and verify that the name on your ID matches your Bull Bitcoin account",
+  "@fundExchangeCanadaPostStep4": {
+    "description": "Step 4 for Canada Post payment process - ID verification"
+  },
+  "fundExchangeCanadaPostStep5": "5. Pay with cash or debit card",
+  "@fundExchangeCanadaPostStep5": {
+    "description": "Step 5 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep6": "6. The cashier will hand you a receipt, keep it as your proof of payment",
+  "@fundExchangeCanadaPostStep6": {
+    "description": "Step 6 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep7": "7. The funds will be added to your Bull Bitcoin account balance within 30 minutes",
+  "@fundExchangeCanadaPostStep7": {
+    "description": "Step 7 for Canada Post payment process - timeframe"
+  },
+  "fundExchangeCanadaPostQrCodeLabel": "Loadhub QR code",
+  "@fundExchangeCanadaPostQrCodeLabel": {
+    "description": "Label for the Loadhub QR code display"
+  },
+  "fundExchangeSepaTitle": "SEPA transfer",
+  "@fundExchangeSepaTitle": {
+    "description": "Screen title for SEPA transfer payment details"
+  },
+  "fundExchangeSepaDescription": "Send a SEPA transfer from your bank account using the details below ",
+  "@fundExchangeSepaDescription": {
+    "description": "Description for SEPA transfer (first part, before 'exactly')"
+  },
+  "fundExchangeSepaDescriptionExactly": "exactly.",
+  "@fundExchangeSepaDescriptionExactly": {
+    "description": "Emphasized word 'exactly' in SEPA description"
+  },
+  "fundExchangeInstantSepaInfo": "Only use for transactions below €20,000. For larger transactions, use the Regular SEPA option.",
+  "@fundExchangeInstantSepaInfo": {
+    "description": "Info message for Instant SEPA transaction limits"
+  },
+  "fundExchangeRegularSepaInfo": "Only use for transactions above €20,000. For smaller transactions, use the Instant SEPA option.",
+  "@fundExchangeRegularSepaInfo": {
+    "description": "Info message for Regular SEPA transaction limits"
+  },
+  "fundExchangeLabelIban": "IBAN account number",
+  "@fundExchangeLabelIban": {
+    "description": "Label for IBAN account number field"
+  },
+  "fundExchangeLabelBicCode": "BIC code",
+  "@fundExchangeLabelBicCode": {
+    "description": "Label for BIC code field"
+  },
+  "fundExchangeLabelBankAccountCountry": "Bank account country",
+  "@fundExchangeLabelBankAccountCountry": {
+    "description": "Label for bank account country field"
+  },
+  "fundExchangeInfoBankCountryUk": "Our bank country is the United Kingdom.",
+  "@fundExchangeInfoBankCountryUk": {
+    "description": "Info message that bank country is United Kingdom"
+  },
+  "fundExchangeInfoBeneficiaryNameLeonod": "The name of the beneficiary should be LEONOD. If you put anything else, your payment will be rejected.",
+  "@fundExchangeInfoBeneficiaryNameLeonod": {
+    "description": "Critical info about beneficiary name being LEONOD"
+  },
+  "fundExchangeInfoPaymentDescription": "In the payment description, add your transfer code.",
+  "@fundExchangeInfoPaymentDescription": {
+    "description": "Info about adding transfer code to payment description"
+  },
+  "fundExchangeHelpBeneficiaryAddress": "Our official address, in case this is required by your bank",
+  "@fundExchangeHelpBeneficiaryAddress": {
+    "description": "Help text for beneficiary address field"
+  },
+  "fundExchangeLabelRecipientName": "Recipient name",
+  "@fundExchangeLabelRecipientName": {
+    "description": "Label for recipient name field (alternative to beneficiary name)"
+  },
+  "fundExchangeLabelBankCountry": "Bank country",
+  "@fundExchangeLabelBankCountry": {
+    "description": "Label for bank country field"
+  },
+  "fundExchangeLabelRecipientAddress": "Recipient address",
+  "@fundExchangeLabelRecipientAddress": {
+    "description": "Label for recipient address field"
+  },
+  "fundExchangeSpeiTitle": "SPEI transfer",
+  "@fundExchangeSpeiTitle": {
+    "description": "Screen title for SPEI transfer (Mexico)"
+  },
+  "fundExchangeSpeiDescription": "Transfer funds using your CLABE",
+  "@fundExchangeSpeiDescription": {
+    "description": "Description for SPEI transfer method"
+  },
+  "fundExchangeSpeiInfo": "Make a deposit using SPEI transfer (instant).",
+  "@fundExchangeSpeiInfo": {
+    "description": "Info message about SPEI transfer being instant"
+  },
+  "fundExchangeLabelClabe": "CLABE",
+  "@fundExchangeLabelClabe": {
+    "description": "Label for CLABE number field (Mexico)"
+  },
+  "fundExchangeLabelMemo": "Memo",
+  "@fundExchangeLabelMemo": {
+    "description": "Label for memo/reference field"
+  },
+  "fundExchangeSinpeTitle": "SINPE Transfer",
+  "@fundExchangeSinpeTitle": {
+    "description": "Screen title for SINPE transfer (Costa Rica)"
+  },
+  "fundExchangeSinpeDescription": "Transfer Colones using SINPE",
+  "@fundExchangeSinpeDescription": {
+    "description": "Description for SINPE transfer method"
+  },
+  "fundExchangeCrIbanCrcTitle": "Bank Transfer (CRC)",
+  "@fundExchangeCrIbanCrcTitle": {
+    "description": "Screen title for Costa Rica bank transfer in Colones"
+  },
+  "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
+  "@fundExchangeCrIbanUsdTitle": {
+    "description": "Screen title for Costa Rica bank transfer in US Dollars"
+  },
+  "fundExchangeArsBankTransferTitle": "Bank Transfer",
+  "@fundExchangeArsBankTransferTitle": {
+    "description": "Screen title for Argentina bank transfer"
+  },
+  "fundExchangeArsBankTransferDescription": "Send a bank transfer from your bank account using the exact Argentina bank details below.",
+  "@fundExchangeArsBankTransferDescription": {
+    "description": "Description for Argentina bank transfer method"
+  },
+  "fundExchangeLabelRecipientNameArs": "Recipient Name",
+  "@fundExchangeLabelRecipientNameArs": {
+    "description": "Label for recipient name in Argentina transfer"
+  },
+  "fundExchangeLabelCvu": "CVU",
+  "@fundExchangeLabelCvu": {
+    "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
+  },
+  "fundExchangeErrorLoadingDetails": "The payment details could not be loaded at this moment. Please go back and try again, pick another payment method or come back later.",
+  "@fundExchangeErrorLoadingDetails": {
+    "description": "Error message when funding details fail to load"
+  },
+  "fundExchangeErrorTitleOrdPo404": "Payment Option Unavailable",
+  "@fundExchangeErrorTitleOrdPo404": {
+    "description": "bb-exchange errorTitleOrdPo404"
+  },
+  "fundExchangeErrorOrdPo404": "No payment option available",
+  "@fundExchangeErrorOrdPo404": {
+    "description": "bb-exchange errorMsgOrdPo404"
+  },
+  "fundExchangeErrorTitleRcpPo404": "Payment Option Not Available",
+  "@fundExchangeErrorTitleRcpPo404": {
+    "description": "bb-exchange errorTitleRcpPo404"
+  },
+  "fundExchangeErrorRcpPo404": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@fundExchangeErrorRcpPo404": {
+    "description": "bb-exchange errorMsgRcpPo404"
+  },
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Not Available",
+  "@fundExchangeErrorTitleRcpPosinpe404": {
+    "description": "bb-exchange errorTitleRcpPosinpe404"
+  },
+  "fundExchangeErrorRcpPosinpe404": "To access this funding option, your phone number must be registered with the SINPE network in Costa Rica.",
+  "@fundExchangeErrorRcpPosinpe404": {
+    "description": "bb-exchange errorMsgRcpPosinpe404"
+  },
+  "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing",
+  "@fundExchangeErrorTitleOrdKyc400": {
+    "description": "bb-exchange errorTitleOrdKyc400"
+  },
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action",
+  "@fundExchangeErrorOrdKyc400": {
+    "description": "bb-exchange errorMsgOrdKyc400. The API names the missing fields in messageData.missingFields; that is backend-controlled text, kept to logs only (#1895)."
+  },
+  "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
+  "@fundExchangeErrorTitleOrdCop400": {
+    "description": "bb-exchange errorTitleOrdCop400"
+  },
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding",
+  "@fundExchangeErrorOrdCop400": {
+    "description": "bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895)."
+  },
+  "fundExchangeErrorOpeningPaymentLink": "The payment link could not be opened. Please try again.",
+  "@fundExchangeErrorOpeningPaymentLink": {
+    "description": "bb-exchange: shown when the COP payment link cannot be handed to a browser (#1895)."
+  },
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
+  "@fundExchangeErrorTitleOrdCsrcp400": {
+    "description": "bb-exchange errorTitleOrdCsrcp400"
+  },
+  "fundExchangeErrorOrdCsrcp400": "Please activate the virtual payment option for this SEPA recipient",
+  "@fundExchangeErrorOrdCsrcp400": {
+    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Copy deliberately omits the IBAN, so it carries no placeholder."
+  },
+  "fundExchangeErrorTitleRcp400": "Invalid Request",
+  "@fundExchangeErrorTitleRcp400": {
+    "description": "bb-exchange errorTitleRcp400"
+  },
+  "fundExchangeErrorRcp400": "Invalid request",
+  "@fundExchangeErrorRcp400": {
+    "description": "bb-exchange errorMsgRcp400"
+  },
+  "fundExchangeErrorFetchingBankCodes": "Error fetching bank codes. Please try again later.",
+  "@fundExchangeErrorFetchingBankCodes": {
+    "description": "bb-exchange FundingCubit._loadBankCodesCopBitso empty-list error"
+  },
+  "fundExchangeSinpeDescriptionBold": "it will be rejected.",
+  "@fundExchangeSinpeDescriptionBold": {
+    "description": "Bold text warning that payment from wrong number will be rejected"
+  },
+  "fundExchangeSinpeAddedToBalance": "Once the payment is sent, it will be added to your account balance.",
+  "@fundExchangeSinpeAddedToBalance": {
+    "description": "Message explaining that payment will be added to account balance"
+  },
+  "fundExchangeSinpeLabelPhone": "Send to this phone number",
+  "@fundExchangeSinpeLabelPhone": {
+    "description": "Label for SINPE Móvil phone number field"
+  },
+  "fundExchangeSinpeLabelRecipientName": "Recipient Name",
+  "@fundExchangeSinpeLabelRecipientName": {
+    "description": "Label for recipient name in SINPE transfer"
+  },
+  "fundExchangeCrIbanCrcDescription": "Send a bank transfer from your bank account using the details below ",
+  "@fundExchangeCrIbanCrcDescription": {
+    "description": "First part of description for CR IBAN CRC transfer"
+  },
+  "fundExchangeCrIbanCrcDescriptionBold": "exactly",
+  "@fundExchangeCrIbanCrcDescriptionBold": {
+    "description": "Bold emphasis word for CR IBAN transfer instructions"
+  },
+  "fundExchangeCrIbanCrcDescriptionEnd": ". Funds will be added to your account balance.",
+  "@fundExchangeCrIbanCrcDescriptionEnd": {
+    "description": "End of description for CR IBAN CRC transfer"
+  },
+  "fundExchangeCrIbanCrcLabelIban": "IBAN Account Number (Colones only)",
+  "@fundExchangeCrIbanCrcLabelIban": {
+    "description": "Label for IBAN number field for CRC (Colones) only"
+  },
+  "fundExchangeCrIbanCrcLabelPaymentDescription": "Payment Description",
+  "@fundExchangeCrIbanCrcLabelPaymentDescription": {
+    "description": "Label for payment description field in CR IBAN transfer"
+  },
+  "fundExchangeCrIbanCrcPaymentDescriptionHelp": "Your transfer code.",
+  "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
+    "description": "Help text explaining payment description is the transfer code"
+  },
+  "fundExchangeCrIbanCrcTransferCodeWarning": "You must add the transfer code as \"message\" or \"reason\" or \"description\" when making the payment. If you forget to include this code, your payment may be rejected.",
+  "@fundExchangeCrIbanCrcTransferCodeWarning": {
+    "description": "Warning about including transfer code in payment"
+  },
+  "fundExchangeCrIbanCrcLabelRecipientName": "Recipient Name",
+  "@fundExchangeCrIbanCrcLabelRecipientName": {
+    "description": "Label for recipient name in CR IBAN CRC transfer"
+  },
+  "fundExchangeCrIbanCrcRecipientNameHelp": "Use our official corporate name. Do not use \"Bull Bitcoin\".",
+  "@fundExchangeCrIbanCrcRecipientNameHelp": {
+    "description": "Help text for recipient name field explaining to use corporate name"
+  },
+  "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
+    "description": "Label for Cédula Jurídica (legal ID number in Costa Rica)"
+  },
+  "fundExchangeCrIbanUsdDescription": "Send a bank transfer from your bank account using the details below ",
+  "@fundExchangeCrIbanUsdDescription": {
+    "description": "First part of description for CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdDescriptionBold": "exactly",
+  "@fundExchangeCrIbanUsdDescriptionBold": {
+    "description": "Bold emphasis word for CR IBAN USD transfer instructions"
+  },
+  "fundExchangeCrIbanUsdDescriptionEnd": ". Funds will be added to your account balance.",
+  "@fundExchangeCrIbanUsdDescriptionEnd": {
+    "description": "End of description for CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdLabelIban": "IBAN Account Number (US dollars only)",
+  "@fundExchangeCrIbanUsdLabelIban": {
+    "description": "Label for IBAN number field for USD only"
+  },
+  "fundExchangeCrIbanUsdLabelPaymentDescription": "Payment Description",
+  "@fundExchangeCrIbanUsdLabelPaymentDescription": {
+    "description": "Label for payment description field in CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Your transfer code.",
+  "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
+    "description": "Help text explaining payment description is the transfer code"
+  },
+  "fundExchangeCrIbanUsdTransferCodeWarning": "You must add the transfer code as \"message\" or \"reason\" or \"description\" when making the payment. If you forget to include this code, your payment may be rejected.",
+  "@fundExchangeCrIbanUsdTransferCodeWarning": {
+    "description": "Warning about including transfer code in payment for USD transfers"
+  },
+  "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
+  "@fundExchangeCrIbanUsdLabelRecipientName": {
+    "description": "Label for recipient name in CR IBAN USD transfer"
+  },
+  "fundExchangeCrIbanUsdRecipientNameHelp": "Use our official corporate name. Do not use \"Bull Bitcoin\".",
+  "@fundExchangeCrIbanUsdRecipientNameHelp": {
+    "description": "Help text for recipient name field explaining to use corporate name"
+  },
+  "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
+  "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
+    "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
+  },
+  "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
+  "@fundExchangeCostaRicaMethodSinpeTitle": {
+    "description": "Payment method title for SINPE Móvil in method list"
+  },
+  "fundExchangeCostaRicaMethodSinpeSubtitle": "Transfer Colones using SINPE",
+  "@fundExchangeCostaRicaMethodSinpeSubtitle": {
+    "description": "Subtitle description for SINPE Móvil payment method"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcTitle": {
+    "description": "Payment method title for IBAN CRC in method list"
+  },
+  "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transfer funds in Costa Rican Colón (CRC)",
+  "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
+    "description": "Subtitle description for IBAN CRC payment method"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdTitle": {
+    "description": "Payment method title for IBAN USD in method list"
+  },
+  "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transfer funds in US Dollars (USD)",
+  "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
+    "description": "Subtitle description for IBAN USD payment method"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "fundExchangeSpeiTransfer": "SPEI transfer",
+  "@fundExchangeSpeiTransfer": {
+    "description": "SPEI transfer method title (Mexico)"
+  },
+  "fundExchangeSpeiSubtitle": "Transfer funds using your CLABE",
+  "@fundExchangeSpeiSubtitle": {
+    "description": "SPEI transfer subtitle"
+  },
+  "fundExchangeBankTransfer": "Bank Transfer",
+  "@fundExchangeBankTransfer": {
+    "description": "Bank transfer method title"
+  },
+  "fundExchangeBankTransferSubtitle": "Send a bank transfer from your bank account",
+  "@fundExchangeBankTransferSubtitle": {
+    "description": "Bank transfer subtitle"
+  },
+  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeErrorNetwork": "Check your internet connection and try again.",
+  "@fundExchangeErrorNetwork": {
+    "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
+  },
+  "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
+  "@fundExchangeMethodConfidentialSepa": {
+    "description": "Title of the Confidential SEPA funding method"
+  },
+  "fundExchangeMethodConfidentialSepaSubtitle": "A personal virtual IBAN to deposit money privately",
+  "@fundExchangeMethodConfidentialSepaSubtitle": {
+    "description": "Subtitle of the Confidential SEPA funding method"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  },
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Add this as the account number",
+  "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
+    "description": "Label for account number in online bill payment"
+  },
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "This unique account number is created just for you",
+  "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
+    "description": "Help text for account number field"
+  },
+  "fundExchangeSinpeWarningNoBitcoin": "Do not put",
+  "@fundExchangeSinpeWarningNoBitcoin": {
+    "description": "Bold warning text at start of bitcoin warning message"
+  },
+  "fundExchangeSinpeWarningNoBitcoinDescription": " the word \"Bitcoin\" or \"Crypto\" in the payment description. This will block your payment.",
+  "@fundExchangeSinpeWarningNoBitcoinDescription": {
+    "description": "Warning that including Bitcoin or Crypto in description will block payment"
   }
 }
