@@ -91,6 +91,12 @@ void main() {
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
     };
+    const inventoryRepository = 'lib/src/data/inventory_repository.dart';
+    const inventoryReadFailures = {
+      'UnsupportedNetworkFailure',
+      'UnreadableWalletFailure',
+      'WalletRegistrationNotFoundFailure',
+    };
 
     final offenders = <String>[];
     for (final file in sources) {
@@ -98,6 +104,10 @@ void main() {
       final constructions = _FailureConstructions(failures);
       parseString(content: file.readAsStringSync()).unit.accept(constructions);
       for (final failure in constructions.names) {
+        if (file.path == inventoryRepository &&
+            inventoryReadFailures.contains(failure)) {
+          continue;
+        }
         offenders.add('${file.path}: $failure(');
       }
     }
@@ -310,6 +320,11 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     const declared = {
       // lifecycle and handle
       'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
+      // scoped inventory reads expose wallet metadata, not descriptors
+      'WalletInventory',
+      'WalletRegistration',
+      'WalletSelection',
+      'WalletSigner',
       // exhaustive custody references supplied by seed owners
       'SeedReferencePort', 'SeedReferencesUnavailable',
       // host exclusion between publishing obligations and deleting a parent
@@ -361,6 +376,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'InvalidVaultFailure',
       'VaultIdentityMismatchFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
+      'UnreadableWalletFailure', 'WalletRegistrationNotFoundFailure',
       'UseSecretFailure',
     };
 
