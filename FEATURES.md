@@ -10,7 +10,7 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
-    PRIMITIVES[Primitives Package<br/>Shared values and signer classification]
+    PRIMITIVES[Primitives Package<br/>Shared values, signer classification and payment networks]
     ARK[Ark]
     ARK_PROTOCOL[Ark Protocol Package]
     BULL_UI[Bull UI Package]
