@@ -134,10 +134,14 @@ graph TD
   access --> secrets
   access -.-> legacy_storage
   address_view --> bull_logger
+  address_view --> bull_payjoin
   address_view --> bull_ui
+  address_view --> scanning
+  address_view --> silent
   address_view --> label_editor
   address_view --> labels
   address_view --> mempool
+  address_view --> preferences
   address_view --> primitives
   address_view --> satoshifier
   address_view --> secrets
@@ -368,6 +372,7 @@ graph TD
   swap_feature --> receive
   swap_feature --> satoshifier
   swap_feature --> secrets
+  swap_feature --> send
   swap_feature --> signers
   swap_feature --> spend
   swap_feature --> sync
