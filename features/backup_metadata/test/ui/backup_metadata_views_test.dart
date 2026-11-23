@@ -9,6 +9,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
 import 'package:flutter/services.dart' show FontLoader, rootBundle;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:labels/backup.dart' show ConflictResolution;
 import 'package:material_ui/material_ui.dart'
     show
         Brightness,
