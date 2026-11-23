@@ -1663,7 +1663,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
       ),
     );
     final epoch = _bitcoinPreviewEpoch;
-    final String address;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    String address;
     switch (await _payinBuildAddress(current, wallet)) {
       case Err(:final failure):
         final live = _currentPaymentState;

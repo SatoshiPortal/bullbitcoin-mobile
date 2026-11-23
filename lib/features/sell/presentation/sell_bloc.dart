@@ -2027,7 +2027,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
     );
     final epoch = _bitcoinPreviewEpoch;
     final addressResult = await _payinBuildAddress(current, wallet);
-    final String address;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    String address;
     switch (addressResult) {
       case Ok(:final value):
         address = value;
