@@ -14,6 +14,7 @@ final class MetadataBackupInventory implements BackupInventoryPort {
   final String _groupIdsPath;
   final Future<bool> Function() _hasSilentPaymentsWallet;
   final String _defaultBitcoinWalletLabel;
+  final String _unnamedWalletLabel;
   final Future<bool> Function(Fingerprint, BitcoinNetwork) _backupVerified;
 
   MetadataBackupInventory({
@@ -23,11 +24,13 @@ final class MetadataBackupInventory implements BackupInventoryPort {
     required String groupIdsPath,
     required Future<bool> Function() hasSilentPaymentsWallet,
     required String defaultBitcoinWalletLabel,
+    required String unnamedWalletLabel,
     required Future<bool> Function(Fingerprint, BitcoinNetwork) backupVerified,
   }) : _wallets = wallets,
        _groupIdsPath = groupIdsPath,
        _hasSilentPaymentsWallet = hasSilentPaymentsWallet,
        _defaultBitcoinWalletLabel = defaultBitcoinWalletLabel,
+       _unnamedWalletLabel = unnamedWalletLabel,
        _backupVerified = backupVerified;
 
   @override
@@ -90,12 +93,15 @@ final class MetadataBackupInventory implements BackupInventoryPort {
           continue;
         }
         final (reference, environment) = entry.key;
+        final label = primary.label;
         inventory.add(
           BackupGroup(
             id: _groupId(reference, environment),
             displayName: primary.isDefault
                 ? _defaultBitcoinWalletLabel
-                : primary.label ?? _defaultBitcoinWalletLabel,
+                : label == null || label.trim().isEmpty
+                ? _unnamedWalletLabel
+                : label,
             network: network,
             bitcoinWalletIds: [for (final wallet in bitcoin) wallet.id],
             liquidWalletIds: [for (final wallet in liquid) wallet.id],
