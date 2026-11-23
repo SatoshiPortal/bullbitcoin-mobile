@@ -29,7 +29,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _lightningAddressInput = '';
   String? _validatedLightningAddress;
-  DcaNetwork? _selectedNetwork;
+  BtcNetwork? _selectedNetwork;
   late String? _defaultLightningAddress;
   bool _useDefaultLightningAddress = false;
 
@@ -48,7 +48,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
         .defaultLightningAddress;
   }
 
-  void _selectNetwork(DcaNetwork? network) {
+  void _selectNetwork(BtcNetwork? network) {
     setState(() {
       _selectedNetwork = network;
       _useDefaultWallet = true;
@@ -75,9 +75,9 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
     };
     final selectedNetwork = _selectedNetwork;
     final defaultWallet = switch (selectedNetwork) {
-      DcaNetwork.bitcoin => defaultWallets.bitcoin,
-      DcaNetwork.liquid => defaultWallets.liquid,
-      DcaNetwork.lightning || null => null,
+      BtcNetwork.bitcoin => defaultWallets.bitcoin,
+      BtcNetwork.liquid => defaultWallets.liquid,
+      BtcNetwork.lightning || null => null,
     };
     final defaultWalletAddress = (defaultWallet?.isNotEmpty ?? false)
         ? defaultWallet!.address
@@ -85,8 +85,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
     final usesDefaultWallet = defaultWalletAddress != null && _useDefaultWallet;
     final String? address = switch (selectedNetwork) {
       null => null,
-      DcaNetwork.lightning => _validatedLightningAddress,
-      DcaNetwork.bitcoin || DcaNetwork.liquid =>
+      BtcNetwork.lightning => _validatedLightningAddress,
+      BtcNetwork.bitcoin || BtcNetwork.liquid =>
         usesDefaultWallet ? defaultWalletAddress : _validatedTypedAddress,
     };
 
@@ -110,7 +110,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   ),
                 ),
                 const Gap(24),
-                FormField<DcaNetwork>(
+                FormField<BtcNetwork>(
                   initialValue: _selectedNetwork,
                   validator: (val) => val == null
                       ? context.loc.dcaNetworkValidationError
@@ -127,7 +127,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     );
                   },
                 ),
-                if (selectedNetwork == DcaNetwork.lightning) ...[
+                if (selectedNetwork == BtcNetwork.lightning) ...[
                   const Gap(16),
                   widget.payoutField(
                     value: _lightningAddressInput,
@@ -172,14 +172,14 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     ),
                 ],
                 if (selectedNetwork case final rail?
-                    when rail != DcaNetwork.lightning) ...[
+                    when rail != BtcNetwork.lightning) ...[
                   const Gap(16),
                   if (defaultWalletAddress != null)
                     CheckboxListTile(
                       title: Text(switch (rail) {
-                        DcaNetwork.liquid =>
+                        BtcNetwork.liquid =>
                           context.loc.dcaUseDefaultLiquidWallet,
-                        DcaNetwork.bitcoin || DcaNetwork.lightning =>
+                        BtcNetwork.bitcoin || BtcNetwork.lightning =>
                           context.loc.dcaUseDefaultBitcoinWallet,
                       }),
                       subtitle: Text(defaultWalletAddress, maxLines: 2),
@@ -198,8 +198,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     )
                   else ...[
                     Text(switch (rail) {
-                      DcaNetwork.liquid => context.loc.dcaNoDefaultLiquidWallet,
-                      DcaNetwork.bitcoin || DcaNetwork.lightning =>
+                      BtcNetwork.liquid => context.loc.dcaNoDefaultLiquidWallet,
+                      BtcNetwork.bitcoin || BtcNetwork.lightning =>
                         context.loc.dcaNoDefaultBitcoinWallet,
                     }, style: context.bullType.body),
                     const Gap(8),
@@ -215,16 +215,16 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     widget.payoutField(
                       value: _typedAddressInput,
                       label: switch (rail) {
-                        DcaNetwork.liquid =>
+                        BtcNetwork.liquid =>
                           context.loc.dcaEnterLiquidAddressLabel,
-                        DcaNetwork.bitcoin || DcaNetwork.lightning =>
+                        BtcNetwork.bitcoin || BtcNetwork.lightning =>
                           context.loc.dcaEnterBitcoinAddressLabel,
                       },
                       hint: context.loc.exchangeBitcoinWalletsEnterAddressHint,
                       type: switch (rail) {
-                        DcaNetwork.liquid => WalletAddressType.liquid,
-                        DcaNetwork.bitcoin ||
-                        DcaNetwork.lightning => WalletAddressType.bitcoin,
+                        BtcNetwork.liquid => WalletAddressType.liquid,
+                        BtcNetwork.bitcoin ||
+                        BtcNetwork.lightning => WalletAddressType.bitcoin,
                       },
                       enabled: true,
                       onChanged: (value) => setState(() {
@@ -254,10 +254,10 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                               network: network,
                               address: address,
                               isDefaultAddress: switch (network) {
-                                DcaNetwork.lightning =>
+                                BtcNetwork.lightning =>
                                   _useDefaultLightningAddress,
-                                DcaNetwork.bitcoin ||
-                                DcaNetwork.liquid => usesDefaultWallet,
+                                BtcNetwork.bitcoin ||
+                                BtcNetwork.liquid => usesDefaultWallet,
                               },
                             ),
                           );

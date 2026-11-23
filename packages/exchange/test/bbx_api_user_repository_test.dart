@@ -91,7 +91,7 @@ void main() {
           isActive: true,
           frequency: DcaBuyFrequency.weekly,
           amount: 100,
-          network: DcaNetwork.lightning,
+          network: BtcNetwork.lightning,
           address: 'bc1qdca',
         ),
       );

@@ -1,14 +1,13 @@
+import 'btc_network.dart';
 import 'order.dart';
 
 enum DcaBuyFrequency { hourly, daily, weekly, monthly }
-
-enum DcaNetwork { bitcoin, lightning, liquid }
 
 class Dca {
   final double amount;
   final FiatCurrency currency;
   final DcaBuyFrequency frequency;
-  final DcaNetwork network;
+  final BtcNetwork network;
   final String address;
   final DateTime nextPurchaseDate;
 

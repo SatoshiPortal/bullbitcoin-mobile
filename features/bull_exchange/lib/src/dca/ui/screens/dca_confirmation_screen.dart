@@ -88,17 +88,17 @@ class DcaConfirmationScreen extends StatelessWidget {
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmNetwork,
               value: switch (confirmationState.network) {
-                DcaNetwork.bitcoin => context.loc.dcaConfirmNetworkBitcoin,
-                DcaNetwork.lightning => context.loc.dcaConfirmNetworkLightning,
-                DcaNetwork.liquid => context.loc.dcaConfirmNetworkLiquid,
+                BtcNetwork.bitcoin => context.loc.dcaConfirmNetworkBitcoin,
+                BtcNetwork.lightning => context.loc.dcaConfirmNetworkLightning,
+                BtcNetwork.liquid => context.loc.dcaConfirmNetworkLiquid,
               },
             ),
             Divider(color: context.appColors.outline),
             DcaConfirmationDetailRow(
               label: switch (confirmationState.network) {
-                DcaNetwork.lightning => context.loc.dcaConfirmLightningAddress,
-                DcaNetwork.bitcoin ||
-                DcaNetwork.liquid => context.loc.dcaConfirmPayoutAddress,
+                BtcNetwork.lightning => context.loc.dcaConfirmLightningAddress,
+                BtcNetwork.bitcoin ||
+                BtcNetwork.liquid => context.loc.dcaConfirmPayoutAddress,
               },
               value: confirmationState.address,
             ),

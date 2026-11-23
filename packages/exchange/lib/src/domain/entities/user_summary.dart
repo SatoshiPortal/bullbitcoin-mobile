@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../catalog/kyc_policy.dart';
+import 'btc_network.dart';
 import 'dca.dart';
 import 'order.dart';
 
@@ -86,7 +87,7 @@ sealed class UserDca with _$UserDca {
     DcaBuyFrequency? frequency,
     double? amount,
     FiatCurrency? currency,
-    DcaNetwork? network,
+    BtcNetwork? network,
     String? address,
   }) = _UserDca;
 }

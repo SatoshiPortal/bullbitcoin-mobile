@@ -98,7 +98,7 @@ abstract interface class ExchangeOrders {
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
     bool enablePreference = false,
   });

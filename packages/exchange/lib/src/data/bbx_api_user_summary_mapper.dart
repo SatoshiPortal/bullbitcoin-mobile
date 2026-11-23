@@ -3,6 +3,7 @@ import 'package:bbx_api/bbx_api.dart' as bbx;
 import '../domain/catalog/exchange_catalog.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/user_summary.dart';
+import 'btc_network_wire.dart';
 
 /// Maps the `bbx_api` user summary to the app entity.
 UserSummary userSummaryFromBbxApi(bbx.UserSummary s) => UserSummary(
@@ -62,11 +63,13 @@ UserDca _dca(bbx.UserDca dca) => UserDca(
     UnknownCurrency() || null => null,
   },
   amount: dca.amount,
-  network: switch (dca.recipientType) {
-    'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
-    'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
-    'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
-    _ => null,
+  // An unknown rail leaves the summary's DCA network empty, as an unknown
+  // currency does.
+  network: switch (dca.recipientType == null
+      ? null
+      : BtcNetworkWire.parseRecipientType(dca.recipientType!)) {
+    KnownBtcNetwork(:final network) => network,
+    UnknownBtcNetwork() || null => null,
   },
   address: dca.address,
 );

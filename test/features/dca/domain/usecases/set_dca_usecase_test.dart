@@ -20,7 +20,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(FiatCurrency.cad);
     registerFallbackValue(DcaBuyFrequency.daily);
-    registerFallbackValue(DcaNetwork.bitcoin);
+    registerFallbackValue(BtcNetwork.bitcoin);
   });
 
   late MockExchangeOrders mainnetOrders;
@@ -39,7 +39,7 @@ void main() {
     amount: 10,
     currency: FiatCurrency.cad,
     frequency: DcaBuyFrequency.daily,
-    network: DcaNetwork.lightning,
+    network: BtcNetwork.lightning,
     address: 'user@lightning.address',
     nextPurchaseDate: DateTime(2026),
   );
@@ -75,7 +75,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
+        network: BtcNetwork.lightning,
         address: 'user@example.com',
       );
       expect(result, isA<Err<Dca, DcaFailure>>());
@@ -89,7 +89,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
+        network: BtcNetwork.lightning,
         address: '',
       );
 
@@ -105,7 +105,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
         address: '',
       );
 
@@ -114,7 +114,7 @@ void main() {
       verifyZeroInteractions(mainnetOrders);
     });
 
-    for (final network in [DcaNetwork.bitcoin, DcaNetwork.liquid]) {
+    for (final network in [BtcNetwork.bitcoin, BtcNetwork.liquid]) {
       test('sends the chosen ${network.name} address (exchange default wallet '
           'or typed) unchanged as the DCA destination', () async {
         const destination = 'default-wallet-address';
@@ -174,7 +174,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
+        network: BtcNetwork.lightning,
         address: 'user@lightning.address',
       );
 
@@ -269,7 +269,7 @@ void main() {
           amount: 10,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.lightning,
+          network: BtcNetwork.lightning,
           address: 'user@lightning.address',
         );
 
@@ -309,7 +309,7 @@ void main() {
           amount: 10,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.lightning,
+          network: BtcNetwork.lightning,
           address: 'user@lightning.address',
         ),
         throwsA(isA<StateError>()),
@@ -331,7 +331,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
+        network: BtcNetwork.lightning,
         address: 'user@lightning.address',
       );
 

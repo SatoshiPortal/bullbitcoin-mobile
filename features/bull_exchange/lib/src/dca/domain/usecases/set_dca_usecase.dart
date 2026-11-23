@@ -20,7 +20,7 @@ class SetDcaUsecase {
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
   }) async {
     final SettingsEntity settings;
@@ -51,9 +51,9 @@ class SetDcaUsecase {
     // Defensive: the wallet-selection screen only continues with an address.
     if (address.isEmpty) {
       final DcaFailure failure = switch (network) {
-        DcaNetwork.lightning => const DcaLightningAddressRequiredFailure(),
-        DcaNetwork.bitcoin ||
-        DcaNetwork.liquid => const DcaDestinationAddressRequiredFailure(),
+        BtcNetwork.lightning => const DcaLightningAddressRequiredFailure(),
+        BtcNetwork.bitcoin ||
+        BtcNetwork.liquid => const DcaDestinationAddressRequiredFailure(),
       };
       return Err(failure);
     }

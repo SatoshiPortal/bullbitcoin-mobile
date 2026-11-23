@@ -217,7 +217,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
     bool enablePreference = false,
   }) => _write((api) async {
@@ -240,11 +240,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
         DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
       },
-      recipientType: switch (network) {
-        DcaNetwork.bitcoin => bbx.DcaRecipientType.bitcoinAddress,
-        DcaNetwork.lightning => bbx.DcaRecipientType.lightningAddress,
-        DcaNetwork.liquid => bbx.DcaRecipientType.liquidAddress,
-      },
+      recipientType: BtcNetworkWire.dcaRecipientType(network),
       address: address,
     )) {
       case Err(:final failure):
@@ -263,11 +259,11 @@ final class BbxApiOrderRepository implements ExchangeOrders {
           'MONTHLY' => DcaBuyFrequency.monthly,
           _ => null,
         };
-        final network = switch (dca.recipientType) {
-          'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
-          'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
-          'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
-          _ => null,
+        final network = switch (BtcNetworkWire.parseRecipientType(
+          dca.recipientType,
+        )) {
+          KnownBtcNetwork(:final network) => network,
+          UnknownBtcNetwork() => null,
         };
         if (amount == null ||
             currency == null ||

@@ -1196,7 +1196,7 @@ void main() {
     Future<Result<Dca, ExchangeFailure>> create(
       FakeBbxHttp http, {
       DcaBuyFrequency frequency = DcaBuyFrequency.weekly,
-      DcaNetwork network = DcaNetwork.liquid,
+      BtcNetwork network = BtcNetwork.liquid,
     }) => _repository(http).createDca(
       amount: 25.5,
       currency: FiatCurrency.cad,
@@ -1245,9 +1245,9 @@ void main() {
         expect(element['recurringFrequency'], wire);
       }
       for (final (network, wire) in [
-        (DcaNetwork.bitcoin, 'OUT_BITCOIN_ADDRESS'),
-        (DcaNetwork.lightning, 'OUT_LIGHTNING_ADDRESS'),
-        (DcaNetwork.liquid, 'OUT_LIQUID_ADDRESS'),
+        (BtcNetwork.bitcoin, 'OUT_BITCOIN_ADDRESS'),
+        (BtcNetwork.lightning, 'OUT_LIGHTNING_ADDRESS'),
+        (BtcNetwork.liquid, 'OUT_LIQUID_ADDRESS'),
       ]) {
         final http = FakeBbxHttp(
           body: {
@@ -1277,7 +1277,7 @@ void main() {
       expect(created.amount, 25.5);
       expect(created.currency, FiatCurrency.cad);
       expect(created.frequency, DcaBuyFrequency.weekly);
-      expect(created.network, DcaNetwork.liquid);
+      expect(created.network, BtcNetwork.liquid);
       expect(created.address, 'lq1address');
       expect(created.nextPurchaseDate, DateTime.utc(2026, 11, 27));
     });
@@ -1319,7 +1319,7 @@ void main() {
           amount: 1,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
         _fails(isA<ExchangeNotAuthenticatedFailure>()),
@@ -1332,7 +1332,7 @@ void main() {
           amount: 1,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
         _fails(isA<ExchangeCredentialReadFailure>()),

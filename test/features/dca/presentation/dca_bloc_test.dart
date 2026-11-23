@@ -99,7 +99,7 @@ void main() {
     final create = MockSetDcaUsecase();
     const frequency = DcaBuyFrequency.daily;
     const currency = FiatCurrency.cad;
-    const network = DcaNetwork.bitcoin;
+    const network = BtcNetwork.bitcoin;
     final pending = Completer<Result<Dca, DcaFailure>>();
     when(start.execute).thenAnswer(
       (_) async => const Ok((
@@ -189,7 +189,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
         address: _bitcoinDefault.address,
       ),
     ).thenAnswer(
@@ -198,7 +198,7 @@ void main() {
           amount: 10,
           currency: FiatCurrency.cad,
           frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.bitcoin,
+          network: BtcNetwork.bitcoin,
           address: _bitcoinDefault.address,
           nextPurchaseDate: DateTime(2026),
         ),
@@ -212,7 +212,7 @@ void main() {
     );
     bloc.add(
       DcaEvent.walletSelected(
-        network: DcaNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
         address: _bitcoinDefault.address,
         isDefaultAddress: true,
       ),
@@ -230,7 +230,7 @@ void main() {
         amount: 10,
         currency: FiatCurrency.cad,
         frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.bitcoin,
+        network: BtcNetwork.bitcoin,
         address: _bitcoinDefault.address,
       ),
     ).called(1);

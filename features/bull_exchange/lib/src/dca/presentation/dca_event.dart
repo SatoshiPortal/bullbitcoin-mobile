@@ -9,7 +9,7 @@ sealed class DcaEvent with _$DcaEvent {
     required DcaBuyFrequency frequency,
   }) = DcaBuyInputContinuePressed;
   const factory DcaEvent.walletSelected({
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
     @Default(false) bool isDefaultAddress,
   }) = DcaWalletSelected;

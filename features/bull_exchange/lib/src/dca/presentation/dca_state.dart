@@ -24,7 +24,7 @@ sealed class DcaState with _$DcaState {
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
     @Default(false) bool isDefaultAddress,
     @Default(false) bool isConfirmingDca,
@@ -159,7 +159,7 @@ extension DcaBuyInputStateX on DcaBuyInputState {
 
 extension DcaWalletSelectionStateX on DcaWalletSelectionState {
   DcaConfirmationState toConfirmationState({
-    required DcaNetwork network,
+    required BtcNetwork network,
     required String address,
     bool isDefaultAddress = false,
   }) {
