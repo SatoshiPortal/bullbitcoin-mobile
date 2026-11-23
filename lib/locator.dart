@@ -472,7 +472,12 @@ class AppLocator {
               amountSat: amountSat,
               note: note,
             ),
-        setPayjoinEnabled: locator<Settings>().setPayjoinReceiveEnabled,
+        // Resolved on use: Settings depends on Exchange, registered below.
+        setPayjoinEnabled: (enabled, {required requestConsent}) =>
+            locator<Settings>().setPayjoinReceiveEnabled(
+              enabled,
+              requestConsent: requestConsent,
+            ),
         openHome: (context) => context.goNamed(WalletRoute.walletHome.name),
         openPayjoinSettings: (context) =>
             context.pushNamed(SettingsRoute.payjoinSettings.name),
