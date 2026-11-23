@@ -96,7 +96,7 @@ typedef ExchangeNotificationOperations = ({
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
-  final Future<Result<OrderStatsResponse, ExchangeFailure>> Function()
+  final Future<Result<OrderStatistics, ExchangeFailure>> Function()
   _getOrderStats;
   final Future<Result<void, ExchangeFailure>> Function({
     required List<int> fileBytes,
@@ -491,40 +491,41 @@ final class Exchange {
   Future<Result<bool, ExchangeFailure>> hasPendingOrders() =>
       _hasPendingOrders();
 
-  Future<Result<OrderStatsResponse, ExchangeFailure>> getOrderStats() =>
+  @useResult
+  Future<Result<OrderStatistics, ExchangeFailure>> getOrderStats() =>
       _getOrderStats();
 
-  Future<Result<void, ExchangeFailure>> uploadKycDocument({
-    required List<int> fileBytes,
   @useResult
   Future<Result<ExchangeKycConfiguration, ExchangeFailure>> loadKyc() async =>
       await _kyc?.load() ?? const Err(ExchangeUnexpectedFailure());
 
   @useResult
+  Future<Result<void, ExchangeFailure>> uploadKycDocument({
+    required List<int> fileBytes,
     required String fileName,
   }) => _uploadKycDocument(fileBytes: fileBytes, fileName: fileName);
 
   /// Reads the account, distinguishing an HTTP 401 from an absent local key.
-  Future<Result<UserSummary, ExchangeFailure>> getAccount(
   @useResult
+  Future<Result<UserSummary, ExchangeFailure>> getAccount(
     ExchangeEnvironment environment,
   ) => _getAccount(environment);
 
   /// Reads the summary with the historical account-availability semantics.
-  Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
   @useResult
+  Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
 
-  Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
   @useResult
+  Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
     ExchangeEnvironment environment,
   ) => _listAnnouncements(environment);
 
   /// Replaces the account's preference set. Supply all existing values that
   /// should be retained when changing only one field.
-  Future<Result<void, ExchangeFailure>> saveUserPreference(
   @useResult
+  Future<Result<void, ExchangeFailure>> saveUserPreference(
     ExchangeEnvironment environment, {
     String? language,
     String? currency,
@@ -571,20 +572,20 @@ final class Exchange {
     address: address,
   );
 
-  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
   @useResult
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
     int? page,
     int? pageSize,
   }) => _chat.getMessages(page: page, pageSize: pageSize);
 
-  Future<Result<void, ExchangeFailure>> sendSupportMessage({
   @useResult
+  Future<Result<void, ExchangeFailure>> sendSupportMessage({
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) => _chat.sendMessage(text: text, attachments: attachments);
 
-  Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   @useResult
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
@@ -594,12 +595,12 @@ final class Exchange {
   Stream<Result<NotificationMessage, ExchangeFailure>> get notifications =>
       _notifications.messages();
 
-  Future<Result<void, ExchangeFailure>> connectNotifications() =>
   @useResult
+  Future<Result<void, ExchangeFailure>> connectNotifications() =>
       _notifications.connect();
 
-  Future<Result<void, ExchangeFailure>> reconnectNotifications() =>
   @useResult
+  Future<Result<void, ExchangeFailure>> reconnectNotifications() =>
       _notifications.reconnect();
 
   void disconnectNotifications() => _notifications.disconnect();
@@ -610,7 +611,7 @@ final class Exchange {
 /// Builds the public capability with scenario-controlled results.
 Exchange exchangeForTesting({
   Future<Result<bool, ExchangeFailure>> Function()? hasPendingOrders,
-  Future<Result<OrderStatsResponse, ExchangeFailure>> Function()? getOrderStats,
+  Future<Result<OrderStatistics, ExchangeFailure>> Function()? getOrderStats,
   Future<Result<void, ExchangeFailure>> Function({
     required List<int> fileBytes,
     required String fileName,
@@ -722,6 +723,7 @@ Exchange exchangeForTesting({
         find: (_) => throw StateError('Unexpected virtual IBAN lookup'),
         create: (_) => throw StateError('Unexpected virtual IBAN creation'),
       ),
+  null,
 );
 
 Exchange exchangeWithTransportForTesting({
@@ -735,4 +737,3 @@ Exchange exchangeWithTransportForTesting({
   openClient: openClient,
   openUntimedClient: openUntimedClient ?? openClient,
 );
-  null,

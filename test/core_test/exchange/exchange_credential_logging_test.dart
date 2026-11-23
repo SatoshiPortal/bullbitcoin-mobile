@@ -138,7 +138,7 @@ void main() {
     );
     expect(
       await exchange.getOrderStats(),
-      isA<Err<OrderStatsResponse, ExchangeFailure>>(),
+      isA<Err<OrderStatistics, ExchangeFailure>>(),
     );
     expect(reporter.calls, 0);
   });
