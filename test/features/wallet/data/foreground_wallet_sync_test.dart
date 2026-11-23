@@ -20,7 +20,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:electrum/electrum.dart' show ElectrumSyncResult;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -89,7 +89,7 @@ void main() {
   late _Metadata metadata;
   late _Values values;
   late WalletRepository repository;
-  late ForegroundWalletSync bridge;
+  late _Bridge bridge;
 
   setUp(() {
     directory = Directory.systemTemp.createTempSync('foreground-sync-');
@@ -97,8 +97,6 @@ void main() {
     metadata = _Metadata();
     values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
-    when(() => metadata.recordSyncTime(any(), any())).thenAnswer((_) async {});
-    when(() => metadata.insert(any())).thenAnswer((_) async {});
     when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
       (_) async => Balances(
         confirmedSat: BigInt.zero,
@@ -109,7 +107,7 @@ void main() {
         totalSat: BigInt.zero,
       ),
     );
-    bridge = ForegroundWalletSync(
+    bridge = _Bridge(
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
@@ -119,7 +117,7 @@ void main() {
     repository = WalletRepository(
       walletRegistrations: metadata,
       walletValuesDatasource: values,
-      synchronize: bridge.synchronize,
+      synchronization: bridge.synchronization,
       syncStarted: bridge.started,
       syncFinished: bridge.finished,
     );
@@ -578,4 +576,43 @@ final class _ThrowingPolicy implements WalletConnectionPort {
   }) async {
     throw const FormatException('sensitive error detail');
   }
+}
+
+/// The legacy repository's view of foreground sync: catalog rows resolve to
+/// descriptors, then the Sync operation runs.
+final class _Bridge {
+  final ElectrumSync sync;
+  final ForegroundWalletSynchronization synchronization;
+
+  _Bridge(this.sync) : synchronization = ForegroundWalletSynchronization(sync);
+
+  Stream<String> get started => sync.started.map((key) => key.id);
+  Stream<String> get finished => sync.finished.map((event) => event.key.id);
+  Stream<ElectrumSyncResult> get results => ElectrumSyncResult.watch(sync.finished);
+
+  Future<void> synchronize(
+    WalletMetadataModel metadata, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
+  }) async {
+    switch (WalletSyncBinding.descriptorFromMetadata(metadata)) {
+      case Err():
+        throw const WalletStorageFailure('Invalid sync descriptor');
+      case Ok(:final value):
+        WalletSyncBinding.value(
+          await synchronization.execute(
+            value,
+            discover: discover,
+            allowInitialScan: allowInitialScan,
+            reason: reason,
+          ),
+        );
+    }
+  }
+
+  Future<Result<void, SyncFailure>> synchronizeDescriptor(
+    PublicWalletDescriptor descriptor, {
+    SyncReason reason = SyncReason.auto,
+  }) => synchronization.execute(descriptor, reason: reason);
 }

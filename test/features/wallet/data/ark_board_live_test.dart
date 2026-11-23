@@ -32,10 +32,10 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:fees/fees.dart';
 import 'package:sync/sync.dart' show WalletCatalogPort, SyncReason;
-import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
@@ -385,7 +385,7 @@ void main() {
           authority: locator<SqliteArkFundingReservations>(),
           runtime: locator<WalletNativeRuntime>(),
           inventory: locator<SecretsInventory>(),
-          synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+          synchronize: (key) => locator<ForegroundWalletSynchronization>().executeKey(
             key,
             locator<WalletCatalogPort>(),
             reason: SyncReason.manual,
