@@ -28,7 +28,7 @@ use bwk_sp::account::config::Config as SpConfig;
 use bwk_sp::account::recipient::{SpRecipientAddress, TxBuilderSpExt};
 use bwk_sp::account::{self as sp_account, Account as SpAccountInner};
 use bwk_sp::receiver::RecipientAddress;
-use bwk_sp::scan::{ScanRuntimeConfig, DEFAULT_FETCH_CONCURRENCY_FACTOR};
+use bwk_sp::scan::{state::ScanState, ScanRuntimeConfig, DEFAULT_FETCH_CONCURRENCY_FACTOR};
 
 use crate::api::types::{
     CoinSource, HeaderProgressPhase, RecipientView, SpBalanceView, SpCoinView, SpError,
@@ -53,9 +53,57 @@ compile_error!(
      Removing this guard requires a deliberate design change."
 );
 
+// First mainnet block served by BlindBit's Silent Payments filters.
+const MAINNET_SCAN_MINIMUM: u32 = 709_656;
+
+fn prepare_mainnet_scan_floor(config: &SpConfig) -> Result<(), String> {
+    if config.network != Network::Bitcoin || config.persistence.is_none() {
+        return Ok(());
+    }
+    let dir = config.account_dir();
+    if !dir.try_exists().map_err(|e| e.to_string())? {
+        return Ok(());
+    }
+    if config.persistence == Some(bwk::persist::PersistenceKind::Sqlite)
+        && !dir
+            .join("account.sqlite")
+            .try_exists()
+            .map_err(|e| e.to_string())?
+    {
+        return Ok(());
+    }
+    let backend =
+        bwk::persist::build_backend(config.persistence, dir).map_err(|e| e.to_string())?;
+    let mut state = ScanState::load_from_backend(MAINNET_SCAN_MINIMUM, backend.clone())
+        .map_err(|e| e.to_string())?;
+
+    // BWK requests saved hashes to detect reorgs and starts the spend sweep at
+    // its own frontier. Both can reach below the receive start passed to BWK.
+    let expired: Vec<_> = state
+        .block_hashes()
+        .range(..MAINNET_SCAN_MINIMUM)
+        .map(|(height, _)| height.to_string())
+        .collect();
+    if !expired.is_empty() {
+        backend
+            .flush_batch(bwk::persist::BLOCK_HASHES_STORE_KEY, &[], &expired)
+            .map_err(|e| e.to_string())?;
+    }
+    let last_unsupported = MAINNET_SCAN_MINIMUM - 1;
+    if state
+        .last_spend_height()
+        .is_some_and(|h| h < last_unsupported)
+    {
+        state.advance_spend_frontier(last_unsupported);
+        state.try_persist().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 #[frb(opaque)]
 pub struct SpAccount {
     inner: Arc<Mutex<SpAccountInner>>,
+    mainnet_birthday: Option<u32>,
     sink: Mutex<Option<StreamSink<SpNotification>>>,
 
     // Cooperative shutdown for the notification-forwarding thread spawned in
@@ -372,7 +420,12 @@ impl SpAccount {
         header_checkpoint: Option<SpHeaderCheckpoint>,
         scan_runtime: ScanRuntimeConfig,
     ) -> Result<SpAccount, String> {
-        config.birthday_height = birthday_height;
+        let mainnet_birthday = (config.network == Network::Bitcoin).then(|| {
+            birthday_height
+                .unwrap_or(MAINNET_SCAN_MINIMUM)
+                .max(MAINNET_SCAN_MINIMUM)
+        });
+        config.birthday_height = mainnet_birthday.or(birthday_height);
         config.dust_limit = dust_limit;
         config.header_checkpoint = header_checkpoint.map(parse_header_checkpoint).transpose()?;
 
@@ -383,12 +436,14 @@ impl SpAccount {
         }
 
         let config = config.with_persistence(Some(bwk::persist::PersistenceKind::Sqlite));
+        prepare_mainnet_scan_floor(&config)?;
         let account =
             SpAccountInner::with_runtime_config(config, scan_runtime).map_err(|e| e.to_string())?;
         let scan_cancel = account.cancel_flag();
 
         Ok(SpAccount {
             inner: Arc::new(Mutex::new(account)),
+            mainnet_birthday,
             sink: Mutex::new(None),
             shutdown: Arc::new(AtomicBool::new(false)),
             notif_handle: Mutex::new(None),
@@ -582,11 +637,19 @@ impl SpAccount {
             config.header_checkpoint = Some(parse_header_checkpoint(checkpoint)?);
         }
 
+        let mainnet_birthday = (config.network == Network::Bitcoin).then(|| {
+            config
+                .birthday_height
+                .unwrap_or(MAINNET_SCAN_MINIMUM)
+                .max(MAINNET_SCAN_MINIMUM)
+        });
+        prepare_mainnet_scan_floor(&config)?;
         let account = SpAccountInner::new(config).map_err(|e| e.to_string())?;
 
         let scan_cancel = account.cancel_flag();
         Ok(SpAccount {
             inner: Arc::new(Mutex::new(account)),
+            mainnet_birthday,
             sink: Mutex::new(None),
             shutdown: Arc::new(AtomicBool::new(false)),
             notif_handle: Mutex::new(None),
@@ -778,6 +841,9 @@ impl SpAccount {
     /// floor.
     #[frb(sync)]
     pub fn min_birthday_height(&self) -> Result<u32, String> {
+        if self.mainnet_birthday.is_some() {
+            return Ok(MAINNET_SCAN_MINIMUM);
+        }
         Ok(lock_inner(&self.inner)?.min_birthday_height())
     }
 
@@ -818,8 +884,17 @@ impl SpAccount {
         // SpAccount is being scanned. Cheap relaxed store.
         self.scan_cancel.store(false, Ordering::Relaxed);
         let mut g = lock_inner(&self.inner)?;
-        // `start_height` overrides where the scan begins (None resumes from the
-        // last scanned position); bwk_sp clamps it to the birthday height.
+        // A legacy account may have a persisted birthday below the filter
+        // range. Retain native resume behavior for cursors already in range.
+        let start_height = match (self.mainnet_birthday, start_height) {
+            (Some(_), Some(height)) => Some(height.max(MAINNET_SCAN_MINIMUM)),
+            (Some(birthday), None) => match g.last_scanned_height() {
+                None => Some(birthday),
+                Some(height) if height < MAINNET_SCAN_MINIMUM - 1 => Some(MAINNET_SCAN_MINIMUM),
+                Some(_) => None,
+            },
+            (None, height) => height,
+        };
         g.start_scan(sp_account::ScanMode::OneShot, start_height)
             .map_err(|e| match e {
                 // Preserved as a variant: callers skip a redundant start
