@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/import_wallet/router.dart';
+import 'package:wallet_import/wallet_import.dart' show ImportNavigation;
 import 'package:label_editor/label_editor.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -459,8 +459,7 @@ List<SettingsItem> buildSettingsItems({
         localization.walletSettingsImportWalletTitle,
       ),
       icon: Icons.sim_card_download,
-      open: (context) =>
-          context.pushNamed(ImportWalletRoute.importWalletHome.name),
+      open: (context) => ImportNavigation.open(context),
       keywords: _keywords(
         localization.settingsSearchImportWalletKeywords,
         english.settingsSearchImportWalletKeywords,

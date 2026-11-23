@@ -356,5 +356,204 @@
   "importColdcardMk4Step10": "روی دکمه‌ی «Scan NFC» کلیک کنید",
   "importColdcardMk4Step11": "تلفن خود را روی NFC کارت سرد قرار دهید",
   "importColdcardMk4Step12": "همین!",
-  "recipientsInfoLabel": "برچسب"
+  "recipientsInfoLabel": "برچسب",
+  "bitboxScreenDefaultWalletLabel": "کیف پول BitBox",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "دستورالعمل ها",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "دوربین را باز کنید",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "توصیف‌گر کیف پول را از {deviceName} خود وارد کنید",
+  "importColdcardConnectTitle": "اتصال {deviceName}",
+  "importColdcardInvalidWalletData": "داده‌ی کیف پول Coldcard نامعتبر است",
+  "importColdcardScanNfcSheetTitle": "برای وارد کردن توصیف‌گر کیف پول از طریق NFC، {deviceName} خود را لمس کنید",
+  "importMnemonicBalanceLabel": "تعادل: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "ادامه",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "importMnemonicEmptyLabelError": "برای وارد کردن عبارت بازیابی، برچسب الزامی است",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "میراث",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "دانلود بازی نستله",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "واردات Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "هر سه نوع کیف پول همگام سازی می شوند و تعادل و معاملات آنها به زودی ظاهر می شود. شما می توانید صبر کنید تا همگام سازی کامل شود یا اگر مطمئن هستید که کدام نوع کیف پول را می خواهید وارد کنید.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "واردات Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "معاملات: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "کارت سرد Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "واردات Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "واردات تنها",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "پایه گذرنامه",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "کیف پول های Generic",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "کیف های سخت افزاری",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "Seedsigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "اضافه کردن کیف پول جدید",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "نصب شده برای Clipboard",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Descriptor",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "اطمینان حاصل کنید که مسیر محرکی که انتخاب می کنید، با تأیید اولین آدرس از کیف پول قبل از استفاده مطابقت دارد. استفاده از مسیر اشتباه می تواند منجر به از دست دادن وجوه شود",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "هشدار مسیر",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "این کیف پول قبلاً وارد شده است.",
+  "importWatchOnlyErrorImportFailed": "نتوانستیم این کیف پول فقط‌مشاهده را وارد کنیم. لطفاً جزئیات را بررسی کرده و دوباره تلاش کنید.",
+  "importWatchOnlyErrorInvalidFormat": "این به نظر یک کلید عمومی یا توصیف‌گر معتبر نمی‌رسد. آنچه را چسبانده‌اید دوباره بررسی کنید.",
+  "importWatchOnlyErrorLabelRequired": "پیش از وارد کردن، برای کیف پول خود نامی انتخاب کنید.",
+  "importWatchOnlyErrorNetworkMismatch": "این کیف پول در حال استفاده از شبکه بیت‌کوین دیگری است. بین Mainnet و Testnet جابه‌جا شوید و دوباره تلاش کنید.",
+  "importWatchOnlyErrorNoWalletSelected": "ابتدا یک کلید عمومی یا توصیف‌گر را بچسبانید یا اسکن کنید.",
+  "importWatchOnlyExtendedPublicKey": "گسترش عمومی کلید کلیدی",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "واردات",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "برچسب",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "شبکه: شبکه اصلی بیت‌کوین",
+  "importWatchOnlyNetworkBitcoinTestnet": "شبکه: شبکه آزمایشی بیت‌کوین",
+  "importWatchOnlyPasteHint": "×pub، ypub، zpub یا descriptor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "نیاز",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "اسکن QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "امضای دستگاه",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "واردات تنها",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "نوع",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "ناشناخته",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "کیف پول Ledger",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

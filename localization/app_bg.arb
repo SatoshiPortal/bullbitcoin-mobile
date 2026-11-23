@@ -7,10 +7,6 @@
   "backupWarningLoseReasonCloudRestore": "Възстановяване на устройството от резервно копие в облака",
   "backupWarningNoRecovery": "Без резервно копие няма начин да възстановите портфейла си.",
   "broadcastSignedTxBroadcastError": "Не успяхме да излъчим вашата транзакция. Проверете интернет връзката си и опитайте отново.",
-  "importWatchOnlyErrorNoWalletSelected": "Първо поставете или сканирайте публичен ключ или дескриптор.",
-  "importWatchOnlyErrorLabelRequired": "Дайте име на портфейла си, преди да го импортирате.",
-  "importWatchOnlyErrorInvalidFormat": "Това не изглежда като валиден публичен ключ или дескриптор. Проверете какво поставихте.",
-  "importWatchOnlyErrorImportFailed": "Не успяхме да импортираме този портфейл само за наблюдение. Моля, проверете данните и опитайте отново.",
   "broadcastSignedTxErrorInvalidTransaction": "Това не изглежда като валидна подписана транзакция. Уверете се, че сте поставили целия PSBT или цялата транзакция.",
   "broadcastSignedTxErrorInvalidPushTx": "Не успяхме да прочетем транзакция от този етикет. Моля, опитайте да сканирате отново.",
   "oopsSomethingWentWrong": "Опа! Нещо се обърка",
@@ -324,10 +320,6 @@
   "rbfFastest": "Най-бързият",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "importWatchOnlyCopiedToClipboard": "Копирано в клипборда",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
   },
   "dcaLightningAddressInvalidError": "Моля, въведете валиден Lightning адрес",
   "@dcaLightningAddressInvalidError": {
@@ -697,10 +689,6 @@
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
-  "importWatchOnlyDescriptor": "Дескриптор",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "Плащането е в процес на обработка!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -1023,10 +1011,6 @@
   "@payPaymentSuccessful": {
     "description": "Success message after payment completes"
   },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "Продължи",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1177,10 +1161,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "Импортирай",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "Резервно копие",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1265,10 +1245,6 @@
   "fundExchangeCrIbanUsdLabelIban": "IBAN номер на сметка (само щатски долари)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "Функцията идва скоро",
   "@featureComingSoonTitle": {
@@ -1401,14 +1377,6 @@
   "importWalletConnectHardware": "Свържете хардуерен портфейл",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWatchOnlyType": "Тип",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "- Хардуерни портфейли",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "connectHardwareWalletDescription": "Изберете хардуерния портфейл, който искате да свържете",
   "@connectHardwareWalletDescription": {
@@ -1574,10 +1542,6 @@
   "swapValidationInsufficientBalance": "Недостатъчен баланс",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "Разширен публичен ключ",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "walletDeletionConfirmationTitle": "Изтриване на портфейл",
   "@walletDeletionConfirmationTitle": {
@@ -1834,10 +1798,6 @@
   "testCompletedSuccessMessage": "Можете да възстановите достъп до изгубен биткойн портфейл",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "Сканирай QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "selectAmountTitle": "Изберете сума",
   "@selectAmountTitle": {
@@ -2126,15 +2086,6 @@
   "payPayeeAccountNumber": "Номер на сметка на получателя",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
-  },
-  "importMnemonicBalanceLabel": "Баланс: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeWarningConfirmation": "Потвърждавам, че не ме молят да купувам Bitcoin от друг човек.",
   "@fundExchangeWarningConfirmation": {
@@ -2457,10 +2408,6 @@
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"
   },
-  "importMnemonicNestedSegwit": "Вложен SegWit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "Replace-by-fee е активирана",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2744,10 +2691,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "- Добави нов портфейл",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "Поставете адрес за плащане или фактура",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -2817,10 +2760,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "Неизвестно",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "Продължи",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -2854,10 +2793,6 @@
   "payRbfActivated": "Replace-by-fee е активирана",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
-  },
-  "importWalletSpecter": "Specter",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "customLocationProvider": "Персонализирано местоположение.",
   "@customLocationProvider": {
@@ -2924,15 +2859,6 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "Транзакции: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "Реферали",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
@@ -2940,10 +2866,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Когато е включено, автоматичните обмени с такси над зададения лимит винаги ще бъдат блокирани",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
-  },
-  "importMnemonicSelectScriptType": "- Импортирай мнемоника",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "fundExchangeCanadaPostStep2": "2. Помолете касиера да сканира QR кода „Loadhub“",
   "@fundExchangeCanadaPostStep2": {
@@ -3134,10 +3056,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "importWalletImportWatchOnly": "- Импортирай само за наблюдение",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "След като транзакцията бъде импортирана във вашия Coldcard, прегледайте адреса на получателя и сумата.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3264,10 +3182,6 @@
   "buyExternalBitcoinWallet": "Външен биткойн портфейл",
   "@buyExternalBitcoinWallet": {
     "description": "Label for external wallet option"
-  },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
   },
   "payInvalidInvoice": "Невалидна фактура",
   "@payInvalidInvoice": {
@@ -3409,10 +3323,6 @@
   "recoverYourWalletTitle": "Възстановете портфейла си.",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "Етикет",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "Настройки на приложението",
   "@settingsAppSettingsTitle": {
@@ -3584,10 +3494,6 @@
   "addressCardUsedLabel": "Използван",
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
-  },
-  "importWalletPassport": "Foundation Passport",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
   },
   "buyExpressWithdrawalFee": "Експрес такса: {amount}",
   "@buyExpressWithdrawalFee": {
@@ -4082,10 +3988,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "importWatchOnlyTitle": "- Импортирай само за наблюдение",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "walletDetailsWalletFingerprintLabel": "Отпечатък на портфейла",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
@@ -4101,10 +4003,6 @@
   "settingsTermsOfServiceTitle": "Условия за ползване",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "Нови получатели",
   "@payNewRecipients": {
@@ -4312,10 +4210,6 @@
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
-  "importWatchOnlyRequired": "Задължително",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "Портфейлът не е синхронизиран. Моля, изчакайте.",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -4327,10 +4221,6 @@
   "sellExchangeRate": "Курс на обмен",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "Класически",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "Този режим е рискован. При активирането му приемате, че може да загубите пари.",
   "@settingsDevModeWarningMessage": {
@@ -4450,10 +4340,6 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "importWatchOnlySigningDevice": "Устройство за подписване",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
   "receiveInvoiceExpired": "Фактурата е изтекла",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
@@ -4564,10 +4450,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "- Обикновени портфейли",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "Непроверено",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -4632,10 +4514,6 @@
   "payBelowMinAmountError": "Минималната сума, която можете да платите с този портфейл, е {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "Продължи",
   "@swapContinueButton": {
@@ -4898,10 +4776,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "Поставете xpub, ypub, zpub или descriptor",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "Номер на сметка",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -4955,10 +4829,6 @@
       }
     }
   },
-  "importMnemonicTitle": "- Импортирай мнемоника",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "Replace-by-fee е активирана",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -4990,10 +4860,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "Името на получателя трябва да бъде LEONOD. Ако въведете друго име, плащането ви ще бъде отхвърлено.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "doneButton": "Готово",
   "@doneButton": {
@@ -5594,10 +5460,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "importWatchOnlyDisclaimerDescription": "Уверете се, че избраният деривационен път съответства на този, който е довел до дадения xpub, като проверите първия адрес, изведен от портфейла, преди употреба. Неправилният път може да доведе до загуба на средства.",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "Натискат ви да действате бързо",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -5648,10 +5510,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "Предупреждение за деривационния път",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "payPayee": "Получател",
   "@payPayee": {
     "description": "Label for payee details"
@@ -5688,10 +5546,6 @@
   "paySwapInProgress": "Размяната е в ход...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "Всички три типа портфейли се синхронизират и балансът им и транзакциите ще се появят скоро. Можете да изчакате синхронизирането да завърши или да продължите с импортирането, ако сте сигурни кой тип портфейл искате да импортирате.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "autoswapRecipientWalletLabel": "Портфейл Bitcoin на получателя",
   "@autoswapRecipientWalletLabel": {
@@ -6003,10 +5857,6 @@
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
   },
-  "importMnemonicContinue": "Продължи",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
-  },
   "chooseVaultLocationTitle": "Изберете място за сейфа.",
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
@@ -6083,10 +5933,6 @@
   "enterBackupKeyManuallyTitle": "Въведете резервния ключ ръчно",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "Започни резервно копиране",
   "@backupSettingsStartBackup": {
@@ -6333,7 +6179,6 @@
   },
   "walletSetupErrorTryAgain": "Нещо се обърка при настройването на портфейла ви. Моля, опитайте отново.",
   "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си.",
-  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува",
   "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
   "coreScreensFeeRateLabel": "Размер на таксата",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -6493,10 +6338,6 @@
   "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
-  },
-  "importMnemonicEmptyLabelError": "За импортирането на мнемоника е необходим етикет",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "allSeedViewErrorDelete": "Неуспешно изтриване на семето. Моля, опитайте отново.",
   "@allSeedViewErrorDelete": {
@@ -6823,7 +6664,6 @@
   "sendCoordinatingPayjoinTransaction": "Координиране на Payjoin транзакция.",
   "sendErrorInvoiceExpired": "Тази фактура е изтекла. Помолете получателя за нова фактура.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Помислете за захранване на Instant Payments за по-малки плащания.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxTitle": "Излъчи транзакция",
   "broadcastSignedTxScanQR": "Сканирайте QR кода от вашия хардуерен портфейл",
   "broadcastSignedTxReviewTransaction": "Преглед на транзакцията",
@@ -6860,12 +6700,6 @@
   "importColdcardImporting": "Импортиране на Coldcard портфейл...",
   "importColdcardSuccess": "Coldcard портфейлът е импортиран",
   "importColdcardError": "Неуспешно импортиране на Coldcard",
-  "importColdcardInvalidWalletData": "Невалидни данни за Coldcard портфейл",
-  "importColdcardConnectTitle": "Свържи {deviceName}",
-  "importColdcardConnectDescription": "Импортирайте описателя на портфейла от вашия {deviceName}",
-  "importColdcardScanNfcSheetTitle": "Докоснете вашия {deviceName}, за да импортирате описателя на портфейла през NFC",
-  "importColdcardButtonOpenCamera": "Отвори камерата",
-  "importColdcardButtonInstructions": "Инструкции",
   "exchangeLandingTitle": "BULL BITCOIN",
   "exchangeLandingConnect": "Свържете сметката си в борсата Bull Bitcoin",
   "exchangeLandingFeature1": "Купувайте Bitcoin директно в самостоятелно попечителство",
@@ -7116,12 +6950,9 @@
   "backupWarningBackupNow": "ДА",
   "backupWarningBackupLater": "НЕ, РАЗБИРАМ РИСКА",
   "transactionSwapOpenWithin24h": "Отворете приложението в рамките на 24 часа, за да завършите обмена си.",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Възникна неочаквана грешка",
   "mempoolErrorUpdateSettingsFailed": "Неуспешно актуализиране на настройките: {error}",
   "sendErrorInsufficientBalanceFrozenHint": "Няма достатъчно наличен баланс — {amount} е замразен. Размразете монетите в „Управление на монетите“, за да го използвате.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Готово",
   "consolidationFailedBody": "Възникна неочаквана грешка. Средствата ви са в безопасност: не беше излъчена транзакция. Моля, опитайте отново.",
   "consolidationFailedTitle": "Консолидацията е неуспешна",
@@ -7244,10 +7075,6 @@
   "autoBuyWalletRequiredError": "Добавете поне един Bitcoin, Lightning или Liquid адрес по подразбиране.",
   "autoBuyUpdateError": "Автоматичната покупка не можа да бъде актуализирана. Опитайте отново по-късно.",
   "withdrawUnexpectedError": "Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката.",
-  "importWatchOnlyErrorNetworkMismatch": "Този портфейл в момента използва друга Bitcoin мрежа. Превключете между Mainnet и Testnet и опитайте отново.",
-  "importWatchOnlyErrorAlreadyExists": "Този портфейл вече е импортиран.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Мрежа: основна мрежа на Bitcoin",
-  "importWatchOnlyNetworkBitcoinTestnet": "Мрежа: тестова мрежа на Bitcoin",
   "broadcastSignedTxErrorPsbtFinalization": "Подписаната транзакция не можа да бъде финализирана. Уверете се, че съдържа всички необходими подписи, и опитайте отново.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

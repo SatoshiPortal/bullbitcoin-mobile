@@ -1031,10 +1031,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "importMnemonicSegwit": "Segwitt",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "exchangeAmountInputValidationInsufficient": "Balança insuficiente",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
@@ -1217,10 +1213,6 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "importWalletSeedSigner": "Sementes",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
-  },
   "coldcardStep13": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Coldcard. Analisa-o.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
@@ -1392,10 +1384,6 @@
   "buyExpressWithdrawal": "Retirada expressa",
   "@buyExpressWithdrawal": {
     "description": "Fast withdrawal option"
-  },
-  "importWalletSectionHardware": "Carteiras de hardware",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "payBillerName": "Nome do Biller",
   "@payBillerName": {
@@ -2511,10 +2499,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "importMnemonicNestedSegwit": "Segwit aninhado",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "exchangeFileUploadInstructionsWithParams": "Carregar até {maxFiles} arquivos. Formatos permitidos: PDF, JPG, PNG, GIF, HEIC. Tamanho máximo do arquivo: 10MB por arquivo.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -2587,10 +2571,6 @@
   "exchangeKycCardSubtitle": "Para remover limites de transação",
   "@exchangeKycCardSubtitle": {
     "description": "Subtitle explaining why to complete KYC"
-  },
-  "importColdcardButtonOpenCamera": "Abra a câmera",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "copyDialogButton": "Entendido",
   "@copyDialogButton": {
@@ -3118,10 +3098,6 @@
   "@sendTo": {
     "description": "Label for the recipient/destination in a transaction"
   },
-  "importMnemonicSelectScriptType": "Importação Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
-  },
   "sendCoinConfirmations": "{count} confirmações",
   "@sendCoinConfirmations": {
     "description": "Label for UTXO confirmation count",
@@ -3154,10 +3130,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "importWalletTitle": "Adicionar uma nova carteira",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "Esta informação ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -3254,10 +3226,6 @@
   "fundExchangeETransferLabelBeneficiaryName": "Use isso como o nome do beneficiário E-transfer",
   "@fundExchangeETransferLabelBeneficiaryName": {
     "description": "Label for E-transfer beneficiary name"
-  },
-  "importWalletSpecter": "Espectro",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Opção mais lenta, mas pode ser feito via banco on-line (3-4 dias úteis)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -3457,10 +3425,6 @@
   "importMnemonicHasBalance": "Tem equilíbrio",
   "@importMnemonicHasBalance": {
     "description": "Status for wallet type with balance"
-  },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
   },
   "payInvalidInvoice": "Fatura inválida",
   "@payInvalidInvoice": {
@@ -3673,10 +3637,6 @@
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
-  "importWalletImportWatchOnly": "Importar apenas relógio",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "exchangeStatisticsAsOf": "A partir de {date}",
   "@exchangeStatisticsAsOf": {
     "description": "Label showing when statistics were last updated",
@@ -3789,10 +3749,6 @@
   "sendTransactionSignedLedger": "Transação assinada com sucesso com Ledger",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
-  },
-  "importWalletPassport": "Passaporte da Fundação",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
   },
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
@@ -4411,10 +4367,6 @@
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
   },
-  "importColdcardButtonInstructions": "Instruções",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
-  },
   "connectHardwareWalletColdcardQ": "Cartão de crédito",
   "@connectHardwareWalletColdcardQ": {
     "description": "Coldcard Q hardware wallet option"
@@ -4482,10 +4434,6 @@
   "settingsTermsOfServiceTitle": "Termos de Serviço",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
-  },
-  "importWalletKeystone": "Chaveiro",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "coreSwapsChainClaimable": "O swap está pronto para ser reivindicado.",
   "@coreSwapsChainClaimable": {
@@ -5037,10 +4985,6 @@
   "@paySecurityQuestion": {
     "description": "Label for security question field"
   },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
-  },
   "receiveFeeExplanation": "Esta taxa será deduzida do montante enviado",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
@@ -5140,10 +5084,6 @@
   "payEmail": "Email",
   "@payEmail": {
     "description": "Label for email field"
-  },
-  "importMnemonicLegacy": "Legado",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "autoswapRecipientWalletInfo": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
   "@autoswapRecipientWalletInfo": {
@@ -5440,10 +5380,6 @@
   "payViewTransaction": "Ver Transação",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "importWalletSectionGeneric": "Carteiras genéricas",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
   },
   "pinButtonConfirm": "Confirmação",
   "@pinButtonConfirm": {
@@ -6142,10 +6078,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
-  },
   "doneButton": "Feito",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -6229,10 +6161,6 @@
   },
   "broadcastSignedTxBroadcasting": "Transmissão...",
   "broadcastSignedTxBroadcastError": "Não foi possível transmitir sua transação. Verifique sua conexão com a internet e tente novamente.",
-  "importWatchOnlyErrorNoWalletSelected": "Cole ou escaneie primeiro uma chave pública ou um descritor.",
-  "importWatchOnlyErrorLabelRequired": "Dê um nome à sua carteira antes de importar.",
-  "importWatchOnlyErrorInvalidFormat": "Isto não parece uma chave pública ou um descritor válido. Verifique o que você colou.",
-  "importWatchOnlyErrorImportFailed": "Não foi possível importar esta carteira somente leitura. Verifique os detalhes e tente novamente.",
   "broadcastSignedTxErrorInvalidTransaction": "Isto não parece uma transação assinada válida. Verifique se você colou o PSBT ou a transação completos.",
   "broadcastSignedTxErrorInvalidPushTx": "Não foi possível ler uma transação desta etiqueta. Tente escanear novamente.",
   "@broadcastSignedTxBroadcasting": {
@@ -6798,10 +6726,6 @@
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
   },
-  "importMnemonicContinue": "Continue",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
-  },
   "swapAmountLabel": "Montante",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
@@ -6912,10 +6836,6 @@
   "@payLabelHint": {
     "description": "Hint for label input"
   },
-  "importWalletColdcardQ": "Cartão de crédito",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
-  },
   "testBackupPhysicalBackupTitle": "Backup físico",
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
@@ -6956,10 +6876,6 @@
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
   },
-  "importMnemonicSyncMessage": "Todos os três tipos de carteira estão sincronizando e seus saldos e transações aparecerão em breve. Você pode esperar até que a sincronização complete ou prossiga para importar se você tiver certeza de qual tipo de carteira você deseja importar.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
-  },
   "importColdcardInstructionsStep10": "Configuração completa",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -6975,10 +6891,6 @@
   "transactionSwapStatusSwapStatus": "Estado do balanço",
   "@transactionSwapStatusSwapStatus": {
     "description": "Header for swap status section"
-  },
-  "importWatchOnlyCopiedToClipboard": "Copiado para clipboard",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
   },
   "importWatchOnlyImportButton": "Importar apenas carteira de relógio",
   "@importWatchOnlyImportButton": {
@@ -6999,10 +6911,6 @@
   "importWatchOnlyYpub": "- sim",
   "@importWatchOnlyYpub": {
     "description": "Label for ypub import method"
-  },
-  "importWatchOnlyDescriptor": "Descritores",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
   },
   "fromLabel": "A partir de",
   "@fromLabel": {
@@ -7028,17 +6936,9 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "importWatchOnlyImport": "Importação",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "confirmTransferTitle": "Confirmar transferência",
   "@confirmTransferTitle": {
     "description": "Title for confirmation screen when transferring between wallets"
-  },
-  "importWatchOnlyType": "Tipo",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
   },
   "enterPinToContinueMessage": "Insira seu {pinOrPassword} para continuar",
   "@enterPinToContinueMessage": {
@@ -7076,10 +6976,6 @@
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
   },
-  "importWatchOnlyExtendedPublicKey": "Público estendido Chaveiro",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
-  },
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "@mempoolNetworkBitcoinMainnet": {
     "description": "Label for Bitcoin Mainnet network"
@@ -7116,10 +7012,6 @@
   "@exchangeLandingFeature4": {
     "description": "Fourth feature bullet point"
   },
-  "importWatchOnlyScanQR": "Digitalização QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
-  },
   "importWatchOnlyFingerprint": "Impressão digital",
   "@importWatchOnlyFingerprint": {
     "description": "Label for wallet fingerprint field"
@@ -7139,15 +7031,6 @@
   "anErrorOccurred": "Um erro ocorreu",
   "@anErrorOccurred": {
     "description": "Generic error message"
-  },
-  "importMnemonicBalanceLabel": "Equilíbrio: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "confirmSendTitle": "Enviar",
   "@confirmSendTitle": {
@@ -7227,10 +7110,6 @@
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
   },
-  "importWatchOnlyUnknown": "Desconhecido",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "importColdcardInstructionsStep8": "Digitalizar o código QR exibido em seu Coldcard Q",
   "@importColdcardInstructionsStep8": {
     "description": "ImportColdcardQ: Eighth instruction step"
@@ -7238,15 +7117,6 @@
   "recoverVia12WordsDescription": "Recupere sua carteira através de 12 palavras.",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
-  },
-  "importMnemonicTransactionsLabel": "Transações: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
   },
   "cancelButton": "Cancelar",
   "@cancelButton": {
@@ -7275,10 +7145,6 @@
   "recoverYourWalletTitle": "Recupere sua carteira",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "Etiqueta",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "importWatchOnlyZpub": "- sim",
   "@importWatchOnlyZpub": {
@@ -7320,10 +7186,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "importWatchOnlyTitle": "Importar apenas relógio",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "walletDetailsWalletFingerprintLabel": "Carteira digital",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
@@ -7335,10 +7197,6 @@
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
-  },
-  "importWatchOnlyRequired": "Requisitos",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
   },
   "amountLabel": "Montante",
   "@amountLabel": {
@@ -7357,10 +7215,6 @@
   "recoverViaCloudDescription": "Recupere seu backup via nuvem usando seu PIN.",
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
-  },
-  "importWatchOnlySigningDevice": "Dispositivo de assinatura",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
   },
   "errorGenericTitle": "Oops! Algo correu mal",
   "@errorGenericTitle": {
@@ -7405,10 +7259,6 @@
       }
     }
   },
-  "importWatchOnlyPasteHint": "Pasta xpub, ypub, zpub ou descritor",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "usePasswordInsteadButton": "Use {pinOrPassword} em vez >>",
   "@usePasswordInsteadButton": {
     "description": "Button to use password/PIN instead",
@@ -7418,10 +7268,6 @@
         "example": "password"
       }
     }
-  },
-  "importMnemonicTitle": "Importação Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
   },
   "exchangeLandingTitle": "BITCOIN",
   "@exchangeLandingTitle": {
@@ -7485,17 +7331,9 @@
   "@continueButton": {
     "description": "Default button text for success state"
   },
-  "importWatchOnlyDisclaimerDescription": "Certifique-se de que o caminho de derivação que você escolher combina com o que produziu o xpub dado verificando o primeiro endereço derivado da carteira antes do uso. Usar o caminho errado pode levar à perda de fundos",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "exchangeLandingFeature3": "Venda Bitcoin, ser pago com Bitcoin",
   "@exchangeLandingFeature3": {
     "description": "Third feature bullet point"
-  },
-  "importWatchOnlyDisclaimerTitle": "Aviso de Caminho de Derivação",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
   },
   "importMnemonicSelectType": "Selecione um tipo de carteira para importar",
   "@importMnemonicSelectType": {
@@ -7703,7 +7541,6 @@
     }
   },
   "walletSetupErrorTryAgain": "Algo deu errado ao configurar sua carteira. Por favor, tente novamente.",
-  "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
   "coreScreensFeeRateLabel": "Taxa de comissão",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7860,10 +7697,6 @@
   "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "A BitBox só é compatível com Android",
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
-  "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "horas",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -8167,13 +8000,8 @@
   "sendErrorInvoiceExpired": "Esta fatura expirou. Peça ao destinatário uma nova fatura.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar a Carteira de Pagamento Instantânea para fazer pagamentos menores.",
   "sendErrorInsufficientBalanceFrozenHint": "Saldo disponível insuficiente — {amount} está congelado. Descongele as moedas em Gerenciar moedas para usá-lo.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Aproxime seu Coldcard para receber a transação assinada via NFC",
-  "importColdcardInvalidWalletData": "Dados de carteira Coldcard inválidos",
-  "importColdcardConnectTitle": "Conecte {deviceName}",
-  "importColdcardConnectDescription": "Importe o descritor da carteira do seu {deviceName}",
-  "importColdcardScanNfcSheetTitle": "Aproxime seu {deviceName} para importar o descritor da carteira via NFC",
   "fundExchangeCopDailyLimitWarning": "Se você exceder o limite diário de transações, a transação falhará. Você precisará entrar em contato com o suporte ao cliente.",
   "fundExchangeCopSenderName": "Nome do remetente",
   "fundExchangeCopIssuingBank": "Banco emissor",
@@ -8203,9 +8031,6 @@
   "backupWarningBackupNow": "SIM",
   "backupWarningBackupLater": "NÃO, EU ENTENDO O RISCO",
   "transactionSwapOpenWithin24h": "Abra o aplicativo em até 24 horas para concluir o seu swap.",
-  "importWatchOnlyXpubLabel": "XPUB",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Concluído",
   "consolidationFailedBody": "Ocorreu um erro inesperado. Seus fundos estão seguros: nenhuma transação foi transmitida. Tente novamente.",
   "consolidationFailedTitle": "Falha na consolidação",
@@ -8328,10 +8153,6 @@
   "autoBuyWalletRequiredError": "Adicione pelo menos um endereço padrão de Bitcoin, Lightning ou Liquid.",
   "autoBuyUpdateError": "Não foi possível atualizar a compra automática. Tente novamente mais tarde.",
   "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte.",
-  "importWatchOnlyErrorNetworkMismatch": "Esta carteira está usando uma rede Bitcoin diferente. Alterne entre Mainnet e Testnet e tente novamente.",
-  "importWatchOnlyErrorAlreadyExists": "Esta carteira já foi importada.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Rede: rede principal do Bitcoin",
-  "importWatchOnlyNetworkBitcoinTestnet": "Rede: rede de teste do Bitcoin",
   "broadcastSignedTxErrorPsbtFinalization": "Não foi possível finalizar a transação assinada. Confirme se ela contém todas as assinaturas necessárias e tente novamente.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

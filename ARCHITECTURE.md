@@ -53,7 +53,7 @@ Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Speci
 
 Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input.
 
-`ImportFeature.mount` composes the QR device instruction routes and the read-only mnemonic prescan. The mnemonic preflight uses the active Secrets wallet inventory. The confirmation routes use the Wallet repository to provision native wallets and register them in that same encrypted inventory.
+`ImportFeature.mount` owns the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The mnemonic duplicate check reads the unlocked Secrets inventory for the active Bitcoin network. The shell passes foreground Wallet provisioning operations directly; they still own custody admission, catalog insertion and native creation. Remove those bindings when Secrets and Sync publish the complete provisioning operations.
 
 ## 🎯 The architecture we tend toward
 

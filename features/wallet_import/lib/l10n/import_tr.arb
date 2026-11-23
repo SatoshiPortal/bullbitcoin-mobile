@@ -356,5 +356,204 @@
   "importColdcardMk4Step10": "\"Scan NFC\" düğmesine tıklayın",
   "importColdcardMk4Step11": "Telefonun NFC'sini Coldcard'ın NFC'sinin üzerine koyun",
   "importColdcardMk4Step12": "Bu kadar!",
-  "recipientsInfoLabel": "Etiket"
+  "recipientsInfoLabel": "Etiket",
+  "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "Talimatlar",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "Kamerayı açın",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "{deviceName} cihazınızdan cüzdan tanımlayıcısını içe aktarın",
+  "importColdcardConnectTitle": "{deviceName} Bağlayın",
+  "importColdcardInvalidWalletData": "Geçersiz Coldcard cüzdan verisi",
+  "importColdcardScanNfcSheetTitle": "Cüzdan tanımlayıcısını NFC ile içe aktarmak için {deviceName} cihazınıza dokunun",
+  "importMnemonicBalanceLabel": "Denge: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Devam etmeye devam et",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
+  "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Mirası",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "Import Mnemonik",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "Tüm üç cüzdan türü senkronize edilir ve onların dengesi ve işlemleri yakında görünecektir. Tamamlanana kadar bekleyebilir veya ithal etmek istediğiniz cüzdan türü olduğundan emin olun.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "Import Mnemonik",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "İşlemler: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "Import Mnemonik",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "Import watch-sadece",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "Vakıf Pasaportu",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "Genric cüzdanlar",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "Donanım cüzdanları",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Specter",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "Yeni bir cüzdan ekleyin",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "Copied to klibi",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Descriptor",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "Verilen xpub'u ilk adresi kullanmadan önce cüzdandan elde edilen ilk adresi doğrulamayı seçtiğinizden emin olun. Yanlış yolu kullanarak fonların kaybına yol açabilir",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "Türleme Path Uyarı",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "Bu cüzdan zaten içe aktarıldı.",
+  "importWatchOnlyErrorImportFailed": "Bu yalnızca-izleme cüzdanını içe aktaramadık. Lütfen bilgileri kontrol edip tekrar deneyin.",
+  "importWatchOnlyErrorInvalidFormat": "Bu, geçerli bir genel anahtar veya tanımlayıcı gibi görünmüyor. Yapıştırdığınızı tekrar kontrol edin.",
+  "importWatchOnlyErrorLabelRequired": "İçe aktarmadan önce cüzdanınıza bir ad verin.",
+  "importWatchOnlyErrorNetworkMismatch": "Bu cüzdan şu anda farklı bir Bitcoin ağı kullanıyor. Mainnet ile Testnet arasında geçiş yapıp tekrar deneyin.",
+  "importWatchOnlyErrorNoWalletSelected": "Önce bir genel anahtar veya tanımlayıcı yapıştırın ya da tarayın.",
+  "importWatchOnlyExtendedPublicKey": "Genişletilmiş Halk Anahtar Anahtar Anahtar Anahtar",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "İthalat",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "Label",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Ağ: Bitcoin ana ağı",
+  "importWatchOnlyNetworkBitcoinTestnet": "Ağ: Bitcoin test ağı",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub veya tanımlayıcı",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "Gerekli",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "Scan QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "Signing Device",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "Import watch-sadece",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "Tipi",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "Bilinmeyen",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

@@ -229,10 +229,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "Κόπηκε να πετάξε",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "Παρακαλώ εισάγετε μια έγκυρη διεύθυνση Lightning",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -654,10 +650,6 @@
   "@importQrDeviceFingerprint": {
     "description": "Label for device fingerprint"
   },
-  "importWatchOnlyDescriptor": "Descriptor",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "Πληρωμή σε εξέλιξη!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -952,10 +944,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "Συνεχίστε να συνεχίζετε",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1118,10 +1106,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "Εισαγόμενη εισαγωγή",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "sellSendPaymentFeePriority": "Προτεραιότητα",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
@@ -1214,10 +1198,6 @@
   "fundExchangeCrIbanUsdLabelIban": "IBAN Account Number (μόνο δολάρια ΗΠΑ)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "Το χαρακτηριστικό έρχεται σύντομα",
   "@featureComingSoonTitle": {
@@ -1379,14 +1359,6 @@
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
   },
-  "importWatchOnlyType": "Τύπος τύπου Type Type",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "Hardware πορτοφόλια",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
-  },
   "connectHardwareWalletDescription": "Επιλέξτε το πορτοφόλι υλικού που θέλετε να συνδέσετε",
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
@@ -1545,10 +1517,6 @@
   "swapValidationInsufficientBalance": "Ανεπαρκή ισορροπία",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "Extended Public Key Key Key",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "Πάντα Block High Fees",
   "@autoswapAlwaysBlock": {
@@ -1817,10 +1785,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Η Google θα σας ζητήσει να μοιραστείτε προσωπικές πληροφορίες με αυτή την εφαρμογή.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "importWatchOnlyScanQR": "Scan QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "Σε εξέλιξη",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2179,15 +2143,6 @@
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
   },
-  "importMnemonicBalanceLabel": "Balance: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeWarningConfirmation": "Επιβεβαιώνω ότι δεν μου ζητείται να αγοράσω Bitcoin από κάποιον άλλο.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
@@ -2533,10 +2488,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "Replace-by-fee ενεργοποιημένη",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2580,10 +2531,6 @@
   "sellFromAnotherWallet": "Πουλήστε από ένα άλλο πορτοφόλι Bitcoin",
   "@sellFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },
-  "importColdcardButtonOpenCamera": "Ανοίξτε την κάμερα",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "Προτεραιότητα",
   "@payFeePriority": {
@@ -2856,10 +2803,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "Προσθέστε ένα νέο πορτοφόλι",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "Παρακολουθήστε μια διεύθυνση πληρωμής ή τιμολόγιο",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -2945,10 +2888,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "Άγνωστο",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "Συνεχίστε να συνεχίζετε",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -2990,10 +2929,6 @@
   "ledgerDefaultWalletLabel": "Ledger Wallet",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "importWalletSpecter": "Πουτερ",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "coreSwapsLnSendRefundable": "Το Swap είναι έτοιμο να επιστραφεί.",
   "@coreSwapsLnSendRefundable": {
@@ -3056,22 +2991,9 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "Συναλλαγές: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "Αναφερόμενα",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
-  },
-  "importMnemonicSelectScriptType": "Εισαγωγή Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "CAD CAD CAD CAD ισορροπία ισορροπία",
   "@sellSendPaymentCadBalance": {
@@ -3278,10 +3200,6 @@
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "importWalletImportWatchOnly": "Εισαγωγή ρολόι μόνο",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "Μόλις η συναλλαγή εισαγάγεται στο Coldcard σας, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3433,10 +3351,6 @@
   "@buyExternalBitcoinWallet": {
     "description": "Label for external wallet option"
   },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "Ακυρωμένο τιμολόγιο",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -3581,10 +3495,6 @@
   "exchangeLandingConnectAccount": "Συνδεθείτε το λογαριασμό ανταλλαγής Bitcoin σας",
   "@exchangeLandingConnectAccount": {
     "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
-  "importWatchOnlyLabel": "Label",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις",
   "@settingsAppSettingsTitle": {
@@ -3771,10 +3681,6 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "importWalletPassport": "Ίδρυμα Passport",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
   "buyExpressWithdrawalFee": "Express τέλος: {amount}",
   "@buyExpressWithdrawalFee": {
     "description": "Additional fee for instant withdrawal",
@@ -3937,10 +3843,6 @@
   "exchangeStatisticsSellStats": "Sell Statistics",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
-  },
-  "importColdcardButtonInstructions": "Οδηγίες",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "Ποιο πορτοφόλι θέλετε να πουλήσετε από?",
   "@sellWhichWalletQuestion": {
@@ -4334,10 +4236,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "importWatchOnlyTitle": "Εισαγωγή ρολόι μόνο",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "Ακύρωση",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -4361,10 +4259,6 @@
   "importQrDeviceScanning": "Σκάνινγκ...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "Νέοι παραλήπτες",
   "@payNewRecipients": {
@@ -4555,10 +4449,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "Απαιτείται",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "Το Wallet δεν συγχρονίζεται. Παρακαλώ περιμένετε",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -4566,10 +4456,6 @@
   "sellExchangeRate": "Συναλλαγματική ισοτιμία",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "Legacy",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "Αυτή η λειτουργία είναι επικίνδυνη. Επιτρέποντάς το, αναγνωρίζετε ότι μπορείτε να χάσετε χρήματα",
   "@settingsDevModeWarningMessage": {
@@ -4686,10 +4572,6 @@
   "payFirstName": "Πρώτο όνομα",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "importWatchOnlySigningDevice": "Signing Device",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
   },
   "receiveInvoiceExpired": "Το Invoice έληξε",
   "@receiveInvoiceExpired": {
@@ -4825,10 +4707,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "Generic πορτοφόλια",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "Δεν Tested",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -4897,10 +4775,6 @@
   "autoswapRecipientWalletInfo": "Επιλέξτε ποια πορτοφόλι Bitcoin θα λάβει τα μεταβιβασθέντα κεφάλαια (απαιτείται)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "Συνεχίστε να συνεχίζετε",
   "@swapContinueButton": {
@@ -5154,10 +5028,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub ήscriptor",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "Αριθμός λογαριασμού",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -5238,10 +5108,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "Το όνομα του δικαιούχου πρέπει να είναι LEONOD. Εάν βάλετε οτιδήποτε άλλο, η πληρωμή σας θα απορριφθεί.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -5831,10 +5697,6 @@
   "@fundExchangeCanadaPostStep7": {
     "description": "Step 7 for Canada Post payment process - timeframe"
   },
-  "importWatchOnlyDisclaimerDescription": "Βεβαιωθείτε ότι η διαδρομή αναχώρησης που επιλέγετε ταιριάζει με αυτή που παρήγαγε το δεδομένο xpub επαληθεύοντας την πρώτη διεύθυνση που προέρχεται από το πορτοφόλι πριν από τη χρήση. Χρησιμοποιώντας το λάθος μονοπάτι μπορεί να οδηγήσει σε απώλεια κεφαλαίων",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "Σας πιέζουν να ενεργήσετε γρήγορα",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -5893,10 +5755,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "Προνομή Path Warning",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "IBAN",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -5924,10 +5782,6 @@
   "paySwapInProgress": "Swap σε εξέλιξη...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "Και οι τρεις τύποι πορτοφολιού συγχρονίζονται και η ισορροπία και οι συναλλαγές τους θα εμφανιστούν σύντομα. Μπορείτε να περιμένετε μέχρι να ολοκληρωθεί η συγχρονισμό ή να προχωρήσετε στην εισαγωγή, εάν είστε σίγουροι ποιο είδος πορτοφολιού που επιθυμείτε να εισάγετε.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "coreSwapsLnSendClaimable": "Το Swap είναι έτοιμο να διεκδικήσει.",
   "@coreSwapsLnSendClaimable": {
@@ -6257,10 +6111,6 @@
   },
   "broadcastSignedTxBroadcasting": "Broadcasting...",
   "broadcastSignedTxBroadcastError": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή σας. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
-  "importWatchOnlyErrorNoWalletSelected": "Επικολλήστε ή σαρώστε πρώτα ένα δημόσιο κλειδί ή έναν descriptor.",
-  "importWatchOnlyErrorLabelRequired": "Δώστε ένα όνομα στο πορτοφόλι σας πριν την εισαγωγή.",
-  "importWatchOnlyErrorInvalidFormat": "Αυτό δεν μοιάζει με έγκυρο δημόσιο κλειδί ή descriptor. Ελέγξτε ξανά αυτό που επικολλήσατε.",
-  "importWatchOnlyErrorImportFailed": "Δεν μπορέσαμε να εισαγάγουμε αυτό το πορτοφόλι μόνο για παρακολούθηση. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
   "broadcastSignedTxErrorInvalidTransaction": "Αυτό δεν μοιάζει με έγκυρη υπογεγραμμένη συναλλαγή. Βεβαιωθείτε ότι επικολλήσατε ολόκληρο το PSBT ή τη συναλλαγή.",
   "broadcastSignedTxErrorInvalidPushTx": "Δεν μπορέσαμε να διαβάσουμε συναλλαγή από αυτή την ετικέτα. Δοκιμάστε να σαρώσετε ξανά.",
   "@broadcastSignedTxBroadcasting": {
@@ -6269,10 +6119,6 @@
   "receivePayjoinActivated": "Payjoin ενεργοποιηθεί",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "Συνεχίστε να συνεχίζετε",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "fundExchangeLabelInstitutionNumber": "Αριθμός ιδρύματος",
   "@fundExchangeLabelInstitutionNumber": {
@@ -6334,10 +6180,6 @@
   "comingSoonDefaultMessage": "Αυτή η λειτουργία είναι σήμερα υπό ανάπτυξη και θα είναι διαθέσιμη σύντομα.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "Ξεκινήστε το Backup",
   "@backupSettingsStartBackup": {
@@ -7310,10 +7152,6 @@
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
   },
-  "importMnemonicTitle": "Εισαγωγή Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "testBackupDoNotShare": "ΜΗΝ ΜΟΙΡΆΖΕΣΑΙ ΜΕ ΚΑΝΈΝΑΝ",
   "@testBackupDoNotShare": {
     "description": "Warning header about keeping recovery phrase secret"
@@ -7680,7 +7518,6 @@
     }
   },
   "walletSetupErrorTryAgain": "Κάτι πήγε στραβά κατά τη ρύθμιση του πορτοφολιού σας. Παρακαλώ δοκιμάστε ξανά.",
-  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
   "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7837,10 +7674,6 @@
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
-  "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "ώρες",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -8141,13 +7974,8 @@
   "sendCoordinatingPayjoinTransaction": "Συντονισμός συναλλαγής Payjoin.",
   "sendErrorInvoiceExpired": "Αυτό το invoice έχει λήξει. Ζητήστε ένα νέο invoice από τον παραλήπτη.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Σκεφτείτε να χρηματοδοτήσετε το Instant Payments για να κάνετε μικρότερες πληρωμές.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Πλησιάστε το Coldcard σας για να λάβετε την υπογεγραμμένη συναλλαγή μέσω NFC",
-  "importColdcardInvalidWalletData": "Μη έγκυρα δεδομένα πορτοφολιού Coldcard",
-  "importColdcardConnectTitle": "Σύνδεση {deviceName}",
-  "importColdcardConnectDescription": "Εισαγωγή του descriptor πορτοφολιού από το {deviceName} σας",
-  "importColdcardScanNfcSheetTitle": "Πλησιάστε το {deviceName} σας για εισαγωγή του descriptor πορτοφολιού μέσω NFC",
   "fundExchangeCopDailyLimitWarning": "Αν υπερβείτε το ημερήσιο όριο συναλλαγών σας, η συναλλαγή θα αποτύχει. Θα χρειαστεί να επικοινωνήσετε με την υποστήριξη πελατών.",
   "fundExchangeCopSenderName": "Όνομα αποστολέα",
   "fundExchangeCopIssuingBank": "Τράπεζα έκδοσης",
@@ -8177,12 +8005,9 @@
   "backupWarningBackupNow": "ΝΑΙ",
   "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
   "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
   "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
   "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Τέλος",
   "consolidationFailedBody": "Παρουσιάστηκε μη αναμενόμενο σφάλμα. Τα κεφάλαιά σας είναι ασφαλή: δεν μεταδόθηκε καμία συναλλαγή. Δοκιμάστε ξανά.",
   "consolidationFailedTitle": "Η ενοποίηση απέτυχε",
@@ -8305,10 +8130,6 @@
   "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
   "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
   "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
-  "importWatchOnlyErrorNetworkMismatch": "Αυτό το πορτοφόλι χρησιμοποιεί αυτήν τη στιγμή διαφορετικό δίκτυο Bitcoin. Αλλάξτε μεταξύ Mainnet και Testnet και δοκιμάστε ξανά.",
-  "importWatchOnlyErrorAlreadyExists": "Αυτό το πορτοφόλι έχει ήδη εισαχθεί.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Δίκτυο: Κύριο δίκτυο Bitcoin",
-  "importWatchOnlyNetworkBitcoinTestnet": "Δίκτυο: Δοκιμαστικό δίκτυο Bitcoin",
   "broadcastSignedTxErrorPsbtFinalization": "Δεν ήταν δυνατή η οριστικοποίηση της υπογεγραμμένης συναλλαγής. Βεβαιωθείτε ότι περιέχει όλες τις απαιτούμενες υπογραφές και δοκιμάστε ξανά.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

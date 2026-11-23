@@ -2485,10 +2485,6 @@
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
   },
-  "importMnemonicTitle": "Mnemonic Import Karo",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "howToDecideBackupTitle": "Kaise decide karein",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
@@ -5318,10 +5314,6 @@
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
   },
-  "importWalletTitle": "Naya wallet add karo",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Hardware Wallet Connect Karo",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
@@ -5329,74 +5321,6 @@
   "importWalletImportMnemonic": "Mnemonic Import Karo",
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
-  },
-  "importWalletImportWatchOnly": "Watch-only import karo",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
-  "importWalletSectionGeneric": "Generic wallets",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
-  "importWalletSectionHardware": "Hardware wallets",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
-  },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
-  },
-  "importWalletPassport": "Foundation Passport",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
-  },
-  "importWalletSpecter": "Specter",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
-  },
-  "importMnemonicContinue": "Aage Badho",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
-  },
-  "importMnemonicSelectScriptType": "Mnemonic Import Karo",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
-  },
-  "importMnemonicSyncMessage": "Teeno wallet types sync ho rahe hain, balance aur transactions jald dikhengi. Aap sync complete hone ka intezaar kar sakte ho ya agar aapko pata hai kaunsa wallet type import karna hai toh aage badh sakte ho.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
-  },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
-  "importMnemonicLegacy": "Legacy",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "importMnemonicChecking": "Check ho raha hai...",
   "@importMnemonicChecking": {
@@ -5440,36 +5364,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "importMnemonicBalanceLabel": "Balance: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "importMnemonicTransactionsLabel": "Transactions: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "importMnemonicEmptyLabelError": "Mnemonic import karne ke liye ek label aavashyak hai",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "importWatchOnlyTitle": "Watch-only import karo",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
-  "importWatchOnlyPasteHint": "xpub, ypub, zpub ya descriptor paste karo",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5481,14 +5375,6 @@
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
-  },
-  "importWatchOnlyDescriptor": "Descriptor",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
-  "importWatchOnlyScanQR": "QR Scan Karo",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "importWatchOnlyScriptType": "Script Type",
   "@importWatchOnlyScriptType": {
@@ -5509,46 +5395,6 @@
   "importWatchOnlyCancel": "Raddh Karo",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  },
-  "importWatchOnlyCopiedToClipboard": "Clipboard mein copy hua",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
-  "importWatchOnlyType": "Type",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWatchOnlySigningDevice": "Signing Device",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
-  "importWatchOnlyUnknown": "Pata Nahi",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
-  "importWatchOnlyLabel": "Label",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
-  },
-  "importWatchOnlyRequired": "Zaroori",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
-  "importWatchOnlyImport": "Import Karo",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
-  "importWatchOnlyExtendedPublicKey": "Extended Public Key",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
-  },
-  "importWatchOnlyDisclaimerTitle": "Derivation Path Chetavni",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
-  "importWatchOnlyDisclaimerDescription": "Dhyan rakho ki aapka chuna hua derivation path diye gaye xpub se match kare — use karne se pehle wallet se pehla derived address verify karo. Galat path se funds ka nuksan ho sakta hai",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
   },
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
@@ -5615,10 +5461,6 @@
   },
   "broadcastSignedTxBroadcasting": "Broadcast ho raha hai...",
   "broadcastSignedTxBroadcastError": "Hum aapka transaction broadcast nahi kar sake. Apna internet connection jaanchein aur phir se koshish karein.",
-  "importWatchOnlyErrorNoWalletSelected": "Pehle koi public key ya descriptor paste ya scan karein.",
-  "importWatchOnlyErrorLabelRequired": "Import karne se pehle apne wallet ko ek naam dein.",
-  "importWatchOnlyErrorInvalidFormat": "Yeh valid public key ya descriptor nahi lagta. Aapne jo paste kiya hai use dobara jaanch lein.",
-  "importWatchOnlyErrorImportFailed": "Hum is watch-only wallet ko import nahi kar sake. Kripya jaankari jaanchein aur phir se koshish karein.",
   "broadcastSignedTxErrorInvalidTransaction": "Yeh valid signed transaction nahi lagta. Pakka karein ki aapne poora PSBT ya transaction paste kiya hai.",
   "broadcastSignedTxErrorInvalidPushTx": "Hum is tag se koi transaction nahi padh sake. Kripya phir se scan karein.",
   "@broadcastSignedTxBroadcasting": {
@@ -5739,14 +5581,6 @@
   "importColdcardDescription": "Apne Coldcard Q se wallet descriptor QR code import karo",
   "@importColdcardDescription": {
     "description": "ImportColdcardQ: Main instruction text on import page"
-  },
-  "importColdcardButtonOpenCamera": "Camera kholo",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "importColdcardButtonInstructions": "Instructions",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "importColdcardInstructionsTitle": "Coldcard Q Instructions",
   "@importColdcardInstructionsTitle": {
@@ -8200,13 +8034,8 @@
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
   "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Signed transaction NFC se receive karne ke liye apna Coldcard tap karo",
-  "importColdcardInvalidWalletData": "Coldcard wallet data galat hai",
-  "importColdcardConnectTitle": "{deviceName} Connect Karo",
-  "importColdcardConnectDescription": "Apne {deviceName} se wallet descriptor import karo",
-  "importColdcardScanNfcSheetTitle": "Wallet descriptor NFC se import karne ke liye apna {deviceName} tap karo",
   "coreScreensResolvingInputs": "Transaction inputs resolve ho rahe hain...",
   "coreScreensFeeRateLabel": "Fee Rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -8329,11 +8158,7 @@
   "recipientsFieldPayeeAccountNumber": "Payee Account Number",
   "exchangeFileUploadStatusRejectedBadge": "Rejected",
   "exchangeFileUploadTapToReupload": "Phir se upload karne ke liye tap karo",
-  "importMnemonicDuplicateError": "Ye mnemonic pehle se maujood hai",
-  "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Done",
   "consolidationFailedBody": "Ek anapekshit truti hui. Aapka dhan surakshit hai: koi lenden prasarit nahi kiya gaya. Kripya punah prayas karein.",
   "consolidationFailedTitle": "Samekan viphal",
@@ -8456,10 +8281,6 @@
   "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
   "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
   "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
-  "importWatchOnlyErrorNetworkMismatch": "Yeh wallet abhi kisi doosre Bitcoin network ka istemal kar raha hai. Mainnet aur Testnet ke beech badlein, phir dobara koshish karein.",
-  "importWatchOnlyErrorAlreadyExists": "Yah wallet pahle se import kiya gaya hai.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin mainnet",
-  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin testnet",
   "broadcastSignedTxErrorPsbtFinalization": "Signed transaction ko final nahin kiya ja saka. Pakka karen ki ismein sabhi zaroori signatures hain, phir dobara koshish karen.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

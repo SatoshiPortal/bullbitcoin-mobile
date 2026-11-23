@@ -129,5 +129,85 @@
   "passphraseHide": "Passphrase verbergen",
   "mnemonicWordCountLabel": "Wörter",
   "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
-  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt"
+  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt",
+  "bitboxScreenDefaultWalletLabel": "BitBox-Wallet",
+  "importColdcardButtonInstructions": "Anweisungen",
+  "importColdcardButtonOpenCamera": "Kamera öffnen",
+  "importColdcardConnectDescription": "Importieren Sie den Wallet-Deskriptor von Ihrem {deviceName}",
+  "importColdcardConnectTitle": "{deviceName} verbinden",
+  "importColdcardInvalidWalletData": "Ungültige Coldcard-Wallet-Daten",
+  "importColdcardScanNfcSheetTitle": "Halten Sie Ihr Telefon an Ihr {deviceName}, um den Wallet-Deskriptor per NFC zu importieren",
+  "importMnemonicBalanceLabel": "Guthaben: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Fortfahren",
+  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
+  "importMnemonicEmptyLabelError": "Zum Importieren einer Mnemonic ist eine Bezeichnung erforderlich",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "importMnemonicNestedSegwit": "Nested SegWit",
+  "importMnemonicSegwit": "SegWit",
+  "importMnemonicSelectScriptType": "Mnemonic importieren",
+  "importMnemonicSyncMessage": "Alle drei Wallet-Typen werden synchronisiert und ihr Guthaben sowie Transaktionen werden bald angezeigt. Sie können warten, bis die Synchronisierung abgeschlossen ist, oder zum Importieren gehen, wenn Sie sicher sind, welchen Wallet-Typ Sie importieren möchten.",
+  "importMnemonicTitle": "Mnemonic importieren",
+  "importMnemonicTransactionsLabel": "Transaktionen: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox",
+  "importWalletBitBoxNova": "BitBox Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "Mnemonic importieren",
+  "importWalletImportWatchOnly": "Watch-Only importieren",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Foundation Passport",
+  "importWalletSectionGeneric": "Generische Wallets",
+  "importWalletSectionHardware": "Hardware-Wallets",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "Neue Wallet hinzufügen",
+  "importWatchOnlyCopiedToClipboard": "In die Zwischenablage kopiert",
+  "importWatchOnlyDescriptor": "Descriptor",
+  "importWatchOnlyDisclaimerDescription": "Stellen Sie sicher, dass der gewählte Ableitungspfad mit dem übereinstimmt, der den angegebenen xpub erzeugt hat. Überprüfen Sie vor der Verwendung die erste abgeleitete Adresse. Ein falscher Pfad kann zum Verlust von Guthaben führen.",
+  "importWatchOnlyDisclaimerTitle": "Warnung: Ableitungspfad",
+  "importWatchOnlyErrorAlreadyExists": "Diese Wallet wurde bereits importiert.",
+  "importWatchOnlyErrorImportFailed": "Wir konnten diese Watch-Only-Wallet nicht importieren. Bitte überprüfen Sie die Angaben und versuchen Sie es erneut.",
+  "importWatchOnlyErrorInvalidFormat": "Das sieht nicht nach einem gültigen öffentlichen Schlüssel oder Descriptor aus. Überprüfen Sie, was Sie eingefügt haben.",
+  "importWatchOnlyErrorLabelRequired": "Geben Sie Ihrer Wallet vor dem Importieren einen Namen.",
+  "importWatchOnlyErrorNetworkMismatch": "Diese Wallet verwendet derzeit ein anderes Bitcoin-Netzwerk. Wechseln Sie zwischen Mainnet und Testnet und versuchen Sie es erneut.",
+  "importWatchOnlyErrorNoWalletSelected": "Öffentlichen Schlüssel oder Deskriptor einfügen oder scannen.",
+  "importWatchOnlyExtendedPublicKey": "Erweiterter öffentlicher Schlüssel",
+  "importWatchOnlyImport": "Importieren",
+  "importWatchOnlyLabel": "Bezeichnung",
+  "importWatchOnlyNetworkBitcoinMainnet": "Netzwerk: Bitcoin-Mainnet",
+  "importWatchOnlyNetworkBitcoinTestnet": "Netzwerk: Bitcoin-Testnet",
+  "importWatchOnlyPasteHint": "Fügen Sie xpub, ypub, zpub oder einen Deskriptor ein",
+  "importWatchOnlyRequired": "Erforderlich",
+  "importWatchOnlyScanQR": "QR-Code scannen",
+  "importWatchOnlySigningDevice": "Signatur-Gerät",
+  "importWatchOnlyTitle": "Watch-Only importieren",
+  "importWatchOnlyType": "Typ",
+  "importWatchOnlyUnknown": "Unbekannt",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger-Wallet",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "NFC scannen"
 }

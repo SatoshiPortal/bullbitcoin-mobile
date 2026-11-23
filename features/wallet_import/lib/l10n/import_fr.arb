@@ -143,5 +143,87 @@
   "mnemonicWordCountLabel": "Mots",
   "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
   "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée",
-  "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné."
+  "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné.",
+  "bitboxScreenDefaultWalletLabel": "Portefeuille BitBox",
+  "electrumRegtest": "Regtest",
+  "importColdcardButtonInstructions": "Instructions",
+  "importColdcardButtonOpenCamera": "Ouvrir la caméra",
+  "importColdcardConnectDescription": "Importez le descripteur de portefeuille depuis votre {deviceName}",
+  "importColdcardConnectTitle": "Connecter {deviceName}",
+  "importColdcardInvalidWalletData": "Données de portefeuille Coldcard invalides",
+  "importColdcardScanNfcSheetTitle": "Approchez votre {deviceName} pour importer le descripteur de portefeuille via NFC",
+  "importMnemonicBalanceLabel": "Solde : {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Continuer",
+  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
+  "importMnemonicEmptyLabelError": "Une étiquette est requise pour importer un mnémonique",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "importMnemonicSegwit": "Segwit",
+  "importMnemonicSelectScriptType": "Importer une mnémonique",
+  "importMnemonicSyncMessage": "Les trois types de portefeuilles se synchronisent et leur solde et transactions apparaîtront bientôt. Vous pouvez attendre la fin de la synchronisation ou procéder à l'importation si vous êtes sûr du type de portefeuille que vous souhaitez importer.",
+  "importMnemonicTitle": "Importer une mnémonique",
+  "importMnemonicTransactionsLabel": "Transactions : {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "Importer une mnémonique",
+  "importWalletImportWatchOnly": "Importer en lecture seule",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Foundation Passport",
+  "importWalletSectionGeneric": "Portefeuilles génériques",
+  "importWalletSectionHardware": "Portefeuilles matériels",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "Ajouter un nouveau portefeuille",
+  "importWatchOnlyCopiedToClipboard": "Copié dans le presse-papiers",
+  "importWatchOnlyDescriptor": "Descripteur",
+  "importWatchOnlyDisclaimerDescription": "Assurez-vous que le chemin de dérivation que vous choisissez correspond à celui qui a produit la xpub donnée, car l'utilisation d'un mauvais chemin peut entraîner une perte de fonds",
+  "importWatchOnlyDisclaimerTitle": "Avertissement sur le chemin de dérivation",
+  "importWatchOnlyErrorAlreadyExists": "Ce portefeuille est déjà importé.",
+  "importWatchOnlyErrorImportFailed": "Impossible d'importer ce portefeuille en lecture seule. Vérifiez les informations et réessayez.",
+  "importWatchOnlyErrorInvalidFormat": "Cela ne ressemble pas à une clé publique ou un descripteur valide. Vérifiez ce que vous avez collé.",
+  "importWatchOnlyErrorLabelRequired": "Nommez votre portefeuille avant de l'importer.",
+  "importWatchOnlyErrorNetworkMismatch": "La clé ne correspond pas au réseau Bitcoin sélectionné.",
+  "importWatchOnlyErrorNoWalletSelected": "Collez ou scannez d'abord une clé publique ou un descripteur.",
+  "importWatchOnlyExtendedPublicKey": "Clé publique étendue",
+  "importWatchOnlyImport": "Importer",
+  "importWatchOnlyLabel": "Libellé",
+  "importWatchOnlyNetworkBitcoinMainnet": "Réseau : réseau principal Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Réseau : réseau de test Bitcoin",
+  "importWatchOnlyPasteHint": "Coller xpub, ypub, zpub ou descripteur",
+  "importWatchOnlyRequired": "Requis",
+  "importWatchOnlyScanQR": "Scanner QR",
+  "importWatchOnlySigningDevice": "Appareil de signature",
+  "importWatchOnlyTitle": "Importer en lecture seule",
+  "importWatchOnlyType": "Type",
+  "importWatchOnlyUnknown": "Inconnu",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Portefeuille Ledger",
+  "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer.",
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scanner NFC"
 }

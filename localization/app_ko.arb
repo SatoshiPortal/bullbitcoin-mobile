@@ -257,10 +257,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "클립보드에 복사",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "이용 약관",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -728,10 +724,6 @@
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
-  "importWatchOnlyDescriptor": "연구분야",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "결제 진행 중!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -1094,10 +1086,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "사이트맵",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "계속하기",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1272,10 +1260,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "제품정보",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "지원하다",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1390,10 +1374,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importWalletSeedSigner": "비밀번호",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "기능 곧 출시",
   "@featureComingSoonTitle": {
@@ -1568,14 +1548,6 @@
   "importWalletConnectHardware": "하드웨어 지갑 연결",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWatchOnlyType": "제품정보",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "하드웨어 지갑",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "connectHardwareWalletDescription": "연결하려는 하드웨어 지갑을 선택하십시오",
   "@connectHardwareWalletDescription": {
@@ -1765,10 +1737,6 @@
   "swapValidationInsufficientBalance": "충분한 균형",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "회사 소개 이름 *",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "항상 블록 높은 비용",
   "@autoswapAlwaysBlock": {
@@ -2073,10 +2041,6 @@
   "testCompletedSuccessMessage": "Bitcoin 지갑에 액세스 할 수 있습니다",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "QR 코드",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "진행 중",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2486,15 +2450,6 @@
   "payPayeeAccountNumber": "Payee 계정 번호",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
-  },
-  "importMnemonicBalanceLabel": "밸런스: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeWarningConfirmation": "나는 내가 다른 사람에 의해 Bitcoin을 구입하는 것을 요청하지 않다는 것을 확인합니다.",
   "@fundExchangeWarningConfirmation": {
@@ -2907,10 +2862,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "연락처",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "Replace-by-fee 활성화",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2962,10 +2913,6 @@
   "automaticallyFetchKeyButton": "자동 Fetch 키 >>",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "importColdcardButtonOpenCamera": "카메라 열기",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "요금 우선",
   "@payFeePriority": {
@@ -3280,10 +3227,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "새로운 지갑 추가",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "결제 주소 또는 송장",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3377,10 +3320,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "이름 *",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "계속하기",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3422,10 +3361,6 @@
   "ledgerDefaultWalletLabel": "Ledger 지갑",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "importWalletSpecter": "관련 상품",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "customLocationProvider": "주문 위치",
   "@customLocationProvider": {
@@ -3504,15 +3439,6 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "거래 : {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "관련 기사",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
@@ -3520,10 +3446,6 @@
   "autoswapAlwaysBlockInfoEnabled": "활성화하면 설정한 한도를 초과하는 수수료의 자동 스왑은 항상 차단됩니다",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
-  },
-  "importMnemonicSelectScriptType": "수입 Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "자료실 (주)",
   "@sellSendPaymentCadBalance": {
@@ -3762,10 +3684,6 @@
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "importWalletImportWatchOnly": "가져오기 watch-only",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "거래가 Coldcard에 수입되면 목적지 주소와 금액을 검토하십시오.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3935,10 +3853,6 @@
       }
     }
   },
-  "importWalletJade": "블록스트림 옥",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "잘못된 청구서",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -4107,10 +4021,6 @@
   "recoverYourWalletTitle": "지갑을 복구",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "이름 *",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "앱 설정",
   "@settingsAppSettingsTitle": {
@@ -4337,10 +4247,6 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "importWalletPassport": "기초 여권",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
   "buyExpressWithdrawalFee": "익스프레스 요금: {amount}",
   "@buyExpressWithdrawalFee": {
     "description": "Additional fee for instant withdrawal",
@@ -4537,10 +4443,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importColdcardButtonInstructions": "관련 기사",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "어떤 지갑에서 판매하고 싶습니까?",
   "@sellWhichWalletQuestion": {
@@ -4998,10 +4900,6 @@
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
   },
-  "importWatchOnlyTitle": "가져오기 watch-only",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "이름 *",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -5029,10 +4927,6 @@
   "importQrDeviceScanning": "스캔 ...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "키스톤",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "새로운 수상자",
   "@payNewRecipients": {
@@ -5264,10 +5158,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "견적 요청",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "지갑은 동기화되지 않습니다. 오시는 길",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -5279,10 +5169,6 @@
   "sellExchangeRate": "환율",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "이름 *",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "이 모드는 위험합니다. 이를 통해 돈을 잃을 수 있음을 인정합니다",
   "@settingsDevModeWarningMessage": {
@@ -5430,10 +5316,6 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "importWatchOnlySigningDevice": "관련 제품",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
   "receiveInvoiceExpired": "청구서 만료",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
@@ -5580,10 +5462,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "일반 지갑",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "시험되지 않음",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -5672,10 +5550,6 @@
   "autoswapRecipientWalletInfo": "Bitcoin 지갑이 전송 된 자금을받을 수 있음을 선택하십시오 (필수)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
-  },
-  "importWalletKrux": "한국어",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "계속하기",
   "@swapContinueButton": {
@@ -6009,10 +5883,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub 또는 디지터",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "계좌번호",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -6088,10 +5958,6 @@
       }
     }
   },
-  "importMnemonicTitle": "수입 Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "Replace-by-fee 활성화",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -6123,10 +5989,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "비만의 이름은 LEONOD이어야합니다. 당신이 다른 것을 넣으면, 당신의 지불은 거절될 것입니다.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "연락처",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "비트 코인",
   "@exchangeLandingTitle": {
@@ -6855,10 +6717,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "importWatchOnlyDisclaimerDescription": "이용하기 전에 지갑에서 파생 된 첫 번째 주소를 확인하여 주어진 Xpub를 생산 한 것으로 일치 경로를 확인합니다. 잘못된 경로를 사용하여 자금의 손실로 이어질 수 있습니다",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "그들은 신속하게 행동하고 있습니다",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -6917,10 +6775,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "Derivation 경로 경고",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "아이반",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -6961,10 +6815,6 @@
   "paySwapInProgress": "진행 중...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "모든 3개의 지갑 유형은 동기화이고 그들의 균형 및 거래는 곧 나타납니다. sync가 완료될 때까지 기다릴 수 있고, 지갑 유형이 가져올지 확인해야 합니다.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "coreSwapsLnSendClaimable": "Swap은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnSendClaimable": {
@@ -7326,10 +7176,6 @@
   },
   "broadcastSignedTxBroadcasting": "방송...",
   "broadcastSignedTxBroadcastError": "거래를 전송할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.",
-  "importWatchOnlyErrorNoWalletSelected": "먼저 공개 키나 디스크립터를 붙여넣거나 스캔하세요.",
-  "importWatchOnlyErrorLabelRequired": "가져오기 전에 지갑 이름을 입력하세요.",
-  "importWatchOnlyErrorInvalidFormat": "유효한 공개 키나 디스크립터가 아닌 것 같습니다. 붙여넣은 내용을 다시 확인하세요.",
-  "importWatchOnlyErrorImportFailed": "이 조회 전용 지갑을 가져올 수 없습니다. 정보를 확인한 후 다시 시도하세요.",
   "broadcastSignedTxErrorInvalidTransaction": "유효한 서명된 거래가 아닌 것 같습니다. PSBT나 거래 전체를 붙여넣었는지 확인하세요.",
   "broadcastSignedTxErrorInvalidPushTx": "이 태그에서 거래를 읽을 수 없습니다. 다시 스캔해 주세요.",
   "@broadcastSignedTxBroadcasting": {
@@ -7338,10 +7184,6 @@
   "receivePayjoinActivated": "Payjoin 활성화",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "계속하기",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "chooseVaultLocationTitle": "Vault 위치 선택",
   "@chooseVaultLocationTitle": {
@@ -7423,10 +7265,6 @@
   "enterBackupKeyManuallyTitle": "백업 키를 수동으로 입력",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "콜드 카드 Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "백업하기",
   "@backupSettingsStartBackup": {
@@ -7691,7 +7529,6 @@
     }
   },
   "walletSetupErrorTryAgain": "지갑을 설정하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
-  "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
   "coreScreensFeeRateLabel": "수수료율",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7737,10 +7574,6 @@
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "시간",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -8065,13 +7898,8 @@
   "sendErrorInvoiceExpired": "이 인보이스는 만료되었습니다. 수취인에게 새 인보이스를 요청하세요.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "더 작은 금액을 결제하려면 Instant Payment Wallet에 자금을 충전하는 것을 고려해 보세요.",
   "sendErrorInsufficientBalanceFrozenHint": "사용 가능한 잔액이 부족합니다 — 동결된 금액: {amount}. 코인 관리에서 동결을 해제하여 사용하세요.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Coldcard를 태그하여 NFC로 서명된 트랜잭션을 받으세요",
-  "importColdcardInvalidWalletData": "잘못된 Coldcard 지갑 데이터",
-  "importColdcardConnectTitle": "{deviceName} 연결",
-  "importColdcardConnectDescription": "{deviceName} 기기에서 지갑 디스크립터를 가져옵니다.",
-  "importColdcardScanNfcSheetTitle": "{deviceName} 기기를 태그하여 NFC로 지갑 디스크립터를 가져오세요",
   "priceFailedToLoad": "가격을 불러오지 못했습니다",
   "statusScreenTryAgain": "다시 시도",
   "statusScreenContinue": "계속",
@@ -8191,9 +8019,6 @@
   "recipientsFieldPayeeAccountNumber": "수취인 계좌번호",
   "exchangeFileUploadStatusRejectedBadge": "거부됨",
   "exchangeFileUploadTapToReupload": "탭하여 다시 업로드",
-  "importWatchOnlyXpubLabel": "XPUB",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "완료",
   "consolidationFailedBody": "예기치 않은 오류가 발생했습니다. 자금은 안전하며 어떤 거래도 브로드캐스트되지 않았습니다. 다시 시도해 주세요.",
   "consolidationFailedTitle": "통합 실패",
@@ -8316,10 +8141,6 @@
   "autoBuyWalletRequiredError": "기본 Bitcoin, Lightning 또는 Liquid 주소를 하나 이상 추가하세요.",
   "autoBuyUpdateError": "자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.",
   "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
-  "importWatchOnlyErrorNetworkMismatch": "이 지갑은 현재 다른 Bitcoin 네트워크를 사용하고 있습니다. Mainnet과 Testnet 사이를 전환한 후 다시 시도하세요.",
-  "importWatchOnlyErrorAlreadyExists": "이 지갑은 이미 가져왔습니다.",
-  "importWatchOnlyNetworkBitcoinMainnet": "네트워크: 비트코인 메인넷",
-  "importWatchOnlyNetworkBitcoinTestnet": "네트워크: 비트코인 테스트넷",
   "broadcastSignedTxErrorPsbtFinalization": "서명된 거래를 완료할 수 없습니다. 필요한 모든 서명이 포함되어 있는지 확인한 후 다시 시도하세요.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

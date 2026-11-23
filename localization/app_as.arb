@@ -150,7 +150,6 @@
   },
   "walletSetupErrorTryAgain": "আপোনাৰ wallet ছেট আপ কৰোঁতে কিবা ভুল হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
-  "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "translationWarningTitle": "AI-দ্বাৰা উৎপাদিত অনুবাদ",
   "translationWarningDescription": "এই এপ্পৰ অধিকাংশ অনুবাদ AI ব্যৱহাৰ কৰি তৈয়াৰ কৰা হৈছে আৰু ইয়াত ভুল থাকিব পাৰে। যদি আপুনি কোনো ভুল লক্ষ্য কৰে বা অনুবাদ উন্নত কৰাত সহায় কৰিব বিচাৰে, তেন্তে আমাৰ সমাজ অনুবাদ প্লেটফৰ্মৰ জৰিয়তে অৱদান দিব পাৰে।",
   "translationWarningContributeButton": "অনুবাদ উন্নত কৰাত সহায় কৰক",
@@ -162,10 +161,6 @@
         "type": "String"
       }
     }
-  },
-  "importMnemonicEmptyLabelError": "মেমোনিক আমদানি কৰিবলৈ এটা লেবেল প্ৰয়োজন",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "coreSwapsStatusPending": "অপেক্ষাৰত",
   "coreSwapsStatusCompleted": "সম্পন্ন হৈছে",
@@ -1054,7 +1049,6 @@
   "recoverVia12WordsDescription": "12 টা শব্দৰ জৰিয়তে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰক।",
   "recoverButton": "পুনৰুদ্ধাৰ কৰক",
   "recoverWalletButton": "Wallet পুনৰুদ্ধাৰ কৰক",
-  "importMnemonicTitle": "Mnemonic আমদানি কৰক",
   "howToDecideBackupTitle": "কেনেকৈ সিদ্ধান্ত লব",
   "howToDecideBackupText1": "মানুহে Bitcoin হেৰুওৱাৰ এটা সাধাৰণ কাৰণ হ'ল ভৌতিক বেকআপ হেৰুওৱা। যিকোনো মানুহে আপোনাৰ ভৌতিক বেকআপ বিচাৰি পালে আপোনাৰ সকলো Bitcoin লৈ যাব পাৰিব। যদি আপুনি নিশ্চিত যে ভালকৈ লুকাই ৰাখিব পাৰিব আৰু কেতিয়াও হেৰাব নিদিব, তেন্তে ই এটা ভাল বিকল্প।",
   "howToDecideBackupText2": "এনক্ৰিপ্টেড vault-এ চোৰক আপোনাৰ বেকআপ চুৰি কৰাৰ পৰা ৰক্ষা কৰে। ই আপোনাক আকস্মিকভাৱে বেকআপ হেৰুওৱাৰ পৰাও ৰক্ষা কৰে কাৰণ ই cloud-ত সংৰক্ষিত থাকিব। Google বা Apple-ৰ দৰে cloud সংৰক্ষণ প্ৰদানকৰ্তাৰ আপোনাৰ Bitcoin-লৈ প্ৰৱেশ নাথাকিব কাৰণ এনক্ৰিপশ্যন পাছৱৰ্ড অতি শক্তিশালী।",
@@ -3923,10 +3917,6 @@
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
   },
-  "importWalletTitle": "নতুন wallet যোগ কৰক",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Hardware Wallet সংযোগ কৰক",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
@@ -3934,74 +3924,6 @@
   "importWalletImportMnemonic": "Mnemonic আমদানি কৰক",
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
-  },
-  "importWalletImportWatchOnly": "Watch-only আমদানি কৰক",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
-  "importWalletSectionGeneric": "সাধাৰণ wallet",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
-  "importWalletSectionHardware": "Hardware wallet",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
-  },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
-  },
-  "importWalletPassport": "Foundation Passport",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
-  },
-  "importWalletSpecter": "Specter",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
-  },
-  "importMnemonicContinue": "অব্যাহত ৰাখক",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
-  },
-  "importMnemonicSelectScriptType": "Mnemonic আমদানি কৰক",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
-  },
-  "importMnemonicSyncMessage": "তিনিওটা wallet ধৰণ sync হৈ আছে আৰু সিহঁতৰ বেলেন্স আৰু লেনদেন শীঘ্ৰে দেখা যাব। আপুনি sync সম্পন্ন হোৱালৈ অপেক্ষা কৰিব পাৰে বা আপুনি কোনটো wallet ধৰণ আমদানি কৰিব বিচাৰে নিশ্চিত হ'লে আগবাঢ়িব পাৰে।",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
-  },
-  "importMnemonicSegwit": "SegWit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
-  "importMnemonicNestedSegwit": "Nested SegWit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
-  "importMnemonicLegacy": "Legacy",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "importMnemonicChecking": "পৰীক্ষা কৰি আছে...",
   "@importMnemonicChecking": {
@@ -4045,32 +3967,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "importMnemonicBalanceLabel": "বেলেন্স: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "importMnemonicTransactionsLabel": "লেনদেন: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "importWatchOnlyTitle": "Watch-only আমদানি কৰক",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
-  "importWatchOnlyPasteHint": "xpub, ypub, zpub বা descriptor পেষ্ট কৰক",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -4082,14 +3978,6 @@
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
-  },
-  "importWatchOnlyDescriptor": "Descriptor",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
-  "importWatchOnlyScanQR": "QR স্কেন কৰক",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "importWatchOnlyScriptType": "Script Type",
   "@importWatchOnlyScriptType": {
@@ -4110,46 +3998,6 @@
   "importWatchOnlyCancel": "বাতিল কৰক",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  },
-  "importWatchOnlyCopiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
-  "importWatchOnlyType": "ধৰণ",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWatchOnlySigningDevice": "Signing Device",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
-  "importWatchOnlyUnknown": "অজ্ঞাত",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
-  "importWatchOnlyLabel": "লেবেল",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
-  },
-  "importWatchOnlyRequired": "প্ৰয়োজনীয়",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
-  "importWatchOnlyImport": "আমদানি কৰক",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
-  "importWatchOnlyExtendedPublicKey": "Extended Public Key",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
-  },
-  "importWatchOnlyDisclaimerTitle": "Derivation Path সতৰ্কবাণী",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
-  "importWatchOnlyDisclaimerDescription": "ব্যৱহাৰ কৰাৰ আগতে wallet ৰ পৰা প্ৰথম ঠিকনাটো যাচাই কৰি নিশ্চিত কৰক যে আপুনি বাছনি কৰা Derivation Path টো দিয়া xpub উৎপন্ন কৰা Derivation Path ৰ সৈতে মিলে। ভুল path ব্যৱহাৰ কৰিলে পুঁজি হেৰুৱাব পাৰে",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
   },
   "bip85Title": "BIP85 নিৰ্ণায়ক Entropies",
   "@bip85Title": {
@@ -4216,10 +4064,6 @@
   },
   "broadcastSignedTxBroadcasting": "প্ৰচাৰ হৈ আছে...",
   "broadcastSignedTxBroadcastError": "আমি আপোনাৰ লেনদেন ব্ৰডকাষ্ট কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "importWatchOnlyErrorNoWalletSelected": "প্ৰথমে এটা পাবলিক কী বা ডেস্ক্ৰিপ্টৰ পেষ্ট বা স্কেন কৰক।",
-  "importWatchOnlyErrorLabelRequired": "ইম্প'ৰ্ট কৰাৰ আগতে আপোনাৰ ৱালেটক এটা নাম দিয়ক।",
-  "importWatchOnlyErrorInvalidFormat": "এইটো এটা বৈধ পাবলিক কী বা ডেস্ক্ৰিপ্টৰ যেন নালাগে। আপুনি যি পেষ্ট কৰিছে সেয়া পুনৰ পৰীক্ষা কৰক।",
-  "importWatchOnlyErrorImportFailed": "আমি এই ৱাচ-অনলী ৱালেটটো ইম্প'ৰ্ট কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি বিৱৰণ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "broadcastSignedTxErrorInvalidTransaction": "এইটো এটা বৈধ স্বাক্ষৰিত লেনদেন যেন নালাগে। আপুনি সম্পূৰ্ণ PSBT বা লেনদেন পেষ্ট কৰাটো নিশ্চিত কৰক।",
   "broadcastSignedTxErrorInvalidPushTx": "আমি এই টেগৰ পৰা কোনো লেনদেন পঢ়িব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ স্কেন কৰক।",
   "@broadcastSignedTxBroadcasting": {
@@ -4340,14 +4184,6 @@
   "importColdcardDescription": "আপোনাৰ Coldcard Q ৰ পৰা wallet descriptor QR code আমদানি কৰক",
   "@importColdcardDescription": {
     "description": "ImportColdcardQ: Main instruction text on import page"
-  },
-  "importColdcardButtonOpenCamera": "কেমেৰা খোলক",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "importColdcardButtonInstructions": "নিৰ্দেশনা",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "importColdcardInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
   "@importColdcardInstructionsTitle": {
@@ -5792,13 +5628,8 @@
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallet swap ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
   "sendErrorInvoiceExpired": "এই invoice ৰ মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "স্বাক্ষৰিত লেনদেনটো NFC ৰ জৰিয়তে ৰিচিভ কৰিবলৈ আপোনাৰ Coldcard টেপ কৰক",
-  "importColdcardInvalidWalletData": "অবৈধ Coldcard wallet ডেটা",
-  "importColdcardConnectTitle": "{deviceName} সংযোগ কৰক",
-  "importColdcardConnectDescription": "আপোনাৰ {deviceName} ৰ পৰা wallet descriptor আমদানি কৰক",
-  "importColdcardScanNfcSheetTitle": "wallet descriptor NFC ৰ জৰিয়তে আমদানি কৰিবলৈ আপোনাৰ {deviceName} টেপ কৰক",
   "viewerAddressTab": "ঠিকনা",
   "viewerPaymentUriTab": "পৰিশোধ URI",
   "transactionSwapOpenWithin24h": "আপোনাৰ swap সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপটো খোলক।",
@@ -5905,10 +5736,7 @@
   "recipientsFieldPayeeAccountNumber": "পেয়ী একাউণ্ট নম্বৰ",
   "exchangeFileUploadStatusRejectedBadge": "প্ৰত্যাখ্যান কৰা হৈছে",
   "exchangeFileUploadTapToReupload": "পুনৰ আপলোড কৰিবলৈ টেপ কৰক",
-  "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "সম্পূৰ্ণ",
   "consolidationFailedBody": "এটা অপ্ৰত্যাশিত ত্ৰুটি হ'ল। আপোনাৰ ধন সুৰক্ষিত: কোনো লেনদেন সম্প্ৰচাৰ কৰা হোৱা নাই। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "consolidationFailedTitle": "একত্ৰীকৰণ বিফল",
@@ -6031,10 +5859,6 @@
   "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
   "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
   "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
-  "importWatchOnlyErrorNetworkMismatch": "এই ৱালেটটোৱে বৰ্তমান বেলেগ Bitcoin নেটৱৰ্ক ব্যৱহাৰ কৰি আছে। Mainnet আৰু Testnet-ৰ মাজত সলনি কৰি পুনৰ চেষ্টা কৰক।",
-  "importWatchOnlyErrorAlreadyExists": "এই ৱালেটটো ইতিমধ্যে আমদানি কৰা হৈছে।",
-  "importWatchOnlyNetworkBitcoinMainnet": "নেটৱৰ্ক: Bitcoin মূল নেটৱৰ্ক",
-  "importWatchOnlyNetworkBitcoinTestnet": "নেটৱৰ্ক: Bitcoin পৰীক্ষামূলক নেটৱৰ্ক",
   "broadcastSignedTxErrorPsbtFinalization": "স্বাক্ষৰিত লেনদেনটো চূড়ান্ত কৰিব পৰা নগ'ল। ইয়াত সকলো প্ৰয়োজনীয় স্বাক্ষৰ আছে বুলি নিশ্চিত কৰি পুনৰ চেষ্টা কৰক।",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

@@ -258,10 +258,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "कोपिड टू क्लिपबोर्ड",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "कृपया एक वैध लाइटनिंग पता दर्ज करें",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -728,10 +724,6 @@
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
-  "importWatchOnlyDescriptor": "वर्णनकर्ता",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "भुगतान प्रगति में है!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -1094,10 +1086,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "जारी रखें",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1272,10 +1260,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "आयात",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "बैकअप",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1390,10 +1374,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importWalletSeedSigner": "बीजगणक",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "फ़ीचर जल्द ही आ रहा है",
   "@featureComingSoonTitle": {
@@ -1568,14 +1548,6 @@
   "importWalletConnectHardware": "कनेक्ट हार्डवेयर वॉलेट",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWatchOnlyType": "प्रकार",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "हार्डवेयर वॉलेट",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "connectHardwareWalletDescription": "वह हार्डवेयर वॉलेट चुनें जिसे आप कनेक्ट करना चाहते हैं",
   "@connectHardwareWalletDescription": {
@@ -1765,10 +1737,6 @@
   "swapValidationInsufficientBalance": "अपर्याप्त संतुलन",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "विस्तारित सार्वजनिक कुंजी",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "हमेशा ब्लॉक उच्च शुल्क",
   "@autoswapAlwaysBlock": {
@@ -2073,10 +2041,6 @@
   "testCompletedSuccessMessage": "आप एक खोए हुए बिटकॉइन वॉलेट तक पहुंच प्राप्त करने में सक्षम हैं",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "स्कैन क्यूआर",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "प्रगति में",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2486,15 +2450,6 @@
   "payPayeeAccountNumber": "भुगतानकर्ता खाता संख्या",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
-  },
-  "importMnemonicBalanceLabel": "शेष: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeWarningConfirmation": "मैं पुष्टि करता/करती हूं कि मुझे किसी और द्वारा Bitcoin खरीदने के लिए नहीं कहा जा रहा है।",
   "@fundExchangeWarningConfirmation": {
@@ -2907,10 +2862,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "नेस्टेड Segwit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "Replace-by-fee सक्रिय",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2962,10 +2913,6 @@
   "automaticallyFetchKeyButton": "स्वचालित रूप से Fetch key",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "importColdcardButtonOpenCamera": "कैमरा खोलें",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "शुल्क प्राथमिकता",
   "@payFeePriority": {
@@ -3280,10 +3227,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "एक नया वॉलेट जोड़ें",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "भुगतान पता या invoice पेस्ट करें",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3377,10 +3320,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "अज्ञात",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "जारी रखें",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3422,10 +3361,6 @@
   "ledgerDefaultWalletLabel": "लेजर वॉलेट",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "importWalletSpecter": "दर्शक",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "customLocationProvider": "कस्टम स्थान",
   "@customLocationProvider": {
@@ -3504,15 +3439,6 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "लेनदेन: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "रेफरल",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
@@ -3520,10 +3446,6 @@
   "autoswapAlwaysBlockInfoEnabled": "सक्षम होने पर, निर्धारित सीमा से अधिक शुल्क वाले ऑटो-स्वैप हमेशा रोक दिए जाएंगे",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
-  },
-  "importMnemonicSelectScriptType": "Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "सीएडी शेष",
   "@sellSendPaymentCadBalance": {
@@ -3762,10 +3684,6 @@
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "importWalletImportWatchOnly": "केवल घड़ी आयात करें",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "एक बार जब लेनदेन आपके कोल्डकार्ड में आयात किया जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3935,10 +3853,6 @@
       }
     }
   },
-  "importWalletJade": "ब्लॉकस्ट्रीम जेड",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "अवैध चालान",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -4107,10 +4021,6 @@
   "recoverYourWalletTitle": "अपने वॉलेट को पुनर्प्राप्त करें",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "लेबल",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "ऐप सेटिंग्स",
   "@settingsAppSettingsTitle": {
@@ -4337,10 +4247,6 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "importWalletPassport": "फाउंडेशन पासपोर्ट",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
   "buyExpressWithdrawalFee": "एक्सप्रेस शुल्क: {amount}",
   "@buyExpressWithdrawalFee": {
     "description": "Additional fee for instant withdrawal",
@@ -4537,10 +4443,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importColdcardButtonInstructions": "निर्देश",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "आप किस वॉलेट से बेचना चाहते हैं?",
   "@sellWhichWalletQuestion": {
@@ -4998,10 +4900,6 @@
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
   },
-  "importWatchOnlyTitle": "केवल घड़ी आयात करें",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "रद्द करना",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -5029,10 +4927,6 @@
   "importQrDeviceScanning": "स्कैनिंग..।",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "कीस्टोन",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "नए प्राप्तकर्ता",
   "@payNewRecipients": {
@@ -5264,10 +5158,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "आवश्यक",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "वॉलेट सिंक नहीं किया गया। कृपया प्रतीक्षा करें",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -5279,10 +5169,6 @@
   "sellExchangeRate": "विनिमय दर",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "विरासत",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "यह मोड जोखिमपूर्ण है। इसे सक्षम करके, आप स्वीकार करते हैं कि आप पैसे खो सकते हैं",
   "@settingsDevModeWarningMessage": {
@@ -5430,10 +5316,6 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "importWatchOnlySigningDevice": "हस्ताक्षर उपकरण",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
   "receiveInvoiceExpired": "चालान समाप्त हो गया",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
@@ -5580,10 +5462,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "जेनेरिक वॉलेट",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "टेस्ट नहीं",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -5672,10 +5550,6 @@
   "autoswapRecipientWalletInfo": "चुनें कि कौन से बिटकॉइन वॉलेट को हस्तांतरित फंड (आवश्यक) प्राप्त होंगे।",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
-  },
-  "importWalletKrux": "क्रूक्स",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "जारी",
   "@swapContinueButton": {
@@ -6009,10 +5883,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "पेस्ट xpub, ypub, zpub या descriptor",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "खाता संख्या",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -6088,10 +5958,6 @@
       }
     }
   },
-  "importMnemonicTitle": "Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "Replace-by-fee सक्रिय",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -6123,10 +5989,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "लाभार्थी का नाम वैध होना चाहिए। यदि आप कुछ और करते हैं तो आपका भुगतान अस्वीकार कर दिया जाएगा।।",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "लेजर",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -6855,10 +6717,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "importWatchOnlyDisclaimerDescription": "यह सुनिश्चित करने के लिए कि आपके द्वारा चुनी गई निष्क्रियता पथ उस से मेल खाती है जिसने उपयोग से पहले वॉलेट से प्राप्त पहले पते की पुष्टि करके दिए गए xpub का उत्पादन किया। गलत रास्ते का उपयोग करने से धन की हानि हो सकती है",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "वे आपको जल्दी कार्य करने के लिए दबाव डाल रहे हैं",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -6917,10 +6775,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "डेरिवेशन पथ चेतावनी",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "इब्न",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -6961,10 +6815,6 @@
   "paySwapInProgress": "प्रगति में स्वैप..।",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "सभी तीन प्रकार के वॉलेट सिंक होते हैं और उनके शेष और लेनदेन जल्द ही दिखाई देते हैं। यदि आप यह सुनिश्चित करते हैं कि आप किस वॉलेट प्रकार का आयात करना चाहते हैं, तो आप सिंक पूरा होने तक इंतजार कर सकते हैं या आयात करने के लिए आगे बढ़ सकते हैं।।",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "coreSwapsLnSendClaimable": "Swap दावा करने के लिए तैयार है।",
   "@coreSwapsLnSendClaimable": {
@@ -7326,10 +7176,6 @@
   },
   "broadcastSignedTxBroadcasting": "प्रसारण..।",
   "broadcastSignedTxBroadcastError": "हम आपका ट्रांज़ैक्शन ब्रॉडकास्ट नहीं कर सके। अपना इंटरनेट कनेक्शन जाँचें और फिर से कोशिश करें।",
-  "importWatchOnlyErrorNoWalletSelected": "पहले कोई पब्लिक की या डिस्क्रिप्टर पेस्ट या स्कैन करें।",
-  "importWatchOnlyErrorLabelRequired": "इम्पोर्ट करने से पहले अपने वॉलेट को एक नाम दें।",
-  "importWatchOnlyErrorInvalidFormat": "यह एक मान्य पब्लिक की या डिस्क्रिप्टर नहीं लगता। आपने जो पेस्ट किया है उसे दोबारा जाँच लें।",
-  "importWatchOnlyErrorImportFailed": "हम इस वॉच-ओनली वॉलेट को इम्पोर्ट नहीं कर सके। कृपया जानकारी जाँचें और फिर से कोशिश करें।",
   "broadcastSignedTxErrorInvalidTransaction": "यह एक मान्य साइन्ड ट्रांज़ैक्शन नहीं लगता। पक्का करें कि आपने पूरा PSBT या ट्रांज़ैक्शन पेस्ट किया है।",
   "broadcastSignedTxErrorInvalidPushTx": "हम इस टैग से कोई ट्रांज़ैक्शन नहीं पढ़ सके। कृपया फिर से स्कैन करें।",
   "@broadcastSignedTxBroadcasting": {
@@ -7338,10 +7184,6 @@
   "receivePayjoinActivated": "Payjoin सक्रिय",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "जारी",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "chooseVaultLocationTitle": "वॉल्ट स्थान चुनें",
   "@chooseVaultLocationTitle": {
@@ -7423,10 +7265,6 @@
   "enterBackupKeyManuallyTitle": "मैन्युअल रूप से बैकअप कुंजी दर्ज करें",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "कोल्डकार्ड Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "बैकअप",
   "@backupSettingsStartBackup": {
@@ -7691,7 +7529,6 @@
     }
   },
   "walletSetupErrorTryAgain": "आपका वॉलेट सेटअप करते समय कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
-  "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
   "recoverbullBalance": "शेष: {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -7700,10 +7537,6 @@
         "type": "String"
       }
     }
-  },
-  "importMnemonicEmptyLabelError": "मेमोनिक आयात करने के लिए एक लेबल आवश्यक है",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
   },
   "recoverbullVaultRecovery": "वॉल्ट रिकवरी",
   "@recoverbullVaultRecovery": {
@@ -8243,13 +8076,8 @@
   "liquidRiskDisclosureTitle": "तत्काल भुगतान वॉलेट Liquid Bitcoin जोखिम प्रकटीकरण",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "sendErrorInvoiceExpired": "यह चालान समाप्त हो चुका है। प्राप्तकर्ता से नया चालान मांगें।",
-  "importWalletColdcardMk4": "कोल्डकार्ड Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "हस्ताक्षरित लेनदेन को NFC के ज़रिए प्राप्त करने के लिए अपने कोल्डकार्ड को टैप करें",
-  "importColdcardInvalidWalletData": "अमान्य कोल्डकार्ड वॉलेट डेटा",
-  "importColdcardConnectTitle": "कनेक्ट {deviceName}",
-  "importColdcardConnectDescription": "अपने {deviceName} से वॉलेट descriptor आयात करें",
-  "importColdcardScanNfcSheetTitle": "वॉलेट descriptor को NFC के ज़रिए आयात करने के लिए अपने {deviceName} को टैप करें",
   "viewerAddressTab": "पता",
   "viewerPaymentUriTab": "भुगतान URI",
   "transactionSwapOpenWithin24h": "अपने Swap को पूरा करने के लिए 24 घंटों के भीतर ऐप खोलें।",
@@ -8356,10 +8184,7 @@
   "recipientsFieldPayeeAccountNumber": "भुगतानकर्ता खाता संख्या",
   "exchangeFileUploadStatusRejectedBadge": "अस्वीकृत",
   "exchangeFileUploadTapToReupload": "पुनः अपलोड करने के लिए टैप करें",
-  "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "पर्याप्त खर्च योग्य शेष नहीं है — {amount} फ्रोज़न है। इसका उपयोग करने के लिए \"कॉइन प्रबंधित करें\" में कॉइन अनफ्रीज़ करें।",
-  "importWalletBitBox": "बिटबॉक्स02",
-  "importWalletBitBoxNova": "बिटबॉक्स02 Nova",
   "consolidationDone": "पूर्ण",
   "consolidationFailedBody": "एक अनपेक्षित त्रुटि हुई। आपका धन सुरक्षित है: कोई लेनदेन प्रसारित नहीं किया गया। कृपया पुनः प्रयास करें।",
   "consolidationFailedTitle": "समेकन विफल",
@@ -8482,10 +8307,6 @@
   "autoBuyWalletRequiredError": "कम से कम एक डिफ़ॉल्ट Bitcoin, Lightning या Liquid पता जोड़ें।",
   "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।",
   "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
-  "importWatchOnlyErrorNetworkMismatch": "यह वॉलेट अभी किसी दूसरे Bitcoin नेटवर्क का उपयोग कर रहा है। Mainnet और Testnet के बीच बदलें, फिर दोबारा कोशिश करें।",
-  "importWatchOnlyErrorAlreadyExists": "यह वॉलेट पहले से इम्पोर्ट किया गया है।",
-  "importWatchOnlyNetworkBitcoinMainnet": "नेटवर्क: Bitcoin मेननेट",
-  "importWatchOnlyNetworkBitcoinTestnet": "नेटवर्क: Bitcoin टेस्टनेट",
   "broadcastSignedTxErrorPsbtFinalization": "हस्ताक्षरित लेनदेन को अंतिम रूप नहीं दिया जा सका। सुनिश्चित करें कि इसमें सभी आवश्यक हस्ताक्षर हैं और फिर से प्रयास करें।",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

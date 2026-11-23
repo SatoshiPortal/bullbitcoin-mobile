@@ -257,10 +257,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "ติดตามคลิปบอร์ด",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "กรุณาป้อนที่อยู่",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -728,10 +724,6 @@
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
-  "importWatchOnlyDescriptor": "ข้อความ",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "การชําระเงินในความคืบหน้า!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -1094,10 +1086,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "อ่านต่อ",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1272,10 +1260,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "การนําเข้า",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "การสํารองข้อมูล",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1390,10 +1374,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importWalletSeedSigner": "เมล็ด",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "ลักษณะ",
   "@featureComingSoonTitle": {
@@ -1568,14 +1548,6 @@
   "importWalletConnectHardware": "เชื่อมต่อฮาร์ดแวร์",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWatchOnlyType": "ประเภท",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "ฮาร์ดแวร์",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "connectHardwareWalletDescription": "เลือกกระเป๋าฮาร์ดแวร์ที่คุณต้องการเชื่อมต่อ",
   "@connectHardwareWalletDescription": {
@@ -1765,10 +1737,6 @@
   "swapValidationInsufficientBalance": "สมดุล",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "ขยายสาธารณะ คีย์",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "รายงานค่าใช้จ่ายสูง",
   "@autoswapAlwaysBlock": {
@@ -2073,10 +2041,6 @@
   "testCompletedSuccessMessage": "คุณสามารถกู้คืนการเข้าถึงกระเป๋าสตางค์ Bitcoin",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "การสแกน QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "ความคืบหน้า",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2486,15 +2450,6 @@
   "payPayeeAccountNumber": "จํานวนบัญชี",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
-  },
-  "importMnemonicBalanceLabel": "สมดุล: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeWarningConfirmation": "ฉันยืนยันฉันไม่ได้ขอให้ซื้อ Bitcoin โดยคนอื่น.",
   "@fundExchangeWarningConfirmation": {
@@ -2907,10 +2862,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "พระราชวัง",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "แทนที่การเปิดใช้งาน",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2962,10 +2913,6 @@
   "automaticallyFetchKeyButton": "เคล็ดลับอัตโนมัติ",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "importColdcardButtonOpenCamera": "เปิดกล้อง",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "ค่าธรรมเนียม",
   "@payFeePriority": {
@@ -3280,10 +3227,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "เพิ่มกระเป๋าสตางค์ใหม่",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "วางการชําระเงินหรือใบแจ้งหนี้",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3377,10 +3320,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "เป็นที่รู้จัก",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "อ่านต่อ",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3422,10 +3361,6 @@
   "ledgerDefaultWalletLabel": "จอแสดงผล LED",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "importWalletSpecter": "ตัวอย่าง",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "customLocationProvider": "สถานที่ที่กําหนดเอง",
   "@customLocationProvider": {
@@ -3504,15 +3439,6 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "การทําธุรกรรม: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "บทความ",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
@@ -3520,10 +3446,6 @@
   "autoswapAlwaysBlockInfoEnabled": "เมื่อเปิดใช้งาน Auto Swap ที่มีค่าธรรมเนียมสูงกว่าขีดจำกัดที่ตั้งไว้จะถูกบล็อกเสมอ",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
-  },
-  "importMnemonicSelectScriptType": "นําเข้า Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "CAD สมดุล",
   "@sellSendPaymentCadBalance": {
@@ -3762,10 +3684,6 @@
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "importWalletImportWatchOnly": "การนําเข้า",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "เมื่อการทําธุรกรรมนําเข้าในบัตรเย็นของคุณตรวจสอบที่อยู่และจํานวนเงิน.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3935,10 +3853,6 @@
       }
     }
   },
-  "importWalletJade": "บล็อก",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "ใบแจ้งหนี้",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -4107,10 +4021,6 @@
   "recoverYourWalletTitle": "การกู้คืนกระเป๋าสตางค์ของคุณ",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "ป้ายฉลาก",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "การตั้งค่า",
   "@settingsAppSettingsTitle": {
@@ -4341,10 +4251,6 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "importWalletPassport": "หนังสือเดินทาง",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
   "buyExpressWithdrawalFee": "ค่าธรรมเนียมด่วน: {amount}",
   "@buyExpressWithdrawalFee": {
     "description": "Additional fee for instant withdrawal",
@@ -4541,10 +4447,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importColdcardButtonInstructions": "คําแนะนํา",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "กระเป๋าเงินที่คุณต้องการขายจาก?",
   "@sellWhichWalletQuestion": {
@@ -5002,10 +4904,6 @@
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
   },
-  "importWatchOnlyTitle": "การนําเข้า",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "ยกเลิก",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -5033,10 +4931,6 @@
   "importQrDeviceScanning": "การสแกน ...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "แจ็ค",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "ผู้รับใหม่",
   "@payNewRecipients": {
@@ -5264,10 +5158,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "ข้อกําหนดที่จําเป็น",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "กระเป๋าสตางค์ไม่ได้ กรุณา",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -5279,10 +5169,6 @@
   "sellExchangeRate": "อัตราแลกเปลี่ยน",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "การลงโทษ",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "โหมดนี้มีความเสี่ยง โดยช่วยให้คุณสามารถสูญเสียเงิน",
   "@settingsDevModeWarningMessage": {
@@ -5430,10 +5316,6 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "importWatchOnlySigningDevice": "ตรวจสอบอุปกรณ์",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
   "receiveInvoiceExpired": "วันหมดอายุ",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
@@ -5580,10 +5462,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "กระเป๋าเงิน",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "ไม่ทดสอบ",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -5672,10 +5550,6 @@
   "autoswapRecipientWalletInfo": "เลือกกระเป๋าสตางค์ Bitcoin จะโอนเงิน (ต้องการ)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
-  },
-  "importWalletKrux": "แม่",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "อ่านต่อ",
   "@swapContinueButton": {
@@ -6009,10 +5883,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "วางชื่อ xem, yem, zasa หรือ descript",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "จํานวนบัญชี",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -6088,10 +5958,6 @@
       }
     }
   },
-  "importMnemonicTitle": "นําเข้า Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "แทนที่การเปิดใช้งาน",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -6123,10 +5989,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "ชื่อของ ปรัชญาควร cheNOD หากคุณใส่รายการการชําระเงินของคุณจะถูกปฏิเสธ.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "ไฟ LED",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "สหรัฐ",
   "@exchangeLandingTitle": {
@@ -6855,10 +6717,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "importWatchOnlyDisclaimerDescription": "ตรวจสอบให้แน่ใจว่าเส้นทางที่คุณเลือกการแข่งขันที่ผลิตขึ้นโดยระบุตามชื่อที่ Xasa เพื่อตรวจสอบที่อยู่แรกจากกระเป๋าเงินก่อน การใช้เส้นทางที่ไม่ถูกต้องสามารถสูญเสียเงิน",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "พวกเขาถูกกดให้คุณดําเนินการได้อย่างรวดเร็ว",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -6917,10 +6775,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "การเตือนภัย",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "ฉัน",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -6961,10 +6815,6 @@
   "paySwapInProgress": "บันทึกในความคืบหน้า ...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "กระเป๋าเงินทั้งหมดสามรายการจะถูกซิงค์และยอดคงเหลือและการทําธุรกรรมของพวกเขาจะปรากฏขึ้น คุณสามารถรอจนกว่าการซิงค์สมบูรณ์หรือดําเนินการเพื่อนําเข้าหากคุณแน่ใจว่ากระดาษที่คุณต้องการ.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "coreSwapsLnSendClaimable": "โค้ดพร้อมที่จะเรียกร้อง.",
   "@coreSwapsLnSendClaimable": {
@@ -7326,10 +7176,6 @@
   },
   "broadcastSignedTxBroadcasting": "ออกอากาศ ...",
   "broadcastSignedTxBroadcastError": "เราไม่สามารถเผยแพร่ธุรกรรมของคุณได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
-  "importWatchOnlyErrorNoWalletSelected": "กรุณาวางหรือสแกนกุญแจสาธารณะหรือดิสคริปเตอร์ก่อน",
-  "importWatchOnlyErrorLabelRequired": "ตั้งชื่อกระเป๋าเงินของคุณก่อนนำเข้า",
-  "importWatchOnlyErrorInvalidFormat": "นี่ดูเหมือนจะไม่ใช่กุญแจสาธารณะหรือดิสคริปเตอร์ที่ถูกต้อง กรุณาตรวจสอบสิ่งที่คุณวางอีกครั้ง",
-  "importWatchOnlyErrorImportFailed": "เราไม่สามารถนำเข้ากระเป๋าเงินแบบดูอย่างเดียวนี้ได้ กรุณาตรวจสอบรายละเอียดแล้วลองอีกครั้ง",
   "broadcastSignedTxErrorInvalidTransaction": "นี่ดูเหมือนจะไม่ใช่ธุรกรรมที่ลงนามแล้วที่ถูกต้อง กรุณาตรวจสอบว่าคุณวาง PSBT หรือธุรกรรมครบถ้วนแล้ว",
   "broadcastSignedTxErrorInvalidPushTx": "เราไม่สามารถอ่านธุรกรรมจากแท็กนี้ได้ กรุณาสแกนอีกครั้ง",
   "@broadcastSignedTxBroadcasting": {
@@ -7338,10 +7184,6 @@
   "receivePayjoinActivated": "ชําระเงิน",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "อ่านต่อ",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "chooseVaultLocationTitle": "เลือกสถานที่",
   "@chooseVaultLocationTitle": {
@@ -7423,10 +7265,6 @@
   "enterBackupKeyManuallyTitle": "ใส่การสํารองข้อมูลคีย์ด้วยตนเอง",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "รถบัส",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล",
   "@backupSettingsStartBackup": {
@@ -7695,7 +7533,6 @@
     }
   },
   "walletSetupErrorTryAgain": "เกิดข้อผิดพลาดในการตั้งค่ากระเป๋าสตางค์ของคุณ กรุณาลองใหม่อีกครั้ง",
-  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
   "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7741,10 +7578,6 @@
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
-  "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "ชั่วโมง",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -8053,13 +7886,8 @@
   "sendCoordinatingPayjoinTransaction": "กำลังประสานงานธุรกรรม Payjoin",
   "sendErrorInvoiceExpired": "ใบแจ้งหนี้นี้หมดอายุแล้ว กรุณาขอใบแจ้งหนี้ใหม่จากผู้รับ",
   "sendErrorAmountBelowSwapLimitsBitcoin": "ลองพิจารณาเติมเงินเข้า Instant Payments เพื่อทำการชำระเงินจำนวนน้อยลง",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "แตะ Coldcard ของคุณเพื่อรับธุรกรรมที่เซ็นแล้วผ่าน NFC",
-  "importColdcardInvalidWalletData": "ข้อมูลกระเป๋า Coldcard ไม่ถูกต้อง",
-  "importColdcardConnectTitle": "เชื่อมต่อ {deviceName}",
-  "importColdcardConnectDescription": "นำเข้า wallet descriptor จาก {deviceName} ของคุณ",
-  "importColdcardScanNfcSheetTitle": "แตะ {deviceName} เพื่อนำเข้า wallet descriptor ผ่าน NFC",
   "fundExchangeCopDailyLimitWarning": "หากคุณทำธุรกรรมเกินวงเงินรายวัน ธุรกรรมจะไม่สำเร็จ คุณจะต้องติดต่อฝ่ายบริการลูกค้า",
   "fundExchangeCopSenderName": "ชื่อผู้โอน",
   "fundExchangeCopIssuingBank": "ธนาคารผู้ออก",
@@ -8192,12 +8020,9 @@
   "recipientsFieldPayeeAccountNumber": "หมายเลขบัญชีผู้รับเงิน",
   "exchangeFileUploadStatusRejectedBadge": "ถูกปฏิเสธ",
   "exchangeFileUploadTapToReupload": "แตะเพื่ออัปโหลดใหม่",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
   "mempoolErrorUpdateSettingsFailed": "อัปเดตการตั้งค่าไม่สำเร็จ: {error}",
   "sendErrorInsufficientBalanceFrozenHint": "ยอดคงเหลือที่ใช้ได้ไม่เพียงพอ — {amount} ถูกแช่แข็งไว้ ปลดการแช่แข็งเหรียญใน \"จัดการเหรียญ\" เพื่อใช้งาน",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "เสร็จสิ้น",
   "consolidationFailedBody": "เกิดข้อผิดพลาดที่ไม่คาดคิด เงินของคุณปลอดภัย: ไม่มีการเผยแพร่ธุรกรรมใด ๆ โปรดลองอีกครั้ง",
   "consolidationFailedTitle": "การรวมล้มเหลว",
@@ -8320,10 +8145,6 @@
   "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
   "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
   "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
-  "importWatchOnlyErrorNetworkMismatch": "กระเป๋าเงินนี้กำลังใช้เครือข่าย Bitcoin อื่น โปรดสลับระหว่าง Mainnet และ Testnet แล้วลองอีกครั้ง",
-  "importWatchOnlyErrorAlreadyExists": "นำเข้ากระเป๋าเงินนี้แล้ว",
-  "importWatchOnlyNetworkBitcoinMainnet": "เครือข่าย: เครือข่ายหลักของ Bitcoin",
-  "importWatchOnlyNetworkBitcoinTestnet": "เครือข่าย: เครือข่ายทดสอบของ Bitcoin",
   "broadcastSignedTxErrorPsbtFinalization": "ไม่สามารถสรุปธุรกรรมที่ลงนามแล้วได้ โปรดตรวจสอบว่ามีลายเซ็นที่จำเป็นครบถ้วนแล้วลองอีกครั้ง",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
