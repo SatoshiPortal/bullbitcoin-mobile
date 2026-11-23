@@ -894,6 +894,7 @@
   "sellPayoutNewBadge": "NOUVEAU",
   "walletSpendAwaitingObservation": "Les dépenses sont indisponibles tant que ce portefeuille n’est pas synchronisé et n’a pas vu ses paiements précédents sur le réseau. Actualisez le portefeuille ou recherchez les transactions manquantes, puis réessayez.",
   "sendPayjoinSpendPaused": "Ce paiement Payjoin est en pause car le portefeuille ne peut pas continuer en toute sécurité. Ses entrées restent réservées. Actualisez le portefeuille ou utilisez Rechercher les transactions manquantes, puis réessayez cette proposition tant qu’elle est valide. Si elle a expiré, vérifiez le paiement dans Transactions avant toute autre action.",
+  "exchangePayinNetworkMismatch": "Le portefeuille sélectionné ne correspond pas au réseau de cet ordre ou à l’environnement actuel de l’application. Choisissez un portefeuille compatible et réessayez.",
   "walletSpendBusy": "Le portefeuille est occupé. Réessayez dans un instant.",
   "broadcastSignedTxErrorOutcomeUnknown": "Impossible de confirmer que votre transaction a été diffusée. Vérifiez dans un explorateur de blocs avant de réessayer.",
   "sendSelectedUtxosInsufficient": "Les UTXO sélectionnés ne couvrent pas le montant requis",

@@ -3598,6 +3598,10 @@
   "@sendPayjoinSpendPaused": {
     "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
   },
+  "exchangePayinNetworkMismatch": "The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.",
+  "@exchangePayinNetworkMismatch": {
+    "description": "Sell and Pay refuse to create the order when the selected wallet belongs to a different chain or environment."
+  },
   "walletSpendBusy": "The wallet is busy. Try again in a moment.",
   "@walletSpendBusy": {
     "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."

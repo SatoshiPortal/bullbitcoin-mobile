@@ -6,6 +6,8 @@ extension SellFailureL10n on SellFailure {
   String toTranslated(BuildContext context) => switch (this) {
     SellPayjoinPausedFailure() => context.loc.sendPayjoinSpendPaused,
     SellPayjoinSessionKeptFailure() => context.loc.sellUnexpectedError,
+    SellPayinNetworkMismatchFailure() =>
+      context.loc.exchangePayinNetworkMismatch,
     SellSpendBlockedFailure(:final busy) =>
       busy
           ? context.loc.walletSpendBusy

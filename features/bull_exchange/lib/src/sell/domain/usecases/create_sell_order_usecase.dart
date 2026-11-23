@@ -43,14 +43,6 @@ class CreateSellOrderUsecase {
       return const Err(SellConfidentialSepaNotActivatedFailure());
     }
     try {
-      if (walletKey != null) {
-        final status = await _wallets.eligibility(walletKey);
-        if (status != BitcoinSpendStatus.ready) {
-          return Err(
-            SellSpendBlockedFailure(busy: status == BitcoinSpendStatus.busy),
-          );
-        }
-      }
       final SettingsEntity settings;
       switch (await _settingsRepository.fetch()) {
         case Ok(:final value):
@@ -70,7 +62,15 @@ class CreateSellOrderUsecase {
                   (walletKey.network is BitcoinNetwork
                       ? OrderBitcoinNetwork.bitcoin
                       : OrderBitcoinNetwork.liquid))) {
-        return const Err(SellSpendBlockedFailure(busy: false));
+        return const Err(SellPayinNetworkMismatchFailure());
+      }
+      if (walletKey != null) {
+        final status = await _wallets.eligibility(walletKey);
+        if (status != BitcoinSpendStatus.ready) {
+          return Err(
+            SellSpendBlockedFailure(busy: status == BitcoinSpendStatus.busy),
+          );
+        }
       }
       final payjoinEnabled = switch (await _payjoinPolicy.load()) {
         Ok(:final value) => value.sellEnabled,

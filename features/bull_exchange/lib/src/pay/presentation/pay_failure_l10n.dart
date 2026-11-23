@@ -7,6 +7,8 @@ extension PayFailureL10n on PayFailure {
   String toTranslated(BuildContext context) => switch (this) {
     PayPayjoinPausedFailure() => context.loc.sendPayjoinSpendPaused,
     PayPayjoinSessionKeptFailure() => context.loc.payUnexpectedError,
+    PayPayinNetworkMismatchFailure() =>
+      context.loc.exchangePayinNetworkMismatch,
     PaySpendBlockedFailure(:final busy) =>
       busy
           ? context.loc.walletSpendBusy

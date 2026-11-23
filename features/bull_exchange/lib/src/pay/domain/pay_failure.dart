@@ -102,6 +102,10 @@ final class PayUnsupportedNetworkFailure extends PayFailure {
   const PayUnsupportedNetworkFailure();
 }
 
+final class PayPayinNetworkMismatchFailure extends PayFailure {
+  const PayPayinNetworkMismatchFailure();
+}
+
 final class PaySpendBlockedFailure extends PayFailure {
   /// The wallet is only busy with another operation: retrying shortly works.
   final bool busy;

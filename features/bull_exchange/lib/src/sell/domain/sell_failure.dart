@@ -114,6 +114,10 @@ final class SellUnsupportedNetworkFailure extends SellFailure {
   const SellUnsupportedNetworkFailure();
 }
 
+final class SellPayinNetworkMismatchFailure extends SellFailure {
+  const SellPayinNetworkMismatchFailure();
+}
+
 final class SellSpendBlockedFailure extends SellFailure {
   /// The wallet is only busy with another operation: retrying shortly works.
   final bool busy;
