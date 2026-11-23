@@ -10995,7 +10995,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, =1{۱ سکه} other{{count} سکه}}",
+  "coinsSummaryCoinsCount": "{count, plural, =1{{count} سکه} other{{count} سکه}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -11032,7 +11032,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, =1{۱ خروجی خرج‌نشده} other{{count} خروجی خرج‌نشده}}",
+  "coinsUnspentOutputsCount": "{count, plural, =1{{count} خروجی خرج‌نشده} other{{count} خروجی خرج‌نشده}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -11109,7 +11109,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, =1{۱ انتخاب‌شده} other{{count} انتخاب‌شده}}",
+  "coinsSelectedCount": "{count, plural, =1{{count} انتخاب‌شده} other{{count} انتخاب‌شده}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -11134,7 +11134,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{۱ سکه مسدود شود؟} other{{count} سکه مسدود شوند؟}}",
+  "coinsFreezeConfirmTitle": "{count, plural, =1{{count} سکه مسدود شود؟} other{{count} سکه مسدود شوند؟}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -11151,7 +11151,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, =1{۱ سکه مسدود شد · از خرج کردن مستثنا} other{{count} سکه مسدود شدند · از خرج کردن مستثنا}}",
+  "coinsFrozenToast": "{count, plural, =1{{count} سکه مسدود شد · از خرج کردن مستثنا} other{{count} سکه مسدود شدند · از خرج کردن مستثنا}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -11160,7 +11160,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{۱ سکه رفع مسدودی شد} other{{count} سکه رفع مسدودی شدند}}",
+  "coinsUnfrozenToast": "{count, plural, =1{{count} سکه رفع مسدودی شد} other{{count} سکه رفع مسدودی شدند}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -11169,7 +11169,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, =1{۱ تأیید} other{{count} تأیید}}",
+  "coinsConfsCount": "{count, plural, =1{{count} تأیید} other{{count} تأیید}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -11222,7 +11222,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{۱ UTXO} other{{count} UTXO}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -11245,7 +11245,7 @@
   "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود",
   "coreSwapsStatusRefunded": "بازپرداخت شده",
   "swapRestoreTitle": "بازیابی مبادله",
-  "swapRestoreActionable": "{count, plural, =0{هیچ مبادله‌ای برای بازیابی وجود ندارد} =1{می‌توانید بازیابی ۱ مبادله را امتحان کنید. ممکن است این مبادله از قبل در وضعیت نهایی باشد.} other{می‌توانید بازیابی {count} مبادله را امتحان کنید. توجه داشته باشید که برخی از آن‌ها ممکن است از قبل در وضعیت نهایی باشند.}}",
+  "swapRestoreActionable": "{count, plural, =0{هیچ مبادله‌ای برای بازیابی وجود ندارد} =1{می‌توانید بازیابی {count} مبادله را امتحان کنید. ممکن است این مبادله از قبل در وضعیت نهایی باشد.} other{می‌توانید بازیابی {count} مبادله را امتحان کنید. توجه داشته باشید که برخی از آن‌ها ممکن است از قبل در وضعیت نهایی باشند.}}",
   "swapRestoreNoSwaps": "هیچ مبادله‌ای برای بازیابی پیدا نشد",
   "swapRestoreRecoverableSection": "قابل بازیابی",
   "swapRestoreAllSection": "همه مبادله‌ها",
@@ -11820,8 +11820,8 @@
   "limitOrdersInsufficientBalance": "عدم تعادل",
   "limitOrdersInsufficientBalanceMessage": "شما تعادل کافی برای ایجاد این دستور ندارید.",
   "limitOrdersFundAccount": "بودجه حساب شما",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 معامله} other{{count} معامله}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 معامله ({currency})} other{{count} معامله ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} معامله} other{{count} معامله}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} معامله ({currency})} other{{count} معامله ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "وضعیت بارگذاری شما بارگیری نشد. لطفاً دوباره تلاش کنید.",
   "recipientsTypeConfidentialSepa": "SEPA محرمانه",
   "recipientsErrorVirtualIbanNotAvailable": "شما مجوزهای لازم برای دسترسی به این گزینه تأمین مالی را ندارید. یا KYC شما کافی نیست یا این گزینه برای حساب شما در دسترس نیست",

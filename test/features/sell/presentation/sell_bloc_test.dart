@@ -786,6 +786,59 @@ void main() {
       timeout: const Timeout(Duration(seconds: 20)),
     );
 
+    test(
+      'a start that already broadcast the original latches its txid',
+      () async {
+        const bip21 =
+            'bitcoin:bc1q0000000000000000000000000000000000000'
+            '?amount=0.001&pj=https://payjo.in/session';
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+        final aborted = PayjoinSenderSession(
+          status: PayjoinStatus.aborted,
+          uri: bip21,
+          network: BitcoinNetwork.mainnet,
+          walletId: 'wallet-1',
+          originalTransactionId: expectedTxid,
+          amount: Sats.fromInt(100000),
+          createdAt: DateTime(2026),
+          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        );
+        when(
+          () => sendWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok<PayjoinSenderSession, SellFailure>(aborted),
+        );
+        // The watch use case delivers the current state of a settled session.
+        when(() => watchPayjoin.execute(bip21)).thenAnswer(
+          (_) => Stream.value(Ok<PayjoinSession, SellFailure>(aborted)),
+        );
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        final paid =
+            await bloc.stream.firstWhere(
+                  (state) =>
+                      state is SellPaymentState && state.isPayinBroadcast,
+                )
+                as SellPaymentState;
+
+        expect(paid.payinBroadcastTxid, expectedTxid);
+        verifyNever(
+          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        );
+      },
+    );
+
     test('absolute custom fees pass their actual rate to Payjoin', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'

@@ -561,6 +561,41 @@ class BdkWalletDatasource {
     return walletTxs.whereType<WalletTransactionModel>().toList();
   }
 
+  /// The id of the wallet transaction that spends every one of [outpoints],
+  /// or null. Reads only bdk's raw inputs, without mapping any transaction.
+  ///
+  /// While one of them is still a wallet utxo nothing spends them, which
+  /// `getUtxo()` answers without walking the history.
+  Future<String?> findTransactionSpending({
+    required WalletModel wallet,
+    required Set<Outpoint> outpoints,
+  }) async {
+    if (outpoints.isEmpty) return null;
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    for (final outpoint in outpoints) {
+      final utxo = bdkWallet.getUtxo(
+        op: bdk.OutPoint(
+          txid: bdk.Txid.fromString(hex: outpoint.txId),
+          vout: outpoint.vout,
+        ),
+      );
+      if (utxo != null) return null;
+    }
+    for (final tx in bdkWallet.transactions()) {
+      final spent = {
+        for (final input in tx.transaction.input())
+          (
+            txId: input.previousOutput.txid.toString(),
+            vout: input.previousOutput.vout,
+          ),
+      };
+      if (spent.containsAll(outpoints)) {
+        return tx.transaction.computeTxid().toString();
+      }
+    }
+    return null;
+  }
+
   Future<({String address, int index})> getNewAddress({
     required WalletModel wallet,
     bool isChange = false,

@@ -656,6 +656,33 @@ void main() {
       throwsException,
     );
   });
+
+  test(
+    'finds the spend of outpoints with the light repository lookup',
+    () async {
+      const outpoints = [(txId: 'aa', vout: 1), (txId: 'bb', vout: 0)];
+      when(
+        () => transactions.findTransactionSpending(
+          walletId: _walletId,
+          outpoints: outpoints,
+        ),
+      ).thenAnswer((_) async => 'payjoin');
+
+      final found = await adapter.findTransactionSpending(
+        walletId: _walletId,
+        outpoints: outpoints,
+      );
+
+      expect(found, 'payjoin');
+      verifyNever(
+        () => transactions.getWalletTransactions(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+        ),
+      );
+      verifyNever(() => wallets.getWallet(any(), sync: any(named: 'sync')));
+    },
+  );
 }
 
 WalletTransaction _transaction() => const WalletTransaction(
