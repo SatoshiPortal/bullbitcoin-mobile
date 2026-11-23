@@ -510,7 +510,8 @@ void main() {
       }
     });
 
-    test('a saved recipient the app cannot read is a save failure', () async {
+    test('a saved recipient the app cannot read is an unknown outcome: the '
+        'recipient exists', () async {
       final result = await _repository(
         FakeBbxHttp(
           body: {
@@ -519,7 +520,15 @@ void main() {
         ),
       ).saveRecipient(_newRecipients.first, isTestnet: true);
 
-      expect(_failureOf(result), isA<RecipientsSaveFailure>());
+      expect(_failureOf(result), isA<RecipientsSaveOutcomeUnknownFailure>());
+    });
+
+    test('a timeout after sending the save is an unknown outcome', () async {
+      final result = await _repository(
+        FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+      ).saveRecipient(_newRecipients.first, isTestnet: true);
+
+      expect(_failureOf(result), isA<RecipientsSaveOutcomeUnknownFailure>());
     });
 
     test('checkSinpe returns the owner name', () async {
@@ -717,6 +726,10 @@ void main() {
       final apiFailure =
           apiFailures[name] ??
           fail('Missing recipient failure matcher for $name');
+      // A write's answer that can't be read may follow a save that happened.
+      final unreadableAnswer = name == 'saveRecipient'
+          ? isA<RecipientsSaveOutcomeUnknownFailure>()
+          : apiFailure;
 
       test('$name: a JSON-RPC error is the operation failure', () async {
         final failure = _failureOf(
@@ -730,7 +743,7 @@ void main() {
       test('$name: a status other than 200 is the operation failure', () async {
         expect(
           _failureOf(await call(_repository(FakeBbxHttp(status: 204)))),
-          apiFailure,
+          unreadableAnswer,
         );
       });
 
@@ -745,7 +758,7 @@ void main() {
           if (name == 'updateInteracSecurityDetails') {
             expect(result, isA<Ok<Object?, RecipientsFailure>>());
           } else {
-            expect(_failureOf(result), apiFailure);
+            expect(_failureOf(result), unreadableAnswer);
           }
         },
       );
@@ -770,7 +783,7 @@ void main() {
               _repository(FakeBbxHttp(error: DioExceptionType.badResponse)),
             ),
           ),
-          apiFailure,
+          unreadableAnswer,
         );
       });
 

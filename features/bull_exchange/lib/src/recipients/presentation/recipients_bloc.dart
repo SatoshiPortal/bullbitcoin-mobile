@@ -341,6 +341,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsAdded event,
     Emitter<RecipientsState> emit,
   ) async {
+    // The last save may have created the recipient: never send another
+    // from this form.
+    if (state.failedToAddRecipient is RecipientsSaveOutcomeUnknownFailure) {
+      return;
+    }
     emit(state.copyWith(isAddingRecipient: true, failedToAddRecipient: null));
     log.info('Adding a recipient');
     switch (await _addRecipientUsecase.execute(
@@ -368,6 +373,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         }
       case Err(:final failure):
         emit(state.copyWith(failedToAddRecipient: failure));
+        if (failure is RecipientsSaveOutcomeUnknownFailure) {
+          // The list says whether the recipient was saved.
+          add(const RecipientsEvent.refreshed());
+        }
     }
     emit(state.copyWith(isAddingRecipient: false));
   }

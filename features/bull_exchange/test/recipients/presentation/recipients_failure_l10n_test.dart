@@ -25,6 +25,7 @@ final _everyFailure = <RecipientsFailure>[
   const RecipientsNotAuthenticatedFailure(),
   const RecipientsLoadFailure(_rawReason),
   const RecipientsSaveFailure(_rawReason),
+  const RecipientsSaveOutcomeUnknownFailure(_rawReason),
   const RecipientsSinpeLookupFailure(_rawReason),
   const RecipientsCadBillerSearchFailure(_rawReason),
   const RecipientsNetworkFailure(_rawReason),

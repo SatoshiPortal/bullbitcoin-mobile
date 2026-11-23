@@ -348,6 +348,32 @@ void main() {
     expect(bloc.state.isAddingRecipient, isFalse);
   });
 
+  test(
+    'an unknown save outcome re-reads the list and never saves again',
+    () async {
+      when(() => addRecipient.execute(any())).thenAnswer(
+        (_) async => const Err(RecipientsSaveOutcomeUnknownFailure()),
+      );
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const RecipientsStarted());
+      await pumpEventQueue();
+      clearInteractions(getRecipients);
+
+      bloc.add(RecipientsAdded(_formData()));
+      await pumpEventQueue();
+      bloc.add(RecipientsAdded(_formData()));
+      await pumpEventQueue();
+
+      expect(
+        bloc.state.failedToAddRecipient,
+        isA<RecipientsSaveOutcomeUnknownFailure>(),
+      );
+      verify(() => addRecipient.execute(any())).called(1);
+      verify(() => getRecipients.execute(any())).called(1);
+    },
+  );
+
   // Both of these were set by the bloc but rendered by no widget, so their
   // localized messages were dead code. They are wired up now — the SINPE one
   // under the phone field, the biller one under the search field — and these

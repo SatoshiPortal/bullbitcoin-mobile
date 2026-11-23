@@ -4,6 +4,8 @@ import 'package:exchange/src/recipients/domain/entities/recipient.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_details.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_details_input.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_type.dart';
+import 'package:exchange/src/data/exchange_call_classifier.dart';
+import 'package:exchange/src/domain/exchange_call_result.dart';
 import 'package:exchange/src/domain/exchange_failure.dart';
 import 'package:exchange/src/recipients/domain/repositories/recipients_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
@@ -19,27 +21,42 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
 
   BbxApiRecipientsRepository({required this._api});
 
+  /// A save that may have reached the server without a readable answer, a
+  /// reply that can't be mapped included, is
+  /// [RecipientsSaveOutcomeUnknownFailure]: the recipient may exist.
   @override
   Future<Result<Recipient, RecipientsFailure>> saveRecipient(
     RecipientDetails recipientDetails, {
     bool isFiatRecipient = true,
     required bool isTestnet,
-  }) => _guard(
-    'create fiat recipient',
-    RecipientsSaveFailure.new,
-    () async =>
-        (await _api.recipients.createRecipientFiat(
-              _toNewRecipient(recipientDetails),
-            ))
-            .map(_toRecipient)
-            .mapErr(
-              (failure) => _failure(
-                failure,
-                'create fiat recipient',
-                RecipientsSaveFailure.new,
-              ),
-            ),
-  );
+  }) async {
+    final bbx.NewFiatRecipient request;
+    try {
+      request = _toNewRecipient(recipientDetails);
+    } on Exception catch (e) {
+      log.warning('Could not build the recipient request: ${e.runtimeType}');
+      return const Err(RecipientsSaveFailure());
+    }
+    return switch (await exchangeWrite<bbx.FiatRecipient, Recipient>(
+      'create fiat recipient',
+      () => _api.recipients.createRecipientFiat(request),
+      _toRecipient,
+    )) {
+      WriteDone(:final value) => Ok(value),
+      WriteRefused() => const Err(RecipientsSaveFailure()),
+      WriteNotSent(reason: ExchangeNotSentReason.signedOut) ||
+      WriteSessionRejected() => const Err(RecipientsNotAuthenticatedFailure()),
+      WriteNotSent(reason: ExchangeNotSentReason.unreachable) => const Err(
+        RecipientsNetworkFailure(),
+      ),
+      WriteNotSent(:final reason) => Err(
+        RecipientsSaveFailure('not sent: ${reason.name}'),
+      ),
+      WriteOutcomeUnknown(:final reason) => Err(
+        RecipientsSaveOutcomeUnknownFailure(reason),
+      ),
+    };
+  }
 
   @override
   Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({

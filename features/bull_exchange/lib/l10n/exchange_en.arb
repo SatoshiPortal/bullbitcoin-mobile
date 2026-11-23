@@ -1994,6 +1994,10 @@
   "@recipientsErrorSaveFailed": {
     "description": "Shown when creating a recipient fails."
   },
+  "recipientsErrorSaveOutcomeUnknown": "We could not tell whether this recipient was saved. Check your recipients before you add it again.",
+  "@recipientsErrorSaveOutcomeUnknown": {
+    "description": "Shown under the recipient form when the save request failed after it may have reached the server, so the recipient may exist. The form does not offer the save again."
+  },
   "recipientsErrorSinpeLookupFailed": "We could not verify this phone number. Please check it and try again.",
   "@recipientsErrorSinpeLookupFailed": {
     "description": "Shown when the SINPE phone number lookup fails."

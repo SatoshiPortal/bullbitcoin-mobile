@@ -15,6 +15,8 @@ extension RecipientsFailureL10n on RecipientsFailure {
     RecipientsNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
     RecipientsLoadFailure() => context.loc.recipientsErrorLoadFailed,
     RecipientsSaveFailure() => context.loc.recipientsErrorSaveFailed,
+    RecipientsSaveOutcomeUnknownFailure() =>
+      context.loc.recipientsErrorSaveOutcomeUnknown,
     RecipientsSinpeLookupFailure() =>
       context.loc.recipientsErrorSinpeLookupFailed,
     RecipientsCadBillerSearchFailure() =>

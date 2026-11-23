@@ -19,6 +19,13 @@ final class RecipientsSaveFailure extends RecipientsFailure {
   const RecipientsSaveFailure([super.logMessage]);
 }
 
+/// The save request may have reached the exchange without a readable answer,
+/// so the recipient may exist. The form does not offer the save again: the
+/// recipient list says whether it was saved.
+final class RecipientsSaveOutcomeUnknownFailure extends RecipientsFailure {
+  const RecipientsSaveOutcomeUnknownFailure([super.logMessage]);
+}
+
 /// The SINPE phone number could not be looked up. Distinct from a save
 /// failure: the user is mid-form and the actionable advice is to check the
 /// number, not to retry the whole thing.
