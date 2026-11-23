@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:go_router/go_router.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:labels/testing.dart';
@@ -10,14 +9,14 @@ import 'package:ark/funding.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletFacade, WalletFailure;
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:spend/spend.dart';
-import 'package:sync/sync.dart' hide Wallet;
+import 'package:sync/sync.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
@@ -107,10 +106,8 @@ void main() {
     late InventoryFixture inventoryFixture;
     late PathProviderPlatform previousPaths;
     SharedPreferencesAsyncPlatform? previousPreferences;
-    var composed = false;
     final parent = Fingerprint('00112233');
     setUp(() async {
-      composed = false;
       directory = await Directory.systemTemp.createTemp('ark-root-custody-');
       previousPaths = PathProviderPlatform.instance;
       PathProviderPlatform.instance = _Paths(directory.path);
@@ -130,9 +127,6 @@ void main() {
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
-      if (composed) {
-        locator<SyncCoordinator<Wallet, WalletFailure>>().dispose();
-      }
       await locator.reset();
       await inventoryFixture.close();
       await database.close();
@@ -178,7 +172,6 @@ void main() {
         ),
         isA<Ok>(),
       );
-      composed = true;
     }
 
     Future<void> publishAccount() async {
@@ -259,7 +252,19 @@ void main() {
       await ArkForegroundHost.setup(
         locator,
         inventory: locator<SecretsInventory>(),
-        boardFunding: () => arkBoardFundingBinding(locator),
+        boardFunding: () => arkBoardFundingBinding(
+          authority: locator<SqliteArkFundingReservations>(),
+          runtime: locator<WalletNativeRuntime>(),
+          inventory: locator<SecretsInventory>(),
+          synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+            key,
+            locator<WalletCatalogPort>(),
+            reason: SyncReason.manual,
+          ),
+          secrets: locator<Secrets>(),
+          fees: locator<Fees>(),
+          custody: locator<ParentCustodyAdmissionPort>(),
+        ),
         arkUrl: Uri.parse('http://ark.regtest'),
         primaryEsploraUrl: Uri.parse('http://chain.regtest'),
         initializeNew: true,
@@ -430,11 +435,7 @@ void main() {
       inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
-      var composed = false;
       addTearDown(() async {
-        if (composed) {
-          locator<SyncCoordinator<Wallet, WalletFailure>>().dispose();
-        }
         await locator.reset();
         await inventoryFixture.close();
         await database.close();
@@ -469,28 +470,9 @@ void main() {
         startAutoswapWatcher: false,
       );
       expect(result, isA<Ok>());
-      composed = true;
       await locator<ForegroundWalletStartup>().start();
       expect(nativeTor.calls, 1);
       expect(locator<WalletRepository>(), isA<WalletRepository>());
-      final wallets = locator<WalletFacade>();
-      expect(
-        await wallets.defaultWalletNetwork(),
-        isA<Ok<NetworkEnv?, WalletFailure>>().having(
-          (result) => result.value,
-          'default wallet environment',
-          isNull,
-        ),
-      );
-      expect(
-        await wallets.isTorRequired(),
-        isA<Ok<bool, WalletFailure>>().having(
-          (result) => result.value,
-          'Tor required',
-          isFalse,
-        ),
-      );
-
       const id = 'wpkh([01234567/84h/0h/0h])';
       final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
       final catalog = locator<WalletCatalogPort>();
@@ -607,10 +589,7 @@ void main() {
       isA<ElectrumSaveFailure>(),
     );
     expect(locator.isRegistered<WalletRepository>(), isFalse);
-    expect(
-      locator.isRegistered<SyncCoordinator<Wallet, WalletFailure>>(),
-      isFalse,
-    );
+    expect(locator.isRegistered<OverviewSynchronization>(), isFalse);
     expect(locator.isRegistered<SilentFeature>(), isFalse);
     expect(
       await electrumDatabase.select(electrumDatabase.electrumServers).get(),

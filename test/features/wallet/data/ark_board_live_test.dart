@@ -31,7 +31,11 @@ import 'package:preferences/preferences.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/sync.dart' show WalletCatalogPort, SyncReason;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
@@ -40,7 +44,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/migration.dart';
 import 'package:signers/storage.dart';
 import 'package:sync/storage.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
@@ -337,7 +341,7 @@ void main() {
         );
         expect(recovered, parent.id);
         _ok(
-          await locator<CreateDefaultWalletsUsecase>().execute(
+          await locator<DefaultWalletProvisioning>().execute(
             secret: parent,
             expectedNetwork: NetworkEnv.regtest,
           ),
@@ -377,7 +381,19 @@ void main() {
       await ArkForegroundHost.setup(
         locator,
         inventory: locator<SecretsInventory>(),
-        boardFunding: () => arkBoardFundingBinding(locator),
+        boardFunding: () => arkBoardFundingBinding(
+          authority: locator<SqliteArkFundingReservations>(),
+          runtime: locator<WalletNativeRuntime>(),
+          inventory: locator<SecretsInventory>(),
+          synchronize: (key) => locator<ForegroundWalletSync>().synchronizeKey(
+            key,
+            locator<WalletCatalogPort>(),
+            reason: SyncReason.manual,
+          ),
+          secrets: locator<Secrets>(),
+          fees: locator<Fees>(),
+          custody: locator<ParentCustodyAdmissionPort>(),
+        ),
         arkUrl: Uri.parse(arkUrl!),
         primaryEsploraUrl: Uri.parse(esploraUrl!),
         initializeNew: true,

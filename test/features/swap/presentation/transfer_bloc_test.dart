@@ -584,7 +584,6 @@ void main() {
         );
         var broadcasts = 0;
         final wallet = WalletFacade(
-          const Stream.empty(),
           broadcastSpend:
               (
                 id,

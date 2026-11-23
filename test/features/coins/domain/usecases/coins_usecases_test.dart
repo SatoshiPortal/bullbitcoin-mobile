@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart' hide Network;
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -23,11 +22,7 @@ void main() {
     test('requests a screen sync of the wallet', () async {
       final polled = <String>[];
       final usecase = RefreshCoinsUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          pollWallet: (walletId, {required isActive}) async =>
-              polled.add(walletId),
-        ),
+        (walletId) async => polled.add(walletId),
       );
 
       await usecase.execute(walletId: 'w1');
@@ -37,11 +32,7 @@ void main() {
 
     test('settles after a sync failure', () async {
       final usecase = RefreshCoinsUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          pollWallet: (_, {required isActive}) async =>
-              throw Exception('offline'),
-        ),
+        (_) async => throw Exception('offline'),
       );
 
       await expectLater(usecase.execute(walletId: 'w1'), completes);

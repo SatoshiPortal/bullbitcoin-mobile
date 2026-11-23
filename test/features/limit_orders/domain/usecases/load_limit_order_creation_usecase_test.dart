@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:primitives/primitives.dart'
+    show Network, BitcoinNetwork, LiquidNetwork, Err, Ok, Result;
+import 'package:preferences/preferences.dart'
+    show ActiveEnvironmentReader, Environment;
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
@@ -25,16 +28,9 @@ abstract interface class _DefaultWalletReader {
 
 class MockDefaultWalletReader extends Mock implements _DefaultWalletReader {}
 
-class MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
+class _Inventory extends Mock implements WalletInventory {}
 
-class _MockWallet extends Mock implements Wallet {}
-
-Wallet _wallet(String id, Network network) {
-  final wallet = _MockWallet();
-  when(() => wallet.id).thenReturn(id);
-  when(() => wallet.network).thenReturn(network);
-  return wallet;
-}
+class _Environment extends Mock implements ActiveEnvironmentReader {}
 
 const _wallets = DefaultWallets(
   bitcoin: DefaultWallet(
@@ -55,7 +51,8 @@ void main() {
   late MockLimitOrderRepository repository;
   late MockGetExchangeUserSummaryUsecase getUserSummary;
   late MockDefaultWalletReader defaultWallets;
-  late MockGetWalletsUsecase getWallets;
+  late _Inventory inventory;
+  late _Environment environment;
   late LoadLimitOrderCreationUsecase usecase;
 
   LimitOrdersFailure failureOf(
@@ -70,18 +67,28 @@ void main() {
     repository = MockLimitOrderRepository();
     getUserSummary = MockGetExchangeUserSummaryUsecase();
     defaultWallets = MockDefaultWalletReader();
-    getWallets = MockGetWalletsUsecase();
+    inventory = _Inventory();
+    environment = _Environment();
     usecase = LoadLimitOrderCreationUsecase(
       getUserSummary,
       exchangeForTesting(getDefaultWallets: defaultWallets.getDefaultWallets),
-      getWallets,
+      inventory,
+      environment,
       repository,
     );
     when(() => repository.getRate(any()))
         .thenAnswer((_) async => Ok(limitOrderRate()));
     when(() => defaultWallets.getDefaultWallets())
         .thenAnswer((_) async => const Ok(_wallets));
-    when(() => getWallets.execute()).thenAnswer((_) async => Ok([]));
+    when(environment.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.mainnet));
+    for (final network in <Network>[
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]) {
+      when(() => inventory.walletsForNetwork(network))
+          .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
+    }
   });
 
   test(
@@ -89,11 +96,26 @@ void main() {
     () async {
       when(() => getUserSummary.execute())
           .thenAnswer((_) async => userSummary());
-      when(() => getWallets.execute()).thenAnswer(
-        (_) async => Ok([
-          _wallet('w-btc', Network.bitcoinMainnet),
-          _wallet('w-lbtc', Network.liquidMainnet),
-        ]),
+      when(() => inventory.walletsForNetwork(BitcoinNetwork.mainnet))
+          .thenAnswer(
+            (_) async => Ok(
+              walletSelectionForTesting([
+                walletRegistrationForTesting(
+                  id: 'w-btc',
+                  network: BitcoinNetwork.mainnet,
+                ),
+              ]),
+            ),
+          );
+      when(() => inventory.walletsForNetwork(LiquidNetwork.mainnet)).thenAnswer(
+        (_) async => Ok(
+          walletSelectionForTesting([
+            walletRegistrationForTesting(
+              id: 'w-lbtc',
+              network: LiquidNetwork.mainnet,
+            ),
+          ]),
+        ),
       );
 
       final result = await usecase.execute();
@@ -105,7 +127,8 @@ void main() {
 
   test('degrades to no in-app wallets when listing them fails', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
-    when(() => getWallets.execute()).thenThrow(Exception('no wallets'));
+    when(() => inventory.walletsForNetwork(BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => const Err(FetchSecretFailure()));
 
     final result = await usecase.execute();
 
@@ -206,7 +229,7 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     verify(() => defaultWallets.getDefaultWallets()).called(1);
-    verify(() => getWallets.execute()).called(1);
+    verify(() => inventory.walletsForNetwork(BitcoinNetwork.mainnet)).called(1);
     verifyNever(() => repository.getRate(any()));
 
     summary.complete(userSummary());

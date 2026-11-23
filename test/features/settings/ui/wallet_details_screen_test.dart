@@ -52,12 +52,7 @@ Future<void> _pumpScreen(WidgetTester tester, {required bool isDefault}) async {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider(
           create: (_) => WalletDiscoveryCubit(
-            DiscoverWalletUsecase(
-              WalletFacade(
-                const Stream.empty(),
-                discoverWallet: (_) async => const Ok(null),
-              ),
-            ),
+            DiscoverWalletUsecase((_) async => const Ok(null)),
           ),
           child: const WalletDetailsScreen(walletId: 'wallet-id'),
         ),

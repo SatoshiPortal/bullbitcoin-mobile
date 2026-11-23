@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +14,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletInventory {}
 
-class _CreateDefaults extends Mock implements CreateDefaultWalletsUsecase {}
+class _CreateDefaults extends Mock implements DefaultWalletProvisioning {}
 
 void main() {
   late _Settings settings;

@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
@@ -81,6 +82,10 @@ Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
 
 class _Settings extends Fake implements Preferences {
   @override
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async => const Ok(Environment.testnet);
+
+  @override
   Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
     const SettingsEntity(
       environment: Environment.testnet,
@@ -92,7 +97,7 @@ class _Settings extends Fake implements Preferences {
 
 class _Logger extends Mock implements Logger {}
 
-class _GetWallets extends Mock implements GetWalletsUsecase {}
+class _Inventory extends Mock implements WalletInventory {}
 
 class _Rates extends Mock implements ExchangeLimitOrders {}
 
@@ -132,8 +137,14 @@ void main() {
           exchange: repo,
           settingsRepository: _Settings(),
         );
-        final wallets = _GetWallets();
-        when(wallets.execute).thenAnswer((_) async => const Ok([]));
+        final wallets = _Inventory();
+        for (final network in <Network>[
+          BitcoinNetwork.testnet,
+          LiquidNetwork.testnet,
+        ]) {
+          when(() => wallets.walletsForNetwork(network))
+              .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
+        }
         final pending = switch (name) {
           'limit orders' => LoadLimitOrderCreationUsecase(
             summary,
@@ -141,6 +152,7 @@ void main() {
               getDefaultWallets: () async => const Ok(DefaultWallets()),
             ),
             wallets,
+            _Settings(),
             _Rates(),
           ).execute(),
           'autobuy status' => autoBuyStatusForTesting(repo),

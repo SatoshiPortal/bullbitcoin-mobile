@@ -32,7 +32,7 @@ void main() {
     }
   });
 
-  test('the shell uses the wallet facade for service status', () {
+  test('the shell supplies service status with owner capabilities', () {
     final shell = parseString(
       content: File('lib/locator.dart').readAsStringSync(),
     ).unit;
@@ -51,6 +51,7 @@ void main() {
               'get_default_wallet_network_usecase.dart',
               'is_tor_required_usecase.dart',
               'wallet_repository.dart',
+              'wallet_facade.dart',
             }.contains(p.basename(uri)),
           ),
       isEmpty,

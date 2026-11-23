@@ -1,25 +1,26 @@
 import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/read_send_recipient_amount_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockRecipientAmount extends Mock
+    implements ReadSendRecipientAmountUsecase {}
 
 void main() {
-  late _MockWalletRepository repository;
+  late _MockRecipientAmount repository;
   late VerifyExchangePayinUsecase usecase;
 
   setUp(() {
-    repository = _MockWalletRepository();
+    repository = _MockRecipientAmount();
     usecase = VerifyExchangePayinUsecase(repository);
   });
 
   test('accepts the exact pinned Exchange payin output', () async {
     when(
-      () => repository.getAmountSentToAddress(
+      () => repository.execute(
         psbtOrPset: 'pset',
         address: 'payin-address',
         walletId: 'wallet-1',
@@ -37,7 +38,7 @@ void main() {
 
   test('rejects an amount mismatch before signing', () async {
     when(
-      () => repository.getAmountSentToAddress(
+      () => repository.execute(
         psbtOrPset: 'pset',
         address: 'payin-address',
         walletId: 'wallet-1',

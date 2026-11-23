@@ -24,7 +24,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
-import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -326,7 +325,7 @@ void main() {
       final started = repository.walletSyncStartedStream.first;
       final finished = repository.walletSyncFinishedStream.first;
       final result = bridge.results.first;
-      await SyncWalletUsecase(walletRepository: repository).execute(wallet);
+      await repository.sync(wallet);
       expect(policy.calls, 1);
       expect(await started, id);
       expect((await finished).id, id);
@@ -341,8 +340,7 @@ void main() {
     final gate = Completer<void>();
     policy.gate = gate.future;
     final started = repository.walletSyncStartedStream.first;
-    final syncing = SyncWalletUsecase(walletRepository: repository)
-        .execute(wallet);
+    final syncing = repository.sync(wallet);
     try {
       await started;
       verifyNever(() => values.getBalance(key: any(named: 'key')));
@@ -359,11 +357,10 @@ void main() {
         log = Logger.replace(directory: directory);
         final wallet =
             (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
-        final usecase = SyncWalletUsecase(walletRepository: repository);
-        await usecase.execute(wallet, reason: reason);
+        await repository.sync(wallet, reason: reason);
         policy.failure = const SyncConnectionFailure();
         await expectLater(
-          usecase.execute(wallet, reason: reason),
+          repository.sync(wallet, reason: reason),
           throwsA(
             isA<WalletSnapshotException>().having(
               (error) => error.failure,
@@ -470,10 +467,9 @@ void main() {
       );
       final wallet =
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
-      final usecase = SyncWalletUsecase(walletRepository: repository);
-      await usecase.execute(wallet);
-      await usecase.execute(wallet, discover: true);
-      await usecase.execute(wallet, allowInitialScan: false);
+      await repository.sync(wallet);
+      await repository.sync(wallet, discover: true);
+      await repository.sync(wallet, allowInitialScan: false);
       expect(requests, [(false, true), (true, true), (false, false)]);
     },
   );
@@ -532,8 +528,7 @@ void main() {
     final wallet =
         (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
     await expectLater(
-      SyncWalletUsecase(walletRepository: repository)
-          .execute(wallet, discover: true, reason: SyncReason.manual),
+      repository.sync(wallet, discover: true, reason: SyncReason.manual),
       throwsA(
         isA<WalletSnapshotException>().having(
           (error) => error.failure,

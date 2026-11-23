@@ -1,4 +1,6 @@
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
+import 'dart:ui' show Locale;
+
+import 'package:notifications/payment_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +8,29 @@ import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 
 void main() {
+  test(
+    'formats the announcement for the configured locale and payment count',
+    () {
+      final english = PaymentNotifications.copy(null);
+      final french = PaymentNotifications.copy(const Locale('fr'));
+      final hindi = PaymentNotifications.copy(
+        const Locale.fromSubtags(languageCode: 'hi', scriptCode: 'Latn'),
+      );
+      expect(english(1), (
+        title: 'Payment received!',
+        body: 'You received a payment',
+      ));
+      expect(french(2), (
+        title: 'Paiement reçu !',
+        body: 'Vous avez reçu 2 paiements',
+      ));
+      expect(hindi(2), (
+        title: 'Payment aa gayi!',
+        body: 'You received 2 payments',
+      ));
+    },
+  );
+
   test(
     'payment notifications open the app without an unconsumed destination',
     () async {
@@ -24,6 +49,7 @@ void main() {
         platformId: 1,
       );
       expect(shown, isA<Ok>());
+      expect(android.channelId, 'bull_wallet_payments');
       expect(android.payload, isNull);
       expect(await gateway.initialize(), isA<Ok>());
       expect(android.response, isNull);
@@ -34,6 +60,7 @@ void main() {
 
 class _Android extends AndroidFlutterLocalNotificationsPlugin {
   String? payload;
+  String? channelId;
   DidReceiveNotificationResponseCallback? response;
   int launchReads = 0;
   @override
@@ -63,5 +90,6 @@ class _Android extends AndroidFlutterLocalNotificationsPlugin {
     String? payload,
   }) async {
     this.payload = payload;
+    channelId = notificationDetails?.channelId;
   }
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -33,8 +32,6 @@ class MockResolveWalletAddressUsecase extends Mock
 
 class MockValidateLightningAddressUsecase extends Mock
     implements ValidateLightningAddressUsecase {}
-
-class _MockWallet extends Mock implements Wallet {}
 
 void main() {
   late MockLoadLimitOrderCreationUsecase loadCreation;
@@ -289,13 +286,6 @@ void main() {
     },
   );
 
-  Wallet appWallet(String id, Network network) {
-    final wallet = _MockWallet();
-    when(() => wallet.id).thenReturn(id);
-    when(() => wallet.network).thenReturn(network);
-    return wallet;
-  }
-
   for (final fails in [false, true]) {
     test('keeps the confirmed default destination after a stale app-wallet '
         '${fails ? 'failure' : 'success'}', () async {
@@ -318,7 +308,7 @@ void main() {
       cubit.setAmount(100);
       cubit.continueFromAmount();
       final resolving = cubit.selectAppWallet(
-        appWallet('w-btc', Network.bitcoinMainnet),
+        const LimitOrderAppWallet(id: 'w-btc', isLiquid: false),
       );
       cubit.selectWallet(bitcoinWallet);
       cubit.continueFromWallet();
@@ -374,7 +364,7 @@ void main() {
     final cubit = buildCubit();
     addTearDown(cubit.close);
     final resolving = cubit.selectAppWallet(
-      appWallet('w-btc', Network.bitcoinMainnet),
+      const LimitOrderAppWallet(id: 'w-btc', isLiquid: false),
     );
     final validating = cubit.setLightningAddress('new@example.com');
     pendingWallet.complete(const Ok('bc1qstale'));
@@ -411,8 +401,9 @@ void main() {
         when(() => resolveAddress.execute('w-btc'))
             .thenAnswer((_) async => const Ok('bc1qderived')),
     build: buildCubit,
-    act: (cubit) =>
-        cubit.selectAppWallet(appWallet('w-btc', Network.bitcoinMainnet)),
+    act: (cubit) => cubit.selectAppWallet(
+      const LimitOrderAppWallet(id: 'w-btc', isLiquid: false),
+    ),
     verify: (cubit) {
       expect(cubit.state.isResolvingAddress, isFalse);
       expect(cubit.state.selectedAppWalletId, 'w-btc');
@@ -427,8 +418,9 @@ void main() {
       () => resolveAddress.execute('w-lbtc'),
     ).thenAnswer((_) async => const Err(LimitOrdersUnexpectedFailure('boom'))),
     build: buildCubit,
-    act: (cubit) =>
-        cubit.selectAppWallet(appWallet('w-lbtc', Network.liquidMainnet)),
+    act: (cubit) => cubit.selectAppWallet(
+      const LimitOrderAppWallet(id: 'w-lbtc', isLiquid: true),
+    ),
     verify: (cubit) {
       expect(cubit.state.isResolvingAddress, isFalse);
       expect(cubit.state.wallet, isNull);

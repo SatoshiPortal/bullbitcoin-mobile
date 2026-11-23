@@ -1,14 +1,10 @@
 import 'package:sync/sync.dart'
     show WalletRevisionState, WalletRevision, WalletKey, WalletLifecycle;
-import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
-import 'package:primitives/primitives.dart' as primitives;
+import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_activity_usecase.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
@@ -36,36 +32,31 @@ class _MockRefreshCoinsUsecase extends Mock implements RefreshCoinsUsecase {}
 
 class _MockLabels extends Mock implements Labels {}
 
-class _MockWatchStarted extends Mock
-    implements WatchStartedWalletSyncsUsecase {}
-
-class _MockWatchFinished extends Mock
-    implements WatchFinishedWalletSyncsUsecase {}
-
 void main() {
   late _MockGetUtxosUsecase getUtxos;
   late _MockFreezeUtxosUsecase freezeUtxos;
   late _MockUnfreezeUtxosUsecase unfreezeUtxos;
   late _MockRefreshCoinsUsecase refreshCoins;
   late _MockLabels labelsFacade;
-  late _MockWatchStarted watchStarted;
-  late _MockWatchFinished watchFinished;
   late StreamController<WalletRevisionState> revisions;
-  late StreamController<String> startedController;
-  late StreamController<Wallet> finishedController;
+  late StreamController<WalletKey> startedController;
+  late StreamController<WalletKey> finishedController;
 
   const walletId = 'w1';
+  final key = WalletKey(id: walletId, network: BitcoinNetwork.testnet);
 
   CoinsCubit buildCubit() => CoinsCubit(
-    watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(revisions.stream),
-    walletId: walletId,
+    watchActivity: WatchCoinsActivityUsecase(
+      startedController.stream,
+      finishedController.stream,
+      revisions.stream,
+    ),
+    walletKey: key,
     getUtxosUsecase: getUtxos,
     freezeUtxosUsecase: freezeUtxos,
     unfreezeUtxosUsecase: unfreezeUtxos,
     refreshCoinsUsecase: refreshCoins,
     loadCoinLabelFilters: LoadCoinLabelFiltersUsecase(labelsFacade),
-    watchStartedWalletSyncsUsecase: watchStarted,
-    watchFinishedWalletSyncsUsecase: watchFinished,
   );
 
   setUp(() {
@@ -75,15 +66,9 @@ void main() {
     unfreezeUtxos = _MockUnfreezeUtxosUsecase();
     refreshCoins = _MockRefreshCoinsUsecase();
     labelsFacade = _MockLabels();
-    watchStarted = _MockWatchStarted();
-    watchFinished = _MockWatchFinished();
-    startedController = StreamController<String>.broadcast();
-    finishedController = StreamController<Wallet>.broadcast();
+    startedController = StreamController<WalletKey>.broadcast();
+    finishedController = StreamController<WalletKey>.broadcast();
 
-    when(() => watchStarted.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => startedController.stream);
-    when(() => watchFinished.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) => finishedController.stream);
     when(() => labelsFacade.suggestions())
         .thenAnswer((_) async => Ok(<String>{}));
     when(() => refreshCoins.execute(walletId: any(named: 'walletId')))
@@ -104,10 +89,7 @@ void main() {
       WalletRevisionState revision(String id, int number) =>
           WalletRevisionState(
             stamp: WalletRevision(
-              key: WalletKey(
-                id: id,
-                network: primitives.BitcoinNetwork.testnet,
-              ),
+              key: WalletKey(id: id, network: BitcoinNetwork.testnet),
               generation: 1,
               revision: number,
             ),
@@ -337,12 +319,17 @@ void main() {
         final cubit = buildCubit();
 
         // Sync started → syncing flips true.
-        startedController.add(_fakeWallet().id);
+        startedController.add(
+          WalletKey(id: walletId, network: BitcoinNetwork.mainnet),
+        );
+        async.flushMicrotasks();
+        expect(cubit.state.syncing, isFalse);
+        startedController.add(key);
         async.flushMicrotasks();
         expect(cubit.state.syncing, isTrue);
 
         // Sync finished → reload only after the debounce window.
-        finishedController.add(_fakeWallet());
+        finishedController.add(key);
         async.flushMicrotasks();
         expect(loadCalls, 0);
 
@@ -366,11 +353,11 @@ void main() {
 
         final cubit = buildCubit();
 
-        finishedController.add(_fakeWallet());
+        finishedController.add(key);
         async.elapse(const Duration(seconds: 1));
-        finishedController.add(_fakeWallet());
+        finishedController.add(key);
         async.elapse(const Duration(seconds: 1));
-        finishedController.add(_fakeWallet());
+        finishedController.add(key);
 
         // Only the last timer survives; advance past it.
         async.elapse(const Duration(seconds: 3));
@@ -398,11 +385,4 @@ void main() {
       await cubit.close();
     });
   });
-}
-
-Wallet _fakeWallet() => _FakeWallet();
-
-class _FakeWallet extends Fake implements Wallet {
-  @override
-  String get id => 'w1';
 }

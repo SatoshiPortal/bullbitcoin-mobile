@@ -238,7 +238,7 @@ void main() {
           scriptType: ScriptType.bip84,
           isDefault: true,
         ),
-      ).thenAnswer((_) async => wallet(Network.liquidRegtest));
+      ).thenAnswer((_) async => wallet(Network.liquidRegtest).id);
 
       final result = await usecaseOn(storage).execute();
 
@@ -389,6 +389,46 @@ void main() {
     },
   );
 
+  test('startup resolves local custody by secret reference', () async {
+    final storage = FakeSecureStoragePlatform(
+      entries: {'seed_$fingerprint': entry},
+    )..install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final inventory = _RegistrationInventory([
+      for (final network in [
+        Network.bitcoinMainnet.shared,
+        LiquidNetwork.mainnet,
+      ])
+        walletRegistrationForTesting(
+          id: network.toString(),
+          network: network,
+          isDefault: true,
+          signer: WalletSigner.local,
+          masterFingerprint: Fingerprint('deadbeef'),
+          secretFingerprint: Fingerprint(fingerprint),
+        ),
+    ]);
+    final usecase = CheckForExistingDefaultWalletsUsecase(
+      preferences: _StartupPreferences(settings),
+      inventory: inventory,
+      hasWallets: () async => const Ok(true),
+      secrets: secrets,
+      repair: DefaultWalletRepair(
+        secrets,
+        (_, _) async => fail('complete pair'),
+      ),
+    );
+    expect(
+      await usecase.execute(),
+      isA<Ok<bool, AppStartupFailure>>().having(
+        (value) => value.value,
+        'has defaults',
+        true,
+      ),
+    );
+    expect(storage.entries, contains('seed_$fingerprint'));
+  });
+
   test('an unreadable seed is neither of those', () async {
     // Still on the device and possibly readable after a plugin fix, so it
     // must not reach the restore flow.
@@ -448,4 +488,19 @@ class _StartupInventory extends Mock implements WalletInventory {
             ]),
           )
           .mapErr((_) => const FetchSecretFailure());
+}
+
+class _RegistrationInventory extends Mock implements WalletInventory {
+  final List<WalletRegistration> registrations;
+
+  _RegistrationInventory(this.registrations);
+
+  @override
+  Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
+    primitives.Network network,
+  ) async => Ok(
+    walletSelectionForTesting(
+      registrations.where((wallet) => wallet.network == network).toList(),
+    ),
+  );
 }

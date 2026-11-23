@@ -172,10 +172,8 @@ void main() {
         NetworkFeature.mount(
           services: networkServices,
           preferences: _UnusedPreferences(),
-          bindings: (
-            readDefaultNetwork: () async => const Ok(null),
-            isTorRequired: () async => const Ok(false),
-          ),
+          inventory: inventoryFixture.inventory,
+          readBackup: (_) async => const Ok(null),
         ),
       );
       locator.registerSingleton(
