@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show ArkFundingSigningGuard;
+import 'package:bull_ark/ark_wallet_setup.dart' show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 
 import 'package:sync/write.dart' show WalletNativeRuntime;

@@ -960,5 +960,8 @@
   "quick_actions__transfer_apple": "Transfer",
   "@quick_actions__transfer_apple": {
     "description": "Apple (App Store) wording for the quick_actions catalogue key transfer."
-  }
+  },
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemonic",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Delete transfer mnemonic?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "This removes the transfer master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing transfers are unaffected."
 }

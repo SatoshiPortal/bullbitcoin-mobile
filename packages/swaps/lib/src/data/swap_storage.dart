@@ -38,16 +38,19 @@ class SwapStorage {
   final SwapKeychain _secrets;
   final Map<String, Lock> _writeLocks = {};
   final Map<String, Lock> _allocationLocks;
+  final Map<String, Lock> _masterKeyLocks;
   final bool _regtest;
 
   SwapStorage({required this._rows, required this._secrets})
     : _allocationLocks = {},
+      _masterKeyLocks = {},
       _regtest = false;
 
   SwapStorage._regtestRows(SwapRowStore rows, SwapStorage canonical)
     : _rows = rows,
       _secrets = canonical._secrets,
       _allocationLocks = canonical._allocationLocks,
+      _masterKeyLocks = canonical._masterKeyLocks,
       _regtest = true;
 
   // Preserve the engine's exception-based storage contract. Only failure types
@@ -145,8 +148,10 @@ class SwapStorage {
       swapMasterKey.boltzNetwork,
       walletFingerprint,
     );
-    if (await _readSecret(key) != null) return;
-    await _writeSecret(key, jsonEncode(swapMasterKey.toJson()));
+    await (_masterKeyLocks[key] ??= Lock()).synchronized(() async {
+      if (await _readSecret(key) != null) return;
+      await _writeSecret(key, jsonEncode(swapMasterKey.toJson()));
+    });
   }
 
   Future<bool> swapMasterKeyExists(
@@ -172,9 +177,7 @@ class SwapStorage {
         'on ${network.value}',
       );
     }
-    return SwapMasterKeyModel.fromJson(
-      jsonDecode(jsonString) as Map<String, dynamic>,
-    );
+    return _decodeMasterKey(jsonString);
   }
 
   /// Deletes the wallet's network-qualified key blob while retaining the
@@ -182,7 +185,44 @@ class SwapStorage {
   Future<void> deleteSwapMasterKey(
     BoltzNetwork network, {
     required String walletFingerprint,
-  }) => _deleteSecret(_swapMasterKeyStorageKey(network, walletFingerprint));
+  }) {
+    final key = _swapMasterKeyStorageKey(network, walletFingerprint);
+    return (_masterKeyLocks[key] ??= Lock()).synchronized(
+      () => _deleteSecret(key),
+    );
+  }
+
+  /// Refuses deletion if the stored key changed since it was confirmed.
+  Future<bool> deleteSwapMasterKeyIfMatches(
+    BoltzNetwork network, {
+    required String walletFingerprint,
+    required String keyFingerprint,
+  }) {
+    final key = _swapMasterKeyStorageKey(network, walletFingerprint);
+    return (_masterKeyLocks[key] ??= Lock()).synchronized(() async {
+      final stored = await _readSecret(key);
+      if (stored == null) return false;
+      final model = _decodeMasterKey(stored);
+      if (model.fingerprint != keyFingerprint ||
+          model.network != network.value) {
+        return false;
+      }
+      await _deleteSecret(key);
+      return true;
+    });
+  }
+
+  static SwapMasterKeyModel _decodeMasterKey(String record) {
+    try {
+      final decoded = jsonDecode(record);
+      if (decoded is Map<String, dynamic>) {
+        return SwapMasterKeyModel.fromJson(decoded);
+      }
+    } on FormatException {
+      // A decoder exception may carry the original key record.
+    }
+    throw const FormatException('Unreadable swap key record');
+  }
 
   // Keyed by the swap master key's fingerprint, not the network: the swap
   // key material is network-independent, so a per-network counter would

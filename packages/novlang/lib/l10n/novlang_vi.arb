@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Xóa mnemonic chuyển khoản?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemonic chuyển khoản",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Xóa mnemonic chuyển khoản?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng."
 }

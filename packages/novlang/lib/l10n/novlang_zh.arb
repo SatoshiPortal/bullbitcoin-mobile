@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "删除转账助记词？",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "转账助记词",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "删除转账助记词？",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。"
 }

@@ -92,6 +92,7 @@ graph TB
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, order inventory, KYC uploads and stats]
     BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account settings and support chat]
     EXCHANGE --> BULL_EXCHANGE
+    SUPPORT -->|support chat| BULL_EXCHANGE
     SETTINGS -->|mount account settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     EXCHANGE --> EXCHANGE_DOMAIN
@@ -234,7 +235,7 @@ graph TB
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     CONSOLIDATION[Consolidation]
-    ALL_SEED_VIEW[All Seed View]
+    ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
     AUTOSWAP[Autoswap]
     SP[Silent Payments]
     AUTOBUY[AutoBuy]
@@ -305,7 +306,9 @@ graph TB
     ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> ACCESS
     ALL_SEED_VIEW --> SECRETS
-    ALL_SEED_VIEW -->|public custody references| WALLETS
+    ALL_SEED_VIEW --> PREFERENCES
+    ALL_SEED_VIEW --> BULL_UI
+    SETTINGS -->|recovery phrase viewer route| ALL_SEED_VIEW
     CORE -->|wallet home composition| ANNOUNCEMENTS
     ANNOUNCEMENTS --> BULL_UI
     ANNOUNCEMENTS --> PRIMITIVES
@@ -753,3 +756,8 @@ Electrum also implements its import participant through `legacy_storage` and ope
 Labels implements its participant through `legacy_storage`, opens its encrypted store through `secrets`, and supplies Sync with its owner-built freeze and reserved-address ports. Label, Payjoin and BIP-329 consumers share that authority.
 
 Preferences owns an encrypted schema-1 settings and RecoverBull permission store, with row/sequence/import-receipt atomicity. It preserves consent only for the default RecoverBull URL and never stores the source URL. Only the testnet credential projection borrows the tracked legacy connection; Announcements owns its encrypted dismissal store. Foreground prepares under exclusive cutover admission; foreground and consuming background tasks open existing Preferences under shared admission and receipt checks. The legacy and standalone RecoverBull files are retained.
+
+
+## Recovery phrase display
+
+Settings mounts All Seed View as a workspace route. Access supplies reauthentication, Secrets supplies the active catalog and guarded seed deletion, and Swaps supplies the sealed swap phrase widget. Wallet recovery phrases and passphrases stay in Secrets’ MnemonicView. Screen protection must succeed before the viewer builds, and neither phrase renderer contributes words to accessibility semantics.

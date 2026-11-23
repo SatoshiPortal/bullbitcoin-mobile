@@ -1,0 +1,45 @@
+{
+  "allSeedViewSecurityWarningMessage": "Відображення слів насіння є ризиком безпеки. Будь-який, хто бачить ваше слово насіння, може отримати доступ до ваших коштів. Переконайтеся, що ви перебуваєте в приватному місці і що ніхто не може бачити ваш екран.",
+  "cancel": "Зареєструватися",
+  "allSeedViewLoadingMessage": "Це може зайняти деякий час для завантаження, якщо у вас є багато насіння на цьому пристрої.",
+  "retry": "Птиця",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "allSeedViewNoSeedsFound": "Не знайдено насіння.",
+  "allSeedViewSecurityWarningTitle": "Попередження про безпеку",
+  "allSeedViewPassphraseLabel": "Пасфрак:",
+  "allSeedViewOldWallets": "Старі Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Я витримую",
+  "allSeedViewDeleteWarningTitle": "УВАГА!",
+  "allSeedViewDeleteWarningMessage": "Видалення насіння незворотної дії. Тільки робіть це, якщо у вас є безпечні резервні копії цього насіння або асоційованих гаманців повністю зливаються.",
+  "delete": "Видалення",
+  "allSeedViewErrorDelete": "Не вдалося видалити сід. Будь ласка, спробуйте ще раз.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Не вдалося завантажити сіди. Будь ласка, спробуйте ще раз.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Показати насіння",
+  "allSeedViewTitle": "Вид на насіння",
+  "allSeedViewExistingWallets": "Надходження на гаманці ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

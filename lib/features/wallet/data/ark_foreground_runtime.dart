@@ -13,7 +13,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
+import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_ark/ark_foreground_maintenance_setup.dart';

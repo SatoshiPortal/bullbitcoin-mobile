@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:primitives/primitives.dart';
-import 'package:swaps/swaps.dart'
-    show SwapWatcher, SwapsFailure, SwapsBusyFailure, classifySwapsFailure;
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:bull_logger/bull_logger.dart';
 
 /// Serializes replacement while retaining the latest requested network and

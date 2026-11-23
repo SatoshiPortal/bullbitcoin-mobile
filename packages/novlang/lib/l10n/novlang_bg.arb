@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Да се изтрие ли мнемониката за прехвърляне?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Това премахва главния ключ за прехвърляне от защитеното хранилище. Той ще бъде извлечен отново от seed-а на портфейла ви следващия път, когато приложението го поиска, със същия отпечатък. Текущите прехвърляния не се засягат.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоника за прехвърляне",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Да се изтрие ли мнемониката за прехвърляне?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Това премахва главния ключ за прехвърляне от защитеното хранилище. Той ще бъде извлечен отново от seed-а на портфейла ви следващия път, когато приложението го поиска, със същия отпечатък. Текущите прехвърляния не се засягат."
 }

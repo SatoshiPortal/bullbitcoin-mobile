@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Eliminare la frase mnemonica dei trasferimenti?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Questa operazione rimuove la chiave master dei trasferimenti dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. I trasferimenti in corso non vengono toccati.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Frase mnemonica dei trasferimenti",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Eliminare la frase mnemonica dei trasferimenti?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Questa operazione rimuove la chiave master dei trasferimenti dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. I trasferimenti in corso non vengono toccati."
 }

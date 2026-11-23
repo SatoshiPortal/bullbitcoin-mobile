@@ -3,16 +3,17 @@ import 'dart:async';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
-import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
+
+import 'package:all_seed_view/src/localizations.dart';
+import 'package:all_seed_view/src/domain/all_seed_view_failure.dart';
+import 'package:all_seed_view/src/presentation/all_seed_view_cubit.dart';
+import 'package:all_seed_view/src/presentation/all_seed_view_failure_l10n.dart';
 import 'package:access/access.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullThemeX,
         BullButtonSize,
         BullConfirmDialog,
         BullButton,
@@ -26,8 +27,13 @@ import 'package:bull_ui/bull_ui.dart'
 
 class AllSeedViewScreen extends StatefulWidget {
   final Access access;
+  final BoltzSwaps swaps;
 
-  const AllSeedViewScreen({super.key, required this.access});
+  const AllSeedViewScreen({
+    super.key,
+    required this.access,
+    required this.swaps,
+  });
 
   @override
   State<AllSeedViewScreen> createState() => _AllSeedViewScreenState();
@@ -52,6 +58,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
       _revealGeneration++;
+      context.read<AllSeedViewCubit>().hideSeeds();
       if (_shownPassphrases.isNotEmpty) setState(_shownPassphrases.clear);
     }
   }
@@ -139,8 +146,8 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                     ? BullFadingLinearProgress(
                         height: 3,
                         trigger: state.loading,
-                        backgroundColor: context.appColors.surface,
-                        foregroundColor: context.appColors.primary,
+                        backgroundColor: context.bull.surface,
+                        foregroundColor: context.bull.primary,
                       )
                     : const SizedBox(height: 3),
               ),
@@ -154,22 +161,20 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                       child: BullText(
                         context.loc.allSeedViewLoadingMessage,
                         style: context.bullType.body,
-                        color: context.appColors.onSurface.withValues(
-                          alpha: 0.7,
-                        ),
+                        color: context.bull.onSurface.withValues(alpha: 0.7),
                         textAlign: .center,
                       ),
                     ),
                   );
                 }
-                if (state.failure is AllSeedViewFetchFailure) {
+                if (state.failure case final AllSeedViewFetchFailure failure) {
                   return Center(
                     child: BullText(
-                      state.failure!.toTranslated(context),
+                      failure.toTranslated(context),
                       style: context.bullType.body.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
-                      color: context.appColors.error,
+                      color: context.bull.error,
                     ),
                   );
                 }
@@ -189,8 +194,8 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                           fontWeight: FontWeight.w500,
                         ),
                         color: state.unreadableEntries > 0
-                            ? context.appColors.error
-                            : context.appColors.onSurface,
+                            ? context.bull.error
+                            : context.bull.onSurface,
                         textAlign: .center,
                         maxLines: 3,
                       ),
@@ -206,7 +211,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                             child: Icon(
                               Icons.visibility_off,
                               size: 120,
-                              color: context.appColors.onSurface.withValues(
+                              color: context.bull.onSurface.withValues(
                                 alpha: 0.3,
                               ),
                             ),
@@ -234,7 +239,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                             state.unreadableEntries,
                           ),
                           style: context.bullType.body,
-                          color: context.appColors.error,
+                          color: context.bull.error,
                           textAlign: .center,
                           maxLines: 3,
                         ),
@@ -247,7 +252,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         style: context.bullType.subtitle
                             .copyWith(fontWeight: FontWeight.w400)
                             .copyWith(fontWeight: .bold),
-                        color: context.appColors.onSurface,
+                        color: context.bull.onSurface,
                       ),
                       const SizedBox(height: 8),
                       ...state.existingWallets.map<Widget>(
@@ -264,7 +269,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         style: context.bullType.subtitle
                             .copyWith(fontWeight: FontWeight.w400)
                             .copyWith(fontWeight: .bold),
-                        color: context.appColors.onSurface,
+                        color: context.bull.onSurface,
                       ),
                       const SizedBox(height: 8),
                       ...state.oldWallets.map<Widget>(
@@ -272,17 +277,17 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                             _buildSeedCard(context, seed, isOldWallet: true),
                       ),
                     ],
-                    if (state.swapMasterKey != null) ...[
+                    if (state.swapMasterKey case final swapMasterKey?) ...[
                       const SizedBox(height: 24),
                       BullText(
                         context.loc.allSeedViewSwapMnemonicTitle,
                         style: context.bullType.subtitle
                             .copyWith(fontWeight: FontWeight.w400)
                             .copyWith(fontWeight: .bold),
-                        color: context.appColors.onSurface,
+                        color: context.bull.onSurface,
                       ),
                       const SizedBox(height: 8),
-                      _buildSwapKeyCard(context, state.swapMasterKey!),
+                      _buildSwapKeyCard(context, swapMasterKey),
                     ],
                   ],
                 );
@@ -326,7 +331,10 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     }
   }
 
-  Future<void> _showDeleteSwapWarningDialog(BuildContext context) async {
+  Future<void> _showDeleteSwapWarningDialog(
+    BuildContext context,
+    SwapMasterKeyInfo key,
+  ) async {
     final confirmed = await BullConfirmDialog.show(
       context,
       title: context.loc.allSeedViewDeleteSwapMnemonicTitle,
@@ -337,7 +345,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
       isDismissible: false,
     );
     if (confirmed && context.mounted) {
-      context.read<AllSeedViewCubit>().deleteSwapMnemonic();
+      context.read<AllSeedViewCubit>().deleteSwapMnemonic(key);
     }
   }
 
@@ -347,9 +355,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: context.appColors.surface,
+          color: context.bull.surface,
           borderRadius: BorderRadius.circular(context.bullShapes.card),
-          border: Border.all(color: context.appColors.outline, width: 1),
+          border: Border.all(color: context.bull.outline, width: 1),
         ),
         child: Column(
           crossAxisAlignment: .start,
@@ -357,14 +365,24 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
             Row(
               crossAxisAlignment: .start,
               children: [
-                const Expanded(child: _SwapMnemonicView()),
+                Expanded(
+                  child: widget.swaps.masterKeyView(
+                    key: swapKey,
+                    style: context.bullType.body.copyWith(
+                      color: context.bull.onSurface,
+                    ),
+                    failure: BullText(
+                      context.loc.oopsSomethingWentWrong,
+                      style: context.bullType.body,
+                      color: context.bull.error,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: context.appColors.error,
-                  ),
-                  onPressed: () => _showDeleteSwapWarningDialog(context),
+                  icon: Icon(Icons.delete_outline, color: context.bull.error),
+                  onPressed: () =>
+                      _showDeleteSwapWarningDialog(context, swapKey),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),
@@ -377,14 +395,14 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 swapKey.network,
               ),
               style: context.bullType.body,
-              color: context.appColors.onSurface.withValues(alpha: 0.7),
+              color: context.bull.onSurface.withValues(alpha: 0.7),
             ),
             BullText(
               context.loc.allSeedViewSwapLinkedWallet(
                 swapKey.walletFingerprint,
               ),
               style: context.bullType.body,
-              color: context.appColors.onSurface.withValues(alpha: 0.7),
+              color: context.bull.onSurface.withValues(alpha: 0.7),
             ),
           ],
         ),
@@ -405,9 +423,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: context.appColors.surface,
+              color: context.bull.surface,
               borderRadius: BorderRadius.circular(context.bullShapes.card),
-              border: Border.all(color: context.appColors.outline, width: 1),
+              border: Border.all(color: context.bull.outline, width: 1),
             ),
             child: Row(
               crossAxisAlignment: .start,
@@ -422,12 +440,12 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         // Keyed by identity so a reordered list never hands one secret's state to another's card.
                         key: ValueKey(seed.id.hex),
                         style: context.bullType.body.copyWith(
-                          color: context.appColors.onSurface,
+                          color: context.bull.onSurface,
                         ),
                         passphraseLabel: context.loc.allSeedViewPassphraseLabel,
                         passphraseLabelStyle: context.bullType.body
                             .copyWith(fontWeight: FontWeight.w500)
-                            .copyWith(color: context.appColors.onSurface),
+                            .copyWith(color: context.bull.onSurface),
                         failureBuilder: (context, failure, retry) => Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -436,7 +454,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                               AllSeedViewFetchFailure(failure.logMessage)
                                   .toTranslated(context),
                               style: context.bullType.body,
-                              color: context.appColors.error,
+                              color: context.bull.error,
                             ),
                             const Gap(16),
                             BullButton.secondary(
@@ -464,10 +482,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 if (isOldWallet) ...[
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: Icon(
-                      Icons.delete_outline,
-                      color: context.appColors.error,
-                    ),
+                    icon: Icon(Icons.delete_outline, color: context.bull.error),
                     onPressed: () => _showDeleteWarningDialog(context, seed),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -477,52 +492,6 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// The swap mnemonic, read where it is drawn and held nowhere.
-///
-/// The sealed-display shape `secrets` uses for wallet seeds, applied to a
-/// credential that belongs to `swaps`: the words are not in cubit state, and
-/// they are kept out of the semantics tree an accessibility service walks.
-class _SwapMnemonicView extends StatefulWidget {
-  const _SwapMnemonicView();
-
-  @override
-  State<_SwapMnemonicView> createState() => _SwapMnemonicViewState();
-}
-
-class _SwapMnemonicViewState extends State<_SwapMnemonicView> {
-  late final Future<String?> _mnemonic = context
-      .read<AllSeedViewCubit>()
-      .loadSwapMnemonic();
-
-  @override
-  Widget build(BuildContext context) {
-    return ExcludeSemantics(
-      child: FutureBuilder<String?>(
-        future: _mnemonic,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const SizedBox(height: 20);
-          }
-          final words = snapshot.data;
-          if (words == null || words.isEmpty) {
-            return BullText(
-              context.loc.oopsSomethingWentWrong,
-              style: context.bullType.body,
-              color: context.appColors.error,
-            );
-          }
-          return BullText(
-            words,
-            style: context.bullType.body,
-            color: context.appColors.onSurface,
-            maxLines: 5,
-          );
-        },
       ),
     );
   }

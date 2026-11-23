@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SeedReferences;
-import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
+import 'package:secrets/custody.dart';
+import 'package:all_seed_view/src/domain/all_seed_view_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';

@@ -6,6 +6,8 @@ library;
 export 'package:swaps/src/data/models/boltz_network.dart';
 export 'package:swaps/src/data/boltz_swap_repository.dart';
 
+export 'src/data/switchable_swap_engine.dart';
+
 export 'src/log.dart';
 
 export 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
@@ -29,11 +31,8 @@ export 'src/domain/usecases/create_lightning_to_bitcoin_swap_usecase.dart';
 export 'src/domain/usecases/create_lightning_to_liquid_swap_usecase.dart';
 export 'src/domain/usecases/create_liquid_to_bitcoin_swap_usecase.dart';
 export 'src/domain/usecases/create_liquid_to_lightning_swap_usecase.dart';
-export 'src/domain/usecases/delete_swap_master_key_usecase.dart';
 export 'src/domain/usecases/drop_pending_swap_lockup_usecase.dart';
 export 'src/domain/usecases/get_swap_limits_and_fees_usecase.dart';
-export 'src/domain/usecases/get_swap_master_key_usecase.dart';
-export 'src/domain/usecases/get_swap_mnemonic_usecase.dart';
 export 'src/domain/usecases/get_swap_usecase.dart';
 export 'src/domain/usecases/get_swaps_usecase.dart';
 export 'src/domain/usecases/log_swap_census_usecase.dart';

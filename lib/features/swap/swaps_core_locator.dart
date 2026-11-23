@@ -16,7 +16,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
+
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
@@ -284,15 +284,6 @@ class SwapsLocator {
     );
     locator.registerFactory<LogSwapCensusUsecase>(
       () => LogSwapCensusUsecase(locator<SwapStore>()),
-    );
-    locator.registerFactory<GetSwapMasterKeyUsecase>(
-      () => GetSwapMasterKeyUsecase(locator<BoltzSwaps>()),
-    );
-    locator.registerFactory<GetSwapMnemonicUsecase>(
-      () => GetSwapMnemonicUsecase(locator<BoltzSwaps>()),
-    );
-    locator.registerFactory<DeleteSwapMasterKeyUsecase>(
-      () => DeleteSwapMasterKeyUsecase(locator<BoltzSwaps>()),
     );
     locator.registerFactory<GetAutoSwapSettingsUsecase>(
       () => GetAutoSwapSettingsUsecase(

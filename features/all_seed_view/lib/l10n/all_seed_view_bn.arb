@@ -1,0 +1,87 @@
+{
+  "allSeedViewSecurityWarningMessage": "সিড ফ্রেজ প্রদর্শন করা একটি নিরাপত্তা ঝুঁকি। যেকোনো ব্যক্তি আপনার সিড ফ্রেজ দেখলে আপনার তহবিল অ্যাক্সেস করতে পারে। অনুগ্রহ করে নিশ্চিত করুন আপনি একটি ব্যক্তিগত স্থানে আছেন এবং কেউ আপনার স্ক্রিন দেখতে পাচ্ছে না।",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "cancel": "বাতিল",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "allSeedViewLoadingMessage": "এই ডিভাইসে আপনার কাছে যদি বহু বীজ থাকে তবে লোড করতে একটু সময় লাগতে পারে।",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "retry": "পুনরায় চেষ্টা করুন",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "allSeedViewNoSeedsFound": "কোনো সিড পাওয়া যায়নি।",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewSecurityWarningTitle": "নিরাপত্তা সতর্কতা\n==WEBLATE_PART==",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewPassphraseLabel": "পাসফ্রেজ:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "allSeedViewOldWallets": "পুরোনো ওয়ালেটসমূহ ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "আমি বুঝেছি",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "সতর্কতা!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "সিড মুছে ফেলা একটি অপরিবর্তনীয় ক্রিয়া। শুধুই তখন এটি করুন যদি আপনার কাছে এই সিডের নিরাপদ ব্যাকআপ থাকে বা সংশ্লিষ্ট ওয়ালেটগুলো সম্পূর্ণভাবে খালি হয়ে গেছে।",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "delete": "মুছে ফেলুন",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "allSeedViewErrorDelete": "সিড মুছে ফেলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "সিড লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "সিড দেখুন",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewTitle": "বীজ দর্শক",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewExistingWallets": "উপস্থিত ওয়ালেটসমূহ ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "@@locale": "bn"
+}

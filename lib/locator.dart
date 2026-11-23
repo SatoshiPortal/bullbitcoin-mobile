@@ -5,7 +5,11 @@ import 'package:secrets/storage.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:secrets/bip85.dart';
+import 'package:secrets/custody.dart';
 import 'package:bip85/bip85.dart';
+import 'package:all_seed_view/setup.dart';
+import 'package:access/access.dart' show Access;
+import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
@@ -32,7 +36,6 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
-import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:access/setup.dart' show AccessFeature;
 import 'package:go_router/go_router.dart';
@@ -287,7 +290,6 @@ class AppLocator {
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     OnboardingLocator.setup(locator);
-    AllSeedViewLocator.setup(locator);
     final bip85 = inventory.bip85(locator<Secrets>());
     locator.registerSingleton<Bip85Derivations>(bip85);
     locator.registerSingleton(
@@ -342,6 +344,16 @@ class AppLocator {
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
+    locator.registerLazySingleton(
+      () => AllSeedViewFeature.mount(
+        secrets: locator<Secrets>(),
+        inventory: inventory,
+        preferences: locator<ActiveEnvironmentReader>(),
+        references: locator<SeedReferences>(),
+        swaps: locator<BoltzSwaps>(),
+        access: const Access(),
+      ),
+    );
     AutoSwapLocator.setup(locator);
 
     ExchangeLocator.setup(locator);

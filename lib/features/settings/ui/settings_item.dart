@@ -1,3 +1,4 @@
+import 'package:all_seed_view/all_seed_view.dart';
 import 'package:access/access.dart';
 import 'package:background_tasks/background_tasks.dart'
     show backgroundSyncAvailable;
@@ -590,7 +591,8 @@ List<SettingsItem> buildSettingsItems({
         title: localization.allSeedViewTitle,
         path: path(SettingsItemSection.wallet, localization.allSeedViewTitle),
         icon: Icons.vpn_key,
-        open: (context) => context.pushNamed(SettingsRoute.allSeedView.name),
+        open: (context) =>
+            context.pushNamed<void>(AllSeedViewRoute.allSeedView.name),
         keywords: _keywords(
           localization.settingsSearchSeedViewerKeywords,
           english.settingsSearchSeedViewerKeywords,
