@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.da
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:backups/backups.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
@@ -276,10 +276,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsStartBackup,
       ),
       icon: Icons.save_as,
-      open: (context) => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
-      ),
+      open: (context) => BackupsNavigation.start(context),
       keywords: _keywords(
         localization.settingsSearchStartBackupKeywords,
         english.settingsSearchStartBackupKeywords,

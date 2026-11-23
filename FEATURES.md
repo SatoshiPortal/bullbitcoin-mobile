@@ -204,6 +204,7 @@ graph TB
     RECIPIENTS[Recipients]
     FUNDING[Funding]
     BACKUPS[Backups]
+    BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
     SWAPS[Swaps]
     WITHDRAWAL[Withdrawal]
     SEND[Send]
@@ -325,6 +326,11 @@ graph TB
     APP_STARTUP --> RECOVERBULL
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
+    BACKUPS -->|mount backup options| BACKUP_OPTIONS
+    SETTINGS -->|start backup| BACKUP_OPTIONS
+    WALLETS -->|start backup| BACKUP_OPTIONS
+    BACKUP_OPTIONS -->|vault navigation| RECOVERBULL
+    BACKUP_OPTIONS --> BULL_UI
     BACKUPS --> SECRETS
     BACKUPS --> ACCESS
     BACKUPS --> TOR

@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:access/access.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/backup_options_bindings.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -189,7 +189,7 @@ class SettingsRouter {
         name: SettingsRoute.backupSettings.name,
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
-          BackupSettingsSettingsRouter.route,
+          BackupOptionsBindings.mount().route,
           TestWalletBackupRouter.route(onTestSucceeded: onBackupTestSucceeded),
         ],
       ),
