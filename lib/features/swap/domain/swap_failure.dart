@@ -93,12 +93,6 @@ final class SwapUnsupportedNetworkFailure extends SwapFailure {
   const SwapUnsupportedNetworkFailure();
 }
 
-/// The swap server cannot change while swaps on the current one are open:
-/// their status and resolution are served by the server that created them.
-final class SwapServerBusyFailure extends SwapInvalidStateFailure {
-  const SwapServerBusyFailure();
-}
-
 /// The app runs on the network it launched with, not the one now selected:
 /// spend preconditions cannot be read, so no swap may be created.
 final class SwapRelaunchRequiredFailure extends SwapInvalidStateFailure {

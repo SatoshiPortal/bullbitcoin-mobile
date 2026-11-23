@@ -1,10 +1,9 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:preferences/preferences.dart';
-import 'package:swaps/swaps.dart' show AutoSwap, AutoSwapSettings;
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -66,6 +65,19 @@ void main() {
   }
 
   group('LoadAutoswapSettingsUsecase', () {
+    test('does not query wallets when settings reject the network', () async {
+      when(getAutoSwap.readAutoSwap)
+          .thenAnswer((_) async => const Err(SwapsUnsupportedNetworkFailure()));
+
+      expect(
+        failureOf(await usecase.execute()),
+        isA<AutoswapUnsupportedNetworkFailure>(),
+      );
+      verifyNever(
+        () => wallets.getWallets(environment: any(named: 'environment')),
+      );
+    });
+
     test('returns only bitcoin wallets and the stored recipient', () async {
       when(() => getAutoSwap.readAutoSwap()).thenAnswer(
         (_) async => const Ok(AutoSwap(recipientWalletId: 'stored')),

@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
+import 'package:swaps/swaps.dart';
 
 class AutoswapWatcher {
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncs;
-  final ExecuteAutoswapUsecase _executeAutoswap;
+  final Autoswap _executeAutoswap;
   StreamSubscription? _subscription;
   Future<void>? _execution;
 

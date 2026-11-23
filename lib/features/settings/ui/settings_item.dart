@@ -20,7 +20,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bb_mobile/features/swap/ui/swap_router.dart';
+import 'package:swap_feature/swap_feature.dart' show SwapNavigation;
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
@@ -517,14 +517,17 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.swaps,
       section: SettingsItemSection.wallet,
-      title: localization.swapSettingsTitle,
-      path: path(SettingsItemSection.wallet, localization.swapSettingsTitle),
+      title: SwapNavigation.settingsTitle(localization.localeName),
+      path: path(
+        SettingsItemSection.wallet,
+        SwapNavigation.settingsTitle(localization.localeName),
+      ),
       icon: Icons.swap_horiz,
-      open: (context) => context.pushNamed(SwapRoute.swapSettings.name),
+      open: SwapNavigation.openSettings,
       keywords: _keywords(
         localization.settingsSearchSwapsKeywords,
         english.settingsSearchSwapsKeywords,
-        [english.swapSettingsTitle],
+        [SwapNavigation.settingsTitle(english.localeName)],
       ),
     ),
     SettingsItem(

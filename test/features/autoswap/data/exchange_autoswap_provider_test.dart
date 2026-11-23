@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:swaps/swaps.dart' show AutoSwap;
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
@@ -12,7 +12,6 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';

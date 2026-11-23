@@ -2,6 +2,8 @@ import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
+import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
@@ -319,6 +321,12 @@ class AppLocator {
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
+    locator.registerSingleton(
+      SwapFeature.mount(
+        routing: locator<SwapRouting>(),
+        servers: locator<SwapServerSettings>(),
+      ),
+    );
     AutoSwapLocator.setup(locator);
     // Lifecycle side effect lives in the composition root, not in DI
     // registration: the background handler opts out via

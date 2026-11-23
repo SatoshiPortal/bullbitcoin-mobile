@@ -267,7 +267,7 @@ graph TB
     BTC_PRICE --> BULL_UI
     BTC_PRICE --> BULL_LOGGER
     BTC_PRICE --> PRIMITIVES
-    SWAPS_PKG[Swaps Package<br/>Boltz engine, provider and autoswap settings]
+    SWAPS_PKG[Swaps Package<br/>Boltz engine, swap routing and autoswap policy]
     SWAPS_PKG --> PRIMITIVES
     SWAPS_PKG --> BULL_LOGGER
     SWAPS_PKG --> ELECTRUM
@@ -278,6 +278,10 @@ graph TB
     SWAPS -->|fresh receive address| ADDRESS_MGMT
     SWAPS -->|wallet-relative history| TX_HISTORY
     SWAPS --> SWAPS_PKG
+    SWAP_SETTINGS[Swap settings<br/>Workspace feature]
+    SWAP_SETTINGS --> SWAPS_PKG
+    SWAP_SETTINGS --> BULL_UI
+    SETTINGS -->|typed settings navigation| SWAP_SETTINGS
     SEND --> SWAPS_PKG
     RECEIVE --> SWAPS_PKG
     AUTOSWAP --> SWAPS_PKG
@@ -360,7 +364,6 @@ graph TB
     DCA --> RECEIVE
     IMPORT_WALLET[Wallet Import]
     IMPORT_WALLET --> SETTINGS
-    SETTINGS --> SWAPS
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
     SETTINGS --> PAY
@@ -506,7 +509,6 @@ graph TB
     REPLACE_BY_FEE --> SEND
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
-    SWAPS --> AUTOSWAP
     SWAPS --> FEES_UI
     TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
@@ -536,7 +538,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,SWAP_SETTINGS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -611,7 +613,8 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, Bitcoin Price
-- **Swaps** (workspace package `packages/swaps`): `Swaps.open` owns the Boltz engine, its network transitions and the provider and autoswap settings. Its stable `SwapStore`, `SwapResolver` and `BoltzSwaps` handles survive provider replacement. Used by Swaps, Send, Receive, Autoswap, Transaction History, Wallets, Settings, All Seed View, App Startup
+- **Swaps** (workspace package `packages/swaps`): `Swaps.open` owns the Boltz engine, its network transitions and the provider and autoswap settings. Its stable `SwapStore`, `SwapResolver` and `BoltzSwaps` handles survive provider replacement. `SwapRouting` resolves the operator choices for Send, Receive, transfers and AutoSwap; the settings narrow view exposes typed reads and writes.
+- **Swap settings** (workspace feature `features/swap`): `SwapFeature.mount` contributes the standalone settings route and `SwapNavigation` exposes its title and navigation to Settings. Transfer and AutoSwap payment orchestration still call legacy Send from the app.
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 

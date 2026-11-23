@@ -1,11 +1,5 @@
-import 'package:swaps/swaps.dart'
-    show
-        AutoSwap,
-        AutoSwapSettings,
-        AutoSwapSettingsViolation,
-        SwapsUnsupportedNetworkFailure;
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
 
 class SaveAutoswapSettingsUsecase {

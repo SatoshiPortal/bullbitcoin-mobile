@@ -444,6 +444,10 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 `packages/swaps` depends directly on `secrets`: `SwapStorage` owns the legacy `swap_` key composition and maps `SwapKeychain` failures inside the engine. Composition injects the closed capability directly, with no feature-owned secret-store bridge. Its regtest view shares the canonical capability and fingerprint allocation locks; only swap blobs use the separate `swap_regtest_` namespace.
 
+`packages/swaps` owns the provider routing decision and the `Autoswap` execution policy. The app still composes finished-sync notifications and the payment operations used by the two providers; these are not exported as new app adapters.
+
+The standalone swap settings route lives in `features/swap`. It consumes `SwapRouting` and `SwapServerSettings` from `packages/swaps` and owns its localized UI. The transfer route remains in the legacy app while it needs Send internals, the wallet catalog and transaction navigation.
+
 ## Legacy SQLite composition
 
 `packages/legacy_storage` owns the historical `bullbitcoin_sqlite.sqlite` database, schema 16, its migrations and seeds. The application imports the database and the row types it still needs through `package:legacy_storage/app_database.dart`. The composite schema defines its own historical tables so that a change to an encrypted owner's schema cannot change the legacy source. Preferences uses the historical settings declaration for the exchange credentials it still reads and writes on that connection. Flutter is required for the historical database's platform directory and Drift isolate integration.

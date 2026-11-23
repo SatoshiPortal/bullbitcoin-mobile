@@ -11,6 +11,7 @@ import 'data/boltz_swap_repository.dart';
 import 'data/db/boltz_swaps_database.dart' show BoltzSwapsDatabase;
 import 'data/db/drift_swap_row_store.dart';
 import 'data/swap_integrations.dart';
+import 'data/swap_route_setting_repository_impl.dart';
 import 'data/swap_server_setting_repository_impl.dart';
 import 'data/swap_storage.dart';
 import 'data/swap_store_impl.dart';
@@ -20,8 +21,10 @@ import 'domain/entities/auto_swap.dart';
 import 'domain/entities/regtest_boltz_profile.dart';
 import 'domain/entities/swap.dart' show SwapProvider;
 import 'domain/entities/swap_failure.dart';
+import 'domain/entities/swap_route.dart';
 import 'domain/entities/swap_server.dart';
 import 'domain/swap_resolver.dart';
+import 'domain/swap_routing.dart';
 import 'domain/swap_server_control.dart';
 import 'domain/swap_store.dart';
 import 'domain/swap_watcher.dart';
@@ -41,9 +44,10 @@ abstract interface class AutoSwapSettings {
 
 /// The foreground Boltz engine. Its read, resolution and creation handles
 /// stay valid across a switch of environment or server.
-final class Swaps implements SwapServerSettings, AutoSwapSettings {
+final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
   final SwapServerControl _servers;
   final AutoSwapSettingsRepository _autoSwap;
+  final SwapRouting _routing;
   final SwitchableSwapEngine _engine;
   final SwapEngineSwitcher _switcher;
   final SwapWatcher watcher;
@@ -52,6 +56,7 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings {
   Swaps._(
     this._servers,
     this._autoSwap,
+    this._routing,
     this._engine,
     this._switcher,
     this.watcher,
@@ -172,6 +177,7 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings {
             swapStore: engine,
           ),
           AutoSwapSettingsRepositoryImpl(database, preferences),
+          StoredSwapRouting(SwapRouteSettingRepositoryImpl(), preferences),
           engine,
           switcher,
           watcher,
@@ -188,6 +194,25 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings {
   void followEnvironment() => _switcher.start();
 
   Future<void> close() => _closing ??= _switcher.dispose();
+
+  @override
+  Future<SwapRoute> resolveRoute() => _routing.resolveRoute();
+
+  @override
+  @useResult
+  Future<Result<SwapRouteSettings, SwapsFailure>> readRouteSettings() =>
+      _routing.readRouteSettings();
+
+  @override
+  @useResult
+  Future<Result<void, SwapsFailure>> setExchangeFallbackEnabled(bool enabled) =>
+      _routing.setExchangeFallbackEnabled(enabled);
+
+  @override
+  @useResult
+  Future<Result<void, SwapsFailure>> setRouteOverride(
+    SwapRouteOverride override,
+  ) => _routing.setRouteOverride(override);
 
   @override
   @useResult

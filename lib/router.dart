@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
+import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
@@ -256,7 +257,7 @@ class AppRouter {
         ),
       ),
       SwapRouter.route,
-      SwapRouter.settingsRoute,
+      ...locator<SwapFeature>().routes,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,
       SellRouter.route,

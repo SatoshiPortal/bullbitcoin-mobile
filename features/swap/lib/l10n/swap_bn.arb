@@ -1,0 +1,11 @@
+{
+  "@@locale": "bn",
+  "save": "সংরক্ষণ করুন",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

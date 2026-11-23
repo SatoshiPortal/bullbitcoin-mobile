@@ -3911,7 +3911,6 @@
   "swapsFailureNetwork": "无法连接任何服务器。请检查网络连接后重试。",
   "swapsFailureUnexpected": "Swap 出现问题，请重试。",
   "coreScreensOutputsExceedInputs": "输出超过输入：此交易无效，网络将拒绝它。",
-  "swapServerBusyError": "请先完成进行中的兑换，再更换兑换服务器。",
   "swapUnderReviewTitle": "Swap 审核中",
   "swapUnderReviewDescription": "此 Swap 需要人工审核。请联系客服获取帮助。如果您没有客服账户，只需创建一个即可，无需 KYC。",
   "swapUnderReviewSupportMessage": "Swap 审核中\n订单 ID：{orderId}\n请求 ID：{requestId}\n订单号：{orderNumber}",

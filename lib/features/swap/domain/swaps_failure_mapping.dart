@@ -22,6 +22,7 @@ extension SwapsFailureToSwapFailure on SwapsFailure {
     SwapsInvalidAutoSwapSettingsFailure() ||
     SwapsInvalidLockupFailure() ||
     SwapsStorageFailure() ||
-    SwapsUnexpectedFailure() => SwapUnexpectedFailure(logMessage),
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => SwapUnexpectedFailure(logMessage),
   };
 }

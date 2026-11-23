@@ -78,6 +78,7 @@ class BoltzSwapsSetup {
       case Ok(value: final engine):
         locator.registerSingleton(engine, dispose: (value) => value.close());
         locator.registerSingleton<SwapServerSettings>(engine);
+        locator.registerSingleton<SwapRouting>(engine);
         locator.registerSingleton<AutoSwapSettings>(engine);
         locator.registerSingleton<SwapStore>(engine.store);
         locator.registerSingleton<SwapResolver>(engine.resolver);

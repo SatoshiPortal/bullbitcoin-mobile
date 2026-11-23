@@ -1,6 +1,5 @@
-import 'package:swaps/swaps.dart' show AutoSwap;
+import 'package:swaps/swaps.dart' show AutoSwap, AutoswapFailure;
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class AutoswapProviderPort {
