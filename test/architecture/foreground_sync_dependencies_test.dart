@@ -23,7 +23,7 @@ import 'package:path/path.dart' as p;
 // coin, receive and history edges that replace the legacy wallet placements.
 // Exchange workspace UI consumers use the published routes (see FEATURES.md).
 const _allowedTargets = <String, String>{
-  'address_view': 'label_editor',
+  'address_view': 'label_editor scanning silent',
   'all_seed_view': 'access',
   'app_startup':
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
