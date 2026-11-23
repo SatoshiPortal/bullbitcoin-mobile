@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:exchange/exchange.dart';
@@ -5,7 +8,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -58,7 +61,7 @@ Future<void> _expectExitLeadsHome(
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: ExchangeHomeScreen(
+          body: _dashboard(
             homeCards: const [],
             onHomeRefresh: () {},
             onOpenSettings: () {},
@@ -75,6 +78,32 @@ Future<void> _expectExitLeadsHome(
   await tester.pumpWidget(const SizedBox.shrink());
   await cubit.close();
 }
+
+ExchangeHomeScreen _dashboard({
+  required List<Widget> homeCards,
+  required VoidCallback onHomeRefresh,
+  required VoidCallback onOpenSettings,
+  required void Function(ExchangeHomeAction) onAction,
+  required VoidCallback onExit,
+  Future<void> Function()? refreshAccount,
+}) => ExchangeHomeScreen(
+  watchDashboard: ExchangeScope.watchDashboard,
+  exchange: ExchangeScope.exchange,
+  preferences: ExchangeScope.preferences,
+  brandAsset: Assets.logos.bbLogoSmall.path,
+  settingsAsset: Assets.icons.settingsLine.path,
+  refreshAccount: refreshAccount ?? () async {},
+  stopDca: () async {},
+  onOpenDca: () {},
+  onWithdraw: () {},
+  onHistory: () {},
+  failureMessage: (context, failure) => failure.toTranslated(context),
+  homeCards: homeCards,
+  onHomeRefresh: onHomeRefresh,
+  onOpenSettings: onOpenSettings,
+  onAction: onAction,
+  onExit: onExit,
+);
 
 void main() {
   setUp(() {
@@ -106,8 +135,9 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ExchangeHomeScreen(
+            body: _dashboard(
               homeCards: const [],
+              refreshAccount: cubit.fetchUserSummary,
               onHomeRefresh: () {},
               onOpenSettings: () {},
               onAction: (_) {},
@@ -146,7 +176,7 @@ void main() {
             ],
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
-              body: ExchangeHomeScreen(
+              body: _dashboard(
                 homeCards: const [],
                 onHomeRefresh: () {},
                 onOpenSettings: () {},
@@ -187,7 +217,7 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ExchangeHomeScreen(
+            body: _dashboard(
               homeCards: const [],
               onHomeRefresh: () {},
               onOpenSettings: () {},

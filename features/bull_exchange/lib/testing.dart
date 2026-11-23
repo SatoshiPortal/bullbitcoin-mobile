@@ -15,6 +15,9 @@ import 'src/default_wallets/presentation/default_wallets_cubit.dart';
 export 'src/ui/screens/exchange_landing_screen.dart' show ExchangeLandingScreen;
 export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthScreen;
 export 'src/auth/exchange_exit_on_back.dart' show ExchangeExitOnBack;
+export 'src/dashboard/exchange_home_screen.dart' show ExchangeHomeScreen;
+export 'src/dashboard/exchange_home_actions.dart' show ExchangeHomeActions;
+export 'src/dashboard/announcement_banner.dart' show AnnouncementBanner;
 export 'src/settings/ui/screens/exchange_settings_screen.dart'
     show ExchangeSettingsScreen;
 export 'src/settings/ui/screens/security_navigation.dart'
