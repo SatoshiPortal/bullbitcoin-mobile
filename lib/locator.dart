@@ -3,9 +3,7 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -13,7 +11,6 @@ import 'package:electrum/electrum.dart' show ElectrumFailure;
 import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/settings/public/network_bindings.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -57,7 +54,6 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
-import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
@@ -198,9 +194,6 @@ class AppLocator {
       );
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
-    locator.registerFactory(
-      () => AppFeeEstimates(fees: locator(), settingsRepository: locator()),
-    );
     CoreLocator.registerUsecases(locator);
     PayjoinSetup.setup(
       locator,
@@ -290,28 +283,11 @@ class AppLocator {
     locator.registerSingleton(
       NetworkFeature.mount(
         services: locator,
+        preferences: locator<Preferences>(),
         bindings: (
           readDefaultNetwork: () =>
-              locator<GetDefaultWalletNetworkUsecase>().execute(),
-          readEnvironment: () =>
-              SettingsNetworkBindings.readEnvironment(locator<Preferences>()),
-          readMempoolEnvironment: SettingsEnvironmentAdapter(
-            settingsRepository: locator<Preferences>(),
-          ).getEnvironment,
-          checkBitcoinFees: (network) =>
-              probeMempoolFees(locator<Fees>(), network),
-          isTorRequired: () => locator<WalletRepository>().isTorRequired(),
-          readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
-            locator<Preferences>(),
-          ),
-          saveTorProxy: ({required enabled, required port}) =>
-              SettingsNetworkBindings.saveTorProxy(
-                locator<Preferences>(),
-                enabled: enabled,
-                port: port,
-              ),
-          saveTorMode: (mode) =>
-              locator<Preferences>().setTorTransportMode(mode),
+              locator<WalletFacade>().defaultWalletNetwork(),
+          isTorRequired: () => locator<WalletFacade>().isTorRequired(),
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -25,7 +24,7 @@ class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
 class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
-class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
+class _MockGetNetworkFees extends Mock implements Fees {}
 
 class _MockFeeOptions extends Mock implements FeeOptions {}
 
@@ -60,7 +59,7 @@ void main() {
       getSettingsUsecase: getSettings,
       getWalletsUsecase: getWallets,
       getReceiveAddressUsecase: getReceiveAddress,
-      feeEstimates: getNetworkFees,
+      fees: getNetworkFees,
       getIndexPrice: getIndexPrice.call,
     );
   });
@@ -136,24 +135,38 @@ void main() {
     }
   });
 
-  test('returns the network fees', () async {
+  test('returns Liquid fees on the configured testnet', () async {
     final fees = _MockFeeOptions();
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => fees);
+    when(
+      getSettings.fetch,
+    ).thenAnswer((_) async => Ok(_settings(environment: Environment.testnet)));
+    when(() => getNetworkFees.estimate(LiquidNetwork.testnet))
+        .thenAnswer((_) async => Ok(fees));
 
-    final result = await usecase.networkFees(isLiquid: false);
+    final result = await usecase.networkFees(isLiquid: true);
 
     expect((result as Ok<FeeOptions, BuyFailure>).value, fees);
   });
 
   test('a failed fee read is sanitized', () async {
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenThrow(Exception(_rawReason));
+    when(getSettings.fetch).thenAnswer((_) async => Ok(_settings()));
+    when(() => getNetworkFees.estimate(BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
 
     expect(
       await usecase.networkFees(isLiquid: false),
       isA<Err<FeeOptions, BuyFailure>>(),
     );
+  });
+
+  test('an unavailable environment skips fee estimation', () async {
+    when(getSettings.fetch)
+        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
+
+    final result = await usecase.networkFees(isLiquid: false);
+
+    expect(result, isA<Err<FeeOptions, BuyFailure>>());
+    verifyZeroInteractions(getNetworkFees);
   });
 
   group('satsToCurrency', () {

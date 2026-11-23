@@ -1,3 +1,22 @@
 {
-  "retry": "Dobara Try Karo"
+  "retry": "Dobara Try Karo",
+  "doneButton": "Ho Gaya",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Total fee (sats mein)",
+  "sendBelowMinFeeRateError": "Fee rate kam se kam 0.1 sat/vB honi chahiye.",
+  "sendCustomFee": "Custom Fee",
+  "sendEconomyFee": "Sasta",
+  "sendEnterAbsoluteFee": "Absolute fee sats mein daalo",
+  "sendEnterRelativeFee": "Relative fee sats/vB mein daalo",
+  "sendEstimatedDelivery": "Anumaan pahunch samay ~ ",
+  "sendEstimatedDelivery10Minutes": "10 minute",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minute",
+  "sendEstimatedDeliveryHours": "ghante",
+  "sendEstimatedDeliveryHoursToDays": "ghanton se dinontak",
+  "sendFastFee": "Tez",
+  "sendRelativeFees": "Relative fee (sats/vB)",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Network fee chuno",
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions confirm hone mein zyada time le sakte hain aur sabhi nodes tak propagate nahi ho sakte."
 }

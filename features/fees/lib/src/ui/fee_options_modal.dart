@@ -14,6 +14,8 @@ import 'package:bull_ui/bull_ui.dart'
         Gap,
         BullTypographyX;
 
+import '../fees_l10n.dart';
+
 /// Shared fee-selection bottom sheet — mounted by both the Bitcoin send
 /// confirm screen and the swap confirm page. The widget depends only on
 /// [FeeModalStatePort] (state slice) and [FeeModalActionsPort] (dispatch),
@@ -88,6 +90,7 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
 
   @override
   Widget build(BuildContext context) {
+    final copy = context.feeCopy;
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -102,7 +105,7 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
           builder: (context, async) {
             final snapshot = async.data ?? widget.viewState.snapshot;
             return BullKeyboardActions(
-              doneText: widget.ui.label(context, FeeLabel.doneButton),
+              doneText: copy.doneButton,
               child: SizedBox.expand(
                 child: SingleChildScrollView(
                   child: Column(
@@ -111,7 +114,7 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
                     children: [
                       const Gap(16),
                       BullText(
-                        widget.ui.label(context, FeeLabel.sendSelectNetworkFee),
+                        copy.sendSelectNetworkFee,
                         style: context.bullType.subtitle.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -164,14 +167,15 @@ class _PresetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = context.feeCopy;
     final cache = snapshot.feePreviewCache;
     final items = [
       _presetItem(
         context: context,
         ui: ui,
         value: FeeSelection.fastest.title(),
-        title: ui.label(context, FeeLabel.sendFastFee),
-        description: ui.label(context, FeeLabel.sendEstimatedDelivery10Minutes),
+        title: copy.sendFastFee,
+        description: copy.sendEstimatedDelivery10Minutes,
         rate: snapshot.feePresets?.fastest,
         slot: cache.fastest,
         loading: cache.presetsLoading,
@@ -182,11 +186,8 @@ class _PresetList extends StatelessWidget {
         context: context,
         ui: ui,
         value: FeeSelection.economic.title(),
-        title: ui.label(context, FeeLabel.sendEconomyFee),
-        description: ui.label(
-          context,
-          FeeLabel.sendEstimatedDelivery10to30Minutes,
-        ),
+        title: copy.sendEconomyFee,
+        description: copy.sendEstimatedDelivery10to30Minutes,
         rate: snapshot.feePresets?.economic,
         slot: cache.economic,
         loading: cache.presetsLoading,
@@ -197,8 +198,8 @@ class _PresetList extends StatelessWidget {
         context: context,
         ui: ui,
         value: FeeSelection.slow.title(),
-        title: ui.label(context, FeeLabel.feePrioritySlow),
-        description: ui.label(context, FeeLabel.sendEstimatedDeliveryHours),
+        title: copy.feePrioritySlow,
+        description: copy.sendEstimatedDeliveryHours,
         rate: snapshot.feePresets?.slow,
         slot: cache.slow,
         loading: cache.presetsLoading,
@@ -237,8 +238,7 @@ BullSelectableListItem _presetItem({
       isSubtitle2Loading: true,
     );
   }
-  final rateLabel =
-      '${rate.value} ${ui.label(context, FeeLabel.sendSatsPerVB)}';
+  final rateLabel = '${rate.value} ${context.feeCopy.sendSatsPerVB}';
   final previewFeeSat = slot.feeSat;
   if (previewFeeSat == null) {
     return BullSelectableListItem(
@@ -260,7 +260,7 @@ BullSelectableListItem _presetItem({
     subtitle1: description,
     subtitle2:
         '$rateLabel ~ ${ui.formatApproximateSats(previewFeeSat)} '
-        '${ui.label(context, FeeLabel.sendSats)}$fiatPart',
+        '${context.feeCopy.sendSats}$fiatPart',
   );
 }
 

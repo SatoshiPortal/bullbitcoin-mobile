@@ -19,7 +19,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_fees_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_input_reservation_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
@@ -96,7 +95,7 @@ abstract final class PayjoinSetup {
           locator<WalletConnectionPort>(),
           locator<WalletFacade>(),
         ),
-        fees: AppPayjoinFeesAdapter(locator<Fees>()),
+        fees: locator<Fees>().payjoin,
         transactions: AppPayjoinTransactionAdapter(
           locator<WalletRepository>(),
           locator<WalletTransactionRepository>(),

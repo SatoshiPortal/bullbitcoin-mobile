@@ -470,6 +470,15 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
   }
 
+  @override
+  @useResult
+  Future<Result<List<Wallet>, WalletFailure>>
+  getDefaultMainnetBitcoinWallets() => getWallets(
+    environment: Environment.mainnet,
+    onlyDefaults: true,
+    onlyBitcoin: true,
+  );
+
   /// Exhaustive custody references, independent of origin and native reads.
   /// A partial result must never authorize destruction of a secret.
   @override
@@ -775,18 +784,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       allowInitialScan: allowInitialScan,
       reason: reason,
     );
-  }
-
-  Future<bool> isTorRequired() async {
-    final defaultWallets = await _readWallets(
-      onlyDefaults: true,
-      onlyBitcoin: true,
-      environment: Environment.mainnet,
-    );
-
-    if (defaultWallets.isEmpty) return false;
-
-    return defaultWallets.first.latestEncryptedBackup != null;
   }
 
   Future<int> getAmountSentToAddress({

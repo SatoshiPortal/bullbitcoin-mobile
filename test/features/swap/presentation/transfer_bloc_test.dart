@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -20,7 +22,6 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
@@ -81,7 +82,7 @@ class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
-class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
+class _MockGetNetworkFees extends Mock implements Fees {}
 
 class _MockPrepareBitcoin extends Mock implements PrepareBitcoinSendUsecase {}
 
@@ -193,6 +194,7 @@ Matcher _toAddress(String address) =>
 void main() {
   setUpAll(() {
     registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(SwapType.bitcoinToLiquid);
     registerFallbackValue(const ToWallet(''));
     registerFallbackValue(const RelativeFee(250));
@@ -245,10 +247,12 @@ void main() {
     BroadcastBitcoinTransactionUsecase? bitcoinBroadcast,
     GetSwapAmountQuotesUsecase? amountQuotes,
   }) => TransferBloc(
-    getSettingsUsecase: getSettings,
+    loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
     getSwapAmountQuotesUsecase: amountQuotes,
     getWalletsUsecase: getWallets,
-    feeEstimates: getNetworkFees,
+    loadNetworkFeesUsecase: LoadTransferNetworkFeesUsecase(
+      fees: getNetworkFees,
+    ),
     prepareBitcoinSendUsecase: prepareBitcoin,
     validateBitcoinSelectionUsecase: validateBitcoinSelection,
     prepareLiquidSendUsecase: prepareLiquid,
@@ -2139,8 +2143,8 @@ void main() {
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1'))
@@ -2148,6 +2152,9 @@ void main() {
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    verify(() => getNetworkFees.estimate(BitcoinNetwork.testnet)).called(1);
+    verify(() => getNetworkFees.estimate(LiquidNetwork.testnet)).called(1);
 
     expect(bloc.state.orderSwap, prepared);
     expect(bloc.state.signedPsbt, 'signed-psbt');
@@ -2165,8 +2172,8 @@ void main() {
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1'))
@@ -2190,8 +2197,8 @@ void main() {
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Err(SwapPriceUnavailableFailure()));
     when(() => watchOrder.execute('local-1'))
@@ -2216,8 +2223,8 @@ void main() {
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Err(SwapUnexpectedFailure('settings')));
     when(() => watchOrder.execute('local-1'))
@@ -2250,8 +2257,8 @@ void main() {
         _destinationWallet(),
       ]),
     );
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1'))
@@ -2279,8 +2286,8 @@ void main() {
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1')).thenAnswer(
@@ -2350,8 +2357,8 @@ void main() {
           .thenAnswer((_) async => Ok([expired]));
       when(() => getWallets.execute())
           .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenAnswer((_) async => _feeOptions());
+      when(() => getNetworkFees.estimate(any()))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => getExchangeRate.execute(currencyCode: 'USD'))
           .thenAnswer((_) async => const Ok(1.0));
 
@@ -3324,8 +3331,8 @@ void main() {
           .thenAnswer((_) async => Ok([prepared]));
       when(() => getWallets.execute())
           .thenAnswer((_) async => Ok([source, destination]));
-      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenAnswer((_) async => _feeOptions());
+      when(() => getNetworkFees.estimate(any()))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => getExchangeRate.execute(currencyCode: 'USD'))
           .thenAnswer((_) async => const Ok(1.0));
       when(() => getSwapRoute.execute())
@@ -3363,8 +3370,8 @@ void main() {
     );
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([source, destination]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => getSwapRoute.execute()).thenAnswer((_) async => SwapRoute.boltz);

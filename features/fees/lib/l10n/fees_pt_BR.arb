@@ -1,3 +1,22 @@
 {
-  "retry": "Repito"
+  "retry": "Repito",
+  "doneButton": "Feito",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Taxas absolutas",
+  "sendBelowMinFeeRateError": "A taxa deve ser de pelo menos 0.1 sat/vB.",
+  "sendCustomFee": "Taxas personalizadas",
+  "sendEconomyFee": "Economia",
+  "sendEnterAbsoluteFee": "Insira taxa absoluta em sats",
+  "sendEnterRelativeFee": "Insira taxa relativa em sats/vB",
+  "sendEstimatedDelivery": "Entrega estimada ~ ",
+  "sendEstimatedDelivery10Minutes": "10 minutos",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
+  "sendEstimatedDeliveryHours": "horas",
+  "sendEstimatedDeliveryHoursToDays": "horas para dias",
+  "sendFastFee": "Rápido",
+  "sendRelativeFees": "Taxas relativas",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Selecione a taxa de rede",
+  "sendSubSatVbyteWarning": "Transações com taxa abaixo de 1 sat/vB podem demorar mais para confirmar e podem não se propagar para todos os nós."
 }

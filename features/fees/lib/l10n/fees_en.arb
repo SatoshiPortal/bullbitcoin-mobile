@@ -6,5 +6,81 @@
   "mempoolDescription": "Estimates from your configured Mempool server.",
   "loadError": "Could not load the fee source.",
   "saveError": "Could not save this choice. Your previous source is still active.",
-  "retry": "Retry"
+  "retry": "Retry",
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "feePrioritySlow": "Slow",
+  "@feePrioritySlow": {
+    "description": "Name of the slow (cheapest) network fee tier"
+  },
+  "sendAbsoluteFees": "Absolute fees",
+  "@sendAbsoluteFees": {
+    "description": "Label for absolute fee display mode (total sats)"
+  },
+  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
+  "@sendBelowMinFeeRateError": {
+    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
+  },
+  "sendCustomFee": "Custom fee",
+  "@sendCustomFee": {
+    "description": "Label for setting a custom transaction fee"
+  },
+  "sendEconomyFee": "Economy",
+  "@sendEconomyFee": {
+    "description": "Lowest fee tier"
+  },
+  "sendEnterAbsoluteFee": "Enter absolute fee in sats",
+  "@sendEnterAbsoluteFee": {
+    "description": "Placeholder for absolute fee input field"
+  },
+  "sendEnterRelativeFee": "Enter relative fee in sats/vB",
+  "@sendEnterRelativeFee": {
+    "description": "Placeholder for relative fee rate input field"
+  },
+  "sendEstimatedDelivery": "Estimated delivery ~ ",
+  "@sendEstimatedDelivery": {
+    "description": "Label prefix for estimated delivery time"
+  },
+  "sendEstimatedDelivery10Minutes": "10 minutes",
+  "@sendEstimatedDelivery10Minutes": {
+    "description": "Estimated delivery time of approximately 10 minutes"
+  },
+  "sendEstimatedDelivery10to30Minutes": "10-30 minutes",
+  "@sendEstimatedDelivery10to30Minutes": {
+    "description": "Estimated delivery time of 10 to 30 minutes"
+  },
+  "sendEstimatedDeliveryHours": "hours",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
+  },
+  "sendEstimatedDeliveryHoursToDays": "hours to days",
+  "@sendEstimatedDeliveryHoursToDays": {
+    "description": "Estimated delivery time ranging from hours to days"
+  },
+  "sendFastFee": "Fast",
+  "@sendFastFee": {
+    "description": "Highest fee tier"
+  },
+  "sendRelativeFees": "Relative fees",
+  "@sendRelativeFees": {
+    "description": "Label for relative fee display mode (sats per vByte)"
+  },
+  "sendSats": "sats",
+  "@sendSats": {
+    "description": "Unit label for satoshis"
+  },
+  "sendSatsPerVB": "sat/vB",
+  "@sendSatsPerVB": {
+    "description": "Unit label for satoshis per virtual byte"
+  },
+  "sendSelectNetworkFee": "Select network fee",
+  "@sendSelectNetworkFee": {
+    "description": "Label for selecting the network fee in the send flow"
+  },
+  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
+  "@sendSubSatVbyteWarning": {
+    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
+  }
 }

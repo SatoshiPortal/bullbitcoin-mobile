@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
@@ -368,7 +367,7 @@ class _FeePriorityRow extends StatelessWidget {
       label: context.loc.payFeePriority,
       displayValue: feeSelectionRowLabel(
         context,
-        ui: appFeeUi,
+        ui: FeeUi.standard,
         selection: selectedFeeOption,
         customFee: customFee,
         fastestLabel: context.loc.payFastest,
@@ -379,7 +378,7 @@ class _FeePriorityRow extends StatelessWidget {
               final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
-                  ui: appFeeUi,
+                  ui: FeeUi.standard,
                   viewState: bloc,
                   actions: bloc,
                   defaultAbsoluteCustomFee: false,

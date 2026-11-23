@@ -369,10 +369,6 @@
   "@fundExchangeCrIbanCrcTransferCodeWarning": {
     "description": "Warning about including transfer code in payment"
   },
-  "sendEstimatedDeliveryHoursToDays": "horas para dias",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "paySecurityQuestionLength": "{count}/40 caracteres",
   "@paySecurityQuestionLength": {
     "description": "Character count for security question",
@@ -1572,10 +1568,6 @@
   "buyExpressWithdrawal": "Retirada expressa",
   "@buyExpressWithdrawal": {
     "description": "Fast withdrawal option"
-  },
-  "sendEstimatedDelivery10Minutes": "10 minutos",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
   },
   "importWalletSectionHardware": "Carteiras de hardware",
   "@importWalletSectionHardware": {
@@ -3865,10 +3857,6 @@
   "@testBackupPhysicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes longer"
   },
-  "sendRelativeFees": "Taxas relativas",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "coreScreensNetworkFeesLabel": "Taxas de rede",
   "@coreScreensNetworkFeesLabel": {
     "description": "Label for network fees field"
@@ -3940,10 +3928,6 @@
   "physicalBackupTag": "Trustless (ter o seu tempo)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
-  },
-  "sendEnterRelativeFee": "Insira taxa relativa em sats/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "sellCopyInvoice": "Fatura de cópia",
   "@sellCopyInvoice": {
@@ -4208,10 +4192,6 @@
   "autoswapMaxFee": "Taxa máxima de swap",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
-  },
-  "sendAbsoluteFees": "Taxas absolutas",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "payDescription": "Descrição",
   "@payDescription": {
@@ -7625,10 +7605,6 @@
   "@transactionFilterSend": {
     "description": "Filter option to show only sent transactions"
   },
-  "sendEnterAbsoluteFee": "Insira taxa absoluta em sats",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "swapTransferAmount": "Valor do swap",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -9216,8 +9192,6 @@
   "sendCoordinatingPayjoinTransaction": "Coordenando uma transação Payjoin.",
   "sendErrorInvoiceExpired": "Esta fatura expirou. Peça ao destinatário uma nova fatura.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar a Carteira de Pagamento Instantânea para fazer pagamentos menores.",
-  "sendSubSatVbyteWarning": "Transações com taxa abaixo de 1 sat/vB podem demorar mais para confirmar e podem não se propagar para todos os nós.",
-  "sendBelowMinFeeRateError": "A taxa deve ser de pelo menos 0.1 sat/vB.",
   "sendErrorInsufficientBalanceFrozenHint": "Saldo disponível insuficiente — {amount} está congelado. Descongele as moedas em Gerenciar moedas para usá-lo.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",

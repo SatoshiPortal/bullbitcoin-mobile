@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
@@ -322,7 +321,7 @@ class _FeePriorityRow extends StatelessWidget {
       label: context.loc.sellFeePriority,
       displayValue: feeSelectionRowLabel(
         context,
-        ui: appFeeUi,
+        ui: FeeUi.standard,
         selection: selectedFeeOption,
         customFee: customFee,
         fastestLabel: context.loc.sellFastest,
@@ -333,7 +332,7 @@ class _FeePriorityRow extends StatelessWidget {
               final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
-                  ui: appFeeUi,
+                  ui: FeeUi.standard,
                   viewState: bloc,
                   actions: bloc,
                   defaultAbsoluteCustomFee: false,

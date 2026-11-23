@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/transactions/public/transactions_facade.dart'
 import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
@@ -60,7 +59,7 @@ void main() {
       expect(nativeTor.calls, 1);
       TorLocator.registerRepositories(services);
       TorLocator.registerUsecases(services);
-      setupElectrum(services);
+      CoreLocator.setupElectrum(services);
       await WalletLocator.registerDatasources(services);
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);

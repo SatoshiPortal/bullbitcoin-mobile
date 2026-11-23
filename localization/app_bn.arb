@@ -480,10 +480,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "ঘণ্টা থেকে দিন",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "মুলতুবি",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1790,10 +1786,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 মিনিট",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "চালিয়ে যাওয়ার জন্য আপনার {pinOrPassword} লিখুন",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2722,10 +2714,6 @@
   "testBackupRecoverWallet": "ওয়ালেট পুনরুদ্ধার করুন",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "আনুমানিক ডেলিভারি ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "অনলাইন বিল পরিশোধ",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -3954,10 +3942,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "আপেক্ষিক ফি",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "প্রাপক ঠিকানা",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4329,10 +4313,6 @@
   "buySecureBitcoinWallet": "নিরাপদ Bitcoin ওয়ালেট",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "আনুপাতিক ফি সাটস/vB-এ দিন",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "importQrDevicePassportStep1": "আপনার Passport ডিভাইস চালু করুন",
   "@importQrDevicePassportStep1": {
@@ -4724,10 +4704,6 @@
   "payDecodeFailed": "ইনভয়েস ডিকোড করতে ব্যর্থ হয়েছে",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "নিরঙ্কুশ ফি",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "মূল ট্রান্স্যাকশনটির তুলনায় ফি রেট অন্তত 1 sat/vbyte বেশি করতে হবে",
   "@rbfErrorFeeTooLow": {
@@ -7740,10 +7716,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "পূর্ণ ফি সাটস-এ দিন",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "withdrawConfirmIban": "IBAN",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -9451,8 +9423,6 @@
   "exchangeSupportChatAttachLogsFailed": "লগ সংযুক্ত করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইল ডেটা আনতে ব্যর্থ হয়েছে",
   "importWatchOnlyXpubLabel": "XPUB",
-  "sendSubSatVbyteWarning": "1 sat/vB-এর কম হারের লেনদেন নিশ্চিত হতে বেশি সময় নিতে পারে এবং সব নোডে ছড়িয়ে নাও পড়তে পারে।",
-  "sendBelowMinFeeRateError": "ফি হার কমপক্ষে 0.1 sat/vB হতে হবে।",
   "sendErrorInsufficientBalanceFrozenHint": "পর্যাপ্ত ব্যয়যোগ্য ব্যালান্স নেই — {amount} ফ্রোজেন আছে। এটি ব্যবহার করতে কয়েন পরিচালনা করুন-এ গিয়ে কয়েন আনফ্রিজ করুন।",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

@@ -18,12 +18,12 @@ void main() {
     addTearDown(database.close);
     electrum = Electrum.open(
       database: database,
-      readPreferences: () async => (
+      readPreferences: () async => const Ok((
         isSuperuser: false,
         isDevModeEnabled: false,
         useTorProxy: false,
         torProxyPort: 9050,
-      ),
+      )),
       tor: () => throw StateError('A cached clearnet read does not open Tor'),
     );
     await database

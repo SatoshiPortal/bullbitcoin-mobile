@@ -29,7 +29,7 @@ const _allowedTargets = <String, String>{
   'autoswap': 'send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
   'broadcast_signed_tx': 'scanning send wallet',
-  'buy': 'exchange fees fund_exchange transactions wallet',
+  'buy': 'exchange fund_exchange transactions wallet',
   'coins': 'bitcoin_price wallet',
   'consolidation': 'send wallet',
   'dca': 'exchange fund_exchange wallet',
@@ -37,7 +37,6 @@ const _allowedTargets = <String, String>{
   'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange transactions withdraw',
   'exchange_settings': 'exchange',
   'exchange_support_chat': 'exchange',
-  'fees': 'wallet',
   'fund_exchange': 'exchange recipients',
   'import_coldcard': 'import_watch_only_wallet scanning signers',
   'import_mnemonic': 'wallet',
@@ -143,6 +142,24 @@ Map<String, String> _edges(
 }
 
 void main() {
+  test(
+    'preferences are consumed through feature use cases in presentation',
+    () {
+      final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
+      for (final path in [
+        'lib/features/send/presentation/bloc/send_cubit.dart',
+        'lib/features/settings/presentation/bloc/settings_cubit.dart',
+        'lib/features/swap/presentation/transfer_bloc.dart',
+      ]) {
+        expect(
+          File(path).readAsStringSync(),
+          isNot(matches(preferenceField)),
+          reason: path,
+        );
+      }
+    },
+  );
+
   test('resolves owners through relative, public and conditional exports', () {
     final edges = _edges(
       {

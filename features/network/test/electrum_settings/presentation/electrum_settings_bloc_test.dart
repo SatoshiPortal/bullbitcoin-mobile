@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart';
+
 import 'dart:async';
 
 import 'package:electrum/electrum.dart';
@@ -12,6 +14,8 @@ import 'package:network/src/electrum_settings/domain/update_electrum_settings_us
 import 'package:network/src/electrum_settings/presentation/electrum_server_view_model.dart';
 import 'package:network/src/electrum_settings/presentation/electrum_settings_bloc.dart';
 import 'package:primitives/primitives.dart';
+
+class _Preferences extends Mock implements ActiveEnvironmentReader {}
 
 class _MockServers extends Mock implements ElectrumServers {}
 
@@ -47,20 +51,20 @@ ElectrumServerChecks _checks(
 void main() {
   late _MockServers servers;
   late ElectrumSettingsBloc bloc;
-  late NetworkEnv environment;
+  late Environment environment;
 
   setUp(() {
     servers = _MockServers();
     final options = _MockOptions();
-    environment = NetworkEnv.mainnet;
+    final preferences = _Preferences();
+    when(preferences.readActiveEnvironment)
+        .thenAnswer((_) async => Ok(environment));
+    environment = Environment.mainnet;
     when(() => servers.hasCustomOnionServer(network: _bitcoin))
         .thenAnswer((_) async => const Ok(false));
     final update = UpdateElectrumSettingsUsecase(options);
     bloc = ElectrumSettingsBloc(
-      loadSettings: LoadElectrumSettingsUsecase(
-        servers,
-        () async => environment,
-      ),
+      loadSettings: LoadElectrumSettingsUsecase(servers, preferences),
       addServer: AddElectrumServerUsecase(servers, update),
       prioritizeServers: PrioritizeElectrumServersUsecase(servers),
       removeServer: RemoveElectrumServerUsecase(servers, update),
@@ -130,7 +134,7 @@ void main() {
     );
     bloc.add(const ElectrumSettingsLoaded(isLiquid: true));
     await loaded;
-    environment = NetworkEnv.testnet;
+    environment = Environment.testnet;
 
     final added = bloc.stream.firstWhere(
       (state) => state.customServers.isNotEmpty,

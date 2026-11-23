@@ -1,6 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:electrum/src/domain/configured_electrum_connection.dart';
 import 'package:electrum/src/domain/electrum_environment.dart';
+import 'package:electrum/src/domain/electrum_failure.dart';
 import 'package:electrum/src/domain/electrum_network_unauthorized_exception.dart';
 import 'package:electrum/src/domain/electrum_fallback_runner.dart';
 import 'package:electrum/src/domain/errors/electrum_fallback_exception.dart';
@@ -12,6 +13,7 @@ import 'package:electrum/src/domain/value_objects/electrum_connection.dart';
 import 'package:electrum/src/domain/electrum_server_network.dart';
 import 'package:electrum/src/domain/value_objects/electrum_server_url.dart';
 import 'package:electrum/src/domain/electrum_preferences.dart';
+import 'package:primitives/primitives.dart';
 
 /// Concrete [ElectrumServersPort]. Owns the only place in the app where the
 /// active server list is resolved, merged with Electrum and proxy settings, and
@@ -20,7 +22,7 @@ import 'package:electrum/src/domain/electrum_preferences.dart';
 class ElectrumServersAdapter implements ElectrumServersPort {
   final ElectrumServerRepository _serverRepository;
   final ElectrumSettingsRepository _settingsRepository;
-  final Future<ElectrumPreferences> Function() _readPreferences;
+  final ReadElectrumPreferences _readPreferences;
   final ElectrumTorSessionPort _torSessionPort;
 
   ElectrumServersAdapter({
@@ -44,9 +46,32 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) async {
+    // Native integrations still use the original exception-based runner.
+    final result = await runWithFallbackResult(
+      network: network,
+      operation: operation,
+      isTransient: isTransient,
+    );
+    return switch (result) {
+      Ok(:final value) => value,
+      Err() => throw Exception('Preferences read failed'),
+    };
+  }
+
+  /// A preferences failure stops admission before the fallback loop starts.
+  /// Connection and callback exceptions retain the retry policy of the caller.
+  Future<Result<T, ElectrumFailure>> runWithFallbackResult<T>({
+    required ElectrumServerNetwork network,
+    required Future<T> Function(ElectrumConnection connection) operation,
+    bool Function(Object error)? isTransient,
+  }) async {
     // Authorization belongs to admission, not to the captured network. A
     // settings change never retargets an operation already running.
-    final appSettings = await _readPreferences();
+    final appSettings = (await _readPreferences()).fold(
+      (value) => value,
+      (_) => null,
+    );
+    if (appSettings == null) return const Err(ElectrumUnexpectedFailure());
     if (network.environment != ElectrumEnvironment.mainnet &&
         (appSettings.isSuperuser != true ||
             appSettings.isDevModeEnabled != true)) {
@@ -90,7 +115,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
         .toList();
 
     var attempt = 0;
-    return runElectrumFallback<ElectrumConnection, T>(
+    final value = await runElectrumFallback<ElectrumConnection, T>(
       servers: connections,
       urlOf: (c) => c.url,
       isCustomOf: (c) => c.isCustom,
@@ -158,6 +183,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
                 error is ClearnetServerWithoutConfiguredTorException ||
                 isTransient(error),
     );
+    return Ok(value);
   }
 
   static bool _isUnroutableOnion(ElectrumConnection connection) =>

@@ -483,10 +483,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "영업시간",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "관련 기사",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1814,10 +1810,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 분",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "계속하려면 {pinOrPassword}를 입력하십시오",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2768,10 +2760,6 @@
   "testBackupRecoverWallet": "지갑 복구",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "예상 배송 ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "온라인 빌 지불",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -4021,10 +4009,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "상대 비용",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "관련 기사",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4405,10 +4389,6 @@
   "buySecureBitcoinWallet": "안전한 Bitcoin 지갑",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "Sats/vB에 상대적인 요금을 입력하십시오",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "importQrDevicePassportStep1": "Passport 기기의 전원을 켜세요",
   "@importQrDevicePassportStep1": {
@@ -4808,10 +4788,6 @@
   "payDecodeFailed": "인보이스를 해독",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "자주 묻는 질문",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@rbfErrorFeeTooLow": {
@@ -7866,10 +7842,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "Sats에서 절대 수수료를 입력하십시오",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "Derivation 경로 경고",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9109,8 +9081,6 @@
   "sendCoordinatingPayjoinTransaction": "Payjoin 트랜잭션을 조율하고 있습니다.",
   "sendErrorInvoiceExpired": "이 인보이스는 만료되었습니다. 수취인에게 새 인보이스를 요청하세요.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "더 작은 금액을 결제하려면 Instant Payment Wallet에 자금을 충전하는 것을 고려해 보세요.",
-  "sendSubSatVbyteWarning": "1 sat/vB 미만의 트랜잭션은 확인되는 데 시간이 더 걸릴 수 있으며 모든 노드에 전파되지 않을 수 있습니다.",
-  "sendBelowMinFeeRateError": "수수료율은 최소 0.1 sat/vB 이상이어야 합니다.",
   "sendErrorInsufficientBalanceFrozenHint": "사용 가능한 잔액이 부족합니다 — 동결된 금액: {amount}. 코인 관리에서 동결을 해제하여 사용하세요.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",

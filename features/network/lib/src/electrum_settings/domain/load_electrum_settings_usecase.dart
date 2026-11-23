@@ -1,4 +1,5 @@
 import 'package:electrum/electrum.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
 import 'has_custom_bitcoin_onion_server.dart';
@@ -10,19 +11,26 @@ typedef ElectrumSettingsSnapshot = ({
 
 class LoadElectrumSettingsUsecase {
   final ElectrumServers _servers;
-  final Future<NetworkEnv> Function() _readEnvironment;
+  final ActiveEnvironmentReader _preferences;
 
-  const LoadElectrumSettingsUsecase(this._servers, this._readEnvironment);
+  const LoadElectrumSettingsUsecase(this._servers, this._preferences);
 
   Future<Result<ElectrumSettingsSnapshot?, ElectrumFailure>> execute({
     required bool isLiquid,
     required bool Function() isCurrent,
     required void Function(ElectrumServerChecks) onUpdate,
   }) async {
+    final NetworkEnv environment;
+    switch (await _preferences.readActiveEnvironment()) {
+      case Ok(:final value):
+        environment = value.networkEnv;
+      case Err():
+        return const Err(ElectrumLoadFailure());
+    }
     final ElectrumServerNetwork network;
     try {
       network = ElectrumServerNetwork.fromNetworkEnv(
-        await _readEnvironment(),
+        environment,
         isLiquid: isLiquid,
       );
     } on ElectrumUnsupportedNetworkException {

@@ -1,11 +1,11 @@
 # Electrum
 
-`Electrum.open` builds the capability around the application's existing Drift database, a current network reader, a preferences reader and a lazy Tor service. The caller owns those resources. Opening is synchronous. Foreground storage preparation and the adapters for sync and native operations live in `package:electrum/setup.dart`.
+`Electrum.open` builds the capability around the application's existing Drift database, a Result-returning preferences reader and a lazy Tor service. The caller owns those resources. Opening is synchronous. Foreground storage preparation and the adapters for sync and native operations live in `package:electrum/setup.dart`.
 
 ```dart
 final electrum = Electrum.open(
   database: database,
-  readPreferences: readPreferences,
+  readPreferences: preferences.readConnectionPreferences,
   tor: getTor,
 );
 final servers = await electrum.servers.fetch(network: network);

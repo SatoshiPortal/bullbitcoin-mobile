@@ -1,3 +1,4 @@
+import 'package:fees/fees.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
@@ -42,6 +43,10 @@ class Memory implements QuickActionsStorage {
   Future<void> remove(String key) async {}
 }
 
+class _UnusedPreferences extends Mock implements Preferences {}
+
+class _MockFees extends Mock implements Fees {}
+
 void main() {
   testWidgets(
     'actual shell routes keep unavailable Ark entries inert and navigable',
@@ -78,21 +83,14 @@ void main() {
         ),
       );
       final networkServices = GetIt.asNewInstance();
+      networkServices.registerSingleton<Fees>(_MockFees());
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
+          preferences: _UnusedPreferences(),
           bindings: (
             readDefaultNetwork: () async => const Ok(null),
-            readEnvironment: () async =>
-                throw StateError('Unexpected environment read'),
-            readMempoolEnvironment: () async =>
-                throw StateError('Unexpected Mempool environment read'),
-            checkBitcoinFees: (_) async {},
-            isTorRequired: () async => false,
-            readTorPreferences: () async =>
-                throw StateError('Unexpected Tor read'),
-            saveTorProxy: ({required enabled, required port}) async => false,
-            saveTorMode: (_) async => const Ok(null),
+            isTorRequired: () async => const Ok(false),
           ),
         ),
       );

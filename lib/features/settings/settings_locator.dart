@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/domain/usecases/load_settings_usecase.dart';
 import 'package:electrum/setup.dart';
 
 import 'dart:io';
@@ -213,7 +214,7 @@ class SettingsLocator {
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
         setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),
-        getSettingsUsecase: locator<Preferences>(),
+        loadPreferencesUsecase: LoadSettingsUsecase(locator<Preferences>()),
         setBitcoinUnitUsecase: locator<SetBitcoinUnitUsecase>(),
         setAmountInputModeUsecase: locator<SetAmountInputModeUsecase>(),
         setLanguageUsecase: locator<SetLanguageUsecase>(),

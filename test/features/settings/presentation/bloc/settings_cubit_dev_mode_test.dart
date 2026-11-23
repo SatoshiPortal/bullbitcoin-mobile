@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/domain/usecases/load_settings_usecase.dart';
+
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
@@ -119,7 +121,7 @@ void main() {
         .thenAnswer((_) => const Stream<PayjoinPolicy>.empty());
 
     cubit = SettingsCubit(
-      getSettingsUsecase: _MockGetSettingsUsecase(),
+      loadPreferencesUsecase: LoadSettingsUsecase(_MockGetSettingsUsecase()),
       setEnvironmentUsecase: _MockSetEnvironmentUsecase(),
       setBitcoinUnitUsecase: _MockSetBitcoinUnitUsecase(),
       setAmountInputModeUsecase: setAmountMode,

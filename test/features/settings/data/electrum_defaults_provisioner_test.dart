@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/settings/data/electrum/environment_adapter.dart';
 import 'package:electrum/testing.dart';
 import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
@@ -115,8 +114,15 @@ void main() {
   });
   tearDown(() => database.close());
 
-  Future<ElectrumPreferences> readPreferences() =>
-      EnvironmentAdapter(settingsRepository: () => app).readPreferences();
+  Future<Result<ElectrumPreferences, Failure>> readPreferences() async =>
+      (await app.fetch()).map(
+        (settings) => (
+          isSuperuser: settings.isSuperuser,
+          isDevModeEnabled: settings.isDevModeEnabled,
+          useTorProxy: settings.useTorProxy,
+          torProxyPort: settings.torProxyPort,
+        ),
+      );
 
   ElectrumServersAdapter adapter() => ElectrumServersAdapter(
     serverRepository: servers,

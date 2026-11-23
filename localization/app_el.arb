@@ -431,10 +431,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "ώρες έως μέρες",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "Pending",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1575,10 +1571,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 λεπτά",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "swapTransferFrom": "Ανταλλαγή από",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
@@ -2407,10 +2399,6 @@
   "payBumpFee": "Bump Fee",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "sendEstimatedDelivery": "Εκτιμώμενη παράδοση - ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -3483,10 +3471,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "Σχετικά τέλη",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "Για την αντιμετώπιση",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -3816,10 +3800,6 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "sendEnterRelativeFee": "Εισαγάγετε σχετικό τέλος σε sats/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
-  },
   "importQrDevicePassportStep1": "Ενεργοποιήστε τη συσκευή Passport σας",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
@@ -4139,10 +4119,6 @@
   "payDecodeFailed": "Αποζημιωμένος να αποκωδικοποιήσει το τιμολόγιο",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "Absolutα τέλη",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
   "@rbfErrorFeeTooLow": {
@@ -6680,10 +6656,6 @@
   "buyUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
-  },
-  "sendEnterAbsoluteFee": "Εισαγάγετε απόλυτο τέλος σε καθούς",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
   },
   "importWatchOnlyDisclaimerTitle": "Προνομή Path Warning",
   "@importWatchOnlyDisclaimerTitle": {
@@ -9268,8 +9240,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
   "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
-  "sendSubSatVbyteWarning": "Οι συναλλαγές κάτω από 1 sat/vB ενδέχεται να χρειαστούν περισσότερο χρόνο για επιβεβαίωση και μπορεί να μην διαδοθούν σε όλους τους κόμβους.",
-  "sendBelowMinFeeRateError": "Ο ρυθμός τέλους πρέπει να είναι τουλάχιστον 0.1 sat/vB.",
   "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

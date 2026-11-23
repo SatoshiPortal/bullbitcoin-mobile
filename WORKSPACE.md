@@ -144,6 +144,7 @@ graph TD
   electrum --> bull_tor
   electrum --> primitives
   electrum --> sync
+  fees --> bull_payjoin
   fees --> mempool
   fees --> primitives
   fees --> sync
@@ -172,7 +173,9 @@ graph TD
   network --> bull_tor
   network --> bull_ui
   network --> electrum
+  network --> fees
   network --> mempool
+  network --> preferences
   network --> primitives
   notifications --> bull_logger
   notifications --> primitives

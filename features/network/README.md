@@ -1,6 +1,6 @@
 # Network
 
-The network feature owns the Electrum, Mempool and Tor settings screens and service status. The host mounts it once during foreground setup with `NetworkFeature.mount(services: services, bindings: bindings)`, adds `feature.routes.root` to the root routes and adds `feature.routes.appSettings` beneath app settings. The host bindings, localization delegate and startup Tor diagnostics are available in `package:network/setup.dart`.
+The network feature owns the Electrum, Mempool and Tor settings screens and service status. The host mounts it once during foreground setup with `NetworkFeature.mount(services: services, bindings: bindings, preferences: preferences)`, adds `feature.routes.root` to the root routes and adds `feature.routes.appSettings` beneath app settings. Network use cases read and update the published Preferences capability. The host bindings, localization delegate and startup Tor diagnostics are available in `package:network/setup.dart`.
 
 ```dart
 await NetworkNavigation.open(context, section: NetworkSection.tor);

@@ -1,3 +1,22 @@
 {
-  "retry": "Retry"
+  "retry": "Retry",
+  "doneButton": "انجام کارها",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "هزینه های مطلق",
+  "sendBelowMinFeeRateError": "نرخ کارمزد باید حداقل ۰.۱ ساتوشی/vB باشد.",
+  "sendCustomFee": "هزینه های سفارشی",
+  "sendEconomyFee": "اقتصاد",
+  "sendEnterAbsoluteFee": "وارد کردن هزینه مطلق در نشست",
+  "sendEnterRelativeFee": "وارد کردن هزینه نسبی در sats/vB",
+  "sendEstimatedDelivery": "تحویل تخمین زده شده - ",
+  "sendEstimatedDelivery10Minutes": "10 دقیقه",
+  "sendEstimatedDelivery10to30Minutes": "10-30 دقیقه",
+  "sendEstimatedDeliveryHours": "ساعت",
+  "sendEstimatedDeliveryHoursToDays": "ساعت ها تا روزها",
+  "sendFastFee": "سریع",
+  "sendRelativeFees": "هزینه های نسبی",
+  "sendSats": "نشستن",
+  "sendSatsPerVB": "نشستن/vB",
+  "sendSelectNetworkFee": "انتخاب هزینه شبکه",
+  "sendSubSatVbyteWarning": "تراکنش‌های زیر ۱ ساتوشی/vB ممکن است تأیید طولانی‌تری داشته باشند و به همه‌ی گره‌ها منتشر نشوند."
 }

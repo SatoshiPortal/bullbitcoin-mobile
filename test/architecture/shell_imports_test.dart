@@ -54,6 +54,39 @@ const _legacyImports = {
 };
 
 void main() {
+  test('the shell uses the wallet facade for service status', () {
+    final shell = parseString(
+      content: File('lib/locator.dart').readAsStringSync(),
+    ).unit;
+    final facade = parseString(
+      content: File('lib/features/wallet/public/wallet_facade.dart')
+          .readAsStringSync(),
+    ).unit;
+
+    expect(
+      shell.directives
+          .whereType<ImportDirective>()
+          .map((directive) => directive.uri.stringValue)
+          .whereType<String>()
+          .where(
+            (uri) => const {
+              'get_default_wallet_network_usecase.dart',
+              'is_tor_required_usecase.dart',
+              'wallet_repository.dart',
+            }.contains(p.basename(uri)),
+          ),
+      isEmpty,
+    );
+    expect(
+      facade.directives
+          .whereType<ExportDirective>()
+          .map((directive) => directive.uri.stringValue)
+          .whereType<String>()
+          .where((uri) => uri.contains('/domain/usecases/')),
+      isEmpty,
+    );
+  });
+
   test('features and packages depend on owners, never on the shell', () {
     final root = Directory.current.path;
     final violations = <String>[];

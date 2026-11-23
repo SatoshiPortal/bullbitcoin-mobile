@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_confirmation_details.dart';
@@ -131,7 +130,7 @@ class SwapConfirmPage extends StatelessWidget {
                       );
                       final selectedFeeOptionTitle = feeSelectionRowLabel(
                         context,
-                        ui: appFeeUi,
+                        ui: FeeUi.standard,
                         selection: selectedFeeOption,
                         customFee: customFee,
                         fastestLabel: context.loc.sendFastFee,
@@ -156,7 +155,7 @@ class SwapConfirmPage extends StatelessWidget {
                           BullBottomSheet.show(
                             context: context,
                             child: FeeOptionsModal(
-                              ui: appFeeUi,
+                              ui: FeeUi.standard,
                               viewState: bloc,
                               actions: bloc,
                               defaultAbsoluteCustomFee: true,

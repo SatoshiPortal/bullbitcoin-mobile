@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/domain/usecases/load_settings_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
@@ -36,7 +38,7 @@ part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({
-    required this._getSettingsUsecase,
+    required this._loadPreferencesUsecase,
     required this._setEnvironmentUsecase,
     required this._setBitcoinUnitUsecase,
     required this._setAmountInputModeUsecase,
@@ -66,7 +68,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
-  final Preferences _getSettingsUsecase;
+  final LoadSettingsUsecase _loadPreferencesUsecase;
   final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
   final SetAmountInputModeUsecase _setAmountInputModeUsecase;
   final SetLanguageUsecase _setLanguageUsecase;
@@ -98,15 +100,19 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> init() async {
-    final (storedSettings, appInfo) = await (
-      _getSettingsUsecase.fetch().then(
-        (result) => result.fold(
-          (value) => value,
-          (failure) => throw Exception('Preferences read failed'),
-        ),
-      ),
+    final (result, appInfo) = await (
+      _loadPreferencesUsecase.execute(),
       PackageInfo.fromPlatform(),
     ).wait;
+    if (isClosed) return;
+    final SettingsEntity storedSettings;
+    switch (result) {
+      case Ok(:final value):
+        storedSettings = value;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+    }
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
 
     // Mirror the persisted preference into the process-wide capture controller

@@ -7,6 +7,7 @@ environment:
   flutter: "3.50.0"
 resolution: workspace
 dependencies:
+  bull_payjoin:
   dio: ^5.9.0
   flutter:
     sdk: flutter

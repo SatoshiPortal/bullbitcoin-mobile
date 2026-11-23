@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/buy/domain/watch_buy_bitcoin_unit_usecase.dar
 import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -95,7 +95,7 @@ class BuyLocator {
         getSettingsUsecase: locator<Preferences>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
-        feeEstimates: locator<AppFeeEstimates>(),
+        fees: locator<Fees>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );

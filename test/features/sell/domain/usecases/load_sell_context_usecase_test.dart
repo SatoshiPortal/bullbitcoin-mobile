@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -20,7 +19,7 @@ class _MockGetUserSummary extends Mock
 
 class _MockGetSettings extends Mock implements Preferences {}
 
-class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
+class _MockGetNetworkFees extends Mock implements Fees {}
 
 class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
 
@@ -59,7 +58,7 @@ void main() {
     usecase = LoadSellContextUsecase(
       getExchangeUserSummaryUsecase: getUserSummary,
       getSettingsUsecase: getSettings,
-      feeEstimates: getNetworkFees,
+      fees: getNetworkFees,
       getAddressAtIndexUsecase: getAddressAtIndex,
       getIndexPrice: getIndexPrice.call,
       getOrderUsecase: getOrder,
@@ -88,8 +87,11 @@ void main() {
   group('networkFees', () {
     test('returns the fee options', () async {
       final fees = _MockFeeOptions();
-      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenAnswer((_) async => fees);
+      when(getSettings.fetch).thenAnswer(
+        (_) async => Ok(_settings(environment: Environment.regtest)),
+      );
+      when(() => getNetworkFees.estimate(BitcoinNetwork.regtest))
+          .thenAnswer((_) async => Ok(fees));
 
       final result = await usecase.networkFees(isLiquid: false);
 
@@ -97,8 +99,9 @@ void main() {
     });
 
     test('names the failure so the message stays actionable', () async {
-      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenThrow(Exception(_rawReason));
+      when(getSettings.fetch).thenAnswer((_) async => Ok(_settings()));
+      when(() => getNetworkFees.estimate(BitcoinNetwork.mainnet))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
 
       final result = await usecase.networkFees(isLiquid: false);
 

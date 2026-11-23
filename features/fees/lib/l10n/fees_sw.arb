@@ -1,3 +1,22 @@
 {
-  "retry": "Jaribu Tena"
+  "retry": "Jaribu Tena",
+  "doneButton": "Imekamilika",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Ada kamili",
+  "sendBelowMinFeeRateError": "Kiwango cha ada lazima kiwe angalau sat/vB 0.1.",
+  "sendCustomFee": "Ada Maalum",
+  "sendEconomyFee": "Kiuchumi",
+  "sendEnterAbsoluteFee": "Weka ada kamili kwa sats",
+  "sendEnterRelativeFee": "Weka ada linganifu kwa sats/vB",
+  "sendEstimatedDelivery": "Muda uliokadiriwa wa kuwasili ~ ",
+  "sendEstimatedDelivery10Minutes": "dakika 10",
+  "sendEstimatedDelivery10to30Minutes": "dakika 10-30",
+  "sendEstimatedDeliveryHours": "saa",
+  "sendEstimatedDeliveryHoursToDays": "masaa hadi siku",
+  "sendFastFee": "Haraka",
+  "sendRelativeFees": "Ada linganifu",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Chagua ada ya mtandao",
+  "sendSubSatVbyteWarning": "Miamala ya chini ya sat/vB 1 huenda ikachukua muda mrefu zaidi kuthibitishwa na huenda isifikie nodi zote."
 }

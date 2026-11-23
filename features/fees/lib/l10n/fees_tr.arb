@@ -1,3 +1,22 @@
 {
-  "retry": "Retry"
+  "retry": "Retry",
+  "doneButton": "Done",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Mutlak ücretler",
+  "sendBelowMinFeeRateError": "Ücret oranı en az 0,1 sat/vB olmalıdır.",
+  "sendCustomFee": "Özel Ücretler",
+  "sendEconomyFee": "Ekonomi ekonomisi",
+  "sendEnterAbsoluteFee": "Satmak için mutlak ücret girin",
+  "sendEnterRelativeFee": "Satmak için göreceli ücret girin /vB",
+  "sendEstimatedDelivery": "Tahmin edilen teslimat - ",
+  "sendEstimatedDelivery10Minutes": "10 dakika 10 dakika",
+  "sendEstimatedDelivery10to30Minutes": "10-30 dakika",
+  "sendEstimatedDeliveryHours": "saatler",
+  "sendEstimatedDeliveryHoursToDays": "günlerce günler",
+  "sendFastFee": "Hızlı",
+  "sendRelativeFees": "Relative ücretleri",
+  "sendSats": "satrançlar",
+  "sendSatsPerVB": "satmak/vB",
+  "sendSelectNetworkFee": "Ağ ücreti seçin",
+  "sendSubSatVbyteWarning": "1 sat/vB altındaki işlemlerin onaylanması daha uzun sürebilir ve tüm düğümlere yayılmayabilir."
 }

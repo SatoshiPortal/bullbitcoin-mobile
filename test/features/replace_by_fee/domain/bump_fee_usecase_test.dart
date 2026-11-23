@@ -1,6 +1,6 @@
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
@@ -28,7 +28,9 @@ class MockBitcoinWalletRepository extends Mock
 class MockBroadcastBitcoinTransactionUsecase extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
 
-class MockAppFeeEstimates extends Mock implements AppFeeEstimates {}
+class MockFees extends Mock implements Fees {}
+
+class _MockPreferences extends Mock implements Preferences {}
 
 void main() {
   setUpAll(() {
@@ -37,17 +39,28 @@ void main() {
 
   late MockBitcoinWalletRepository walletRepository;
   late MockBroadcastBitcoinTransactionUsecase broadcastUsecase;
-  late MockAppFeeEstimates feeEstimates;
+  late MockFees feeEstimates;
   late BumpFeeUsecase usecase;
 
   setUp(() {
     walletRepository = MockBitcoinWalletRepository();
     broadcastUsecase = MockBroadcastBitcoinTransactionUsecase();
-    feeEstimates = MockAppFeeEstimates();
+    feeEstimates = MockFees();
+    final preferences = _MockPreferences();
+    when(preferences.fetch).thenAnswer(
+      (_) async => const Ok(
+        SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      ),
+    );
     usecase = BumpFeeUsecase(
       bitcoinWalletRepository: walletRepository,
       broadcastBitcoinTransactionUsecase: broadcastUsecase,
-      feeEstimates: feeEstimates,
+      fees: feeEstimates,
+      preferences: preferences,
     );
   });
 
@@ -246,25 +259,22 @@ void main() {
         slow: NetworkFee.relativeSatPerKwu(1),
         minRelay: RelativeFee(25),
       );
-      when(() => feeEstimates.execute(isLiquid: false))
-          .thenAnswer((_) async => feeOptions);
+      when(() => feeEstimates.estimate(BitcoinNetwork.testnet))
+          .thenAnswer((_) async => const Ok(feeOptions));
 
       final result = await usecase.getNetworkFees();
 
       expect(result, isA<Ok<FeeOptions, ReplaceByFeeFailure>>());
     });
 
-    test(
-      'returns Err(ReplaceByFeeNetworkFeesFailure) on exception — no raw leak',
-      () async {
-        when(() => feeEstimates.execute(isLiquid: false))
-            .thenThrow(Exception('network unavailable'));
+    test('returns Err(ReplaceByFeeNetworkFeesFailure) when the estimate is unavailable', () async {
+      when(() => feeEstimates.estimate(BitcoinNetwork.testnet))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
 
-        final result = await usecase.getNetworkFees();
+      final result = await usecase.getNetworkFees();
 
-        expect(result, isA<Err<FeeOptions, ReplaceByFeeFailure>>());
-        expect((result as Err).failure, isA<ReplaceByFeeNetworkFeesFailure>());
-      },
-    );
+      expect(result, isA<Err<FeeOptions, ReplaceByFeeFailure>>());
+      expect((result as Err).failure, isA<ReplaceByFeeNetworkFeesFailure>());
+    });
   });
 }

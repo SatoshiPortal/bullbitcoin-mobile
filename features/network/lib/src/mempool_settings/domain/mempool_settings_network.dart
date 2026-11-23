@@ -1,18 +1,23 @@
 import 'package:mempool/mempool.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-typedef ReadMempoolEnvironment =
-    Future<Result<BitcoinNetwork, MempoolFailure>> Function();
-
 Future<Result<T, MempoolFailure>> withMempoolSettingsNetwork<T>(
-  ReadMempoolEnvironment readEnvironment, {
+  Result<Environment, PreferencesFailure> environment, {
   required bool isLiquid,
   required Future<Result<T, MempoolFailure>> Function(Network) operation,
 }) async {
-  switch (await readEnvironment()) {
+  switch (environment) {
     case Err(:final failure):
-      return Err(failure);
-    case Ok(value: final bitcoin):
+      return Err(MempoolUnexpectedFailure(failure.logMessage));
+    case Ok(:final value):
+      final bitcoin = BitcoinNetwork.fromName(value.name);
+      if (!NetworkCapabilities.supports(
+        bitcoin,
+        NetworkCapability.publicExplorer,
+      )) {
+        return Err(MempoolUnsupportedNetworkFailure(bitcoin));
+      }
       final Network? network = isLiquid
           ? LiquidNetwork.tryFromName(bitcoin.name)
           : bitcoin;

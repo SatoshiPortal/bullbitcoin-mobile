@@ -19,7 +19,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/write.dart';
-import 'package:bb_mobile/features/settings/data/electrum/background_setup.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 
 const paymentNotificationChannelId = PaymentNotifications.channelId;
 const _queueFilename = 'wallet_transaction_sync_queue.sqlite';
@@ -78,7 +79,11 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   TorLocator.registerUsecases(torLocator);
   final tor = torLocator<Tor>();
   resources.onClose(tor.dispose);
-  final connections = createBackgroundWalletConnections(sqlite, settings, tor);
+  final connections = Electrum.open(
+    database: sqlite,
+    readPreferences: settings.readConnectionPreferences,
+    tor: () => tor,
+  ).walletConnections;
   final catalog = WalletCatalogPortImpl(
     WalletMetadataDatasource(sqlite: sqlite),
   );

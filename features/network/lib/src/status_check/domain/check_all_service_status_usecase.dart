@@ -7,15 +7,16 @@ import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'service_status.dart';
 
 import 'package:electrum/electrum.dart';
+import 'package:fees/fees.dart';
 
-import '../../tor_settings/domain/tor_preferences.dart';
+import 'package:preferences/preferences.dart';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, NetworkEnv, Err, Ok;
+    show BitcoinNetwork, NetworkEnv, Err, Failure, Ok, Result;
 
 class CheckAllServiceStatusUsecase {
   /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
@@ -28,11 +29,11 @@ class CheckAllServiceStatusUsecase {
   final IndexPriceReader _getIndexPrice;
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
-  final Future<void> Function(BitcoinNetwork) _checkBitcoinFees;
-  final Future<bool> Function() _isTorRequired;
+  final Fees _fees;
+  final Future<Result<bool, Failure>> Function() _isTorRequired;
   final Future<rb.Result<bool, rb.RecoverBullFailure>> Function()
   _checkServerConnection;
-  final Future<TorPreferences> Function() _readTorPreferences;
+  final TorProxyPreferencesReader _preferences;
   final Tor _tor;
 
   CheckAllServiceStatusUsecase({
@@ -40,10 +41,10 @@ class CheckAllServiceStatusUsecase {
     required this._getIndexPrice,
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
-    required this._checkBitcoinFees,
+    required this._fees,
     required this._isTorRequired,
     required this._checkServerConnection,
-    required this._readTorPreferences,
+    required this._preferences,
     required this._tor,
   });
 
@@ -240,10 +241,15 @@ class CheckAllServiceStatusUsecase {
       NetworkEnv.signet => BitcoinNetwork.signet,
       NetworkEnv.regtest => BitcoinNetwork.regtest,
     };
-    await _checkBitcoinFees(bitcoinNetwork);
-
+    final estimate = await _fees.estimate(
+      bitcoinNetwork,
+      source: FeeSource.mempool,
+    );
+    if (estimate case Err(:final failure)) {
+      log.warning('Mempool fee probe unavailable: ${failure.runtimeType}');
+    }
     return ServiceStatusInfo(
-      status: ServiceStatus.online,
+      status: estimate is Ok ? ServiceStatus.online : ServiceStatus.unknown,
 
       lastChecked: DateTime.now(),
     );
@@ -276,7 +282,9 @@ class CheckAllServiceStatusUsecase {
     // An explicitly configured external proxy is authoritative even when this
     // wallet has no backup requiring embedded Tor. Only the disabled branch
     // consults wallet usage before probing embedded Tor.
-    final settings = await _readTorPreferences();
+    final result = await _preferences.readTorProxyPreferences();
+    final settings = result.fold((value) => value, (_) => null);
+    if (settings == null) return status;
     if (settings.useTorProxy) {
       final TorProxyEndpoint endpoint;
       try {
@@ -298,8 +306,15 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
-    if (!await _isTorRequired()) return ServiceStatus.unknown;
-    return _checkEmbeddedTorConnection();
+    switch (await _isTorRequired()) {
+      case Ok(value: true):
+        return _checkEmbeddedTorConnection();
+      case Ok(value: false):
+        return ServiceStatus.unknown;
+      case Err(:final failure):
+        log.warning('Tor status: wallet read failed (${failure.runtimeType})');
+        return ServiceStatus.unknown;
+    }
   }
 
   Future<ServiceStatus> _checkEmbeddedTorConnection() async =>

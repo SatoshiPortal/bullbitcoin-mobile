@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +14,8 @@ import 'package:network/src/mempool_settings/ui/mempool_settings_screen.dart';
 import 'package:primitives/primitives.dart';
 
 import 'fixtures.dart';
+
+class _Preferences extends Mock implements Preferences {}
 
 class _Electrum extends Mock implements Electrum {}
 
@@ -28,6 +32,8 @@ class _Tor extends Mock implements Tor {}
 class _ExternalTor extends Mock implements ExternalTor {}
 
 class _EmbeddedTor extends Mock implements EmbeddedTor {}
+
+class _MockFees extends Mock implements Fees {}
 
 void main() {
   testWidgets('mounted settings routes use the supplied services', (
@@ -63,22 +69,25 @@ void main() {
     when(() => embedded.states).thenAnswer((_) => const Stream.empty());
     services.registerSingleton<Tor>(tor);
 
+    final preferences = _Preferences();
+    when(preferences.fetch).thenAnswer(
+      (_) async => const Ok(
+        SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      ),
+    );
+    when(preferences.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.testnet));
+    services.registerSingleton<Fees>(_MockFees());
     final feature = NetworkFeature.mount(
       services: services,
+      preferences: preferences,
       bindings: (
         readDefaultNetwork: () async => const Ok(null),
-        readEnvironment: () async => NetworkEnv.testnet,
-        readMempoolEnvironment: () async => const Ok(BitcoinNetwork.testnet),
-        checkBitcoinFees: (_) async {},
-        isTorRequired: () async => false,
-        readTorPreferences: () async => (
-          useTorProxy: false,
-          torProxyPort: 9050,
-          torTransportMode: TorTransportMode.automatic,
-          lastSuccessfulTorTransport: null,
-        ),
-        saveTorProxy: ({required enabled, required port}) async => false,
-        saveTorMode: (_) async => const Ok(null),
+        isTorRequired: () async => const Ok(false),
       ),
     );
     final router = GoRouter(

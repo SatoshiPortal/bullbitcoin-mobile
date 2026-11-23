@@ -483,10 +483,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "घंटों से दिनों तक",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "लंबित",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1814,10 +1810,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 मिनट",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "अपने {pinOrPassword} को जारी रखने के लिए दर्ज करें",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2768,10 +2760,6 @@
   "testBackupRecoverWallet": "वॉलेट को पुनर्प्राप्त करें",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "अनुमानित डिलीवरी ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "ऑनलाइन बिल भुगतान",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -4021,10 +4009,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "सापेक्ष शुल्क",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "पता",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4405,10 +4389,6 @@
   "buySecureBitcoinWallet": "सुरक्षित Bitcoin वॉलेट",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "सत्स/vB में सापेक्ष शुल्क दर्ज करें",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "importQrDevicePassportStep1": "अपने Passport डिवाइस को चालू करें",
   "@importQrDevicePassportStep1": {
@@ -4808,10 +4788,6 @@
   "payDecodeFailed": "चालान को डिकोड करने में विफल",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "पूर्ण शुल्क",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
   "@rbfErrorFeeTooLow": {
@@ -7866,10 +7842,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "सत्संग में पूर्ण शुल्क दर्ज करें",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "डेरिवेशन पथ चेतावनी",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9443,8 +9415,6 @@
   "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
   "importWatchOnlyXpubLabel": "XPUB",
-  "sendSubSatVbyteWarning": "1 sat/vB से कम वाले लेनदेन की पुष्टि होने में अधिक समय लग सकता है और हो सकता है कि वे सभी नोड्स तक प्रसारित न हों।",
-  "sendBelowMinFeeRateError": "शुल्क दर कम से कम 0.1 sat/vB होनी चाहिए।",
   "sendErrorInsufficientBalanceFrozenHint": "पर्याप्त खर्च योग्य शेष नहीं है — {amount} फ्रोज़न है। इसका उपयोग करने के लिए \"कॉइन प्रबंधित करें\" में कॉइन अनफ्रीज़ करें।",
   "importWalletBitBox": "बिटबॉक्स02",
   "importWalletBitBoxNova": "बिटबॉक्स02 Nova",

@@ -6,9 +6,3 @@ typedef TorPreferences = ({
   TorTransportMode torTransportMode,
   TorTransport? lastSuccessfulTorTransport,
 });
-
-typedef ReadTorPreferences = Future<TorPreferences> Function();
-typedef SaveTorProxy = Future<bool> Function({
-  required bool enabled,
-  required int port,
-});

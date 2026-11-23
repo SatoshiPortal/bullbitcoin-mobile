@@ -22,6 +22,7 @@ dependencies:
   bull_ui:
   clock: ^1.1.2
   electrum:
+  fees:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -34,6 +35,7 @@ dependencies:
   material_ui: ^1.11.0
   mempool:
   meta: ^1.17.0
+  preferences:
   primitives:
   url_launcher: ^6.3.2
 

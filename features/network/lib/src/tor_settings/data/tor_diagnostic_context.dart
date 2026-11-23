@@ -1,14 +1,18 @@
-import '../domain/tor_preferences.dart';
-
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:preferences/preferences.dart';
 
 Future<DiagnosticTorContext> loadTorDiagnosticContext(
-  TorPreferences saved,
+  TorProxyPreferencesReader preferences,
   Tor client,
 ) async {
+  final result = await preferences.readTorProxyPreferences();
+  final saved = result.fold((value) => value, (_) => null);
+  if (saved == null) {
+    return const DiagnosticTorContext(state: 'uninitialized');
+  }
   if (saved.useTorProxy) {
     final state = await client.external.verify(
       TorProxyEndpoint(

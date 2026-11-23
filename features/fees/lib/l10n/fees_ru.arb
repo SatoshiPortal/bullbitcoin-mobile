@@ -1,3 +1,22 @@
 {
-  "retry": "Retry"
+  "retry": "Retry",
+  "doneButton": "Дон",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Абсолютные сборы",
+  "sendBelowMinFeeRateError": "Ставка комиссии должна быть не менее 0.1 sat/vB.",
+  "sendCustomFee": "Пользовательские феи",
+  "sendEconomyFee": "Экономика",
+  "sendEnterAbsoluteFee": "Введите абсолютный сбор в сатах",
+  "sendEnterRelativeFee": "Введите относительную плату в sats/vB",
+  "sendEstimatedDelivery": "Предполагаемая доставка ~ ",
+  "sendEstimatedDelivery10Minutes": "10 минут",
+  "sendEstimatedDelivery10to30Minutes": "10-30 минут",
+  "sendEstimatedDeliveryHours": "часы",
+  "sendEstimatedDeliveryHoursToDays": "часы до дней",
+  "sendFastFee": "Быстро",
+  "sendRelativeFees": "Относительные сборы",
+  "sendSats": "сидение",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Выберите сетевой сбор",
+  "sendSubSatVbyteWarning": "Транзакции со ставкой комиссии ниже 1 sat/vB могут дольше подтверждаться и не распространиться на все узлы сети."
 }

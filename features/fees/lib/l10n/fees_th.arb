@@ -1,3 +1,22 @@
 {
-  "retry": "ปรึกษา"
+  "retry": "ปรึกษา",
+  "doneButton": "อย่าลืม",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "ค่าธรรมเนียม",
+  "sendBelowMinFeeRateError": "อัตราค่าธรรมเนียมต้องมีอย่างน้อย 0.1 sat/vB",
+  "sendCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
+  "sendEconomyFee": "เศรษฐกิจ",
+  "sendEnterAbsoluteFee": "กรอกค่าธรรมเนียมทั้งหมด",
+  "sendEnterRelativeFee": "ใส่ค่าใช้จ่ายในที่นั่ง / VB",
+  "sendEstimatedDelivery": "ราคาโดยประมาณ ~ ",
+  "sendEstimatedDelivery10Minutes": "10 นาที",
+  "sendEstimatedDelivery10to30Minutes": "10-30 นาที",
+  "sendEstimatedDeliveryHours": "ชั่วโมง",
+  "sendEstimatedDeliveryHoursToDays": "ชั่วโมง",
+  "sendFastFee": "ได้อย่างรวดเร็ว",
+  "sendRelativeFees": "ค่าธรรมเนียม",
+  "sendSats": "นอน",
+  "sendSatsPerVB": "เบาะ / VB",
+  "sendSelectNetworkFee": "เลือกค่าธรรมเนียมเครือข่าย",
+  "sendSubSatVbyteWarning": "ธุรกรรมที่มีอัตราค่าธรรมเนียมต่ำกว่า 1 sat/vB อาจใช้เวลานานขึ้นในการยืนยัน และอาจไม่กระจายไปยังทุกโหนด"
 }

@@ -1,3 +1,7 @@
+import 'package:primitives/primitives.dart';
+
+import 'package:electrum/src/domain/electrum_failure.dart';
+
 import 'package:electrum/src/domain/value_objects/electrum_connection.dart';
 import 'package:electrum/src/domain/electrum_server_network.dart';
 
@@ -44,3 +48,11 @@ abstract class ElectrumServersPort {
   /// must not do so when this is true. The servers themselves stay private.
   Future<bool> hasCustomServers({required ElectrumServerNetwork network});
 }
+
+/// Electrum's connection runner for consumers that can propagate failures.
+typedef RunElectrumWithFallback =
+    Future<Result<T, ElectrumFailure>> Function<T>({
+      required ElectrumServerNetwork network,
+      required Future<T> Function(ElectrumConnection connection) operation,
+      bool Function(Object error)? isTransient,
+    });

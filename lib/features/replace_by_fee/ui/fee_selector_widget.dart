@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -48,7 +47,7 @@ class BumpFeeSelectorWidget extends StatelessWidget {
             ),
             const Gap(16),
             CustomFeeListItem(
-              ui: appFeeUi,
+              ui: FeeUi.standard,
               // Seed from the current selection's rate even when not custom,
               // so tapping the custom tile pre-fills the input with the
               // last-known rate (matches the pre-refactor RBF behaviour).

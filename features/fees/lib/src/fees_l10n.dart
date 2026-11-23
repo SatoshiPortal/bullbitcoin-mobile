@@ -15,3 +15,8 @@ FeesLocalizations feesCopy(String localeName) {
     supported.contains(language) ? language : const Locale('en'),
   );
 }
+
+extension FeesCopyContext on BuildContext {
+  FeesLocalizations get feeCopy =>
+      feesCopy(Localizations.localeOf(this).toLanguageTag());
+}

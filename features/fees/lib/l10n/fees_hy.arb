@@ -1,3 +1,22 @@
 {
-  "retry": "Կրկին փորձել"
+  "retry": "Կրկին փորձել",
+  "doneButton": "Պատրաստ է",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Բացարձակ վճարներ",
+  "sendBelowMinFeeRateError": "Վճարի դրույքաչափը պետք է լինի առնվազն 0.1 sat/vB։",
+  "sendCustomFee": "Հատուկ վճար",
+  "sendEconomyFee": "Խնայող",
+  "sendEnterAbsoluteFee": "Մուտքագրեք բացարձակ վճարը sats-ով",
+  "sendEnterRelativeFee": "Մուտքագրեք հարաբերական վճարը sats/vB-ով",
+  "sendEstimatedDelivery": "Մոտավոր առաքում ~ ",
+  "sendEstimatedDelivery10Minutes": "10 րոպե",
+  "sendEstimatedDelivery10to30Minutes": "10-30 րոպե",
+  "sendEstimatedDeliveryHours": "ժամեր",
+  "sendEstimatedDeliveryHoursToDays": "ժամերից մինչև օրեր",
+  "sendFastFee": "Արագ",
+  "sendRelativeFees": "Հարաբերական վճարներ",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Ընտրեք ցանցի վճարը",
+  "sendSubSatVbyteWarning": "1 sat/vB-ից պակաս գործարքները կարող են ավելի երկար հաստատվել և չտարածվել բոլոր հանգույցներում։"
 }

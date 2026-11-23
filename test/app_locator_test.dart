@@ -2,6 +2,8 @@ import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletFacade, WalletFailure;
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart';
@@ -353,6 +355,23 @@ void main() {
       composed = true;
       expect(nativeTor.calls, 1);
       expect(locator<WalletRepository>(), isA<WalletRepository>());
+      final wallets = locator<WalletFacade>();
+      expect(
+        await wallets.defaultWalletNetwork(),
+        isA<Ok<NetworkEnv?, WalletFailure>>().having(
+          (result) => result.value,
+          'default wallet environment',
+          isNull,
+        ),
+      );
+      expect(
+        await wallets.isTorRequired(),
+        isA<Ok<bool, WalletFailure>>().having(
+          (result) => result.value,
+          'Tor required',
+          isFalse,
+        ),
+      );
     },
   );
   test('regtest provisioning failure returns a typed Err before wallet runtime registration', () async {

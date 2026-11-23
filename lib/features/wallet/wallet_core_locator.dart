@@ -2,6 +2,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
+import 'domain/usecases/is_tor_required_usecase.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show ArkFundingSigningGuard;
@@ -108,6 +109,9 @@ class WalletLocator {
     );
     locator.registerFactory<GetDefaultWalletNetworkUsecase>(
       () => GetDefaultWalletNetworkUsecase(locator<GetWalletsUsecase>()),
+    );
+    locator.registerFactory<IsTorRequiredUsecase>(
+      () => IsTorRequiredUsecase(locator<WalletRepository>()),
     );
     locator.registerFactory<GetWalletsUsecase>(
       () => GetWalletsUsecase(

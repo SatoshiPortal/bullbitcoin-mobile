@@ -1,3 +1,22 @@
 {
-  "retry": "পুনরায় চেষ্টা করুন"
+  "retry": "পুনরায় চেষ্টা করুন",
+  "doneButton": "সম্পন্ন",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "নিরঙ্কুশ ফি",
+  "sendBelowMinFeeRateError": "ফি হার কমপক্ষে 0.1 sat/vB হতে হবে।",
+  "sendCustomFee": "কাস্টম ফি",
+  "sendEconomyFee": "ইকোনমি",
+  "sendEnterAbsoluteFee": "পূর্ণ ফি সাটস-এ দিন",
+  "sendEnterRelativeFee": "আনুপাতিক ফি সাটস/vB-এ দিন",
+  "sendEstimatedDelivery": "আনুমানিক ডেলিভারি ~ ",
+  "sendEstimatedDelivery10Minutes": "10 মিনিট",
+  "sendEstimatedDelivery10to30Minutes": "10-30 মিনিট",
+  "sendEstimatedDeliveryHours": "ঘণ্টা",
+  "sendEstimatedDeliveryHoursToDays": "ঘণ্টা থেকে দিন",
+  "sendFastFee": "দ্রুত",
+  "sendRelativeFees": "আপেক্ষিক ফি",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "নেটওয়ার্ক ফি নির্বাচন করুন",
+  "sendSubSatVbyteWarning": "1 sat/vB-এর কম হারের লেনদেন নিশ্চিত হতে বেশি সময় নিতে পারে এবং সব নোডে ছড়িয়ে নাও পড়তে পারে।"
 }

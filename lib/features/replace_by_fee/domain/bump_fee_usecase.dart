@@ -3,7 +3,10 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    as wallet
+    show Network, NetworkX;
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
@@ -23,20 +26,42 @@ import 'package:meta/meta.dart';
 class BumpFeeUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
-  final AppFeeEstimates _feeEstimates;
+  final Fees _fees;
+  final Preferences _preferences;
 
   BumpFeeUsecase({
     required this._bitcoinWalletRepository,
     required this._broadcastBitcoinTransactionUsecase,
-    required this._feeEstimates,
+    required this._fees,
+    required this._preferences,
   });
 
   @useResult
   Future<Result<FeeOptions, ReplaceByFeeFailure>> getNetworkFees() async {
     try {
-      final fees = await _feeEstimates.execute(isLiquid: false);
-      return Ok(fees);
-    } catch (e, st) {
+      final SettingsEntity settings;
+      switch (await _preferences.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err(:final failure):
+          final reason = 'Preferences read failed: ${failure.runtimeType}';
+          log.warning(reason);
+          return const Err(ReplaceByFeeNetworkFeesFailure());
+      }
+      final network = wallet.Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: false,
+      );
+      switch (await _fees.estimate(network.shared)) {
+        case Ok(:final value):
+          return Ok(value);
+        case Err(:final failure):
+          final reason =
+              'Network fee estimation unavailable: ${failure.runtimeType}';
+          log.warning(reason);
+          return const Err(ReplaceByFeeNetworkFeesFailure());
+      }
+    } on Exception catch (e, st) {
       log.warning('Failed to fetch network fees for RBF', error: e, trace: st);
       return const Err(ReplaceByFeeNetworkFeesFailure());
     }

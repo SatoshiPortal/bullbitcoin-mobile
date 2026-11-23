@@ -33,6 +33,7 @@ void main() {
   late _Connections connections;
   late _Http http;
   late List<String> bases;
+  late FeeSource? preferredSource;
   late Fees fees;
 
   setUp(() {
@@ -41,13 +42,14 @@ void main() {
     connections = _Connections();
     http = _Http();
     bases = [];
+    preferredSource = null;
     when(() => mempool.servers).thenReturn(servers);
     when(() => http.get<dynamic>('/api/v1/fees/precise')).thenAnswer(
       (_) async => Response(
         requestOptions: RequestOptions(path: '/api/v1/fees/precise'),
         statusCode: 200,
         data: {
-          'fastestFee': 5,
+          'fastestFee': 5.5,
           'halfHourFee': 4,
           'hourFee': 3,
           'economyFee': 2,
@@ -58,7 +60,7 @@ void main() {
     fees = Fees.open(
       connections: connections,
       mempool: mempool,
-      readPreference: (_) async => null,
+      readPreference: (_) async => preferredSource?.name,
       writePreference: (_, _) async {},
       mempoolHttpClient: (base) {
         bases.add(base);
@@ -75,6 +77,31 @@ void main() {
     expect(connections.networks, [BitcoinNetwork.testnet]);
     expect(bases, isEmpty);
     verifyZeroInteractions(servers);
+  });
+
+  test('Payjoin uses the fastest rate from the preferred source', () async {
+    const network = BitcoinNetwork.testnet;
+    preferredSource = FeeSource.mempool;
+    when(
+      () => servers.activeBase(network: network),
+    ).thenAnswer((_) async => Ok(Uri.parse('https://default.example/testnet')));
+
+    final rate = await fees.payjoin.fastestFeeRate(network: network);
+
+    expect(rate.satsPerVbyte, 5.5);
+    verify(() => servers.activeBase(network: network)).called(1);
+    expect(connections.networks, isEmpty);
+  });
+
+  test('Payjoin receives an exception when estimation fails', () async {
+    const network = BitcoinNetwork.testnet;
+
+    await expectLater(
+      fees.payjoin.fastestFeeRate(network: network),
+      throwsException,
+    );
+
+    expect(connections.networks, [network]);
   });
 
   test('regtest stays on Electrum even with a Mempool override', () async {
@@ -118,7 +145,7 @@ void main() {
         isA<Ok<FeeOptions, FeesFailure>>().having(
           (result) => result.value.fastest.value,
           'fastest',
-          5,
+          5.5,
         ),
       );
       expect(bases, [base]);

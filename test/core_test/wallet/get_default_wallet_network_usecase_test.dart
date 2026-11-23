@@ -1,8 +1,7 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/get_default_wallet_network_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as legacy;
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show GetDefaultWalletNetworkUsecase;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

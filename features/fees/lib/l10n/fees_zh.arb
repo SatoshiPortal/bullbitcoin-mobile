@@ -1,3 +1,22 @@
 {
-  "retry": "学历"
+  "retry": "学历",
+  "doneButton": "Done",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "绝对费用",
+  "sendBelowMinFeeRateError": "费率必须至少为 0.1 sat/vB。",
+  "sendCustomFee": "习俗税",
+  "sendEconomyFee": "经济",
+  "sendEnterAbsoluteFee": "服用绝对税",
+  "sendEnterRelativeFee": "服扎/vB的相对收费",
+  "sendEstimatedDelivery": "估计交付量 ",
+  "sendEstimatedDelivery10Minutes": "10分钟",
+  "sendEstimatedDelivery10to30Minutes": "10-30分钟",
+  "sendEstimatedDeliveryHours": "小时",
+  "sendEstimatedDeliveryHoursToDays": "每天",
+  "sendFastFee": "快速",
+  "sendRelativeFees": "相关费用",
+  "sendSats": "ats",
+  "sendSatsPerVB": "注",
+  "sendSelectNetworkFee": "选择网络收费",
+  "sendSubSatVbyteWarning": "低于 1 sat/vB 的交易可能需要更长时间才能确认，也可能无法传播到所有节点。"
 }
