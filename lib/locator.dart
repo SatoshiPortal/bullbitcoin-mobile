@@ -7,6 +7,11 @@ import 'package:bull_exchange/bull_exchange.dart'
 
 import 'dart:async';
 
+import 'package:ark/funding.dart';
+import 'package:bull_exchange/bull_exchange.dart'
+    show AccelerateTransactionListTile, BuyRoute;
+
+import 'package:backups/backups.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
 import 'package:material_ui/material_ui.dart' show AssetImage;
@@ -62,7 +67,6 @@ import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:access/setup.dart' show AccessFeature;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:signers/routes.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -83,7 +87,6 @@ import 'package:silent/setup.dart';
 import 'package:bb_mobile/features/wallet/public/silent_bindings.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/features/wallet/public/boltz_swaps_setup.dart';
-import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -319,8 +322,7 @@ class AppLocator {
           completeAppStartupUnlock(context);
           context.goNamed(WalletRoute.walletHome.name);
         },
-        onBackUp: (context) =>
-            context.pushNamed<void>(SettingsRoute.backupSettings.name),
+        onBackUp: BackupsNavigation.open,
       ),
     );
     WizardLocator.setup(locator);
@@ -424,8 +426,6 @@ class AppLocator {
     ReceiveLocator.setup(locator);
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
-    BackupSettingsLocator.setup(locator);
-    TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     locator.registerSingleton(
       SwapFeature.mount(

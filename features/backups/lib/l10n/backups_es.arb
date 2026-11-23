@@ -1,0 +1,97 @@
+{
+  "@@locale": "es",
+  "walletDetailsUnnamedWalletFallback": "Billetera Sin Nombre",
+  "backupWalletTitle": "Respaldar su billetera",
+  "testBackupTitle": "Prueba tu respaldo",
+  "continueButton": "Continuar",
+  "passphraseLabel": "Frase de contraseña",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "closeDialogButton": "Cerrar",
+  "backupSettingsPhysicalBackup": "Respaldo Físico",
+  "backupSettingsEncryptedVault": "Bóveda Cifrada",
+  "backupSettingsTested": "Probado",
+  "backupSettingsNotTested": "No Probado",
+  "backupSettingsTestBackup": "Probar Respaldo",
+  "backupSettingsStartBackup": "Iniciar Respaldo",
+  "backupSettingsViewVaultKey": "Ver Clave de la Bóveda",
+  "backupSettingsLabelsButton": "Etiquetas",
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "backupWalletImportanceWarning": "Sin un respaldo, eventualmente perderá el acceso a su dinero. Es críticamente importante hacer un respaldo.",
+  "backupWalletEncryptedVaultTitle": "Bóveda cifrada",
+  "backupWalletEncryptedVaultDescription": "Respaldo anónimo con cifrado robusto usando su nube.",
+  "backupWalletEncryptedVaultTag": "Fácil y simple (1 minuto)",
+  "backupWalletPhysicalBackupTitle": "Respaldo físico",
+  "backupWalletPhysicalBackupDescription": "Escriba 12 palabras en un pedazo de papel. Manténgalas seguras y asegúrese de no perderlas.",
+  "backupWalletPhysicalBackupTag": "Sin confianza (tómese su tiempo)",
+  "backupWalletHowToDecide": "¿Cómo decidir?",
+  "backupWalletHowToDecideBackupModalTitle": "Cómo decidir",
+  "backupWalletHowToDecideBackupLosePhysical": "Una de las formas más comunes en que las personas pierden sus Bitcoin es porque pierden el respaldo físico. Cualquier persona que encuentre su respaldo físico podrá tomar todos sus Bitcoin. Si está muy seguro de que puede ocultarlo bien y nunca perderlo, es una buena opción.",
+  "backupWalletHowToDecideBackupEncryptedVault": "La bóveda cifrada lo protege de ladrones que buscan robar su respaldo. También le impide perder accidentalmente su respaldo ya que se almacenará en su nube. Los proveedores de almacenamiento en nube como Google o Apple no tendrán acceso a sus Bitcoin porque la contraseña de cifrado es demasiado robusta. Existe una pequeña posibilidad de que el servidor web que almacena la clave de cifrado de su respaldo pueda verse comprometido. En este caso, la seguridad del respaldo en su cuenta de nube podría estar en riesgo.",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Respaldo físico: ",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Está seguro de sus propias capacidades de seguridad operacional para ocultar y preservar sus palabras de semilla de Bitcoin.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Bóveda cifrada: ",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "No está seguro y necesita más tiempo para aprender sobre las prácticas de seguridad de respaldo.",
+  "backupWalletHowToDecideBackupMoreInfo": "Visite recoverbull.com para más información.",
+  "testBackupWalletTitle": "Probar {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDefaultWallets": "Billeteras Predeterminadas",
+  "testBackupConfirm": "Confirmar",
+  "testBackupWriteDownPhrase": "Escriba su frase de recuperación\nen el orden correcto",
+  "testBackupStoreItSafe": "Guárdela en un lugar seguro.",
+  "testBackupLastBackupTest": "Última prueba de respaldo: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDoNotShare": "NO COMPARTA CON NADIE",
+  "testBackupTranscribe": "Transcribir",
+  "testBackupDigitalCopy": "Copia digital",
+  "testBackupScreenshot": "Captura de pantalla",
+  "testBackupNext": "Siguiente",
+  "testBackupTapWordsInOrder": "Toque las palabras de recuperación en el\norden correcto",
+  "testBackupWhatIsWordNumber": "¿Cuál es la palabra número {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "testBackupAllWordsSelected": "Ha seleccionado todas las palabras",
+  "testBackupPassphrase": "Frase de contraseña",
+  "testBackupSuccessTitle": "¡Prueba completada exitosamente!",
+  "testBackupSuccessMessage": "Puede recuperar el acceso a una billetera Bitcoin perdida",
+  "testBackupSuccessButton": "Entendido",
+  "testBackupErrorIncorrectOrder": "Orden de palabras incorrecto. Por favor intente nuevamente.",
+  "transactionHistoryTitle": "Historial de transacciones",
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Desconocido",
+  "settingsBackupTitle": "Copia de seguridad",
+  "testBackupErrorWalletsUnavailable": "No se pudieron cargar tus billeteras. Inténtalo de nuevo.",
+  "testBackupErrorNoWallets": "No hay ninguna billetera cuya copia de seguridad se pueda probar.",
+  "testBackupErrorNoWalletSelected": "Selecciona una billetera antes de probar su copia de seguridad.",
+  "testBackupErrorSeedUnavailable": "No se pudo leer tu frase de recuperación. Inténtalo de nuevo.",
+  "testBackupErrorSeedNotMnemonic": "Esta billetera no tiene una frase de recuperación para probar.",
+  "testBackupErrorCompletionFailed": "Tu frase de recuperación era correcta, pero no pudimos guardar el resultado. Inténtalo de nuevo.",
+  "screenPrivacyUnavailable": "No se pudo activar la protección de pantalla, así que este secreto permanece oculto.",
+  "passphraseShow": "Mostrar frase de contraseña",
+  "passphraseHide": "Ocultar frase de contraseña",
+  "passphraseWhitespaceWarning": "Los espacios al principio o al final forman parte de tu frase de contraseña.",
+  "passphraseBackupPrompt": "Introduce tu frase de contraseña para verificar tu copia de seguridad.",
+  "passphraseIncorrect": "Frase de contraseña incorrecta.",
+  "passphraseWordsIncompleteWarning": "Estas palabras por sí solas no pueden restaurar esta billetera. Guarda tu frase de contraseña por separado.",
+  "backupCardTitle": "Protege tus bitcoins.",
+  "backupCardSubtitle": "Haz una copia de seguridad de tu billetera ahora."
+}

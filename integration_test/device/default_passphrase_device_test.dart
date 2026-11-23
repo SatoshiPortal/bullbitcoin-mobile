@@ -1,3 +1,9 @@
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
+import 'package:secrets/storage.dart';
+import 'package:bull_recoverbull/storage.dart';
+import 'package:backups/testing.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+
 import '../initialization_result.dart';
 
 import 'dart:math';
@@ -5,16 +11,9 @@ import 'dart:math';
 import 'package:bull_ui/app_theme.dart';
 import 'package:access/access.dart';
 import 'package:access/testing.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
@@ -539,13 +538,7 @@ void registerPhysicalRecoveryTests() {
       expect(secret.info.hasPassphrase, isTrue);
       expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
 
-      backupBloc = TestWalletBackupBloc(
-        completeBackupVerificationUsecase:
-            locator<CompleteBackupVerificationUsecase>(),
-        loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
-        getSecretFromFingerprintUsecase:
-            locator<GetSecretFromFingerprintUsecase>(),
-      )..add(const LoadWallets());
+      backupBloc = _deviceBackupBloc()..add(const LoadWallets());
       final selectedBloc = backupBloc;
       await tester.pumpWidget(
         MaterialApp(
@@ -555,7 +548,10 @@ void registerPhysicalRecoveryTests() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: selectedBloc,
-            child: VerifyMnemonicScreen(onTestSucceeded: (_) {}),
+            child: VerifyMnemonicScreen(
+              onTestSucceeded: (_) {},
+              successImage: AssetImage(Assets.animations.successTick.path),
+            ),
           ),
         ),
       );
@@ -605,13 +601,7 @@ void registerReturnNavigationTest() {
   testWidgets('reauthentication Back only closes the Navigator gate', (
     tester,
   ) async {
-    final bloc = TestWalletBackupBloc(
-      completeBackupVerificationUsecase:
-          locator<CompleteBackupVerificationUsecase>(),
-      loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
-      getSecretFromFingerprintUsecase:
-          locator<GetSecretFromFingerprintUsecase>(),
-    )..add(const LoadWallets());
+    final bloc = _deviceBackupBloc()..add(const LoadWallets());
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -619,6 +609,7 @@ void registerReturnNavigationTest() {
           builder: (_, _) => BlocProvider.value(
             value: bloc,
             child: ShowMnemonicScreen(
+              successImage: AssetImage(Assets.animations.successTick.path),
               onTestSucceeded: (_) {},
               access: const _DeviceCancelUnlock(),
             ),
@@ -660,3 +651,12 @@ void registerReturnNavigationTest() {
     }
   });
 }
+
+TestWalletBackupBloc _deviceBackupBloc() => createBackupBloc(
+  locator<Secrets>(),
+  locator<SecretsInventory>(),
+  locator<ActiveEnvironmentReader>(),
+  (network) => locator<RecoverBullWalletBackups>(
+    instanceName: network.env == NetworkEnv.regtest ? 'regtest' : null,
+  ),
+);

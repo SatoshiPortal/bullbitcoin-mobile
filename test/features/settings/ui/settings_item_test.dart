@@ -78,8 +78,6 @@ void main() {
           previousY = y;
         }
       }
-      // The only other explicit order is backup; all its entries remain available.
-      expect(backupSettingsDataItemOrder.map(items.byId), hasLength(2));
     });
   }
 

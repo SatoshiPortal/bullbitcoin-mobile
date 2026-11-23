@@ -1,0 +1,235 @@
+{
+  "testBackupWriteDownPhrase": "เขียนวลีของคุณ\nการแก้ไขที่ถูกต้อง",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "สําเนาดิจิตอล",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletEncryptedVaultTag": "ใช้งานง่าย (1 นาที)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "หนึ่งในวิธีที่สําคัญที่สุดที่สูญเสีย Bitcoin เพราะพวกเขาสูญเสียการสํารองข้อมูลทางกายภาพ คุณค้นหาการสํารองข้อมูลทางกายภาพของคุณจะสามารถเข้าถึง Bitcoin ของคุณ หากคุณมีความมั่นใจมากที่คุณสามารถซ่อนมันและไม่เคยสูญเสียมันเป็นตัวเลือกที่ดี.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "แตะคํากู้คืนในคําพูด\nคําสั่งซื้อ",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "ค่าเริ่มต้นกระเป๋าสตางค์",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "ทดสอบเสร็จสมบูรณ์!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "บัตร",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "คุณเลือกคําพูดทั้งหมด",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletPhysicalBackupTag": "ความเชื่อมั่น (เวลาของคุณ)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "การทดสอบ",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "ป้าย",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "การกู้คืน",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "คุณมั่นใจในประสิทธิภาพความปลอดภัยของคุณเพื่อซ่อนและรักษาผลเมล็ดพันธุ์ Bitcoin.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "การเข้ารหัสที่เข้ารหัสป้องกันคุณจาก thieves มองหาการสํารองข้อมูลของคุณ นอกจากนี้ยังป้องกันคุณจากการสูญเสียการสํารองข้อมูลของคุณเนื่องจากจะเก็บไว้ในเมฆของคุณ ผู้ให้บริการคลาวด์เช่น Google หรือ Apple ไม่ได้รับการเข้าถึง Bitcoin ของคุณเนื่องจากรหัสผ่านที่แข็งแกร่งเกินไป มีความเป็นไปได้เล็ก ๆ ของเว็บเซิร์ฟเวอร์ที่จัดเก็บการสํารองข้อมูลของคุณอาจส่งผลกระทบต่อ. ในเหตุการณ์นี้ ความปลอดภัยของการสํารองข้อมูลในบัญชีคลาวด์ของคุณอาจมีความเสี่ยง.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "สําเนา",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "คําสั่งที่ถูกต้อง กรุณาลองอีกครั้ง.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletEncryptedVaultTitle": "การเข้ารหัส",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "walletDetailsUnnamedWalletFallback": "ชื่อข้อความ",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "การสํารองข้อมูลทางกายภาพ: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "เยี่ยมชม กู้คืนข้อมูลเพิ่มเติม.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "การเข้ารหัส: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "testBackupTitle": "ทดสอบกระเป๋าสตางค์ของคุณ",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "closeDialogButton": "ปิด",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupWalletPhysicalBackupDescription": "เขียน 12 คําบนกระดาษ เพื่อให้ปลอดภัยและให้แน่ใจว่าไม่สูญเสียพวกเขา.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "passphraseLabel": "บัตร",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "ถัดไป",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "ภาพหน้าจอ",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "การสํารองข้อมูลกระเป๋าสตางค์ของคุณ",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "ประวัติธุรกรรม",
+  "backupSettingsPhysicalBackup": "การสํารองข้อมูลทางกายภาพ",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "วิธีการตัดสินใจ?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupConfirm": "ยืนยัน",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupLastBackupTest": "ทดสอบการสํารองข้อมูล: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "ไม่ทดสอบ",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "วิธีการตัดสินใจ",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "ทดสอบ {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "testBackupDoNotShare": "อย่าส่งได้",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsViewVaultKey": "มุมมอง คีย์",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupSuccessButton": "ดู",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "ร้านค้าออนไลน์.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "คำที่ {number} คืออะไร?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "สํารองข้อมูลด้วยการเข้ารหัสที่แข็งแกร่งโดยใช้ระบบคลาวด์ของคุณ.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "คุณไม่ต้องกังวลและคุณต้องเรียนรู้เกี่ยวกับการดําเนินงานความปลอดภัย.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletImportanceWarning": "ไม่มีการสํารองข้อมูล, คุณจะได้รับการเข้าถึงเงินของคุณ. มันเป็นสิ่งสําคัญที่จะสํารองข้อมูล.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "continueButton": "อ่านต่อ",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "testBackupSuccessMessage": "คุณสามารถกู้คืนการเข้าถึงกระเป๋าสตางค์ Bitcoin",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupSettingsTestBackup": "ทดสอบการสํารองข้อมูล",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "การสํารองข้อมูลทางกายภาพ",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "การเข้ารหัส",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "เริ่มต้นการสํารองข้อมูล",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "coreScreensUnknown": "ไม่ทราบ",
+  "testBackupErrorWalletsUnavailable": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
+  "testBackupErrorNoWallets": "ไม่มีกระเป๋าเงินที่จะทดสอบข้อมูลสำรอง",
+  "testBackupErrorNoWalletSelected": "เลือกกระเป๋าเงินก่อนทดสอบข้อมูลสำรอง",
+  "testBackupErrorSeedUnavailable": "ไม่สามารถอ่านวลีกู้คืนของคุณได้ โปรดลองอีกครั้ง",
+  "testBackupErrorSeedNotMnemonic": "กระเป๋าเงินนี้ไม่มีวลีกู้คืนให้ทดสอบ",
+  "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง",
+  "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
+  "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้"
+}

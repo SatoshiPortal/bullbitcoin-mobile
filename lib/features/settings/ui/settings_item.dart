@@ -80,11 +80,6 @@ enum SettingsItemId {
 
 enum SettingsItemSection { root, backup, wallet, app }
 
-const backupSettingsDataItemOrder = [
-  SettingsItemId.labels,
-  SettingsItemId.transactionHistory,
-];
-
 const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
   SettingsItemId.ark,
@@ -263,7 +258,7 @@ List<SettingsItem> buildSettingsItems({
       title: backupSection,
       path: path(SettingsItemSection.root, backupSection),
       icon: Icons.backup_outlined,
-      open: (context) => context.pushNamed(SettingsRoute.backupSettings.name),
+      open: BackupsNavigation.open,
       keywords: _keywords(
         localization.settingsSearchBackupKeywords,
         english.settingsSearchBackupKeywords,

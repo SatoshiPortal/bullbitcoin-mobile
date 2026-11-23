@@ -159,8 +159,16 @@ graph TD
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
+  backups --> access
+  backups --> bull_logger
   backups --> bull_recoverbull
   backups --> bull_ui
+  backups --> label_editor
+  backups --> physical_backup_verification
+  backups --> preferences
+  backups --> primitives
+  backups --> screen_privacy
+  backups --> secrets
   bbx_api --> primitives
   bip85 --> bull_ui
   bip85 --> preferences

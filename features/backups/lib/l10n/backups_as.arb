@@ -1,0 +1,217 @@
+{
+  "walletDetailsUnnamedWalletFallback": "নামহীন Wallet",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "backupWalletTitle": "আপোনাৰ wallet বেকআপ কৰক",
+  "testBackupTitle": "আপোনাৰ wallet বেকআপ পৰীক্ষা কৰক",
+  "continueButton": "অব্যাহত ৰাখক",
+  "passphraseLabel": "Passphrase",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "closeDialogButton": "বন্ধ কৰক",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupSettingsPhysicalBackup": "ভৌতিক বেকআপ",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupSettingsEncryptedVault": "এনক্ৰিপ্টেড Vault",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsTested": "পৰীক্ষিত",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsNotTested": "পৰীক্ষা কৰা হোৱা নাই",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupSettingsTestBackup": "বেকআপ পৰীক্ষা কৰক",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupSettingsStartBackup": "বেকআপ আৰম্ভ কৰক",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "backupSettingsViewVaultKey": "Vault কী চাওক",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "backupSettingsLabelsButton": "লেবেলসমূহ",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletImportanceWarning": "বেকআপ নোহোৱাকৈ আপুনি শেষত আপোনাৰ ধনলৈ প্ৰৱেশ হেৰুৱাব। বেকআপ কৰাটো অতি গুৰুত্বপূৰ্ণ।",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "backupWalletEncryptedVaultTitle": "এনক্ৰিপ্টেড vault",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "backupWalletEncryptedVaultDescription": "আপোনাৰ ক্লাউড ব্যৱহাৰ কৰি শক্তিশালী এনক্ৰিপ্শনসহ বেনামী বেকআপ।",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletEncryptedVaultTag": "সহজ আৰু সৰল (১ মিনিট)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletPhysicalBackupTitle": "ভৌতিক বেকআপ",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupWalletPhysicalBackupDescription": "এখন কাগজত ১২টা শব্দ লিখক। সেইবোৰ সুৰক্ষিত ৰাখক আৰু হেৰুৱাব নোৱাৰাকৈ মনোযোগ দিয়ক।",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "backupWalletPhysicalBackupTag": "বিশ্বাসহীন (সময় লওক)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupWalletHowToDecide": "কেনেকৈ সিদ্ধান্ত ল'ব?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "কেনেকৈ সিদ্ধান্ত ল'ব",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "মানুহে Bitcoin হেৰুৱাৰ অন্যতম সাধাৰণ কাৰণ হ'ল ভৌতিক বেকআপ হেৰুওৱা। আপোনাৰ ভৌতিক বেকআপ পোৱা যিকোনো ব্যক্তিয়ে আপোনাৰ সকলো Bitcoin ল'ব পাৰিব। যদি আপুনি নিশ্চিত যে ইয়াক ভালদৰে লুকুৱাব পাৰিব আৰু কেতিয়াও হেৰুৱাব নাপাব, তেন্তে এইটো এটা ভাল বিকল্প।",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "এনক্ৰিপ্টেড vault আপোনাক চোৰ-ডকাইতৰ পৰা সুৰক্ষা দিয়ে যি আপোনাৰ বেকআপ চুৰি কৰিব বিচাৰে। ই আপোনাক দুৰ্ঘটনাক্ৰমে বেকআপ হেৰুওৱাৰ পৰাও সুৰক্ষিত কৰে কাৰণ এইটো আপোনাৰ ক্লাউডত সংৰক্ষণ কৰা থাকিব। Google বা Apple-ৰ দৰে ক্লাউড সংৰক্ষণ প্ৰদানকাৰীৰ আপোনাৰ Bitcoin-লৈ প্ৰৱেশ নাথাকিব কাৰণ এনক্ৰিপ্শন পাছৱৰ্ড অতি শক্তিশালী। এটা ক্ষুদ্ৰ সম্ভাৱনা আছে যে আপোনাৰ বেকআপৰ এনক্ৰিপ্শন কী সংৰক্ষণ কৰা ৱেব চাৰ্ভাৰ আপোছ হ'ব পাৰে। এই ক্ষেত্ৰত আপোনাৰ ক্লাউড একাউন্টত বেকআপৰ সুৰক্ষা বিপদত পৰিব পাৰে।",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "ভৌতিক বেকআপ: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "আপুনি আপোনাৰ Bitcoin seed শব্দসমূহ লুকুৱাই ৰখা আৰু সংৰক্ষণ কৰাৰ নিজৰ অপাৰেশনেল সুৰক্ষা সামৰ্থ্যৰ প্ৰতি আত্মবিশ্বাসী।",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "এনক্ৰিপ্টেড vault: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "আপুনি নিশ্চিত নহয় আৰু বেকআপ সুৰক্ষা পদ্ধতিৰ বিষয়ে জানিবলৈ অধিক সময়ৰ প্ৰয়োজন।",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "অধিক তথ্যৰ বাবে recoverbull.com চাওক।",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "testBackupWalletTitle": "{walletName} পৰীক্ষা কৰক",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDefaultWallets": "ডিফল্ট Wallets",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupConfirm": "নিশ্চিত কৰক",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupWriteDownPhrase": "আপোনাৰ পুনৰুদ্ধাৰ phrase সঠিক ক্ৰমত লিখক",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupStoreItSafe": "ইয়াক সুৰক্ষিত ঠাইত সংৰক্ষণ কৰক।",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupLastBackupTest": "শেষবাৰৰ বেকআপ পৰীক্ষা: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDoNotShare": "কাৰো সৈতে শ্বেয়াৰ নকৰিব",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "testBackupTranscribe": "লিপিবদ্ধ কৰক",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupDigitalCopy": "ডিজিটেল কপি",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "testBackupScreenshot": "স্ক্ৰীনশ্বট",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "testBackupNext": "পৰৱৰ্তী",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupTapWordsInOrder": "পুনৰুদ্ধাৰৰ শব্দসমূহ সঠিক ক্ৰমত টেপ কৰক",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupWhatIsWordNumber": "{number} নম্বৰ শব্দটো কি?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "testBackupAllWordsSelected": "আপুনি সকলো শব্দ বাছনি কৰিছে",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "testBackupPassphrase": "Passphrase",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupSuccessTitle": "পৰীক্ষা সফলভাৱে সম্পন্ন হৈছে!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupSuccessMessage": "আপুনি হেৰোৱা Bitcoin wallet পুনৰুদ্ধাৰ কৰিব পাৰিব",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "testBackupSuccessButton": "বুজিলোঁ",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupErrorIncorrectOrder": "ভুল শব্দ ক্ৰম। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
+  "coreScreensUnknown": "Unknown",
+  "testBackupErrorWalletsUnavailable": "আপোনাৰ ৱালেটবোৰ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorNoWallets": "বেকআপ পৰীক্ষা কৰিবলৈ কোনো ৱালেট নাই।",
+  "testBackupErrorNoWalletSelected": "বেকআপ পৰীক্ষা কৰাৰ আগতে এটা ৱালেট বাছনি কৰক।",
+  "testBackupErrorSeedUnavailable": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ পঢ়িব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorSeedNotMnemonic": "এই ৱালেটত পৰীক্ষা কৰিবলৈ কোনো পুনৰুদ্ধাৰ বাক্যাংশ নাই।",
+  "testBackupErrorCompletionFailed": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ শুদ্ধ আছিল, কিন্তু আমি ফলাফল সংৰক্ষণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "backupCardTitle": "আপোনাৰ বিটক'ইন সুৰক্ষিত কৰক।",
+  "backupCardSubtitle": "এতিয়াই আপোনাৰ ৱালেট বেকআপ কৰক।"
+}

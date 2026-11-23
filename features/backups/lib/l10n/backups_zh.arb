@@ -1,0 +1,88 @@
+{
+  "testBackupWriteDownPhrase": "写你的恢复短语\n更正",
+  "testBackupDigitalCopy": "数字复印件",
+  "backupWalletEncryptedVaultTag": "简便和简单(1分钟)",
+  "backupWalletHowToDecideBackupLosePhysical": "人民失去生计的最常见途径之一,是失去物质支持。 找到你身体支持的人将能够带上你所有的座位。 如果你确信你能够掩盖它,永远不会失去它,那么它就是一个好选择.",
+  "testBackupTapWordsInOrder": "恢复语\n权利保护令",
+  "testBackupDefaultWallets": "违约情况",
+  "testBackupSuccessTitle": "成功完成试验!",
+  "testBackupPassphrase": "Passphrase",
+  "testBackupAllWordsSelected": "你选择了所有字句",
+  "backupWalletPhysicalBackupTag": "无信托能力(时间)",
+  "backupSettingsTested": "测试",
+  "backupSettingsLabelsButton": "Labels",
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "你相信你自己的业务安全能力,能够隐藏和维护你的种子.",
+  "backupWalletHowToDecideBackupEncryptedVault": "被加密的过失使你无法looking望偷走。 这也使你无法意外地失去支持,因为它将储存在你的云层。 谷歌或 Apple果等云层储存供应商由于加密密码太强而无法进入海底。 储存你的后备加密钥匙的网络服务器可能受到削弱。 在这种情况下,贵云层账户的备份安全可能受到威胁.",
+  "testBackupTranscribe": "说明",
+  "testBackupErrorIncorrectOrder": "页: 1 请再次审判.",
+  "backupWalletEncryptedVaultTitle": "加密",
+  "walletDetailsUnnamedWalletFallback": "不详",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "身体支持: ",
+  "backupWalletHowToDecideBackupMoreInfo": "访问后收集更多信息.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "加密: ",
+  "testBackupTitle": "检验您的墙壁",
+  "closeDialogButton": "近距离",
+  "backupWalletPhysicalBackupDescription": "在一份文件上写了12字。 让他们安全,并确保他们不会失去.",
+  "passphraseLabel": "Passphrase",
+  "testBackupNext": "下一步",
+  "testBackupScreenshot": "放映",
+  "backupWalletTitle": "页: 1",
+  "transactionHistoryTitle": "交易记录",
+  "backupSettingsPhysicalBackup": "实物补偿",
+  "backupWalletHowToDecide": "如何决定?",
+  "testBackupConfirm": "执 行",
+  "testBackupLastBackupTest": "后续测试:{timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "未经测试",
+  "backupWalletHowToDecideBackupModalTitle": "如何决定",
+  "testBackupWalletTitle": "测试{walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "testBackupDoNotShare": "纽约总部",
+  "backupSettingsViewVaultKey": "观点五 关键",
+  "testBackupSuccessButton": "签字",
+  "testBackupStoreItSafe": "存放在安全的地方.",
+  "testBackupWhatIsWordNumber": "字数{number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "匿名背书,使用你的云层进行强有力的加密.",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "你不相信,你需要更多时间了解后备安保做法.",
+  "backupWalletImportanceWarning": "如果没有支持,你最终将失去获得你的钱的机会。 提供支持至关重要.",
+  "continueButton": "继续",
+  "testBackupSuccessMessage": "你们能够恢复使用丢失的“红外墙”",
+  "backupSettingsTestBackup": "退约",
+  "backupWalletPhysicalBackupTitle": "物理备份",
+  "backupSettingsEncryptedVault": "加密违约",
+  "backupSettingsStartBackup": "启动",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "未知",
+  "testBackupErrorWalletsUnavailable": "无法加载您的钱包。请重试。",
+  "testBackupErrorNoWallets": "没有可测试备份的钱包。",
+  "testBackupErrorNoWalletSelected": "请先选择一个钱包，再测试其备份。",
+  "testBackupErrorSeedUnavailable": "无法读取您的恢复短语。请重试。",
+  "testBackupErrorSeedNotMnemonic": "此钱包没有可测试的恢复短语。",
+  "testBackupErrorCompletionFailed": "您的恢复短语正确，但我们无法保存结果。请重试。",
+  "backupCardTitle": "保护您的比特币。",
+  "backupCardSubtitle": "立即备份您的钱包。"
+}

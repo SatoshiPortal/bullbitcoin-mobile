@@ -1,0 +1,235 @@
+{
+  "testBackupWriteDownPhrase": "عبارت بازیابی خود را بنویسید\nدر دستور صحیح",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "کپی دیجیتال",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletEncryptedVaultTag": "آسان و ساده (1 دقیقه)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "یکی از رایج ترین راه هایی که مردم بیت کوین خود را از دست می دهند این است که آنها پشتیبان فیزیکی خود را از دست می دهند. هر کسی که پشتیبان فیزیکی شما را پیدا کند می تواند تمام Bitcoin شما را بگیرد. اگر بسیار مطمئن هستید که می توانید آن را به خوبی پنهان کنید و هرگز آن را از دست ندهید، گزینه خوبی است.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "روی کلمات بازیابی در\nدستور صحیح",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "کیف پول های شکست خورده",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "آزمون با موفقیت تمام شد!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "Passphrase",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "همه کلمات را انتخاب کرده اید",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletPhysicalBackupTag": "بی اعتماد (زمان خود را)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "آزمون",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "برچسب ها",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "بازیابی",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "شما به قابلیت های امنیتی عملیاتی خود برای پنهان کردن و حفظ کلمات بذر بیت کوین اعتماد دارید.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "کابینت رمزگذاری شده مانع از شما دزدان می شود که به دنبال سرقت پشتیبان خود هستید. همچنین از از دست دادن نسخه پشتیبان خود به طور تصادفی جلوگیری می کند زیرا در ابر شما ذخیره می شود. ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. احتمال کمی وجود دارد که سرور وب که کلید رمزگذاری پشتیبان شما را ذخیره می کند، به خطر بیفتد. در این رویداد، امنیت پشتیبان گیری در حساب ابری شما می تواند در معرض خطر باشد.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "Transcribe",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "دستور صحیح کلمه لطفا دوباره امتحان کنید.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletEncryptedVaultTitle": "بایگانی برچسب ها",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "walletDetailsUnnamedWalletFallback": "کیف پول بدون نام",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "پشتیبانی فیزیکی: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "برای کسب اطلاعات بیشتر به Recoverybull.com مراجعه کنید.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "بایگانی برچسب ها: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "testBackupTitle": "کیف پول خود را تست کنید",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "closeDialogButton": "نزدیک",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupWalletPhysicalBackupDescription": "12 کلمه را روی یک تکه کاغذ بنویسید. آنها را امن نگه دارید و مطمئن شوید که آنها را از دست ندهید.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "بعدی",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "Screenshot",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "کیف پول خود را پشتیبان بگیرید",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "تاریخچه تراکنش‌ها",
+  "backupSettingsPhysicalBackup": "پشتیبانی فیزیکی",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "چگونه تصمیم بگیریم؟?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupConfirm": "تایید",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupLastBackupTest": "آخرین تست پشتیبان: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "تست نکردن",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "چگونه تصمیم بگیریم",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "Test {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "testBackupDoNotShare": "با هیچ کس مخالفت نکن",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsViewVaultKey": "مشاهده Vault کلید کلیدی",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupSuccessButton": "آن را",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "آن را در جایی امن ذخیره کنید.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "کلمه‌ی شماره {number} چیست؟",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "نسخه پشتیبان ناشناس با رمزگذاری قوی با استفاده از ابر شما.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "شما مطمئن نیستید و نیاز به زمان بیشتری برای یادگیری در مورد شیوه های امنیتی پشتیبان دارید.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletImportanceWarning": "بدون نسخه پشتیبان، شما در نهایت دسترسی به پول خود را از دست خواهید داد. بسیار مهم است که یک پشتیبان بگیرید.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "continueButton": "ادامه",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "testBackupSuccessMessage": "شما می توانید دسترسی به کیف پول از دست رفته بیت کوین را بازیابی کنید",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupSettingsTestBackup": "تست پشتیبان",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "پشتیبانی فیزیکی",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "رمزگذاری Vault",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "coreScreensUnknown": "نامشخص",
+  "testBackupErrorWalletsUnavailable": "کیف‌پول‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "testBackupErrorNoWallets": "هیچ کیف‌پولی برای آزمایش نسخهٔ پشتیبان وجود ندارد.",
+  "testBackupErrorNoWalletSelected": "پیش از آزمایش نسخهٔ پشتیبان، یک کیف‌پول انتخاب کنید.",
+  "testBackupErrorSeedUnavailable": "عبارت بازیابی شما خوانده نشد. لطفاً دوباره تلاش کنید.",
+  "testBackupErrorSeedNotMnemonic": "این کیف‌پول عبارت بازیابی برای آزمایش ندارد.",
+  "testBackupErrorCompletionFailed": "عبارت بازیابی شما درست بود، اما نتوانستیم نتیجه را ذخیره کنیم. لطفاً دوباره تلاش کنید.",
+  "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
+  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید."
+}

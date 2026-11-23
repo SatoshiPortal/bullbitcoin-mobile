@@ -1,5 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/backup_settings/public/backup_settings.dart';
+import 'package:backups/backups.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -18,7 +19,12 @@ void main() {
           theme: AppTheme.themeData(type),
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: BackupCard(onTap: () => taps++)),
+          home: Scaffold(
+            body: BackupCard(
+              icon: AssetImage(Assets.misc.passwordbook.path),
+              onTap: () => taps++,
+            ),
+          ),
         ),
       );
       final banner = find.byType(BackupCard);

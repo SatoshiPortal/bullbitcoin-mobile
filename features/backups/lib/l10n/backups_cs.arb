@@ -1,0 +1,235 @@
+{
+  "walletDetailsUnnamedWalletFallback": "Unnamed Peněženka",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "testBackupWriteDownPhrase": "Napište svou regeneraci\nv správné objednávce",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "Digitální kopie",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletEncryptedVaultTag": "Snadné a jednoduché (1 minut)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "Jedním z nejčastějších způsobů, jak lidé ztratí svůj Bitcoin je proto, že ztratí fyzickou zálohu. Každý, kdo zjistí, že vaše fyzické zálohování bude schopen vzít všechny vaše Bitcoin. Pokud jste velmi přesvědčeni, že ho můžete dobře skrýt a nikdy neztratíte, je to dobrá volba.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "Výchozí peněženky",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "Test úspěšně dokončil!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "Čeština",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "Vybrali jste všechny slova",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletPhysicalBackupTag": "Bezpovědné (přihlášení času)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "Testováno",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "Štítky",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Jste si jisti, že máte vlastní provozní bezpečnostní schopnosti skrýt a zachovat své Bitcoin seed slova.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "Šifrovaný klenba vás brání od zlodějů, kteří chtějí ukrást zálohu. Také vás brání z omylu, že ztratíte zálohu, protože bude uložen ve vašem cloudu. Poskytovatelé cloudových úložišť jako Google nebo Apple nebude mít přístup k vaší Bitcoin, protože šifrovací heslo je příliš silná. Existuje malá možnost, že webový server, který ukládá šifrovací klíč vaší zálohy, může být ohrožen. V tomto případě může být bezpečnost zálohy ve vašem cloudovém účtu ohrožena.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "Čeština",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "Nesprávná objednávka slov. Prosím, zkuste to znovu.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletEncryptedVaultTitle": "Šifrovaná klenba",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Fyzická záloha: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "Navštivte obnovitbull.com pro více informací.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "retry": "Hledat",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Šifrovaná klenba: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "testBackupTitle": "Zkoumat zálohu vaší peněženky",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "backupWalletPhysicalBackupDescription": "Sepsat 12 slov na kus papíru. Udržujte je bezpečné a ujistěte se, že je neztrácejí.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "passphraseLabel": "Čeština",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "Čeština",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "Čeština",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "Zálohování vaší peněženky",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "Historie transakcí",
+  "backupSettingsPhysicalBackup": "Fyzické zálohování",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "Jak se rozhodnout?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupLastBackupTest": "Poslední test zálohování: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Netestováno",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "Jak se rozhodnout",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "Test {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "testBackupDoNotShare": "NESMĚJÍ S ANYOU",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsViewVaultKey": "Zobrazit Vault Čeština",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupSuccessButton": "Chci to",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "Uchovávejte někde v bezpečí.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "Co je slovo číslo {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Anonymní zálohování se silným šifrováním pomocí cloudu.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Nejste si jisti a potřebujete více času se dozvědět o postupech zabezpečení zálohování.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletImportanceWarning": "Bez zálohování, nakonec ztratíte přístup k vašim penězům. Je velmi důležité provést zálohu.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "testBackupSuccessMessage": "Jste schopni obnovit přístup k ztracené Bitcoin peněženku",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupSettingsTestBackup": "Test zálohování",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "Fyzická záloha",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "Šifrovaný Vault",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "closeDialogButton": "Zavřít",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "testBackupConfirm": "Potvrdit",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "continueButton": "Pokračovat",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensUnknown": "Neznámé",
+  "testBackupErrorWalletsUnavailable": "Vaše peněženky se nepodařilo načíst. Zkuste to prosím znovu.",
+  "testBackupErrorNoWallets": "Není k dispozici žádná peněženka, jejíž zálohu by bylo možné otestovat.",
+  "testBackupErrorNoWalletSelected": "Před testováním zálohy vyberte peněženku.",
+  "testBackupErrorSeedUnavailable": "Vaši obnovovací frázi se nepodařilo přečíst. Zkuste to prosím znovu.",
+  "testBackupErrorSeedNotMnemonic": "Tato peněženka nemá obnovovací frázi k otestování.",
+  "testBackupErrorCompletionFailed": "Vaše obnovovací fráze byla správná, ale výsledek se nepodařilo uložit. Zkuste to prosím znovu.",
+  "backupCardTitle": "Chraňte své bitcoiny.",
+  "backupCardSubtitle": "Zazálohujte si peněženku hned teď."
+}

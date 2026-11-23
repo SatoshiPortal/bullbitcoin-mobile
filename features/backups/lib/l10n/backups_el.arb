@@ -1,0 +1,235 @@
+{
+  "backupWalletEncryptedVaultTag": "Εύκολο και απλό (1 λεπτό)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletPhysicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "Tested",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "Ετικέτες",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletEncryptedVaultTitle": "Αποκρυπτωμένο θησαυροφυλάκιο",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "testBackupTitle": "Δοκιμάστε το backup πορτοφόλι σας",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "closeDialogButton": "Κλείστε κοντά",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "backupWalletPhysicalBackupDescription": "Γράψτε 12 λέξεις σε ένα κομμάτι χαρτί. Κρατήστε τους ασφαλείς και βεβαιωθείτε ότι δεν τα χάσετε.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "backupWalletTitle": "Ανοίξτε το πορτοφόλι σας",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "Ιστορικό συναλλαγών",
+  "backupSettingsPhysicalBackup": "Φυσικό Backup",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "Πώς να αποφασίσετε?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "backupSettingsNotTested": "Δεν Tested",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupSettingsViewVaultKey": "Δείτε Vault Key Key Key",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "backupWalletEncryptedVaultDescription": "Anonymous backup με ισχυρή κρυπτογράφηση χρησιμοποιώντας το σύννεφο σας.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletImportanceWarning": "Χωρίς ένα αντίγραφο ασφαλείας, θα χάσετε τελικά την πρόσβαση στα χρήματά σας. Είναι εξαιρετικά σημαντικό να κάνετε ένα αντίγραφο ασφαλείας.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "continueButton": "Συνεχίστε να συνεχίζετε",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "backupSettingsTestBackup": "Backup Test Backup Test Backup",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "Φυσικό backup",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "Κατακρυπτόμενος Vault",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "Ξεκινήστε το Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "testBackupWriteDownPhrase": "Γράψτε τη φράση ανάκτησης\nστη σωστή τάξη",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "Ψηφιακό αντίγραφο",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "Ένας από τους πιο συνηθισμένους τρόπους που οι άνθρωποι χάνουν το Bitcoin τους είναι επειδή χάνουν το φυσικό αντίγραφο ασφαλείας. Ο καθένας που βρίσκει το φυσικό σας αντίγραφο ασφαλείας θα είναι σε θέση να πάρει όλο το Bitcoin σας. Αν είστε πολύ σίγουροι ότι μπορείτε να το κρύψετε καλά και ποτέ να το χάσετε, είναι μια καλή επιλογή.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "Πατήστε τις λέξεις ανάκτησης στις\nσωστή τάξη",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "Default Wallets",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "Το Test ολοκληρώθηκε με επιτυχία!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "Passphrase",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "Έχετε επιλέξει όλες τις λέξεις",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Είστε σίγουροι για τις δικές σας δυνατότητες επιχειρησιακής ασφάλειας για να κρύψετε και να διατηρήσετε τα λόγια σας για σπόρους Bitcoin.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "Τα κρυπτογραφημένα θησαυροφυλάκια σας εμποδίζουν από τους κλέφτες που θέλουν να κλέψουν το εφεδρικό σας. Επίσης σας αποτρέπει από το να χάσετε τυχαία το εφεδρικό σας δεδομένου ότι θα αποθηκευτεί στο σύννεφο σας. Οι πάροχοι αποθήκευσης Cloud όπως η Google ή η Apple δεν θα έχουν πρόσβαση στο Bitcoin σας επειδή ο κωδικός κρυπτογράφησης είναι πολύ ισχυρός. Υπάρχει μια μικρή πιθανότητα ότι ο διακομιστής ιστού που αποθηκεύει το κλειδί κρυπτογράφησης του backup σας θα μπορούσε να συμβιβαστεί. Σε αυτή την περίπτωση, η ασφάλεια του backup στο λογαριασμό του cloud θα μπορούσε να τεθεί σε κίνδυνο.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "Transcript",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "Η σωστή σειρά λέξεων. Παρακαλώ δοκιμάστε ξανά.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Φυσικό αντίγραφο ασφαλείας: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "Επισκεφθείτε το ανάκτησηbull.com για περισσότερες πληροφορίες.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Κατακρυπτόμενο θησαυροφυλάκιο: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "Next",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "Screenshot",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "testBackupConfirm": "Επιβεβαίωση",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupLastBackupTest": "Τελευταία εφεδρική δοκιμή: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideBackupModalTitle": "Πώς να αποφασίσετε",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "Test {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "testBackupDoNotShare": "ΜΗΝ ΜΟΙΡΆΖΕΣΑΙ ΜΕ ΚΑΝΈΝΑΝ",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "testBackupSuccessButton": "Got it Got it Got it",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "Το αποθηκεύει κάπου ασφαλές.",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "Τι είναι ο αριθμός των λέξεων {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Δεν είστε σίγουροι και χρειάζεστε περισσότερο χρόνο για να μάθετε σχετικά με τις πρακτικές ασφαλείας.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "testBackupSuccessMessage": "Μπορείτε να ανακτήσετε την πρόσβαση σε ένα χαμένο πορτοφόλι Bitcoin",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "coreScreensUnknown": "Άγνωστο",
+  "testBackupErrorWalletsUnavailable": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Δοκιμάστε ξανά.",
+  "testBackupErrorNoWallets": "Δεν υπάρχει πορτοφόλι για να δοκιμαστεί το αντίγραφο ασφαλείας του.",
+  "testBackupErrorNoWalletSelected": "Επιλέξτε ένα πορτοφόλι πριν δοκιμάσετε το αντίγραφο ασφαλείας του.",
+  "testBackupErrorSeedUnavailable": "Δεν ήταν δυνατή η ανάγνωση της φράσης ανάκτησής σας. Δοκιμάστε ξανά.",
+  "testBackupErrorSeedNotMnemonic": "Αυτό το πορτοφόλι δεν έχει φράση ανάκτησης για δοκιμή.",
+  "testBackupErrorCompletionFailed": "Η φράση ανάκτησής σας ήταν σωστή, αλλά δεν μπορέσαμε να αποθηκεύσουμε το αποτέλεσμα. Δοκιμάστε ξανά.",
+  "backupCardTitle": "Προστατέψτε τα bitcoin σας.",
+  "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα."
+}

@@ -1,4 +1,10 @@
 import 'package:address_view/routes.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:secrets/storage.dart';
+import 'package:secrets/secrets.dart';
+import 'package:backups/backups.dart';
+import 'package:bull_recoverbull/storage.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
@@ -259,7 +265,31 @@ class AppRouter {
           accessRoutes: locator<AccessFeature>().routes.settings,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
           appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
-          onBackupTestSucceeded: _onBackupTestSucceeded,
+          backupRoutes: [
+            BackupsFeature.mount(
+              secrets: () => locator<Secrets>(),
+              inventory: () => locator<SecretsInventory>(),
+              environment: () => locator<ActiveEnvironmentReader>(),
+              records: (network) => locator<RecoverBullWalletBackups>(
+                instanceName: network.env == NetworkEnv.regtest
+                    ? 'regtest'
+                    : null,
+              ),
+              vaultStatus: (context) =>
+                  locator<RecoverBullFacade>().status(context),
+              encryptedIcon: Image.asset(
+                Assets.misc.encryptedVault.path,
+                fit: .contain,
+              ),
+              physicalIcon: Image.asset(
+                Assets.misc.physicalBackup.path,
+                fit: .contain,
+              ),
+              successImage: AssetImage(Assets.animations.successTick.path),
+              onTestSucceeded: _onBackupTestSucceeded,
+              onExportTransactions: TransactionsNavigation.openExport,
+            ).route,
+          ],
           priceRoutes: locator<BitcoinPriceFeature>().routes,
         ),
       ).route,

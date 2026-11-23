@@ -65,7 +65,6 @@ void main() {
         });
         FakeSecureStoragePlatform().install();
         inventory = await InventoryFixture.open(directory);
-        inventory.register(services);
         final sourceFile = File('${directory.path}/bullbitcoin_sqlite.sqlite');
         final standalone = File('${directory.path}/recoverbull.sqlite');
         final ownerFile = File('${directory.path}/recoverbull-owner.sqlite');

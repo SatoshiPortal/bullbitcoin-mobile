@@ -1,0 +1,92 @@
+{
+  "testBackupWriteDownPhrase": "Schreiben Sie Ihre Wiederherstellungsphrase\nin der richtigen Reihenfolge.",
+  "testBackupDigitalCopy": "Digitale Kopie",
+  "backupWalletEncryptedVaultTag": "Einfach und schnell (1 Minute)",
+  "backupWalletHowToDecideBackupLosePhysical": "Eine der häufigsten Ursachen, warum Menschen ihre Bitcoin verlieren, ist der Verlust ihrer physischen Sicherung. Jeder, der Ihre physische Sicherung findet, kann alle Ihre Bitcoin entnehmen. Wenn Sie sehr zuversichtlich sind, dass Sie sie gut verstecken und nie verlieren werden, ist dies eine gute Option.",
+  "testBackupTapWordsInOrder": "Tippen Sie auf die Wiederherstellungswörter\nin der richtigen Reihenfolge.",
+  "testBackupDefaultWallets": "Standard-Wallets",
+  "testBackupSuccessTitle": "Test erfolgreich abgeschlossen!",
+  "testBackupPassphrase": "Passphrase",
+  "testBackupAllWordsSelected": "Sie haben alle Wörter ausgewählt",
+  "backupWalletPhysicalBackupTag": "Vertrauenslos (benötigt etwas Zeit)",
+  "backupSettingsTested": "Getestet",
+  "backupSettingsLabelsButton": "Labels",
+  "backupSettingsRecoverBullSettings": "RecoverBull",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Sie sind zuversichtlich in Ihren Sicherheitsvorkehrungen, um Ihre Bitcoin-Seed-Wörter zu verstecken und zu bewahren.",
+  "backupWalletHowToDecideBackupEncryptedVault": "Der verschlüsselte Tresor verhindert, dass Diebe nach Ihrem Backup suchen. Es verhindert auch, dass Sie Ihr Backup versehentlich verlieren, da es in Ihrer Cloud gespeichert wird. Cloud-Speicheranbieter wie Google oder Apple haben keinen Zugriff auf Ihr Bitcoin, da das Verschlüsselungspasswort zu stark ist. Es gibt eine kleine Möglichkeit, dass der Webserver, der die Verschlüsselungsschlüssel Ihres Backups speichert, beeinträchtigt werden könnte. In diesem Fall könnte die Sicherheit des Backups in Ihrem Cloud-Konto gefährdet sein.",
+  "testBackupTranscribe": "Aufschreiben",
+  "testBackupErrorIncorrectOrder": "Falsche Wortreihenfolge. Bitte versuchen Sie es erneut.",
+  "backupWalletEncryptedVaultTitle": "Verschlüsselter Tresor",
+  "walletDetailsUnnamedWalletFallback": "Wallet ohne Namen",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Physische Sicherung:",
+  "backupWalletHowToDecideBackupMoreInfo": "Besuchen Sie recoverbull.com für weitere Informationen.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Verschlüsselter Tresor: ",
+  "testBackupTitle": "Testen Sie Ihre Wallet-Sicherung",
+  "closeDialogButton": "Schließen",
+  "backupWalletPhysicalBackupDescription": "Schreiben Sie Ihre 12 Wörter (Seed-Phrase) auf ein Stück Papier. Bewahren Sie sie sicher auf und achten Sie darauf, dass Sie sie nicht verlieren.",
+  "passphraseLabel": "Passphrase",
+  "testBackupNext": "Weiter",
+  "testBackupScreenshot": "Screenshot",
+  "backupWalletTitle": "Sichern Sie Ihre Wallet",
+  "transactionHistoryTitle": "Transaktionsverlauf",
+  "backupSettingsPhysicalBackup": "Physische Sicherung",
+  "backupWalletHowToDecide": "Wie entscheiden?",
+  "testBackupConfirm": "Bestätigen",
+  "testBackupLastBackupTest": "Letzter Sicherungstest: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Nicht getestet",
+  "backupWalletHowToDecideBackupModalTitle": "Wie entscheiden",
+  "testBackupWalletTitle": "Test {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "testBackupDoNotShare": "ZEIGE SIE NIEMANDEM",
+  "backupSettingsViewVaultKey": "Tresor-Schlüssel anzeigen",
+  "testBackupSuccessButton": "Verstanden",
+  "testBackupStoreItSafe": "Lagern Sie sie an einem sicheren Ort.",
+  "testBackupWhatIsWordNumber": "Was ist Wort Nummer {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Anonyme Sicherung mit starker Verschlüsselung in Ihrer Cloud.",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Sie sind sich noch nicht sicher und möchten mehr Zeit, um sichere Backup-Methoden zu lernen.",
+  "backupWalletImportanceWarning": "Ohne Backup verlieren Sie dauerhaft den Zugriff auf Ihre Bitcoins. Eine Sicherung ist absolut notwendig.",
+  "continueButton": "Fortfahren",
+  "testBackupSuccessMessage": "Sie können den Zugriff auf eine verlorene Bitcoin-Wallet wiederherstellen.",
+  "backupSettingsTestBackup": "Sicherung testen",
+  "backupWalletPhysicalBackupTitle": "Physische Sicherung",
+  "backupSettingsEncryptedVault": "Verschlüsselter Tresor",
+  "backupSettingsStartBackup": "Backup starten",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Unbekannt",
+  "testBackupErrorWalletsUnavailable": "Ihre Wallets konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "testBackupErrorNoWallets": "Es gibt keine Wallet, deren Backup getestet werden kann.",
+  "testBackupErrorNoWalletSelected": "Wählen Sie eine Wallet aus, bevor Sie deren Sicherung testen.",
+  "testBackupErrorSeedUnavailable": "Ihre Wiederherstellungsphrase konnte nicht gelesen werden. Bitte versuchen Sie es erneut.",
+  "testBackupErrorSeedNotMnemonic": "Diese Wallet hat keine Wiederherstellungsphrase zum Testen.",
+  "testBackupErrorCompletionFailed": "Ihre Wiederherstellungsphrase war korrekt, aber wir konnten das Ergebnis nicht speichern. Bitte versuchen Sie es erneut.",
+  "settingsBackupTitle": "Sicherung",
+  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen.",
+  "passphraseShow": "Passphrase anzeigen",
+  "passphraseHide": "Passphrase verbergen",
+  "backupCardTitle": "Schützen Sie Ihre Bitcoin.",
+  "backupCardSubtitle": "Sichern Sie jetzt Ihre Wallet."
+}

@@ -9,7 +9,7 @@ void main() {
       addressRoutes: const [],
       exchangeSettingsRoutes: const [],
       appSettingsRoutes: const [],
-      onBackupTestSucceeded: (_) {},
+      backupRoutes: const [],
       priceRoutes: const [],
     ).whereType<GoRoute>().map((route) => route.name);
 

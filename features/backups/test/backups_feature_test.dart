@@ -1,4 +1,5 @@
 import 'package:backups/backups.dart';
+import 'package:backups/testing.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBackupOptionCard;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,7 +12,7 @@ void main() {
   ) async {
     final selected = <String>[];
     String? optionsPath;
-    final feature = BackupsFeature.mount(
+    final feature = backupOptionsRoute(
       copyOf: (context) {
         optionsPath = GoRouterState.of(context).uri.path;
         return _copy;
@@ -40,7 +41,7 @@ void main() {
               ],
             ),
           ),
-          routes: [feature.route],
+          routes: [feature],
         ),
       ],
     );
