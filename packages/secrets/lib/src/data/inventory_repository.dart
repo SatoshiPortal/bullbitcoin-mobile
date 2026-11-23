@@ -33,6 +33,30 @@ final class InventoryRepository {
     return List.unmodifiable(fingerprints);
   }, orElse: FetchSecretFailure.new);
 
+  /// Seeds held by every locally signing wallet, in every view: a wallet
+  /// outside the current view still keeps its seed. A local row without a
+  /// valid seed reference fails the read rather than authorizing deletion.
+  Future<Result<Set<Fingerprint>, SecretFailure>> custodyFingerprints() =>
+      boundary(() async {
+        final rows = await _database
+            .customSelect(
+              "SELECT secret_fingerprint FROM wallets WHERE signer = 'local'",
+              readsFrom: {_database.wallets},
+            )
+            .get();
+        final fingerprints = <Fingerprint>{};
+        for (final row in rows) {
+          final fingerprint = Fingerprint.tryParse(
+            row.read<String?>('secret_fingerprint') ?? '',
+          );
+          if (fingerprint == null) {
+            throw const FormatException('invalid custody reference');
+          }
+          fingerprints.add(fingerprint);
+        }
+        return Set.unmodifiable(fingerprints);
+      }, orElse: FetchSecretFailure.new);
+
   Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
     String view,
   ) => boundary(() async {
