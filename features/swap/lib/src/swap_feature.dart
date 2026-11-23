@@ -266,7 +266,11 @@ final class _SwapFeature implements SwapFeature {
     required ReceiveWallet wallet,
     required int amountSat,
     String? note,
-  }) => _createReceiveOrder.execute(wallet: wallet, amountSat: amountSat, note: note);
+  }) => _createReceiveOrder.execute(
+    wallet: wallet,
+    amountSat: amountSat,
+    note: note,
+  );
 
   @override
   void start({required bool watchOrders, required bool watchAutoswap}) {
