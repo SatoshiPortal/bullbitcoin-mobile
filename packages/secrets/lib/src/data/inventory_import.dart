@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
@@ -19,6 +20,14 @@ const defaultViewId = 'all';
 const initialCredentialId = 'initial-credential';
 const _imported = 'split-v1/secrets';
 const _fresh = 'fresh-v1/secrets';
+const _importedWithAccess = 'split-v1/secrets/access-v2';
+const _freshWithAccess = 'fresh-v1/secrets/access-v2';
+
+typedef _LegacyAccessSnapshot = ({
+  String? pin,
+  int failedAttempts,
+  int? lockedUntil,
+});
 
 /// Foreground participant for the wallet inventory, the derivation registry and
 /// the first access view. The receipt commits with all three projections.
@@ -83,12 +92,129 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
     final state = await database.select(database.accessState).getSingleOrNull();
     return switch (state?.importReceipt) {
       null => const Ok(OwnerReadiness.pending),
-      _imported => const Ok(OwnerReadiness.imported),
-      _fresh => const Ok(OwnerReadiness.initialized),
+      _imported || _importedWithAccess => const Ok(OwnerReadiness.imported),
+      _fresh || _freshWithAccess => const Ok(OwnerReadiness.initialized),
       _ => const Err(LegacyImportVerificationFailed()),
     };
   } on SqliteException {
     return const Err(LegacyImportUnavailable());
+  }
+}
+
+/// Older versions admitted the inventory while Access still wrote to the
+/// keychain. Reconcile access once, before publishing a foreground session.
+Future<Result<void, LegacyImportFailure>> reconcileInventoryAccess(
+  SecretsDatabase database,
+) async {
+  try {
+    return await database.transaction(() async {
+      // Serialize reconciliation with other access writers before reading.
+      await database.customStatement(
+        'UPDATE access_state SET singleton = singleton WHERE singleton = 1 '
+        'AND import_receipt IN (?, ?)',
+        [_imported, _fresh],
+      );
+      final state = await database
+          .select(database.accessState)
+          .getSingleOrNull();
+      if (state == null) return const Err(LegacyImportVerificationFailed());
+      final receipt = switch (state.importReceipt) {
+        _imported => _importedWithAccess,
+        _fresh => _freshWithAccess,
+        _importedWithAccess || _freshWithAccess => null,
+        _ => throw const _VerificationRejected(),
+      };
+      if (receipt == null) return const Ok(null);
+
+      final legacy = await _PreparedInventory.readLegacyAccess();
+      if (legacy case Err(:final failure)) return Err(failure);
+      final snapshot =
+          (legacy as Ok<_LegacyAccessSnapshot, LegacyImportFailure>).value;
+      var next = state.copyWith(importReceipt: receipt);
+      if (snapshot.pin case final String pin) {
+        final view = database.select(database.views)
+          ..where((row) => row.id.equals(defaultViewId));
+        final currentView = await view.getSingleOrNull();
+        if (currentView == null) throw const _VerificationRejected();
+        // A fresh receipt never imported a credential. Any existing PIN
+        // there was explicitly set through the live inventory.
+        if (state.importReceipt != _fresh || currentView.credentialId == null) {
+          await _writeInitialCredential(database, pin);
+          await (database.update(
+            database.views,
+          )..where((row) => row.id.equals(defaultViewId))).write(
+            const ViewsCompanion(credentialId: Value(initialCredentialId)),
+          );
+          if ((await view.getSingleOrNull())?.credentialId !=
+              initialCredentialId) {
+            throw const _VerificationRejected();
+          }
+          final deadline = switch ((state.lockedUntil, snapshot.lockedUntil)) {
+            (final int current, final int historical) => math.max(
+              current,
+              historical,
+            ),
+            (final current, final historical) => current ?? historical,
+          };
+          next = next.copyWith(
+            failedAttempts: math.max(
+              state.failedAttempts,
+              snapshot.failedAttempts,
+            ),
+            lockedUntil: Value(deadline),
+          );
+        }
+      }
+      await database.update(database.accessState).replace(next);
+      final written = await database
+          .select(database.accessState)
+          .getSingleOrNull();
+      if (written != next) {
+        throw const _VerificationRejected();
+      }
+      return const Ok(null);
+    });
+  } on _VerificationRejected {
+    return const Err(LegacyImportVerificationFailed());
+  } on SqliteException {
+    return const Err(LegacyImportUnavailable());
+  }
+}
+
+Future<void> _writeInitialCredential(
+  SecretsDatabase database,
+  String pin,
+) async {
+  final salt = AccessVerifier.newSalt();
+  final verifier = await AccessVerifier.derive(pin, salt);
+  try {
+    await database
+        .into(database.credentials)
+        .insertOnConflictUpdate(
+          CredentialsCompanion.insert(
+            id: initialCredentialId,
+            scheme: AccessVerifier.scheme,
+            salt: salt,
+            params: AccessVerifier.params,
+            verifier: verifier,
+          ),
+        );
+    final written = await (database.select(
+      database.credentials,
+    )..where((row) => row.id.equals(initialCredentialId))).getSingleOrNull();
+    if (written == null ||
+        !AccessVerifier.supports(
+          storedScheme: written.scheme,
+          storedParams: written.params,
+          salt: written.salt,
+          verifier: written.verifier,
+        ) ||
+        !AccessVerifier.equals(verifier, written.verifier) ||
+        !salt.indexed.every((entry) => written.salt[entry.$1] == entry.$2)) {
+      throw const _VerificationRejected();
+    }
+  } finally {
+    verifier.fillRange(0, verifier.length, 0);
   }
 }
 
@@ -139,13 +265,13 @@ final class _PreparedInventory implements PreparedOwner {
 
         // The iOS keychain may survive a reinstall. Only import its access
         // protection when there is a wallet to protect.
-        ({String? pin, int failedAttempts, int? lockedUntil}) access = (
+        _LegacyAccessSnapshot access = (
           pin: null,
           failedAttempts: 0,
           lockedUntil: null,
         );
         if (source != null && await _copyLegacy(source)) {
-          switch (await _readLegacyAccess()) {
+          switch (await readLegacyAccess()) {
             case Ok(:final value):
               access = value;
             case Err(:final failure):
@@ -155,42 +281,7 @@ final class _PreparedInventory implements PreparedOwner {
 
         final pin = access.pin;
         final credentialId = pin == null ? null : initialCredentialId;
-        if (pin != null) {
-          final salt = AccessVerifier.newSalt();
-          final verifier = await AccessVerifier.derive(pin, salt);
-          try {
-            await _database
-                .into(_database.credentials)
-                .insert(
-                  CredentialsCompanion.insert(
-                    id: initialCredentialId,
-                    scheme: AccessVerifier.scheme,
-                    salt: salt,
-                    params: AccessVerifier.params,
-                    verifier: verifier,
-                  ),
-                );
-            final written =
-                await (_database.select(_database.credentials)
-                      ..where((row) => row.id.equals(initialCredentialId)))
-                    .getSingleOrNull();
-            if (written == null ||
-                !AccessVerifier.supports(
-                  storedScheme: written.scheme,
-                  storedParams: written.params,
-                  salt: written.salt,
-                  verifier: written.verifier,
-                ) ||
-                !AccessVerifier.equals(verifier, written.verifier) ||
-                !salt.indexed.every(
-                  (entry) => written.salt[entry.$1] == entry.$2,
-                )) {
-              throw const _VerificationRejected();
-            }
-          } finally {
-            verifier.fillRange(0, verifier.length, 0);
-          }
-        }
+        if (pin != null) await _writeInitialCredential(_database, pin);
         await _database
             .into(_database.views)
             .insert(
@@ -231,7 +322,9 @@ final class _PreparedInventory implements PreparedOwner {
             ], mode: InsertMode.insertOrIgnore);
           });
         }
-        final importReceipt = source == null ? _fresh : _imported;
+        final importReceipt = source == null
+            ? _freshWithAccess
+            : _importedWithAccess;
         await _database
             .into(_database.accessState)
             .insert(
@@ -362,13 +455,8 @@ final class _PreparedInventory implements PreparedOwner {
     }
   }
 
-  Future<
-    Result<
-      ({String? pin, int failedAttempts, int? lockedUntil}),
-      LegacyImportFailure
-    >
-  >
-  _readLegacyAccess() async {
+  static Future<Result<_LegacyAccessSnapshot, LegacyImportFailure>>
+  readLegacyAccess() async {
     final keychain = OwnerKeychain();
     final values = <OwnerKey, String?>{};
     for (final key in [OwnerKey.pin, OwnerKey.attempts, OwnerKey.lockedUntil]) {
