@@ -2,7 +2,8 @@ import 'package:labels/backup.dart';
 import 'package:backup_storage/backup_storage.dart' show BackupDestination;
 
 import 'backup_inventory.dart';
-import 'labels_snapshot.dart';
+
+import 'package:labels/backup.dart';
 
 final class DiscoveredBackup {
   final BackupGroup group;
