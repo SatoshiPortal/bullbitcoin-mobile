@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/coins_entry_subtitle.dart';
+import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
