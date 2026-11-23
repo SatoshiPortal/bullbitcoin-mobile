@@ -32,6 +32,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:settings/settings.dart';
 
 enum SettingsItemId {
   exchange,
@@ -124,10 +125,34 @@ class SettingsItem {
     this.iconAsset,
   }) : _open = open; // ignore: prefer_initializing_formals
 
-  String location(TextDirection textDirection) =>
-      path.join(textDirection == TextDirection.rtl ? ' ← ' : ' → ');
-
   void open(BuildContext context) => _open(context);
+
+  SettingsEntry hubEntry({Widget? homeIcon}) => SettingsEntry(
+    id: id.name,
+    title: title,
+    breadcrumbs: path,
+    icon: icon,
+    open: open,
+    keywords: keywords,
+    showOnHome: section == SettingsItemSection.root,
+    isSuperuser: isSuperuser,
+    indicatesServiceHealth: id == SettingsItemId.servicesStatus,
+    homeIcon: homeIcon,
+  );
+
+  Widget? assetIcon(BuildContext context, {Color? iconColor}) {
+    final asset = iconAsset;
+    if (asset == null) return null;
+    return SvgPicture.asset(
+      asset,
+      width: 24,
+      height: 24,
+      colorFilter: ColorFilter.mode(
+        iconColor ?? context.appColors.onSurface,
+        BlendMode.srcIn,
+      ),
+    );
+  }
 
   Widget buildTile(
     BuildContext context, {
@@ -135,20 +160,9 @@ class SettingsItem {
     Color? iconColor,
     Color? textColor,
   }) {
-    final asset = iconAsset;
     return BullSettingsEntryItem(
       icon: icon,
-      leading: asset == null
-          ? null
-          : SvgPicture.asset(
-              asset,
-              width: 24,
-              height: 24,
-              colorFilter: ColorFilter.mode(
-                iconColor ?? context.appColors.onSurface,
-                BlendMode.srcIn,
-              ),
-            ),
+      leading: assetIcon(context, iconColor: iconColor),
       iconColor: iconColor,
       textColor: textColor,
       title: title,

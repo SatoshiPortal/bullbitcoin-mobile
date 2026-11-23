@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 
 void main() {
   test('publishes the legacy swap recovery routes', () {
-    final routeNames = SettingsRouter.route(
+    final routeNames = SettingsRouter.childRoutes(
       accessRoutes: const [],
       exchangeSettingsRoutes: const [],
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
       priceRoutes: const [],
-    ).routes.whereType<GoRoute>().map((route) => route.name);
+    ).whereType<GoRoute>().map((route) => route.name);
 
     expect(routeNames, contains('swapRestore'));
     expect(routeNames, contains('swapRescue'));

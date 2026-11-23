@@ -138,7 +138,12 @@ graph TB
     WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]
     ONBOARDING[Onboarding]
-    SETTINGS[Settings]
+    SETTINGS[Legacy Settings<br/>Preferences and child screens]
+    SETTINGS_HUB[Settings home and search<br/>Workspace Feature]
+    SETTINGS -->|menu projection and child routes| SETTINGS_HUB
+    SETTINGS_HUB --> NETWORK
+    SETTINGS_HUB --> BULL_UI
+    SETTINGS_HUB --> PRIMITIVES
     PREFERENCES[Preferences Package]
     PREFERENCES --> LEGACY_STORAGE
     PREFERENCES --> SECRETS

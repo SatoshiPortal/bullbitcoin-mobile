@@ -1,20 +1,22 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullSettingsEntryItem, BullTypographyX;
+    show BullSettingsEntryItem, BullThemeX, BullTypographyX;
+
+import '../presentation/settings_search.dart';
+import '../settings_menu.dart';
 
 /// The settings search surface: a field, and the results for what it holds.
 ///
-/// Takes the registry it searches rather than resolving it, so it can be
-/// rendered and tested without the settings cubit. [SettingsSearchScreen] is the
-/// one place that resolves it.
+/// The destination is pushed over this view so Back restores the query.
 class SettingsSearchView extends StatefulWidget {
-  final List<SettingsItem> items;
+  final List<SettingsEntry> items;
+  final SettingsLabels labels;
 
-  const SettingsSearchView({super.key, required this.items});
+  const SettingsSearchView({
+    super.key,
+    required this.items,
+    required this.labels,
+  });
 
   @override
   State<SettingsSearchView> createState() => _SettingsSearchViewState();
@@ -46,7 +48,7 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
     _focusNode.requestFocus();
   }
 
-  void _open(SettingsItem item) {
+  void _open(SettingsEntry item) {
     // The destination is pushed over this screen rather than replacing it, so
     // the keyboard would otherwise still be up when it arrives.
     _focusNode.unfocus();
@@ -58,7 +60,7 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
     final hasQuery = _query.trim().isNotEmpty;
     final results = hasQuery
         ? searchSettings(widget.items, _query)
-        : const <SettingsItem>[];
+        : const <SettingsEntry>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -71,12 +73,12 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
           textInputAction: TextInputAction.search,
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)
-              .copyWith(color: context.appColors.onSurface),
+              .copyWith(color: context.bull.onSurface),
           decoration: InputDecoration(
-            hintText: context.loc.settingsSearchHint,
+            hintText: widget.labels.searchHint,
             hintStyle: context.bullType.body
                 .copyWith(fontWeight: FontWeight.w500)
-                .copyWith(color: context.appColors.textMuted),
+                .copyWith(color: context.bull.textMuted),
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -88,7 +90,7 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
             IconButton(
               key: const Key('settings-search-clear'),
               tooltip: MaterialLocalizations.of(context).clearButtonTooltip,
-              color: context.appColors.secondary,
+              color: context.bull.secondary,
               icon: const Icon(Icons.clear),
               onPressed: _clear,
             ),
@@ -96,8 +98,8 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
       ),
       body: SafeArea(
         child: switch ((hasQuery, results.isEmpty)) {
-          (false, _) => _Message(text: context.loc.settingsSearchStartTyping),
-          (true, true) => _Message(text: context.loc.settingsSearchNoResults),
+          (false, _) => _Message(text: widget.labels.searchStartTyping),
+          (true, true) => _Message(text: widget.labels.searchNoResults),
           (true, false) => ListView.builder(
             key: const Key('settings-search-results'),
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -105,10 +107,14 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
             itemBuilder: (context, index) {
               final entry = results[index];
               return BullSettingsEntryItem(
-                key: Key('settings-search-result-${entry.id.name}-$index'),
+                key: Key('settings-search-result-${entry.id}-$index'),
                 icon: entry.icon,
                 title: entry.title,
-                subtitle: entry.location(Directionality.of(context)),
+                subtitle: entry.breadcrumbs.join(
+                  Directionality.of(context) == TextDirection.rtl
+                      ? ' ← '
+                      : ' → ',
+                ),
                 isSuperUser: entry.isSuperuser,
                 onTap: () => _open(entry),
               );
@@ -135,7 +141,7 @@ class _Message extends StatelessWidget {
           textAlign: TextAlign.center,
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)
-              .copyWith(color: context.appColors.textMuted),
+              .copyWith(color: context.bull.textMuted),
         ),
       ),
     );

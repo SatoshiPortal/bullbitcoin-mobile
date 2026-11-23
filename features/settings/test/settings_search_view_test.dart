@@ -1,16 +1,25 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/settings_search_view.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:settings/settings.dart';
+import 'package:settings/src/ui/settings_search_view.dart';
+
+const _labels = (
+  title: 'Settings',
+  searchHint: 'Search settings',
+  searchStartTyping: 'Start typing to see results.',
+  searchNoResults: 'No settings found.',
+  appVersionLabel: 'App version ',
+);
 
 void main() {
   testWidgets('stays empty until typing, then shows the item and its path', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _TestApp(home: SettingsSearchView(items: _items())),
+      _TestApp(
+        home: SettingsSearchView(items: _items(), labels: _labels),
+      ),
     );
     await tester.pump();
 
@@ -32,7 +41,9 @@ void main() {
 
   testWidgets('reports when nothing matches', (tester) async {
     await tester.pumpWidget(
-      _TestApp(home: SettingsSearchView(items: _items())),
+      _TestApp(
+        home: SettingsSearchView(items: _items(), labels: _labels),
+      ),
     );
     await tester.pump();
 
@@ -47,7 +58,9 @@ void main() {
 
   testWidgets('clearing the field returns to the empty state', (tester) async {
     await tester.pumpWidget(
-      _TestApp(home: SettingsSearchView(items: _items())),
+      _TestApp(
+        home: SettingsSearchView(items: _items(), labels: _labels),
+      ),
     );
     await tester.pump();
 
@@ -69,7 +82,9 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _TestApp(home: SettingsSearchView(items: _items())),
+      _TestApp(
+        home: SettingsSearchView(items: _items(), labels: _labels),
+      ),
     );
     await tester.pump();
 
@@ -90,12 +105,12 @@ void main() {
     await tester.pumpWidget(
       _TestApp(
         home: SettingsSearchView(
+          labels: _labels,
           items: [
-            SettingsItem(
-              id: SettingsItemId.logs,
-              section: SettingsItemSection.app,
+            SettingsEntry(
+              id: 'tor',
               title: 'Tor Settings',
-              path: const ['Settings', 'App Settings', 'Tor Settings'],
+              breadcrumbs: const ['Settings', 'App Settings', 'Tor Settings'],
               icon: IconData(0),
               open: (context) => Navigator.of(context).push(
                 MaterialPageRoute<void>(
@@ -136,12 +151,16 @@ void main() {
       _TestApp(
         locale: const Locale('ar'),
         home: SettingsSearchView(
+          labels: _labels,
           items: [
-            SettingsItem(
-              id: SettingsItemId.logs,
-              section: SettingsItemSection.app,
+            SettingsEntry(
+              id: 'tor',
               title: 'إعدادات Tor',
-              path: const ['الإعدادات', 'إعدادات التطبيق', 'إعدادات Tor'],
+              breadcrumbs: const [
+                'الإعدادات',
+                'إعدادات التطبيق',
+                'إعدادات Tor',
+              ],
               icon: IconData(0),
               open: (_) {},
             ),
@@ -164,20 +183,18 @@ void main() {
   });
 }
 
-List<SettingsItem> _items() => [
-  SettingsItem(
-    id: SettingsItemId.logs,
-    section: SettingsItemSection.app,
+List<SettingsEntry> _items() => [
+  SettingsEntry(
+    id: 'tor',
     title: 'Tor Settings',
-    path: const ['Settings', 'App Settings', 'Tor Settings'],
+    breadcrumbs: const ['Settings', 'App Settings', 'Tor Settings'],
     icon: IconData(0),
     open: (_) {},
   ),
-  SettingsItem(
-    id: SettingsItemId.mempool,
-    section: SettingsItemSection.wallet,
+  SettingsEntry(
+    id: 'mempool',
     title: 'Mempool Server',
-    path: const ['Settings', 'Bitcoin Settings', 'Mempool Server'],
+    breadcrumbs: const ['Settings', 'Bitcoin Settings', 'Mempool Server'],
     icon: IconData(0),
     open: (_) {},
   ),
@@ -192,9 +209,9 @@ class _TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(extensions: testBullExtensions),
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: const [Locale('en'), Locale('ar')],
       locale: locale,
       home: home,
     );

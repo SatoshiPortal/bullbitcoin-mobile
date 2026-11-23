@@ -161,7 +161,7 @@ void main() {
     );
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
-    final settingsRoute = SettingsRouter.route(
+    final settingsRoutes = SettingsRouter.childRoutes(
       accessRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
         settings: SettingsRouter.exchangeSettingsHost,
@@ -177,10 +177,10 @@ void main() {
       onBackupTestSucceeded: (_) {},
       priceRoutes: const [],
     );
-    final manage = settingsRoute.routes.whereType<GoRoute>().singleWhere(
+    final manage = settingsRoutes.whereType<GoRoute>().singleWhere(
       (route) => route.name == SettingsRoute.exchangeAccess.name,
     );
-    final account = settingsRoute.routes.whereType<GoRoute>().singleWhere(
+    final account = settingsRoutes.whereType<GoRoute>().singleWhere(
       (route) => route.name == ExchangeSettingsRoute.home.name,
     );
     final router = GoRouter(
@@ -263,13 +263,13 @@ void main() {
       return cubit;
     });
     final route =
-        SettingsRouter.route(
+        SettingsRouter.childRoutes(
           accessRoutes: const [],
           exchangeSettingsRoutes: const [],
           appSettingsRoutes: const [],
           onBackupTestSucceeded: (_) {},
           priceRoutes: const [],
-        ).routes.whereType<GoRoute>().singleWhere(
+        ).whereType<GoRoute>().singleWhere(
           (route) => route.name == SettingsRoute.exchangeAccess.name,
         );
     final routeBuilder = route.builder;

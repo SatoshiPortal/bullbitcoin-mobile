@@ -21,7 +21,6 @@ import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/permissions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
@@ -32,11 +31,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:network/network.dart' show NetworkFeature;
-import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -91,27 +87,15 @@ class SettingsRouter {
         context.goNamed(ExchangeRoute.exchangeHome.name),
   );
 
-  static GoRoute route({
+  static List<RouteBase> childRoutes({
     required List<RouteBase> priceRoutes,
     required void Function(BuildContext) onBackupTestSucceeded,
     required List<RouteBase> appSettingsRoutes,
     required List<RouteBase> accessRoutes,
     required List<RouteBase> exchangeSettingsRoutes,
-  }) => GoRoute(
-    name: SettingsRoute.settings.name,
-    path: SettingsRoute.settings.path,
-    builder: (context, state) => AllSettingsScreen(
-      watchServiceHealth: WatchSettingsServiceHealthUsecase(
-        locator<NetworkFeature>().status,
-      ).execute,
-    ),
-    routes: [
+  }) {
+    return [
       ...priceRoutes,
-      GoRoute(
-        name: SettingsRoute.search.name,
-        path: SettingsRoute.search.path,
-        builder: (context, state) => const SettingsSearchScreen(),
-      ),
       GoRoute(
         name: SettingsRoute.exchangeAccess.name,
         path: SettingsRoute.exchangeAccess.path,
@@ -268,6 +252,6 @@ class SettingsRouter {
           child: const AllSeedViewScreen(access: Access()),
         ),
       ),
-    ],
-  );
+    ];
+  }
 }

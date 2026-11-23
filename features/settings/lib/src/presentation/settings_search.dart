@@ -1,11 +1,15 @@
-import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:unorm_dart/unorm_dart.dart' as unorm;
 
-List<SettingsItem> searchSettings(Iterable<SettingsItem> items, String query) {
+import '../settings_menu.dart';
+
+List<SettingsEntry> searchSettings(
+  Iterable<SettingsEntry> items,
+  String query,
+) {
   final normalizedQuery = _normalize(query);
   if (normalizedQuery.isEmpty) return [];
 
-  final matches = <({SettingsItem item, int score})>[];
+  final matches = <({SettingsEntry item, int score})>[];
   for (final item in items) {
     final score = _score(item, normalizedQuery);
     if (score != null) matches.add((item: item, score: score));
@@ -19,13 +23,16 @@ List<SettingsItem> searchSettings(Iterable<SettingsItem> items, String query) {
   return matches.map((match) => match.item).toList(growable: false);
 }
 
-int? _score(SettingsItem item, String query) {
+int? _score(SettingsEntry item, String query) {
   final title = _normalize(item.title);
   if (title == query) return 0;
   if (title.startsWith(query)) return 10;
   if (title.contains(query)) return 20;
 
-  final terms = [...item.path, ...item.keywords].map(_normalize).toList();
+  final terms = [
+    ...item.breadcrumbs,
+    ...item.keywords,
+  ].map(_normalize).toList();
   if (terms.any((term) => term == query)) return 30;
   if (terms.any((term) => term.startsWith(query))) return 40;
   if (terms.any((term) => term.contains(query))) return 50;
