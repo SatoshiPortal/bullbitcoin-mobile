@@ -27,7 +27,8 @@ Future<Result<void, SwapsInvalidLockupFailure>> verifySwapLockup(
     return amount == expected
         ? const Ok(null)
         : const Err(SwapsInvalidLockupFailure(SwapLockupIssue.amountMismatch));
-  } on Exception catch (error) {
+  } catch (error) {
+    // Preserve the legacy lockup check's handling of decoder errors.
     return Err(
       SwapsInvalidLockupFailure(
         SwapLockupIssue.unreadable,
