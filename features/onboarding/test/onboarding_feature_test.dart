@@ -10,7 +10,6 @@ import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:novlang/novlang.dart';
 import 'package:onboarding/onboarding.dart';
-import 'package:onboarding/setup.dart';
 import 'package:onboarding/src/domain/onboarding_operations.dart';
 import 'package:onboarding/src/onboarding_feature.dart';
 import 'package:preferences/preferences.dart' show Language;

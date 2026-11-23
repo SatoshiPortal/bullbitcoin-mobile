@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart' show ExchangeKeychain;
+import 'package:secrets/secrets.dart' show Secrets;
 import 'package:secrets/testing.dart';
 
 class _Preferences extends Mock implements Preferences {}
@@ -19,7 +19,7 @@ void main() {
 
   Future<ExchangeAvailability> tradingEntry(ExchangePlatform platform) async {
     final exchange = BullExchangeServices.open(
-      keychain: ExchangeKeychain(),
+      keychain: Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
       preferences: preferences,
       platform: platform,
     );
@@ -29,9 +29,8 @@ void main() {
   }
 
   test('unreadable iOS preferences hide trading without failing', () async {
-    when(
-      preferences.fetch,
-    ).thenAnswer((_) async => const Err(PreferencesReadFailure()));
+    when(preferences.fetch)
+        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
 
     expect(
       await tradingEntry(ExchangePlatform.ios),

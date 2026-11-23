@@ -24,7 +24,7 @@ import 'package:access/setup.dart';
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:provisioning/provisioning.dart' show DefaultWalletProvisioning;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -117,6 +117,8 @@ class _UnusedCustodyAdmission extends Mock
     implements ParentCustodyAdmissionPort {}
 
 class _UnusedSwaps extends Mock implements BoltzSwaps {}
+
+class _UnusedProvisioning extends Mock implements DefaultWalletProvisioning {}
 
 void main() {
   testWidgets(
@@ -337,12 +339,8 @@ void main() {
       const unusedImage = AssetImage('unused.png');
       locator.registerSingleton(
         OnboardingFeature.mount(
-          createWallet: () => throw StateError('Unexpected wallet creation'),
-          recoverWallet: ({
-            required mnemonicWords,
-            required language,
-            required passphrase,
-          }) => throw StateError('Unexpected wallet recovery'),
+          defaultWallets: _UnusedProvisioning(),
+          records: (_) => throw StateError('Unexpected backup records'),
           walletImport: locator<ImportFeature>(),
           onWalletReady: (_) {},
           languageOf: (_) => Language.unitedStatesEnglish,

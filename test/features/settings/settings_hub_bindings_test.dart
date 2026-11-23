@@ -10,8 +10,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:settings/testing.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:exchange/exchange.dart'
-    show ExchangeAccess, ExchangeAccessEnabled, ExchangeAccessSession;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
