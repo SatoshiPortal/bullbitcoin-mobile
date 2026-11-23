@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, LiquidNetwork, Network, Err, Ok, Result;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:sync/write.dart';
@@ -86,7 +87,7 @@ void main() {
         .thenAnswer((_) async => Ok(limitOrderRate()));
     when(() => exchangeReads.getDefaultWallets())
         .thenAnswer((_) async => const Ok(_wallets));
-    for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
       when(() => inventory.walletsForNetwork(network))
           .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
     }
@@ -98,15 +99,15 @@ void main() {
       when(() => exchangeReads.getUserSummary(ExchangeEnvironment.mainnet))
           .thenAnswer((_) async => Ok(userSummary()));
       when(
-        () => inventory.walletsForNetwork(Network.bitcoinMainnet),
+        () => inventory.walletsForNetwork(BitcoinNetwork.mainnet),
       ).thenAnswer(
         (_) async => Ok(
-          walletSelectionForTesting([_wallet('w-btc', Network.bitcoinMainnet)]),
+          walletSelectionForTesting([_wallet('w-btc', BitcoinNetwork.mainnet)]),
         ),
       );
-      when(() => inventory.walletsForNetwork(Network.liquidMainnet)).thenAnswer(
+      when(() => inventory.walletsForNetwork(LiquidNetwork.mainnet)).thenAnswer(
         (_) async => Ok(
-          walletSelectionForTesting([_wallet('w-lbtc', Network.liquidMainnet)]),
+          walletSelectionForTesting([_wallet('w-lbtc', LiquidNetwork.mainnet)]),
         ),
       );
 
@@ -121,10 +122,10 @@ void main() {
     when(() => exchangeReads.getUserSummary(ExchangeEnvironment.mainnet))
         .thenAnswer((_) async => Ok(userSummary()));
     when(
-      () => inventory.walletsForNetwork(Network.bitcoinMainnet),
+      () => inventory.walletsForNetwork(BitcoinNetwork.mainnet),
     ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
     when(
-      () => inventory.walletsForNetwork(Network.liquidMainnet),
+      () => inventory.walletsForNetwork(LiquidNetwork.mainnet),
     ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
 
     final result = await usecase.execute();
@@ -252,8 +253,8 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     verify(() => exchangeReads.getDefaultWallets()).called(1);
-    verify(() => inventory.walletsForNetwork(Network.bitcoinMainnet)).called(1);
-    verify(() => inventory.walletsForNetwork(Network.liquidMainnet)).called(1);
+    verify(() => inventory.walletsForNetwork(BitcoinNetwork.mainnet)).called(1);
+    verify(() => inventory.walletsForNetwork(LiquidNetwork.mainnet)).called(1);
     verifyNever(() => repository.getRate(any()));
 
     summary.complete(Ok(userSummary()));

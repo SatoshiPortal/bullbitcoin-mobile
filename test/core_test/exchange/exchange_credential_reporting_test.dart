@@ -131,7 +131,7 @@ void main() {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
         final wallets = _Inventory();
-        for (final network in [Network.bitcoinTestnet, Network.liquidTestnet]) {
+        for (final network in [BitcoinNetwork.testnet, LiquidNetwork.testnet]) {
           when(() => wallets.walletsForNetwork(network))
               .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
         }

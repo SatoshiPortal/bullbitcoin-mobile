@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:primitives/primitives.dart' show FormatAmount;
+import 'package:primitives/primitives.dart' show FormatAmount, LiquidNetwork;
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:secrets/secrets.dart';
@@ -18,8 +18,10 @@ import '../../../default_wallets/ui/default_wallets_router.dart';
 import '../../../exchange_landing_navigation.dart';
 import '../../../exchange_payout_field.dart';
 import '../../../funding/fund_exchange_router.dart';
+import '../../../ui/widgets/exchange_amount_input_field.dart';
 import '../../limit_orders_navigation.dart';
 import '../widgets/limit_order_detail_row.dart';
+import '../widgets/limit_orders_loading_bar.dart';
 
 final class CreateLimitOrderScreen extends StatefulWidget {
   final ExchangePayoutField payoutField;
@@ -416,7 +418,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               ),
               title: Text(_appWalletName(context, appWallet)),
               subtitle: Text(
-                appWallet.network.isLiquid
+                appWallet.network is LiquidNetwork
                     ? context.loc.limitOrdersWalletLiquid
                     : context.loc.limitOrdersWalletBitcoin,
               ),
@@ -488,7 +490,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   String _appWalletName(BuildContext context, WalletRegistration wallet) {
     final label = wallet.label;
     if (label != null && label.isNotEmpty) return label;
-    return wallet.network.isLiquid
+    return wallet.network is LiquidNetwork
         ? context.loc.limitOrdersWalletLiquid
         : context.loc.limitOrdersWalletBitcoin;
   }

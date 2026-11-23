@@ -14,7 +14,7 @@ class _Native extends Mock implements WalletNativeLifecycle {}
 void main() {
   final wallet = walletRegistrationForTesting(
     id: 'payout-wallet',
-    network: Network.bitcoinMainnet,
+    network: BitcoinNetwork.mainnet,
   );
   final key = WalletKey(id: wallet.id, network: wallet.network);
   late _Inventory inventory;

@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, LiquidNetwork, Network, Err, Ok, Result;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bull_exchange/testing.dart';
@@ -281,15 +282,15 @@ void main() {
 
   final bitcoinRegistration = walletRegistrationForTesting(
     id: 'w-btc',
-    network: Network.bitcoinMainnet,
+    network: BitcoinNetwork.mainnet,
   );
   final liquidRegistration = walletRegistrationForTesting(
     id: 'w-lbtc',
-    network: Network.liquidMainnet,
+    network: LiquidNetwork.mainnet,
   );
 
   WalletRegistration appWallet(String id, Network network) =>
-      network == Network.bitcoinMainnet
+      network == BitcoinNetwork.mainnet
       ? bitcoinRegistration
       : liquidRegistration;
 
@@ -315,7 +316,7 @@ void main() {
       cubit.setAmount(100);
       cubit.continueFromAmount();
       final resolving = cubit.selectAppWallet(
-        appWallet('w-btc', Network.bitcoinMainnet),
+        appWallet('w-btc', BitcoinNetwork.mainnet),
       );
       cubit.selectWallet(bitcoinWallet);
       cubit.continueFromWallet();
@@ -371,7 +372,7 @@ void main() {
     final cubit = buildCubit();
     addTearDown(cubit.close);
     final resolving = cubit.selectAppWallet(
-      appWallet('w-btc', Network.bitcoinMainnet),
+      appWallet('w-btc', BitcoinNetwork.mainnet),
     );
     final validating = cubit.setLightningAddress('new@example.com');
     pendingWallet.complete(const Ok('bc1qstale'));
@@ -409,7 +410,7 @@ void main() {
             .thenAnswer((_) async => const Ok('bc1qderived')),
     build: buildCubit,
     act: (cubit) =>
-        cubit.selectAppWallet(appWallet('w-btc', Network.bitcoinMainnet)),
+        cubit.selectAppWallet(appWallet('w-btc', BitcoinNetwork.mainnet)),
     verify: (cubit) {
       expect(cubit.state.isResolvingAddress, isFalse);
       expect(cubit.state.selectedAppWalletId, 'w-btc');
@@ -425,7 +426,7 @@ void main() {
     ).thenAnswer((_) async => const Err(LimitOrdersUnexpectedFailure('boom'))),
     build: buildCubit,
     act: (cubit) =>
-        cubit.selectAppWallet(appWallet('w-lbtc', Network.liquidMainnet)),
+        cubit.selectAppWallet(appWallet('w-lbtc', LiquidNetwork.mainnet)),
     verify: (cubit) {
       expect(cubit.state.isResolvingAddress, isFalse);
       expect(cubit.state.wallet, isNull);
