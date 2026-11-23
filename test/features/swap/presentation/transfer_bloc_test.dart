@@ -3290,6 +3290,47 @@ void main() {
         verifyNever(() => dropPendingLockup.execute(any()));
       });
 
+      for (final (category, dropsLockup) in [
+        (BroadcastFailureCategory.connection, false),
+        (BroadcastFailureCategory.authorization, true),
+      ]) {
+        test('Liquid lockup after ${category.name}', () async {
+          final swap = _swap().copyWith(type: SwapType.liquidToBitcoin);
+          final pending = swap.copyWith(pendingLockupTx: 'lockup-signed');
+          when(
+            () => recordPendingLockup.execute(
+              swapId: swap.id,
+              signedTx: 'lockup-signed',
+            ),
+          ).thenAnswer((_) async => Ok(pending));
+          when(() => broadcastLiquid.execute('lockup-signed'))
+              .thenThrow(CategorizedBroadcastException(category));
+          bloc.emit(
+            confirming(swap: swap).copyWith(
+              fromWallet: _liquidWallet(),
+              toWallet: _destinationWallet(),
+              bitcoinSignature: null,
+              liquidSignature: SpendFixtures.signedLiquid('lockup-signed'),
+            ),
+          );
+
+          final finished = bloc.stream.firstWhere(
+            (state) => !state.isConfirming && state.swapFailure != null,
+          );
+          bloc.add(const TransferEvent.confirmed());
+          await finished;
+
+          verify(() => broadcastLiquid.execute('lockup-signed')).called(1);
+          if (dropsLockup) {
+            verify(() => dropPendingLockup.execute(swap.id)).called(1);
+          } else {
+            verifyNever(() => dropPendingLockup.execute(swap.id));
+            expect(bloc.state.swap?.pendingLockupTx, 'lockup-signed');
+            expect(bloc.state.swapFailure, isA<SwapLockupPendingFailure>());
+          }
+        });
+      }
+
       test('a lockup still being confirmed refuses a rebuild', () async {
         bloc.emit(
           confirming(swap: _swap().copyWith(pendingLockupTx: 'lockup-signed'))
@@ -3842,6 +3883,8 @@ final class _SwapSpend extends FakeSpend {
           ),
         BroadcastFailureCategory.authorization =>
           const SpendDeveloperAuthorizationFailure(),
+        BroadcastFailureCategory.connection when !guarded =>
+          const SpendBroadcastConnectionFailure(),
         _ => const SpendBroadcastOutcomeUnknownFailure(),
       });
     }
