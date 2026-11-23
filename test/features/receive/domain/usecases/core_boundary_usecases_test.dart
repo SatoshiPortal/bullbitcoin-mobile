@@ -91,33 +91,39 @@ void main() {
       },
     );
 
-    test('an unreadable signer keeps the wallet listed and admissible', () async {
-      final read = GetReceiveWalletsUsecase(
-        preferences,
-        inventory,
-        (_) async => const Err(native.SyncNotFoundFailure()),
-        (_) async => const Err(SignerDeviceUnavailable()),
-      );
-      when(() => inventory.walletsForNetwork(BitcoinNetwork.testnet))
-          .thenAnswer((_) async => Ok(walletSelectionForTesting([registration])));
-      when(() => inventory.readWallet(registration.id))
-          .thenAnswer((_) async => Ok(registration));
+    test(
+      'an unreadable signer keeps the wallet listed and admissible',
+      () async {
+        final read = GetReceiveWalletsUsecase(
+          preferences,
+          inventory,
+          (_) async => const Err(native.SyncNotFoundFailure()),
+          (_) async => const Err(SignerDeviceUnavailable()),
+        );
+        when(() => inventory.walletsForNetwork(BitcoinNetwork.testnet))
+            .thenAnswer(
+              (_) async => Ok(walletSelectionForTesting([registration])),
+            );
+        when(() => inventory.readWallet(registration.id))
+            .thenAnswer((_) async => Ok(registration));
 
-      final listed = (await read.execute(onlyBitcoin: true)).fold(
-        (wallets) => wallets,
-        (failure) => fail('Expected a listed wallet, got ${failure.runtimeType}'),
-      );
-      expect(listed.map((wallet) => wallet.id), [registration.id]);
+        final listed = (await read.execute(onlyBitcoin: true)).fold(
+          (wallets) => wallets,
+          (failure) =>
+              fail('Expected a listed wallet, got ${failure.runtimeType}'),
+        );
+        expect(listed.map((wallet) => wallet.id), [registration.id]);
 
-      final admitted = (await read.resolveEntry(listed.single)).fold(
-        (wallet) => wallet,
-        (failure) => fail('Expected admission, got ${failure.runtimeType}'),
-      );
-      for (final wallet in [listed.single, admitted]) {
-        expect(wallet.signsLocally, isTrue);
-        expect(wallet.signerDevice, isNull);
-      }
-    });
+        final admitted = (await read.resolveEntry(listed.single)).fold(
+          (wallet) => wallet,
+          (failure) => fail('Expected admission, got ${failure.runtimeType}'),
+        );
+        for (final wallet in [listed.single, admitted]) {
+          expect(wallet.signsLocally, isTrue);
+          expect(wallet.signerDevice, isNull);
+        }
+      },
+    );
 
     test('a locked inventory must not resurrect an entry wallet', () async {
       when(() => inventory.readWallet('w1'))
