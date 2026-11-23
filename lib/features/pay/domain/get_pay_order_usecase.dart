@@ -19,16 +19,17 @@ class GetPayOrderUsecase {
     required String orderId,
   }) async {
     final Order order;
-    try {
-      order = await _getOrderUsecase.execute(orderId: orderId);
-    } catch (_) {
-      const diagnostic = 'pay_order_read_failed category=unexpected';
-      log.severe(
-        message: diagnostic,
-        error: Exception(diagnostic),
-        trace: StackTrace.current,
-      );
-      return const Err(PayUnexpectedFailure(diagnostic));
+    switch (await _getOrderUsecase.execute(orderId: orderId)) {
+      case Ok(:final value):
+        order = value;
+      case Err():
+        const diagnostic = 'pay_order_read_failed category=unexpected';
+        log.severe(
+          message: diagnostic,
+          error: Exception(diagnostic),
+          trace: StackTrace.current,
+        );
+        return const Err(PayUnexpectedFailure(diagnostic));
     }
 
     if (order is! FiatPaymentOrder) {

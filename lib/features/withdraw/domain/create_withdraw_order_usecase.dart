@@ -1,8 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/features/withdraw/domain/map_withdraw_order_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
@@ -20,13 +18,11 @@ final class CreateWithdrawOrderResult {
 }
 
 class CreateWithdrawOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
 
   CreateWithdrawOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
   });
 
@@ -53,10 +49,15 @@ class CreateWithdrawOrderUsecase {
     }
 
     try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(
+            WithdrawUnexpectedFailure('Preferences read failed'),
+          );
+      }
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,
@@ -65,10 +66,11 @@ class CreateWithdrawOrderUsecase {
         return const Err(WithdrawUnsupportedNetworkFailure());
       }
       final isTestnet = settings.environment.requireHistoricalTestnet();
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
-      final order = await repo.placeWithdrawalOrder(
+      final repo = _exchange.orders(
+        isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
+      );
+      final WithdrawOrder order;
+      switch (await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
         recipientId: recipientId,
         paymentProcessor: switch (recipientType) {
@@ -79,7 +81,12 @@ class CreateWithdrawOrderUsecase {
         },
         securityQuestion: interacSecurityDetails?.securityQuestion,
         securityAnswer: interacSecurityDetails?.securityAnswer,
-      );
+      )) {
+        case Ok(:final value):
+          order = value;
+        case Err(:final failure):
+          return Err(mapWithdrawOrderFailure(failure));
+      }
 
       return Ok(
         CreateWithdrawOrderResult(
@@ -87,41 +94,7 @@ class CreateWithdrawOrderUsecase {
           interacSecurityDetails: interacSecurityDetails,
         ),
       );
-    } on ExchangeCredentialUnavailableException {
-      log.warning('Exchange order unavailable: credential read refused');
-      return const Err(WithdrawUnexpectedFailure());
-    } on ApiKeyException catch (e, st) {
-      log.warning(
-        'Withdrawal order rejected: not authenticated',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return const Err(WithdrawUnauthenticatedFailure());
-    } on BullBitcoinApiMinAmountException catch (e) {
-      // The two amount bounds are expected user input errors, so they are
-      // logged at info rather than severe; the bound itself travels in the
-      // failure so the screen can name it.
-      log.info('Withdrawal order below the minimum: ${e.message}');
-      return Err(
-        WithdrawBelowMinAmountFailure(
-          minAmount: e.minAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      log.info('Withdrawal order above the maximum: ${e.message}');
-      return Err(
-        WithdrawAboveMaxAmountFailure(
-          maxAmount: e.maxAmount,
-          currency: e.currency,
-          logMessage: e.message,
-        ),
-      );
-    } on BullBitcoinApiConfidentialSepaNotActivatedException {
-      log.info('Withdrawal refused: the virtual payee is not active yet');
-      return const Err(WithdrawConfidentialSepaNotActivatedFailure());
-    } catch (_, st) {
+    } on Exception catch (_, st) {
       // The raw error is deliberately dropped: the request can carry the
       // Interac security answer, which must never reach diagnostics.
       log.severe(

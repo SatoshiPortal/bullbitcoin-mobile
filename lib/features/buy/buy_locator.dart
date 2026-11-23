@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart'
     show AmountDisplayPreferencesReader, Preferences;
 import 'package:bb_mobile/features/buy/domain/watch_buy_bitcoin_unit_usecase.dart';
@@ -5,7 +6,6 @@ import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
@@ -30,12 +30,7 @@ class BuyLocator {
     );
     locator.registerFactory<CreateBuyOrderUsecase>(
       () => CreateBuyOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
         payjoinReceiver: locator<PayjoinReceiver>(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
@@ -43,35 +38,20 @@ class BuyLocator {
     );
     locator.registerFactory<ConfirmBuyOrderUsecase>(
       () => ConfirmBuyOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
         labelsFacade: locator<Labels>(),
       ),
     );
     locator.registerFactory<RefreshBuyOrderUsecase>(
       () => RefreshBuyOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerFactory<AccelerateBuyOrderUsecase>(
       () => AccelerateBuyOrderUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
       ),
     );

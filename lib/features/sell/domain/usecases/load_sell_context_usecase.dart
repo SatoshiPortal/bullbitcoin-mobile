@@ -169,16 +169,17 @@ class LoadSellContextUsecase {
 
   @useResult
   Future<Result<Order, SellFailure>> order({required String orderId}) async {
-    try {
-      return Ok(await _getOrderUsecase.execute(orderId: orderId));
-    } catch (_) {
-      const diagnostic = 'sell_order_read_failed category=unexpected';
-      log.severe(
-        message: diagnostic,
-        error: Exception(diagnostic),
-        trace: StackTrace.current,
-      );
-      return const Err(SellUnexpectedFailure(diagnostic));
+    switch (await _getOrderUsecase.execute(orderId: orderId)) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err():
+        const diagnostic = 'sell_order_read_failed category=unexpected';
+        log.severe(
+          message: diagnostic,
+          error: Exception(diagnostic),
+          trace: StackTrace.current,
+        );
+        return const Err(SellUnexpectedFailure(diagnostic));
     }
   }
 }

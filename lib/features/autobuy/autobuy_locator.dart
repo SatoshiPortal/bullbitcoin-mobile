@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
@@ -13,7 +12,6 @@ class AutoBuyLocator {
     locator.registerLazySingleton<SetAutoBuyUsecase>(
       () => SetAutoBuyUsecase(
         locator<GetExchangeUserSummaryUsecase>(),
-        locator<GetDefaultWalletsUsecase>(),
         locator<Preferences>(),
         locator<Exchange>(),
       ),

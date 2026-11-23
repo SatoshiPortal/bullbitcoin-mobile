@@ -1,7 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
@@ -10,8 +9,6 @@ import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:meta/meta.dart';
 
 class SetDcaUsecase {
-  final ExchangeOrderRepository _mainnetDcaRepository;
-  final ExchangeOrderRepository _testnetDcaRepository;
   // TODO: Don't use the repositories of other domains directly, but use reduced
   // interfaces for each domain just for what is needed from them in the DCA context/domain
   final WalletRepository _wallet;
@@ -20,14 +17,11 @@ class SetDcaUsecase {
   final Exchange _exchange;
 
   SetDcaUsecase({
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
     required this._wallet,
     required this._settingsRepository,
     required this._walletAddressRepository,
     required this._exchange,
-  }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
-       _testnetDcaRepository = testnetExchangeOrderRepository;
+  });
 
   @useResult
   Future<Result<Dca, DcaFailure>> execute({
@@ -39,10 +33,12 @@ class SetDcaUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(DcaUnexpectedFailure('settings fetch failed'));
+      }
     } catch (e, st) {
       if (e is Error) rethrow;
       log.severe(message: 'Failed to load settings', error: e, trace: st);
@@ -127,21 +123,23 @@ class SetDcaUsecase {
     }
 
     final Dca dca;
-    try {
-      final repository = environment.isMainnet
-          ? _mainnetDcaRepository
-          : _testnetDcaRepository;
-      dca = await repository.createDca(
-        amount: amount,
-        currency: currency,
-        frequency: frequency,
-        network: network,
-        address: address,
-      );
-    } catch (e, st) {
-      if (e is Error) rethrow;
-      log.warning('Exchange rejected DCA creation', error: e, trace: st);
-      return const Err(DcaOrderCreationFailure('createDca rejected'));
+    switch (await _exchange
+        .orders(exchangeEnvironment)
+        .createDca(
+          amount: amount,
+          currency: currency,
+          frequency: frequency,
+          network: network,
+          address: address,
+        )) {
+      case Ok(:final value):
+        dca = value;
+      case Err(:final failure):
+        log.warning(
+          'Exchange rejected DCA creation',
+          error: failure.runtimeType,
+        );
+        return const Err(DcaOrderCreationFailure('createDca rejected'));
     }
 
     if (await _exchange.saveUserPreference(

@@ -1,10 +1,11 @@
-import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/entities/exchange_api_key.dart';
+import '../domain/exchange_failure.dart';
+import 'api_key_model.dart';
+
 abstract final class ExchangeApiKeyMapper {
-  static Result<ExchangeApiKey, ExchangeApiKeyFailure> toDomain(
+  static Result<ExchangeApiKey, ExchangeFailure> toDomain(
     ExchangeApiKeyModel model,
   ) => ExchangeApiKey.create(
     id: model.id,

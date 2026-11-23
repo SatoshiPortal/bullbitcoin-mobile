@@ -1,20 +1,17 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/features/buy/domain/map_buy_order_failure.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class RefreshBuyOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
 
   RefreshBuyOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
   });
 
@@ -26,10 +23,13 @@ class RefreshBuyOrderUsecase {
     bool confirmed = false,
   }) async {
     try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(BuyUnexpectedFailure('Preferences read failed'));
+      }
       final environment = settings.environment.networkEnv;
       final exchangeNetwork = switch (environment) {
         NetworkEnv.mainnet => BitcoinNetwork.mainnet,
@@ -44,36 +44,34 @@ class RefreshBuyOrderUsecase {
         return const Err(BuyUnsupportedNetworkFailure());
       }
       final isTestnet = environment == NetworkEnv.testnet;
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
-      if (!confirmed) return Ok(await repo.refreshBuyOrder(orderId));
-      final order = await repo.getOrder(orderId);
+      final repo = _exchange.orders(
+        isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
+      );
+      if (!confirmed) {
+        return (await repo.refreshBuyOrder(orderId)).mapErr(mapBuyOrderFailure);
+      }
+      final Order order;
+      switch (await repo.getOrder(orderId)) {
+        case Ok(:final value):
+          order = value;
+        case Err(:final failure):
+          return Err(mapBuyOrderFailure(failure));
+      }
       if (order is! BuyOrder) {
         log.severe(
           error: 'Expected a buy order but read ${order.runtimeType}',
           trace: StackTrace.current,
         );
-        return Err(BuyUnexpectedFailure('Not a buy order: $orderId'));
+        return const Err(BuyUnexpectedFailure('Expected a buy order'));
       }
       return Ok(order);
-    } on ExchangeCredentialUnavailableException {
-      log.warning('Exchange order unavailable: credential read refused');
-      return const Err(BuyUnexpectedFailure());
-    } on ApiKeyException catch (e, st) {
-      log.warning(
-        'Cannot refresh the buy order: not authenticated',
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'Failed to refresh the buy order',
         error: e.runtimeType,
         trace: st,
       );
-      return const Err(BuyUnauthenticatedFailure());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to refresh the buy order',
-        error: e,
-        trace: st,
-      );
-      return Err(BuyUnexpectedFailure('$e'));
+      return Err(BuyUnexpectedFailure(e.runtimeType.toString()));
     }
   }
 }

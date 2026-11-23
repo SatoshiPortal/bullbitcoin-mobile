@@ -1,5 +1,6 @@
-import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
+
+import '../domain/entities/order.dart';
 
 /// Whether [s] settled through [txId].
 ///
@@ -12,7 +13,7 @@ bool orderSummaryMatchesTxId(bbx.OrderSummary s, String txId) =>
     s.liquidTransactionId == txId ||
     s.payjoinDetails?.txid == txId;
 
-/// Maps a `bbx_api` order to the app entity, with the defaults the exchange
+/// Maps a `bbx_api` order to the domain entity, with the defaults the exchange
 /// order parser has always applied: missing amounts are 0, missing strings
 /// are empty and unparseable optional dates are null.
 ///

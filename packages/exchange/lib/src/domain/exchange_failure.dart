@@ -2,9 +2,8 @@ import 'package:primitives/primitives.dart' show Failure;
 
 /// Recoverable exchange failures. Consumers localize them at the UI boundary.
 ///
-/// `logMessage` reaches logs and Sentry only. It MUST never be rendered — the
-/// exchange API and the legacy `BullException` chain both carry operator-facing
-/// English that is not safe to put in front of a user.
+/// Never render `logMessage`. Keep it free of server text, credentials and
+/// request data; it is reserved for sanitized diagnostics.
 sealed class ExchangeFailure extends Failure {
   const ExchangeFailure([super.logMessage]);
 }
@@ -101,6 +100,45 @@ final class ExchangeOrderInventoryUnavailableFailure extends ExchangeFailure {
 /// The credential store could not supply an authoritative answer.
 final class ExchangeCredentialReadFailure extends ExchangeFailure {
   const ExchangeCredentialReadFailure();
+}
+
+/// A legacy stored credential could not be decoded.
+final class ExchangeApiKeyInvalidFailure extends ExchangeFailure {
+  const ExchangeApiKeyInvalidFailure([super.logMessage]);
+}
+
+final class ExchangeApiKeySaveFailure extends ExchangeFailure {
+  const ExchangeApiKeySaveFailure([super.logMessage]);
+}
+
+final class ExchangeApiKeyDeleteFailure extends ExchangeFailure {
+  const ExchangeApiKeyDeleteFailure([super.logMessage]);
+}
+
+enum ExchangeOrderAmountBound { minimum, maximum }
+
+final class ExchangeOrderLimitFailure extends ExchangeFailure {
+  final ExchangeOrderAmountBound bound;
+  final double amount;
+  final String currency;
+
+  const ExchangeOrderLimitFailure(this.bound, this.amount, this.currency);
+}
+
+final class ExchangeConfidentialSepaInactiveFailure extends ExchangeFailure {
+  const ExchangeConfidentialSepaInactiveFailure();
+}
+
+final class ExchangeOrderLoadFailure extends ExchangeFailure {
+  const ExchangeOrderLoadFailure();
+}
+
+/// Server refusal with safe codes only; the response may echo request data.
+final class ExchangeOrderRejectedFailure extends ExchangeFailure {
+  final String? apiCode;
+  final int? rpcCode;
+
+  const ExchangeOrderRejectedFailure({this.apiCode, this.rpcCode});
 }
 
 final class ExchangeStatisticsUnavailableFailure extends ExchangeFailure {

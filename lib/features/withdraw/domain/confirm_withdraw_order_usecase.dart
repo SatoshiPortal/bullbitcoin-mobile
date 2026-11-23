@@ -1,7 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/features/withdraw/domain/map_withdraw_order_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
@@ -9,14 +8,12 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class ConfirmWithdrawOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
   final RecipientsFacade _recipientsFacade;
 
   ConfirmWithdrawOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
     required this._recipientsFacade,
   });
@@ -29,10 +26,15 @@ class ConfirmWithdrawOrderUsecase {
   }) async {
     final WithdrawOrder order;
     try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final SettingsEntity settings;
+      switch (await _settingsRepository.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err():
+          return const Err(
+            WithdrawUnexpectedFailure('Preferences read failed'),
+          );
+      }
       final environment = settings.environment.networkEnv;
       final exchangeNetwork = switch (environment) {
         NetworkEnv.mainnet => BitcoinNetwork.mainnet,
@@ -48,21 +50,16 @@ class ConfirmWithdrawOrderUsecase {
         return const Err(WithdrawUnsupportedNetworkFailure());
       }
       final isTestnet = environment == NetworkEnv.testnet;
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
-      order = await repo.confirmWithdrawOrder(orderId);
-    } on ExchangeCredentialUnavailableException {
-      log.warning('Exchange order unavailable: credential read refused');
-      return const Err(WithdrawUnexpectedFailure());
-    } on ApiKeyException catch (e, st) {
-      log.warning(
-        'Cannot confirm the withdrawal order: not authenticated',
-        error: e.runtimeType,
-        trace: st,
+      final repo = _exchange.orders(
+        isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
-      return const Err(WithdrawUnauthenticatedFailure());
-    } catch (_, st) {
+      switch (await repo.confirmWithdrawOrder(orderId)) {
+        case Ok(:final value):
+          order = value;
+        case Err(:final failure):
+          return Err(mapWithdrawOrderFailure(failure));
+      }
+    } on Exception catch (_, st) {
       // The raw error is deliberately dropped, as for order creation: it must
       // not carry order payment data into diagnostics.
       log.severe(
