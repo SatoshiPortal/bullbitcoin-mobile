@@ -52,6 +52,7 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - features/physical_backup_verification
   - packages/rust_bindings
   - packages/onion
   - packages/boltz_stream
@@ -73,6 +74,7 @@ dependencies:
   bull_ark:
   fees:
   fees_feature:
+  physical_backup_verification:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:
