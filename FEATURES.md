@@ -24,6 +24,8 @@ graph TB
     ARK --> NOTIFICATIONS
     ARK --> BULL_UI
     ARK --> BULL_PRICER
+    ARK -->|funding and wallet display data| SYNC
+    TX_HISTORY -->|Payjoin signing guard| ARK
     ARK_PROTOCOL --> PRIMITIVES
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER

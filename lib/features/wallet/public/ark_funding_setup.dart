@@ -4,6 +4,7 @@ library;
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart'
     show ArkBoardFundingPort, ArkFailure, ArkServiceUnavailableFailure;
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
@@ -11,15 +12,9 @@ import 'package:fees/fees.dart';
 
 import '../data/ark_board_funding.dart';
 import '../data/foreground_wallet_sync.dart';
-import '../data/sqlite_ark_funding_reservations.dart';
 import '../data/wallet_registrations.dart';
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
-
-export '../data/ark_funding_signing_guard.dart';
-export '../data/ark_installation_state.dart';
-export '../data/sqlite_ark_funding_reservations.dart'
-    show SqliteArkFundingReservations;
 
 /// Construct before ArkClient, bind once after the SAME real client exists.
 final class WalletArkFundingFactory {

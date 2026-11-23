@@ -11,11 +11,11 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_ark/ark_foreground_maintenance_setup.dart';
 import 'package:bull_ark/ark_maintenance_setup.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -28,13 +28,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:secrets/secrets.dart';
 
-import 'ark_board_abandonment.dart';
-import 'ark_installation_state.dart';
-import 'ark_display_data.dart';
-
 import 'package:sync/write.dart' show WalletNativeRuntime;
-
-import 'sqlite_ark_funding_reservations.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.
 typedef ArkBoardFundingFactory = ArkBoardFundingPort Function(

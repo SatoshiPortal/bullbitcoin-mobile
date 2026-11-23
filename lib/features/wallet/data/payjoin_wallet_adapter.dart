@@ -1,4 +1,4 @@
-import 'ark_funding_signing_guard.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:secrets/secrets.dart';

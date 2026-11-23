@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/ark_ui_setup.dart';
