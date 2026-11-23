@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
@@ -5,6 +7,7 @@ import 'package:bull_exchange/bull_exchange.dart'
     show BuyRoute, ExchangeHomeAction;
 import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:btc_map/btc_map.dart';
@@ -101,11 +104,11 @@ class AppRouter {
     homePath: WalletRoute.walletHome.path,
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: SettingsNavigation.open,
-    onAction: (context, action) => _openQuickAction(context, switch (action) {
-      ExchangeHomeAction.buy => QuickAction.buy,
-      ExchangeHomeAction.sell => QuickAction.sell,
-      ExchangeHomeAction.pay => QuickAction.pay,
-      ExchangeHomeAction.transfer => QuickAction.transfer,
+    onAction: (context, action) => context.pushNamed(switch (action) {
+      ExchangeHomeAction.buy => BuyRoute.buy.name,
+      ExchangeHomeAction.sell => SellRoute.sell.name,
+      ExchangeHomeAction.pay => PayRoute.pay.name,
+      ExchangeHomeAction.transfer => SwapRoute.swap.name,
     }),
   );
 
@@ -119,18 +122,46 @@ class AppRouter {
         context.pushNamed(SwapRoute.swap.name);
       case QuickAction.history:
         TransactionsNavigation.openHistory(context);
+      case QuickAction.settings:
+        SettingsNavigation.open(context);
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
         BitcoinPriceFeature.openHistory(context);
-      case QuickAction.buy:
-        context.pushNamed(BuyRoute.buy.name);
-      case QuickAction.sell:
-        context.pushNamed(SellRoute.sell.name);
       case QuickAction.pay:
         context.pushNamed(PayRoute.pay.name);
       case QuickAction.exchange:
-        context.pushNamed(ExchangeRoute.exchangeHome.name);
+        if (locator<ExchangeFacade>().currentAccess is ExchangeAccessDisabled) {
+          unawaited(_activateExchange(context));
+        } else {
+          context.pushNamed(ExchangeRoute.exchangeHome.name);
+        }
+    }
+  }
+
+  static bool _activatingExchange = false;
+
+  static Future<void> _activateExchange(BuildContext context) async {
+    if (_activatingExchange) return;
+    _activatingExchange = true;
+    final Result<void, ExchangeFailure> result;
+    try {
+      result = await locator<ExchangeFacade>().enable();
+    } finally {
+      _activatingExchange = false;
+    }
+    if (!context.mounted) return;
+    if (result case Err(:final failure)) {
+      BullSnackBar.show(context, message: failure.toTranslated(context));
+      return;
+    }
+    final signedIn = ExchangeAvailability.canManageAccount(
+      locator<ExchangeFacade>().currentAccess,
+    );
+    if (signedIn) {
+      context.pushNamed(ExchangeRoute.exchangeHome.name);
+    } else {
+      context.goNamed(ExchangeRoute.exchangeAuth.name);
     }
   }
 
@@ -191,11 +222,7 @@ class AppRouter {
               child: Scaffold(
                 // The app bar of the exchange tab is rendered by the
                 // ExchangeHomeScreen itself, as an overlay.
-                appBar: tabIndex == 0
-                    ? WalletHomeAppBar(
-                        onSettings: () => SettingsNavigation.open(context),
-                      )
-                    : null,
+                appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                 extendBodyBehindAppBar: true,
                 body: child,
               ),
@@ -214,6 +241,8 @@ class AppRouter {
             onQuickAction: _openQuickAction,
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
+            exchangePrompt: locator<ExchangePromptCubit>(),
+            onActivateExchange: _activateExchange,
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),

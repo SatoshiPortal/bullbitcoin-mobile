@@ -3,6 +3,7 @@ import 'package:electrum/setup.dart';
 
 import 'dart:io';
 
+import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -73,6 +74,14 @@ class SettingsLocator {
               .where((state) => state.storedSettings != null)
               .map((state) => !Platform.isIOS || state.isSuperuser == true),
         ).execute(),
+        exchangeEntry: _exchangeActivationOffer(locator, onlyWhileOff: false),
+      ),
+      dispose: (cubit) => cubit.close(),
+    );
+    locator.registerLazySingleton<ExchangePromptCubit>(
+      () => createExchangePromptCubit(
+        warning: log.warning,
+        offered: _exchangeActivationOffer(locator, onlyWhileOff: true),
       ),
       dispose: (cubit) => cubit.close(),
     );
@@ -220,4 +229,17 @@ class SettingsLocator {
       ),
     );
   }
+
+  static Stream<bool> _exchangeActivationOffer(
+    GetIt locator, {
+    required bool onlyWhileOff,
+  }) => WatchExchangeActivationOfferUsecase(
+    exchange: locator<ExchangeFacade>(),
+    platformAllowed: () =>
+        !Platform.isIOS || locator<SettingsCubit>().state.isSuperuser == true,
+    platformChanges: locator<SettingsCubit>().stream
+        .where((state) => state.storedSettings != null)
+        .map((state) => !Platform.isIOS || state.isSuperuser == true),
+    onlyWhileOff: onlyWhileOff,
+  ).execute();
 }

@@ -26,7 +26,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SettingsCubit>.value(
           value: settings,
-          child: Scaffold(appBar: WalletHomeAppBar(onSettings: () {})),
+          child: Scaffold(appBar: const WalletHomeAppBar()),
         ),
       ),
     );

@@ -97,6 +97,12 @@ void main() {
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
+                exchangePrompt: createExchangePromptCubit(
+                  storage: _MemoryQuickActionsStorage(),
+                  warning: (_) {},
+                  offered: const Stream.empty(),
+                ),
+                onActivateExchange: (_) {},
                 announcements: () => const SizedBox.shrink(),
                 createSetupCubit: createSetupCubit,
               ),

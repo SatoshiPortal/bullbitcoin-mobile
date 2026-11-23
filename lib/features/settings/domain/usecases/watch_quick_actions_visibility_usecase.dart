@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:preferences/preferences.dart';
 import 'package:exchange/exchange.dart';
 
-/// Combines the exchange state with the platform and network restrictions.
+/// Whether the trading actions can be used: a signed-in exchange session
+/// within the platform and network restrictions.
 class WatchQuickActionsVisibilityUsecase {
   const WatchQuickActionsVisibilityUsecase({
     required this._exchange,
@@ -38,12 +39,11 @@ class WatchQuickActionsVisibilityUsecase {
       if (network == null) return;
       final visible =
           network &&
-          access is! ExchangeAccessResolving &&
           ExchangeAvailability.resolve(
                 platformAllowed: allowed,
                 access: access,
-              ) !=
-              ExchangeAvailability.hidden;
+              ) ==
+              ExchangeAvailability.ready;
       if (active && !controller.isClosed && visible != lastValue) {
         lastValue = visible;
         controller.add(visible);

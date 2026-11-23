@@ -21,21 +21,26 @@ void main() {
     expect(loaded, isFalse);
     visibility.add(true);
     await load;
-    expect(cubit.state.available, contains(QuickAction.buy));
+    expect(cubit.state.available, contains(QuickAction.pay));
   });
 
   test('a null stored selection drafts the injected defaults', () async {
+    const injected = [
+      QuickAction.toggleAmounts,
+      QuickAction.map,
+      QuickAction.transfer,
+    ];
     final cubit = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: const Stream.empty(),
-      defaults: QuickActionsLayout.iosDefaults,
+      defaults: injected,
     );
     addTearDown(cubit.close);
     await cubit.load();
-    expect(cubit.state.defaults, QuickActionsLayout.iosDefaults);
+    expect(cubit.state.defaults, injected);
     expect(cubit.state.selection, isNull);
-    expect(cubit.state.draft?.actions, QuickActionsLayout.iosDefaults);
+    expect(cubit.state.draft?.actions, injected);
   });
 
   test(
@@ -51,7 +56,7 @@ void main() {
       final initial = cubit.state.draft?.actions;
       expect(initial, isNotNull);
       storage.failWrite = true;
-      await cubit.save(QuickActionSelection([QuickAction.buy]));
+      await cubit.save(QuickActionSelection([QuickAction.pay]));
       expect(cubit.state.selection, isNull);
       expect(cubit.state.draft?.actions, initial);
       expect(cubit.state.saving, isFalse);
@@ -67,7 +72,7 @@ void main() {
       exchangeVisible: const Stream.empty(),
     );
     final load = cubit.load();
-    await cubit.save(QuickActionSelection([QuickAction.buy]));
+    await cubit.save(QuickActionSelection([QuickAction.pay]));
     storage.firstRead.complete(null);
     await load;
     expect(cubit.state.initialized, isTrue);
@@ -92,6 +97,81 @@ void main() {
     expect(cubit.state.available, isNot(contains(QuickAction.exchange)));
     await cubit.close();
     await visibility.close();
+  });
+
+  const exchangeOnly = {QuickAction.pay};
+  const exchangeActions = {...exchangeOnly, QuickAction.exchange};
+
+  Future<Set<QuickAction>> availableFor({
+    required bool visible,
+    Stream<bool>? entry,
+  }) async {
+    final cubit = entry == null
+        ? createQuickActionsCubit(
+            storage: MemoryStorage(),
+            warning: (_) {},
+            exchangeVisible: Stream.value(visible),
+          )
+        : createQuickActionsCubit(
+            storage: MemoryStorage(),
+            warning: (_) {},
+            exchangeVisible: Stream.value(visible),
+            exchangeEntry: entry,
+          );
+    addTearDown(cubit.close);
+    await cubit.load();
+    await Future<void>.delayed(Duration.zero);
+    return cubit.state.available;
+  }
+
+  test(
+    'a hidden exchange without an entry hides every exchange action',
+    () async {
+      for (final entry in [null, Stream.value(false)]) {
+        final available = await availableFor(visible: false, entry: entry);
+        expect(available.intersection(exchangeActions), isEmpty);
+        expect(
+          available,
+          QuickAction.values.toSet().difference(exchangeActions),
+        );
+      }
+    },
+  );
+
+  test('an exchange entry alone only offers the exchange action', () async {
+    final available = await availableFor(
+      visible: false,
+      entry: Stream.value(true),
+    );
+    expect(available, contains(QuickAction.exchange));
+    expect(available.intersection(exchangeOnly), isEmpty);
+    expect(available, QuickAction.values.toSet().difference(exchangeOnly));
+  });
+
+  test('a visible exchange offers every exchange action', () async {
+    for (final entry in [null, Stream.value(false), Stream.value(true)]) {
+      final available = await availableFor(visible: true, entry: entry);
+      expect(available, QuickAction.values.toSet());
+    }
+  });
+
+  test('withdrawing the exchange entry hides the exchange action', () async {
+    final entry = StreamController<bool>();
+    final cubit = createQuickActionsCubit(
+      storage: MemoryStorage(),
+      warning: (_) {},
+      exchangeVisible: Stream.value(false),
+      exchangeEntry: entry.stream,
+    );
+    addTearDown(cubit.close);
+    addTearDown(entry.close);
+    await cubit.load();
+    entry.add(true);
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.available, contains(QuickAction.exchange));
+    entry.add(false);
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.available, isNot(contains(QuickAction.exchange)));
   });
 }
 

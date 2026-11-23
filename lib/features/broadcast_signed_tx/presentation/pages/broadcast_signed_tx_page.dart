@@ -15,14 +15,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButtonSize,
-        BullButton,
-        BullPasteInput,
-        BullText,
-        BullTopBar,
-        Gap,
-        BullTypographyX;
+    show BullButton, BullPasteInput, BullText, BullTopBar, Gap, BullTypographyX;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,6 +38,9 @@ class BroadcastSignedTxPage extends StatelessWidget {
       bottomNavigationBar:
           BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
             builder: (context, state) {
+              if (state.transaction == null) {
+                return const SafeArea(child: _InputActions());
+              }
               final showActions =
                   state.transaction != null && !state.isBroadcasted;
               if (!showActions) return const SizedBox.shrink();
@@ -78,39 +74,6 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       color: context.appColors.error,
                     ),
                   ],
-
-                  const Gap(16),
-                  BullButton.secondary(
-                    size: BullButtonSize.small,
-                    label: context.loc.broadcastSignedTxCameraButton,
-                    onPressed: () {
-                      cubit.resetState();
-                      context.pushNamed(
-                        BroadcastSignedTxRoute.broadcastScanQr.name,
-                      );
-                    },
-                    iconData: Icons.qr_code_scanner,
-                  ),
-                  const Gap(32),
-                  BullButton.secondary(
-                    size: BullButtonSize.small,
-                    label: context.loc.broadcastSignedTxNfcButton,
-                    onPressed: () => NfcBottomSheet.showReadNfc(
-                      context: context,
-                      title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
-                      onDataReceived: (payload) => cubit.onQrScanned(payload),
-                    ),
-                    iconData: Icons.nfc,
-                  ),
-                  const Gap(32),
-                  BullButton.secondary(
-                    size: BullButtonSize.small,
-                    label: context.loc.broadcastSignedTxPushTxButton,
-                    onPressed: () => context.pushNamed(
-                      BroadcastSignedTxRoute.broadcastScanNfc.name,
-                    ),
-                    iconData: Icons.contactless_outlined,
-                  ),
                 ],
 
                 // Transaction review using TransactionReviewView
@@ -150,6 +113,49 @@ class BroadcastSignedTxPage extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _InputActions extends StatelessWidget {
+  const _InputActions();
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<BroadcastSignedTxCubit>();
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BullButton.secondary(
+            label: context.loc.broadcastSignedTxCameraButton,
+            onPressed: () {
+              cubit.resetState();
+              context.pushNamed(BroadcastSignedTxRoute.broadcastScanQr.name);
+            },
+            iconData: Icons.qr_code_scanner,
+          ),
+          const Gap(8),
+          BullButton.secondary(
+            label: context.loc.broadcastSignedTxNfcButton,
+            onPressed: () => NfcBottomSheet.showReadNfc(
+              context: context,
+              title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
+              onDataReceived: (payload) => cubit.onQrScanned(payload),
+            ),
+            iconData: Icons.nfc,
+          ),
+          const Gap(8),
+          BullButton.secondary(
+            label: context.loc.broadcastSignedTxPushTxButton,
+            onPressed: () =>
+                context.pushNamed(BroadcastSignedTxRoute.broadcastScanNfc.name),
+            iconData: Icons.contactless_outlined,
+          ),
+        ],
       ),
     );
   }

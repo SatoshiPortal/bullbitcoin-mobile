@@ -14,7 +14,6 @@ class AmountInputModeSetting extends StatefulWidget {
 
 class _AmountInputModeSettingState extends State<AmountInputModeSetting> {
   bool _writing = false;
-  int _revision = 0;
 
   Future<void> _select(bool fiat) async {
     if (_writing) return;
@@ -23,10 +22,7 @@ class _AmountInputModeSettingState extends State<AmountInputModeSetting> {
       fiat,
     );
     if (!mounted) return;
-    setState(() {
-      _writing = false;
-      if (result case Err()) _revision++;
-    });
+    setState(() => _writing = false);
     if (result case Err(:final failure)) {
       BullSnackBar.show(context, message: failure.toTranslated(context));
     }
@@ -36,46 +32,23 @@ class _AmountInputModeSettingState extends State<AmountInputModeSetting> {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsCubit>().state.storedSettings;
     if (settings == null) return const SizedBox.shrink();
-    final bitcoin = context.loc.amountInputBitcoin;
-    final currency = settings.currencyCode;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: BullSpacing.xs),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
-            child: Text(
-              context.loc.amountInputTitle,
-              style: context.bullType.body,
-            ),
-          ),
-          const Gap(BullSpacing.xs),
-          Semantics(
-            label: context.loc.amountInputTitle,
-            enabled: !_writing,
-            child: IgnorePointer(
-              ignoring: _writing,
-              child: BullSegmented(
-                key: ValueKey(_revision),
-                height: BullSpacing.xxl,
-                items: {bitcoin, currency},
-                initialValue: settings.startAmountsInFiat ? currency : bitcoin,
-                onSelected: (selected) => _select(selected == currency),
-              ),
-            ),
-          ),
-          const Gap(BullSpacing.xs),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
-            child: Text(
-              context.loc.amountInputSettingsHint,
-              style: context.bullType.label.copyWith(
-                color: context.bull.textMuted,
-              ),
-            ),
-          ),
-        ],
+    return BullSettingsEntryItem(
+      icon: BullIcons.payments,
+      title: context.loc.amountInputTitle,
+      trailing: IgnorePointer(
+        ignoring: _writing,
+        child: BullPickerChip<bool>(
+          tooltip: context.loc.amountInputTitle,
+          value: settings.startAmountsInFiat,
+          items: [
+            BullPickerItem(value: false, label: context.loc.amountInputBitcoin),
+            BullPickerItem(value: true, label: settings.currencyCode),
+          ],
+          onChanged: (fiat) {
+            if (fiat == settings.startAmountsInFiat) return;
+            _select(fiat);
+          },
+        ),
       ),
     );
   }

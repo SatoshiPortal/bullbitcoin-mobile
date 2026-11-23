@@ -119,6 +119,12 @@ void main() {
         );
         addTearDown(actions.close);
         await actions.load();
+        final exchangePrompt = createExchangePromptCubit(
+          storage: _MemoryActions(),
+          warning: (_) {},
+          offered: const Stream.empty(),
+        );
+        addTearDown(exchangePrompt.close);
         final navigatorKey = GlobalKey<NavigatorState>();
         final router = GoRouter(
           navigatorKey: navigatorKey,
@@ -131,7 +137,7 @@ void main() {
                 return switch (scene) {
                   'home' => Scaffold(
                     extendBodyBehindAppBar: true,
-                    appBar: WalletHomeAppBar(onSettings: () {}),
+                    appBar: const WalletHomeAppBar(),
                     body: WalletHomeScreen(
                       announcements: const SizedBox.shrink(),
                       arkHost: null,
@@ -144,6 +150,8 @@ void main() {
                       quickActions: actions,
                       onQuickAction: (_, _) {},
                       onCustomizeQuickActions: (_) {},
+                      exchangePrompt: exchangePrompt,
+                      onActivateExchange: (_) {},
                     ),
                   ),
                   'settings' => const AppSettingsScreen(),

@@ -3,7 +3,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullIcon, BullShapesX, BullText, BullTextRole, Gap;
+    show BullIcon, BullShapesX, BullSizes, BullText, BullTextRole, Gap;
 
 class BackupCard extends StatelessWidget {
   const BackupCard({super.key, required this.onTap});
@@ -18,6 +18,7 @@ class BackupCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
+          constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: colors.banner,
@@ -31,7 +32,6 @@ class BackupCard extends StatelessWidget {
             ],
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
                 Assets.misc.passwordbook.path,
@@ -43,6 +43,7 @@ class BackupCard extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: .start,
+                  mainAxisSize: .min,
                   children: [
                     BullText(
                       context.loc.backupCardTitle,

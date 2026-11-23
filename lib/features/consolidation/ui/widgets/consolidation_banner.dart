@@ -1,6 +1,6 @@
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAlertCard;
+import 'package:bull_ui/bull_ui.dart' show BullAlertCard, BullSizes;
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_banner_cubit.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -53,15 +53,18 @@ class _ConsolidationBannerView extends StatelessWidget {
           if (!required) return const SizedBox.shrink();
           return Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: BullAlertCard(
-              title: showWalletName
-                  ? context.loc.consolidationRequiredTitleNamed(
-                      wallet.displayLabel(context),
-                    )
-                  : context.loc.consolidationRequiredTitle,
-              onTap: () => context.pushNamed(
-                ConsolidationRoute.consolidation.name,
-                pathParameters: {'walletId': wallet.id},
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
+              child: BullAlertCard(
+                title: showWalletName
+                    ? context.loc.consolidationRequiredTitleNamed(
+                        wallet.displayLabel(context),
+                      )
+                    : context.loc.consolidationRequiredTitle,
+                onTap: () => context.pushNamed(
+                  ConsolidationRoute.consolidation.name,
+                  pathParameters: {'walletId': wallet.id},
+                ),
               ),
             ),
           );

@@ -30,6 +30,8 @@ class WalletHomeScreen extends StatefulWidget {
   final QuickActionsCubit quickActions;
   final void Function(BuildContext, QuickAction) onQuickAction;
   final void Function(BuildContext) onCustomizeQuickActions;
+  final ExchangePromptCubit exchangePrompt;
+  final void Function(BuildContext) onActivateExchange;
 
   const WalletHomeScreen({
     super.key,
@@ -42,6 +44,8 @@ class WalletHomeScreen extends StatefulWidget {
     required this.quickActions,
     required this.onQuickAction,
     required this.onCustomizeQuickActions,
+    required this.exchangePrompt,
+    required this.onActivateExchange,
   });
 
   @override
@@ -174,6 +178,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                     quickActions: widget.quickActions,
                     onAction: widget.onQuickAction,
                     onCustomize: widget.onCustomizeQuickActions,
+                    exchangePrompt: widget.exchangePrompt,
+                    onActivateExchange: widget.onActivateExchange,
                   ),
                 ),
               ),

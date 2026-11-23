@@ -106,10 +106,13 @@ class _CarouselBody extends StatelessWidget {
     return BullCarousel(
       children: [
         for (final announcement in announcements)
-          AnnouncementCard(
-            announcement: announcement,
-            onTap: _actionFor(announcement),
-            onDismiss: () => _onDismiss(context, announcement),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
+            child: AnnouncementCard(
+              announcement: announcement,
+              onTap: _actionFor(announcement),
+              onDismiss: () => _onDismiss(context, announcement),
+            ),
           ),
       ],
     );
