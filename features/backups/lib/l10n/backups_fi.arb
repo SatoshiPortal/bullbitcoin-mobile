@@ -1,0 +1,87 @@
+{
+  "@@locale": "fi",
+  "walletDetailsUnnamedWalletFallback": "Nimetön lompakko",
+  "backupWalletTitle": "Varmuuskopioi lompakkosi",
+  "testBackupTitle": "Testaa lompakkosi varmuuskopio",
+  "continueButton": "Jatka",
+  "passphraseLabel": "Suojaussana",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "closeDialogButton": "Sulje",
+  "backupSettingsPhysicalBackup": "Fyysinen varmuuskopio",
+  "backupSettingsEncryptedVault": "Salattu holvi",
+  "backupSettingsTested": "Testattu",
+  "backupSettingsNotTested": "Ei testattu",
+  "backupSettingsTestBackup": "Testaa varmuuskopio",
+  "backupSettingsStartBackup": "Aloita varmuuskopiointi",
+  "backupSettingsViewVaultKey": "Näytä holviavain",
+  "backupSettingsLabelsButton": "Tunnisteet",
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "backupWalletImportanceWarning": "Ilman varmuuskopiota menetät lopulta pääsyn varoihisi. Varmuuskopiointi on ehdottoman tärkeää.",
+  "backupWalletEncryptedVaultTitle": "Salattu holvi",
+  "backupWalletEncryptedVaultDescription": "Anonyymi varmuuskopio vahvalla salauksella pilvessä.",
+  "backupWalletEncryptedVaultTag": "Helppo ja nopea (1 minuutti)",
+  "backupWalletPhysicalBackupTitle": "Fyysinen varmuuskopio",
+  "backupWalletPhysicalBackupDescription": "Kirjoita 12 sanaa paperille. Säilytä ne turvallisesti äläkä menetä niitä.",
+  "backupWalletPhysicalBackupTag": "Luottamukseton (ota aikaa)",
+  "backupWalletHowToDecide": "Miten valita?",
+  "backupWalletHowToDecideBackupModalTitle": "Miten valita",
+  "backupWalletHowToDecideBackupLosePhysical": "Yksi yleisimmistä tavoista, joilla ihmiset menettävät Bitcoininsa, on fyysisen varmuuskopion katoaminen. Kuka tahansa, joka löytää fyysisen varmuuskopiosi, voi ottaa kaikki Bitcoinisi. Jos olet erittäin varma, että osaat piilottaa sen hyvin etkä koskaan menetä sitä, se on hyvä vaihtoehto.",
+  "backupWalletHowToDecideBackupEncryptedVault": "Salattu holvi estää varkaita varastamasta varmuuskopioasi. Se myös estää sinua vahingossa menettämästä varmuuskopiota, koska se tallennetaan pilveen. Pilvipalveluntarjoajilla, kuten Googlella tai Applella, ei ole pääsyä Bitcoineihisi, koska salausavain on liian vahva. On kuitenkin pieni mahdollisuus, että palvelin, joka tallentaa varmuuskopion salausavaimen, voi joutua vaarantumaan. Tällöin varmuuskopion turvallisuus pilvitilissäsi voi olla uhattuna.",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Fyysinen varmuuskopio: ",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Olet varma, että osaat piilottaa ja säilyttää Bitcoin-siementekstisi turvallisesti.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Salattu holvi: ",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Et ole varma ja tarvitset enemmän aikaa oppia varmuuskopioinnin turvallisuuskäytännöistä.",
+  "backupWalletHowToDecideBackupMoreInfo": "Lisätietoja osoitteessa recoverbull.com.",
+  "testBackupWalletTitle": "Testaa {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDefaultWallets": "Oletuslompakot",
+  "testBackupConfirm": "Vahvista",
+  "testBackupWriteDownPhrase": "Kirjoita siemenlauseen\nsanat oikeassa järjestyksessä",
+  "testBackupStoreItSafe": "Säilytä se turvallisessa paikassa.",
+  "testBackupLastBackupTest": "Viimeisin varmuuskopiointitesti: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDoNotShare": "ÄLÄ JAA KENENKÄÄN KANSSA",
+  "testBackupTranscribe": "Kirjoita ylös",
+  "testBackupDigitalCopy": "Digitaalinen kopio",
+  "testBackupScreenshot": "Näyttökuva",
+  "testBackupNext": "Seuraava",
+  "testBackupTapWordsInOrder": "Napauta siemenlauseen\nsanat oikeassa järjestyksessä",
+  "testBackupWhatIsWordNumber": "Mikä on sana numero {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "testBackupAllWordsSelected": "Olet valinnut kaikki sanat",
+  "testBackupPassphrase": "Suojaussana",
+  "testBackupSuccessTitle": "Testi suoritettu onnistuneesti!",
+  "testBackupSuccessMessage": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
+  "testBackupSuccessButton": "Selvä",
+  "testBackupErrorIncorrectOrder": "Sanat väärässä järjestyksessä. Yritä uudelleen.",
+  "transactionHistoryTitle": "Tapahtumahistoria",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Tuntematon",
+  "testBackupErrorWalletsUnavailable": "Lompakoitasi ei voitu ladata. Yritä uudelleen.",
+  "testBackupErrorNoWallets": "Ei ole lompakkoa, jonka varmuuskopion voisi testata.",
+  "testBackupErrorNoWalletSelected": "Valitse lompakko ennen sen varmuuskopion testaamista.",
+  "testBackupErrorSeedUnavailable": "Palautuslausettasi ei voitu lukea. Yritä uudelleen.",
+  "testBackupErrorSeedNotMnemonic": "Tällä lompakolla ei ole testattavaa palautuslausetta.",
+  "testBackupErrorCompletionFailed": "Palautuslauseesi oli oikein, mutta tulosta ei voitu tallentaa. Yritä uudelleen."
+}

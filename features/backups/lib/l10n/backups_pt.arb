@@ -1,0 +1,86 @@
+{
+  "testBackupWriteDownPhrase": "Escreva sua frase de recuperação\nna ordem correta",
+  "testBackupDigitalCopy": "Cópia digital",
+  "backupWalletEncryptedVaultTag": "Fácil e simples (1 minuto)",
+  "backupWalletHowToDecideBackupLosePhysical": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
+  "testBackupTapWordsInOrder": "Toque nas palavras de recuperação no\nordem certa",
+  "testBackupDefaultWallets": "Carteiras padrão",
+  "testBackupSuccessTitle": "Teste concluído com sucesso!",
+  "testBackupPassphrase": "Passphrase",
+  "testBackupAllWordsSelected": "Selecionou todas as palavras",
+  "backupWalletPhysicalBackupTag": "Trustless (ter o seu tempo)",
+  "backupSettingsTested": "Testado",
+  "backupSettingsLabelsButton": "Etiquetas",
+  "backupSettingsRecoverBullSettings": "Recuperação",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
+  "backupWalletHowToDecideBackupEncryptedVault": "O cofre encriptado impede-te de ladrões que procuram roubar o teu apoio. Ele também impede que você perca acidentalmente seu backup, uma vez que ele será armazenado em sua nuvem. Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Há uma pequena possibilidade de que o servidor web que armazena a chave de criptografia do seu backup possa ser comprometida. Neste caso, a segurança do backup em sua conta na nuvem pode estar em risco.",
+  "testBackupTranscribe": "Transcrição",
+  "testBackupErrorIncorrectOrder": "Ordem de palavra incorreta. Por favor, tente novamente.",
+  "backupWalletEncryptedVaultTitle": "Vault criptografado",
+  "walletDetailsUnnamedWalletFallback": "Carteira sem nome",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Backup físico: ",
+  "backupWalletHowToDecideBackupMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Vault criptografado: ",
+  "testBackupTitle": "Teste o backup da sua carteira",
+  "closeDialogButton": "Fechar",
+  "backupWalletPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
+  "passphraseLabel": "Passphrase",
+  "testBackupNext": "Próximo",
+  "testBackupScreenshot": "Tiro de tela",
+  "backupWalletTitle": "Faça backup da sua carteira",
+  "transactionHistoryTitle": "Histórico de transações",
+  "backupSettingsPhysicalBackup": "Backup físico",
+  "backupWalletHowToDecide": "Como decidir?",
+  "testBackupConfirm": "Confirmação",
+  "testBackupLastBackupTest": "Último teste de backup: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Não testado",
+  "backupWalletHowToDecideBackupModalTitle": "Como decidir",
+  "testBackupWalletTitle": "Teste {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "testBackupDoNotShare": "NÃO COMPLEMENTAR COM NINGUÉM",
+  "backupSettingsViewVaultKey": "Ver o Vault Chaveiro",
+  "testBackupSuccessButton": "Entendido",
+  "testBackupStoreItSafe": "Armazená-lo em algum lugar seguro.",
+  "testBackupWhatIsWordNumber": "Qual é o número da palavra {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Você não tem certeza e precisa de mais tempo para aprender sobre práticas de segurança de backup.",
+  "backupWalletImportanceWarning": "Sem um backup, você eventualmente perderá o acesso ao seu dinheiro. É criticamente importante fazer um backup.",
+  "continueButton": "Continue",
+  "testBackupSuccessMessage": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
+  "backupSettingsTestBackup": "Teste de backup",
+  "backupWalletPhysicalBackupTitle": "Backup físico",
+  "backupSettingsEncryptedVault": "Vault criptografado",
+  "backupSettingsStartBackup": "Iniciar backup",
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Desconhecido",
+  "testBackupErrorWalletsUnavailable": "Não foi possível carregar as suas carteiras. Tente novamente.",
+  "testBackupErrorNoWallets": "Não existe nenhuma carteira cuja cópia de segurança possa ser testada.",
+  "testBackupErrorNoWalletSelected": "Selecione uma carteira antes de testar a sua cópia de segurança.",
+  "testBackupErrorSeedUnavailable": "Não foi possível ler a sua frase de recuperação. Tente novamente.",
+  "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
+  "testBackupErrorCompletionFailed": "A sua frase de recuperação estava correta, mas não foi possível guardar o resultado. Tente novamente."
+}

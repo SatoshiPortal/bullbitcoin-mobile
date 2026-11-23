@@ -1,0 +1,86 @@
+{
+  "testBackupWriteDownPhrase": "Запишите свою фразу восстановления\nв правильном порядке",
+  "testBackupDigitalCopy": "Цифровая копия",
+  "backupWalletEncryptedVaultTag": "Легко и просто (1 минута)",
+  "backupWalletHowToDecideBackupLosePhysical": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
+  "testBackupTapWordsInOrder": "Переместите слова восстановления в\nправильный заказ",
+  "testBackupDefaultWallets": "По умолчанию",
+  "testBackupSuccessTitle": "Тест завершен успешно!",
+  "testBackupPassphrase": "Passphrase",
+  "testBackupAllWordsSelected": "Вы выбрали все слова",
+  "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
+  "backupSettingsTested": "Испытываемые",
+  "backupSettingsLabelsButton": "Этикетки",
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Вы уверены в своих собственных возможностях операционной безопасности, чтобы скрыть и сохранить ваши семенные слова Bitcoin.",
+  "backupWalletHowToDecideBackupEncryptedVault": "Зашифрованное хранилище предотвращает вас от воров, стремящихся украсть вашу резервную копию. Это также мешает вам случайно потерять резервную копию, поскольку она будет храниться в вашем облаке. Поставщики облачного хранилища, такие как Google или Apple, не будут иметь доступа к вашему биткойну, потому что пароль шифрования слишком силен. Существует небольшая вероятность того, что веб-сервер, который хранит ключ шифрования вашего резервного копирования, может быть скомпрометирован. В этом случае безопасность резервного копирования в вашем облачном аккаунте может быть под угрозой.",
+  "testBackupTranscribe": "Transcribe",
+  "testBackupErrorIncorrectOrder": "Неправильный порядок слов. Попробуй еще раз.",
+  "backupWalletEncryptedVaultTitle": "Зашифрованное хранилище",
+  "walletDetailsUnnamedWalletFallback": "Неназванный кошелек",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Физическая поддержка: ",
+  "backupWalletHowToDecideBackupMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Зашифрованное хранилище: ",
+  "testBackupTitle": "Проверьте резервную копию кошелька",
+  "closeDialogButton": "Закрыть",
+  "backupWalletPhysicalBackupDescription": "Запишите 12 слов на бумаге. Держите их в безопасности и убедитесь, что не потерять их.",
+  "passphraseLabel": "Passphrase",
+  "testBackupNext": "Следующий",
+  "testBackupScreenshot": "Скриншот",
+  "backupWalletTitle": "Назад ваш кошелек",
+  "transactionHistoryTitle": "История транзакций",
+  "backupSettingsPhysicalBackup": "Физическая поддержка",
+  "backupWalletHowToDecide": "Как решить?",
+  "testBackupConfirm": "Подтверждение",
+  "testBackupLastBackupTest": "Последний тест резервного копирования: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Not Tested",
+  "backupWalletHowToDecideBackupModalTitle": "Как решить",
+  "testBackupWalletTitle": "Испытание {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "testBackupDoNotShare": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
+  "backupSettingsViewVaultKey": "Посмотреть хранилище Ключ",
+  "testBackupSuccessButton": "Понял",
+  "testBackupStoreItSafe": "Храни его где-нибудь в безопасности.",
+  "testBackupWhatIsWordNumber": "Что такое число слов {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Anonymousная резервная копия с сильным шифрованием с помощью вашего облака.",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Вы не уверены, и вам нужно больше времени, чтобы узнать о практике резервного копирования безопасности.",
+  "backupWalletImportanceWarning": "Без резервного копирования вы в конечном итоге потеряете доступ к своим деньгам. Крайне важно сделать резервную копию.",
+  "continueButton": "Продолжить",
+  "testBackupSuccessMessage": "Вы можете восстановить доступ к потерянному кошельку Bitcoin",
+  "backupSettingsTestBackup": "Проверка",
+  "backupWalletPhysicalBackupTitle": "Физическая резервная копия",
+  "backupSettingsEncryptedVault": "Зашифрованное хранилище",
+  "backupSettingsStartBackup": "Запуск",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Неизвестно",
+  "testBackupErrorWalletsUnavailable": "Не удалось загрузить ваши кошельки. Попробуйте ещё раз.",
+  "testBackupErrorNoWallets": "Нет кошелька, резервную копию которого можно проверить.",
+  "testBackupErrorNoWalletSelected": "Выберите кошелёк, прежде чем проверять его резервную копию.",
+  "testBackupErrorSeedUnavailable": "Не удалось прочитать вашу фразу восстановления. Попробуйте ещё раз.",
+  "testBackupErrorSeedNotMnemonic": "У этого кошелька нет фразы восстановления для проверки.",
+  "testBackupErrorCompletionFailed": "Ваша фраза восстановления верна, но нам не удалось сохранить результат. Попробуйте ещё раз."
+}

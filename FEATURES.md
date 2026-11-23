@@ -240,8 +240,7 @@ graph TB
     SUPPORT[Support]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
-    BACKUPS[Backups]
-    BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
+    BACKUPS[Backups workspace feature<br/>Backup status and verification]
     SWAPS[Swaps]
     SEND[Send]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
@@ -416,15 +415,13 @@ graph TB
     WALLETS -->|signer device properties| SIGNERS
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
-    BACKUPS -->|mount backup options| BACKUP_OPTIONS
-    SETTINGS -->|start backup| BACKUP_OPTIONS
-    WALLETS -->|start backup| BACKUP_OPTIONS
-    BACKUP_OPTIONS -->|vault navigation| RECOVERBULL
-    BACKUP_OPTIONS --> BULL_UI
+    SETTINGS -->|start backup| BACKUPS
+    WALLETS -->|start backup| BACKUPS
+    BACKUPS --> BULL_UI
     BACKUPS --> SECRETS
     BACKUPS --> ACCESS
-    BACKUPS --> TOR
-    BACKUPS --> WALLETS
+    BACKUPS --> LABEL_EDITOR
+    BACKUPS --> PREFERENCES
     WALLETS --> BTC_PRICE
     COINS --> BTC_PRICE
     SELL --> BTC_PRICE
@@ -665,7 +662,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Core**: Foundation for all features
 - **Store vocabulary**: `packages/novlang` — the real words live in the root catalogue; `novlang` holds sparse per-store overrides (`novlang_<lang>.arb`, listed in `manifest.yaml`) and the pure `resolveNovlangPolicy(platform, isSuperuser)`. `tools/novlang_bridge.dart` (run by `make translations`) generates the `AppLocalizations` subclasses and `NovlangAppLocalizationsDelegate` that the shell composes before `AppLocalizations.delegate`. A new user-visible word a store forces is added to the manifest and to all 27 `novlang_<lang>.arb`; nothing else in the app chooses vocabulary.
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
-- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
+- **Wallets**: Used by Send, UTXO Management, Transaction History, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, Bitcoin Price
 - **Swaps** (workspace package `packages/swaps`): `Swaps.open` owns the Boltz engine, its network transitions and the provider and autoswap settings. Its stable `SwapStore`, `SwapResolver` and `BoltzSwaps` handles survive provider replacement. `SwapRouting` resolves the operator choices for Send, Receive, transfers and AutoSwap; the settings narrow view exposes typed reads and writes.
@@ -677,9 +674,8 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 - **Send**: Depends on Spend, Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **Backups**: Depends on Tor and Wallets
 - **Receive and Address View capabilities**: `features/receive` owns request admission, pricing, address notes and transfer/next-unused selection. `features/address_view` mounts the Settings address history and uses the active Secrets inventory, Sync and Labels for indexed reads, address issuance and label enrichment. The app still owns the Receive routes, Lightning fallback, shared polling and incoming-payment observation.
-- **Backups**: Depends on BIP85, Tor, Wallets
+- **Backups**: Uses the Secrets wallet inventory and the RecoverBull backup facts
 
 ### Exchange-Related Features
 
@@ -724,7 +720,6 @@ The architecture test records source dependencies, including internal imports an
 | `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
 | `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `autoswap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
@@ -749,7 +744,7 @@ Develop also removes the price chart’s shell locator import and its obsolete e
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
-RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly. Onboarding also uses the read-only Bitcoin history scan published by Wallet Import.
+RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, backups and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly. Onboarding also uses the read-only Bitcoin history scan published by Wallet Import.
 
 
 ## Regtest Electrum storage and watch-only import
@@ -820,3 +815,7 @@ Preferences owns an encrypted schema-1 settings and RecoverBull permission store
 ## Recovery phrase display
 
 Settings mounts All Seed View as a workspace route. Access supplies reauthentication, Secrets supplies the active catalog and guarded seed deletion, and Swaps supplies the sealed swap phrase widget. Wallet recovery phrases and passphrases stay in Secrets’ MnemonicView. Screen protection must succeed before the viewer builds, and neither phrase renderer contributes words to accessibility semantics.
+
+## Backup verification ownership
+
+Backups mounts the status, options and physical verification routes. It reads the default Bitcoin wallet from the active Secrets inventory and the backup facts keyed by its local secret from RecoverBull. Physical Backup Verification validates the mnemonic and passphrase before Backups records completion against the verified secret in RecoverBull. Access continues to read backup eligibility for default wallets in the active environment.

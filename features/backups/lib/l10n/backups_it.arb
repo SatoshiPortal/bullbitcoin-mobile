@@ -1,0 +1,87 @@
+{
+  "testBackupWriteDownPhrase": "Scrivi la tua frase di recupero\nnell'ordine corretto",
+  "testBackupDigitalCopy": "Copia digitale",
+  "backupWalletEncryptedVaultTag": "Facile e semplice (1 minuto)",
+  "backupWalletHowToDecideBackupLosePhysical": "Uno dei modi più comuni in cui si perdono i propri Bitcoin è smarrire il backup fisico. Chiunque lo trovi potrà prendere i tuoi Bitcoin. Se sei sicuro di poterlo nascondere bene e di non perderlo mai, è una buona opzione.",
+  "testBackupTapWordsInOrder": "Toccare le parole di recupero in\nordine giusto",
+  "testBackupDefaultWallets": "Portafogli predefiniti",
+  "testBackupSuccessTitle": "Verifica completata con successo!",
+  "testBackupPassphrase": "Passphrase",
+  "testBackupAllWordsSelected": "Hai selezionato tutte le parole",
+  "backupWalletPhysicalBackupTag": "Senza fiducia (richiede più tempo)",
+  "backupSettingsTested": "Verificato",
+  "backupSettingsLabelsButton": "Etichette",
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Sei sicuro di saper nascondere e custodire le parole della tua frase di recupero.",
+  "backupWalletHowToDecideBackupEncryptedVault": "La cassaforte crittografata ti protegge dai ladri che cercano di rubare il tuo backup. Ti evita anche di perdere accidentalmente il backup, perché viene salvato nel tuo cloud. I provider cloud come Google o Apple non avranno accesso ai tuoi Bitcoin, perché la password di crittografia è troppo complessa. C'è una piccola possibilità che il server web che conserva la chiave di crittografia del backup venga compromesso. In questo caso, la sicurezza del backup nel tuo account cloud potrebbe essere a rischio.",
+  "testBackupTranscribe": "Trascrizione",
+  "testBackupErrorIncorrectOrder": "Ordine delle parole non corretto. Riprova.",
+  "backupWalletEncryptedVaultTitle": "Cassaforte crittografata",
+  "walletDetailsUnnamedWalletFallback": "Portafoglio senza nome",
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Backup fisico: ",
+  "backupWalletHowToDecideBackupMoreInfo": "Visita recoverbull.com per ulteriori informazioni.",
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Cassaforte crittografata: ",
+  "testBackupTitle": "Verifica il backup del portafoglio",
+  "closeDialogButton": "Chiudi",
+  "backupWalletPhysicalBackupDescription": "Scrivi 12 parole su un pezzo di carta. Tienilo al sicuro e assicurati di non perderlo.",
+  "passphraseLabel": "Passphrase",
+  "testBackupNext": "Avanti",
+  "testBackupScreenshot": "Schermata",
+  "backupWalletTitle": "Esegui il backup del portafoglio",
+  "transactionHistoryTitle": "Cronologia transazioni",
+  "backupSettingsPhysicalBackup": "Backup fisico",
+  "backupWalletHowToDecide": "Come decidere?",
+  "testBackupConfirm": "Conferma",
+  "testBackupLastBackupTest": "Ultima verifica del backup: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Non verificato",
+  "backupWalletHowToDecideBackupModalTitle": "Come decidere",
+  "testBackupWalletTitle": "Verifica {walletName}",
+  "@testBackupWalletTitle": {
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "testBackupDoNotShare": "NON CONDIVIDERLA MAI!",
+  "backupSettingsViewVaultKey": "Chiave della cassaforte",
+  "testBackupSuccessButton": "Ho capito",
+  "testBackupStoreItSafe": "Conservalo in un posto sicuro.",
+  "testBackupWhatIsWordNumber": "Qual è la parola numero {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Backup anonimo con crittografia forte utilizzando il cloud.",
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Non sei sicuro e hai bisogno di più tempo per conoscere le pratiche di sicurezza di backup.",
+  "backupWalletImportanceWarning": "Senza un backup, alla fine perderai l'accesso ai tuoi soldi. È fondamentale fare un backup.",
+  "continueButton": "Continua",
+  "testBackupSuccessMessage": "Sei in grado di recuperare l'accesso a un portafoglio Bitcoin perso",
+  "backupSettingsTestBackup": "Verifica il backup",
+  "backupWalletPhysicalBackupTitle": "Backup fisico",
+  "backupSettingsEncryptedVault": "Cassaforte crittografata",
+  "backupSettingsStartBackup": "Avvia il backup",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "coreScreensUnknown": "Sconosciuto",
+  "testBackupErrorWalletsUnavailable": "Non è stato possibile caricare i tuoi portafogli. Riprova.",
+  "testBackupErrorNoWallets": "Non c'è nessun portafoglio di cui verificare il backup.",
+  "testBackupErrorNoWalletSelected": "Seleziona un portafoglio prima di testarne il backup.",
+  "testBackupErrorSeedUnavailable": "Non è stato possibile leggere la tua frase di recupero. Riprova.",
+  "testBackupErrorSeedNotMnemonic": "Questo portafoglio non ha una frase di recupero da verificare.",
+  "testBackupErrorCompletionFailed": "La tua frase di recupero era corretta, ma non è stato possibile salvare il risultato. Riprova.",
+  "settingsBackupTitle": "Backup"
+}

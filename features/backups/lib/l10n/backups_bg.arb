@@ -1,0 +1,230 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "closeDialogButton": "Затвори",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  },
+  "testBackupWriteDownPhrase": "Запишете фразата си за възстановяване\nв правилния ред\n==WEBLATE_PART==",
+  "@testBackupWriteDownPhrase": {
+    "description": "Main instruction header for physical backup screen"
+  },
+  "testBackupDigitalCopy": "Цифрово копие",
+  "@testBackupDigitalCopy": {
+    "description": "Label with X mark warning against making digital copies"
+  },
+  "backupWalletEncryptedVaultTag": "Лесно и просто (1 минута)",
+  "@backupWalletEncryptedVaultTag": {
+    "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletHowToDecideBackupLosePhysical": "Един от най-често срещаните начини, по които хората губят своите биткойни, е като загубят физическото резервно копие. Всеки, който намери вашето физическо резервно копие, ще може да открадне всички ваши биткойни. Ако сте много уверени, че можете да го скриете добре и никога да не го изгубите, това е добър вариант.",
+  "@backupWalletHowToDecideBackupLosePhysical": {
+    "description": "Explanation of physical backup risks in decision help modal"
+  },
+  "testBackupTapWordsInOrder": "Докоснете думите за възстановяване в правилния ред",
+  "@testBackupTapWordsInOrder": {
+    "description": "Instruction header for word selection quiz"
+  },
+  "testBackupDefaultWallets": "Портфейли по подразбиране",
+  "@testBackupDefaultWallets": {
+    "description": "Label shown when testing the default wallets"
+  },
+  "testBackupSuccessTitle": "Тестът завърши успешно!",
+  "@testBackupSuccessTitle": {
+    "description": "Success screen title after completing backup verification"
+  },
+  "testBackupPassphrase": "Паролна фраза",
+  "@testBackupPassphrase": {
+    "description": "Label for optional passphrase field"
+  },
+  "testBackupAllWordsSelected": "Избрали сте всички думи.",
+  "@testBackupAllWordsSelected": {
+    "description": "Message shown when user has selected all 12 words"
+  },
+  "backupWalletPhysicalBackupTag": "Без доверие (вземете си време)",
+  "@backupWalletPhysicalBackupTag": {
+    "description": "Tag indicating difficulty and trust model for physical backup"
+  },
+  "backupSettingsTested": "Проверено",
+  "@backupSettingsTested": {
+    "description": "Status text shown when backup has been tested"
+  },
+  "backupSettingsLabelsButton": "Етикети",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendationText": "Уверени сте в собствените си оперативни умения за сигурност да скриете и запазите вашите seed думи за биткойн.",
+  "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
+    "description": "Recommendation text for when to use physical backup"
+  },
+  "backupWalletHowToDecideBackupEncryptedVault": "Шифрован сейф ви предпазва от крадци, които се опитват да откраднат вашето резервно копие. Освен това той предотвратява случайното загубване на вашето резервно копие, тъй като ще бъде съхранено в облака. Доставчиците на облачно съхранение като Google или Apple нямат достъп до вашите биткойни, защото паролата за криптиране е прекалено силна. Те могат да получат достъп до вашите биткойни само в малко вероятния случай, че си сътрудничат със сървъра за ключове (онлайн услугата, която съхранява вашата парола за криптиране). Ако ключовият сървър някога бъде хакнат, вашият биткойн може да бъде изложен на риск във облака на Google или Apple.",
+  "@backupWalletHowToDecideBackupEncryptedVault": {
+    "description": "Explanation of encrypted vault benefits and risks in decision help modal"
+  },
+  "testBackupTranscribe": "Транскрирай",
+  "@testBackupTranscribe": {
+    "description": "Label with checkmark indicating users should transcribe the phrase"
+  },
+  "testBackupErrorIncorrectOrder": "Неправилна подредба на думите. Моля, опитайте отново.",
+  "@testBackupErrorIncorrectOrder": {
+    "description": "Error when words are selected in wrong order"
+  },
+  "backupWalletEncryptedVaultTitle": "Шифиран сейф",
+  "@backupWalletEncryptedVaultTitle": {
+    "description": "Title for encrypted vault backup option"
+  },
+  "walletDetailsUnnamedWalletFallback": "Безименен портфейл",
+  "@walletDetailsUnnamedWalletFallback": {
+    "description": "Fallback name displayed for wallets without a specified name"
+  },
+  "backupWalletHowToDecideBackupPhysicalRecommendation": "Физическо резервно копие: ",
+  "@backupWalletHowToDecideBackupPhysicalRecommendation": {
+    "description": "Bold label for physical backup recommendation"
+  },
+  "backupWalletHowToDecideBackupMoreInfo": "Посетете recoverbull.com за повече информация.",
+  "@backupWalletHowToDecideBackupMoreInfo": {
+    "description": "Link text to external resource"
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendation": "Шифрован сейф: ",
+  "@backupWalletHowToDecideBackupEncryptedRecommendation": {
+    "description": "Bold label for encrypted vault recommendation"
+  },
+  "testBackupTitle": "Проверете резервното копие на портфейла си",
+  "@testBackupTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "backupWalletPhysicalBackupDescription": "Запишете 12 думи на лист хартия. Дръжте ги на сигурно място и се уверете, че няма да ги изгубите.",
+  "@backupWalletPhysicalBackupDescription": {
+    "description": "Description of physical backup method"
+  },
+  "passphraseLabel": "Паролна фраза",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "testBackupNext": "Напред",
+  "@testBackupNext": {
+    "description": "Button to proceed to verification quiz"
+  },
+  "testBackupScreenshot": "Екранна снимка",
+  "@testBackupScreenshot": {
+    "description": "Label with X mark warning against taking screenshots"
+  },
+  "backupWalletTitle": "Направете резервно копие на портфейла си",
+  "@backupWalletTitle": {
+    "description": "AppBar title for main backup options screen"
+  },
+  "transactionHistoryTitle": "История на транзакциите",
+  "backupSettingsPhysicalBackup": "Физическо резервно копие",
+  "@backupSettingsPhysicalBackup": {
+    "description": "Label for physical backup status row"
+  },
+  "backupWalletHowToDecide": "Как да решите?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "testBackupConfirm": "Потвърди",
+  "@testBackupConfirm": {
+    "description": "Button text to confirm wallet selection"
+  },
+  "testBackupLastBackupTest": "Последна проверка на резервното копие: {timestamp}",
+  "@testBackupLastBackupTest": {
+    "description": "Shows timestamp of last physical backup test",
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSettingsNotTested": "Непроверено",
+  "@backupSettingsNotTested": {
+    "description": "Status text shown when backup has not been tested"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "Как да решите",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "testBackupWalletTitle": "Тест {walletName}",
+  "@testBackupWalletTitle": {
+    "description": "Dynamic AppBar title showing which wallet is being tested",
+    "placeholders": {
+      "walletName": {
+        "type": "String"
+      }
+    }
+  },
+  "testBackupDoNotShare": "Не споделяйте с никого",
+  "@testBackupDoNotShare": {
+    "description": "Warning header about keeping recovery phrase secret"
+  },
+  "backupSettingsViewVaultKey": "Прегледай Vault ключ",
+  "@backupSettingsViewVaultKey": {
+    "description": "Button text to view vault decryption key"
+  },
+  "testBackupSuccessButton": "Разбрах",
+  "@testBackupSuccessButton": {
+    "description": "Button to dismiss success screen"
+  },
+  "testBackupStoreItSafe": "Съхранявайте го на сигурно място",
+  "@testBackupStoreItSafe": {
+    "description": "Sub-instruction telling users to store recovery phrase safely"
+  },
+  "testBackupWhatIsWordNumber": "Коя е думата № {number}?",
+  "@testBackupWhatIsWordNumber": {
+    "description": "Quiz prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWalletEncryptedVaultDescription": "Анонимно резервно копие с силно криптиране, използвайки вашето облачно съхранение.",
+  "@backupWalletEncryptedVaultDescription": {
+    "description": "Description of encrypted vault backup method"
+  },
+  "backupWalletHowToDecideBackupEncryptedRecommendationText": "Не сте сигурни и ви трябва още време, за да научите повече за практиките за сигурност на резервното копие.",
+  "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
+    "description": "Recommendation text for when to use encrypted vault"
+  },
+  "backupWalletImportanceWarning": "Без резервно копие в крайна сметка ще загубите достъп до парите си. Изключително важно е да направите резервно копие.",
+  "@backupWalletImportanceWarning": {
+    "description": "Warning message emphasizing the importance of creating a backup"
+  },
+  "continueButton": "Продължи",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "testBackupSuccessMessage": "Можете да възстановите достъп до изгубен биткойн портфейл",
+  "@testBackupSuccessMessage": {
+    "description": "Success screen message confirming recovery capability"
+  },
+  "backupSettingsTestBackup": "Провери резервното копие",
+  "@backupSettingsTestBackup": {
+    "description": "Button text to test existing backup"
+  },
+  "backupWalletPhysicalBackupTitle": "Физическо резервно копие.",
+  "@backupWalletPhysicalBackupTitle": {
+    "description": "Title for physical backup option"
+  },
+  "backupSettingsEncryptedVault": "Зашифровано хранилище",
+  "@backupSettingsEncryptedVault": {
+    "description": "Label for encrypted vault backup status row"
+  },
+  "backupSettingsStartBackup": "Започни резервно копиране",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "coreScreensUnknown": "Неизвестно",
+  "testBackupErrorWalletsUnavailable": "Портфейлите ви не можаха да бъдат заредени. Опитайте отново.",
+  "testBackupErrorNoWallets": "Няма портфейл, чието резервно копие да бъде тествано.",
+  "testBackupErrorNoWalletSelected": "Изберете портфейл, преди да тествате резервното му копие.",
+  "testBackupErrorSeedUnavailable": "Фразата ви за възстановяване не можа да бъде прочетена. Опитайте отново.",
+  "testBackupErrorSeedNotMnemonic": "Този портфейл няма фраза за възстановяване за тестване.",
+  "testBackupErrorCompletionFailed": "Фразата ви за възстановяване беше правилна, но не успяхме да запазим резултата. Опитайте отново."
+}
