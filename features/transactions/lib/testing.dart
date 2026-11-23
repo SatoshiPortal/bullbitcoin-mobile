@@ -5,6 +5,7 @@ import 'src/domain/usecases/wallet_history_events.dart';
 export 'transactions.dart';
 export 'src/data/payjoin_blockchain_adapter.dart'
     show AppPayjoinBlockchainAdapter;
+export 'src/data/payjoin_broadcast_wallet.dart' show payjoinBroadcastWallet;
 export 'src/data/payjoin_transaction_adapter.dart'
     show AppPayjoinTransactionAdapter;
 export 'src/data/payjoin_wallet_adapter.dart' show PayjoinWalletAdapter;
