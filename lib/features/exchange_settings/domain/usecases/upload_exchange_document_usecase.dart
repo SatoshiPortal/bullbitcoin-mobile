@@ -1,8 +1,7 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/file_upload.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:exchange/exchange.dart';
 import 'package:file_system/file_system.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -26,15 +25,14 @@ final class ExchangeDocumentUploaded extends UploadExchangeDocumentOutcome {
 /// Picks a document, checks it against the exchange's limits, and uploads it.
 ///
 /// Every step that can fail is already a `Result`, so this composes them with
-/// an explicit short-circuit and holds no `try/catch` of its own except around
-/// the shared upload use-case, which still throws.
+/// an explicit short-circuit and translates failures at the feature boundary.
 class UploadExchangeDocumentUsecase {
   final FileSystem _fileSystem;
-  final UploadKycDocumentUsecase _uploadKycDocumentUsecase;
+  final Exchange _exchange;
 
   const UploadExchangeDocumentUsecase({
     required this._fileSystem,
-    required this._uploadKycDocumentUsecase,
+    required this._exchange,
   });
 
   @useResult
@@ -89,35 +87,12 @@ class UploadExchangeDocumentUsecase {
     // Mirrors the filename BB-Exchange expects for a secure upload.
     final fileName = userId != null ? 'doc-$userId-ID' : document.name;
 
-    try {
-      final result = await _uploadKycDocumentUsecase.execute(
-        fileBytes: bytes,
-        fileName: fileName,
-      );
-
-      if (!result.isSuccess) {
-        // `errorMessage` is the exchange's own sentence. It is diagnosis
-        // material only and must not be rendered, so it is logged here and
-        // carried in `logMessage` for equality/debug.
-        final reason =
-            result.errorMessage ?? 'upload rejected without a reason';
-        log.warning('uploadKycDocument rejected: $reason');
-        return Err(ExchangeSettingsDocumentUploadFailure(reason));
-      }
-
-      return const Ok(ExchangeDocumentUploaded());
-    } on ExchangeCredentialUnavailableException {
-      log.warning(
-        'Exchange document upload unavailable: credential read refused',
-      );
-      return const Err(ExchangeSettingsDocumentUploadFailure());
-    } catch (e, st) {
-      log.severe(message: 'uploadKycDocument failed', error: e, trace: st);
-      return Err(
-        ExchangeSettingsDocumentUploadFailure(
-          'uploadKycDocument failed: ${e.runtimeType}',
-        ),
-      );
-    }
+    return switch (await _exchange.uploadKycDocument(
+      fileBytes: bytes,
+      fileName: fileName,
+    )) {
+      Ok() => const Ok(ExchangeDocumentUploaded()),
+      Err() => const Err(ExchangeSettingsDocumentUploadFailure()),
+    };
   }
 }

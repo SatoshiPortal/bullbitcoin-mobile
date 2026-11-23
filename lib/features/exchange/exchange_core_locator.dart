@@ -21,8 +21,12 @@ import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:get_it/get_it.dart';
+
+import 'domain/repositories/exchange_access_repository.dart';
 
 class ExchangeLocator {
   /// Resolves the credential only when a request starts. The app retains key
@@ -41,6 +45,17 @@ class ExchangeLocator {
   }
 
   static void registerDatasources(GetIt locator) {
+    locator.registerLazySingleton<Exchange>(
+      () => Exchange.open(
+        mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
+        testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
+        readSession: () => readLegacyExchangeSession(
+          preferences: locator<Preferences>(),
+          readEpoch: () => locator<ExchangeAccessRepository>().epoch,
+          readKey: locator<ExchangeApiKeyRepository>().readActiveApiKey,
+        ),
+      ),
+    );
     for (final isTestnet in [false, true]) {
       final environment = isTestnet ? 'testnet' : 'mainnet';
       locator.registerLazySingleton<bbx.Bbx>(

@@ -1,12 +1,5 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
-import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_account_info_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
@@ -14,62 +7,14 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show Bbx;
+import 'package:exchange/exchange.dart';
 import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 
 class ExchangeSettingsLocator {
   static void setup(GetIt locator) {
-    _registerRepositories(locator);
-    _registerUsecases(locator);
     _registerFeatureUsecases(locator);
     _registerFacade(locator);
-  }
-
-  static void _registerRepositories(GetIt locator) {
-    for (final environment in ['mainnet', 'testnet']) {
-      locator.registerLazySingleton<ExchangeKycRepository>(
-        () => BbxApiKycRepository(
-          api: locator<Bbx>(instanceName: '${environment}BbxApiClient'),
-        ),
-        instanceName: environment,
-      );
-    }
-
-    for (final environment in ['mainnet', 'testnet']) {
-      locator.registerLazySingleton<ExchangeOrderStatsRepository>(
-        () => BbxApiOrderStatsRepository(
-          api: locator<Bbx>(instanceName: '${environment}BbxApiClient'),
-        ),
-        instanceName: environment,
-      );
-    }
-  }
-
-  static void _registerUsecases(GetIt locator) {
-    locator.registerLazySingleton<UploadKycDocumentUsecase>(
-      () => UploadKycDocumentUsecase(
-        mainnetRepository: locator<ExchangeKycRepository>(
-          instanceName: 'mainnet',
-        ),
-        testnetRepository: locator<ExchangeKycRepository>(
-          instanceName: 'testnet',
-        ),
-        settingsRepository: locator<Preferences>(),
-      ),
-    );
-
-    locator.registerLazySingleton<GetOrderStatsUsecase>(
-      () => GetOrderStatsUsecase(
-        mainnetRepository: locator<ExchangeOrderStatsRepository>(
-          instanceName: 'mainnet',
-        ),
-        testnetRepository: locator<ExchangeOrderStatsRepository>(
-          instanceName: 'testnet',
-        ),
-        settingsRepository: locator<Preferences>(),
-      ),
-    );
   }
 
   /// The feature's own use-cases. Each wraps a shared `core/exchange`
@@ -95,9 +40,7 @@ class ExchangeSettingsLocator {
     );
 
     locator.registerFactory<GetExchangeStatisticsUsecase>(
-      () => GetExchangeStatisticsUsecase(
-        getOrderStatsUsecase: locator<GetOrderStatsUsecase>(),
-      ),
+      () => GetExchangeStatisticsUsecase(exchange: locator<Exchange>()),
     );
 
     locator.registerFactory<GetSecureFileUploadStatusUsecase>(
@@ -109,7 +52,7 @@ class ExchangeSettingsLocator {
     locator.registerFactory<UploadExchangeDocumentUsecase>(
       () => UploadExchangeDocumentUsecase(
         fileSystem: const FileSystem.open(),
-        uploadKycDocumentUsecase: locator<UploadKycDocumentUsecase>(),
+        exchange: locator<Exchange>(),
       ),
     );
   }

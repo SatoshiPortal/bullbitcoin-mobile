@@ -97,3 +97,16 @@ final class ExchangeUnsupportedNetworkFailure extends ExchangeFailure {
 final class ExchangeOrderInventoryUnavailableFailure extends ExchangeFailure {
   const ExchangeOrderInventoryUnavailableFailure();
 }
+
+/// The credential store could not supply an authoritative answer.
+final class ExchangeCredentialReadFailure extends ExchangeFailure {
+  const ExchangeCredentialReadFailure();
+}
+
+final class ExchangeStatisticsUnavailableFailure extends ExchangeFailure {
+  const ExchangeStatisticsUnavailableFailure([super.logMessage]);
+}
+
+final class ExchangeDocumentUploadFailure extends ExchangeFailure {
+  const ExchangeDocumentUploadFailure([super.logMessage]);
+}

@@ -2,15 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:file_system/file_system.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
-import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
@@ -165,20 +163,15 @@ void main() {
 
   test('statistics credential refusal never invokes the reporter', () async {
     storage.scripted.add(Exception(_sensitive));
-    final stats = BbxApiOrderStatsRepository(
-      api: bbxForTesting(
-        endpoint: testBbxEndpoint,
-        adapter: _NoRequest(),
-        readActiveApiKey: bbxCredentialRead(
-          () => repository.readActiveApiKey(isTestnet: true),
-        ),
-      ),
-    );
     final operation = GetExchangeStatisticsUsecase(
-      getOrderStatsUsecase: GetOrderStatsUsecase(
-        mainnetRepository: stats,
-        testnetRepository: stats,
-        settingsRepository: _Settings(),
+      exchange: Exchange.open(
+        mainnetEndpoint: Uri.parse(testBbxEndpoint),
+        testnetEndpoint: Uri.parse(testBbxEndpoint),
+        readSession: () => readLegacyExchangeSession(
+          preferences: _Settings(),
+          readEpoch: () => 0,
+          readKey: repository.readActiveApiKey,
+        ),
       ),
     );
     expect(
@@ -190,21 +183,16 @@ void main() {
 
   test('document credential refusal never invokes the reporter', () async {
     storage.scripted.add(Exception(_sensitive));
-    final kyc = BbxApiKycRepository(
-      api: bbxForTesting(
-        endpoint: testBbxEndpoint,
-        adapter: _NoRequest(),
-        readActiveApiKey: bbxCredentialRead(
-          () => repository.readActiveApiKey(isTestnet: true),
-        ),
-      ),
-    );
     final operation = UploadExchangeDocumentUsecase(
       fileSystem: _Picker(),
-      uploadKycDocumentUsecase: UploadKycDocumentUsecase(
-        mainnetRepository: kyc,
-        testnetRepository: kyc,
-        settingsRepository: _Settings(),
+      exchange: Exchange.open(
+        mainnetEndpoint: Uri.parse(testBbxEndpoint),
+        testnetEndpoint: Uri.parse(testBbxEndpoint),
+        readSession: () => readLegacyExchangeSession(
+          preferences: _Settings(),
+          readEpoch: () => 0,
+          readKey: repository.readActiveApiKey,
+        ),
       ),
     );
     expect(

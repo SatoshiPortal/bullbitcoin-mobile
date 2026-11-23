@@ -1,26 +1,28 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:primitives/primitives.dart';
 
-/// Order statistics through the `bbx_api` package.
-class BbxApiOrderStatsRepository implements ExchangeOrderStatsRepository {
+import '../domain/entities/order_stats.dart';
+import '../domain/exchange_failure.dart';
+
+final class BbxApiOrderStatsRepository {
   final bbx.Bbx _api;
 
-  BbxApiOrderStatsRepository({required this._api});
+  const BbxApiOrderStatsRepository({required this._api});
 
-  @override
-  Future<OrderStatsResponse> getOrderStats() async {
+  Future<Result<OrderStatsResponse, ExchangeFailure>> getOrderStats() async {
     final result = await _api.orders.getOrderStats();
     return switch (result) {
-      Ok(:final value) => _toEntity(value),
-      Err(failure: bbx.BbxMissingCredentialFailure()) =>
-        throw ApiKeyNotFoundException(),
-      Err(failure: bbx.BbxCredentialUnavailableFailure()) =>
-        throw const ExchangeCredentialUnavailableException(),
-      Err(:final failure) => throw Exception(
-        'Failed to get order stats: ${_describe(failure)}',
+      Ok(:final value) => Ok(_toEntity(value)),
+      Err(failure: bbx.BbxMissingCredentialFailure()) => const Err(
+        ExchangeNotAuthenticatedFailure(),
+      ),
+      Err(failure: bbx.BbxCredentialUnavailableFailure()) => const Err(
+        ExchangeCredentialReadFailure(),
+      ),
+      Err(:final failure) => Err(
+        ExchangeStatisticsUnavailableFailure(
+          'Failed to get order stats: ${failure.runtimeType}',
+        ),
       ),
     };
   }
@@ -58,10 +60,4 @@ class BbxApiOrderStatsRepository implements ExchangeOrderStatsRepository {
       asOf: report.asOf,
     );
   }
-
-  static String _describe(bbx.BbxFailure failure) => switch (failure) {
-    bbx.BbxRpcFailure(:final code, :final apiCode) =>
-      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
-    _ => failure.runtimeType.toString(),
-  };
 }

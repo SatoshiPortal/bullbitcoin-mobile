@@ -86,7 +86,7 @@ graph TB
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
-    EXCHANGE_DOMAIN[Exchange Package<br/>Account and order values, strict pending inventory]
+    EXCHANGE_DOMAIN[Exchange Package<br/>Account, order inventory, KYC uploads and stats]
     BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing route]
     EXCHANGE --> BULL_EXCHANGE
     EXCHANGE_SETTINGS --> BULL_EXCHANGE

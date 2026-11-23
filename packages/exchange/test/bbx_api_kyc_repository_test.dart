@@ -1,18 +1,14 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
-import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
+import 'package:bbx_api/bbx_api.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/bbx_api_test_http.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/src/data/bbx_api_kyc_repository.dart';
 
 /// One sent request: path, content type and body, with the multipart
 /// boundary replaced by `BOUNDARY`.
@@ -66,17 +62,19 @@ class _UploadHttp implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-ExchangeKycRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
-    BbxApiKycRepository(
-      api: bbxForTesting(
-        endpoint: testBbxEndpoint,
-        adapter: http,
-        readActiveApiKey: bbxCredentialRead(key),
-      ),
-    );
+BbxApiKycRepository _new(
+  HttpClientAdapter http, {
+  Future<Result<String?, BbxFailure>> Function()? key,
+}) => BbxApiKycRepository(
+  api: bbxForTesting(
+    endpoint: 'https://example.invalid',
+    adapter: http,
+    readActiveApiKey: key ?? () async => const Ok('synthetic-key'),
+  ),
+);
 
-Future<FileUploadResult> _upload(
-  ExchangeKycRepository repository, {
+Future<Result<void, ExchangeFailure>> _upload(
+  BbxApiKycRepository repository, {
   String fileName = 'doc-u-1-ID',
 }) => repository.uploadDocument(
   fileBytes: const [0, 1, 2, 255],
@@ -159,10 +157,10 @@ void main() {
         _new(_UploadHttp(status: status, body: body)),
       );
 
-      expect(result.isSuccess, _oldSuccess[name]);
-      if (!result.isSuccess) {
-        expect(result.errorMessage, startsWith('Failed to upload document: '));
-        expect(result.errorMessage, isNot(contains('server detail')));
+      expect(result is Ok, _oldSuccess[name]);
+      if (result case Err(:final failure)) {
+        expect(failure.logMessage, startsWith('Failed to upload document: '));
+        expect(failure.logMessage, isNot(contains('server detail')));
       }
     });
   }
@@ -179,59 +177,40 @@ void main() {
         ),
       );
 
-      expect(result.isSuccess, isFalse);
+      final failure = (result as Err<void, ExchangeFailure>).failure;
       expect(
-        result.errorMessage,
+        failure.logMessage,
         'Failed to upload document: BbxTimeoutFailure',
       );
       expect(
-        result.errorMessage,
+        failure.logMessage,
         isNot(contains('fixture-sensitive-upload-path')),
       );
     },
   );
 
-  test('signed out throws ApiKeyNotFoundException like before', () async {
-    Future<ExchangeKycRepository> signedOut(
-      ExchangeKycRepository Function(
-        HttpClientAdapter, {
-        ReadExchangeApiKey? key,
-      })
-      build,
-    ) async => build(_UploadHttp(), key: () async => const Ok(null));
-
-    await expectLater(
-      _upload(await signedOut(_new)),
-      throwsA(isA<ApiKeyNotFoundException>()),
+  test('a missing credential is not authenticated', () async {
+    final result = await _upload(
+      _new(_UploadHttp(), key: () async => const Ok(null)),
+    );
+    expect(
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeNotAuthenticatedFailure>(),
     );
   });
 
-  test(
-    'an unreadable key throws the credential exception like before',
-    () async {
-      Future<Object?> unreadable(
-        ExchangeKycRepository Function(
-          HttpClientAdapter, {
-          ReadExchangeApiKey? key,
-        })
-        build,
-      ) async {
-        try {
-          await _upload(
-            build(
-              _UploadHttp(),
-              key: () async => const Err(ExchangeApiKeyReadFailure()),
-            ),
-          );
-          return null;
-        } catch (e) {
-          return e.runtimeType;
-        }
-      }
-
-      expect(await unreadable(_new), ExchangeCredentialUnavailableException);
-    },
-  );
+  test('an unreadable key is a distinct credential failure', () async {
+    final result = await _upload(
+      _new(
+        _UploadHttp(),
+        key: () async => const Err(BbxCredentialUnavailableFailure()),
+      ),
+    );
+    expect(
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeCredentialReadFailure>(),
+    );
+  });
 }
 
 /// The multipart requests the removed ExchangeKycRepositoryImpl sent.

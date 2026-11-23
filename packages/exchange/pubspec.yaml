@@ -13,6 +13,7 @@ dependencies:
   drift: ^2.35.4
   freezed_annotation: ^3.1.0
   legacy_storage:
+  preferences:
   primitives:
   secrets:
   sqlite3: ^3.9.1

@@ -1,10 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/entities/file_upload.dart';
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:file_system/file_system.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';
@@ -25,12 +24,17 @@ import 'package:mocktail/mocktail.dart';
 const _rawReason =
     'ExchangeApiException[ERR_KYC_403]: recipient bc1qexamplerecipient rejected';
 
-class _MockGetOrderStats extends Mock implements GetOrderStatsUsecase {}
-
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
-class _MockUploadKycDocument extends Mock implements UploadKycDocumentUsecase {}
+abstract interface class _Upload {
+  Future<Result<void, ExchangeFailure>> execute({
+    required List<int> fileBytes,
+    required String fileName,
+  });
+}
+
+class _MockUploadKycDocument extends Mock implements _Upload {}
 
 class _MockExchangeFacade extends Mock implements ExchangeFacade {}
 
@@ -107,12 +111,12 @@ void main() {
   });
 
   group('GetExchangeStatisticsUsecase', () {
-    test('a throwing core use-case becomes a sanitized failure', () async {
-      final core = _MockGetOrderStats();
-      when(core.execute).thenThrow(Exception(_rawReason));
-
+    test('an Exchange statistics failure stays sanitized', () async {
       final result = await GetExchangeStatisticsUsecase(
-        getOrderStatsUsecase: core,
+        exchange: exchangeForTesting(
+          getOrderStats: () async =>
+              const Err(ExchangeStatisticsUnavailableFailure(_rawReason)),
+        ),
       ).execute();
 
       final failure = (result as Err).failure as ExchangeSettingsFailure;
@@ -347,13 +351,11 @@ void main() {
   });
 
   group('UploadExchangeDocumentUsecase', () {
-    UploadExchangeDocumentUsecase build(
-      FileSystem picker,
-      UploadKycDocumentUsecase upload,
-    ) => UploadExchangeDocumentUsecase(
-      fileSystem: picker,
-      uploadKycDocumentUsecase: upload,
-    );
+    UploadExchangeDocumentUsecase build(FileSystem picker, _Upload upload) =>
+        UploadExchangeDocumentUsecase(
+          fileSystem: picker,
+          exchange: exchangeForTesting(uploadKycDocument: upload.execute),
+        );
 
     test('a dismissed picker is a cancellation, not a failure', () async {
       final result = await build(
@@ -412,7 +414,7 @@ void main() {
           fileBytes: any(named: 'fileBytes'),
           fileName: any(named: 'fileName'),
         ),
-      ).thenAnswer((_) async => FileUploadResult.success());
+      ).thenAnswer((_) async => const Ok(null));
 
       final result = await build(
         _StubPicker(Ok(_Document(name: 'ID.PNG', extension: 'PNG'))),
@@ -468,36 +470,16 @@ void main() {
       );
     });
 
-    // The exchange's own sentence is the leak this migration exists to stop.
-    test('a rejected upload keeps the API sentence in logMessage', () async {
+    test('a rejected upload does not retain the API sentence', () async {
       final upload = _MockUploadKycDocument();
       when(
         () => upload.execute(
           fileBytes: any(named: 'fileBytes'),
           fileName: any(named: 'fileName'),
         ),
-      ).thenAnswer((_) async => FileUploadResult.failure(_rawReason));
-
-      final result = await build(
-        _StubPicker(Ok(_Document())),
-        upload,
-      ).execute();
-
-      final failure = (result as Err).failure as ExchangeSettingsFailure;
-      expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
-      // Kept for diagnosis — safe only because the l10n extension never reads
-      // it, which exchange_settings_failure_l10n_test.dart asserts.
-      expect(failure.logMessage, _rawReason);
-    });
-
-    test('a throwing upload becomes a sanitized failure', () async {
-      final upload = _MockUploadKycDocument();
-      when(
-        () => upload.execute(
-          fileBytes: any(named: 'fileBytes'),
-          fileName: any(named: 'fileName'),
-        ),
-      ).thenThrow(Exception(_rawReason));
+      ).thenAnswer(
+        (_) async => const Err(ExchangeDocumentUploadFailure(_rawReason)),
+      );
 
       final result = await build(
         _StubPicker(Ok(_Document())),
@@ -508,6 +490,28 @@ void main() {
       expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
       _expectSanitized(failure);
     });
+
+    test(
+      'a credential read refusal becomes a sanitized upload failure',
+      () async {
+        final upload = _MockUploadKycDocument();
+        when(
+          () => upload.execute(
+            fileBytes: any(named: 'fileBytes'),
+            fileName: any(named: 'fileName'),
+          ),
+        ).thenAnswer((_) async => const Err(ExchangeCredentialReadFailure()));
+
+        final result = await build(
+          _StubPicker(Ok(_Document())),
+          upload,
+        ).execute();
+
+        final failure = (result as Err).failure as ExchangeSettingsFailure;
+        expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
+        _expectSanitized(failure);
+      },
+    );
 
     test('a picker failure short-circuits without uploading', () async {
       final upload = _MockUploadKycDocument();
@@ -533,7 +537,7 @@ void main() {
           fileBytes: any(named: 'fileBytes'),
           fileName: any(named: 'fileName'),
         ),
-      ).thenAnswer((_) async => FileUploadResult.success());
+      ).thenAnswer((_) async => const Ok(null));
 
       final result = await build(
         _StubPicker(Ok(_Document())),
