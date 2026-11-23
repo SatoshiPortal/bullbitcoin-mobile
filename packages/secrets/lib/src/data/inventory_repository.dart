@@ -22,6 +22,15 @@ final class InventoryRepository {
         return List.unmodifiable(rows.map((row) => _decode(row.data)));
       }, orElse: FetchSecretFailure.new);
 
+  Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
+    String view,
+  ) => boundary(() async {
+    final rows = await _listRows(view, defaultsOnly: true);
+    return List.unmodifiable([
+      for (final row in rows) ?decodeWalletRegistration(row.data),
+    ]);
+  }, orElse: FetchSecretFailure.new);
+
   Future<Result<WalletSelection, SecretFailure>> listForNetwork(
     String view,
     Network network,
@@ -42,10 +51,13 @@ final class InventoryRepository {
     }, Err.new);
   }
 
-  Future<List<QueryRow>> _listRows(String view, {String? networkCode}) =>
-      _database
-          .customSelect(
-            '''
+  Future<List<QueryRow>> _listRows(
+    String view, {
+    String? networkCode,
+    bool defaultsOnly = false,
+  }) => _database
+      .customSelect(
+        '''
           SELECT w.*
           FROM wallets w
           WHERE EXISTS (
@@ -54,15 +66,16 @@ final class InventoryRepository {
                 THEN 'wallet:' || w.id ELSE 'secret:' || w.secret_fingerprint END
           )
           ${networkCode == null ? '' : 'AND w.network = ?'}
+          ${defaultsOnly ? 'AND w.is_default = 1' : ''}
           ORDER BY w.id
           ''',
-            variables: [
-              Variable(view),
-              if (networkCode != null) Variable(networkCode),
-            ],
-            readsFrom: {_database.wallets, _database.viewMembers},
-          )
-          .get();
+        variables: [
+          Variable(view),
+          if (networkCode != null) Variable(networkCode),
+        ],
+        readsFrom: {_database.wallets, _database.viewMembers},
+      )
+      .get();
 
   Future<Result<RegisteredWallet?, SecretFailure>> find(
     String view,

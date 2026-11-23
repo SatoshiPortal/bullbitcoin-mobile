@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:bull_recoverbull/bull_recoverbull.dart' show RecoverBullFacade;
 import 'package:bull_recoverbull/migration.dart'
     show RecoverBullCutover, RecoverBullFailure;
 import 'package:bull_recoverbull/storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -78,6 +80,8 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
     (freshness as Ok<SyncFreshness, SyncFailure>).value,
     mainBackups,
     regtestBackups,
+    () => services<ActiveEnvironmentReader>().readActiveEnvironment(),
+    (context) => services<RecoverBullFacade>().status(context),
   );
   services.registerSingleton<WalletRegistrations>(registrations);
   services.registerSingleton<InventoryBackupVerification>(registrations);

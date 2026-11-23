@@ -10,6 +10,7 @@ import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
 import 'boundary.dart';
 import 'inventory_import.dart';
+import 'inventory_repository.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
 
@@ -146,19 +147,8 @@ final class AccessRepository {
     AccessViewRow view,
     InventoryBackupVerification verification,
   ) async {
-    final parents = await boundary(() async {
-      const prefix = 'secret:';
-      final members = await (_database.select(
-        _database.viewMembers,
-      )..where((member) => member.viewId.equals(view.id))).get();
-      return Set<String>.unmodifiable({
-        for (final member in members)
-          if (member.member.startsWith(prefix))
-            member.member.substring(prefix.length),
-      });
-    }, orElse: FetchSecretFailure.new);
-    return switch (parents) {
-      Ok(value: final ids) when ids.isEmpty => const Ok(true),
+    final defaults = await InventoryRepository(_database).listDefaults(view.id);
+    return switch (defaults) {
       Ok(:final value) => verification.hasVerifiedBackups(value),
       Err(:final failure) => Err(failure),
     };

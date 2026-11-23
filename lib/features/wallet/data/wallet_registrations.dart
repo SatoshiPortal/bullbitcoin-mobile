@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show BackupStatus, RecoverBullFailure, VaultContext;
 import 'package:bull_recoverbull/storage.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
@@ -31,6 +34,10 @@ final class SecretsWalletRegistrations
   final SyncFreshness _freshness;
   final RecoverBullWalletBackups _backups;
   final RecoverBullWalletBackups _regtestBackups;
+  final Future<Result<Environment, PreferencesFailure>> Function()
+  _readEnvironment;
+  final Future<Result<BackupStatus, RecoverBullFailure>> Function(VaultContext)
+  _vaultStatus;
 
   const SecretsWalletRegistrations(
     this._inventory,
@@ -38,6 +45,8 @@ final class SecretsWalletRegistrations
     this._freshness,
     this._backups,
     this._regtestBackups,
+    this._readEnvironment,
+    this._vaultStatus,
   );
 
   @override
@@ -110,24 +119,39 @@ final class SecretsWalletRegistrations
 
   @override
   Future<Result<bool, SecretFailure>> hasVerifiedBackups(
-    Set<String> parentFingerprints,
+    List<WalletRegistration> defaults,
   ) async {
-    for (final parent in parentFingerprints) {
-      final fingerprint = Fingerprint.tryParse(parent);
-      if (fingerprint == null) return const Err(FetchSecretFailure());
-      var verified = false;
-      for (final store in [_backups, _regtestBackups]) {
-        switch (await store.projection(fingerprint)) {
-          case Err():
-            return const Err(FetchSecretFailure());
-          case Ok(:final value):
-            verified = value.physicalBackupTested || value.encryptedVaultTested;
-        }
-        if (verified) break;
-      }
-      if (!verified) return const Ok(false);
+    final environment = await _readEnvironment();
+    if (environment is! Ok<Environment, PreferencesFailure>) {
+      return const Err(FetchSecretFailure());
     }
-    return const Ok(true);
+    final network = environment.value.networkEnv;
+    final store = network == NetworkEnv.regtest ? _regtestBackups : _backups;
+    VaultContext? vault;
+    for (final wallet in defaults.where(
+      (wallet) => wallet.network.env == network,
+    )) {
+      switch (await store.read(wallet.id)) {
+        case Err():
+          return const Err(FetchSecretFailure());
+        case Ok(value: final backup?):
+          if (backup.physicalBackupTested || backup.encryptedVaultTested) {
+            return const Ok(true);
+          }
+        case Ok():
+          break;
+      }
+      if ((wallet.network, wallet.secretFingerprint) case (
+        final BitcoinNetwork bitcoin,
+        final Fingerprint fingerprint,
+      )) {
+        vault ??= VaultContext(fingerprint: fingerprint, network: bitcoin);
+      }
+    }
+    if (vault == null) return const Ok(false);
+    return (await _vaultStatus(vault))
+        .map((status) => status.isVerified)
+        .mapErr((_) => const FetchSecretFailure());
   }
 
   RecoverBullWalletBackups _backupStore(String networkCode) =>
