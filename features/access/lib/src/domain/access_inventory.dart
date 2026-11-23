@@ -37,12 +37,11 @@ final class AccessInventory {
           .mapErr((_) => const AccessPinVerifyFailure());
 
   UnlockAttempt _convert(AccessAttempt attempt) {
-    final milliseconds =
-        attempt.lockedUntil?.difference(DateTime.now()).inMilliseconds ?? 0;
+    final milliseconds = attempt.remaining.inMilliseconds;
     return UnlockAttempt(
       success: attempt.accepted,
       failedAttempts: attempt.failedAttempts,
-      timeout: milliseconds <= 0 ? 0 : (milliseconds + 999) ~/ 1000,
+      timeout: (milliseconds + 999) ~/ 1000,
     );
   }
 }

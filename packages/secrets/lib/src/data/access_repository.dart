@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:meta/meta.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
@@ -13,10 +15,15 @@ import 'secrets_database.drift.dart';
 
 /// Single-view access authority. Comparison and rate limiting commit together.
 final class AccessRepository {
+  static const _maxEpoch = 8640000000000000;
+  static const _attemptIncrementMs = 30000;
+
   final SecretsDatabase _database;
+  final Stopwatch _cooldown = Stopwatch();
+  ({int attempts, int? until})? _cooldownState;
 
   @internal
-  const AccessRepository(this._database);
+  AccessRepository(this._database);
 
   Future<Result<bool, SecretFailure>> isProtected() => boundary(
     () async => (await _credential()) != null,
@@ -34,10 +41,8 @@ final class AccessRepository {
           // Take the write lock before reading. Two SQLite connections must
           // never evaluate a guess against the same attempt count.
           final state = await _stateForUpdate();
-          final now = DateTime.now().millisecondsSinceEpoch;
-          if (state.lockedUntil case final until? when until > now) {
-            return _attempt(state, accepted: false);
-          }
+          final blocked = _attempt(state, accepted: false);
+          if (blocked.remaining > Duration.zero) return blocked;
           final credential = await _credential();
           if (credential == null) return _attempt(state, accepted: true);
 
@@ -47,20 +52,16 @@ final class AccessRepository {
           );
           final accepted = AccessVerifier.equals(output, credential.verifier);
           output.fillRange(0, output.length, 0);
-          const maxEpoch = 8640000000000000;
           final attempts = accepted
               ? 0
-              : state.failedAttempts.clamp(0, maxEpoch).toInt() + 1;
-          // Keep the existing 30 s increment after the third failed attempt.
-          // Saturate the expiration within Dart's representable DateTime.
-          final cooldown = attempts <= 3
-              ? 0
-              : (attempts - 3).clamp(0, maxEpoch ~/ 30000) * 30000;
+              : state.failedAttempts.clamp(0, _maxEpoch) + 1;
+          final cooldown = _cooldownMilliseconds(attempts);
           final until = cooldown == 0
               ? null
-              : (DateTime.now().millisecondsSinceEpoch + cooldown)
-                    .clamp(-maxEpoch, maxEpoch)
-                    .toInt();
+              : (DateTime.now().millisecondsSinceEpoch + cooldown).clamp(
+                  -_maxEpoch,
+                  _maxEpoch,
+                );
           final next = state.copyWith(
             failedAttempts: attempts,
             lockedUntil: Value(until),
@@ -131,11 +132,12 @@ final class AccessRepository {
           _database.credentials,
         )..where((c) => c.id.equals(existing.id))).go();
       }
-      await _database
-          .update(_database.accessState)
-          .replace(
-            state.copyWith(failedAttempts: 0, lockedUntil: const Value(null)),
-          );
+      final reset = state.copyWith(
+        failedAttempts: 0,
+        lockedUntil: const Value(null),
+      );
+      await _database.update(_database.accessState).replace(reset);
+      _remaining(reset);
     }),
     orElse: StoreSecretFailure.new,
   );
@@ -203,10 +205,7 @@ final class AccessRepository {
     return credential;
   }
 
-  static AccessAttempt _attempt(
-    AccessStateRow state, {
-    required bool accepted,
-  }) {
+  AccessAttempt _attempt(AccessStateRow state, {required bool accepted}) {
     final epoch = state.lockedUntil;
     return AccessAttempt(
       accepted: accepted,
@@ -214,8 +213,33 @@ final class AccessRepository {
       lockedUntil: epoch == null
           ? null
           : DateTime.fromMillisecondsSinceEpoch(epoch),
+      remaining: _remaining(state),
     );
   }
+
+  Duration _remaining(AccessStateRow state) {
+    final snapshot = (attempts: state.failedAttempts, until: state.lockedUntil);
+    if (snapshot != _cooldownState) {
+      _cooldownState = snapshot;
+      _cooldown
+        ..reset()
+        ..start();
+    }
+    // A new process or a write from another connection has no trusted elapsed
+    // time for this state. Apply its full delay from the first observation.
+    final monotonic =
+        _cooldownMilliseconds(snapshot.attempts) -
+        _cooldown.elapsedMilliseconds;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final wall = (snapshot.until ?? now) - now;
+    return Duration(
+      milliseconds: math.max(wall, monotonic).clamp(0, _maxEpoch),
+    );
+  }
+
+  static int _cooldownMilliseconds(int attempts) =>
+      (attempts - 3).clamp(0, _maxEpoch ~/ _attemptIncrementMs) *
+      _attemptIncrementMs;
 }
 
 final class _InvalidAccessState implements Exception {
