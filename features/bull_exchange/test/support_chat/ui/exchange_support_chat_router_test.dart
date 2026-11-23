@@ -22,6 +22,7 @@ void main() {
           isLoggedIn: (_) => false,
           loginScreenBuilder: (_) => const Scaffold(body: Text('support')),
           onExit: (_, _) => exits++,
+          onMessagesRead: (_) => fail('unexpected read receipt'),
         ),
       ],
     );

@@ -11,6 +11,7 @@ class ExchangeSupportChatRouter {
     required bool Function(BuildContext) isLoggedIn,
     required Widget Function(ExchangeSupportChatDraft?) loginScreenBuilder,
     required void Function(BuildContext, bool fromExchange) onExit,
+    required void Function(BuildContext) onMessagesRead,
   }) => GoRoute(
     name: ExchangeSupportChatNavigation.routeName,
     path: '/exchange/support-chat',
@@ -27,6 +28,7 @@ class ExchangeSupportChatRouter {
             ? ExchangeSupportChatScreen(
                 exchange: exchange(),
                 onExit: exit,
+                onMessagesRead: () => onMessagesRead(context),
                 initialMessage: draft?.initialMessage,
               )
             : loginScreenBuilder(draft),

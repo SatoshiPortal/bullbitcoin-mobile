@@ -17,6 +17,7 @@ typedef ExchangeSupportChatHost = ({
   bool Function(BuildContext) isLoggedIn,
   Widget Function(ExchangeSupportChatDraft?) loginScreenBuilder,
   void Function(BuildContext, bool fromExchange) onExit,
+  void Function(BuildContext) onMessagesRead,
 });
 
 /// Mounts Exchange routes in their host's navigation slots.
@@ -79,6 +80,7 @@ final class BullExchangeFeature {
             isLoggedIn: supportChat.isLoggedIn,
             loginScreenBuilder: supportChat.loginScreenBuilder,
             onExit: supportChat.onExit,
+            onMessagesRead: supportChat.onMessagesRead,
           ),
     kyc == null
         ? null

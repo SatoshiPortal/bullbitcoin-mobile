@@ -163,6 +163,9 @@ class ExchangeRouter {
                 config.onExit(context);
               }
             },
+            onMessagesRead: (context) => unawaited(
+              context.read<ExchangeCubit>().markSupportMessagesRead(),
+            ),
           ),
   );
 

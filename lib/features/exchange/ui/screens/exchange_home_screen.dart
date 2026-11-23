@@ -57,6 +57,9 @@ class ExchangeHomeScreen extends StatelessWidget {
       (ExchangeCubit cubit) => cubit.state.stopDcaFailure,
     );
     final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
+    final unreadSupportMessages = context.select(
+      (ExchangeCubit cubit) => cubit.state.unreadSupportMessages,
+    );
     final hasDcaActive = dca?.isActive ?? false;
     final autoBuy = context.select(
       (ExchangeCubit cubit) => cubit.state.userSummary?.autoBuy,
@@ -239,6 +242,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                               ),
                               BullSupportButton.icon(
                                 label: context.loc.exchangeSupportChatTitle,
+                                unreadCount: unreadSupportMessages,
                               ),
                             ],
                           ),

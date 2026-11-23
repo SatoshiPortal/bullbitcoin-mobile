@@ -41,6 +41,8 @@ Exchange _withSupport(_SendSupportChat send) => exchangeForTesting(
     getMessages: ({page, pageSize}) async => fail('unexpected chat read'),
     sendMessage: send.execute,
     getAttachment: (_) async => fail('unexpected attachment read'),
+    getUnreadCount: () async => fail('unexpected unread count'),
+    markAllRead: () async => fail('unexpected mark read'),
   ),
 );
 

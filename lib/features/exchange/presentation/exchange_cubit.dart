@@ -13,6 +13,8 @@ import '../domain/usecases/enable_exchange_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';
 import '../domain/usecases/sign_out_exchange_usecase.dart';
 import '../domain/usecases/watch_exchange_access_usecase.dart';
+import '../domain/usecases/get_unread_support_message_count_usecase.dart';
+import '../domain/usecases/mark_support_messages_read_usecase.dart';
 import '../domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'exchange_state.dart';
 
@@ -32,6 +34,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required this._enableAccess,
     required this._resolveAccess,
     required this._signOut,
+    required this._getUnreadSupportMessageCount,
+    required this._markSupportMessagesRead,
     required WatchExchangeAccessUsecase watchAccess,
     required WatchExchangeNotificationsUsecase
     watchExchangeNotificationsUsecase,
@@ -44,6 +48,9 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     _notifications = _watchNotifications.accountChanges().listen(
       (_) => fetchUserSummary(),
     );
+    _supportMessages = _watchNotifications.supportMessages().listen(
+      (_) => refreshUnreadSupportMessages(),
+    );
     _access = watchAccess.execute().listen((access) {
       if (isClosed) return;
       if (access case ExchangeAccessEnabled(
@@ -53,8 +60,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         // unchanged account emits no summary transition to reopen the socket.
         unawaited(fetchUserSummary());
         unawaited(connectWebSocket());
+        unawaited(refreshUnreadSupportMessages());
       } else {
         _accountAttempt++;
+        _unreadAttempt++;
         emit(const ExchangeState());
       }
     });
@@ -67,8 +76,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final EnableExchangeUsecase _enableAccess;
   final ResolveExchangeAccessUsecase _resolveAccess;
   final SignOutExchangeUsecase _signOut;
+  final GetUnreadSupportMessageCountUsecase _getUnreadSupportMessageCount;
+  final MarkSupportMessagesReadUsecase _markSupportMessagesRead;
   final WatchExchangeNotificationsUsecase _watchNotifications;
   StreamSubscription<Object?>? _notifications;
+  StreamSubscription<Object?>? _supportMessages;
+  int _unreadAttempt = 0;
   StreamSubscription<ExchangeAccess>? _access;
   int _accountAttempt = 0;
 
@@ -160,6 +173,29 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     );
   }
 
+  /// The badge keeps its last known count when the read fails.
+  Future<void> refreshUnreadSupportMessages() async {
+    if (isClosed) return;
+    final attempt = ++_unreadAttempt;
+    final result = await _getUnreadSupportMessageCount.execute();
+    if (isClosed || attempt != _unreadAttempt) return;
+    if (result case Ok(:final value)) {
+      emit(state.copyWith(unreadSupportMessages: value));
+    }
+  }
+
+  /// Clears the badge at once, then confirms the count with the server.
+  Future<void> markSupportMessagesRead() async {
+    if (isClosed) return;
+    final attempt = ++_unreadAttempt;
+    if (state.unreadSupportMessages != 0) {
+      emit(state.copyWith(unreadSupportMessages: 0));
+    }
+    final _ = await _markSupportMessagesRead.execute();
+    if (isClosed || attempt != _unreadAttempt) return;
+    await refreshUnreadSupportMessages();
+  }
+
   Future<void> connectWebSocket() async {
     final _ = await _watchNotifications.connect();
   }
@@ -172,6 +208,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   @override
   Future<void> close() async {
     await _notifications?.cancel();
+    await _supportMessages?.cancel();
     await _access?.cancel();
     _watchNotifications.disconnect();
     return super.close();

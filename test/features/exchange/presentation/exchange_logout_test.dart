@@ -9,6 +9,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_acc
 import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_unread_support_message_count_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/mark_support_messages_read_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
@@ -39,6 +41,11 @@ class _Authentication extends Mock
 class _Notifications extends Mock
     implements WatchExchangeNotificationsUsecase {}
 
+class _UnreadCount extends Mock
+    implements GetUnreadSupportMessageCountUsecase {}
+
+class _MarkRead extends Mock implements MarkSupportMessagesReadUsecase {}
+
 const account = UserSummary(
   userNumber: 1,
   groups: [],
@@ -59,6 +66,9 @@ void main() {
   late _Resolve resolve;
   late _SignOut signOut;
   late _Notifications notifications;
+  late _UnreadCount unreadCount;
+  late _MarkRead markRead;
+  late StreamController<NotificationMessage> supportMessages;
   late StreamController<ExchangeAccess> changes;
 
   void publish(ExchangeAccess access) {
@@ -74,6 +84,8 @@ void main() {
     enableAccess: enable,
     resolveAccess: resolve,
     signOut: signOut,
+    getUnreadSupportMessageCount: unreadCount,
+    markSupportMessagesRead: markRead,
     watchAccess: watchAccess,
     watchExchangeNotificationsUsecase: notifications,
   );
@@ -92,6 +104,16 @@ void main() {
     changes = StreamController<ExchangeAccess>.broadcast(sync: true);
     when(watchAccess.execute).thenAnswer((_) => changes.stream);
     when(notifications.accountChanges).thenAnswer((_) => const Stream.empty());
+    unreadCount = _UnreadCount();
+    markRead = _MarkRead();
+    supportMessages = StreamController<NotificationMessage>.broadcast(
+      sync: true,
+    );
+    addTearDown(supportMessages.close);
+    when(notifications.supportMessages)
+        .thenAnswer((_) => supportMessages.stream);
+    when(unreadCount.execute).thenAnswer((_) async => const Ok(0));
+    when(markRead.execute).thenAnswer((_) async => const Ok(null));
     when(getAccount.execute).thenAnswer((_) async => const Ok(account));
     when(announcements.execute).thenAnswer((_) async => const Ok([]));
     when(notifications.connect).thenAnswer((_) async => const Ok(null));
@@ -124,6 +146,79 @@ void main() {
       expect(cubit.state.userSummary, account);
       publish(const ExchangeAccessDisabled());
       expect(cubit.state.userSummary, isNull);
+    },
+  );
+
+  test('the unread support count follows sign-in and new messages', () async {
+    when(unreadCount.execute).thenAnswer((_) async => const Ok(2));
+    final cubit = build();
+    addTearDown(cubit.close);
+    expect(cubit.state.unreadSupportMessages, 0);
+
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    await pumpEventQueue();
+    expect(cubit.state.unreadSupportMessages, 2);
+
+    when(unreadCount.execute).thenAnswer((_) async => const Ok(3));
+    supportMessages.add(
+      const NotificationMessage(kind: NotificationMessageKind.message),
+    );
+    await pumpEventQueue();
+    expect(cubit.state.unreadSupportMessages, 3);
+
+    when(unreadCount.execute)
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure('offline')));
+    supportMessages.add(
+      const NotificationMessage(kind: NotificationMessageKind.message),
+    );
+    await pumpEventQueue();
+    expect(cubit.state.unreadSupportMessages, 3);
+
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    await pumpEventQueue();
+    expect(cubit.state.unreadSupportMessages, 0);
+  });
+
+  test(
+    'opening the chat clears the badge and confirms with the server',
+    () async {
+      when(unreadCount.execute).thenAnswer((_) async => const Ok(4));
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await pumpEventQueue();
+      expect(cubit.state.unreadSupportMessages, 4);
+
+      final marked = Completer<Result<void, ExchangeFailure>>();
+      when(markRead.execute).thenAnswer((_) => marked.future);
+      final marking = cubit.markSupportMessagesRead();
+      expect(cubit.state.unreadSupportMessages, 0);
+
+      when(unreadCount.execute).thenAnswer((_) async => const Ok(1));
+      marked.complete(const Ok(null));
+      await marking;
+      expect(cubit.state.unreadSupportMessages, 1);
+      verify(markRead.execute).called(1);
+    },
+  );
+
+  test(
+    'a count read before the chat opened cannot restore the badge',
+    () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await pumpEventQueue();
+
+      final stale = Completer<Result<int, ExchangeFailure>>();
+      when(unreadCount.execute).thenAnswer((_) => stale.future);
+      final refreshing = cubit.refreshUnreadSupportMessages();
+      when(unreadCount.execute).thenAnswer((_) async => const Ok(0));
+      await cubit.markSupportMessagesRead();
+      stale.complete(const Ok(5));
+      await refreshing;
+
+      expect(cubit.state.unreadSupportMessages, 0);
     },
   );
 

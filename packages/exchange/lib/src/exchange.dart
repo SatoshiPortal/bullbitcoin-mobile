@@ -55,6 +55,8 @@ typedef ExchangeChatOperations = ({
   sendMessage,
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(String)
   getAttachment,
+  Future<Result<int, ExchangeFailure>> Function() getUnreadCount,
+  Future<Result<void, ExchangeFailure>> Function() markAllRead,
 });
 
 typedef ExchangeNotificationBindings = ({
@@ -339,6 +341,20 @@ final class Exchange {
           untimed: true,
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
         ),
+        getUnreadCount: () => withClient(
+          (client, _) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
+          ).getUnreadMessageCount(),
+          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+        ),
+        markAllRead: () => withClient(
+          (client, _) => BbxApiSupportChatRepository(
+            users: client.users,
+            commcenter: client.commcenter,
+          ).markAllMessagesRead(),
+          credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+        ),
       ),
       (
         messages: () => service().messageStream,
@@ -462,6 +478,13 @@ final class Exchange {
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
+  /// The number of support messages the user has not read.
+  Future<Result<int, ExchangeFailure>> getUnreadSupportMessageCount() =>
+      _chat.getUnreadCount();
+
+  Future<Result<void, ExchangeFailure>> markSupportMessagesRead() =>
+      _chat.markAllRead();
+
   Stream<NotificationMessage> get notifications => _notifications.messages();
 
   Future<Result<void, ExchangeFailure>> connectNotifications() =>
@@ -533,6 +556,9 @@ Exchange exchangeForTesting({
             throw StateError('Unexpected chat send'),
         getAttachment: (_) =>
             throw StateError('Unexpected chat attachment request'),
+        getUnreadCount: () =>
+            throw StateError('Unexpected chat unread count request'),
+        markAllRead: () => throw StateError('Unexpected chat mark read'),
       ),
   notifications ??
       (

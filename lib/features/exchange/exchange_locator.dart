@@ -5,6 +5,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/expire_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_unread_support_message_count_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/mark_support_messages_read_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
 
@@ -157,6 +159,18 @@ class ExchangeLocator {
         locator<ExchangeAccessRepository>(),
       ),
     );
+    locator.registerFactory<GetUnreadSupportMessageCountUsecase>(
+      () => GetUnreadSupportMessageCountUsecase(
+        exchange: locator<Exchange>(),
+        access: locator<ExchangeAccessRepository>(),
+      ),
+    );
+    locator.registerFactory<MarkSupportMessagesReadUsecase>(
+      () => MarkSupportMessagesReadUsecase(
+        exchange: locator<Exchange>(),
+        access: locator<ExchangeAccessRepository>(),
+      ),
+    );
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
         access: locator<ExchangeAccessRepository>(),
@@ -178,6 +192,9 @@ class ExchangeLocator {
         enableAccess: locator<EnableExchangeUsecase>(),
         resolveAccess: locator<ResolveExchangeAccessUsecase>(),
         signOut: locator<SignOutExchangeUsecase>(),
+        getUnreadSupportMessageCount:
+            locator<GetUnreadSupportMessageCountUsecase>(),
+        markSupportMessagesRead: locator<MarkSupportMessagesReadUsecase>(),
         watchAccess: locator<WatchExchangeAccessUsecase>(),
         watchExchangeNotificationsUsecase:
             locator<WatchExchangeNotificationsUsecase>(),

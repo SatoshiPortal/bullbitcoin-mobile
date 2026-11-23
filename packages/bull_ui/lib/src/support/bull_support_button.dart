@@ -24,6 +24,7 @@ class BullSupportButton extends StatelessWidget {
     this.bgColor,
     this.textColor,
   }) : color = null,
+       unreadCount = 0,
        _variant = _BullSupportButtonVariant.big;
 
   /// Compact icon button for top bars. Defaults to a chat bubble in
@@ -34,6 +35,7 @@ class BullSupportButton extends StatelessWidget {
     this.message,
     this.icon,
     this.color,
+    this.unreadCount = 0,
   }) : bgColor = null,
        textColor = null,
        _variant = _BullSupportButtonVariant.icon;
@@ -44,6 +46,7 @@ class BullSupportButton extends StatelessWidget {
       color = null,
       bgColor = null,
       textColor = null,
+      unreadCount = 0,
       _variant = _BullSupportButtonVariant.text;
 
   /// Icon above its label, for a footer row. Defaults to a headset in
@@ -56,6 +59,7 @@ class BullSupportButton extends StatelessWidget {
     this.color,
   }) : bgColor = null,
        textColor = null,
+       unreadCount = 0,
        _variant = _BullSupportButtonVariant.tile;
 
   /// Visible label, or the tooltip of [BullSupportButton.icon].
@@ -75,6 +79,10 @@ class BullSupportButton extends StatelessWidget {
 
   /// Label colour of `.big`; defaults to `context.bull.onSecondary`.
   final Color? textColor;
+
+  /// Unread support messages, shown as a count on [BullSupportButton.icon].
+  /// Nothing is shown at zero.
+  final int unreadCount;
 
   final _BullSupportButtonVariant _variant;
 
@@ -104,10 +112,16 @@ class BullSupportButton extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           // Tooltip needs an Overlay; fall back to a plain semantics label.
           tooltip: Overlay.maybeOf(context) == null ? null : label,
-          icon: BullIcon(
-            icon ?? BullIcons.chatBubbleOutline,
-            color: color ?? context.bull.onPrimary,
-            size: 24,
+          icon: Badge(
+            isLabelVisible: unreadCount > 0,
+            label: Text(unreadCount > 99 ? '99+' : '$unreadCount'),
+            backgroundColor: context.bull.error,
+            textColor: context.bull.onError,
+            child: BullIcon(
+              icon ?? BullIcons.chatBubbleOutline,
+              color: color ?? context.bull.onPrimary,
+              size: 24,
+            ),
           ),
           onPressed: onTap,
         );
