@@ -9,6 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  clock: ^1.1.2
   legacy_storage:
   drift: ^2.35.4
   flutter:
@@ -25,6 +26,7 @@ dependencies:
   json_annotation: ^4.12.0
 
 dev_dependencies:
+  fake_async: ^1.3.3
   drift_dev: ^2.35.3
   build_runner: ^2.16.1
   freezed: ^4.0.1

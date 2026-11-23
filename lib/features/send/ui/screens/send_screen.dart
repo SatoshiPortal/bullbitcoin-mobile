@@ -29,10 +29,10 @@ import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer, FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
-import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localizations.dart' show OnchainSendLabelsL10n;
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
@@ -63,6 +63,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullAlertCard,
         BullAmount,
         BullKeyboardActions,
+        BullOnchainSendInfoSection,
         BullAdvancedOptionsLink,
         BullFieldAction,
         BullIcons,
@@ -1754,7 +1755,7 @@ class ConfirmSendButton extends StatelessWidget {
 ///
 /// Reads directly from [SendState] — all data (amount, address, fees) is
 /// already available after [createTransaction] + [signTransaction].
-/// Uses [OnchainSendInfoSection] for the layout, same as Liquid.
+/// Uses [BullOnchainSendInfoSection] for the layout, same as Liquid.
 class _OnchainTransactionReview extends StatelessWidget {
   const _OnchainTransactionReview();
 
@@ -1844,7 +1845,8 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        OnchainSendInfoSection(
+        BullOnchainSendInfoSection(
+          labels: context.loc.onchainSendLabels,
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           addressBuilder: (style, color) =>
               AddressViewer(paymentRequestAddress, style: style, color: color),
@@ -1946,7 +1948,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
 /// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
 /// using [TransactionReviewView] (which requires a [ReviewableTransaction]), this
 /// widget reads directly from [SendState] and delegates to
-/// [OnchainSendInfoSection].
+/// [BullOnchainSendInfoSection].
 class _LiquidOnchainSendInfoSection extends StatelessWidget {
   const _LiquidOnchainSendInfoSection();
 
@@ -1978,7 +1980,8 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        OnchainSendInfoSection(
+        BullOnchainSendInfoSection(
+          labels: context.loc.onchainSendLabels,
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           addressBuilder: (style, color) =>
               AddressViewer(paymentRequestAddress, style: style, color: color),
@@ -3094,7 +3097,20 @@ class ShowPsbtButton extends StatelessWidget {
         );
         if (result == PsbtHandoffResult.readyToReadSignedTransaction &&
             context.mounted) {
-          await SendPsbtHandoff.of(context)(context, unsignedPsbt, wallet);
+          final signed = await SendPsbtHandoff.of(context)(
+            context,
+            unsignedPsbt,
+            wallet,
+          );
+          if (signed == null || !context.mounted || wallet == null) return;
+          final send = context.read<SendCubit>();
+          final current = send.state.selectedWallet;
+          if (current is SendWalletBitcoin &&
+              current.wallet.id == wallet.id &&
+              current.wallet.network == wallet.network &&
+              send.state.unsignedPsbt == unsignedPsbt) {
+            await send.updateSignedBitcoinTx(signed);
+          }
         }
       },
     );

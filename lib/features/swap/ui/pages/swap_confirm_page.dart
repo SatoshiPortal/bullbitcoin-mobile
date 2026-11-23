@@ -1,11 +1,11 @@
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_confirmation_details.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localizations.dart' show OnchainSendLabelsL10n;
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
@@ -18,6 +18,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullConfirmationHeader,
         BullFadingLinearProgress,
+        BullOnchainSendInfoSection,
         BullText,
         BullTypographyX,
         Gap;
@@ -139,7 +140,8 @@ class SwapConfirmPage extends StatelessWidget {
                         (TransferBloc bloc) =>
                             bloc.state.toWallet?.displayLabel(context) ?? '',
                       );
-                      return OnchainSendInfoSection(
+                      return BullOnchainSendInfoSection(
+                        labels: context.loc.onchainSendLabels,
                         sendWalletLabel: fromWallet.displayLabel(context),
                         addressBuilder: (style, color) => AddressViewer(
                           toWalletLabel,

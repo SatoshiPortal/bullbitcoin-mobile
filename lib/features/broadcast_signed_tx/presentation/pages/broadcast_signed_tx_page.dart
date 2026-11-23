@@ -168,10 +168,13 @@ class _BroadcastActions extends StatelessWidget {
     final isBroadcasting = context.select(
       (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
     );
+    final forSend = context.select(
+      (BroadcastSignedTxCubit c) => c.state.unsignedPsbt != null,
+    );
 
     return Row(
       children: [
-        if (pushTxUri != null)
+        if (pushTxUri != null && !forSend)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -185,8 +188,19 @@ class _BroadcastActions extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: BullButton.primary(
-              label: context.loc.broadcastSignedTxBroadcast,
-              onPressed: (isBroadcasting) ? null : cubit.broadcastTransaction,
+              label: forSend
+                  ? context.loc.continueButton
+                  : context.loc.broadcastSignedTxBroadcast,
+              onPressed: isBroadcasting
+                  ? null
+                  : forSend
+                  ? () async {
+                      final signed = await cubit.signedForSend();
+                      if (signed != null && context.mounted) {
+                        context.pop(signed);
+                      }
+                    }
+                  : cubit.broadcastTransaction,
             ),
           ),
         ),

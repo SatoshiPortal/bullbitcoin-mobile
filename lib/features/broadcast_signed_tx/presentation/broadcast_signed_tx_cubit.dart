@@ -162,11 +162,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> pushTxUri() async {
-    if (state.pushTxUri == null) return;
+    final uri = state.pushTxUri;
+    if (uri == null || state.unsignedPsbt != null) return;
 
     try {
       final launched = await launchUrl(
-        state.pushTxUri!,
+        uri,
         mode: LaunchMode.externalApplication,
       );
       if (!launched) {
@@ -251,6 +252,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       signedTransaction: signedTransaction,
       isPsbt: isPsbt,
     );
+    if (isClosed || state.unsignedPsbt != unsignedPsbt) return false;
     switch (result) {
       case Ok():
         return true;
@@ -265,9 +267,11 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> broadcastTransaction() async {
+    final transaction = state.transaction;
     if (state.isBroadcasting ||
         state.isBroadcasted ||
-        state.transaction == null) {
+        transaction == null ||
+        state.unsignedPsbt != null) {
       return;
     }
     // Clear any error from a previous failed attempt so the stale message
@@ -275,8 +279,8 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     emit(state.copyWith(isBroadcasting: true, failure: null));
     try {
       await _broadcastBitcoinTransactionUsecase.execute(
-        state.transaction!.data,
-        isPsbt: state.transaction!.format == TxFormat.psbt,
+        transaction.data,
+        isPsbt: transaction.format == TxFormat.psbt,
         network: await capturedNetwork,
       );
       emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
@@ -299,5 +303,33 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         ),
       );
     }
+  }
+
+  /// The Send reader never broadcasts. Finalize the signed transaction, then
+  /// verify it again before returning it to the owner of the original PSBT.
+  Future<String?> signedForSend() async {
+    final original = state.unsignedPsbt;
+    final transaction = state.transaction;
+    if (original == null || transaction == null) return null;
+    final String signed;
+    if (transaction.format == TxFormat.psbt) {
+      switch (finalizeBitcoinPsbts(
+        unsignedBase64: original,
+        signedBase64: transaction.data,
+      )) {
+        case Ok(:final value):
+          signed = hex.encode(value.bytes);
+        case Err():
+          emit(state.copyWith(failure: const PsbtFinalizationFailure()));
+          return null;
+      }
+    } else {
+      signed = transaction.data;
+    }
+    final matches = await _verifyAgainstOriginal(signed);
+    if (isClosed || !matches || !identical(state.transaction, transaction)) {
+      return null;
+    }
+    return signed;
   }
 }

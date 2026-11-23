@@ -67,6 +67,12 @@ graph TB
     FEES_PACKAGE --> PRIMITIVES
     CORE --> SYNC
     SEND --> SYNC
+    SPEND[Spend Package<br/>Wallet-bound Bitcoin and Liquid preparation, signing and broadcast]
+    SPEND --> SYNC
+    SPEND --> SECRETS
+    SPEND --> ARK_PROTOCOL
+    SPEND --> FEES_PACKAGE
+    SPEND --> PRIMITIVES
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
@@ -149,6 +155,12 @@ graph TB
     WALLETS --> PREFERENCES
     BTC_PRICE --> PREFERENCES
     COINS --> PREFERENCES
+    COIN_SELECTION[Coins Workspace Feature<br/>Selection sheet]
+    COIN_SELECTION --> BULL_UI
+    COIN_SELECTION --> PRIMITIVES
+    SELL --> COIN_SELECTION
+    PAY --> COIN_SELECTION
+    TRANSFER --> COIN_SELECTION
     BUY --> PREFERENCES
     EXCHANGE --> PREFERENCES
     SWAPS --> PREFERENCES

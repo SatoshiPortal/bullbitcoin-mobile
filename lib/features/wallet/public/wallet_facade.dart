@@ -12,8 +12,7 @@ export '../domain/network_x.dart' show NetworkX;
 
 import 'package:sync/sync.dart';
 
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BroadcastSpend;
+import 'package:sync/write.dart' show BroadcastSpend;
 
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show NetworkEnv, Result, Err;

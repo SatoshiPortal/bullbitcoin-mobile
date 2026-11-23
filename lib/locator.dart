@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
+import 'package:ark/funding.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
@@ -191,8 +192,11 @@ class AppLocator {
           );
     locator.registerSingleton<ArkFundingSigningGuard>(
       ArkFundingSigningGuard(
-        arkFunding,
-        arkFundingDatabasePath == null ? null : installation,
+        authority: switch (arkFunding) {
+          Ok(:final value) => value,
+          Err() => null,
+        },
+        installation: arkFundingDatabasePath == null ? null : installation,
       ),
     );
     if (arkFunding case Ok(:final value)) {

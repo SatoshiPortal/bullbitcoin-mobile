@@ -16,7 +16,6 @@ import '../data/wallet_registrations.dart';
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
-export '../data/ark_funding_signing_guard.dart';
 export '../data/ark_installation_state.dart';
 export '../data/sqlite_ark_funding_reservations.dart'
     show SqliteArkFundingReservations;

@@ -200,6 +200,7 @@ export 'src/feedback/bull_snack_bar.dart';
 
 // Layout.
 export 'src/layout/bull_carousel.dart';
+export 'src/layout/bull_onchain_send_info_section.dart';
 export 'src/layout/bull_stream_value_builder.dart';
 export 'src/layout/bull_pullable_body.dart';
 export 'src/layout/bull_scrollable_column.dart';

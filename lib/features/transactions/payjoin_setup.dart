@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show ArkFundingSigningGuard;
+import 'package:ark/funding.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'dart:async';

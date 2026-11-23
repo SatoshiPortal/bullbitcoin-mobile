@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ark/ark.dart' show ArkStorageFailure, ArkWalletFailure;
+import 'package:ark/funding.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show SeedReferencePort;
@@ -36,7 +38,10 @@ final class ArkFundingBinding {
 /// Requested/reserved/signed/unknown operations survive restart and own their
 /// exact inputs until a positive confirmed transaction observation settles them.
 final class SqliteArkFundingReservations
-    implements FundingReservationPort, SeedReferencePort {
+    implements
+        FundingReservationPort,
+        SeedReferencePort,
+        ArkFundingSigningAuthority {
   final Database _db;
   bool _closed = false;
   SqliteArkFundingReservations._(this._db);
@@ -804,6 +809,16 @@ final class SqliteArkFundingReservations
     required WalletKey key,
     required String unsignedPsbt,
   }) async => _run(() => _classifySigning(key, unsignedPsbt));
+
+  @override
+  Future<Result<void, ArkWalletFailure>> recordOrdinarySigning({
+    required String walletId,
+    required BitcoinNetwork network,
+    required String unsignedPsbt,
+  }) async => (await admitOrdinarySigning(
+    key: WalletKey(id: walletId, network: network),
+    unsignedPsbt: unsignedPsbt,
+  )).mapErr((_) => const ArkStorageFailure());
 
   // Publishes irreversible possible signer handoff before Secrets. This is an
   // EXACT network/unsigned-txid fence, not a blacklist of unrelated input reuse.

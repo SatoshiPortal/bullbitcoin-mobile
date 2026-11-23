@@ -8,6 +8,8 @@ import 'package:primitives/primitives.dart';
 import '../../../sync.dart' hide Wallet;
 import '../../../sync.dart' as sync show Wallet;
 import '../../../write.dart';
+import '../freeze_authority.dart';
+import '../input_reservations.dart';
 
 /// Coordinates provisioning and recovery of native stores. Catalog entries are
 /// supplied through [WalletCatalogPort]; their deletion remains with the owner.
@@ -40,6 +42,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final void Function(ForegroundStores)? _onStoresOpened;
   final FreezeStorePort _freezes;
   final WalletConnectionPort _connections;
+  final BroadcastObservationFollowUp? _broadcastObservation;
 
   WalletNativeRuntime.open({
     required this._catalog,
@@ -51,6 +54,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     required this._documentsDirectory,
     required this._freezes,
     required this._connections,
+    this._broadcastObservation,
     @visibleForTesting this._onStoresOpened,
   });
 
@@ -112,6 +116,89 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<Result<void, SyncFailure>> close() => _result(_close);
 
   Stream<WalletRevisionState> get changes => _changes.stream;
+
+  /// Checks the current protocol reservations for selected ordinary inputs.
+  /// This is a preview check only; the writer rechecks at the point of use.
+  @useResult
+  Future<Result<void, SyncFailure>> checkUnreservedInputs(
+    Set<Outpoint> selected,
+  ) async {
+    final inputs = Set.of(selected);
+    if (inputs.isEmpty) return const Ok(null);
+    final reservations = CombinedInputReservations(
+      _inputReservations,
+      _fundingReservations,
+    );
+    switch (await reservations.reservations()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final blocked = {
+          for (final reservation in value)
+            if (inputs.contains(reservation.outpoint)) reservation.outpoint,
+        };
+        return blocked.isEmpty
+            ? const Ok(null)
+            : Err(SyncProtectedInputsFailure(reserved: blocked));
+    }
+  }
+
+  /// An imported transaction has no wallet generation. It still goes
+  /// through the same global freeze queue and authorized connection policy.
+  @useResult
+  Future<Result<String, SyncFailure>> broadcastImportedBitcoin(
+    List<int> bytes, {
+    required BitcoinNetwork network,
+  }) async {
+    final DecodedBitcoinTransaction transaction;
+    try {
+      transaction = decodeBitcoinTransaction(bytes);
+    } on FormatException {
+      return const Err(SyncInvalidTransactionFailure());
+    }
+    final opened = await _result(() async => (await _services).stores.freezes);
+    final FreezeAuthority freezes;
+    switch (opened) {
+      case Ok(:final value):
+        freezes = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    return switch (await freezes.guard((frozen) async {
+      final blocked = transaction.inputs.where(frozen.contains).toSet();
+      if (blocked.isNotEmpty) {
+        return Err<String, SyncFailure>(
+          SyncProtectedInputsFailure(frozen: blocked),
+        );
+      }
+      return broadcastBitcoinTransaction(
+        transaction.bytes,
+        network: network,
+        connections: _connections,
+      );
+    })) {
+      Ok(:final value) => value,
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  /// Broadcasts a spend that already carries its original wallet generation.
+  /// Observes accepted Bitcoin broadcasts even if recording is not yet durable.
+  @useResult
+  Future<Result<SpendReceipt, SyncFailure>> broadcastSigned(
+    SignedSpend signed,
+  ) async {
+    switch (await wallet(signed.key)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final result = await value.tx.broadcast(signed);
+        if (result case Ok(value: SpendReceipt(guarded: true))) {
+          _broadcastObservation?.start(signed.key.id);
+        }
+        return result;
+    }
+  }
 
   /// Privileged wallet composition must bind the exact same durable authority.
   bool usesFundingReservations(FundingReservationPort authority) =>

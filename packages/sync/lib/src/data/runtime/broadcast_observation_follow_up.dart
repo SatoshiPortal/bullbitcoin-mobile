@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:clock/clock.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/sync.dart'
+
+import '../../../sync.dart'
     show
         BitcoinSpendStatus,
         SignedBitcoinTransaction,
@@ -54,7 +55,7 @@ final class BroadcastObservationFollowUp {
     required this._pollWallet,
   });
 
-  /// [broadcast] with the follow-up started after an accepted Bitcoin
+  /// Wraps [broadcast] with the follow-up started after an accepted Bitcoin
   /// broadcast only: Liquid has no guard to wait for. The result is
   /// returned unchanged.
   BroadcastSpend wrap(BroadcastSpend broadcast) =>

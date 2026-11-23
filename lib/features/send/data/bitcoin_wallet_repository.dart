@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show ArkFundingSigningGuard;
+import 'package:ark/funding.dart';
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -166,7 +165,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final metadata = await _metadataFor(walletId);
     final admission = await _arkFundingGuard.admit(
-      key: WalletKey(id: metadata.id, network: metadata.network.shared),
+      walletId: metadata.id,
+      network: metadata.network.shared,
       unsignedPsbt: psbt,
     );
     if (admission case Err()) {
