@@ -183,6 +183,24 @@ void main() {
           (grantedAgain as Ok<BackupSettings, RecoverBullFailure>).value;
       expect(after.generation, before.generation);
       expect(after.sameGeneration(before), isFalse);
+      final preserved = sqlite3.open('${directory.path}/recoverbull.sqlite');
+      try {
+        expect(
+          preserved
+              .select(
+                'SELECT server, permission_granted, generation '
+                'FROM recoverbull_state',
+              )
+              .single,
+          {
+            'server': 'http://obsolete.onion',
+            'permission_granted': 1,
+            'generation': before.generation,
+          },
+        );
+      } finally {
+        preserved.close();
+      }
       expect(
         services<RecoverBullRoutePort>(),
         same(services<RecoverBullEnvironmentPort>()),

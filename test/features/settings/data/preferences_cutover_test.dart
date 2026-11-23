@@ -256,8 +256,26 @@ void main() {
       );
       expect(
         await preferences.recoverBull.setPermission(true, regtest: true),
+        isA<Err<void, PreferencesFailure>>().having(
+          (result) => result.failure,
+          'inactive regtest family',
+          isA<PreferencesContextChangedFailure>(),
+        ),
+      );
+      expect(await preferences.setEnvironment(Environment.regtest), isA<Ok>());
+      expect(
+        await preferences.recoverBull.setPermission(true, regtest: true),
         isA<Ok<void, PreferencesFailure>>(),
       );
+      expect(
+        await preferences.recoverBull.setPermission(false),
+        isA<Err<void, PreferencesFailure>>().having(
+          (result) => result.failure,
+          'inactive normal family',
+          isA<PreferencesContextChangedFailure>(),
+        ),
+      );
+      expect(await preferences.setEnvironment(Environment.testnet), isA<Ok>());
       expect(
         await preferences.recoverBull.setPermission(false),
         isA<Ok<void, PreferencesFailure>>(),

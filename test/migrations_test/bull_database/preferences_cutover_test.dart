@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bull_recoverbull/migration.dart'
+    show readLegacyRecoverBullPermission;
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +14,7 @@ import 'package:preferences/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
 import 'generated/schema_v15.dart' as v15;
 
@@ -24,6 +27,20 @@ void main() {
       );
       final source = File('${directory.path}/legacy.sqlite');
       final file = File('${directory.path}/preferences.sqlite');
+      final standalone = File('${directory.path}/recoverbull.sqlite');
+      if (!delayed) {
+        final fixture = sqlite3.open(standalone.path);
+        try {
+          fixture.userVersion = 1;
+          fixture.execute(
+            'CREATE TABLE recoverbull_state ('
+            'id INTEGER PRIMARY KEY, permission_granted INTEGER NOT NULL)',
+          );
+          fixture.execute('INSERT INTO recoverbull_state VALUES (1, 0)');
+        } finally {
+          fixture.close();
+        }
+      }
       FakeSecureStoragePlatform().install();
       final keys = Secrets(scratchDirectory: () async => directory.path)
           .databaseKeys(module: 'preferences');
@@ -31,7 +48,15 @@ void main() {
         source: LegacySource(source, 16),
         create: SqliteDatabase.new,
       );
-      final participant = PreferencesImport(file: file, testingKeys: keys);
+      final foreground = PreferencesImport(
+        file: file,
+        testingKeys: keys,
+        readStandalonePermission: () async =>
+            (await readLegacyRecoverBullPermission(standalone))
+                .map((consent) => consent?.permissionGranted)
+                .mapErr((_) => const LegacyImportUnavailable()),
+      );
+      final background = PreferencesImport(file: file, testingKeys: keys);
       StorageCutover coordinator(List<LegacyImportParticipant> participants) =>
           StorageCutover(
             directory: Directory('${directory.path}/coordination'),
@@ -74,12 +99,11 @@ void main() {
         );
         await old.close();
       }
-      final cutover = coordinator([participant]);
       for (var attempt = 0; attempt < 2; attempt++) {
         // First launch prepares; a worker only admits existing state.
         final result = attempt == 0
-            ? await cutover.prepare()
-            : await cutover.admit();
+            ? await coordinator([foreground]).prepare()
+            : await coordinator([background]).admit();
         expect(result, isA<Ok>());
         final runtime =
             (result as Ok<RuntimeAdmission, LegacyImportFailure>).value;
@@ -93,6 +117,22 @@ void main() {
         expect(opened, isA<Ok>());
         final preferences =
             (opened as Ok<Preferences, PreferencesFailure>).value;
+        expect(
+          await preferences.recoverBull.read(),
+          isA<Ok<bool?, PreferencesFailure>>().having(
+            (result) => result.value,
+            'normal permission (standalone denial or v16 grant)',
+            delayed,
+          ),
+        );
+        expect(
+          await preferences.recoverBull.read(regtest: true),
+          isA<Ok<bool?, PreferencesFailure>>().having(
+            (result) => result.value,
+            'regtest permission does not import normal consent',
+            false,
+          ),
+        );
         expect(
           (await preferences.readCurrency() as Ok<String, PreferencesFailure>)
               .value,
