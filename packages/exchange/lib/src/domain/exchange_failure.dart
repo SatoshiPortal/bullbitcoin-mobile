@@ -55,6 +55,14 @@ final class ExchangePreferencesSaveFailure extends ExchangeFailure {
   const ExchangePreferencesSaveFailure([super.logMessage]);
 }
 
+/// The preference save may have reached the exchange without a readable
+/// answer. A save replaces the whole set with the same values, so saving
+/// again can't duplicate anything; callers treat it like a failed save.
+final class ExchangePreferencesSaveOutcomeUnknownFailure
+    extends ExchangeFailure {
+  const ExchangePreferencesSaveOutcomeUnknownFailure([super.logMessage]);
+}
+
 /// The notification socket could not be opened. Non-blocking: the exchange is
 /// fully usable without it, so this is logged rather than shown.
 final class ExchangeNotificationsUnavailableFailure extends ExchangeFailure {

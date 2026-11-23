@@ -277,8 +277,36 @@ void main() {
     });
 
     for (final (name, http) in [
-      ('a status other than 200', FakeBbxHttp(status: 500, body: {})),
       ('a body that is not an object', FakeBbxHttp(body: 'unexpected')),
+      (
+        'a timeout after sending',
+        FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+      ),
+      ('a gateway timeout', FakeBbxHttp(status: 504, body: {})),
+    ]) {
+      test('$name is an unknown outcome', () async {
+        expect(
+          _failureOf(
+            await _repository(http).saveUserPreference(autoBuyEnabled: 'true'),
+          ),
+          isA<ExchangePreferencesSaveOutcomeUnknownFailure>(),
+        );
+      });
+    }
+
+    test('a connect timeout is a network failure', () async {
+      expect(
+        _failureOf(
+          await _repository(
+            FakeBbxHttp(error: DioExceptionType.connectionTimeout),
+          ).saveUserPreference(autoBuyEnabled: 'true'),
+        ),
+        isA<ExchangeNetworkFailure>(),
+      );
+    });
+
+    for (final (name, http) in [
+      ('a status other than 200', FakeBbxHttp(status: 500, body: {})),
     ]) {
       test('$name is a save failure', () async {
         expect(

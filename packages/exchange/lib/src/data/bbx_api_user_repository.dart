@@ -106,6 +106,11 @@ final class BbxApiUserRepository {
     );
     return switch (result) {
       Ok() => const Ok(null),
+      Err(failure: bbx.BbxOutcomeUnknownFailure(:final reason)) => Err(
+        ExchangePreferencesSaveOutcomeUnknownFailure(
+          'saveUserPreference outcome unknown: $reason',
+        ),
+      ),
       Err(:final failure) => Err(
         _failureFrom(
           failure,

@@ -19,7 +19,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeAuthenticationFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeApiKeyStorageFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeSessionClearFailure() => context.loc.exchangeErrorSigningOut,
-    ExchangePreferencesSaveFailure() =>
+    ExchangePreferencesSaveFailure() ||
+    ExchangePreferencesSaveOutcomeUnknownFailure() =>
       context.loc.exchangeErrorSavingPreferences,
     // Infrastructure, not a user story: the socket is best-effort and the
     // cubit never surfaces this. It gets the generic string rather than a
