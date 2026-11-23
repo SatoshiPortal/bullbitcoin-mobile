@@ -22,35 +22,31 @@ import 'package:path/path.dart' as p;
 // Wallet reader ownership (2026-11-22): see FEATURES.md for the address,
 // coin, receive and history edges that replace the legacy wallet placements.
 // Exchange workspace UI consumers use the published routes (see FEATURES.md).
+// Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
+// Settings consumes Receive's disclaimer and typed Wallet Import navigation.
+// Wallet Import owns mnemonic input and scanning; Wallet uses its data types.
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
   'all_seed_view': 'access',
   'app_startup':
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'backups': 'access label_editor physical_backup_verification recoverbull',
-  'bull_exchange': 'bitcoin_price',
+  'bull_exchange': 'bitcoin_price coins fees',
   'coins': 'address_view bitcoin_price wallet',
   'exchange': 'address_view bull_exchange transactions wallet',
-  'import_coldcard': 'scanning signers wallet_import',
-  'import_mnemonic': 'mnemonic_entry wallet wallet_import',
-  'import_wallet': 'import_coldcard import_mnemonic import_watch_only_wallet settings signers wallet_import',
-  'import_watch_only_wallet': 'scanning signers wallet wallet_import',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
   'onboarding':
       'mnemonic_entry network recoverbull settings wallet wallet_import',
-  'pay': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
-  'receive':
-      'address_view label_editor settings signers swap transactions wallet',
+  'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
-  'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull send silent swap transactions wallet',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
   'support': 'bull_exchange',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
-  'wallet_import': 'signers',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
+  'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
 
