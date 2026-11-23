@@ -1,4 +1,7 @@
+import 'package:address_view/address_view.dart';
 import 'package:primitives/primitives.dart';
+import 'package:receive/receive.dart' show ReceiveFailure, ReceiveWallet;
+import 'package:bb_mobile/features/swap/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_refresh_batch.dart';
@@ -119,6 +122,17 @@ class SwapFacade implements ReadOrderSwaps {
 
   Future<Result<OrderSwapRecord, SwapFailure>> refreshOrder(String localId) =>
       _refreshOrder.execute(localId);
+
+  /// Legacy Lightning-to-Liquid order admission while Exchange does not own it.
+  Future<Result<OrderSwapRecord, ReceiveFailure>> createReceiveOrder({
+    required AddressView addresses,
+    required ReceiveWallet wallet,
+    required int amountSat,
+    String? note,
+  }) => CreateReceiveOrderSwapUsecase(
+    this,
+    addresses,
+  ).execute(wallet: wallet, amountSat: amountSat, note: note);
 
   @override
   Future<Result<List<OrderSwapRecord>, SwapFailure>> getOrders({

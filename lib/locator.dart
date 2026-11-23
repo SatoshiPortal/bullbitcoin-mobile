@@ -77,7 +77,6 @@ import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -442,10 +441,12 @@ class AppLocator {
         },
         orderSwaps: () => locator<SwapFacade>(),
         createOrder: ({required wallet, required amountSat, note}) =>
-            CreateReceiveOrderSwapUsecase(
-              locator<SwapFacade>(),
-              locator<AddressView>(),
-            ).execute(wallet: wallet, amountSat: amountSat, note: note),
+            locator<SwapFacade>().createReceiveOrder(
+              addresses: locator<AddressView>(),
+              wallet: wallet,
+              amountSat: amountSat,
+              note: note,
+            ),
         setPayjoinEnabled: locator<SettingsFacade>().setPayjoinReceiveEnabled,
         openHome: (context) => context.goNamed(WalletRoute.walletHome.name),
         successAnimation: AssetImage(Assets.animations.successTick.path),
