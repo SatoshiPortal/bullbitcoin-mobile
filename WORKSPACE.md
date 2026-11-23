@@ -68,6 +68,8 @@ graph TD
   style legacy_storage stroke:#894488
   mempool["mempool"]
   style mempool stroke:#26e46e
+  mnemonic_entry["mnemonic_entry"]
+  style mnemonic_entry stroke:#1c5b14
   network["network"]
   style network stroke:#56b0f0
   notifications["notifications"]
@@ -76,6 +78,8 @@ graph TD
   style novlang stroke:#dd8ff2
   onion["onion"]
   style onion stroke:#cb1217
+  physical_backup_verification["physical_backup_verification"]
+  style physical_backup_verification stroke:#501ef0
   preferences["preferences"]
   style preferences stroke:#f493f6
   primitives["primitives"]
@@ -84,6 +88,8 @@ graph TD
   style rust_bindings stroke:#cc6a2f
   satoshifier["satoshifier"]
   style satoshifier stroke:#127673
+  scanning["scanning"]
+  style scanning stroke:#17e528
   screen_awake["screen_awake"]
   style screen_awake stroke:#d2f33f
   screen_privacy["screen_privacy"]
@@ -195,6 +201,9 @@ graph TD
   mempool --> primitives
   mempool --> legacy_storage
   mempool --> secrets
+  mnemonic_entry --> bull_logger
+  mnemonic_entry --> bull_ui
+  mnemonic_entry --> primitives
   network --> bull_logger
   network --> bull_payjoin
   network --> bull_pricer
@@ -208,6 +217,10 @@ graph TD
   network --> primitives
   notifications --> bull_logger
   notifications --> primitives
+  physical_backup_verification --> bull_ui
+  physical_backup_verification --> primitives
+  physical_backup_verification --> screen_privacy
+  physical_backup_verification --> secrets
   preferences --> bull_logger
   preferences --> bull_reporting
   preferences --> bull_tor
@@ -217,6 +230,9 @@ graph TD
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings
+  scanning --> bull_logger
+  scanning --> bull_ui
+  scanning --> signers
   screen_awake --> bull_logger
   secrets --> primitives
   secrets --> bull_logger
@@ -254,7 +270,10 @@ graph TD
     bull_recoverbull
     fees_feature
     label_editor
+    mnemonic_entry
     network
+    physical_backup_verification
+    scanning
     signers
   end
   subgraph packages1 ["packages"]
