@@ -50,6 +50,7 @@ workspace:
   - packages/primitives
   - packages/file_system
   - packages/google_drive
+  - packages/backup_storage
   - packages/background_tasks
   - packages/notifications
   - packages/sync
@@ -70,6 +71,7 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - features/backup_metadata
   - features/physical_backup_verification
   - packages/rust_bindings
   - packages/onion
@@ -139,6 +141,7 @@ dependencies:
   screen_awake:
   bull_logger:
   bull_recoverbull:
+  backup_metadata:
   bull_logs:
   swaps:
   bull_quick_actions:

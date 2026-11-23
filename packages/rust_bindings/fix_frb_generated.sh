@@ -12,6 +12,9 @@ sedi 's/transform_result_dco::<_, _, boltz::api::error::BoltzError>/transform_re
 # aggregator cannot implement IntoDart for it directly, so wrap it too.
 sedi 's/transform_result_dco::<_, _, SpError>/transform_result_dco::<_, _, FrbWrapper<dart_bwk::api::types::SpError>>/g' "$FILE"
 
+# dart_bip138 errors also live in a dependency crate.
+sedi 's/transform_result_dco::<_, _, dart_bip138::api::Bip138Error>/transform_result_dco::<_, _, FrbWrapper<dart_bip138::api::Bip138Error>>/g' "$FILE"
+
 # Step 2: For those calls, the closure result needs .map_err(FrbWrapper)
 # The pattern is })()) at the end of the transform_result_dco block
 # We use awk to find lines after transform_result_dco::<_, _, FrbWrapper< and add .map_err(FrbWrapper) before the closing )
