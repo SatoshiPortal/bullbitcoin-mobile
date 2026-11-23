@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';

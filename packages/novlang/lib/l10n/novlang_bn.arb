@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক মুছবেন?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "এটি সুরক্ষিত স্টোরেজ থেকে ট্রান্সফার মাস্টার কী সরিয়ে দেয়। অ্যাপের পরবর্তী প্রয়োজনে এটি আপনার ওয়ালেট সিড থেকে একই ফিঙ্গারপ্রিন্টসহ পুনরায় তৈরি হবে। চলমান ট্রান্সফারগুলো প্রভাবিত হবে না।",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্রান্সফার মনেমনিক মুছবেন?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "এটি সুরক্ষিত স্টোরেজ থেকে ট্রান্সফার মাস্টার কী সরিয়ে দেয়। অ্যাপের পরবর্তী প্রয়োজনে এটি আপনার ওয়ালেট সিড থেকে একই ফিঙ্গারপ্রিন্টসহ পুনরায় তৈরি হবে। চলমান ট্রান্সফারগুলো প্রভাবিত হবে না।"
 }

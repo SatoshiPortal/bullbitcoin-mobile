@@ -1,0 +1,11 @@
+{
+  "@@locale": "ka",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
+  "bip85NoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ.",
+  "retry": "ხელახლა ცდა",
+  "bip85Title": "BIP85 დეტერმინისტული ენტროპიები",
+  "bip85ExperimentalWarning": "ექსპერიმენტული \nსარეზერვო ასლი გააკეთეთ თქვენი დერივაციის გზების ხელით",
+  "bip85NextMnemonic": "შემდეგი მნემონიკი",
+  "bip85NextHex": "შემდეგი HEX",
+  "copiedToClipboard": "დაკოპირდა ბუფერში"
+}

@@ -74,11 +74,15 @@ WalletRegistration? decodeWalletRegistration(Map<String, Object?> row) {
       return null;
     }
     final path = _descriptorKeyOrigin.firstMatch(external)?.group(1);
+    final masterFingerprint = Fingerprint.tryParse(master);
     return WalletRegistration(
       id: id,
       network: network,
       scriptType: script,
       signer: signer,
+      masterFingerprint: masterFingerprint?.hex == master
+          ? masterFingerprint
+          : null,
       secretFingerprint: fingerprint,
       derivationPath: path == null ? null : 'm$path',
       label: label,

@@ -1,5 +1,5 @@
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
+import 'package:secrets/custody.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

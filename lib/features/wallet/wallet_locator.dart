@@ -1,17 +1,13 @@
+import 'package:secrets/custody.dart';
 import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:primitives/primitives.dart';
 
-import 'data/ark_installation_state.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
-
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show SqliteArkFundingReservations;
-
-import 'data/sqlite_parent_custody_admission.dart';
 
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show BroadcastObservationFollowUp;

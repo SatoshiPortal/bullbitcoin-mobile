@@ -1,0 +1,51 @@
+{
+  "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer.",
+  "allSeedViewSecurityWarningMessage": "Afficher les phrases de récupération est un risque de sécurité. Toute personne qui voit votre phrase de récupération peut accéder à vos fonds. Assurez-vous d'être dans un endroit privé et que personne ne puisse voir votre écran.",
+  "cancel": "Annuler",
+  "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
+  "allSeedViewLoadingMessage": "Cela peut prendre un certain temps à charger si vous avez beaucoup de graines sur cet appareil.",
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "allSeedViewNoSeedsFound": "Aucune graine trouvée.",
+  "allSeedViewSecurityWarningTitle": "Avertissement de Sécurité",
+  "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
+  "allSeedViewPassphraseLabel": "Passphrase :",
+  "allSeedViewOldWallets": "Anciens Portefeuilles ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Je Comprends",
+  "allSeedViewDeleteWarningTitle": "ATTENTION !",
+  "allSeedViewDeleteWarningMessage": "Supprimer la graine est une action irréversible. Ne faites cela que si vous avez des sauvegardes sécurisées de cette graine ou si les portefeuilles associés ont été complètement vidés.",
+  "passphraseHide": "Masquer la passphrase",
+  "delete": "Supprimer",
+  "allSeedViewErrorDelete": "Échec de la suppression de la mnémonique. Veuillez réessayer.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Échec du chargement des mnémoniques. Veuillez réessayer.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Afficher les Graines",
+  "passphraseShow": "Afficher la passphrase",
+  "allSeedViewTitle": "Visualiseur de Graines",
+  "allSeedViewExistingWallets": "Portefeuilles Existants ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "@@locale": "fr"
+}

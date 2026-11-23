@@ -4,7 +4,13 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:secrets/bip85.dart';
+import 'package:secrets/custody.dart';
+import 'package:bip85/bip85.dart';
+import 'package:all_seed_view/setup.dart';
+import 'package:access/access.dart' show Access;
+import 'package:swaps/swaps.dart' show BoltzSwaps;
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
@@ -28,12 +34,10 @@ import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
-import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:access/setup.dart' show AccessFeature;
 import 'package:go_router/go_router.dart';
@@ -41,7 +45,6 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
-import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -286,10 +289,14 @@ class AppLocator {
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     OnboardingLocator.setup(locator);
-    AllSeedViewLocator.setup(locator);
-    Bip85EntropyLocator.setup(
-      locator,
-      readParent: WalletBip85Bindings.reader(locator),
+    final bip85 = inventory.bip85(locator<Secrets>());
+    locator.registerSingleton<Bip85Derivations>(bip85);
+    locator.registerSingleton(
+      Bip85Feature.mount(
+        derivations: bip85,
+        inventory: inventory,
+        preferences: locator<ActiveEnvironmentReader>(),
+      ),
     );
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(
@@ -340,6 +347,16 @@ class AppLocator {
       SwapFeature.mount(
         routing: locator<SwapRouting>(),
         servers: locator<SwapServerSettings>(),
+      ),
+    );
+    locator.registerLazySingleton(
+      () => AllSeedViewFeature.mount(
+        secrets: locator<Secrets>(),
+        inventory: inventory,
+        preferences: locator<ActiveEnvironmentReader>(),
+        references: locator<SeedReferences>(),
+        swaps: locator<BoltzSwaps>(),
+        access: const Access(),
       ),
     );
     AutoSwapLocator.setup(locator);

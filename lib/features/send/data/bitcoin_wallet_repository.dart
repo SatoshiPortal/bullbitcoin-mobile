@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show ArkFundingSigningGuard;
+import 'package:bull_ark/ark_wallet_setup.dart' show ArkFundingSigningGuard;
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';

@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Διαγραφή μνημονικής φράσης μεταφοράς;",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Αυτό αφαιρεί το κύριο κλειδί μεταφορών από την ασφαλή αποθήκευση. Θα παραχθεί ξανά από το seed του πορτοφολιού σας την επόμενη φορά που θα το χρειαστεί η εφαρμογή, με το ίδιο αποτύπωμα. Οι μεταφορές σε εξέλιξη δεν επηρεάζονται.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Μνημονική φράση μεταφοράς",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Διαγραφή μνημονικής φράσης μεταφοράς;",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Αυτό αφαιρεί το κύριο κλειδί μεταφορών από την ασφαλή αποθήκευση. Θα παραχθεί ξανά από το seed του πορτοφολιού σας την επόμενη φορά που θα το χρειαστεί η εφαρμογή, με το ίδιο αποτύπωμα. Οι μεταφορές σε εξέλιξη δεν επηρεάζονται."
 }

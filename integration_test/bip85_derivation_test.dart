@@ -1,14 +1,10 @@
-import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:secrets/bip85.dart';
 
 import 'initialization_result.dart';
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -26,7 +22,7 @@ Future<void> main({bool isInitialized = false}) async {
   }
 
   final secrets = locator<Secrets>();
-  final bip85Repository = locator<Bip85Repository>();
+  final registry = locator<Bip85Derivations>();
   final createDefaultWalletsUsecase = locator<CreateDefaultWalletsUsecase>();
 
   final mnemonic = Mnemonic.fromWords(
@@ -46,22 +42,13 @@ Future<void> main({bool isInitialized = false}) async {
     ],
   );
 
-  final usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
-    bip85Repository: bip85Repository,
-    secrets: secrets,
-  );
-
-  final withDefault = WithDefaultBip85WalletUsecase(
-    WalletBip85Bindings.reader(locator),
-  );
-
   late Fingerprint parent;
 
-  Future<List<Bip85DerivationEntity>> derivations() async {
-    final result = await bip85Repository.fetchAll();
+  Future<List<Bip85Derivation>> derivations() async {
+    final result = await registry.list();
     expect(result, isA<Ok>());
-    return (result as Ok<List<Bip85DerivationEntity>, Failure>).value
-        .where((record) => record.xprvFingerprint == parent.hex)
+    return (result as Ok<List<Bip85Derivation>, Failure>).value
+        .where((record) => record.parentFingerprint == parent.hex)
         .toList();
   }
 
@@ -99,114 +86,44 @@ Future<void> main({bool isInitialized = false}) async {
     );
   });
 
-  group(
-    'DeriveNextBip85MnemonicFromDefaultWalletUsecase Integration Tests',
-    () {
-      test('reserves and derives the next available index', () async {
-        const length = bip39.MnemonicLength.words12;
-        final index = await nextIndex();
-
-        // Execute the usecase
-        final result = await withDefault.execute(
-          (fingerprint) => usecase.execute(
-            fingerprint: fingerprint,
-            length: length,
-            alias: 'test',
-          ),
-        );
-        expect(result, isA<Ok>());
-        final (:derivation, mnemonic: resultMnemonic) = (result as Ok).value;
-
-        // Verify the derivation path
-        expect(derivation, "39'/0'/12'/$index'");
-        expect(resultMnemonic, isA<bip39.Mnemonic>());
-        expect(resultMnemonic.length, equals(length));
-
-        // Verify the derivation was stored in the database
-        final firstDerivation = (await derivations()).singleWhere(
-          (record) => record.path == derivation,
-        );
-        expect(firstDerivation.index, index);
-        expect(firstDerivation.alias, 'test');
-        expect(firstDerivation.application, Bip85Application.bip39);
-
-        // Get the xprv from the default-wallet seed (the outer `mnemonic`),
-        // i.e. the same seed the usecase derives from — NOT the derived result.
-        final xprv = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
-            .toBase58();
-
-        // Now generate the same derivation using BIP85 library directly
-        final directBip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
-          xprvBase58: xprv,
-          language: bip39.Language.english,
-          length: length,
-          index: index,
-        );
-
-        // Verify both results are identical
-        expect(resultMnemonic.sentence, directBip85Mnemonic.sentence);
-      });
-
-      test('advances the index across different mnemonic lengths', () async {
-        final start = await nextIndex();
-        // Execute the usecase first time
-        final aResult = await withDefault.execute(
-          (fingerprint) => usecase.execute(
-            fingerprint: fingerprint,
-            length: bip39.MnemonicLength.words12,
-            alias: 'First derivation',
-          ),
-        );
-        expect(aResult, isA<Ok>());
-        final (derivation: aPath, mnemonic: aMnemonic) = (aResult as Ok).value;
-
-        // Execute the usecase second time
-        final bResult = await withDefault.execute(
-          (fingerprint) => usecase.execute(
-            fingerprint: fingerprint,
-            length: bip39.MnemonicLength.words24,
-            alias: 'Second derivation',
-          ),
-        );
-        expect(bResult, isA<Ok>());
-        final (derivation: bPath, mnemonic: bMnemonic) = (bResult as Ok).value;
-
-        // Get the xprv from the seed
-        final xprv = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
-            .toBase58();
-
-        final storedDerivations = await derivations();
-        final first = storedDerivations.singleWhere((d) => d.path == aPath);
-        expect(first.path, "39'/0'/12'/$start'");
-        expect(first.index, start);
-        expect(first.alias, 'First derivation');
-        expect(first.application, equals(Bip85Application.bip39));
-        expect(
-          aMnemonic.sentence,
-          bip85.Bip85Entropy.deriveMnemonic(
-            xprvBase58: xprv,
-            language: bip39.Language.english,
-            length: bip39.MnemonicLength.words12,
-            index: start,
-          ).sentence,
-        );
-
-        final second = storedDerivations.singleWhere((d) => d.path == bPath);
-        final following = start + 1;
-        expect(second.path, "39'/0'/24'/$following'");
-        expect(second.index, following);
-        expect(second.alias, 'Second derivation');
-        expect(second.application, equals(Bip85Application.bip39));
-        expect(
-          bMnemonic.sentence,
-          bip85.Bip85Entropy.deriveMnemonic(
-            xprvBase58: xprv,
-            language: bip39.Language.english,
-            length: bip39.MnemonicLength.words24,
-            index: following,
-          ).sentence,
-        );
-      });
-    },
-  );
+  test('allocates and renders the same deterministic child across mnemonic lengths', () async {
+    final start = await nextIndex();
+    final root = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
+        .toBase58();
+    final lengths = [
+      bip39.MnemonicLength.words12,
+      bip39.MnemonicLength.words24,
+    ];
+    for (final (offset, length) in lengths.indexed) {
+      final index = start + offset;
+      final reserved = await registry.deriveNextMnemonic(
+        parent: parent,
+        length: length,
+        alias: 'Derivation ${offset + 1}',
+      );
+      expect(reserved, isA<Ok>());
+      final record = (reserved as Ok<Bip85Derivation, SecretFailure>).value;
+      expect(record.index, index);
+      expect(record.path, "39'/0'/${length.words}'/$index'");
+      expect(record.application, Bip85Application.bip39);
+      final expected = bip85.Bip85Entropy.deriveMnemonic(
+        xprvBase58: root,
+        language: bip39.Language.english,
+        length: length,
+        index: index,
+      );
+      final revealed = await registry.reveal(parent);
+      expect(revealed, isA<Ok>());
+      final child =
+          (revealed
+                  as Ok<
+                    List<({Bip85Derivation derivation, String entropy})>,
+                    SecretFailure
+                  >)
+              .value
+              .singleWhere((child) => child.derivation.path == record.path);
+      expect(child.derivation.alias, record.alias);
+      expect(child.entropy == expected.sentence, isTrue);
+    }
+  });
 }

@@ -1,0 +1,29 @@
+{
+  "@@locale": "el",
+  "bip85NextMnemonic": "Next Mnemonic",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85ExperimentalWarning": "Experimental\nΚλείστε τα μονοπάτια στέρησης σας χειροκίνητα",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bip85Title": "BIP85 προσδιοριστικές εντροπίες",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85NextHex": "Επόμενη HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "bip85NoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο"
+}

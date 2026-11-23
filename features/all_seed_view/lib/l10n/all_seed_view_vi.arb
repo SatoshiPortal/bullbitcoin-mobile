@@ -1,0 +1,26 @@
+{
+  "allSeedViewSecurityWarningMessage": "Hiển thị cụm từ hạt giống là một rủi ro bảo mật. Bất kỳ ai thấy được cụm từ hạt giống của bạn đều có thể truy cập vào tiền của bạn. Hãy đảm bảo bạn đang ở nơi riêng tư và không ai có thể nhìn thấy màn hình của bạn.",
+  "cancel": "Hủy",
+  "allSeedViewLoadingMessage": "Việc này có thể mất một lúc để tải nếu thiết bị của bạn có nhiều seed.",
+  "retry": "Thử lại",
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
+  "allSeedViewNoSeedsFound": "Không tìm thấy seed nào.",
+  "allSeedViewSecurityWarningTitle": "Cảnh báo bảo mật",
+  "allSeedViewPassphraseLabel": "Cụm mật khẩu:",
+  "allSeedViewOldWallets": "Ví cũ ({count})",
+  "allSeedViewIUnderstandButton": "Tôi đã hiểu",
+  "allSeedViewDeleteWarningTitle": "CẢNH BÁO!",
+  "allSeedViewDeleteWarningMessage": "Xóa seed là một hành động không thể hoàn tác. Chỉ thực hiện việc này nếu bạn có bản sao lưu an toàn của seed này hoặc các ví liên quan đã được rút hết tiền.",
+  "delete": "Xóa",
+  "allSeedViewErrorDelete": "Không thể xóa seed. Vui lòng thử lại.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Không thể tải seed. Vui lòng thử lại.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Hiện Seed",
+  "allSeedViewTitle": "Trình xem Seed",
+  "allSeedViewExistingWallets": "Ví hiện có ({count})"
+}

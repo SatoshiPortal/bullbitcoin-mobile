@@ -5,7 +5,6 @@ enum SettingsRoute {
   backupSettings('backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
   walletAddresses('wallet-details/:walletId/addresses'),
-  allSeedView('seed-viewer'),
   experimental('experimental-settings'),
   quickActions('quick-actions'),
   walletSettings('bitcoin-settings'),

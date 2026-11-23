@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Excluir mnemônico de transferência?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Isso remove a chave mestra de transferência do armazenamento seguro. Ela será derivada novamente da seed da sua carteira na próxima vez que o app precisar dela, com a mesma impressão digital. As transferências em andamento não são afetadas.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemônico de transferência",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Excluir mnemônico de transferência?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Isso remove a chave mestra de transferência do armazenamento seguro. Ela será derivada novamente da seed da sua carteira na próxima vez que o app precisar dela, com a mesma impressão digital. As transferências em andamento não são afetadas."
 }

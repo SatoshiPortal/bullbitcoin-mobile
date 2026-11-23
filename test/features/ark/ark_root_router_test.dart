@@ -1,3 +1,8 @@
+import 'package:access/access.dart' show Access;
+import 'package:all_seed_view/setup.dart';
+import 'package:bip85/bip85.dart';
+import 'package:secrets/custody.dart';
+import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:fees/fees.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
@@ -55,6 +60,12 @@ class _MockFees extends Mock implements Fees {}
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
+class _UnusedSwaps extends Mock implements BoltzSwaps {}
+
+class _UnusedReferences extends Mock implements SeedReferencePort {}
+
+class _UnusedCustodyAdmission extends Mock
+    implements ParentCustodyAdmissionPort {}
 
 void main() {
   testWidgets(
@@ -127,12 +138,36 @@ void main() {
           display: preferences,
         ),
       );
+      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final inventory = inventoryFixture.inventory;
+      locator.registerSingleton(
+        Bip85Feature.mount(
+          derivations: inventory.bip85(secrets),
+          inventory: inventory,
+          preferences: preferences,
+        ),
+      );
+      locator.registerSingleton(
+        AllSeedViewFeature.mount(
+          secrets: secrets,
+          inventory: inventory,
+          preferences: preferences,
+          references: SeedReferences(
+            _UnusedReferences(),
+            admission: _UnusedCustodyAdmission(),
+          ),
+          swaps: _UnusedSwaps(),
+          access: const Access(),
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
         await quickActions.close();
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
+        await locator.unregister<Bip85Feature>();
+        await locator.unregister<AllSeedViewFeature>();
         await accessServices.reset();
         await inventoryFixture.close();
         await locator.unregister<SignersFeature>();

@@ -4,9 +4,6 @@ export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 export '../ui/widgets/wallet_detail_balance_card.dart'
     show WalletDetailBalanceCard;
 
-export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
-    show SeedReferences;
-
 export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
 

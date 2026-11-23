@@ -1,3 +1,4 @@
+import 'package:all_seed_view/all_seed_view.dart';
 import 'package:access/access.dart';
 import 'package:background_tasks/background_tasks.dart'
     show backgroundSyncAvailable;
@@ -8,7 +9,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/settings_links.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bip85/bip85.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
@@ -593,7 +594,8 @@ List<SettingsItem> buildSettingsItems({
         title: localization.allSeedViewTitle,
         path: path(SettingsItemSection.wallet, localization.allSeedViewTitle),
         icon: Icons.vpn_key,
-        open: (context) => context.pushNamed(SettingsRoute.allSeedView.name),
+        open: (context) =>
+            context.pushNamed<void>(AllSeedViewRoute.allSeedView.name),
         keywords: _keywords(
           localization.settingsSearchSeedViewerKeywords,
           english.settingsSearchSeedViewerKeywords,
@@ -611,7 +613,7 @@ List<SettingsItem> buildSettingsItems({
           localization.bitcoinSettingsBip85EntropiesTitle,
         ),
         icon: Icons.science,
-        open: (context) => context.pushNamed(Bip85EntropyRoute.bip85Home.name),
+        open: const Bip85Route().push,
         keywords: _keywords(
           localization.settingsSearchBip85Keywords,
           english.settingsSearchBip85Keywords,

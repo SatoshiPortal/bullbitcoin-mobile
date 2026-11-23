@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';

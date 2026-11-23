@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "عبارت یادآور انتقال حذف شود؟",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "این کار کلید اصلی انتقال را از حافظه امن حذف می‌کند. دفعه بعد که برنامه به آن نیاز داشته باشد، با همان اثر انگشت دوباره از seed کیف پول شما استخراج می‌شود. انتقال‌های در حال انجام تحت تأثیر قرار نمی‌گیرند.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "عبارت یادآور انتقال",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "عبارت یادآور انتقال حذف شود؟",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "این کار کلید اصلی انتقال را از حافظه امن حذف می‌کند. دفعه بعد که برنامه به آن نیاز داشته باشد، با همان اثر انگشت دوباره از seed کیف پول شما استخراج می‌شود. انتقال‌های در حال انجام تحت تأثیر قرار نمی‌گیرند."
 }

@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2614 screen capture protection', () {
     test('BIP85 home page uses PrivacyScreen', () {
-      final source = File('lib/features/bip85_entropy/bip85_home_page.dart')
+      final source = File('features/bip85/lib/src/ui/bip85_home_page.dart')
           .readAsStringSync();
 
       expect(source, contains('PrivacyScreen'));

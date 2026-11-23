@@ -1,0 +1,149 @@
+{
+  "allSeedViewDeleteSwapMnemonicMessage": "This removes the swap master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing swaps are unaffected.",
+  "@allSeedViewDeleteSwapMnemonicMessage": {
+    "description": "Explanation shown before deleting the swap mnemonic"
+  },
+  "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
+  "@parentCustodyMetadataUnavailable": {
+    "description": "Refusal to import or delete a seed when durable parent custody state is missing or corrupt; never recreate it automatically."
+  },
+  "allSeedViewSecurityWarningMessage": "Displaying seed phrases is a security risk. Anyone who sees your seed phrase can access your funds. Make sure you are in a private location and that no one can see your screen.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "screenPrivacyUnavailable": "Screen protection could not be turned on, so this secret stays hidden.",
+  "@screenPrivacyUnavailable": {
+    "description": "Shown instead of a secret (recovery phrase, seed, BIP85 child) when the OS screen-capture blocking could not be enabled"
+  },
+  "allSeedViewLoadingMessage": "This may take a while to load if you have a lot of seeds on this device.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "allSeedViewNoSeedsFound": "No seeds found.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewSecurityWarningTitle": "Security Warning",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
+  "@passphraseWordsIncompleteWarning": {
+    "description": "Protected wallet recovery requires the separately kept passphrase."
+  },
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "allSeedViewOldWallets": "Old Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "I Understand",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "WARNING!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "Deleting the seed is an irreversible action. Only do this if you have secure backups of this seed or the associated wallets have been fully drained.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "passphraseHide": "Hide passphrase",
+  "@passphraseHide": {
+    "description": "Accessible name of the button that hides the typed passphrase"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "allSeedViewErrorDelete": "Failed to delete seed. Please try again.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Failed to load seeds. Please try again.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewUnreadableEntries": "{count, plural, =1{1 stored entry could not be read and is not shown.} other{{count} stored entries could not be read and are not shown.}}",
+  "@allSeedViewUnreadableEntries": {
+    "description": "Shown in the seed viewer when the keystore holds entries under the secrets prefix that could not be parsed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "allSeedViewShowSeedsButton": "Show Seeds",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewSwapLinkedWallet": "Linked wallet: {fingerprint}",
+  "@allSeedViewSwapLinkedWallet": {
+    "description": "Fingerprint of the wallet linked to the swap master key",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "allSeedViewDeleteSwapMnemonicTitle": "Delete swap mnemonic?",
+  "@allSeedViewDeleteSwapMnemonicTitle": {
+    "description": "Confirmation dialog title for deleting the swap mnemonic"
+  },
+  "passphraseShow": "Show passphrase",
+  "@passphraseShow": {
+    "description": "Accessible name of the button that reveals the typed passphrase"
+  },
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewSwapMnemonicTitle": "Swap mnemonic",
+  "@allSeedViewSwapMnemonicTitle": {
+    "description": "Heading for the swap mnemonic section"
+  },
+  "allSeedViewSwapFingerprint": "Fingerprint: {fingerprint} ({network})",
+  "@allSeedViewSwapFingerprint": {
+    "description": "Fingerprint and network of the swap master key",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
+    }
+  },
+  "allSeedViewExistingWallets": "Existing Wallets ({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "@@locale": "en"
+}

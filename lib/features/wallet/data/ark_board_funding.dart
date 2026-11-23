@@ -18,7 +18,9 @@ import '../domain/network_x.dart';
 import '../domain/wallet.dart' as wallet;
 import 'foreground_wallet_sync.dart';
 import 'models/wallet_metadata_model.dart';
-import 'sqlite_ark_funding_reservations.dart';
+
+import 'package:bull_ark/ark_wallet_setup.dart';
+
 import 'wallet_registrations.dart';
 
 /// Main-wallet Board funding. No Bark key, raw PSBT or data binding leaves here.

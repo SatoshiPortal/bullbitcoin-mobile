@@ -1,0 +1,86 @@
+{
+  "allSeedViewSecurityWarningMessage": "표시 씨앗 구문은 보안 위험입니다. 씨앗 구문을 보는 사람은 자금을 액세스 할 수 있습니다. 개인 위치에 있는지 확인하고 화면을 볼 수 없습니다.",
+  "@allSeedViewSecurityWarningMessage": {
+    "description": "Security warning message about displaying seed phrases"
+  },
+  "cancel": "이름 *",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "allSeedViewLoadingMessage": "이 장치에서 많은 씨앗이 있으면로드하는 동안이 걸릴 수 있습니다.",
+  "@allSeedViewLoadingMessage": {
+    "description": "Loading message shown while fetching seeds"
+  },
+  "retry": "이름 *",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "allSeedViewNoSeedsFound": "씨앗이 없습니다.",
+  "@allSeedViewNoSeedsFound": {
+    "description": "Message shown when no seeds are found"
+  },
+  "allSeedViewSecurityWarningTitle": "보안 경고",
+  "@allSeedViewSecurityWarningTitle": {
+    "description": "Title for security warning dialog"
+  },
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "@allSeedViewPassphraseLabel": {
+    "description": "Label for passphrase display"
+  },
+  "allSeedViewOldWallets": "오래된 지갑 ({count})",
+  "@allSeedViewOldWallets": {
+    "description": "Section header for old wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "나는 이해",
+  "@allSeedViewIUnderstandButton": {
+    "description": "Button label to acknowledge security warning"
+  },
+  "allSeedViewDeleteWarningTitle": "여행 정보!",
+  "@allSeedViewDeleteWarningTitle": {
+    "description": "Title for delete seed warning dialog"
+  },
+  "allSeedViewDeleteWarningMessage": "씨앗을 삭제하는 것은 불가능한 행동입니다. 이 씨앗 또는 관련 지갑의 백업을 완전히 배수 한 경우에만 이것을하십시오.",
+  "@allSeedViewDeleteWarningMessage": {
+    "description": "Warning message about deleting a seed"
+  },
+  "delete": "기타 제품",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "allSeedViewErrorDelete": "시드를 삭제하지 못했습니다. 다시 시도해 주세요.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "시드를 불러오지 못했습니다. 다시 시도해 주세요.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "씨앗보기",
+  "@allSeedViewShowSeedsButton": {
+    "description": "Button label to show seed phrases"
+  },
+  "allSeedViewTitle": "씨 뷰어",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "allSeedViewExistingWallets": "기존 지갑({count})",
+  "@allSeedViewExistingWallets": {
+    "description": "Section header for existing wallets with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

@@ -8,7 +8,6 @@ import 'package:path/path.dart' as p;
 // Exact legacy feature imports at 982b98e90 (2026-11-06). Remove entries as their
 // consumers migrate; never extend this list to permit a new shell dependency.
 const _legacyImports = {
-  'lib/features/bip85_entropy/router.dart -> locator.dart',
   'lib/features/broadcast_signed_tx/router.dart -> locator.dart',
   'lib/features/import_mnemonic/router.dart -> locator.dart',
   'lib/features/replace_by_fee/router.dart -> locator.dart',

@@ -25,6 +25,8 @@ graph TB
     ARK --> NOTIFICATIONS
     ARK --> BULL_UI
     ARK --> BULL_PRICER
+    ARK -->|funding and wallet display data| SYNC
+    TX_HISTORY -->|Payjoin signing guard| ARK
     ARK_PROTOCOL --> PRIMITIVES
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER
@@ -105,6 +107,7 @@ graph TB
     EXCHANGE --> BULL_EXCHANGE
     BULL_EXCHANGE -->|withdrawal order details navigation| TX_HISTORY
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
+    SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     DCA -->|amount input| BULL_EXCHANGE
     EXCHANGE --> EXCHANGE_DOMAIN
@@ -198,7 +201,7 @@ graph TB
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price<br/>Workspace Feature]
-    BIP85[BIP85]
+    BIP85[BIP85<br/>Workspace Feature]
     FEES_PACKAGE[Fees Package]
     FEES_PACKAGE -->|receiver fee estimation port| BULL_PAYJOIN
     FEES_UI[Fees Feature]
@@ -239,7 +242,7 @@ graph TB
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     CONSOLIDATION[Consolidation]
-    ALL_SEED_VIEW[All Seed View]
+    ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
     AUTOSWAP[Autoswap]
     SP[Silent Payments]
 
@@ -323,7 +326,9 @@ graph TB
     ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> ACCESS
     ALL_SEED_VIEW --> SECRETS
-    ALL_SEED_VIEW -->|public custody references| WALLETS
+    ALL_SEED_VIEW --> PREFERENCES
+    ALL_SEED_VIEW --> BULL_UI
+    SETTINGS -->|recovery phrase viewer route| ALL_SEED_VIEW
     CORE -->|wallet home composition| ANNOUNCEMENTS
     ANNOUNCEMENTS --> BULL_UI
     ANNOUNCEMENTS --> PRIMITIVES
@@ -336,7 +341,9 @@ graph TB
     APP_STARTUP --> TOR
     AUTOSWAP --> TRANSFER
     BIP85 --> SECRETS
-    BACKUPS --> BIP85
+    BIP85 --> PREFERENCES
+    BIP85 --> BULL_UI
+    SETTINGS -->|derivation history route| BIP85
     APP_STARTUP --> RECOVERBULL
     WALLETS -->|signer device properties| SIGNERS
     WALLETS --> RECOVERBULL
@@ -454,7 +461,6 @@ graph TB
     TX_HISTORY -->|public revisions, raw sync finishes and pass activity| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
-    WALLETS --> BIP85
     WALLETS --> CONSOLIDATION
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
@@ -614,7 +620,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **Backups**: Depends on BIP85, Tor, Wallets
+- **Backups**: Depends on Tor and Wallets
 
 ### Exchange-Related Features
 
@@ -681,7 +687,7 @@ The architecture test records source dependencies, including internal imports an
 
 The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
 
-Develop also removes the price chart’s shell locator import; its obsolete entry is removed from `shell_imports_test.dart`. The BIP85 integration now removes `bip85_entropy → wallet`: Wallet selects the active-environment default Bitcoin fingerprint and passes it into BIP85 operations. The reviewed `wallet → bip85_entropy` edge supplies that binding and the read-only historical registry used by Ark collision checks. BIP85 owns the relocated domain, data and locator until Secrets absorbs the derivation registry (D58); no reverse feature edge is retained.
+Develop also removes the price chart’s shell locator import and its obsolete exception from `shell_imports_test.dart`. Secrets owns BIP85 allocations, historical records and re-derivation. The BIP85 workspace feature uses the active Preferences environment and the Bitcoin default from the authorized inventory. Ark reads historical derivation metadata, including revoked rows, directly through the same Secrets registry.
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
@@ -749,3 +755,8 @@ Electrum also implements its import participant through `legacy_storage` and ope
 Labels implements its participant through `legacy_storage`, opens its encrypted store through `secrets`, and supplies Sync with its owner-built freeze and reserved-address ports. Label, Payjoin and BIP-329 consumers share that authority.
 
 Preferences owns an encrypted schema-1 settings and RecoverBull permission store, with row/sequence/import-receipt atomicity. It preserves consent only for the default RecoverBull URL and never stores the source URL. Only the testnet credential projection borrows the tracked legacy connection; Announcements owns its encrypted dismissal store. Foreground prepares under exclusive cutover admission; foreground and consuming background tasks open existing Preferences under shared admission and receipt checks. The legacy and standalone RecoverBull files are retained.
+
+
+## Recovery phrase display
+
+Settings mounts All Seed View as a workspace route. Access supplies reauthentication, Secrets supplies the active catalog and guarded seed deletion, and Swaps supplies the sealed swap phrase widget. Wallet recovery phrases and passphrases stay in Secrets’ MnemonicView. Screen protection must succeed before the viewer builds, and neither phrase renderer contributes words to accessibility semantics.

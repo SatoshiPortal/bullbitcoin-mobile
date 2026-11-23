@@ -1,3 +1,7 @@
+import 'package:all_seed_view/testing.dart';
+import 'package:all_seed_view/setup.dart';
+import 'package:swaps/swaps.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -9,9 +13,6 @@ import 'package:access/access.dart';
 import 'package:access/setup.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
-import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -34,6 +35,8 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _AllCubit extends Mock implements AllSeedViewCubit {}
+
+class _SwapEngine extends Mock implements BoltzSwaps {}
 
 class _MockCompleteBackupVerificationUsecase extends Mock
     implements CompleteBackupVerificationUsecase {}
@@ -228,7 +231,10 @@ void main() {
   Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: appLocalizationsDelegates,
+      localizationsDelegates: [
+        AllSeedViewLocalizations.delegate,
+        ...appLocalizationsDelegates,
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<TestWalletBackupBloc>.value(
         value: bloc,
@@ -365,7 +371,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: [
+          AllSeedViewLocalizations.delegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TestWalletBackupBloc>.value(
           value: bloc,
@@ -458,11 +467,17 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: appLocalizationsDelegates,
+          localizationsDelegates: [
+            AllSeedViewLocalizations.delegate,
+            ...appLocalizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<AllSeedViewCubit>.value(
             value: cubit,
-            child: const AllSeedViewScreen(access: Access()),
+            child: AllSeedViewScreen(
+              access: const Access(),
+              swaps: _SwapEngine(),
+            ),
           ),
         ),
       );

@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/backup_card.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:network/network.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';

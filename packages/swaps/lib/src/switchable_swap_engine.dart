@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
@@ -263,11 +265,13 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
       _boltz.masterKeyInfo();
 
   @override
-  Future<Result<String?, SwapsFailure>> masterKeyMnemonic({
-    required String walletFingerprint,
-  }) => _boltz.masterKeyMnemonic(walletFingerprint: walletFingerprint);
+  Widget masterKeyView({
+    required SwapMasterKeyInfo key,
+    required TextStyle style,
+    required Widget failure,
+  }) => _boltz.masterKeyView(key: key, style: style, failure: failure);
 
   @override
-  Future<Result<void, SwapsFailure>> deleteMasterKey() =>
-      _boltz.deleteMasterKey();
+  Future<Result<void, SwapsFailure>> deleteMasterKey(SwapMasterKeyInfo key) =>
+      _boltz.deleteMasterKey(key);
 }

@@ -18,6 +18,8 @@ workspace:
   - features/network
   - features/signers
   - features/access
+  - features/all_seed_view
+  - features/bip85
   - features/ark
   - features/fees
   - features/swap
@@ -59,6 +61,8 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  all_seed_view:
+  bip85:
   access:
   announcements:
   bitcoin_price:

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.dart';
+import 'package:bip85/bip85.dart';
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
@@ -214,6 +216,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           novlangPolicy,
                           const QuickActionsFallbackDelegate(),
                         ),
+                        Bip85Localizations.delegate,
+                        NovlangAllSeedViewLocalizationsDelegate(novlangPolicy),
                         bullUiLocalizationsDelegate,
                         ...RecoverBullFeature.localizationsDelegates,
                       ],

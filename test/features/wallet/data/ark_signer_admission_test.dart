@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';

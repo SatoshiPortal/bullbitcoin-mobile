@@ -1,3 +1,4 @@
+import 'package:all_seed_view/setup.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeHomeAction;
@@ -17,7 +18,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart'
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bip85/bip85.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
@@ -224,6 +225,7 @@ class AppRouter {
       ConsolidationRouter.route,
       SettingsRouter.route(
         accessRoutes: locator<AccessFeature>().routes.settings,
+        seedViewRoute: locator<AllSeedViewFeature>().route,
         exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,
@@ -272,7 +274,7 @@ class AppRouter {
       LimitOrdersRouter.create,
       ?_exchangeFeature.limitOrderDetails,
       ReplaceByFeeRouter.route,
-      Bip85EntropyRouter.route,
+      locator<Bip85Feature>().route,
       ...locator<NetworkFeature>().routes.root,
       ...locator<FeesFeature>().routes,
       SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
