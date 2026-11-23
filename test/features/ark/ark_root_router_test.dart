@@ -23,6 +23,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+import 'package:silent/setup.dart';
 
 class PricePreferences extends Mock
     implements
@@ -31,6 +32,8 @@ class PricePreferences extends Mock
         RuntimeDisplayPreferencesReader {}
 
 class Exchange extends Mock implements ExchangeFacade {}
+
+class SilentPreferences extends Mock implements Preferences {}
 
 class Wallets extends Mock implements RecoverBullWalletPort {}
 
@@ -97,6 +100,19 @@ void main() {
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
+      locator.registerSingleton(
+        SilentFeature.mount(
+          preferences: SilentPreferences(),
+          secrets: Secrets(scratchDirectory: () async => directory.path),
+          readDefaultFingerprint: (_) async => const Ok(null),
+          readRouteAccess: (_) =>
+              (environment: null, isSuperuser: false, isDevModeEnabled: false),
+          walletHomePath: '/wallet-home',
+          openSend: (_) {},
+          balanceBuilder: (_, _) => const SizedBox(),
+          settingsIconBuilder: (_) => const SizedBox(),
+        ),
+      );
       final preferences = PricePreferences();
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
@@ -120,6 +136,7 @@ void main() {
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<SilentFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });
@@ -136,6 +153,12 @@ void main() {
         false,
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
+      expect(router.namedLocation('spSetup'), '/sp-setup');
+      expect(router.namedLocation('spWalletDetail'), '/sp-wallet-detail');
+      expect(
+        router.namedLocation('spTransactionDetails'),
+        '/sp-transaction-details',
+      );
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

@@ -832,7 +832,7 @@ SyncWalletsUsecase _stubbedSync() {
 /// settles immediately and the watcher stays silent.
 CheckSpFeatureGateForWalletUsecase _stubbedSpGate() {
   final gate = _MockCheckSpFeatureGateForWalletUsecase();
-  when(gate.execute).thenAnswer((_) async => false);
+  when(gate.execute).thenAnswer((_) async => const Ok(false));
   return gate;
 }
 

@@ -7,7 +7,6 @@ import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
@@ -86,8 +85,8 @@ Widget _buildCardsRouter({
         ),
       ),
       GoRoute(
-        name: SpRoute.spWalletDetail.name,
-        path: SpRoute.spWalletDetail.path,
+        name: 'spWalletDetail',
+        path: '/sp-wallet-detail',
         builder: (context, state) => const Scaffold(body: Text('SP Detail')),
       ),
     ],

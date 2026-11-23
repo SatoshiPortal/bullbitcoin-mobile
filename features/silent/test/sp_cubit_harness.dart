@@ -1,0 +1,140 @@
+import 'package:silent/src/watchers/sp_header_retry_watcher.dart';
+import 'package:silent/src/domain/silent_failure.dart';
+import 'package:silent/src/watchers/sp_notifications_watcher.dart';
+import 'package:silent/src/domain/usecases/clear_sp_scan_state_usecase.dart';
+import 'package:silent/src/domain/usecases/ensure_sp_session_usecase.dart';
+import 'package:silent/src/domain/usecases/generate_taproot_address_usecase.dart';
+import 'package:silent/src/domain/usecases/load_sp_wallet_data_usecase.dart';
+import 'package:silent/src/domain/usecases/restamp_sp_payment_times_usecase.dart';
+import 'package:silent/src/domain/usecases/resync_sp_listener_usecase.dart';
+import 'package:silent/src/domain/usecases/revoke_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/scan_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/stop_sp_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/watch_sp_notifications_usecase.dart';
+import 'package:silent/src/domain/entities/sp_coin.dart';
+import 'package:primitives/primitives.dart';
+import 'package:silent/src/domain/entities/sp_payment.dart';
+import 'package:silent/src/domain/entities/sp_balance.dart';
+import 'package:silent/src/domain/entities/sp_wallet.dart';
+import 'package:silent/src/presentation/sp_cubit.dart';
+import 'package:silent/src/domain/usecases/get_sp_auto_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/set_sp_auto_scan_usecase.dart';
+import 'package:mocktail/mocktail.dart';
+
+import 'sp_fakes.dart';
+
+import 'package:silent/src/domain/entities/sp_wallet_data.dart';
+
+/// Parameterized [SpWalletData] builder shared by the SP cubit + UI tests. A
+/// test tweaks only the toggle it cares about; everything else keeps a sane
+/// loaded-wallet default. [confirmedSat] defaults [totalUnifiedSat] so a single
+/// number sets both.
+SpWalletData spWalletData({
+  String spAddress = 'sp1qtest',
+  SilentBalance? balance,
+  Sats? confirmedSat,
+  Sats? totalUnifiedSat,
+  bool isScanning = false,
+  int? lastScannedHeight,
+  List<SpPayment> history = const <SpPayment>[],
+  List<SpCoin> coins = const <SpCoin>[],
+  BitcoinNetwork? network = BitcoinNetwork.mainnet,
+  int? chainTip,
+  int minBirthdayHeight = 0,
+}) => SpWalletData(
+  wallet: SilentWallet(
+    spAddress: spAddress,
+    balance:
+        balance ??
+        SilentBalance(
+          confirmedSat: confirmedSat ?? Sats.zero,
+          totalUnifiedSat: totalUnifiedSat ?? confirmedSat ?? Sats.zero,
+        ),
+    isScanning: isScanning,
+    lastScannedHeight: lastScannedHeight,
+  ),
+  history: history,
+  coins: coins,
+  network: network,
+  chainTip: chainTip,
+  minBirthdayHeight: minBirthdayHeight,
+);
+
+// Shared mocks + cubit wiring for the SP presentation cubit tests. Each test
+// keeps its own stubbing (return values, throws); this only factors out the
+// copy-pasted mock declarations and cubit construction.
+
+class MockLoadSpWalletDataUsecase extends Mock
+    implements LoadSpWalletDataUsecase {}
+
+class MockWatchSpNotificationsUsecase extends Mock
+    implements WatchSpNotificationsUsecase {}
+
+class MockScanSpWalletUsecase extends Mock implements ScanSpWalletUsecase {}
+
+class MockRestampSpPaymentTimesUsecase extends Mock
+    implements RestampSpPaymentTimesUsecase {}
+
+class MockResyncSpListenerUsecase extends Mock
+    implements ResyncSpListenerUsecase {}
+
+class MockStopSpScanUsecase extends Mock implements StopSpScanUsecase {}
+
+class MockClearSpScanStateUsecase extends Mock
+    implements ClearSpScanStateUsecase {}
+
+class MockRevokeSpWalletUsecase extends Mock implements RevokeSpWalletUsecase {}
+
+class MockGenerateTaprootAddressUsecase extends Mock
+    implements GenerateTaprootAddressUsecase {}
+
+class MockEnsureSpSessionUsecase extends Mock
+    implements EnsureSpSessionUsecase {}
+
+/// Holds the six SpCubit collaborator mocks and builds the cubit. Stubbing
+/// stays in the test's `setUp`.
+class SpCubitHarness {
+  final loadUsecase = MockLoadSpWalletDataUsecase();
+  final restampUsecase = MockRestampSpPaymentTimesUsecase();
+  final watchUsecase = MockWatchSpNotificationsUsecase();
+  final ensureUsecase = MockEnsureSpSessionUsecase();
+  final scanUsecase = MockScanSpWalletUsecase();
+  final stopUsecase = MockStopSpScanUsecase();
+  final clearScanStateUsecase = MockClearSpScanStateUsecase();
+  final revokeUsecase = MockRevokeSpWalletUsecase();
+  final generateUsecase = MockGenerateTaprootAddressUsecase();
+  final resyncUsecase = MockResyncSpListenerUsecase();
+  final autoScanRepo = FakeSpAutoScanRepository();
+  late final autoScanUsecase = SetSpAutoScanUsecase(repository: autoScanRepo);
+  late final getAutoScanUsecase = GetSpAutoScanUsecase(
+    repository: autoScanRepo,
+  );
+
+  SpCubit build() {
+    // Default: a re-establish (only fired when the notification stream closes)
+    // finds no wallet, so the watcher does not re-subscribe. Tests override it.
+    when(() => ensureUsecase.execute()).thenAnswer((_) async => const Ok(null));
+    when(() => resyncUsecase.execute())
+        .thenAnswer((_) async => const Ok<void, SilentFailure>(null));
+    when(() => restampUsecase.execute())
+        .thenReturn(const Ok<void, SilentFailure>(null));
+    return SpCubit(
+      loadSpWalletDataUsecase: loadUsecase,
+      restampSpPaymentTimesUsecase: restampUsecase,
+      spNotificationsWatcher: SpNotificationsWatcher(
+        watchSpNotificationsUsecase: watchUsecase,
+        ensureSpSessionUsecase: ensureUsecase,
+      ),
+      scanSpWalletUsecase: scanUsecase,
+      stopSpScanUsecase: stopUsecase,
+      clearSpScanStateUsecase: clearScanStateUsecase,
+      revokeSpWalletUsecase: revokeUsecase,
+      generateTaprootAddressUsecase: generateUsecase,
+      headerRetryWatcher: SpHeaderRetryWatcher(
+        resyncSpListenerUsecase: resyncUsecase,
+      ),
+      setSpAutoScanUsecase: autoScanUsecase,
+      getSpAutoScanUsecase: getAutoScanUsecase,
+    );
+  }
+}

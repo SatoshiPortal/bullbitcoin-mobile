@@ -11,8 +11,8 @@ import 'package:path/path.dart' as p;
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// SP and swap still import the wallet repository, and swap uses wallet
-// navigation. Both feature edges predate foreground sync.
+// Swap still imports the wallet repository and uses wallet navigation.
+// Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
 // These four edges are documented in FEATURES.md.
@@ -55,14 +55,13 @@ const _allowedTargets = <String, String>{
   'replace_by_fee': 'fees send wallet',
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price coins exchange fees recipients send transactions wallet',
-  'send': 'address_view ark coins consolidation fees label_editor signers sp swap transactions wallet',
-  'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings fees import_wallet label_editor logs network pay quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
-  'sp': 'wallet',
+  'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
+  'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
   'support': 'exchange_support_chat',
   'swap': 'address_view ark autoswap coins consolidation fees send transactions wallet',
   'test_wallet_backup': 'access onboarding recoverbull wallet',
   'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
-  'wallet': 'ark backup_settings bip85_entropy bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
+  'wallet': 'ark backup_settings bip85_entropy bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

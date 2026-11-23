@@ -89,6 +89,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:silent/silent.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
@@ -251,7 +252,7 @@ GetSpNetworkForSendUsecase _spNetworkStub([
   Network network = Network.bitcoinMainnet,
 ]) {
   final stub = _MockGetSpNetworkForSendUsecase();
-  when(stub.execute).thenReturn(Ok(network));
+  when(stub.execute).thenAnswer((_) async => Ok(network));
   return stub;
 }
 
@@ -677,7 +678,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(Sats.zero);
     registerFallbackValue(
-      SpTxDraft(
+      SilentTxDraft(
         id: 'fallback',
         inputs: const [],
         outputs: const [],
@@ -685,7 +686,7 @@ void main() {
         changeSat: Sats.zero,
       ),
     );
-    registerFallbackValue(<SpRecipient>[]);
+    registerFallbackValue(<SilentRecipient>[]);
     registerFallbackValue(
       const PaymentRequest.bolt11(
         invoice: 'fallback',
@@ -7380,7 +7381,8 @@ void main() {
     );
 
     void stubAmount(Result<Sats, SendFailure> result) =>
-        when(() => validateSpAmount.execute(any())).thenReturn(result);
+        when(() => validateSpAmount.execute(any()))
+            .thenAnswer((_) async => result);
 
     // Mirrors what the SP flow has by the amount step: the synthetic SP wallet
     // from loadWalletWithRatesAndFees and the stand-in bitcoin payment request
@@ -7603,12 +7605,12 @@ void main() {
     late _MockPrepareSpPaymentForSendUsecase prepare;
     late _MockSendSpPaymentForSendUsecase send;
 
-    SpTxDraft draft({int fee = 200, int output = 800}) => SpTxDraft(
+    SilentTxDraft draft({int fee = 200, int output = 800}) => SilentTxDraft(
       id: 'draft-1',
       inputs: const [],
       outputs: [
-        SpRecipientStandard(
-          address: SpAddress('bc1-address'),
+        SilentRecipientStandard(
+          address: SilentAddress('bc1-address'),
           amountSat: Sats.fromInt(output),
           isMax: false,
         ),
@@ -7659,8 +7661,8 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok(
-          SpRecipientStandard(
-            address: SpAddress('bc1-address'),
+          SilentRecipientStandard(
+            address: SilentAddress('bc1-address'),
             amountSat: Sats.fromInt(1000),
             isMax: false,
           ),
@@ -7674,8 +7676,8 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok(
-          SpRecipientStandard(
-            address: SpAddress('bc1-address'),
+          SilentRecipientStandard(
+            address: SilentAddress('bc1-address'),
             amountSat: Sats.fromInt(1000),
             isMax: true,
           ),
@@ -7706,7 +7708,7 @@ void main() {
     test(
       'SP validation cannot restore an input cleared while awaiting',
       () async {
-        final pending = Completer<Result<SpRecipient, SendFailure>>();
+        final pending = Completer<Result<SilentRecipient, SendFailure>>();
         when(
           () => validateRecipient.execute(
             input: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
@@ -7726,8 +7728,8 @@ void main() {
         await cubit.onChangedText('');
         pending.complete(
           Ok(
-            SpRecipientStandard(
-              address: SpAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
+            SilentRecipientStandard(
+              address: SilentAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
               amountSat: Sats.fromInt(1000),
               isMax: false,
             ),
@@ -7786,7 +7788,7 @@ void main() {
             isMax: false,
           ),
         ).thenAnswer(
-          (_) async => const Err<SpRecipient, SendFailure>(
+          (_) async => const Err<SilentRecipient, SendFailure>(
             SendAddressNetworkMismatchFailure('wrong network'),
           ),
         );
@@ -7815,7 +7817,7 @@ void main() {
             isMax: false,
           ),
         ).thenAnswer(
-          (_) async => const Err<SpRecipient, SendFailure>(
+          (_) async => const Err<SilentRecipient, SendFailure>(
             SendInvalidPaymentRequestFailure(logMessage: 'unsupported'),
           ),
         );
@@ -7835,7 +7837,7 @@ void main() {
           fee: any(named: 'fee'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SendFailure>(
+        (_) async => const Err<SilentTxDraft, SendFailure>(
           SendInsufficientBalanceFailure('exceeds'),
         ),
       );
@@ -7854,7 +7856,7 @@ void main() {
           fee: any(named: 'fee'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SendFailure>(
+        (_) async => const Err<SilentTxDraft, SendFailure>(
           SendTransactionBuildFailure('blindbit down'),
         ),
       );

@@ -29,8 +29,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:preferences/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
-import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
+import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:drift/native.dart';
 import 'package:bull_tor/tor_adapter.dart';
@@ -116,8 +115,6 @@ void main() {
     });
     tearDown(() async {
       if (composed) {
-        await locator<SpTipWatcher>().dispose();
-        await locator<SpElectrumReconnectWatcher>().dispose();
         locator<SyncCoordinator>().dispose();
       }
       await locator.reset();
@@ -371,8 +368,6 @@ void main() {
       var composed = false;
       addTearDown(() async {
         if (composed) {
-          await locator<SpTipWatcher>().dispose();
-          await locator<SpElectrumReconnectWatcher>().dispose();
           locator<SyncCoordinator>().dispose();
         }
         await locator.reset();
@@ -496,7 +491,7 @@ void main() {
     );
     expect(locator.isRegistered<WalletRepository>(), isFalse);
     expect(locator.isRegistered<SyncCoordinator>(), isFalse);
-    expect(locator.isRegistered<SpTipWatcher>(), isFalse);
+    expect(locator.isRegistered<SilentFeature>(), isFalse);
     expect(await database.select(database.electrumServers).get(), isEmpty);
     expect(await database.select(database.electrumSettings).get(), isEmpty);
   });
