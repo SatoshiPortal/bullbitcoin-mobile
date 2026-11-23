@@ -5,7 +5,6 @@ import '../../domain/usecases/get_receive_swap_limits_usecase.dart';
 
 import 'package:primitives/primitives.dart'
     show
-        BitcoinNetwork,
         LiquidNetwork,
         Network,
         BitcoinUnit,

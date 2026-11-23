@@ -435,7 +435,7 @@ class AppLocator {
         rootNavigatorKey: AppRouter.rootNavigatorKey,
         inventory: inventory,
         loadWallet: (key) => locator<WalletNativeRuntime>().loadWallet(key),
-        signerDevices: locator<SignerDevices>(),
+        readSigner: locator<SignerDevices>().read,
         poll: wallet().pollWallet,
         refreshAfterLightningPayment: () async {
           final _ = await locator<GetWalletsUsecase>().execute(sync: true);

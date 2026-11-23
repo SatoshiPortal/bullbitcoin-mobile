@@ -34,7 +34,6 @@ import 'package:get_it/get_it.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:secrets/secrets.dart';
-import 'package:signers/storage.dart';
 import 'package:swaps/order_swaps.dart';
 
 import 'ui/receive_router.dart';
@@ -49,7 +48,7 @@ final class ReceiveFeature {
     required GlobalKey<NavigatorState> rootNavigatorKey,
     required WalletInventory inventory,
     required LoadReceiveWallet loadWallet,
-    required SignerDevices signerDevices,
+    required ReadReceiveSigner readSigner,
     required PollReceiveWallet poll,
     required Future<void> Function() refreshAfterLightningPayment,
     required ReadOrderSwaps Function() orderSwaps,
@@ -100,7 +99,7 @@ final class ReceiveFeature {
       locator<ActiveEnvironmentReader>(),
       inventory,
       loadWallet,
-      signerDevices.read,
+      readSigner,
     );
     locator.registerFactory<PrepareReceiveAddressUsecase>(
       () => PrepareReceiveAddressUsecase(locator<AddressView>()),
