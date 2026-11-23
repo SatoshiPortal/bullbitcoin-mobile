@@ -21,7 +21,7 @@ import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' as native_sync;
@@ -748,7 +748,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
         xpub: wallet.xpub,
         isDefault: wallet.isDefault,
         label: wallet.label,
-        signer: Signer.fromEntity(wallet.signer),
+        signer: Signer.fromName(wallet.signer.name),
       ),
       discover: discover,
       allowInitialScan: allowInitialScan,

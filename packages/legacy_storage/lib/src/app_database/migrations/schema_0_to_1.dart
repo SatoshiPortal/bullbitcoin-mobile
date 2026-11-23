@@ -1,8 +1,9 @@
-import 'package:bb_mobile/features/settings/data/settings_seeds.dart';
-import 'package:bb_mobile/core/storage/database_seeds.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
+
+import '../database_seeds.dart';
+import '../settings_seeds.dart';
+import '../sqlite_database.dart';
 
 class Schema0To1 {
   /// The tables [onCreate] fills with defaults.

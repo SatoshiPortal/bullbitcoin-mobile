@@ -32,7 +32,7 @@ import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/migration.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
 import 'package:bb_mobile/core/utils/constants.dart';

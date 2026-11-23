@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:drift/drift.dart';
+
+import 'migration_guards.dart';
+import '../sqlite_database.steps.dart';
 
 class Schema4To5 {
   static Future<void> migrate(Migrator m, Schema5 schema5) async {

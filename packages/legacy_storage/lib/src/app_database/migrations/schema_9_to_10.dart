@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:drift/drift.dart';
+
+import '../historical_defaults.dart';
+import 'migration_guards.dart';
+import '../sqlite_database.dart';
+import '../sqlite_database.steps.dart';
 
 class Schema9To10 {
   static Future<void> migrate(Migrator m, Schema10 schema10) async {
@@ -32,7 +33,7 @@ class Schema9To10 {
         .insert(
           RawValuesInsertable({
             'id': const Constant(1),
-            'url': const Constant(SettingsConstants.recoverbullUrl),
+            'url': const Constant(HistoricalDefaults.recoverbullUrl),
             'is_permission_granted': const Constant(false),
           }),
           mode: InsertMode.insertOrIgnore,

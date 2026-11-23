@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:drift/drift.dart';
+
+import '../sqlite_database.steps.dart';
 
 class Schema1To2 {
   static Future<void> migrate(Migrator m, Schema2 schema2) async {

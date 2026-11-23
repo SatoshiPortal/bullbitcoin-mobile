@@ -1,8 +1,8 @@
 import 'bip85_column_mapping.dart';
 
 import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.drift.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'package:legacy_storage/app_database.dart'
+    show Bip85ApplicationColumn, Bip85DerivationRow, Bip85StatusColumn;
 
 class Bip85DerivationModel {
   final String path;

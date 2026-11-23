@@ -1,22 +1,25 @@
-import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
-import 'package:electrum/storage.dart';
-import 'package:preferences/recoverbull_table.drift.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:mempool/storage.dart';
+
+import 'historical_defaults.dart';
+import 'sqlite_database.dart';
+import 'tables/auto_swap.drift.dart';
+import 'tables/electrum_servers_table.drift.dart';
+import 'tables/electrum_settings_table.dart';
+import 'tables/electrum_settings_table.drift.dart';
+import 'tables/mempool_servers_table.drift.dart';
+import 'tables/mempool_settings_table.drift.dart';
+import 'tables/recoverbull_table.drift.dart';
 
 class DatabaseSeeds {
   static Future<void> seedDefaultElectrumServers(SqliteDatabase db) async {
     final serversData = [
-      (ApiServiceConstants.fulcrumElectrumUrl, false, false, 0),
-      (ApiServiceConstants.bbElectrumUrl, false, false, 1),
-      (ApiServiceConstants.bbLiquidElectrumUrlPath, false, true, 0),
-      (ApiServiceConstants.publicElectrumUrl, false, false, 2),
-      (ApiServiceConstants.publicLiquidElectrumUrlPath, false, true, 1),
-      (ApiServiceConstants.publicElectrumTestUrl, true, false, 0),
-      (ApiServiceConstants.publicliquidElectrumTestUrlPath, true, true, 0),
+      (HistoricalDefaults.fulcrumElectrumUrl, false, false, 0),
+      (HistoricalDefaults.bbElectrumUrl, false, false, 1),
+      (HistoricalDefaults.bbLiquidElectrumUrlPath, false, true, 0),
+      (HistoricalDefaults.publicElectrumUrl, false, false, 2),
+      (HistoricalDefaults.publicLiquidElectrumUrlPath, false, true, 1),
+      (HistoricalDefaults.publicElectrumTestUrl, true, false, 0),
+      (HistoricalDefaults.publicliquidElectrumTestUrlPath, true, true, 0),
     ];
 
     for (final (url, isTestnet, isLiquid, priority) in serversData) {
@@ -105,21 +108,47 @@ class DatabaseSeeds {
         .insert(
           const RecoverbullRow(
             id: 1,
-            url: SettingsConstants.recoverbullUrl,
+            url: HistoricalDefaults.recoverbullUrl,
             isPermissionGranted: false,
           ),
         );
   }
 
-  static Future<void> seedDefaultMempoolServers(SqliteDatabase db) =>
-      MempoolSeeds.seedDefaultServers(
-        db,
-        bitcoinMainnet: ApiServiceConstants.bbMempoolUrlPath,
-        bitcoinTestnet: ApiServiceConstants.testnetMempoolUrlPath,
-        liquidMainnet: ApiServiceConstants.bbLiquidMempoolUrlPath,
-        liquidTestnet: ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
-      );
+  static Future<void> seedDefaultMempoolServers(SqliteDatabase db) async {
+    const servers = [
+      (HistoricalDefaults.bbMempoolUrlPath, false, false),
+      (HistoricalDefaults.testnetMempoolUrlPath, true, false),
+      (HistoricalDefaults.bbLiquidMempoolUrlPath, false, true),
+      (HistoricalDefaults.bbLiquidMempoolTestnetUrlPath, true, true),
+    ];
+    for (final (url, isTestnet, isLiquid) in servers) {
+      await db
+          .into(db.mempoolServers)
+          .insertOnConflictUpdate(
+            MempoolServerRow(
+              url: url,
+              isTestnet: isTestnet,
+              isLiquid: isLiquid,
+              isCustom: false,
+              enableSsl: true,
+            ),
+          );
+    }
+  }
 
-  static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) =>
-      MempoolSeeds.seedDefaultSettings(db);
+  static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) async {
+    const networks = [
+      'bitcoinMainnet',
+      'bitcoinTestnet',
+      'liquidMainnet',
+      'liquidTestnet',
+    ];
+    for (final network in networks) {
+      await db
+          .into(db.mempoolSettings)
+          .insertOnConflictUpdate(
+            MempoolSettingsRow(network: network, useForFeeEstimation: true),
+          );
+    }
+  }
 }

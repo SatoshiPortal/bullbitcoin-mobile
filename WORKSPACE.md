@@ -189,6 +189,8 @@ graph TD
   labels --> legacy_storage
   labels --> secrets
   labels --> sync
+  legacy_storage --> bull_logger
+  legacy_storage --> bull_reporting
   legacy_storage --> primitives
   mempool --> bull_logger
   mempool --> bull_tor

@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
+
+import 'migration_guards.dart';
+import '../sqlite_database.steps.dart';
 
 /// The single pending revision: concrete wallet/Electrum networks, removal
 /// of the price cache now owned by bull_pricer, and the move of the default
@@ -32,18 +31,16 @@ class Schema15To16 {
       var unresolved = 0;
       for (final row in rows) {
         final id = row.read<String>('id');
-        try {
-          // Historical origins encode only the four shipped networks. Never
-          // run this backfill again once a concrete network has been stored.
-          final origin = WalletMetadataService.decodeOrigin(origin: id);
-          await m.database.customStatement(
-            'UPDATE wallet_metadatas SET network = ? WHERE id = ?',
-            [WalletNetworkCodec.encode(origin.network), id],
-          );
-        } on String {
+        final network = _legacyWalletNetwork(id);
+        if (network == null) {
           // Preserve the row for repair; an unresolved network fails closed.
           unresolved++;
+          continue;
         }
+        await m.database.customStatement(
+          'UPDATE wallet_metadatas SET network = ? WHERE id = ?',
+          [network, id],
+        );
       }
       if (unresolved > 0) {
         log.warning('Wallet network backfill unresolved_count=$unresolved');
@@ -106,5 +103,25 @@ class Schema15To16 {
     }
     // The cache is now owned by bull_pricer. Safe on every rerun.
     await m.deleteTable('prices');
+  }
+
+  /// v15 origin syntax and network names are part of the migration.
+  static String? _legacyWalletNetwork(String origin) {
+    final match = RegExp(r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]')
+        .firstMatch(origin);
+    if (match?.group(2) case '44h' || '49h' || '84h') {
+      return switch (match?.group(3)) {
+        '0h' => 'bitcoinMainnet',
+        '1h' =>
+          origin.contains('elwpkh(') ||
+                  origin.contains('elsh(wpkh(') ||
+                  origin.contains('elpkh(')
+              ? 'liquidTestnet'
+              : 'bitcoinTestnet',
+        '1776h' => 'liquidMainnet',
+        _ => null,
+      };
+    }
+    return null;
   }
 }

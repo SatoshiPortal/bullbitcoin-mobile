@@ -1,6 +1,8 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:signers/signers.dart' as signers;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.drift.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart'
+    show Signer, SignerDevice, WalletMetadataRow, WalletMetadatasCompanion;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
@@ -99,4 +101,12 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         signerDevice: row.signerDevice,
         birthday: row.birthday,
       );
+}
+
+extension WalletMetadataSignerMapping on Signer {
+  SignerEntity toEntity() => SignerEntity.values.byName(name);
+}
+
+extension WalletMetadataDeviceMapping on SignerDevice {
+  signers.SignerDevice toEntity() => signers.SignerDevice.values.byName(name);
 }

@@ -12,8 +12,7 @@ import 'package:sync/sync.dart' as sync;
 import 'package:sync/write.dart';
 
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
+import 'package:legacy_storage/app_database.dart' show Signer;
 
 import '../domain/network_x.dart';
 import '../domain/wallet.dart' as wallet;

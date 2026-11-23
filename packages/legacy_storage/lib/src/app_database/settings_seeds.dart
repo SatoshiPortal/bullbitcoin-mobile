@@ -1,8 +1,7 @@
-import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:preferences/settings_table.drift.dart';
 import 'package:bull_logger/bull_logger.dart';
+
+import 'sqlite_database.dart';
+import 'tables/settings_table.drift.dart';
 
 class SettingsSeeds {
   static Future<void> seed(SqliteDatabase db) async {
@@ -10,12 +9,12 @@ class SettingsSeeds {
     await db
         .into(db.settings)
         .insert(
-          SettingsRow(
+          const SettingsRow(
             id: 1,
-            environment: Environment.mainnet.name,
-            bitcoinUnit: BitcoinUnit.sats.name,
+            environment: 'mainnet',
+            bitcoinUnit: 'sats',
             startAmountsInFiat: false,
-            language: Language.unitedStatesEnglish.name,
+            language: 'unitedStatesEnglish',
             currency: 'USD',
             hideAmounts: false,
             isSuperuser: false,

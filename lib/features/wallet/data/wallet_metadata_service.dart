@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer, SignerDevice;
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
@@ -294,9 +294,9 @@ class WalletMetadataService {
       ),
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
-      signer: Signer.fromEntity(entity.signer),
+      signer: Signer.fromName(entity.signer.name),
       signerDevice: switch (entity.signerDevice) {
-        final device? => SignerDevice.fromEntity(device),
+        final device? => SignerDevice.values.byName(device.name),
         null => null,
       },
       xpub: entity.pubkey,

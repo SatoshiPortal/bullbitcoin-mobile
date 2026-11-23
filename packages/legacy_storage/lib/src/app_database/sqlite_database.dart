@@ -1,26 +1,7 @@
 import 'dart:io';
 
-import 'package:legacy_storage/coordination.dart'
-    show splitV1SourceSchemaVersion;
-
-import 'package:bb_mobile/core/storage/migrations/migrations.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_reporting/bull_reporting.dart';
-import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
-import 'package:preferences/dismissed_announcements_table.dart';
-import 'package:electrum/storage.dart';
-import 'package:labels/frozen_utxos_table.dart';
-import 'package:labels/labels_table.dart';
-import 'package:bb_mobile/features/swap/data/order_swaps_table.dart';
-import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
-import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
-import 'package:preferences/recoverbull_table.dart';
-import 'package:preferences/settings_table.dart';
-import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:mempool/storage.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
@@ -31,7 +12,27 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
+import '../../coordination.dart' show splitV1SourceSchemaVersion;
+import 'migrations/migrations.dart';
 import 'sqlite_database.drift.dart';
+import 'sqlite_database.steps.dart';
+import 'tables/auto_swap.dart';
+import 'tables/bip85_derivations_table.dart';
+import 'tables/dismissed_announcements_table.dart';
+import 'tables/electrum_servers_table.dart';
+import 'tables/electrum_settings_table.dart';
+import 'tables/frozen_utxos_table.dart';
+import 'tables/labels_table.dart';
+import 'tables/mempool_servers_table.dart';
+import 'tables/mempool_settings_table.dart';
+import 'tables/order_swaps_table.dart';
+import 'tables/payjoin_receivers_table.dart';
+import 'tables/payjoin_senders_table.dart';
+import 'tables/recoverbull_table.dart';
+import 'tables/settings_table.dart';
+import 'tables/swaps_table.dart';
+import 'tables/transactions_table.dart';
+import 'tables/wallet_metadata_table.dart';
 
 @DriftDatabase(
   tables: [
@@ -87,7 +88,10 @@ class SqliteDatabase extends $SqliteDatabase {
   }
 
   static Future<DriftIsolate> createIsolateWithSpawn() async {
-    final token = RootIsolateToken.instance!;
+    final token = RootIsolateToken.instance;
+    if (token == null) {
+      throw StateError('The legacy database isolate requires a root isolate');
+    }
     return await DriftIsolate.spawn(() {
       BackgroundIsolateBinaryMessenger.ensureInitialized(token);
 
@@ -194,9 +198,9 @@ class SqliteDatabase extends $SqliteDatabase {
       // step runs, so this fires once on the first launch after a
       // pre-v6.6.0 → v6.6.0+ upgrade and is a no-op otherwise.
       beforeOpen: (details) async {
-        if (details.versionBefore != null &&
-            details.versionBefore != details.versionNow) {
-          Report.recordSchemaUpgrade(from: details.versionBefore!);
+        final previousVersion = details.versionBefore;
+        if (previousVersion != null && previousVersion != details.versionNow) {
+          Report.recordSchemaUpgrade(from: previousVersion);
         }
       },
     );

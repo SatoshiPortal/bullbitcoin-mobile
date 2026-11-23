@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:drift/drift.dart';
+
+import '../historical_defaults.dart';
+import 'migration_guards.dart';
+import '../sqlite_database.steps.dart';
 
 class Schema6To7 {
   static Future<void> migrate(Migrator m, Schema7 schema7) async {
@@ -11,12 +12,12 @@ class Schema6To7 {
     if (await m.columnDefault('electrum_servers', 'is_custom') == null) return;
 
     final defaultServerUrls = [
-      ApiServiceConstants.bbElectrumUrl,
-      ApiServiceConstants.bbLiquidElectrumUrlPath,
-      ApiServiceConstants.publicElectrumUrl,
-      ApiServiceConstants.publicLiquidElectrumUrlPath,
-      ApiServiceConstants.publicElectrumTestUrl,
-      ApiServiceConstants.publicliquidElectrumTestUrlPath,
+      HistoricalDefaults.bbElectrumUrl,
+      HistoricalDefaults.bbLiquidElectrumUrlPath,
+      HistoricalDefaults.publicElectrumUrl,
+      HistoricalDefaults.publicLiquidElectrumUrlPath,
+      HistoricalDefaults.publicElectrumTestUrl,
+      HistoricalDefaults.publicliquidElectrumTestUrlPath,
     ];
 
     // All entries that are not in the list above should have isCustom = true

@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
+
+import '../sqlite_database.steps.dart';
 
 /// Migration from version 13 to 14
 ///
