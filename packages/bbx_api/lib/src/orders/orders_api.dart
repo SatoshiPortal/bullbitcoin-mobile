@@ -62,11 +62,15 @@ final class OrdersApi {
         parseOrderSummary(read<Map<String, dynamic>>(result, 'result')),
   );
 
-  /// One page of the user's orders, newest first. A missing element list is
-  /// empty.
+  /// One page of the user's orders, newest first.
+  ///
+  /// With [requireCompletePage], only an explicit empty element list proves
+  /// the end of pagination and an undecodable row rejects the whole page.
+  /// The ordinary history listing tolerates both omissions and rejected rows.
   Future<Result<OrderSummaryList, BbxFailure>> listOrderSummaries({
     int page = 1,
     int pageSize = 50,
+    bool requireCompletePage = false,
   }) => _transport.request(
     endpoint,
     'listOrderSummaries',
@@ -77,7 +81,9 @@ final class OrdersApi {
     read: (result) {
       final element = read<Map<String, dynamic>>(result, 'result');
       final elements = element['elements'];
-      if (elements == null) return const OrderSummaryList(orders: []);
+      if (elements == null && !requireCompletePage) {
+        return const OrderSummaryList(orders: []);
+      }
       final orders = <OrderSummary>[];
       final rejected = <BbxResponseFormatFailure>[];
       for (final order in read<List<dynamic>>(elements, 'elements')) {
@@ -86,6 +92,7 @@ final class OrdersApi {
             parseOrderSummary(read<Map<String, dynamic>>(order, 'elements')),
           );
         } on BbxFormatException catch (e) {
+          if (requireCompletePage) rethrow;
           rejected.add(BbxResponseFormatFailure(e.reason));
         }
       }
