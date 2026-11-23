@@ -13,7 +13,7 @@ import 'package:preferences/dismissed_announcements_table.dart';
 import 'package:electrum/storage.dart';
 import 'package:labels/frozen_utxos_table.dart';
 import 'package:labels/labels_table.dart';
-import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:preferences/recoverbull_table.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/tables/order_swaps_table.drift.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_table.drift.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';

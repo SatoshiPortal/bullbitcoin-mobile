@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_domain;
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -149,7 +149,7 @@ class SwapLocator {
         locator<ExchangePublicApiDatasource>(
           instanceName: _mainnetExchangeDatasource,
         ),
-        OrderSwapLocalDatasource(locator<SqliteDatabase>()),
+        OrderSwapLocalDatasource(locator<OrderSwapsDatabase>()),
       ),
     );
     locator.registerLazySingleton<SwapRouteSettingRepository>(

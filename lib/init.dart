@@ -3,10 +3,13 @@ import 'package:labels/migration.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/migration.dart';
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:announcements/migration.dart';
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
+import 'package:bb_mobile/features/swap/data/order_swaps_store.dart';
+import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
@@ -15,8 +18,6 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
-
-import 'dart:async';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
@@ -93,16 +94,20 @@ class Bull {
     final announcementsFile = File(
       p.join(support.path, 'databases', 'announcements.sqlite'),
     );
+    final orderSwapsFile = File(
+      p.join(support.path, 'databases', 'order_swaps.sqlite'),
+    );
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
-      expectedOwners: splitV1Owners,
+      expectedOwners: storageOwnerManifest,
       destinationFamilies: [
-        for (final owner in splitV1Owners)
+        for (final owner in storageOwnerManifest)
           File(p.join(support.path, 'databases', '$owner.sqlite')),
       ],
       participants: [
         AnnouncementsStore.participant(announcementsFile),
+        OrderSwapsStore.participant(orderSwapsFile),
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
@@ -134,6 +139,14 @@ class Bull {
         locator.registerSingleton<AnnouncementDismissals>(
           value,
           dispose: (_) => value.close(),
+        );
+      }
+      final orderSwaps = await OrderSwapsStore.open(orderSwapsFile, admission);
+      if (orderSwaps case Err(:final failure)) return Err(failure);
+      if (orderSwaps case Ok(:final value)) {
+        locator.registerSingleton(
+          value.database,
+          dispose: (_) => value.handle.close(),
         );
       }
       final setup = await AppLocator.setup(

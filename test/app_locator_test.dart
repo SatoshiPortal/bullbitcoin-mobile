@@ -14,6 +14,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
 import 'features/wallet/data/ark_funding_test_fixture.dart';
+import 'support/owner_databases.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
@@ -98,6 +99,7 @@ void main() {
           InMemorySharedPreferencesAsync.empty();
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
+      registerTestOwnerDatabases(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
@@ -351,6 +353,7 @@ void main() {
           InMemorySharedPreferencesAsync.empty();
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
+      registerTestOwnerDatabases(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
       var composed = false;
@@ -425,6 +428,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final database = SqliteDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
+    registerTestOwnerDatabases(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
       await locator.reset();

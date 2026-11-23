@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/background_setup.dart'
@@ -46,7 +47,7 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
       ),
       create: SqliteDatabase.new,
     ),
-    expectedOwners: splitV1Owners,
+    expectedOwners: storageOwnerManifest,
     participants: [
       if (task == BackgroundTask.walletsSync)
         ElectrumImport(file: File('${support.path}/databases/electrum.sqlite')),

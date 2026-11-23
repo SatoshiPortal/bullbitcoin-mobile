@@ -45,6 +45,8 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../support/owner_databases.dart';
+
 /// Writes [content] to a new private file, never replacing an existing one.
 void _writePrivate(File file, String content) {
   if (file.existsSync()) throw StateError('${file.path} already exists');
@@ -141,6 +143,7 @@ void main() {
 
       await initFlutterRustBridgeDependencies();
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
+      registerTestOwnerDatabases(locator);
       final database = SqliteDatabase(
         NativeDatabase(File('${appDirectory.path}/bull.sqlite')),
       );
