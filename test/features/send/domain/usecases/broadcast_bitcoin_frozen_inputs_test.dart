@@ -15,8 +15,6 @@ import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
 import 'package:send/testing.dart';
 import 'package:labels/labels.dart';
-import 'package:preferences/preferences.dart'
-    show AmountDisplayPreferencesReader;
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
