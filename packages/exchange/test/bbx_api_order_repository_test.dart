@@ -795,7 +795,8 @@ void main() {
       );
     });
 
-    test('other refusals keep only their codes', () async {
+    test('other refusals keep only their codes in results and logs', () async {
+      final capture = await captureExchangeLogs();
       expect(
         await pay(
           FakeBbxHttp(
@@ -824,6 +825,10 @@ void main() {
               ),
         ),
       );
+      final logs = (await capture.logger.readLogs()).join('\n');
+      expect(logs, contains('apiCode: ERR_ORD_PO404'));
+      expect(logs, contains('rpcCode: -32603'));
+      expect(logs, isNot(contains('Account details')));
     });
 
     test('a maximum limit is the maximum failure', () async {
