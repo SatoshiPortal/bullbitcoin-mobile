@@ -474,6 +474,8 @@ Boltz, public order swaps, Payjoin and RecoverBull each have a separate encrypte
 
 The schema owned by `packages/secrets` stores wallet definitions, derivation records, access views, credentials and the global access state. Its split-v1 participant imports raw schema-16 rows, the initial view and its access state under exclusive admission. Its receipt commits in the same transaction after row-by-row verification. Secret material and module keys stay in the OS keystore. The participant leaves the source and legacy access entries available for coordinated retirement after the complete manifest verifies.
 
+Foreground consumers resolve a visible wallet by ID or list choices for a concrete network through the read-only `WalletInventory` (`package:secrets/secrets.dart`), supplied by the admitted `SecretsInventory`. The metadata projection distinguishes absent or unreadable wallets from storage failures without exposing descriptors. Sync still owns native catalog conversion, snapshots and spend policy; foreground metadata is not a substitute for those capabilities.
+
 ### Wallet-independent chain operations
 
 Send and Payjoin consume the chain operations published by `sync` through `WalletConnectionPort`. The former `core/blockchain` adapters are removed. Electrum implements connection selection and fallback; Payjoin retains its script-based reconciliation for unrecognized transaction lookup replies, and Send retains authorization and presentation failure mapping.

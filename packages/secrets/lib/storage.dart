@@ -1,4 +1,4 @@
-/// The wallet inventory and the narrow descriptor capability for background sync.
+/// Foreground wallet inventory and the narrow descriptor capability for background sync.
 library;
 
 export 'src/domain/access_attempt.dart';

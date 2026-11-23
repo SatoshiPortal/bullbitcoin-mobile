@@ -31,5 +31,7 @@ export 'package:secrets/src/domain/domain.dart'
         SwapMasterKey,
         TrashSecretFailure,
         UnsupportedNetworkFailure,
+        UnreadableWalletFailure,
         UseSecretFailure,
-        VaultKey;
+        VaultKey,
+        WalletRegistrationNotFoundFailure;

@@ -5,9 +5,11 @@ import 'package:sqlite3/sqlite3.dart' show SqliteException, SqlExtendedError;
 
 import '../domain/domain.dart';
 import '../domain/registered_wallet.dart';
+import '../domain/wallet_registration.dart';
 import 'boundary.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
+import 'wallet_registration_mapper.dart';
 
 final class InventoryRepository {
   final SecretsDatabase _database;
@@ -17,9 +19,34 @@ final class InventoryRepository {
 
   Future<Result<List<RegisteredWallet>, SecretFailure>> list(String view) =>
       boundary(() async {
-        final rows = await _database
-            .customSelect(
-              '''
+        final rows = await _listRows(view);
+        return List.unmodifiable(rows.map((row) => _decode(row.data)));
+      }, orElse: FetchSecretFailure.new);
+
+  Future<Result<WalletSelection, SecretFailure>> listForNetwork(
+    String view,
+    Network network,
+  ) async {
+    final networkCode = storedWalletNetwork(network);
+    if (networkCode == null) return const Err(UnsupportedNetworkFailure());
+    final result = await boundary(
+      () => _listRows(view, networkCode: networkCode),
+      orElse: FetchSecretFailure.new,
+    );
+    return result.fold((rows) {
+      final wallets = [
+        for (final row in rows) ?decodeWalletRegistration(row.data),
+      ];
+      return rows.isNotEmpty && wallets.isEmpty
+          ? const Err(UnreadableWalletFailure())
+          : Ok(WalletSelection(wallets));
+    }, Err.new);
+  }
+
+  Future<List<QueryRow>> _listRows(String view, {String? networkCode}) =>
+      _database
+          .customSelect(
+            '''
           SELECT w.*
           FROM wallets w
           WHERE EXISTS (
@@ -27,22 +54,43 @@ final class InventoryRepository {
               AND m.member = CASE WHEN w.secret_fingerprint IS NULL
                 THEN 'wallet:' || w.id ELSE 'secret:' || w.secret_fingerprint END
           )
+          ${networkCode == null ? '' : 'AND w.network = ?'}
           ORDER BY w.id
           ''',
-              variables: [Variable(view)],
-              readsFrom: {_database.wallets, _database.viewMembers},
-            )
-            .get();
-        return List.unmodifiable(rows.map((row) => _decode(row.data)));
-      }, orElse: FetchSecretFailure.new);
+            variables: [
+              Variable(view),
+              if (networkCode != null) Variable(networkCode),
+            ],
+            readsFrom: {_database.wallets, _database.viewMembers},
+          )
+          .get();
 
   Future<Result<RegisteredWallet?, SecretFailure>> find(
     String view,
     String id,
   ) => boundary(() async {
-    final row = await _database
-        .customSelect(
-          '''
+    final row = await _findRow(view, id);
+    return row == null ? null : _decode(row.data);
+  }, orElse: FetchSecretFailure.new);
+
+  Future<Result<WalletRegistration, SecretFailure>> read(
+    String view,
+    String id,
+  ) async {
+    final result = await boundary(
+      () => _findRow(view, id),
+      orElse: FetchSecretFailure.new,
+    );
+    return result.fold((row) {
+      if (row == null) return const Err(WalletRegistrationNotFoundFailure());
+      final wallet = decodeWalletRegistration(row.data);
+      return wallet == null ? const Err(UnreadableWalletFailure()) : Ok(wallet);
+    }, Err.new);
+  }
+
+  Future<QueryRow?> _findRow(String view, String id) => _database
+      .customSelect(
+        '''
       SELECT w.*
       FROM wallets w
       WHERE w.id = ? AND EXISTS (
@@ -51,12 +99,10 @@ final class InventoryRepository {
             THEN 'wallet:' || w.id ELSE 'secret:' || w.secret_fingerprint END
       )
       ''',
-          variables: [Variable(id), Variable(view)],
-          readsFrom: {_database.wallets, _database.viewMembers},
-        )
-        .getSingleOrNull();
-    return row == null ? null : _decode(row.data);
-  }, orElse: FetchSecretFailure.new);
+        variables: [Variable(id), Variable(view)],
+        readsFrom: {_database.wallets, _database.viewMembers},
+      )
+      .getSingleOrNull();
 
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>> descriptors({
     String? foregroundView,

@@ -10,6 +10,8 @@
 library;
 
 export 'src/domain/database_open_failure.dart';
+export 'src/domain/wallet_registration.dart'
+    show WalletRegistration, WalletSelection, WalletSigner;
 export 'src/public/keychains.dart'
     show AccessKeychain, ExchangeKeychain, SilentPaymentKeychain, SwapKeychain;
 export 'src/public/extensions.dart'
@@ -29,4 +31,5 @@ export 'src/public/seed_reference_port.dart'
     show SeedReferencePort, SeedReferencesUnavailable;
 export 'src/public/parent_custody_admission.dart';
 export 'src/public/types.dart';
+export 'src/public/wallet_inventory.dart' show WalletInventory;
 export 'src/public/widgets.dart';

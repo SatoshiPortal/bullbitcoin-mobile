@@ -235,4 +235,6 @@ The initial view preserves the legacy access policy. An existing PIN becomes a s
 
 The storage library opens an existing admitted inventory. Its foreground capability checks the session before reading or mutating wallet registrations and rechecks the session before returning data. Locking withdraws inventory access. Credential checks and attempt updates share one transaction. The active view's background grant controls a separate descriptor-only capability for sync.
 
+The host gives features the read-only `WalletInventory` from `package:secrets/secrets.dart`, implemented by the admitted `SecretsInventory`. A targeted lookup distinguishes a wallet not visible to this view, unreadable metadata and a storage read failure. The concrete chain and network come from storage, not from the derivation path or the app's current environment. Network selection returns readable wallets in wallet ID order and their explicit defaults; it neither chooses a fallback nor resolves competing defaults. These reads never expose descriptors. The descriptor catalog for native Sync remains a separate projection, not a metadata lookup for features.
+
 Reserve BIP85 indices per parent and application before deriving the child. Keep every reservation, including revoked entries, so a retry cannot return the same child. Historical paths retain their original spelling.

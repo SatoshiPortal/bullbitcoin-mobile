@@ -22,10 +22,12 @@ import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
 import '../domain/recorded_derivation.dart';
 import '../domain/registered_wallet.dart';
+import '../domain/wallet_registration.dart';
+import 'wallet_inventory.dart';
 
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
-final class SecretsInventory {
+final class SecretsInventory implements WalletInventory {
   final InventoryStore _store;
   final AccessRepository _access;
   final InventoryRepository _wallets;
@@ -133,6 +135,17 @@ final class SecretsInventory {
   @useResult
   Future<Result<RegisteredWallet?, SecretFailure>> findWallet(String id) =>
       _inSession((_) => _wallets.find(defaultViewId, id));
+
+  @override
+  @useResult
+  Future<Result<WalletRegistration, SecretFailure>> readWallet(String id) =>
+      _inSession((_) => _wallets.read(defaultViewId, id));
+
+  @override
+  @useResult
+  Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
+    Network network,
+  ) => _inSession((_) => _wallets.listForNetwork(defaultViewId, network));
 
   @useResult
   Future<Result<void, SecretFailure>> registerWallet(RegisteredWallet wallet) =>
