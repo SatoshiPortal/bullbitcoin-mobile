@@ -79,8 +79,11 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
+import 'package:spend/setup.dart' show SpendCatalog;
+import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
     show Sync, Wallet, SyncFailure, SyncStorageFailure, WalletConnectionPort;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 final GetIt locator = GetIt.instance;
 
@@ -266,6 +269,14 @@ class AppLocator {
 
     // Register feature-specific dependencies
     final inventory = locator<SecretsInventory>();
+    locator.registerLazySingleton<Spend>(
+      () => Spend.open(
+        sync: locator<WalletNativeRuntime>(),
+        secrets: locator<Secrets>(),
+        arkFunding: locator<ArkFundingSigningGuard>(),
+        catalog: SpendCatalog.fromInventory(inventory),
+      ),
+    );
     final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(

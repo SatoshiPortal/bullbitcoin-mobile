@@ -39,6 +39,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required PayjoinLabelsPort labels,
   required PayjoinLogPort log,
   required PayjoinCodecPort codec,
+  required PayjoinInputAdmission admitInputs,
   PayjoinRegtestProfile? regtestProfile,
   RegtestHostProfile? regtestHostProfile,
   Future<bool> Function()? isCurrent,
@@ -60,6 +61,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   labels: labels,
   log: log,
   codec: codec,
+  admitInputs: admitInputs,
   regtestProfile: regtestProfile,
   regtestHostProfile: regtestHostProfile,
   isCurrent: isCurrent,
@@ -80,6 +82,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoinWithStorage({
   required PayjoinLabelsPort labels,
   required PayjoinLogPort log,
   required PayjoinCodecPort codec,
+  PayjoinInputAdmission? admitInputs,
   PayjoinRegtestProfile? regtestProfile,
   RegtestHostProfile? regtestHostProfile,
   Future<bool> Function()? isCurrent,
@@ -179,6 +182,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoinWithStorage({
       policy: policy,
       labels: labels,
       codec: codec,
+      admitInputs: admitInputs,
     );
     final roles = _PayjoinRoles(
       engine,
@@ -402,12 +406,17 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         error: error.cause,
         trace: trace,
       );
+      if (error.publicationUnknown) {
+        return Err(PayjoinPublicationUnknownFailure(error.originalTxId));
+      }
       return Err(
         PayjoinSenderKeptFailure(
           error.originalTxId,
           'Sender start failed; session kept',
         ),
       );
+    } on PayjoinSpendBlockedException catch (blocked) {
+      return Err(PayjoinSpendBlockedFailure(busy: blocked.busy));
     } on PayjoinRuntimeInactiveException {
       return const Err(
         PayjoinUnavailableFailure('Payjoin runtime family changed'),

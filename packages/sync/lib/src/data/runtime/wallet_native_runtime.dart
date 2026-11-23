@@ -200,6 +200,33 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
+  /// Serializes local Payjoin reservation writes with ordinary Bitcoin
+  /// broadcasts and user freezes. [persist] must not call Sync or the relay.
+  @useResult
+  Future<Result<void, SyncFailure>> reservePayjoinInputs(
+    WalletKey key, {
+    required Set<Outpoint> inputs,
+    required String sessionId,
+    required Future<void> Function() persist,
+    int? expectedGeneration,
+  }) async {
+    final current = await wallet(key);
+    return switch (current) {
+      Err(:final failure) => Err(failure),
+      Ok(:final value)
+          when expectedGeneration == null ||
+              value.generation == expectedGeneration =>
+        (await _services).stores.spend.reservePayjoinInputs(
+          key,
+          value.generation,
+          inputs,
+          sessionId,
+          persist,
+        ),
+      Ok() => const Err(SyncNotFoundFailure()),
+    };
+  }
+
   /// Privileged wallet composition must bind the exact same durable authority.
   bool usesFundingReservations(FundingReservationPort authority) =>
       identical(_fundingReservations, authority);

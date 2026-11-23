@@ -24,6 +24,7 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     switch (await bumpFeeUsecase.verifyOriginalTransaction(
       walletId: originalTransaction.walletId,
       txid: originalTransaction.txId,
+      network: originalTransaction.network,
     )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));
@@ -32,7 +33,7 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
         break;
     }
 
-    switch (await bumpFeeUsecase.getNetworkFees()) {
+    switch (await bumpFeeUsecase.getNetworkFees(originalTransaction.network)) {
       case Ok(:final value):
         // Mempool fees are already RelativeFee (sat/kwu) by construction;
         // the AbsoluteFee branch is unreachable today but kept for exhaustiveness.

@@ -1,4 +1,3 @@
-import 'package:primitives/primitives.dart' show BitcoinNetwork, NetworkEnv;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
@@ -256,14 +255,7 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
     super.initState();
     context.read<TransactionReviewCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
-      network: context.read<BroadcastSignedTxCubit>().capturedNetwork.then(
-        (network) => switch (network.environment) {
-          NetworkEnv.mainnet when network.isBitcoin => BitcoinNetwork.mainnet,
-          NetworkEnv.testnet when network.isBitcoin => BitcoinNetwork.testnet,
-          NetworkEnv.regtest when network.isBitcoin => BitcoinNetwork.regtest,
-          _ => null,
-        },
-      ),
+      network: context.read<BroadcastSignedTxCubit>().capturedNetwork,
     );
   }
 

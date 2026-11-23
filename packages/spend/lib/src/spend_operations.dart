@@ -385,7 +385,12 @@ final class _Spend extends _SpendPreviews {
     required String unsignedPsbt,
     required String signedTransaction,
     required bool isPsbt,
-  }) => _bitcoinEvidence(unsignedPsbt, signedTransaction, isPsbt).map((_) {});
+  }) => _bitcoinEvidence(
+    unsignedPsbt,
+    signedTransaction,
+    isPsbt,
+    requireFinalized: false,
+  ).map((_) {});
 
   Result<SignedBitcoinSpend, SpendFailure> _verifyBitcoin(
     UnsignedSpend built, {
@@ -462,13 +467,43 @@ final class _Spend extends _SpendPreviews {
     }
   }
 
-  // This base only publishes Payjoin reservation reads. No handoff may
-  // succeed until Sync can claim and Payjoin can recover the same session.
   @override
   Future<Result<PayjoinSpendHandoff, SpendFailure>> handOffToPayjoin(
     PreparedBitcoinSpend prepared, {
     required String sessionId,
-  }) async => const Err(SpendPayjoinUnavailableFailure());
+    required String signedPsbt,
+    required Future<void> Function() persist,
+  }) async {
+    final built = prepared._native;
+    if (built == null ||
+        built.owner != null ||
+        built.replacing != null ||
+        sessionId.isEmpty ||
+        built.key.network is! BitcoinNetwork) {
+      return const Err(SpendInvalidRequestFailure());
+    }
+    final inputs = built.inputs.toSet();
+    switch (_bitcoinEvidence(built.encoded, signedPsbt, true)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (value.inputs.length != inputs.length ||
+            !inputs.containsAll(value.inputs)) {
+          return const Err(SpendSignedTransactionMismatchFailure());
+        }
+    }
+    return (await _sync.reservePayjoinInputs(
+          built.key,
+          inputs: inputs,
+          sessionId: sessionId,
+          expectedGeneration: built.revision.generation,
+          persist: persist,
+        ))
+        .map<PayjoinSpendHandoff>(
+          (_) => _PayjoinSpendHandoff(built.encoded, built.key, inputs),
+        )
+        .mapErr(_syncFailure);
+  }
 
   @override
   Future<Result<void, SpendFailure>> verifyOriginalBitcoin({
@@ -536,6 +571,17 @@ final class _Spend extends _SpendPreviews {
         }
     }
   }
+
+  @override
+  Future<Result<int, SpendFailure>> countLiquidCoins(String walletId) async =>
+      switch (await _wallet(walletId)) {
+        Err(:final failure) => Err(failure),
+        Ok(value: final wallet) when wallet.key.network is LiquidNetwork =>
+          (await wallet.unspent())
+              .map((coins) => coins.length)
+              .mapErr(_syncFailure),
+        Ok() => const Err(SpendNetworkMismatchFailure()),
+      };
 
   @override
   Future<Result<bool, SpendFailure>> needsLiquidConsolidation(
@@ -646,11 +692,24 @@ final class _Spend extends _SpendPreviews {
   }
 }
 
+final class _PayjoinSpendHandoff implements PayjoinSpendHandoff {
+  @override
+  final String unsignedPsbt;
+  @override
+  final WalletKey wallet;
+  @override
+  final Set<Outpoint> inputs;
+
+  _PayjoinSpendHandoff(this.unsignedPsbt, this.wallet, Set<Outpoint> inputs)
+    : inputs = Set.unmodifiable(inputs);
+}
+
 Result<DecodedBitcoinTransaction, SpendFailure> _bitcoinEvidence(
   String unsignedPsbt,
   String signedTransaction,
-  bool isPsbt,
-) {
+  bool isPsbt, {
+  bool requireFinalized = true,
+}) {
   try {
     final unsignedResult = bitcoinPsbtSkeleton(unsignedPsbt);
     if (unsignedResult case Err(:final failure)) {
@@ -691,7 +750,7 @@ Result<DecodedBitcoinTransaction, SpendFailure> _bitcoinEvidence(
         return const Err(SpendSignedTransactionMismatchFailure());
       }
     }
-    if (!isPsbt) return Ok(signed);
+    if (!isPsbt || !requireFinalized) return Ok(signed);
     return finalizeBitcoinPsbts(
       unsignedBase64: unsignedPsbt,
       signedBase64: signedTransaction,
@@ -732,7 +791,7 @@ SpendFailure _syncFailure(SyncFailure failure) => switch (failure) {
     SpendBroadcastRejection.nodeRejected,
   ),
   SyncAlreadyInChainFailure() => const SpendAlreadyInChainFailure(),
-  SyncConnectionFailure() ||
+  SyncConnectionFailure() => const SpendBroadcastConnectionFailure(),
   SyncOutcomeUnknownFailure() ||
   SyncUnrecognizedReplyFailure() => const SpendBroadcastOutcomeUnknownFailure(),
   SyncInvalidTransactionFailure() ||

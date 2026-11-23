@@ -20,7 +20,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_useca
 import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
@@ -75,7 +74,6 @@ class WalletLocator {
         walletRegistrations: locator<WalletRegistrations>(),
         secrets: locator<Secrets>(),
         wallet: locator<WalletNativeRuntime>().wallet,
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
@@ -118,11 +116,6 @@ class WalletLocator {
       ),
     );
 
-    locator.registerLazySingleton<CheckLiquidConsolidationUsecase>(
-      () => CheckLiquidConsolidationUsecase(
-        liquidWalletRepository: locator<LiquidWalletRepository>(),
-      ),
-    );
     locator.registerFactory<GetWalletTransactionsUsecase>(
       () => GetWalletTransactionsUsecase(
         settingsRepository: locator<ActiveEnvironmentReader>(),

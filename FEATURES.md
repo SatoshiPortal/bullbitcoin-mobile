@@ -76,6 +76,7 @@ graph TB
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
+    BROADCAST_SIGNED_TX --> SPEND
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
@@ -402,7 +403,6 @@ graph TB
     SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
-    BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
     SEND --> FEES_UI
     SEND --> NETWORK
@@ -483,9 +483,10 @@ graph TB
     AUTOBUY --> EXCHANGE
     AUTOBUY --> WALLETS
     AUTOSWAP --> SEND
+    AUTOSWAP --> SPEND
     AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
-    CONSOLIDATION --> SEND
+    CONSOLIDATION --> SPEND
     DEFAULT_WALLETS --> EXCHANGE
     DEFAULT_WALLETS -->|public destination validation and input| WALLETS
     WALLETS --> FEES_PACKAGE
@@ -504,7 +505,7 @@ graph TB
     PAY --> FEES_UI
     SEND --> SIGNERS
     REPLACE_BY_FEE --> FEES_UI
-    REPLACE_BY_FEE --> SEND
+    REPLACE_BY_FEE --> SPEND
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> AUTOSWAP

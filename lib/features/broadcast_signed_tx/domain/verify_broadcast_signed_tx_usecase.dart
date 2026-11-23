@@ -1,12 +1,12 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:meta/meta.dart';
 
 class VerifyBroadcastSignedTxUsecase {
-  final SendFacade _verifySignedTxUsecase;
+  final Spend _spend;
 
-  VerifyBroadcastSignedTxUsecase(this._verifySignedTxUsecase);
+  VerifyBroadcastSignedTxUsecase(this._spend);
 
   @useResult
   Future<Result<void, BroadcastSignedTxFailure>> execute({
@@ -14,13 +14,11 @@ class VerifyBroadcastSignedTxUsecase {
     required String signedTransaction,
     bool isPsbt = false,
   }) async {
-    final result = await _verifySignedTxUsecase.verifySignedTransaction(
+    final result = _spend.verifyExternalBitcoin(
       unsignedPsbt: unsignedPsbt,
       signedTransaction: signedTransaction,
       isPsbt: isPsbt,
     );
-    return result.mapErr(
-      (failure) => InvalidTransactionFailure(failure.logMessage),
-    );
+    return result.mapErr((_) => const InvalidTransactionFailure());
   }
 }

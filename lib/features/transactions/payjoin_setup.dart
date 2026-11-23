@@ -25,7 +25,12 @@ import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
-    show InputReservationPort, WalletConnectionPort, BitcoinSpendStatus;
+    show
+        InputReservationPort,
+        WalletConnectionPort,
+        BitcoinSpendStatus,
+        WalletKey,
+        SyncBusyFailure;
 
 abstract final class PayjoinSetup {
   static void setup(GetIt locator, {bool startRecovery = true}) {
@@ -99,6 +104,25 @@ abstract final class PayjoinSetup {
           spendWallet: locator<WalletFacade>(),
         ),
         labels: locator<PayjoinLabelsPort>(),
+        admitInputs:
+            ({
+              required walletId,
+              required network,
+              required inputs,
+              required sessionId,
+              required persist,
+            }) async => switch (await locator<WalletNativeRuntime>()
+                .reservePayjoinInputs(
+                  WalletKey(id: walletId, network: network),
+                  inputs: inputs,
+                  sessionId: sessionId,
+                  persist: persist,
+                )) {
+              Ok() => const Ok(null),
+              Err(:final failure) => Err(
+                PayjoinSpendBlockedFailure(busy: failure is SyncBusyFailure),
+              ),
+            },
         log: const AppPayjoinLogAdapter(),
         codec: const AppPayjoinCodecAdapter(),
       );

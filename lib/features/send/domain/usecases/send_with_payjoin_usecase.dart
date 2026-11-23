@@ -45,6 +45,13 @@ class SendWithPayjoinUsecase {
         return core.Err(SendPayjoinUnavailableFailure(logMessage));
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return core.Err(SendSpendBlockedFailure(busy: busy));
+      case Err(failure: PayjoinPublicationUnknownFailure(:final originalTxId)):
+        return core.Err(
+          SendTransactionConfirmationFailure(
+            keptPayjoinOriginalTxId: originalTxId,
+            payjoinPublicationUnknown: true,
+          ),
+        );
       case Err(
         failure: PayjoinSenderKeptFailure(
           :final originalTxId,

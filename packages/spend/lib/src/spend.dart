@@ -186,6 +186,8 @@ abstract interface class Spend {
   Future<Result<PayjoinSpendHandoff, SpendFailure>> handOffToPayjoin(
     PreparedBitcoinSpend prepared, {
     required String sessionId,
+    required String signedPsbt,
+    required Future<void> Function() persist,
   });
 
   @useResult
@@ -202,6 +204,9 @@ abstract interface class Spend {
     required BitcoinNetwork network,
     required RelativeFee newFeeRate,
   });
+
+  @useResult
+  Future<Result<int, SpendFailure>> countLiquidCoins(String walletId);
 
   @useResult
   Future<Result<bool, SpendFailure>> needsLiquidConsolidation(

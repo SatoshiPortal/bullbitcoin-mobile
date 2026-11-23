@@ -91,6 +91,7 @@ dependencies:
   notifications:
   flutter_local_notifications: ^23.0.2
   sync:
+  spend:
   electrum:
   bull_tor:
   mempool:

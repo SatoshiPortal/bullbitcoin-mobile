@@ -24,6 +24,7 @@ import 'package:swaps/swaps.dart'
         RecordPendingSwapLockupUsecase,
         RecordSwapLockupUsecase;
 import 'package:get_it/get_it.dart';
+import 'package:spend/spend.dart';
 
 class AutoSwapLocator {
   static void setup(GetIt locator) {
@@ -43,9 +44,8 @@ class AutoSwapLocator {
         locator<DropPendingSwapLockupUsecase>(),
         locator<WalletRepository>(),
         locator<Preferences>(),
-        locator<LiquidWalletRepository>(),
+        locator<Spend>(),
         locator<GetReceiveAddressUsecase>(),
-        locator<BroadcastLiquidTransactionUsecase>(),
         locator<Labels>(),
       ),
     );

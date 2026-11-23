@@ -4008,7 +4008,10 @@ class SendCubit extends Cubit<SendState>
               // is settled at once. Any other rejection (an earlier healthy
               // session for the same payment, for instance) is adopted and
               // watched, never downgraded to the plain original.
-              settleAdoptedNow = keptOriginal != null;
+              settleAdoptedNow =
+                  keptOriginal != null &&
+                  failure is SendTransactionConfirmationFailure &&
+                  !failure.payjoinPublicationUnknown;
           }
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the

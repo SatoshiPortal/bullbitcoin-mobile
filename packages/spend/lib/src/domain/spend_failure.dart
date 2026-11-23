@@ -77,6 +77,11 @@ final class SpendBroadcastRejectedFailure extends SpendFailure {
   const SpendBroadcastRejectedFailure(this.category);
 }
 
+/// No server was reached to submit this transaction.
+final class SpendBroadcastConnectionFailure extends SpendFailure {
+  const SpendBroadcastConnectionFailure();
+}
+
 final class SpendAlreadyInChainFailure extends SpendFailure {
   const SpendAlreadyInChainFailure();
 }

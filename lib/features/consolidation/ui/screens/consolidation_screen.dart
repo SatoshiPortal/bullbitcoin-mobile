@@ -83,6 +83,7 @@ class _ReviewView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final consolidation = context.read<ConsolidationCubit>();
     final wallet = context.select((WalletBloc bloc) {
       try {
         return bloc.state.wallets.firstWhere((w) => w.id == state.walletId);
@@ -177,7 +178,9 @@ class _ReviewView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: BullButton.primary(
               label: context.loc.consolidationScreenTitle,
-              onPressed: () => context.read<ConsolidationCubit>().consolidate(),
+              onPressed: consolidation.canSubmit
+                  ? consolidation.consolidate
+                  : null,
             ),
           ),
         ],

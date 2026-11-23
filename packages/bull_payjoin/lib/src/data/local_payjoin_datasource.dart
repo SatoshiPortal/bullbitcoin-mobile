@@ -108,6 +108,7 @@ class LocalPayjoinDatasource {
         return (_db.update(_db.payjoinReceivers)..where(
               (row) =>
                   row.id.equals(receiver.id) &
+                  row.proposalPsbt.isNull() &
                   row.isCompleted.equals(false) &
                   row.isAborted.equals(false),
             ))
@@ -281,6 +282,7 @@ class LocalPayjoinDatasource {
   Future<List<PayjoinModel>> fetchAll({
     String? walletId,
     bool onlyUnfinished = false,
+    bool includeExpiredReservations = false,
     BitcoinNetwork? network,
   }) async {
     final isTestnet = network == null ? null : !network.isMainnet;
@@ -295,7 +297,9 @@ class LocalPayjoinDatasource {
         // keep being "resumed" on every app start.
         expr =
             expr &
-            row.isExpired.equals(false) &
+            (row.isExpired.equals(false) |
+                (row.proposalPsbt.isNotNull() &
+                    Constant(includeExpiredReservations))) &
             row.isCompleted.equals(false) &
             row.isAborted.equals(false);
       }
@@ -317,7 +321,9 @@ class LocalPayjoinDatasource {
       if (onlyUnfinished) {
         expr =
             expr &
-            row.isExpired.equals(false) &
+            (row.isExpired.equals(false) |
+                (row.hasNetworkEvidence.equals(true) &
+                    Constant(includeExpiredReservations))) &
             row.isCompleted.equals(false) &
             row.isAborted.equals(false);
       }

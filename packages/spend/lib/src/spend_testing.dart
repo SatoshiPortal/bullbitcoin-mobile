@@ -53,5 +53,10 @@ abstract final class SpendFixtures {
     required String unsignedPsbt,
     required String signedTransaction,
     required bool isPsbt,
-  }) => _bitcoinEvidence(unsignedPsbt, signedTransaction, isPsbt).map((_) {});
+  }) => _bitcoinEvidence(
+    unsignedPsbt,
+    signedTransaction,
+    isPsbt,
+    requireFinalized: false,
+  ).map((_) {});
 }
