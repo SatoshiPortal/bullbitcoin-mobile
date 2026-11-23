@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
-import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxFailure, BbxCredentialUnavailableFailure;
 import 'package:bbx_api/bbx_api_testing.dart';

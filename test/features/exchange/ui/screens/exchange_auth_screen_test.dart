@@ -1,19 +1,17 @@
+import '../../fixtures/legacy_access.dart';
+
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import 'package:exchange/exchange.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
 import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
@@ -24,18 +22,20 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import '../../../settings/fake_webview_platform.dart';
 
-class _Settings extends Mock implements GetExchangeWebSettingsUsecase {}
+class _Settings extends Mock implements Preferences {}
 
 class _Keys extends Mock implements ExchangeCredentials {}
 
 class _Cubit extends Mock implements ExchangeCubit {}
 
-class _FakeAuthentication extends Fake
-    implements CompleteExchangeAuthenticationUsecase {}
+typedef _Authenticate = Future<Result<void, ExchangeFailure>> Function({
+  required bool Function() isCurrent,
+});
 
 class _Platform extends FakeWebViewPlatform {
   _Delegate? delegate;
   _Controller? controller;
+  Object Function(String)? evaluate;
   final cookies = _Cookies(const PlatformWebViewCookieManagerCreationParams());
   @override
   PlatformWebViewCookieManager createPlatformCookieManager(
@@ -44,7 +44,7 @@ class _Platform extends FakeWebViewPlatform {
   @override
   PlatformWebViewController createPlatformWebViewController(
     PlatformWebViewControllerCreationParams params,
-  ) => controller = _Controller(params);
+  ) => controller = _Controller(params, evaluate);
   @override
   PlatformNavigationDelegate createPlatformNavigationDelegate(
     PlatformNavigationDelegateCreationParams params,
@@ -67,7 +67,12 @@ class _Cookies extends PlatformWebViewCookieManager {
 }
 
 class _Controller extends FakePlatformWebViewController {
-  _Controller(super.params);
+  final Object Function(String)? _evaluate;
+  _Controller(super.params, this._evaluate);
+  @override
+  Future<Object> runJavaScriptReturningResult(String javascript) async =>
+      _evaluate?.call(javascript) ?? '';
+
   @override
   Future<void> addJavaScriptChannel(JavaScriptChannelParams params) async {}
   @override
@@ -85,7 +90,12 @@ class _Delegate extends FakePlatformNavigationDelegate {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() => registerFallbackValue(_FakeAuthentication()));
+  setUpAll(() {
+    Future<Result<void, ExchangeFailure>> fallback({
+      required bool Function() isCurrent,
+    }) async => const Ok(null);
+    registerFallbackValue(fallback);
+  });
   for (final scenario in [
     'deferred',
     'acknowledge',
@@ -105,15 +115,15 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       when(() => keys.readActiveApiKey(isTestnet: true))
           .thenAnswer((_) async => const Ok(null));
-      final access = ExchangeAccessRepositoryImpl(
+      final access = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => true,
         platformAllowed: () async => true,
         disconnectNotifications: () async {},
         clearCookies: () async {},
       );
-      await access.enable();
-      when(settings.execute).thenAnswer(
+      final _ = await access.enable();
+      when(settings.readExchangeWebPreferences).thenAnswer(
         (_) async => const Ok((
           environment: Environment.testnet,
           exchangeTestnetBasicAuthUsername: null,
@@ -130,47 +140,43 @@ void main() {
         ),
       ).thenAnswer(
         (invocation) =>
-            (invocation.positionalArguments.single
-                    as CompleteExchangeAuthenticationUsecase)
-                .execute(
-                  isCurrent:
-                      invocation.namedArguments[#isCurrent] as bool Function(),
-                ),
-      );
-      locator.registerSingleton<GetExchangeWebSettingsUsecase>(settings);
-      locator.registerFactoryParam<
-        CompleteExchangeAuthenticationUsecase,
-        Future<Object> Function(String),
-        ({bool isTestnet, bool Function() isOpen})
-      >(
-        (_, session) => CompleteExchangeAuthenticationUsecase(
-          authRepository: ExchangeAuthRepositoryImpl(
-            datasource: ExchangeWebAuthDatasource(
-              isTestnet: session.isTestnet,
-              isOpen: session.isOpen,
-              evaluateJavaScript: (_) async {
-                generations++;
-                return jsonEncode(
-                  scenario == 'deferred'
-                      ? {'error': 'request refused'}
-                      : scenario == 'inactive'
-                      ? {
-                          'id': 'id',
-                          'key': 'synthetic',
-                          'name': 'name',
-                          'userId': 'user',
-                          'isActive': false,
-                          'createdAt': 0,
-                          'updatedAt': 0,
-                        }
-                      : {},
-                );
-              },
+            (invocation.positionalArguments.single as _Authenticate)(
+              isCurrent:
+                  invocation.namedArguments[#isCurrent] as bool Function(),
             ),
-          ),
-          access: access,
-          isTestnet: session.isTestnet,
+      );
+      platform.evaluate = (_) {
+        generations++;
+        return jsonEncode(
+          scenario == 'deferred'
+              ? {'error': 'request refused'}
+              : scenario == 'inactive'
+              ? {
+                  'id': 'id',
+                  'key': 'synthetic',
+                  'name': 'name',
+                  'userId': 'user',
+                  'isActive': false,
+                  'createdAt': 0,
+                  'updatedAt': 0,
+                }
+              : {},
+        );
+      };
+      final capability = Exchange.open(
+        mainnetEndpoint: Uri.https('mainnet.example.invalid'),
+        testnetEndpoint: Uri.https('testnet.example.invalid'),
+        readSession: () async => fail('unexpected Exchange network request'),
+        access: access,
+        sessionPreferences: settings,
+        webAuthEndpoints: (
+          mainnet: Uri.parse(ExchangeDefaults.bbAuthUrl),
+          testnet: Uri.parse(ExchangeDefaults.bbAuthTestUrl),
         ),
+      );
+      locator.registerSingleton<Exchange>(
+        capability,
+        dispose: (value) => value.close(),
       );
       addTearDown(locator.reset);
       await tester.pumpWidget(
@@ -180,7 +186,10 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<ExchangeCubit>.value(
             value: cubit,
-            child: ExchangeAuthScreen(onExit: () => exits++),
+            child: ExchangeAuthScreen(
+              onExit: () => exits++,
+              host: ExchangeScope.authHost,
+            ),
           ),
         ),
       );

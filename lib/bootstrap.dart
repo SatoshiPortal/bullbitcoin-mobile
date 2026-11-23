@@ -12,6 +12,9 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
+import 'package:exchange/exchange.dart'
+    show ExchangeAvailability, ExchangePlatform;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:material_ui/material_ui.dart';
 
 Future<void> startApp() async {
@@ -21,6 +24,11 @@ Future<void> startApp() async {
         WidgetsFlutterBinding.ensureInitialized();
         await runStartupWizard(
           notificationChannelId: paymentNotificationChannelId,
+          exchangeAllowed: ExchangeAvailability.platformAllowed(
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? ExchangePlatform.ios
+                : ExchangePlatform.other,
+          ),
         );
         if (await Bull.init() case Err(:final failure)) {
           log.severe(

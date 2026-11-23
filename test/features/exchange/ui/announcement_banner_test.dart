@@ -1,19 +1,13 @@
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter/services.dart'
     show FontLoader, TextSelection, rootBundle;
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:mocktail/mocktail.dart';
-
-class _Exchange extends Mock implements ExchangeCubit {}
 
 void main() {
   setUpAll(() async {
@@ -25,10 +19,10 @@ void main() {
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     testWidgets('exchange announcement sheet in ${theme.name}', (tester) async {
       const title = 'Scheduled maintenance';
-      final exchange = _Exchange();
-      when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
-      when(() => exchange.state).thenReturn(
-        ExchangeState(
+      await _pump(
+        tester,
+        theme,
+        AnnouncementBanner(
           announcements: [
             Announcement(
               title: title,
@@ -36,14 +30,6 @@ void main() {
               updatedAt: DateTime.utc(2026, 11, 20),
             ),
           ],
-        ),
-      );
-      await _pump(
-        tester,
-        theme,
-        BlocProvider<ExchangeCubit>.value(
-          value: exchange,
-          child: const AnnouncementBanner(),
         ),
       );
 

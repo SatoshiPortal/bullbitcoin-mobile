@@ -542,34 +542,6 @@
   "@exchangeTransactionsComingSoon": {
     "description": "Message indicating that the transactions feature is coming soon"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "Manage 2FA and password",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
-  "exchangeSecurityAccessSettingsButton": "Access Settings",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
-  },
-  "exchangeReferralsTitle": "Referral Codes",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
-  "exchangeReferralsJoinMissionTitle": "Join the mission",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
-  },
-  "exchangeReferralsContactSupportMessage": "Contact support to learn about our referral program",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
-  "exchangeReferralsApplyToJoinMessage": "Apply to join the program here",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "exchangeRecipientsTitle": "Recipients",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -8720,25 +8692,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "No messages yet. Start a conversation!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "Type a message…",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "A message is required",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "Message cannot be empty",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "Yesterday",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "This chat is only for exchange related issues in Funding/Buy/Sell/Withdraw/Pay.\nFor wallet related issues, join the telegram group by clicking here.",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -10083,26 +10039,6 @@
   "@exchangeFileUploadTapToReupload": {
     "description": "Call-to-action shown when a rejected upload can be retried by tapping."
   },
-  "exchangeSupportChatAttachmentImage": "Image",
-  "@exchangeSupportChatAttachmentImage": {
-    "description": "Fallback display name for an image attachment in the support chat when no file name is available."
-  },
-  "exchangeSupportChatAttachmentUnknownFile": "Unknown file",
-  "@exchangeSupportChatAttachmentUnknownFile": {
-    "description": "Fallback display name for a non-image attachment in the support chat when no file name is available."
-  },
-  "exchangeSupportChatPickFilesFailed": "Failed to pick files. Please try again.",
-  "@exchangeSupportChatPickFilesFailed": {
-    "description": "Snackbar shown when picking files for a support chat attachment fails."
-  },
-  "exchangeSupportChatAttachLogsFailed": "Failed to attach logs. Please try again.",
-  "@exchangeSupportChatAttachLogsFailed": {
-    "description": "Snackbar shown when attaching log files to a support chat message fails."
-  },
-  "exchangeSupportChatFetchFileDataFailed": "Failed to fetch file data",
-  "@exchangeSupportChatFetchFileDataFailed": {
-    "description": "Snackbar shown when downloading a support chat attachment fails because no file data was returned."
-  },
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
@@ -11009,18 +10945,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
   "@torSettingsExternalProxyUnavailableDescription": {
     "description": "Status description when the external SOCKS5 proxy is unavailable"
-  },
-  "exchangeSupportChatLoadMessagesError": "Couldn't load messages. Please try again.",
-  "@exchangeSupportChatLoadMessagesError": {
-    "description": "Shown when loading the support chat message history fails."
-  },
-  "exchangeSupportChatSendMessageError": "Couldn't send your message. Please try again.",
-  "@exchangeSupportChatSendMessageError": {
-    "description": "Shown when sending a support chat message fails."
-  },
-  "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
-  "@exchangeSupportChatLoadAttachmentError": {
-    "description": "Shown when downloading or opening a support chat attachment fails."
   },
   "settingsBackupTitle": "Backup",
   "@settingsBackupTitle": {

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_view.dart';
 import 'package:material_ui/material_ui.dart';

@@ -1,5 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeHomeAction;
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -13,7 +14,6 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
 import 'package:announcements/setup.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show SwapFacade;
-import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
@@ -29,7 +29,6 @@ import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
@@ -52,11 +51,11 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
-import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:preferences/preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -69,12 +68,10 @@ class AppRouter {
 
   static final _exchangeConfig = ExchangeRouterConfig(
     networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
-    loadKyc: () => locator<ExchangeFacade>().loadKyc(),
+    loadKyc: () => locator<Exchange>().loadKyc(),
     isSuperuser: (context) =>
         context.read<SettingsCubit>().state.isSuperuser ?? false,
     homePath: WalletRoute.walletHome.path,
-    buildHomeCards: () => [locator<LimitOrdersFacade>().buildDashboardCard()],
-    onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
     onAction: (context, action) => _openQuickAction(context, switch (action) {
@@ -113,6 +110,7 @@ class AppRouter {
   static final _exchangeFeature = ExchangeRouter.mount(
     _exchangeConfig,
     exchange: () => locator<Exchange>(),
+    preferences: () => locator<Preferences>(),
     settings: SettingsRouter.exchangeSettingsHost,
   );
 
@@ -214,7 +212,7 @@ class AppRouter {
           ),
         ],
       ),
-      ExchangeRouter.authRoute(_exchangeConfig),
+      ?_exchangeFeature.authRoute,
       ?_exchangeFeature.supportChatRoute,
       OnboardingRouter.route,
       ...locator<AccessFeature>().routes.root,
@@ -259,9 +257,9 @@ class AppRouter {
       SwapRouter.route,
       ...locator<SwapFeature>().routes,
       ...BuyRouter.routes,
-      ...FundExchangeRouter.routes,
+      ..._exchangeFeature.fundingRoutes,
       SellRouter.route,
-      WithdrawRouter.route,
+      ?_exchangeFeature.withdrawalRoute,
       PayRouter.route,
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,
@@ -270,8 +268,9 @@ class AppRouter {
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
       DcaRouter.route,
-      AutoBuyRouter.route,
-      ...LimitOrdersRouter.routes,
+      ?_exchangeFeature.autoBuy,
+      LimitOrdersRouter.create,
+      ?_exchangeFeature.limitOrderDetails,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
       ...locator<NetworkFeature>().routes.root,

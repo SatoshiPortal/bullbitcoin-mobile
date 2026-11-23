@@ -1,6 +1,6 @@
+import 'dart:io';
+
 import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -12,13 +12,14 @@ import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wall
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
@@ -61,7 +62,7 @@ class SettingsRouter {
           currency: currency,
           emailNotificationsEnabled: emailNotificationsEnabled,
         ),
-    refreshSession: ExchangeScope.refreshSession,
+    refreshSession: ExchangeSessionScope.refresh,
     isLoggedIn: ExchangeScope.isLoggedIn,
     sessionChanges: ExchangeScope.signedInChanges,
     isSuperuser: (context) =>
@@ -80,15 +81,41 @@ class SettingsRouter {
     },
     title: (context) => context.loc.settingsExchangeSettingsTitle,
     signedOutMessage: (context) => context.loc.notLoggedInMessage,
-    buildAccountActions: (showDeleteAccount) =>
-        ExchangeAccountActions(showDeleteAccount: showDeleteAccount),
+    hasAccount: ExchangeSessionScope.watchHasAccount,
+    accountFailureMessage: (context, failure) => failure.toTranslated(context),
     onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
     onOpenTransactions: (context) =>
         context.pushNamed(TransactionsRoute.exchangeTransactions.name),
-    onOpenDefaultWallets: (context) =>
-        context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
+    onOpenDefaultWallets: DefaultWalletsNavigation.open,
     onOpenExchange: (context) =>
         context.goNamed(ExchangeRoute.exchangeHome.name),
+    access: (
+      actions: (
+        current: () => locator<ExchangeFacade>().currentAccess,
+        watch: () => locator<ExchangeFacade>().watchAccess(),
+        enable: () => locator<ExchangeFacade>().enable(),
+        signOut: () => locator<ExchangeFacade>().logout(),
+        resolve: () => locator<ExchangeFacade>().resolveAccess(),
+      ),
+      platform: Platform.isIOS ? ExchangePlatform.ios : ExchangePlatform.other,
+      description: (context) => context.loc.exchangeAccessSettingsDescription,
+      onAuthenticate: (context) => context.pushNamed<void>(
+        ExchangeRoute.exchangeAuth.name,
+        queryParameters: {'from': 'settings'},
+      ),
+      onDisabled: (context) => context.goNamed(WalletRoute.walletHome.name),
+    ),
+    defaultWallets: (
+      payoutFields: exchangePayoutFields,
+      isAvailable: () async => switch (await locator<Preferences>().fetch()) {
+        Ok(:final value) => NetworkCapabilities.supports(
+          BitcoinNetwork.fromName(value.environment.name),
+          NetworkCapability.exchange,
+        ),
+        Err() => false,
+      },
+      unavailableRedirectPath: WalletRoute.walletHome.path,
+    ),
   );
 
   static GoRoute route({
@@ -113,28 +140,11 @@ class SettingsRouter {
         builder: (context, state) => const SettingsSearchScreen(),
       ),
       GoRoute(
-        name: SettingsRoute.exchangeAccess.name,
-        path: SettingsRoute.exchangeAccess.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<ExchangeAccessSettingsCubit>(),
-          child: ExchangeAccessSettingsScreen(
-            onBack: () => context.pop(),
-            onAuthenticate: () => context.pushNamed<void>(
-              ExchangeRoute.exchangeAuth.name,
-              queryParameters: {'from': 'settings'},
-            ),
-            onOpenAccount: () => ExchangeSettingsRoute.home.open(context),
-            onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
-          ),
-        ),
-      ),
-      GoRoute(
         name: SettingsRoute.quickActions.name,
         path: SettingsRoute.quickActions.path,
         builder: (context, state) =>
             QuickActionsSettingsScreen(cubit: locator<QuickActionsCubit>()),
       ),
-      DefaultWalletsRouter.route,
       ...exchangeSettingsRoutes,
       GoRoute(
         name: SettingsRoute.walletSettings.name,

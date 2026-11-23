@@ -1,4 +1,5 @@
 import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bull_exchange/bull_exchange.dart' show WizardExchangeOption;
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
@@ -134,17 +135,9 @@ class CustomizeStep extends StatelessWidget {
           ),
           if (exchange != null) ...[
             divider,
-            MergeSemantics(
-              child: BullSettingsEntryItem(
-                icon: Icons.currency_exchange,
-                title: loc.wizardExchangeTitle,
-                subtitle: loc.wizardExchangeDescription,
-                contentPadding: EdgeInsets.zero,
-                trailing: BullSwitch(
-                  value: exchange,
-                  onChanged: onExchangePicked,
-                ),
-              ),
+            WizardExchangeOption(
+              enabled: exchange,
+              onChanged: onExchangePicked,
             ),
           ],
           if (background != null) ...[

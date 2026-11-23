@@ -229,10 +229,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "รหัส",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "การกู้คืนกระเป๋าสตางค์ของคุณ",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -856,10 +852,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "การจัดการ 2FA และรหัสผ่าน",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "การสํารองข้อมูลเสร็จสิ้น!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1193,10 +1185,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "บูม",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "Swap กำลังดำเนินการ ธุรกรรม Bitcoin อาจใช้เวลายืนยันสักครู่ คุณสามารถกลับไปหน้าหลักแล้วรอได้",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1228,10 +1216,6 @@
   "payExpired": "วันหมดอายุ",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "การตั้งค่าการเข้าถึง",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "การชําระเงินที่ประสบความสําเร็จ",
   "@payPaymentSuccessful": {
@@ -1708,10 +1692,6 @@
   "logoutConfirmationLogout": "โลโก้",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "ข้อความที่จําเป็น",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "ค่าธรรมเนียมโดยประมาณ",
   "@buyEstimatedFeeValue": {
@@ -3204,10 +3184,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "ให้การสนับสนุนเกี่ยวกับโปรแกรมแนะนําของเรา",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR สมดุล",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -4072,10 +4048,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "เยี่ยมชม กู้คืนข้อมูลเพิ่มเติม.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "ไม่มีข้อความ เริ่มต้นการสนทนา!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "ชําระเงินจากกระเป๋าสตางค์ Bitcoin",
   "@payExternalWalletDescription": {
@@ -6567,10 +6539,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "exchangeSupportChatYesterday": "สุดท้าย",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "dcaSetupFundAccount": "บัญชีบัญชีของคุณ",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -7347,10 +7315,6 @@
   "fundExchangeLabelBeneficiaryName": "เมนู",
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
-  },
-  "exchangeSupportChatMessageEmptyError": "ข้อความไม่สามารถเปล่า",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeWarningTactic2": "พวกเขาเสนอสินเชื่อ",
   "@fundExchangeWarningTactic2": {
@@ -8437,10 +8401,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "ใช้เข้าร่วมโปรแกรมที่นี่",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "ใส่ป้ายสําหรับผู้รับนี้",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8488,10 +8448,6 @@
   "sellAdvancedSettings": "การตั้งค่าขั้นสูง",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "เข้าร่วมภารกิจ",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "เข้าสู่ระบบ",
   "@exchangeSettingsLogInTitle": {
@@ -9236,11 +9192,6 @@
   "recipientsFieldPayeeAccountNumber": "หมายเลขบัญชีผู้รับเงิน",
   "exchangeFileUploadStatusRejectedBadge": "ถูกปฏิเสธ",
   "exchangeFileUploadTapToReupload": "แตะเพื่ออัปโหลดใหม่",
-  "exchangeSupportChatAttachmentImage": "รูปภาพ",
-  "exchangeSupportChatAttachmentUnknownFile": "ไฟล์ที่ไม่ทราบชนิด",
-  "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
-  "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
-  "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
   "mempoolErrorUpdateSettingsFailed": "อัปเดตการตั้งค่าไม่สำเร็จ: {error}",
@@ -9318,9 +9269,6 @@
   "settingsSearchErrorReportingKeywords": "รายงานข้อขัดข้อง|รายงานข้อบกพร่อง|การวินิจฉัย|ข้อมูลการใช้งาน|บันทึกข้อผิดพลาด",
   "settingsSearchScreenPrivacyKeywords": "ภาพหน้าจอ|การบันทึกหน้าจอ|การป้องกันการจับภาพ|ความเป็นส่วนตัว",
   "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์",
-  "exchangeSupportChatLoadMessagesError": "ไม่สามารถโหลดข้อความได้ โปรดลองอีกครั้ง",
-  "exchangeSupportChatSendMessageError": "ไม่สามารถส่งข้อความของคุณได้ โปรดลองอีกครั้ง",
-  "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง",
   "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
   "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",

@@ -32,6 +32,7 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeNetworkFailure() => context.loc.exchangeErrorNetwork,
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
+    RecipientsFailure() ||
     ExchangeUnexpectedFailure() ||
     ExchangeApiKeyInvalidFailure() ||
     ExchangeApiKeySaveFailure() ||

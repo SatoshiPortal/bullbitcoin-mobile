@@ -77,7 +77,7 @@ void main() {
     final repository = _new(http);
 
     final result = await repository.getOrderStats();
-    final stats = (result as Ok<OrderStatsResponse, ExchangeFailure>).value;
+    final stats = (result as Ok<OrderStatistics, ExchangeFailure>).value;
 
     expect(stats.orderStats.bitcoinBuyVolume, const [
       AmountByCurrencyCode(currency: 'CAD', value: 1500),
@@ -98,7 +98,7 @@ void main() {
       readApiKey: () async => const Ok(null),
     ).getOrderStats();
     expect(
-      (result as Err<OrderStatsResponse, ExchangeFailure>).failure,
+      (result as Err<OrderStatistics, ExchangeFailure>).failure,
       isA<ExchangeNotAuthenticatedFailure>(),
     );
     expect(http.calls, 0);
@@ -112,7 +112,7 @@ void main() {
       readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
     ).getOrderStats();
     expect(
-      (result as Err<OrderStatsResponse, ExchangeFailure>).failure,
+      (result as Err<OrderStatistics, ExchangeFailure>).failure,
       isA<ExchangeCredentialReadFailure>(),
     );
     expect(http.calls, 0);
@@ -122,7 +122,7 @@ void main() {
     final repository = _new(_Http({'result': {}}));
     final result = await repository.getOrderStats();
     expect(
-      (result as Err<OrderStatsResponse, ExchangeFailure>).failure,
+      (result as Err<OrderStatistics, ExchangeFailure>).failure,
       isA<ExchangeStatisticsUnavailableFailure>(),
     );
   });

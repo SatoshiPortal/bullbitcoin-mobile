@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import 'entities/funding_details.dart';
@@ -7,12 +8,15 @@ import 'entities/funding_method.dart';
 import 'exchange_failure.dart';
 
 abstract interface class ExchangeFunding {
+  @useResult
   Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
   });
+  @useResult
   Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
     required FundingJurisdiction jurisdiction,
   });
+  @useResult
   Future<Result<void, ExchangeFailure>> registerResponsibilityConsent();
 }
 

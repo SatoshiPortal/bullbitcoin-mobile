@@ -237,10 +237,6 @@
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
-  "exchangeReferralsTitle": "Códigos de referência",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "fundExchangeLabelRecipientAddress": "Endereço de destinatário",
   "@fundExchangeLabelRecipientAddress": {
     "description": "Label for recipient address field"
@@ -771,10 +767,6 @@
   "@payTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "Gerenciar 2FA e senha",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "walletDeletionFailedTitle": "Excluir Falhado",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -1097,17 +1089,9 @@
   "@sellAccountName": {
     "description": "Label for bank account holder name"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/missão",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "receiveWaitForPayjoin": "Aguarde o remetente para terminar a transação payjoin",
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "exchangeSecurityAccessSettingsButton": "Configurações de acesso",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "sendErrorLiquidWalletRequired": "Carteira líquida deve ser usada para um líquido para troca de raios",
   "@sendErrorLiquidWalletRequired": {
@@ -1721,10 +1705,6 @@
   "sellCashPickup": "Recolha de dinheiro",
   "@sellCashPickup": {
     "description": "Option for in-person cash"
-  },
-  "exchangeSupportChatMessageRequired": "É necessária uma mensagem",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "exchangeStatisticsOrderStats": "Estatísticas da ordem",
   "@exchangeStatisticsOrderStats": {
@@ -3084,10 +3064,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "exchangeReferralsContactSupportMessage": "Contacte o suporte para aprender sobre o nosso programa de referência",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "physicalBackupRecommendation": "Backup físico: ",
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -3677,10 +3653,6 @@
   "transactionNetworkBitcoin": "Bitcoin",
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
-  },
-  "exchangeSupportChatEmptyState": "Ainda não há mensagens. Começa uma conversa!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "addressViewAddressesTitle": "Endereços",
   "@addressViewAddressesTitle": {
@@ -6486,10 +6458,6 @@
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
   },
-  "exchangeSupportChatYesterday": "Ontem",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Você não tem certeza e precisa de mais tempo para aprender sobre práticas de segurança de backup.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
     "description": "Recommendation text for when to use encrypted vault"
@@ -7174,10 +7142,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "exchangeReferralsApplyToJoinMessage": "Aplicar para se juntar ao programa aqui",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "receiveNoTimeToWait": "Não há tempo para esperar ou o payjoin falhou no lado do remetente?",
   "@receiveNoTimeToWait": {
     "description": "Question prompting user if they want to proceed without payjoin"
@@ -7419,10 +7383,6 @@
   "sellReceiveAmount": "Você receberá",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
-  },
-  "exchangeSupportChatMessageEmptyError": "A mensagem não pode estar vazia",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "dcaConfirmFrequencyHourly": "Cada hora",
   "@dcaConfirmFrequencyHourly": {
@@ -7827,10 +7787,6 @@
         "type": "String"
       }
     }
-  },
-  "exchangeReferralsJoinMissionTitle": "Junte-se à missão",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "backupSettingsEncryptedVault": "Vault criptografado",
   "@backupSettingsEncryptedVault": {
@@ -8838,11 +8794,6 @@
   "recipientsFieldPayeeAccountNumber": "Número da conta do beneficiário",
   "exchangeFileUploadStatusRejectedBadge": "Rejeitado",
   "exchangeFileUploadTapToReupload": "Toque para enviar novamente",
-  "exchangeSupportChatAttachmentImage": "Imagem",
-  "exchangeSupportChatAttachmentUnknownFile": "Arquivo desconhecido",
-  "exchangeSupportChatPickFilesFailed": "Falha ao selecionar arquivos. Tente novamente.",
-  "exchangeSupportChatAttachLogsFailed": "Falha ao anexar logs. Tente novamente.",
-  "exchangeSupportChatFetchFileDataFailed": "Falha ao buscar os dados do arquivo.",
   "recipientsFieldSinpePhoneNumberHint": "8 dígitos sem código do país",
   "recipientsCopDocCcRecipientNumber": "Número de cédula do destinatário",
   "recipientsCopDocCeRecipientNumber": "Número de cédula de extranjería do destinatário",
@@ -9330,9 +9281,6 @@
   "settingsSearchErrorReportingKeywords": "relatórios de falhas|relatórios de bugs|diagnóstico|telemetria|logs de erros",
   "settingsSearchScreenPrivacyKeywords": "capturas de tela|gravação de tela|proteção contra captura|privacidade",
   "settingsSearchStartTyping": "Comece a digitar para ver os resultados.",
-  "exchangeSupportChatLoadMessagesError": "Não foi possível carregar as mensagens. Tente novamente.",
-  "exchangeSupportChatSendMessageError": "Não foi possível enviar sua mensagem. Tente novamente.",
-  "exchangeSupportChatLoadAttachmentError": "Não foi possível abrir o anexo. Tente novamente.",
   "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente.",
   "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",

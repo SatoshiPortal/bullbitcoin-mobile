@@ -2,6 +2,7 @@ import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxCredentialUnavailableFailure, BbxTimeouts;
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
+import 'package:preferences/preferences.dart';
 
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_exchange_recipient_repository.dart';
@@ -15,20 +16,37 @@ import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
 import 'data/bbx_api_virtual_iban_repository.dart';
 import 'data/exchange_notification_service.dart';
+import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
 import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';
 import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
+import 'domain/entities/virtual_iban.dart';
+import 'domain/exchange_access.dart';
+import 'domain/exchange_account_deletion_outcome.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
+import 'domain/exchange_kyc_configuration.dart';
 import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
+import 'setup/exchange_access_lifecycle.dart';
+import 'recipients/exchange_recipients.dart';
+import 'session/complete_exchange_authentication_usecase.dart';
+import 'session/exchange_auth_repository_impl.dart';
+import 'session/exchange_web_auth_datasource.dart';
+import 'session/expire_exchange_session_usecase.dart';
+import 'session/get_exchange_account_usecase.dart';
+import 'session/get_exchange_announcements_usecase.dart';
+import 'session/get_exchange_web_settings_usecase.dart';
+import 'session/save_exchange_preferences_usecase.dart';
+import 'session/watch_exchange_notifications_usecase.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -84,19 +102,20 @@ typedef ExchangeNotificationBindings = ({
 });
 
 typedef ExchangeNotificationOperations = ({
-  Stream<NotificationMessage> Function() messages,
+  Stream<Result<NotificationMessage, ExchangeFailure>> Function() messages,
   Future<Result<void, ExchangeFailure>> Function() connect,
   Future<Result<void, ExchangeFailure>> Function() reconnect,
   void Function() disconnect,
   Future<void> Function() close,
 });
 
+typedef ExchangeWebAuthEndpoints = ({Uri mainnet, Uri testnet});
 enum _CompletionCheck { none, read, write }
 
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
-  final Future<Result<OrderStatsResponse, ExchangeFailure>> Function()
+  final Future<Result<OrderStatistics, ExchangeFailure>> Function()
   _getOrderStats;
   final Future<Result<void, ExchangeFailure>> Function({
     required List<int> fileBytes,
@@ -123,6 +142,13 @@ final class Exchange {
   final ExchangeLimitOrders limitOrders;
   final ExchangeFunding funding;
   final ExchangeVirtualIbans virtualIbans;
+  final ExchangeKycConfigurationRepository? _kyc;
+  final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
+  _getConfidentialSepaAvailability;
+  final ExchangeAccessLifecycle? _access;
+  final Preferences? _sessionPreferences;
+  final ExchangeWebAuthEndpoints? _webAuthEndpoints;
+  final ExchangeRecipients recipients;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -139,6 +165,12 @@ final class Exchange {
     this.limitOrders,
     this.funding,
     this.virtualIbans,
+    this._kyc,
+    this._getConfidentialSepaAvailability,
+    this._access,
+    this.recipients,
+    this._sessionPreferences,
+    this._webAuthEndpoints,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -151,12 +183,20 @@ final class Exchange {
     required ExchangeSessionReader readSession,
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
+    ExchangeKycSetup? kyc,
+    ExchangeAccessLifecycle? access,
+    Preferences? sessionPreferences,
+    ExchangeWebAuthEndpoints? webAuthEndpoints,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
     readSession: readSession,
     notifications: notifications,
     paymentReturnUrl: paymentReturnUrl,
+    kyc: kyc,
+    access: access,
+    sessionPreferences: sessionPreferences,
+    webAuthEndpoints: webAuthEndpoints,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -174,6 +214,10 @@ final class Exchange {
     required OpenInventoryClient openUntimedClient,
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
+    ExchangeKycSetup? kyc,
+    ExchangeAccessLifecycle? access,
+    Preferences? sessionPreferences,
+    ExchangeWebAuthEndpoints? webAuthEndpoints,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -485,38 +529,263 @@ final class Exchange {
           untimed: true,
         ),
       ),
+      kyc == null ? null : ExchangeKycConfigurationRepository(kyc),
+      () => withClient((client, untimedClient) async {
+        switch (await BbxApiUserRepository(api: client).getUserSummary()) {
+          case Err():
+            return const Err(ExchangeAccountUnavailableFailure());
+          case Ok(:final value):
+            if (!value.isEligibleForConfidentialSepa) {
+              return const Ok(ConfidentialSepaAvailability.unavailable);
+            }
+        }
+        return (await BbxApiVirtualIbanRepository(untimedClient()).find()).map(
+          (iban) => iban is ActiveVirtualIban
+              ? ConfidentialSepaAvailability.ready
+              : ConfidentialSepaAvailability.needsVirtualIban,
+        );
+      }, checkCompletion: true),
+      access,
+      ExchangeRecipientsImpl(
+        <T>(environment, operation) => withClient<T>(
+          (client, _) => operation(client),
+          environment: environment,
+          untimed: true,
+          checkCompletion: true,
+        ),
+      ),
+      sessionPreferences,
+      webAuthEndpoints,
+    );
+  }
+
+  /// Applies onboarding's choice only if access has not already been set.
+  @useResult
+  Future<Result<void, ExchangeFailure>> applyInitialChoice(
+    bool enabled,
+  ) async =>
+      await _access?.enable(onlyIfUnset: true, choice: enabled) ??
+      const Err(ExchangeSessionClearFailure());
+
+  ExchangeAccess get currentAccess =>
+      _access?.current ?? const ExchangeAccessUnreadable();
+
+  Stream<ExchangeAccess> watchAccess() =>
+      _access?.watch() ?? Stream.value(currentAccess);
+
+  @useResult
+  Future<Result<ExchangeWebPreferences, ExchangeFailure>>
+  loadWebPreferences() async {
+    final preferences = _sessionPreferences;
+    if (preferences == null) return const Err(ExchangeUnexpectedFailure());
+    return GetExchangeWebSettingsUsecase(preferences: preferences).execute();
+  }
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> resolveAccess() async =>
+      await _access?.resolve() ?? const Err(ExchangeSessionClearFailure());
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> enableAccess({
+    bool forSupport = false,
+  }) async =>
+      await _access?.enable(forSupport: forSupport) ??
+      const Err(ExchangeSessionClearFailure());
+
+  /// Completes one WebView authentication. The session owner checks the
+  /// active environment and the view lifetime before saving a credential.
+  @useResult
+  Future<Result<void, ExchangeFailure>> authenticateWebSession({
+    required bool isTestnet,
+    required bool Function() isCurrent,
+    required Future<Object> Function(String) evaluateJavaScript,
+  }) async {
+    final access = _access;
+    final endpoints = _webAuthEndpoints;
+    if (access == null || endpoints == null) {
+      return const Err(ExchangeAuthenticationFailure());
+    }
+    return CompleteExchangeAuthenticationUsecase(
+      authRepository: ExchangeAuthRepositoryImpl(
+        datasource: ExchangeWebAuthDatasource(
+          signInUrl: isTestnet ? endpoints.testnet : endpoints.mainnet,
+          evaluateJavaScript: evaluateJavaScript,
+          isOpen: isCurrent,
+        ),
+      ),
+      access: access,
+      isTestnet: isTestnet,
+    ).execute(isCurrent: isCurrent);
+  }
+
+  /// Loads the foreground account and expires only a rejected current session.
+  @useResult
+  Future<Result<UserSummary, ExchangeFailure>> loadCurrentAccount() async {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    if (access == null || preferences == null) {
+      return const Err(ExchangeAccountUnavailableFailure());
+    }
+    return GetExchangeAccountUsecase(
+      exchange: this,
+      settingsRepository: preferences,
+      access: access,
+      expire: ExpireExchangeSessionUsecase(access),
+    ).execute();
+  }
+
+  @useResult
+  Future<Result<List<Announcement>, ExchangeFailure>>
+  loadCurrentAnnouncements() async {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    if (access == null || preferences == null) {
+      return const Err(ExchangeAnnouncementsUnavailableFailure());
+    }
+    return GetExchangeAnnouncementsUsecase(
+      exchange: this,
+      settingsRepository: preferences,
+      access: access,
+    ).execute();
+  }
+
+  /// Merges partial updates with a fresh account summary before saving.
+  @useResult
+  Future<Result<void, ExchangeFailure>> updateCurrentPreferences({
+    String? language,
+    String? currency,
+    bool? emailNotificationsEnabled,
+    bool? dcaEnabled,
+    String? autoBuyEnabled,
+  }) async {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    if (access == null || preferences == null) {
+      return const Err(ExchangePreferencesSaveFailure());
+    }
+    return SaveExchangePreferencesUsecase(
+      exchange: this,
+      settingsRepository: preferences,
+      access: access,
+    ).execute(
+      language: language,
+      currency: currency,
+      emailNotificationsEnabled: emailNotificationsEnabled,
+      dcaEnabled: dcaEnabled,
+      autoBuyEnabled: autoBuyEnabled,
+    );
+  }
+
+  WatchExchangeNotificationsUsecase? get _currentNotifications {
+    final access = _access;
+    final preferences = _sessionPreferences;
+    return access == null || preferences == null
+        ? null
+        : WatchExchangeNotificationsUsecase(
+            exchange: this,
+            settingsRepository: preferences,
+            access: access,
+          );
+  }
+
+  Stream<NotificationMessage> watchAccountChanges() =>
+      _currentNotifications?.accountChanges() ?? const Stream.empty();
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> openCurrentNotifications({
+    bool reconnect = false,
+  }) async {
+    final notifications = _currentNotifications;
+    if (notifications == null) {
+      return const Err(ExchangeNotificationsUnavailableFailure());
+    }
+    return reconnect ? notifications.reconnect() : notifications.connect();
+  }
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> signOut() async =>
+      await _access?.signOut() ?? const Err(ExchangeSessionClearFailure());
+
+  /// Sends the account deletion request to support, then signs out only if
+  /// the account still belongs to the session that sent it.
+  @useResult
+  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
+  deleteAccount() async {
+    final access = _access;
+    if (access == null) {
+      return const Err(ExchangeNotAuthenticatedFailure());
+    }
+    final current = access.current;
+    if (current is! ExchangeAccessEnabled ||
+        current.session != ExchangeAccessSession.signedIn) {
+      return const Err(ExchangeNotAuthenticatedFailure());
+    }
+    final epoch = access.epoch;
+    final result = await sendSupportMessage(
+      text: 'I want to delete my account',
+    );
+    if (access.epoch != epoch) {
+      return const Ok(ExchangeAccountDeletionOutcome.stale);
+    }
+    if (result case Err(:final failure)) {
+      return Err(switch (failure) {
+        ExchangeUnsupportedNetworkFailure() => failure,
+        _ => ExchangeAccountDeletionRequestFailure(
+          'sendSupportChatMessage failed: ${failure.runtimeType}',
+        ),
+      });
+    }
+    return (await access.signOut()).map(
+      (_) => ExchangeAccountDeletionOutcome.completed,
     );
   }
 
   /// Returns false only after scanning a complete, stable session inventory.
   /// A signed-out account cannot establish absence.
+  @useResult
   Future<Result<bool, ExchangeFailure>> hasPendingOrders() =>
       _hasPendingOrders();
 
-  Future<Result<OrderStatsResponse, ExchangeFailure>> getOrderStats() =>
+  @useResult
+  Future<Result<OrderStatistics, ExchangeFailure>> getOrderStats() =>
       _getOrderStats();
 
+  @useResult
+  Future<Result<ExchangeKycConfiguration, ExchangeFailure>> loadKyc() async =>
+      await _kyc?.load() ?? const Err(ExchangeUnexpectedFailure());
+
+  @useResult
   Future<Result<void, ExchangeFailure>> uploadKycDocument({
     required List<int> fileBytes,
     required String fileName,
   }) => _uploadKycDocument(fileBytes: fileBytes, fileName: fileName);
 
   /// Reads the account, distinguishing an HTTP 401 from an absent local key.
+  @useResult
   Future<Result<UserSummary, ExchangeFailure>> getAccount(
     ExchangeEnvironment environment,
   ) => _getAccount(environment);
 
   /// Reads the summary with the historical account-availability semantics.
+  @useResult
   Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
 
+  /// Checks account eligibility and then the IBAN under one session. A failed
+  /// lookup is distinct from an eligible account without an active IBAN.
+  @useResult
+  Future<Result<ConfidentialSepaAvailability, ExchangeFailure>>
+  getConfidentialSepaAvailability() => _getConfidentialSepaAvailability();
+
+  @useResult
   Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
     ExchangeEnvironment environment,
   ) => _listAnnouncements(environment);
 
   /// Replaces the account's preference set. Supply all existing values that
   /// should be retained when changing only one field.
+  @useResult
   Future<Result<void, ExchangeFailure>> saveUserPreference(
     ExchangeEnvironment environment, {
     String? language,
@@ -564,25 +833,34 @@ final class Exchange {
     address: address,
   );
 
+  @useResult
   Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
     int? page,
     int? pageSize,
   }) => _chat.getMessages(page: page, pageSize: pageSize);
 
+  @useResult
   Future<Result<void, ExchangeFailure>> sendSupportMessage({
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) => _chat.sendMessage(text: text, attachments: attachments);
 
+  @useResult
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
-  Stream<NotificationMessage> get notifications => _notifications.messages();
+  /// Broadcasts messages and recoverable failures from the active socket.
+  /// An [Err] does not close the stream. Failures before opening a socket
+  /// (such as an unavailable environment) are returned by the command only.
+  Stream<Result<NotificationMessage, ExchangeFailure>> get notifications =>
+      _notifications.messages();
 
+  @useResult
   Future<Result<void, ExchangeFailure>> connectNotifications() =>
       _notifications.connect();
 
+  @useResult
   Future<Result<void, ExchangeFailure>> reconnectNotifications() =>
       _notifications.reconnect();
 
@@ -594,7 +872,7 @@ final class Exchange {
 /// Builds the public capability with scenario-controlled results.
 Exchange exchangeForTesting({
   Future<Result<bool, ExchangeFailure>> Function()? hasPendingOrders,
-  Future<Result<OrderStatsResponse, ExchangeFailure>> Function()? getOrderStats,
+  Future<Result<OrderStatistics, ExchangeFailure>> Function()? getOrderStats,
   Future<Result<void, ExchangeFailure>> Function({
     required List<int> fileBytes,
     required String fileName,
@@ -636,6 +914,11 @@ Exchange exchangeForTesting({
   ExchangeLimitOrders? limitOrders,
   ExchangeFunding? funding,
   ExchangeVirtualIbans? virtualIbans,
+  Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
+  getConfidentialSepaAvailability,
+  ExchangeRecipients? recipients,
+  ExchangeAccessLifecycle? access,
+  Preferences? sessionPreferences,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -706,6 +989,16 @@ Exchange exchangeForTesting({
         find: (_) => throw StateError('Unexpected virtual IBAN lookup'),
         create: (_) => throw StateError('Unexpected virtual IBAN creation'),
       ),
+  null,
+  getConfidentialSepaAvailability ??
+      () => throw StateError('Unexpected Confidential SEPA availability check'),
+  access,
+  recipients ??
+      ExchangeRecipientsImpl(
+        <T>(_, _) => throw StateError('Unexpected fiat recipient operation'),
+      ),
+  sessionPreferences,
+  null,
 );
 
 Exchange exchangeWithTransportForTesting({

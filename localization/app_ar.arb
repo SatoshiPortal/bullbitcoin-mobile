@@ -213,10 +213,6 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "exchangeReferralsTitle": "مدونات الإحالة",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "استرجع محفظتك",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -790,10 +786,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA and password",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "اكتمل الدعم!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1079,10 +1071,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "المبادلة قيد التنفيذ. قد تستغرق معاملات Bitcoin بعض الوقت للتأكيد. يمكنك العودة إلى الصفحة الرئيسية والانتظار.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1114,10 +1102,6 @@
   "payExpired": "Expired",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "الدخول",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "المدفوعات الناجحة",
   "@payPaymentSuccessful": {
@@ -1562,10 +1546,6 @@
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "الرسالة مطلوبة",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "القيمة التقديرية للرسوم",
   "@buyEstimatedFeeValue": {
@@ -2966,10 +2946,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "دعم الاتصال للتعلم عن برنامج الإحالة",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR الرصيد",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -3759,10 +3735,6 @@
   "receiveRequestInboundLiquidity": "طلب الحصول على القدرة",
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
-  },
-  "exchangeSupportChatEmptyState": "لا رسائل بعد ابدأ المحادثة!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "دفع محفظة بيتكوين أخرى",
   "@payExternalWalletDescription": {
@@ -6048,10 +6020,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "exchangeSupportChatYesterday": "أمس",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "dcaSetupFundAccount": "صندوق حسابك",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -6756,10 +6724,6 @@
   "fundExchangeLabelBeneficiaryName": "الاسم المستفيد",
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
-  },
-  "exchangeSupportChatMessageEmptyError": "الرسالة لا يمكن أن تكون فارغة",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeWarningTactic2": "انهم يعرضون عليك قرض",
   "@fundExchangeWarningTactic2": {
@@ -7769,10 +7733,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "exchangeReferralsApplyToJoinMessage": "تطبيق للانضمام إلى البرنامج هنا",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "أدخل بطاقة تعريف لهذا المتلقي",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -7816,10 +7776,6 @@
   "sellAdvancedSettings": "المراحل المتقدمة",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "انضم إلى البعثة",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "Log In",
   "@exchangeSettingsLogInTitle": {
@@ -9235,11 +9191,6 @@
   "recipientsFieldPayeeAccountNumber": "رقم حساب المستفيد",
   "exchangeFileUploadStatusRejectedBadge": "مرفوض",
   "exchangeFileUploadTapToReupload": "اضغط لإعادة الرفع",
-  "exchangeSupportChatAttachmentImage": "صورة",
-  "exchangeSupportChatAttachmentUnknownFile": "ملف غير معروف",
-  "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
@@ -9317,9 +9268,6 @@
   "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
   "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
   "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
-  "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
   "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",

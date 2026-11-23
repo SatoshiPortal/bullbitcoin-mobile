@@ -1,0 +1,17 @@
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
+import 'package:material_ui/material_ui.dart';
+
+class FundExchangeRestrictedCard extends StatelessWidget {
+  const FundExchangeRestrictedCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BullInfoCard(
+      title: context.loc.fundExchangeRestrictedTitle,
+      description: context.loc.fundExchangeRestrictedMessage,
+      bgColor: context.appColors.error.withValues(alpha: 0.1),
+      tagColor: context.appColors.error,
+    );
+  }
+}

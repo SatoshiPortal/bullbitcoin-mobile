@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_exit_on_back.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';

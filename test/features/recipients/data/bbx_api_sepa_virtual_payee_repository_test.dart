@@ -1,11 +1,8 @@
-import 'package:exchange/exchange.dart';
-
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
-import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:exchange/testing.dart';
+import 'package:exchange/exchange.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

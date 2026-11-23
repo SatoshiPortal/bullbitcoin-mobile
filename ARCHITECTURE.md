@@ -341,7 +341,27 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 The Exchange credential participant owns a separate encrypted schema. It uses the scoped Secrets database worker opener with native-close admission and reads the two fixed legacy records on the foreground isolate. It is not yet active in app composition. Activation requires the coordinator's pre-marker provenance check and draining both legacy credential writers.
 
-`BullExchangeFeature.mount` contributes the exchange landing, support chat and account settings routes from `features/bull_exchange`. The legacy exchange router supplies the landing's store-aware localized copy, branding and navigation, and selects the sign-in screen for unauthenticated chat entry. The feature owns chat and settings presentation, attachment handling and localized copy, and consumes the Exchange capability directly. The settings host supplies sign-in state, the store-aware settings title and sign-in message, and the existing authenticated preference-save operation.
+`BullExchangeFeature.mount` contributes the exchange landing, authentication, support chat and account settings routes from `features/bull_exchange`. The legacy exchange router supplies the landing's store-aware localized copy, branding and navigation. The workspace feature owns the authentication WebView and its return paths, chat and settings presentation, attachment handling and localized copy. `Exchange.authenticateWebSession` binds credential generation to the configured environment and view lifetime without returning key material to the feature.
+
+The startup wizard receives the platform visibility decision from bootstrap before any services are opened. `packages/exchange` owns that pure decision independently of the later exchange access state, and `bull_exchange` renders the option without opening a session. KYC configuration also belongs to `Exchange`; the feature opens the web view with configuration for the active environment only.
+
+`BullExchangeFeature.mount` also contributes the manage-access route under app settings and owns its route-scoped state. `packages/exchange` owns the foreground access queue, epoch, and sign-out journal. The host only binds the existing platform preference, cookie cleanup and app navigation; the Wizard applies its pending choice to the same authority through `Exchange.applyInitialChoice`.
+
+The workspace Settings screen owns the logout and deletion confirmations. `Exchange` observes the access authority for Quick Actions and will not sign out a new session when an older deletion request completes.
+
+The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange` and uses the workspace virtual IBAN screen. The Exchange domain owns fiat recipients, the CAD directory, SINPE and SEPA activation. Their operations use the untimed BBX client bound to the current session; the feature owns polling, selection and form state.
+
+Withdrawal is mounted in the same feature and reuses its recipient selection and activation. A completed withdrawal is not invalidated by failing to update Interac defaults. The host opens the existing transaction detail route and preserves its return to Exchange.
+
+The Exchange amount and currency controls are intentionally reusable widgets. DCA, Limit Orders, Sell, Pay and Withdrawal import them from `bull_exchange`, not from the legacy Exchange UI.
+
+Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
+
+The Exchange mount contributes `/auto-buy`; the dashboard uses its reusable AutoBuy card. Both use route- or widget-scoped state and call `Exchange` directly for typed account reads, default payout checks and preference writes. The host supplies the existing address viewer and terms URL.
+
+The Exchange mount owns the Trade dashboard and its KYC child route. `ExchangeSessionScope` owns the foreground account state and app-resume refresh. It consumes the Exchange session's guarded account, preference and notification operations; application-level destinations remain explicit navigation callbacks.
+
+The same mount owns the active limit-order card, details and cancellation. Create still uses the legacy foreground wallet catalog until the authorized wallet inventory is mounted; its route uses the workspace's typed details navigation.
 
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 

@@ -1,0 +1,50 @@
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_ui/testing.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
+
+import 'limit_order_fixtures.dart';
+
+class _Orders extends Mock implements ExchangeLimitOrders {}
+
+void main() {
+  testWidgets('the mounted details route loads the selected active order', (
+    tester,
+  ) async {
+    final orders = _Orders();
+    when(() => orders.get('selected'))
+        .thenAnswer((_) async => Ok(limitOrder(id: 'selected')));
+    final exchange = exchangeForTesting(limitOrders: orders);
+    final feature = BullExchangeFeature.mount(
+      networkUnavailable: () async => false,
+      showWebsiteOnly: (_) => false,
+      unavailableRedirectPath: '/wallet',
+      brandAssetPath: 'unused',
+      copy: (_) => fail('unexpected landing'),
+      onSignIn: (_) {},
+      onExit: (_) {},
+      limitOrders: () => exchange,
+    );
+    final router = GoRouter(
+      initialLocation: '/limit-orders/selected',
+      routes: [?feature.limitOrderDetails],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+        supportedLocales: ExchangeLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    verify(() => orders.get('selected')).called(1);
+    expect(find.text('LO-1'), findsOneWidget);
+  });
+}

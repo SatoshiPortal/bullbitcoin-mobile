@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart' show Failure;
 
+part '../recipients/domain/recipients_failure.dart';
+
 /// Recoverable exchange failures. Consumers localize them at the UI boundary.
 ///
 /// Never render `logMessage`. Keep it free of server text, credentials and

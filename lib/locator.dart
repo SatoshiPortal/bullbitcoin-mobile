@@ -7,7 +7,6 @@ import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
-import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -36,7 +35,6 @@ import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
-import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:signers/routes.dart';
@@ -47,17 +45,14 @@ import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/receive/public/receive_setup.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -69,7 +64,6 @@ import 'package:bb_mobile/features/swap/boltz_swaps_setup.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
-import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -340,14 +334,9 @@ class AppLocator {
     }
 
     ExchangeLocator.setup(locator);
-    locator.registerLazySingleton<DefaultWalletsFacade>(
-      () => DefaultWalletsFacade(locator<Exchange>()),
-    );
-    AutoBuyLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
     BuyLocator.setup(locator);
     SellLocator.setup(locator);
-    WithdrawLocator.setup(locator);
     PayLocator.setup(locator);
     locator.registerSingleton(
       NetworkFeature.mount(
@@ -361,11 +350,9 @@ class AppLocator {
       ),
     );
 
-    FundExchangeLocator.setup(locator);
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
-    RecipientsLocator.setup(locator);
 
     // Follows network switches from launch on, whether or not the swap
     // watcher has started yet: the engine must match the network the first

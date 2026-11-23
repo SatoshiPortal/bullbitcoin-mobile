@@ -341,7 +341,7 @@ List<SettingsItem> buildSettingsItems({
       title: localization.settingsExchangeTitle,
       path: path(SettingsItemSection.root, localization.settingsExchangeTitle),
       icon: Icons.currency_exchange,
-      open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
+      open: ExchangeAccessSettingsNavigation.open,
       keywords: _keywords(
         localization.settingsSearchExchangeKeywords,
         english.settingsSearchExchangeKeywords,

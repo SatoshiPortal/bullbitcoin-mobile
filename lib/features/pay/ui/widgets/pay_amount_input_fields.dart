@@ -1,6 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_currency_dropdown.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 

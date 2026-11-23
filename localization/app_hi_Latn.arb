@@ -438,34 +438,6 @@
   "@exchangeTransactionsComingSoon": {
     "description": "Message indicating that the transactions feature is coming soon"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA aur password manage karo",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
-  "exchangeSecurityAccessSettingsButton": "Settings Access Karo",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
-  },
-  "exchangeReferralsTitle": "Referral Codes",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
-  "exchangeReferralsJoinMissionTitle": "Mission Mein Shamil Ho",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
-  },
-  "exchangeReferralsContactSupportMessage": "Hamare referral program ke baare mein jaankari ke liye support se sampark karo",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
-  "exchangeReferralsApplyToJoinMessage": "Program mein shamil hone ke liye yahan apply karo",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "exchangeRecipientsTitle": "Recipients",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -7376,25 +7348,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "Abhi koi message nahi. Baat shuru karo!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "Message type karo...",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "Ek message zaruri hai",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "Message khali nahi reh sakta",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "Kal",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "Ye chat sirf Funding/Buy/Sell/Withdraw/Pay se related exchange issues ke liye hai.\nWallet related issues ke liye, yahan click karke telegram group join karo.",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -9477,11 +9433,6 @@
   "recipientsFieldPayeeAccountNumber": "Payee Account Number",
   "exchangeFileUploadStatusRejectedBadge": "Rejected",
   "exchangeFileUploadTapToReupload": "Phir se upload karne ke liye tap karo",
-  "exchangeSupportChatAttachmentImage": "Image",
-  "exchangeSupportChatAttachmentUnknownFile": "Anjaan file",
-  "exchangeSupportChatPickFilesFailed": "Files select nahi ho saki. Kripya dobara try karein.",
-  "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
-  "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
   "importMnemonicDuplicateError": "Ye mnemonic pehle se maujood hai",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
@@ -9558,9 +9509,6 @@
   "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
   "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
   "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein.",
-  "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
-  "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
-  "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
   "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",

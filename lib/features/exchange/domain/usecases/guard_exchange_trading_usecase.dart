@@ -1,14 +1,10 @@
-import 'package:primitives/primitives.dart';
-
-import '../exchange_availability.dart';
-
+import 'package:exchange/setup.dart';
 import 'package:exchange/exchange.dart';
-
-import '../repositories/exchange_access_repository.dart';
+import 'package:primitives/primitives.dart';
 
 class GuardExchangeTradingUsecase {
   const GuardExchangeTradingUsecase(this._access, this._platformAllowed);
-  final ExchangeAccessRepository _access;
+  final ExchangeAccessLifecycle _access;
   final Future<bool> Function() _platformAllowed;
 
   Future<Result<ExchangeAvailability, ExchangeFailure>> execute() async {

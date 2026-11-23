@@ -230,10 +230,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "रेफरल कोड",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "अपना वॉलेट पुनर्प्राप्त करें",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -856,10 +852,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA और पासवर्ड प्रबंधित करें",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "बैकअप पूरा हो गया!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1193,10 +1185,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "स्वैप प्रगति पर है। Bitcoin लेनदेन की पुष्टि होने में कुछ समय लग सकता है। आप होम पर लौटकर प्रतीक्षा कर सकते हैं।",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1228,10 +1216,6 @@
   "payExpired": "शीघ्र",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "सेटिंग्स एक्सेस करें",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "भुगतान सफल",
   "@payPaymentSuccessful": {
@@ -1708,10 +1692,6 @@
   "logoutConfirmationLogout": "लॉग-इन",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "एक संदेश की आवश्यकता है",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "अनुमानित शुल्क मूल्य",
   "@buyEstimatedFeeValue": {
@@ -3204,10 +3184,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "हमारे रेफरल कार्यक्रम के बारे में जानने के लिए सहायता से संपर्क करें",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR शेष",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -4072,10 +4048,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "अधिक जानकारी के लिए getbull.com पर जाएं।।",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "अभी तक कोई संदेश नहीं। बातचीत शुरू करें!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "किसी अन्य Bitcoin वॉलेट से भुगतान करें",
   "@payExternalWalletDescription": {
@@ -6567,10 +6539,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "exchangeSupportChatYesterday": "कल",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "dcaSetupFundAccount": "अपने खाते को फंड करें",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -7347,10 +7315,6 @@
   "fundExchangeLabelBeneficiaryName": "लाभार्थी का नाम",
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
-  },
-  "exchangeSupportChatMessageEmptyError": "संदेश खाली नहीं हो सकता",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeWarningTactic2": "वे आपको कर्ज दे रहे हैं",
   "@fundExchangeWarningTactic2": {
@@ -8437,10 +8401,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "यहाँ कार्यक्रम में शामिल होने के लिए आवेदन करें",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "इस प्राप्तकर्ता के लिए एक लेबल दर्ज करें",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8488,10 +8448,6 @@
   "sellAdvancedSettings": "उन्नत सेटिंग्स",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "मिशन में शामिल हों",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "लॉग इन",
   "@exchangeSettingsLogInTitle": {
@@ -9409,11 +9365,6 @@
   "recipientsFieldPayeeAccountNumber": "भुगतानकर्ता खाता संख्या",
   "exchangeFileUploadStatusRejectedBadge": "अस्वीकृत",
   "exchangeFileUploadTapToReupload": "पुनः अपलोड करने के लिए टैप करें",
-  "exchangeSupportChatAttachmentImage": "छवि",
-  "exchangeSupportChatAttachmentUnknownFile": "अज्ञात फ़ाइल",
-  "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
-  "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
-  "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "पर्याप्त खर्च योग्य शेष नहीं है — {amount} फ्रोज़न है। इसका उपयोग करने के लिए \"कॉइन प्रबंधित करें\" में कॉइन अनफ्रीज़ करें।",
   "importWalletBitBox": "बिटबॉक्स02",
@@ -9489,9 +9440,6 @@
   "settingsSearchErrorReportingKeywords": "Crash report|त्रुटि रिपोर्ट|डायग्नोस्टिक्स|Telemetry|त्रुटि लॉग",
   "settingsSearchScreenPrivacyKeywords": "स्क्रीनशॉट|स्क्रीन रिकॉर्डिंग|स्क्रीन कैप्चर सुरक्षा|गोपनीयता",
   "settingsSearchStartTyping": "परिणाम देखने के लिए टाइप करना शुरू करें।",
-  "exchangeSupportChatLoadMessagesError": "संदेश लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
-  "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
-  "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
   "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
   "sendErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
   "sendErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",

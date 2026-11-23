@@ -1,7 +1,8 @@
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
-import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
+import 'package:bull_exchange/bull_exchange.dart'
+    show ExchangeLocalizations, ExchangeSessionScope;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
@@ -12,6 +13,7 @@ import 'package:mempool/mempool.dart';
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
+import 'package:exchange/exchange.dart' show Exchange;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -121,7 +123,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),
       ],
-      child: ExchangeScope(
+      child: ExchangeSessionScope(
+        exchange: () => locator<Exchange>(),
+        preferences: () => locator<Preferences>(),
         child: MultiBlocListener(
           listeners: [
             SettingsFailureListener(),

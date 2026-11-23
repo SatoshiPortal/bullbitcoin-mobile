@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:fees_feature/fee_ui.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';

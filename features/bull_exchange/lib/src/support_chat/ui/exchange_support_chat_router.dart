@@ -1,15 +1,21 @@
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:primitives/primitives.dart';
 
 import '../exchange_support_chat_navigation.dart';
 import 'screens/exchange_support_chat_screen.dart';
+import 'screens/exchange_support_login_screen.dart';
 
 class ExchangeSupportChatRouter {
   static GoRoute route({
     required Exchange Function() exchange,
     required bool Function(BuildContext) isLoggedIn,
-    required Widget Function(ExchangeSupportChatDraft?) loginScreenBuilder,
+    required Future<Result<void, ExchangeFailure>> Function(BuildContext)
+    enableLogin,
+    required void Function(BuildContext, ExchangeSupportChatDraft?) onLogin,
+    required String Function(BuildContext) loginLabel,
+    required String Function(BuildContext, ExchangeFailure) failureMessage,
     required void Function(BuildContext, bool fromExchange) onExit,
   }) => GoRoute(
     name: ExchangeSupportChatNavigation.routeName,
@@ -29,7 +35,12 @@ class ExchangeSupportChatRouter {
                 onExit: exit,
                 initialMessage: draft?.initialMessage,
               )
-            : loginScreenBuilder(draft),
+            : ExchangeSupportLoginScreen(
+                enable: enableLogin,
+                onLogin: (context) => onLogin(context, draft),
+                loginLabel: loginLabel,
+                failureMessage: failureMessage,
+              ),
       );
     },
   );

@@ -6,8 +6,6 @@ import 'package:background_tasks/background_tasks.dart'
         backgroundSyncAvailable;
 import 'package:notifications/notifications.dart'
     show NotificationPermissionsFacade, notificationPermissions;
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
-    show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
@@ -21,6 +19,7 @@ import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,10 +42,12 @@ class WizardApp extends StatelessWidget {
     super.key,
     required this.onDone,
     required this.notificationChannelId,
+    required this.exchangeAllowed,
   });
 
   final ValueChanged<WizardChoices> onDone;
   final String notificationChannelId;
+  final bool exchangeAllowed;
 
   WizardBloc _createBloc() {
     final datasource = WizardLocalDatasourceImpl();
@@ -74,15 +75,16 @@ class WizardApp extends StatelessWidget {
         if (backgroundSyncAvailable) bloc.add(const WizardEvent.started());
         return bloc;
       },
-      child: _WizardAppView(onDone: onDone),
+      child: _WizardAppView(onDone: onDone, exchangeAllowed: exchangeAllowed),
     );
   }
 }
 
 class _WizardAppView extends StatelessWidget {
-  const _WizardAppView({required this.onDone});
+  const _WizardAppView({required this.onDone, required this.exchangeAllowed});
 
   final ValueChanged<WizardChoices> onDone;
+  final bool exchangeAllowed;
 
   @override
   Widget build(BuildContext context) {
@@ -110,18 +112,16 @@ class _WizardAppView extends StatelessWidget {
           locale: state.choices.language.locale,
           // The wizard runs before the main app and its settings exist: the
           // store constraint of the platform applies (superuser unknown).
-          localizationsDelegates: novlangLocalizationsDelegates(
-            resolveNovlangPolicy(defaultTargetPlatform, null),
-          ),
+          localizationsDelegates: [
+            ...novlangLocalizationsDelegates(
+              resolveNovlangPolicy(defaultTargetPlatform, null),
+            ),
+            ExchangeLocalizations.delegate,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: WizardScreen(
             backgroundTasksAvailable: backgroundSyncAvailable,
-            exchangeAllowed:
-                ExchangeAvailability.resolve(
-                  platformAllowed: defaultTargetPlatform != TargetPlatform.iOS,
-                  access: const ExchangeAccessResolving(),
-                ) !=
-                ExchangeAvailability.hidden,
+            exchangeAllowed: exchangeAllowed,
           ),
         );
       },

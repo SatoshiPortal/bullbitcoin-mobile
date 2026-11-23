@@ -229,10 +229,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "Referral Kodlar",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "Cüzdanını yeniden keşfedin",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -852,10 +848,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA ve şifreyi yönetin",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "Backup tamamlandı!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1185,10 +1177,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "Takas devam ediyor. Bitcoin işlemlerinin onaylanması biraz zaman alabilir. Ana sayfaya dönüp bekleyebilirsiniz.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1220,10 +1208,6 @@
   "payExpired": "Açıklama",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "Access Settings Ayarlar",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "Ödeme başarılı",
   "@payPaymentSuccessful": {
@@ -1700,10 +1684,6 @@
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "Bir mesaj gereklidir",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "Tahmin edilen ücret değeri",
   "@buyEstimatedFeeValue": {
@@ -3184,10 +3164,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "Tavsiye programımız hakkında bilgi edinmek için iletişim desteği",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR EUR EUR EUR EUR EUR Denge dengesi",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -4044,10 +4020,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Daha fazla bilgi için kurtarmabull.com ziyaret edin.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "Henüz mesajlar yok. Bir sohbete başlayın!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "Başka bir Bitcoin cüzdanından ödeme",
   "@payExternalWalletDescription": {
@@ -6492,10 +6464,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "exchangeSupportChatYesterday": "Dün",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "dcaSetupFundAccount": "Hesabınızı finanse edin",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -7272,10 +7240,6 @@
   "fundExchangeLabelBeneficiaryName": "Beneficiary name",
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
-  },
-  "exchangeSupportChatMessageEmptyError": "Mesaj boş olamaz",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeWarningTactic2": "Size bir kredi sunuyorlar",
   "@fundExchangeWarningTactic2": {
@@ -8328,10 +8292,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "Burada programa katılmak için uygulayın",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "Bu alıcı için bir etiket girin",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8379,10 +8339,6 @@
   "sellAdvancedSettings": "Gelişmiş Ayarlar",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "Göreve Katılın",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "Giriş Yap",
   "@exchangeSettingsLogInTitle": {
@@ -9232,11 +9188,6 @@
   "recipientsFieldPayeeAccountNumber": "Alıcı Hesap Numarası",
   "exchangeFileUploadStatusRejectedBadge": "Reddedildi",
   "exchangeFileUploadTapToReupload": "Yeniden yüklemek için dokunun",
-  "exchangeSupportChatAttachmentImage": "Görsel",
-  "exchangeSupportChatAttachmentUnknownFile": "Bilinmeyen dosya",
-  "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
-  "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
-  "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Beklenmeyen bir hata oluştu",
   "mempoolErrorUpdateSettingsFailed": "Ayarlar güncellenemedi: {error}",
@@ -9314,9 +9265,6 @@
   "settingsSearchErrorReportingKeywords": "çökme raporları|hata raporları|tanılama|telemetri|hata günlükleri",
   "settingsSearchScreenPrivacyKeywords": "ekran görüntüleri|ekran kaydı|ekran yakalama koruması|gizlilik",
   "settingsSearchStartTyping": "Sonuçları görmek için yazmaya başlayın.",
-  "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
-  "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
-  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin.",
   "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
   "sendErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
