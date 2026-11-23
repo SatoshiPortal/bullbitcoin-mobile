@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 
 import 'dart:convert';
 
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:satoshifier/bbqr.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:sync/sync.dart' show BitcoinTx;

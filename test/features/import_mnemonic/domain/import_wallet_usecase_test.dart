@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:preferences/preferences.dart';
@@ -22,7 +22,7 @@ class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+class _MockMetadata extends Mock implements WalletRegistrations {}
 
 class _MockWallet extends Mock implements Wallet {}
 

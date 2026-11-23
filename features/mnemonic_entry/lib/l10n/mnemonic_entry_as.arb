@@ -1,0 +1,25 @@
+{
+  "@@locale": "as",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "ঐচ্ছিক Passphrase",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "লেবেল",
+  "requiredHint": "প্ৰয়োজনীয়",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "দাখিল কৰক",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "emptyMnemonicWordsError": "আপোনাৰ mnemonic-ৰ সকলো শব্দ লিখক",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

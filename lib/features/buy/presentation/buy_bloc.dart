@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/buy/domain/validate_buy_destination_usecase.d
 import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';

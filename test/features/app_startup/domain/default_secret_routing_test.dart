@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;

@@ -17,6 +17,12 @@ extension SwapsFailureToSwapFailure on SwapsFailure {
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() ||
-    SwapsUnexpectedFailure() => SwapUnexpectedFailure(logMessage),
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
+    SwapsUnexpectedFailure() ||
+    AutoswapFailure() => SwapUnexpectedFailure(logMessage),
   };
 }

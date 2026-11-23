@@ -1,0 +1,10 @@
+{
+  "@@locale": "zh",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Optional Passphrase",
+  "recipientsInfoLabel": "标签",
+  "requiredHint": "所需",
+  "submitButton": "排放",
+  "emptyMnemonicWordsError": "插入你的 m言",
+  "oopsSomethingWentWrong": "Oops! 某些错误"
+}

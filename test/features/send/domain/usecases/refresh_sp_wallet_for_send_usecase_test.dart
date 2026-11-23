@@ -2,12 +2,12 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
-class _MockSpFacade extends Mock implements SpFacade {}
+class _MockSpFacade extends Mock implements Silent {}
 
 class _MockGetSpNetworkForSendUsecase extends Mock
     implements GetSpNetworkForSendUsecase {}
@@ -22,10 +22,10 @@ void main() {
     network = _MockGetSpNetworkForSendUsecase();
     usecase = RefreshSpWalletForSendUsecase(facade, network);
     when(facade.refresh).thenAnswer(
-      (_) async => Ok<SpWallet?, SpFailure>(
-        SpWallet(
+      (_) async => Ok<SilentWallet?, SilentFailure>(
+        SilentWallet(
           spAddress: 'sp1qexample',
-          balance: SpBalance(
+          balance: SilentBalance(
             confirmedSat: Sats.fromInt(1000),
             totalUnifiedSat: Sats.fromInt(1500),
           ),
@@ -33,7 +33,8 @@ void main() {
         ),
       ),
     );
-    when(network.execute).thenReturn(const Ok(Network.bitcoinMainnet));
+    when(network.execute)
+        .thenAnswer((_) async => const Ok(Network.bitcoinMainnet));
   });
 
   SpSendWallet? walletOf(Result<SpSendWallet?, SendFailure> result) =>
@@ -51,7 +52,8 @@ void main() {
   });
 
   test('follows the real SP network', () async {
-    when(network.execute).thenReturn(const Ok(Network.bitcoinTestnet));
+    when(network.execute)
+        .thenAnswer((_) async => const Ok(Network.bitcoinTestnet));
 
     final wallet = walletOf(await usecase.execute())!;
 
@@ -67,8 +69,9 @@ void main() {
   });
 
   test('an unreadable network fails instead of assuming mainnet', () async {
-    when(network.execute)
-        .thenReturn(const Err(SendUnexpectedFailure('no session')));
+    when(
+      network.execute,
+    ).thenAnswer((_) async => const Err(SendUnexpectedFailure('no session')));
 
     // Guessing mainnet here would describe a signet wallet as a mainnet one.
     final failure = failureOf(await usecase.execute());
@@ -79,15 +82,15 @@ void main() {
 
   test('no SP wallet yields null', () async {
     when(facade.refresh)
-        .thenAnswer((_) async => const Ok<SpWallet?, SpFailure>(null));
+        .thenAnswer((_) async => const Ok<SilentWallet?, SilentFailure>(null));
 
     expect(walletOf(await usecase.execute()), isNull);
   });
 
   test('a refresh failure the send flow knows is mapped', () async {
     when(facade.refresh).thenAnswer(
-      (_) async => const Err<SpWallet?, SpFailure>(
-        SpAmountExceedsBalance('over balance'),
+      (_) async => const Err<SilentWallet?, SilentFailure>(
+        SilentAmountExceedsBalance('over balance'),
       ),
     );
 
@@ -100,8 +103,9 @@ void main() {
 
   test('any other refresh failure becomes the send catch-all', () async {
     when(facade.refresh).thenAnswer(
-      (_) async =>
-          const Err<SpWallet?, SpFailure>(SpUnexpected('ffi went away')),
+      (_) async => const Err<SilentWallet?, SilentFailure>(
+        SilentUnexpected('ffi went away'),
+      ),
     );
 
     final failure = failureOf(await usecase.execute());

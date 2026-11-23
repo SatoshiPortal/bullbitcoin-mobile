@@ -1,0 +1,43 @@
+name: silent
+description: Silent Payments account, scanning, payments and user journeys.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  bull_logger:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  freezed_annotation: ^3.1.0
+  get_it: ^9.1.1
+  go_router: ^18.1.4
+  intl: any
+  material_ui: ^1.11.0
+  mempool:
+  meta: ^1.17.0
+  path_provider: ^2.1.5
+  preferences:
+  primitives:
+  rust_bindings:
+  secrets:
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  bip39_mnemonic: ^4.1.0
+  build_runner: ^2.10.4
+  fake_async: ^1.3.3
+  flutter_test:
+    sdk: flutter
+  freezed: ^4.0.1
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  generate: true

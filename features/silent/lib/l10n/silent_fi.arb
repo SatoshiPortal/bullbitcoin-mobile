@@ -1,0 +1,27 @@
+{
+  "@@locale": "fi",
+  "transactionStatusPending": "Odottaa",
+  "transactionListLoadingTransactions": "Ladataan transaktioita...",
+  "transactionListToday": "Tänään",
+  "transactionListYesterday": "Eilen",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "copyDialogButton": "Kopioi",
+  "amountLabel": "Määrä",
+  "receiveQRCode": "QR-koodi",
+  "cancel": "Peruuta",
+  "delete": "Poista",
+  "save": "Tallenna",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Kopioi napauttamalla",
+  "viewerViewInExplorer": "Näytä selaimessa",
+  "transactionViewerTitle": "Tapahtuman tunnus",
+  "viewerCopyLink": "Kopioi linkki",
+  "coinsTitle": "Kolikot",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Kopioitu leikepöydälle"
+}

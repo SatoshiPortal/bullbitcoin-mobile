@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
-import 'package:bb_mobile/features/wallet/data/ark_installation_state.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:shared_preferences/shared_preferences.dart';

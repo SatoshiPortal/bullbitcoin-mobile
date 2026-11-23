@@ -1,7 +1,7 @@
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
@@ -15,22 +15,8 @@ final class ForegroundWalletSync {
 
   Stream<String> get started => _sync.started.map((key) => key.id);
   Stream<String> get finished => _sync.finished.map((event) => event.key.id);
-  Stream<ElectrumSyncResult> get results => _sync.finished
-      // Contention or a deferred initial scan says nothing about server reachability. Completion still
-      // reaches finished so callers clear their syncing state.
-      .where(
-        (event) => switch (event.result) {
-          Err(failure: SyncBusyFailure() || SyncInitialScanRequiredFailure()) =>
-            false,
-          _ => true,
-        },
-      )
-      .map(
-        (event) => ElectrumSyncResult(
-          isLiquid: event.key.network is LiquidNetwork,
-          success: event.result is Ok<SyncCompletion, SyncFailure>,
-        ),
-      );
+  Stream<ElectrumSyncResult> get results =>
+      ElectrumSyncResult.watch(_sync.finished);
 
   bool isSyncing({String? walletId}) => _sync.isSyncing(walletId: walletId);
 
@@ -40,7 +26,7 @@ final class ForegroundWalletSync {
     bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
   }) async {
-    final descriptor = WalletCatalogPortImpl.descriptorFromMetadata(metadata);
+    final descriptor = WalletSyncBinding.descriptorFromMetadata(metadata);
     switch (descriptor) {
       case Err():
         throw const WalletStorageFailure('Invalid sync descriptor');
@@ -55,7 +41,7 @@ final class ForegroundWalletSync {
         final native = _native;
         if (result case Err(failure: SyncNeedsRepairFailure())
             when native != null) {
-          WalletCatalogPortImpl.value(await native.repair(value.key));
+          WalletSyncBinding.value(await native.repair(value.key));
           result = await _sync.execute(
             value,
             discover: discover,
@@ -64,7 +50,7 @@ final class ForegroundWalletSync {
           );
         }
         if (native != null) {
-          WalletCatalogPortImpl.value(await native.refresh(value.key));
+          WalletSyncBinding.value(await native.refresh(value.key));
         }
         if (result case Err(:final failure)) {
           // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.

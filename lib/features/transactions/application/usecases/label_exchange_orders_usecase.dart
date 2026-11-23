@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -23,7 +24,17 @@ class LabelExchangeOrdersUsecase {
   }) async {
     if (!explicitCompletion) return;
     try {
-      final ordersToLabel = orders ?? await _listAllOrdersUsecase.execute();
+      final List<Order> ordersToLabel;
+      if (orders != null) {
+        ordersToLabel = orders;
+      } else {
+        switch (await _listAllOrdersUsecase.execute()) {
+          case Ok(:final value):
+            ordersToLabel = value;
+          case Err():
+            return;
+        }
+      }
       if (ordersToLabel.isEmpty) return;
 
       final existingLabels = (await _labelsFacade.fetch()).fold(

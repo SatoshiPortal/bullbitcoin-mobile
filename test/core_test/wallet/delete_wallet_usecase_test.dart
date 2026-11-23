@@ -1,11 +1,9 @@
-import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
+import 'package:secrets/custody.dart';
 import 'package:swaps/swaps.dart';
 
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SeedReferences;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

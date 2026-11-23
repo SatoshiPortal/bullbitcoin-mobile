@@ -7,6 +7,7 @@ import '../domain/wallet_utxo.dart';
 export '../domain/coins_failure.dart';
 export '../ui/coins_router.dart'
     show CoinsRoute, CoinsRouter, OpenSelectedCoinsFlow;
+export '../ui/widgets/coins_entry_subtitle.dart' show CoinsEntrySubtitle;
 
 typedef CoinSummary = ({int count, BigInt frozenSat});
 

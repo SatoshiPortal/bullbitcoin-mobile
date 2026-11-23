@@ -1,0 +1,14 @@
+{
+  "@@locale": "ru",
+  "bip85NextMnemonic": "Следующий Mnemonic",
+  "bip85ExperimentalWarning": "Экспериментальный\nЗаверните свои пути вывода вручную",
+  "bip85Title": "Детерминированные энтропии BIP85",
+  "bip85NextHex": "Следующий HEX",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "bip85NoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "Скопировано в буфер обмена"
+}

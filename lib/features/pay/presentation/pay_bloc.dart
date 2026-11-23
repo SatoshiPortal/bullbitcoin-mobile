@@ -3,9 +3,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
@@ -29,7 +27,7 @@ import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';

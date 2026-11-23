@@ -10,7 +10,7 @@ class GetExchangeStatisticsUsecase {
   const GetExchangeStatisticsUsecase({required this._exchange});
 
   @useResult
-  Future<Result<OrderStatsResponse, ExchangeSettingsFailure>> execute() async =>
+  Future<Result<OrderStatistics, ExchangeSettingsFailure>> execute() async =>
       (await _exchange.getOrderStats()).mapErr(
         (_) => const ExchangeSettingsStatisticsUnavailableFailure(),
       );

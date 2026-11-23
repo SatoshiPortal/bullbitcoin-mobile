@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
-    show ArkFundingSigningGuard;
+import 'package:bull_ark/ark_wallet_setup.dart' show ArkFundingSigningGuard;
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -27,7 +26,7 @@ import 'package:meta/meta.dart';
 
 import 'package:fees/fees.dart';
 import 'package:sync/sync.dart' as sync;
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
@@ -37,14 +36,14 @@ import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final WalletRegistrations _walletRegistrations;
   final Secrets _secrets;
   final ArkFundingSigningGuard _arkFundingGuard;
   final Future<Result<sync.Wallet, SyncFailure>> Function(WalletKey) _wallet;
   final SyncWalletValuesDatasource _values;
 
   BitcoinWalletRepository({
-    required this._walletMetadataDatasource,
+    required this._walletRegistrations,
     required this._secrets,
     required this._arkFundingGuard,
     required this._wallet,
@@ -67,7 +66,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     bool? replaceByFee,
   }) async {
     try {
-      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      final metadata = await _walletRegistrations.fetch(walletId);
 
       if (metadata == null) {
         return const Err(WalletNotFoundFailure());
@@ -185,7 +184,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   }
 
   Future<WalletMetadataModel> _metadataFor(String walletId) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -247,7 +246,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required List<BitcoinTransactionRecipient> recipients,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -278,7 +277,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String address,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
@@ -304,7 +303,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String walletId,
     required String txid,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    final metadata = await _walletRegistrations.fetch(walletId);
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }

@@ -7,6 +7,8 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:test/test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import 'support/dart_executable.dart';
+
 void main() {
   late Directory directory;
   late NativeFileGate gate;
@@ -51,7 +53,7 @@ void main() {
   );
 
   test('separate process contends and SIGKILL releases its lease', () async {
-    final child = await Process.start(Platform.resolvedExecutable, [
+    final child = await Process.start(dartExecutable, [
       'run',
       'test/support/lifecycle_child.dart',
       gate.file.path,

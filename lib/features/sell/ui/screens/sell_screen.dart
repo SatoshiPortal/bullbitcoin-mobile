@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_field.dart';

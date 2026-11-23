@@ -1,19 +1,18 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart' show Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
+import 'package:swaps/swaps.dart' show Autoswap, AutoswapFailure;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockWatchFinished extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
 
-class _MockExecuteAutoswap extends Mock implements ExecuteAutoswapUsecase {}
+class _MockExecuteAutoswap extends Mock implements Autoswap {}
 
 Wallet _wallet({required bool liquid}) => Wallet(
   origin: liquid ? 'liquid' : 'bitcoin',

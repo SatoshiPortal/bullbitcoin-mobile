@@ -1,3 +1,8 @@
+import 'package:access/access.dart' show Access;
+import 'package:all_seed_view/setup.dart';
+import 'package:bip85/bip85.dart';
+import 'package:secrets/custody.dart';
+import 'package:swaps/swaps.dart' show BoltzSwaps;
 import 'package:fees/fees.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
@@ -23,6 +28,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+import 'package:swap_feature/swap_feature.dart' show SwapFeature;
+import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
+import 'package:secrets/testing.dart';
+
+import '../../support/inventory_fixture.dart';
+
+import 'package:silent/setup.dart';
 
 class PricePreferences extends Mock
     implements
@@ -31,6 +43,8 @@ class PricePreferences extends Mock
         RuntimeDisplayPreferencesReader {}
 
 class Exchange extends Mock implements ExchangeFacade {}
+
+class SilentPreferences extends Mock implements Preferences {}
 
 class Wallets extends Mock implements RecoverBullWalletPort {}
 
@@ -46,6 +60,17 @@ class Memory implements QuickActionsStorage {
 class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
+
+class _UnusedSwapRouting extends Mock implements SwapRouting {}
+
+class _UnusedSwapServers extends Mock implements SwapServerSettings {}
+
+class _UnusedSwaps extends Mock implements BoltzSwaps {}
+
+class _UnusedReferences extends Mock implements SeedReferencePort {}
+
+class _UnusedCustodyAdmission extends Mock
+    implements ParentCustodyAdmissionPort {}
 
 void main() {
   testWidgets(
@@ -66,10 +91,17 @@ void main() {
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       locator.registerSingleton<RecoverBullFeature>(recovery);
+      FakeSecureStoragePlatform().install();
+      final inventoryFixture = await tester.runAsync(
+        () => InventoryFixture.open(directory),
+      );
+      if (inventoryFixture == null) throw StateError('Inventory unavailable');
       final accessServices = GetIt.asNewInstance();
       locator.registerSingleton(
         AccessFeature.mount(
           services: accessServices,
+          inventory: inventoryFixture.inventory,
+          backupVerification: inventoryFixture.backup,
           hasVerifiedBackup: () async => false,
           onUnlocked: (_) {},
           onBackUp: (_) async {},
@@ -97,6 +129,25 @@ void main() {
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
+      locator.registerSingleton(
+        SwapFeature.mount(
+          routing: _UnusedSwapRouting(),
+          servers: _UnusedSwapServers(),
+        ),
+      );
+      locator.registerSingleton(
+        SilentFeature.mount(
+          preferences: SilentPreferences(),
+          secrets: Secrets(scratchDirectory: () async => directory.path),
+          readDefaultFingerprint: (_) async => const Ok(null),
+          readRouteAccess: (_) =>
+              (environment: null, isSuperuser: false, isDevModeEnabled: false),
+          walletHomePath: '/wallet-home',
+          openSend: (_) {},
+          balanceBuilder: (_, _) => const SizedBox(),
+          settingsIconBuilder: (_) => const SizedBox(),
+        ),
+      );
       final preferences = PricePreferences();
       locator.registerSingleton(
         BitcoinPriceFeature.mount(
@@ -105,13 +156,38 @@ void main() {
           display: preferences,
         ),
       );
+      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final inventory = inventoryFixture.inventory;
+      locator.registerSingleton(
+        Bip85Feature.mount(
+          derivations: inventory.bip85(secrets),
+          inventory: inventory,
+          preferences: preferences,
+        ),
+      );
+      locator.registerSingleton(
+        AllSeedViewFeature.mount(
+          secrets: secrets,
+          inventory: inventory,
+          preferences: preferences,
+          references: SeedReferences(
+            _UnusedReferences(),
+            admission: _UnusedCustodyAdmission(),
+          ),
+          swaps: _UnusedSwaps(),
+          access: const Access(),
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
         await quickActions.close();
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
+        await locator.unregister<Bip85Feature>();
+        await locator.unregister<AllSeedViewFeature>();
         await accessServices.reset();
+        await inventoryFixture.close();
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
         await locator.unregister<ExchangeFacade>();
@@ -119,12 +195,24 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<SwapFeature>();
         await locator.unregister<BitcoinPriceFeature>();
+        await locator.unregister<SilentFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });
       // Exercise the actual production route configuration, not a test GoRouter.
       expect(router.configuration.findMatch(Uri.parse('/ark')).isError, false);
+      expect(router.namedLocation('settings'), '/settings');
+      expect(router.namedLocation('search'), '/settings/search');
+      expect(
+        router.namedLocation('backupSettings'),
+        '/settings/backup-settings',
+      );
+      expect(
+        router.namedLocation('backupOptions'),
+        '/settings/backup-settings/backup-options',
+      );
       expect(
         router.namedLocation('torSettings'),
         '/settings/app-settings/tor-settings',
@@ -136,6 +224,13 @@ void main() {
         false,
       );
       expect(router.namedLocation('priceHistory'), '/settings/price-history');
+      expect(router.namedLocation('swapSettings'), '/swap-settings');
+      expect(router.namedLocation('spSetup'), '/sp-setup');
+      expect(router.namedLocation('spWalletDetail'), '/sp-wallet-detail');
+      expect(
+        router.namedLocation('spTransactionDetails'),
+        '/sp-transaction-details',
+      );
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

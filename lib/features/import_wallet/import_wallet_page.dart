@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart' show NetworkCapability;
 
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';

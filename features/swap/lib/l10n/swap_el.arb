@@ -1,0 +1,11 @@
+{
+  "@@locale": "el",
+  "save": "Εξοικονομήστε",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  }
+}

@@ -1,24 +1,27 @@
+import 'package:bb_mobile/features/exchange/ui/exchange_scope.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
+
+class _Preferences extends Mock implements Preferences {}
 
 class _ExchangeCubit extends MockCubit<ExchangeState>
     implements ExchangeCubit {}
-
-class _AutoBuy extends Mock implements AutoBuyFacade {}
 
 const _summary = UserSummary(
   userNumber: 1,
@@ -51,11 +54,12 @@ Future<void> _expectExitLeadsHome(
         locale: const Locale('en'),
         localizationsDelegates: const [
           BitcoinPriceLocalizations.delegate,
+          ExchangeLocalizations.delegate,
           ...AppLocalizations.localizationsDelegates,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: ExchangeHomeScreen(
+          body: _dashboard(
             homeCards: const [],
             onHomeRefresh: () {},
             onOpenSettings: () {},
@@ -73,7 +77,41 @@ Future<void> _expectExitLeadsHome(
   await cubit.close();
 }
 
+ExchangeHomeScreen _dashboard({
+  required List<Widget> homeCards,
+  required VoidCallback onHomeRefresh,
+  required VoidCallback onOpenSettings,
+  required void Function(ExchangeHomeAction) onAction,
+  required VoidCallback onExit,
+  Future<void> Function()? refreshAccount,
+}) => ExchangeHomeScreen(
+  watchDashboard: ExchangeSessionScope.watchDashboard,
+  exchange: ExchangeScope.exchange,
+  preferences: ExchangeScope.preferences,
+  brandAsset: Assets.logos.bbLogoSmall.path,
+  settingsAsset: Assets.icons.settingsLine.path,
+  refreshAccount: refreshAccount ?? () async {},
+  stopDca: () async {},
+  onOpenDca: () {},
+  onWithdraw: () {},
+  onHistory: () {},
+  failureMessage: (context, failure) => failure.toTranslated(context),
+  homeCards: homeCards,
+  onHomeRefresh: onHomeRefresh,
+  onOpenSettings: onOpenSettings,
+  onAction: onAction,
+  onExit: onExit,
+);
+
 void main() {
+  setUp(() {
+    locator.registerSingleton<Exchange>(exchangeForTesting());
+    locator.registerSingleton<Preferences>(_Preferences());
+    addTearDown(() async {
+      await locator.unregister<Preferences>();
+      await locator.unregister<Exchange>();
+    });
+  });
   testWidgets('initial account failure shows error and retry fetches again', (
     tester,
   ) async {
@@ -90,12 +128,14 @@ void main() {
           locale: const Locale('en'),
           localizationsDelegates: const [
             BitcoinPriceLocalizations.delegate,
+            ExchangeLocalizations.delegate,
             ...AppLocalizations.localizationsDelegates,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ExchangeHomeScreen(
+            body: _dashboard(
               homeCards: const [],
+              refreshAccount: cubit.fetchUserSummary,
               onHomeRefresh: () {},
               onOpenSettings: () {},
               onAction: (_) {},
@@ -129,11 +169,12 @@ void main() {
             locale: const Locale('en'),
             localizationsDelegates: const [
               BitcoinPriceLocalizations.delegate,
+              ExchangeLocalizations.delegate,
               ...AppLocalizations.localizationsDelegates,
             ],
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
-              body: ExchangeHomeScreen(
+              body: _dashboard(
                 homeCards: const [],
                 onHomeRefresh: () {},
                 onOpenSettings: () {},
@@ -154,17 +195,6 @@ void main() {
   testWidgets('names every top bar button within a 48 dp target', (
     tester,
   ) async {
-    final autoBuy = _AutoBuy();
-    when(
-      () => autoBuy.buildHomeCard(
-        isActive: any(named: 'isActive'),
-        isRestricted: any(named: 'isRestricted'),
-        onActivate: any(named: 'onActivate'),
-        onStatusChanged: any(named: 'onStatusChanged'),
-      ),
-    ).thenReturn(const SizedBox.shrink());
-    locator.registerSingleton<AutoBuyFacade>(autoBuy);
-    addTearDown(() => locator.unregister<AutoBuyFacade>());
     final cubit = _ExchangeCubit();
     when(() => cubit.state)
         .thenReturn(const ExchangeState(userSummary: _summary));
@@ -180,11 +210,12 @@ void main() {
           locale: const Locale('en'),
           localizationsDelegates: const [
             BitcoinPriceLocalizations.delegate,
+            ExchangeLocalizations.delegate,
             ...AppLocalizations.localizationsDelegates,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ExchangeHomeScreen(
+            body: _dashboard(
               homeCards: const [],
               onHomeRefresh: () {},
               onOpenSettings: () {},
@@ -228,17 +259,6 @@ void main() {
     });
 
     testWidgets('loaded account', (tester) async {
-      final autoBuy = _AutoBuy();
-      when(
-        () => autoBuy.buildHomeCard(
-          isActive: any(named: 'isActive'),
-          isRestricted: any(named: 'isRestricted'),
-          onActivate: any(named: 'onActivate'),
-          onStatusChanged: any(named: 'onStatusChanged'),
-        ),
-      ).thenReturn(const SizedBox.shrink());
-      locator.registerSingleton<AutoBuyFacade>(autoBuy);
-      addTearDown(() => locator.unregister<AutoBuyFacade>());
       await _expectExitLeadsHome(
         tester,
         const ExchangeState(userSummary: _summary),

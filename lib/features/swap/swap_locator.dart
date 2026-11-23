@@ -12,11 +12,10 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transa
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:preferences/preferences.dart';
-import 'package:preferences/preferences.dart' as settings_domain;
 import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
+import 'package:swaps/setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show
@@ -29,7 +28,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
@@ -41,18 +40,13 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
-import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_repository_impl.dart';
-import 'package:bb_mobile/features/swap/data/swap_route_setting_repository_impl.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
-import 'package:bb_mobile/features/swap/domain/repositories/swap_route_setting_repository.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
@@ -62,12 +56,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_server_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_exchange_fallback_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/set_swap_route_override_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
@@ -119,7 +108,7 @@ class SwapLocator {
       () => ExchangePublicApiDatasource(
         Dio(
           BaseOptions(
-            baseUrl: ApiServiceConstants.swapApiStagingUrl,
+            baseUrl: SwapServiceDefaults.swapApiStagingUrl,
             connectTimeout: const Duration(seconds: 15),
             sendTimeout: const Duration(seconds: 15),
             receiveTimeout: const Duration(seconds: 30),
@@ -132,7 +121,7 @@ class SwapLocator {
       () => ExchangePublicApiDatasource(
         Dio(
           BaseOptions(
-            baseUrl: ApiServiceConstants.swapApiMainnetUrl,
+            baseUrl: SwapServiceDefaults.swapApiMainnetUrl,
             connectTimeout: const Duration(seconds: 15),
             sendTimeout: const Duration(seconds: 15),
             receiveTimeout: const Duration(seconds: 30),
@@ -151,9 +140,6 @@ class SwapLocator {
         ),
         OrderSwapLocalDatasource(locator<OrderSwapsDatabase>()),
       ),
-    );
-    locator.registerLazySingleton<SwapRouteSettingRepository>(
-      SwapRouteSettingRepositoryImpl.new,
     );
     locator.registerFactory<GetOrderSwapQuoteUsecase>(
       () => GetOrderSwapQuoteUsecase(locator<OrderSwapRepository>()),
@@ -226,47 +212,7 @@ class SwapLocator {
       ),
     );
     locator.registerFactory<GetSwapRouteUsecase>(
-      () => GetSwapRouteUsecase(
-        swapRouteSettingRepository: locator<SwapRouteSettingRepository>(),
-        settingsRepository: locator<settings_domain.Preferences>(),
-      ),
-    );
-    locator.registerFactory<GetSwapRouteSettingsUsecase>(
-      () => GetSwapRouteSettingsUsecase(
-        swapRouteSettingRepository: locator<SwapRouteSettingRepository>(),
-        settingsRepository: locator<settings_domain.Preferences>(),
-      ),
-    );
-    locator.registerFactory<SetSwapExchangeFallbackUsecase>(
-      () =>
-          SetSwapExchangeFallbackUsecase(locator<SwapRouteSettingRepository>()),
-    );
-    locator.registerFactory<SetSwapRouteOverrideUsecase>(
-      () => SetSwapRouteOverrideUsecase(locator<SwapRouteSettingRepository>()),
-    );
-    locator.registerFactory<GetSwapServerUsecase>(
-      () => GetSwapServerUsecase(
-        swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.Preferences>(),
-      ),
-    );
-    locator.registerFactory<SetSwapServerUsecase>(
-      () => SetSwapServerUsecase(
-        swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.Preferences>(),
-        swapEngineSwitcher: locator<SwapEngineSwitcher>(),
-        swapStore: locator<SwapStore>(),
-      ),
-    );
-    locator.registerFactory<SwapSettingsCubit>(
-      () => SwapSettingsCubit(
-        getSwapRouteSettingsUsecase: locator<GetSwapRouteSettingsUsecase>(),
-        setSwapExchangeFallbackUsecase:
-            locator<SetSwapExchangeFallbackUsecase>(),
-        setSwapRouteOverrideUsecase: locator<SetSwapRouteOverrideUsecase>(),
-        getSwapServerUsecase: locator<GetSwapServerUsecase>(),
-        setSwapServerUsecase: locator<SetSwapServerUsecase>(),
-      ),
+      () => GetSwapRouteUsecase(locator<SwapRouting>()),
     );
     locator.registerFactory<SwapFacade>(
       () => SwapFacade(
@@ -286,7 +232,6 @@ class SwapLocator {
         locator<RefreshOrderSwapsUsecase>(),
         locator<GetSwapAppUpdateRequiredUsecase>(),
         locator<WatchSwapAppUpdateRequiredUsecase>(),
-        locator<GetSwapRouteUsecase>(),
         locator<RetryOngoingSwapsUsecase>(),
       ),
     );

@@ -5,14 +5,13 @@ import 'package:flutter/rendering.dart';
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:go_router/go_router.dart';

@@ -1,0 +1,71 @@
+{
+  "@@locale": "en",
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "swapSettingsTitle": "Swaps",
+  "@swapSettingsTitle": {
+    "description": "Title of the swap settings page and its row in wallet settings"
+  },
+  "swapSettingsExchangeFallbackLabel": "Fall back to the Bull Bitcoin exchange",
+  "@swapSettingsExchangeFallbackLabel": {
+    "description": "Switch label: use an exchange order when Boltz cannot take the swap"
+  },
+  "swapSettingsExchangeFallbackDescription": "Swaps go through Boltz. When Boltz cannot be reached or does not accept the amount, a Bull Bitcoin exchange order is created instead. The exchange holds the funds until the order completes.",
+  "@swapSettingsExchangeFallbackDescription": {
+    "description": "Explains the exchange fallback switch on the swap settings page"
+  },
+  "swapSettingsRouteOverrideTitle": "Swap provider",
+  "@swapSettingsRouteOverrideTitle": {
+    "description": "Developer-only section title for pinning the swap provider"
+  },
+  "swapSettingsRouteOverrideAuto": "Auto",
+  "@swapSettingsRouteOverrideAuto": {
+    "description": "Swap provider option: Boltz first, exchange per the fallback setting"
+  },
+  "swapSettingsRouteOverrideBoltzOnly": "Boltz only",
+  "@swapSettingsRouteOverrideBoltzOnly": {
+    "description": "Swap provider option: always Boltz"
+  },
+  "swapSettingsRouteOverrideExchangeOnly": "Exchange only",
+  "@swapSettingsRouteOverrideExchangeOnly": {
+    "description": "Swap provider option: always the Bull Bitcoin exchange"
+  },
+  "swapServerTitle": "Swap server",
+  "@swapServerTitle": {
+    "description": "Row and editor title for the Boltz server used by swaps"
+  },
+  "swapServerSubtitle": "The Boltz server used for trustless swaps on this network. Leave empty for the default.",
+  "@swapServerSubtitle": {
+    "description": "Explains the swap server editor"
+  },
+  "swapServerDefault": "Default",
+  "@swapServerDefault": {
+    "description": "Shown as the swap server value when the default Boltz server is used"
+  },
+  "swapServerReset": "Reset to default",
+  "@swapServerReset": {
+    "description": "Button that restores the default swap server"
+  },
+  "swapServerInvalid": "Enter a valid server address (e.g. api.boltz.exchange/v2)",
+  "@swapServerInvalid": {
+    "description": "Error under the swap server input"
+  },
+  "swapServerChangedNotice": "Swaps now use this server.",
+  "@swapServerChangedNotice": {
+    "description": "Shown after the swap server changed"
+  },
+  "swapServerBusyError": "Finish your ongoing swaps before changing the swap server.",
+  "@swapServerBusyError": {
+    "description": "Error when the user changes the swap server while swaps on the current server are still in progress"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  }
+}

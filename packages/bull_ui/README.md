@@ -4,9 +4,9 @@ The Bull Bitcoin design system publishes reusable Flutter components through `pa
 
 ## Theme injection
 
-`bull_ui` is **brightness-agnostic**: the app injects the palette. It builds a `BullTheme` (a `ThemeExtension`) from `AppColors.light` and another from `AppColors.dark`, and registers each on the matching `ThemeData` with `extensions: bullUiExtensions(colors: …, brightness: …)`, which adds every other extension the components read (`BullShapes`, `BullTypography`, `BullKeypadColors`, `BullLoaderTheme`). The one exception to injected colours is `BullKeypadColors`: `bull_ui` holds its `light` and `dark` presets, chosen so each glyph-on-key and key-on-panel pair has the same contrast in both themes.
+`package:bull_ui/app_theme.dart` builds the app's light and dark `ThemeData` from `AppColors`. It registers the matching `BullTheme` and the other design tokens through `bullUiExtensions`. The components remain brightness-agnostic: they read the extensions on the active theme. `BullKeypadColors` supplies separate light and dark presets so each glyph-on-key and key-on-panel pair has the same contrast in both themes.
 Components read colours through `context.bull` (e.g. `context.bull.primary`). `BullTheme` is a
-**1:1 mirror of the app's `AppColors`** — same field names — so the app wires every field through
+**1:1 mirror of `AppColors`** — same field names — so `AppTheme` wires every field through
 without translation. Derived fills use `tokenColor.withValues(alpha: …)` so they adapt to both
 light and dark automatically.
 

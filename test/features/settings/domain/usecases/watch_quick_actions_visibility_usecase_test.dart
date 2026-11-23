@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
-class _Exchange extends Mock implements ExchangeFacade {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Settings extends Mock implements Preferences {}
 
@@ -22,16 +24,15 @@ void main() {
   test(
     'unresolved startup never flashes exchange actions for a disabled user',
     () async {
-      final exchange = _Exchange();
-      when(exchange.networkUnavailable).thenAnswer((_) async => false);
+      final lifecycle = _Access();
       final settings = _Settings();
       final access = StreamController<ExchangeAccess>();
-      when(() => exchange.currentAccess)
-          .thenReturn(const ExchangeAccessResolving());
-      when(exchange.watchAccess).thenAnswer((_) => access.stream);
+      when(() => lifecycle.current).thenReturn(const ExchangeAccessResolving());
+      when(lifecycle.watch).thenAnswer((_) => access.stream);
       final values = <bool>[];
       final sub = WatchQuickActionsVisibilityUsecase(
-        exchange: exchange,
+        exchange: exchangeForTesting(access: lifecycle),
+        networkUnavailable: () async => false,
         settings: settings,
         platformChanges: const Stream.empty(),
         isIOS: false,
@@ -46,17 +47,16 @@ void main() {
   );
 
   test('non-iOS visibility follows exchange access', () async {
-    final exchange = _Exchange();
-    when(exchange.networkUnavailable).thenAnswer((_) async => false);
+    final lifecycle = _Access();
     final settings = _Settings();
     final access = StreamController<ExchangeAccess>();
     final platform = StreamController<bool>();
-    when(() => exchange.currentAccess)
-        .thenReturn(const ExchangeAccessDisabled());
-    when(exchange.watchAccess).thenAnswer((_) => access.stream);
+    when(() => lifecycle.current).thenReturn(const ExchangeAccessDisabled());
+    when(lifecycle.watch).thenAnswer((_) => access.stream);
     final values = <bool>[];
     final sub = WatchQuickActionsVisibilityUsecase(
-      exchange: exchange,
+      exchange: exchangeForTesting(access: lifecycle),
+      networkUnavailable: () async => false,
       settings: settings,
       platformChanges: platform.stream,
       isIOS: false,
@@ -75,21 +75,21 @@ void main() {
   test(
     'new iOS platform event wins over a delayed initial settings read',
     () async {
-      final exchange = _Exchange();
-      when(exchange.networkUnavailable).thenAnswer((_) async => false);
+      final lifecycle = _Access();
       final settings = _Settings();
       final pending = Completer<SettingsEntity>();
       final access = StreamController<ExchangeAccess>();
       final platform = StreamController<bool>();
       when(
-        () => exchange.currentAccess,
+        () => lifecycle.current,
       ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-      when(exchange.watchAccess).thenAnswer((_) => access.stream);
+      when(lifecycle.watch).thenAnswer((_) => access.stream);
       when(settings.fetch)
           .thenAnswer((_) => (pending.future).then((value) => Ok(value)));
       final values = <bool>[];
       final sub = WatchQuickActionsVisibilityUsecase(
-        exchange: exchange,
+        exchange: exchangeForTesting(access: lifecycle),
+        networkUnavailable: () async => false,
         settings: settings,
         platformChanges: platform.stream,
         isIOS: true,
@@ -108,17 +108,17 @@ void main() {
   );
 
   test('iOS settings read failure leaves exchange actions hidden', () async {
-    final exchange = _Exchange();
-    when(exchange.networkUnavailable).thenAnswer((_) async => false);
+    final lifecycle = _Access();
     final settings = _Settings();
     when(
-      () => exchange.currentAccess,
+      () => lifecycle.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-    when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
+    when(lifecycle.watch).thenAnswer((_) => const Stream.empty());
     when(settings.fetch).thenThrow(const FormatException('unavailable'));
     final values = <bool>[];
     final sub = WatchQuickActionsVisibilityUsecase(
-      exchange: exchange,
+      exchange: exchangeForTesting(access: lifecycle),
+      networkUnavailable: () async => false,
       settings: settings,
       platformChanges: const Stream.empty(),
       isIOS: true,
@@ -129,18 +129,18 @@ void main() {
   });
 
   test('a network without exchange hides exchange actions', () async {
-    final exchange = _Exchange();
+    final lifecycle = _Access();
     var unavailable = true;
-    when(exchange.networkUnavailable).thenAnswer((_) async => unavailable);
     final settings = _Settings();
     final access = StreamController<ExchangeAccess>();
     when(
-      () => exchange.currentAccess,
+      () => lifecycle.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
-    when(exchange.watchAccess).thenAnswer((_) => access.stream);
+    when(lifecycle.watch).thenAnswer((_) => access.stream);
     final values = <bool>[];
     final sub = WatchQuickActionsVisibilityUsecase(
-      exchange: exchange,
+      exchange: exchangeForTesting(access: lifecycle),
+      networkUnavailable: () async => unavailable,
       settings: settings,
       platformChanges: const Stream.empty(),
       isIOS: false,

@@ -2,19 +2,17 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, ScriptType;
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

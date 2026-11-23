@@ -1,57 +1,41 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class ListAllOrdersUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
 
   ListAllOrdersUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
+    required this._exchange,
     required this._settingsRepository,
   });
 
-  Future<List<Order>> execute({
+  @useResult
+  Future<Result<List<Order>, ExchangeFailure>> execute({
     int? limit,
     int? offset,
     OrderType? type,
   }) async {
-    try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      final isTestnet = settings.environment.requireHistoricalTestnet();
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
-      final orders = await repo.getOrders(
-        limit: limit,
-        offset: offset,
-        type: type,
-      );
-      return switch (orders) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw ListAllOrdersException(
-          'Exchange order history unavailable: ${failure.runtimeType}',
-        ),
-      };
-    } on ListAllOrdersException {
-      rethrow;
-    } on Exception catch (e) {
-      log.warning('Exchange order unavailable: ${e.runtimeType}');
-      throw ListAllOrdersException(
-        'Exchange order history unavailable: ${e.runtimeType}',
-      );
+    final ExchangeEnvironment environment;
+    switch (await _settingsRepository.fetch()) {
+      case Err():
+        return const Err(ExchangeOrderLoadFailure());
+      case Ok(value: SettingsEntity(environment: Environment.regtest)):
+        return const Err(ExchangeUnsupportedNetworkFailure());
+      case Ok(value: final settings):
+        environment = settings.environment == Environment.testnet
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet;
     }
+    final result = await _exchange
+        .orders(environment)
+        .getOrders(limit: limit, offset: offset, type: type);
+    if (result case Err(:final failure)) {
+      log.warning('Exchange order unavailable: ${failure.runtimeType}');
+    }
+    return result;
   }
-}
-
-class ListAllOrdersException extends BullException {
-  ListAllOrdersException(super.message);
 }

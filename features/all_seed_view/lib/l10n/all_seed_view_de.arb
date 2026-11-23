@@ -1,0 +1,53 @@
+{
+  "allSeedViewDeleteSwapMnemonicMessage": "Dadurch wird der Swap-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Swaps bleiben davon unberührt.",
+  "allSeedViewSecurityWarningMessage": "Die Anzeige von Seed-Phrasen stellt ein Sicherheitsrisiko dar. Jeder, der Ihre Seed-Phrase sieht, kann auf Ihr Guthaben zugreifen. Stellen Sie sicher, dass Sie sich an einem privaten Ort befinden und niemand Ihren Bildschirm einsehen kann.",
+  "cancel": "Abbrechen",
+  "screenPrivacyUnavailable": "Der Bildschirmschutz konnte nicht aktiviert werden, daher bleibt dieses Geheimnis verborgen.",
+  "allSeedViewLoadingMessage": "Das Laden kann eine Weile dauern, wenn sich viele Seeds auf diesem Gerät befinden.",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "allSeedViewNoSeedsFound": "Keine Seed-Phrase gefunden.",
+  "allSeedViewSecurityWarningTitle": "Sicherheitswarnung",
+  "allSeedViewPassphraseLabel": "Passphrase:",
+  "allSeedViewOldWallets": "Alte Wallets ({count})",
+  "@allSeedViewOldWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "allSeedViewIUnderstandButton": "Ich verstehe",
+  "allSeedViewDeleteWarningTitle": "ACHTUNG!",
+  "allSeedViewDeleteWarningMessage": "Das Löschen der Seed-Phrase ist eine irreversible Aktion. Führen Sie diesen Schritt nur durch, wenn Sie eine Sicherung der Seed-Phrase haben oder die zugehörigen Wallets vollständig geleert wurden.",
+  "passphraseHide": "Passphrase verbergen",
+  "delete": "Löschen",
+  "allSeedViewErrorDelete": "Seed konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "allSeedViewErrorFetch": "Seeds konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewShowSeedsButton": "Seed anzeigen",
+  "allSeedViewSwapLinkedWallet": "Verknüpfte Wallet: {fingerprint}",
+  "allSeedViewDeleteSwapMnemonicTitle": "Swap-Wiederherstellungsphrase löschen?",
+  "passphraseShow": "Passphrase anzeigen",
+  "allSeedViewTitle": "Seed-Anzeige",
+  "allSeedViewSwapMnemonicTitle": "Swap-Wiederherstellungsphrase",
+  "allSeedViewSwapFingerprint": "Fingerabdruck: {fingerprint} ({network})",
+  "allSeedViewExistingWallets": "Vorhandene Wallets ({count})",
+  "@allSeedViewExistingWallets": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  }
+}

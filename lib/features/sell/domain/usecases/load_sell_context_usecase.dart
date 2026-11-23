@@ -6,7 +6,6 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     as wallet
     show Network, NetworkX;
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
@@ -169,16 +168,17 @@ class LoadSellContextUsecase {
 
   @useResult
   Future<Result<Order, SellFailure>> order({required String orderId}) async {
-    try {
-      return Ok(await _getOrderUsecase.execute(orderId: orderId));
-    } catch (_) {
-      const diagnostic = 'sell_order_read_failed category=unexpected';
-      log.severe(
-        message: diagnostic,
-        error: Exception(diagnostic),
-        trace: StackTrace.current,
-      );
-      return const Err(SellUnexpectedFailure(diagnostic));
+    switch (await _getOrderUsecase.execute(orderId: orderId)) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err():
+        const diagnostic = 'sell_order_read_failed category=unexpected';
+        log.severe(
+          message: diagnostic,
+          error: Exception(diagnostic),
+          trace: StackTrace.current,
+        );
+        return const Err(SellUnexpectedFailure(diagnostic));
     }
   }
 }

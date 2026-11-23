@@ -1,0 +1,11 @@
+{
+  "@@locale": "hy",
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "bip85NoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։",
+  "retry": "Կրկին փորձել",
+  "bip85Title": "BIP85 դետերմինիստական էնտրոպիաներ",
+  "bip85ExperimentalWarning": "Փորձարարական \nՊահուստավորեք ձեր ածանցման ուղիները ձեռքով",
+  "bip85NextMnemonic": "Հաջորդ մնեմոնիկ",
+  "bip85NextHex": "Հաջորդ HEX",
+  "copiedToClipboard": "Պատճենվեց սեղմատախտակին"
+}

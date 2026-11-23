@@ -1,11 +1,11 @@
 import '../receive_lightning_limits.dart';
 
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/swaps.dart' show SwapRoute, SwapRouting;
 
 class GetReceiveSwapRouteUsecase {
-  final SwapFacade _swapFacade;
+  final SwapRouting _routing;
 
-  const GetReceiveSwapRouteUsecase(this._swapFacade);
+  const GetReceiveSwapRouteUsecase(this._routing);
 
   static ReceiveLightningLimits limitsFor({
     SwapRoute? route,
@@ -17,5 +17,5 @@ class GetReceiveSwapRouteUsecase {
     maximumSat: maximumSat,
   );
 
-  Future<SwapRoute> execute() => _swapFacade.getRoute();
+  Future<SwapRoute> execute() => _routing.resolveRoute();
 }

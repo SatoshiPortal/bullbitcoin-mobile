@@ -1,44 +1,9 @@
-import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
-import 'package:bb_mobile/features/swap/domain/repositories/swap_route_setting_repository.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:swaps/swaps.dart' show SwapRoute, SwapRouting;
 
 class GetSwapRouteUsecase {
-  final SwapRouteSettingRepository _swapRouteSettingRepository;
-  final Preferences _settingsRepository;
+  final SwapRouting _routing;
 
-  GetSwapRouteUsecase({
-    required this._swapRouteSettingRepository,
-    required this._settingsRepository,
-  });
+  const GetSwapRouteUsecase(this._routing);
 
-  Future<SwapRoute> execute() async {
-    final exchangeFallbackEnabled = switch (await _swapRouteSettingRepository
-        .isExchangeFallbackEnabled()) {
-      Ok(:final value) => value,
-      Err() => false,
-    };
-    final override = switch (await _swapRouteSettingRepository
-        .getRouteOverride()) {
-      Ok(:final value) => value,
-      Err() => SwapRouteOverride.auto,
-    };
-    var devModeEnabled = false;
-    try {
-      devModeEnabled =
-          ((await _settingsRepository.fetch()).fold(
-            (value) => value,
-            (failure) => throw Exception('Preferences read failed'),
-          )).isDevModeEnabled ??
-          false;
-    } catch (e) {
-      log.warning('Swap route: settings unreadable (${e.runtimeType})');
-    }
-    return SwapRoute.resolve(
-      exchangeFallbackEnabled: exchangeFallbackEnabled,
-      devModeEnabled: devModeEnabled,
-      override: override,
-    );
-  }
+  Future<SwapRoute> execute() => _routing.resolveRoute();
 }

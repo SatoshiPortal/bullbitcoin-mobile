@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';

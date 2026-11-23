@@ -9,7 +9,9 @@ import 'package:secrets/src/data/data.dart'
     show
         inventorySessionChangedFailure,
         inventoryCredentialRequiredFailure,
-        inventoryLockedFailure;
+        inventoryLockedFailure,
+        invalidBip85HexLengthFailure,
+        unreadableBip85RecordFailure;
 
 import '../data/access_repository.dart';
 import '../data/derivation_repository.dart';
@@ -23,7 +25,12 @@ import '../domain/inventory_backup_verification.dart';
 import '../domain/recorded_derivation.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
+import 'extensions.dart';
+import 'secret.dart';
+import 'secrets.dart';
 import 'wallet_inventory.dart';
+
+part 'bip85_derivations.dart';
 
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
@@ -101,6 +108,11 @@ final class SecretsInventory implements WalletInventory {
         }
       });
 
+  @useResult
+  Future<Result<bool, SecretFailure>> hasVerifiedBackups(
+    InventoryBackupVerification verification,
+  ) => _inSession((_) => _access.hasVerifiedBackups(verification));
+
   /// Protect the active view from an authenticated foreground session.
   @useResult
   Future<Result<void, SecretFailure>> setCredential(
@@ -147,9 +159,20 @@ final class SecretsInventory implements WalletInventory {
     Network network,
   ) => _inSession((_) => _wallets.listForNetwork(defaultViewId, network));
 
+  /// Reserve the ID before preparing properties owned by other stores. The
+  /// callback must not call back into this inventory. If it fails, the wallet
+  /// and its membership are not published; a retry prepares its properties.
   @useResult
-  Future<Result<void, SecretFailure>> registerWallet(RegisteredWallet wallet) =>
-      _inSession((_) => _wallets.register(wallet, view: defaultViewId));
+  Future<Result<void, SecretFailure>> registerWallet(
+    RegisteredWallet wallet, {
+    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+  }) => _inSession(
+    (_) => _wallets.register(
+      wallet,
+      view: defaultViewId,
+      prepareProperties: prepareProperties,
+    ),
+  );
 
   @useResult
   Future<Result<void, SecretFailure>> setWalletProperties({
@@ -170,6 +193,9 @@ final class SecretsInventory implements WalletInventory {
   @useResult
   Future<Result<void, SecretFailure>> removeWallet(String id) =>
       _inSession((_) => _wallets.remove(view: defaultViewId, id: id));
+
+  /// Operates on historical BIP85 children in the current foreground view.
+  Bip85Derivations bip85(Secrets secrets) => Bip85Derivations._(this, secrets);
 
   @useResult
   Future<Result<List<RecordedDerivation>, SecretFailure>> listDerivations() =>

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:sync/transactions.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';

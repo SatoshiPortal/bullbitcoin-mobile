@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart' show SqliteException, SqlExtendedError;
 
 import '../domain/domain.dart';
 import '../domain/registered_wallet.dart';
@@ -23,6 +22,15 @@ final class InventoryRepository {
         return List.unmodifiable(rows.map((row) => _decode(row.data)));
       }, orElse: FetchSecretFailure.new);
 
+  Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
+    String view,
+  ) => boundary(() async {
+    final rows = await _listRows(view, defaultsOnly: true);
+    return List.unmodifiable([
+      for (final row in rows) ?decodeWalletRegistration(row.data),
+    ]);
+  }, orElse: FetchSecretFailure.new);
+
   Future<Result<WalletSelection, SecretFailure>> listForNetwork(
     String view,
     Network network,
@@ -43,10 +51,13 @@ final class InventoryRepository {
     }, Err.new);
   }
 
-  Future<List<QueryRow>> _listRows(String view, {String? networkCode}) =>
-      _database
-          .customSelect(
-            '''
+  Future<List<QueryRow>> _listRows(
+    String view, {
+    String? networkCode,
+    bool defaultsOnly = false,
+  }) => _database
+      .customSelect(
+        '''
           SELECT w.*
           FROM wallets w
           WHERE EXISTS (
@@ -55,15 +66,16 @@ final class InventoryRepository {
                 THEN 'wallet:' || w.id ELSE 'secret:' || w.secret_fingerprint END
           )
           ${networkCode == null ? '' : 'AND w.network = ?'}
+          ${defaultsOnly ? 'AND w.is_default = 1' : ''}
           ORDER BY w.id
           ''',
-            variables: [
-              Variable(view),
-              if (networkCode != null) Variable(networkCode),
-            ],
-            readsFrom: {_database.wallets, _database.viewMembers},
-          )
-          .get();
+        variables: [
+          Variable(view),
+          if (networkCode != null) Variable(networkCode),
+        ],
+        readsFrom: {_database.wallets, _database.viewMembers},
+      )
+      .get();
 
   Future<Result<RegisteredWallet?, SecretFailure>> find(
     String view,
@@ -143,48 +155,57 @@ final class InventoryRepository {
   Future<Result<void, SecretFailure>> register(
     RegisteredWallet wallet, {
     required String view,
-  }) => boundary(
-    () => _database.transaction(() async {
-      final secret = wallet.secretFingerprint;
-      if (wallet.signer == 'local'
-          ? secret != wallet.masterFingerprint || secret == null
-          : secret != null) {
-        throw const _InvalidRegistration();
-      }
-      final member = secret == null ? 'wallet:${wallet.id}' : 'secret:$secret';
-      try {
-        await _database
-            .into(_database.wallets)
-            .insert(
-              WalletsCompanion.insert(
-                id: wallet.id,
-                secretFingerprint: Value(secret),
-                masterFingerprint: wallet.masterFingerprint,
-                signer: wallet.signer,
-                network: wallet.network,
-                xpub: wallet.xpub,
-                externalDescriptor: wallet.externalDescriptor,
-                internalDescriptor: wallet.internalDescriptor,
-                label: Value(wallet.label),
-                birthday: Value(wallet.birthday),
-                isDefault: wallet.isDefault,
-              ),
-            );
-      } on SqliteException catch (error) {
-        if (error.extendedResultCode ==
-            SqlExtendedError.SQLITE_CONSTRAINT_PRIMARYKEY) {
-          throw const _InvalidRegistration();
-        }
-        rethrow;
-      }
-      await _database
-          .into(_database.viewMembers)
-          .insertOnConflictUpdate(
-            ViewMembersCompanion.insert(viewId: view, member: member),
-          );
-    }),
-    orElse: StoreSecretFailure.new,
-  );
+    Future<Result<void, SecretFailure>> Function()? prepareProperties,
+  }) =>
+      boundary(
+        () => _database.transaction(() async {
+          final secret = wallet.secretFingerprint;
+          if (wallet.signer == 'local'
+              ? secret != wallet.masterFingerprint || secret == null
+              : secret != null) {
+            throw const _InvalidRegistration();
+          }
+          final member = secret == null
+              ? 'wallet:${wallet.id}'
+              : 'secret:$secret';
+          final inserted = await _database
+              .into(_database.wallets)
+              .insertReturningOrNull(
+                WalletsCompanion.insert(
+                  id: wallet.id,
+                  secretFingerprint: Value(secret),
+                  masterFingerprint: wallet.masterFingerprint,
+                  signer: wallet.signer,
+                  network: wallet.network,
+                  xpub: wallet.xpub,
+                  externalDescriptor: wallet.externalDescriptor,
+                  internalDescriptor: wallet.internalDescriptor,
+                  label: Value(wallet.label),
+                  birthday: Value(wallet.birthday),
+                  isDefault: wallet.isDefault,
+                ),
+                onConflict: DoNothing(target: [_database.wallets.id]),
+              );
+          if (inserted == null) return false;
+          if (await prepareProperties?.call() case Err()) {
+            throw const _InvalidRegistration();
+          }
+          await _database
+              .into(_database.viewMembers)
+              .insertOnConflictUpdate(
+                ViewMembersCompanion.insert(viewId: view, member: member),
+              );
+          return true;
+        }),
+        orElse: StoreSecretFailure.new,
+      ).then(
+        (result) => result.fold(
+          (inserted) => inserted
+              ? const Ok(null)
+              : const Err(WalletAlreadyRegisteredFailure()),
+          Err.new,
+        ),
+      );
 
   Future<Result<void, SecretFailure>> updateProperties({
     required String view,

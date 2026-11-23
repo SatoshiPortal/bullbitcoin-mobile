@@ -1,6 +1,10 @@
 import 'package:swaps/src/util.dart';
 import 'package:primitives/primitives.dart';
 
+import 'auto_swap.dart';
+
+part 'autoswap_failure.dart';
+
 /// The swap engine's modeled failures — one sealed family, per the
 /// project-wide error convention: variants carry typed data, the catch-all
 /// carries only a `logMessage` that is logged at the boundary and never
@@ -18,6 +22,30 @@ final class SwapsBusyFailure extends SwapsFailure {
 /// Current application policy refused a recovery broadcast.
 final class SwapsAuthorizationFailure extends SwapsFailure {
   const SwapsAuthorizationFailure([super.logMessage]);
+}
+
+final class SwapsUnsupportedNetworkFailure extends SwapsFailure {
+  const SwapsUnsupportedNetworkFailure();
+}
+
+final class SwapsInvalidServerFailure extends SwapsFailure {
+  const SwapsInvalidServerFailure(super.logMessage);
+}
+
+final class SwapsInvalidAutoSwapSettingsFailure extends SwapsFailure {
+  const SwapsInvalidAutoSwapSettingsFailure();
+}
+
+final class SwapsStorageFailure extends SwapsFailure {
+  const SwapsStorageFailure([super.logMessage]);
+}
+
+enum SwapLockupIssue { receiveSwap, amountMismatch, unreadable }
+
+final class SwapsInvalidLockupFailure extends SwapsFailure {
+  final SwapLockupIssue issue;
+
+  const SwapsInvalidLockupFailure(this.issue, [super.logMessage]);
 }
 
 /// No default bitcoin wallet seed is available to derive the swap master
@@ -53,6 +81,12 @@ final class SwapsBoltzUnavailableFailure extends SwapsFailure {
 /// created and no funds moved.
 final class SwapsBoltzRejectedFailure extends SwapsFailure {
   const SwapsBoltzRejectedFailure([super.logMessage]);
+}
+
+/// Boltz requires more time before the invoice expires.
+final class SwapsInvoiceExpiryTooShortFailure
+    extends SwapsBoltzRejectedFailure {
+  const SwapsInvoiceExpiryTooShortFailure();
 }
 
 /// The amount is outside what Boltz currently accepts for this swap type.
@@ -117,6 +151,9 @@ SwapsFailure classifySwapCreationFailure(Object error) {
     );
   }
   if (error is BoltzApiException) {
+    if (error.isInvoiceExpiryTooShort) {
+      return const SwapsInvoiceExpiryTooShortFailure();
+    }
     return error.isUnreachable
         ? SwapsBoltzUnavailableFailure(error.message)
         : SwapsBoltzRejectedFailure(error.message);

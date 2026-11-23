@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart' show debugPrint;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -25,24 +25,23 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -76,7 +75,8 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart' as boltz;
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:swaps/swaps.dart' show SwapRoute;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
@@ -89,6 +89,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:silent/silent.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
@@ -251,7 +252,7 @@ GetSpNetworkForSendUsecase _spNetworkStub([
   Network network = Network.bitcoinMainnet,
 ]) {
   final stub = _MockGetSpNetworkForSendUsecase();
-  when(stub.execute).thenReturn(Ok(network));
+  when(stub.execute).thenAnswer((_) async => Ok(network));
   return stub;
 }
 
@@ -455,7 +456,7 @@ const _sweepFeeOptions = FeeOptions(
 );
 
 Bip21PaymentRequest _payjoinBip21() => const PaymentRequest.bip21(
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
   address: 'bc1qaddr',
   amountSat: 50000,
@@ -677,7 +678,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(Sats.zero);
     registerFallbackValue(
-      SpTxDraft(
+      SilentTxDraft(
         id: 'fallback',
         inputs: const [],
         outputs: const [],
@@ -685,7 +686,7 @@ void main() {
         changeSat: Sats.zero,
       ),
     );
-    registerFallbackValue(<SpRecipient>[]);
+    registerFallbackValue(<SilentRecipient>[]);
     registerFallbackValue(
       const PaymentRequest.bolt11(
         invoice: 'fallback',
@@ -1082,7 +1083,7 @@ void main() {
       when(() => detectBitcoinStringUsecase.execute(data: 'bitcoin:fixture'))
           .thenAnswer(
             (_) async => const PaymentRequest.bip21(
-              network: Network.bitcoinMainnet,
+              network: BitcoinNetwork.mainnet,
               uri: 'bitcoin:fixture?amount=0.00001',
               address: 'bc1qfixture',
               amountSat: 1000,
@@ -2133,7 +2134,7 @@ void main() {
         sats: 75000,
       );
       const request = PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
         address: 'bc1qfirst',
         lightning: 'lnbc1invoice',
@@ -2309,7 +2310,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -2428,7 +2429,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -2501,7 +2502,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?label=rent',
           address: 'bc1qrecipient',
           label: 'rent',
@@ -3474,7 +3475,7 @@ void main() {
         const uri = 'bitcoin:bc1qsecond?amount=0.0005';
         when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
           (_) async => const PaymentRequest.bip21(
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             uri: uri,
             address: 'bc1qsecond',
             amountSat: 50000,
@@ -3536,7 +3537,7 @@ void main() {
         const uri = 'bitcoin:bc1qsecond?amount=0.0005';
         when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
           (_) async => const PaymentRequest.bip21(
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             uri: uri,
             address: 'bc1qsecond',
             amountSat: 50000,
@@ -3585,7 +3586,7 @@ void main() {
       const uri = 'bitcoin:bc1qsecond?amount=0.0005';
       when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: uri,
           address: 'bc1qsecond',
           amountSat: 50000,
@@ -4007,7 +4008,7 @@ void main() {
     test('keeps a multi-recipient BIP21 send on chain', () async {
       final wallet = _bitcoinLocalWallet();
       const request = PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
         address: 'bc1qfirst',
         lightning: 'lnbc1invoice',
@@ -6619,7 +6620,7 @@ void main() {
       () async {
         final wallet = _bitcoinLocalWallet();
         const request = PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
           address: 'bc1qfirst',
           lightning: 'lnbc1invoice',
@@ -7039,7 +7040,7 @@ void main() {
         sendType: SendType.bitcoin,
         selectedWallet: SendWalletBitcoin(wallet),
         paymentRequest: const PaymentRequest.bip21(
-          network: Network.bitcoinRegtest,
+          network: BitcoinNetwork.regtest,
           uri: 'bitcoin:bcrt1qrecipient',
           address: 'bcrt1qrecipient',
         ),
@@ -7106,7 +7107,7 @@ void main() {
             sendType: SendType.bitcoin,
             selectedWallet: SendWalletBitcoin(wallet),
             paymentRequest: const PaymentRequest.bip21(
-              network: Network.bitcoinRegtest,
+              network: BitcoinNetwork.regtest,
               uri: 'bitcoin:bcrt1qrecipient',
               address: 'bcrt1qrecipient',
             ),
@@ -7380,7 +7381,8 @@ void main() {
     );
 
     void stubAmount(Result<Sats, SendFailure> result) =>
-        when(() => validateSpAmount.execute(any())).thenReturn(result);
+        when(() => validateSpAmount.execute(any()))
+            .thenAnswer((_) async => result);
 
     // Mirrors what the SP flow has by the amount step: the synthetic SP wallet
     // from loadWalletWithRatesAndFees and the stand-in bitcoin payment request
@@ -7603,12 +7605,12 @@ void main() {
     late _MockPrepareSpPaymentForSendUsecase prepare;
     late _MockSendSpPaymentForSendUsecase send;
 
-    SpTxDraft draft({int fee = 200, int output = 800}) => SpTxDraft(
+    SilentTxDraft draft({int fee = 200, int output = 800}) => SilentTxDraft(
       id: 'draft-1',
       inputs: const [],
       outputs: [
-        SpRecipientStandard(
-          address: SpAddress('bc1-address'),
+        SilentRecipientStandard(
+          address: SilentAddress('bc1-address'),
           amountSat: Sats.fromInt(output),
           isMax: false,
         ),
@@ -7659,8 +7661,8 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok(
-          SpRecipientStandard(
-            address: SpAddress('bc1-address'),
+          SilentRecipientStandard(
+            address: SilentAddress('bc1-address'),
             amountSat: Sats.fromInt(1000),
             isMax: false,
           ),
@@ -7674,8 +7676,8 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok(
-          SpRecipientStandard(
-            address: SpAddress('bc1-address'),
+          SilentRecipientStandard(
+            address: SilentAddress('bc1-address'),
             amountSat: Sats.fromInt(1000),
             isMax: true,
           ),
@@ -7706,7 +7708,7 @@ void main() {
     test(
       'SP validation cannot restore an input cleared while awaiting',
       () async {
-        final pending = Completer<Result<SpRecipient, SendFailure>>();
+        final pending = Completer<Result<SilentRecipient, SendFailure>>();
         when(
           () => validateRecipient.execute(
             input: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
@@ -7726,8 +7728,8 @@ void main() {
         await cubit.onChangedText('');
         pending.complete(
           Ok(
-            SpRecipientStandard(
-              address: SpAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
+            SilentRecipientStandard(
+              address: SilentAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
               amountSat: Sats.fromInt(1000),
               isMax: false,
             ),
@@ -7786,7 +7788,7 @@ void main() {
             isMax: false,
           ),
         ).thenAnswer(
-          (_) async => const Err<SpRecipient, SendFailure>(
+          (_) async => const Err<SilentRecipient, SendFailure>(
             SendAddressNetworkMismatchFailure('wrong network'),
           ),
         );
@@ -7815,7 +7817,7 @@ void main() {
             isMax: false,
           ),
         ).thenAnswer(
-          (_) async => const Err<SpRecipient, SendFailure>(
+          (_) async => const Err<SilentRecipient, SendFailure>(
             SendInvalidPaymentRequestFailure(logMessage: 'unsupported'),
           ),
         );
@@ -7835,7 +7837,7 @@ void main() {
           fee: any(named: 'fee'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SendFailure>(
+        (_) async => const Err<SilentTxDraft, SendFailure>(
           SendInsufficientBalanceFailure('exceeds'),
         ),
       );
@@ -7854,7 +7856,7 @@ void main() {
           fee: any(named: 'fee'),
         ),
       ).thenAnswer(
-        (_) async => const Err<SpTxDraft, SendFailure>(
+        (_) async => const Err<SilentTxDraft, SendFailure>(
           SendTransactionBuildFailure('blindbit down'),
         ),
       );
@@ -8531,7 +8533,7 @@ void main() {
 
   group('Boltz-first cross-chain send', () {
     const liquidRequest = PaymentRequest.bip21(
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       uri: 'liquidnetwork:lq1recipient?amount=0.0005',
       address: 'lq1recipient',
       amountSat: 50000,
@@ -8787,7 +8789,7 @@ void main() {
         cubit.setStateForTest(
           crossChainState(
             paymentRequest: const PaymentRequest.bip21(
-              network: Network.liquidTestnet,
+              network: LiquidNetwork.testnet,
               uri: 'liquidtestnet:tlq1recipient?amount=0.0005',
               address: 'tlq1recipient',
               amountSat: 50000,
@@ -8915,7 +8917,7 @@ void main() {
             sendType: SendType.bitcoin,
             selectedWallet: SendWalletBitcoin(wallet),
             paymentRequest: PaymentRequest.bip21(
-              network: destination,
+              network: destination.shared,
               uri: 'bitcoin:public-fixture',
               address: 'public-fixture',
               amountSat: 50000,

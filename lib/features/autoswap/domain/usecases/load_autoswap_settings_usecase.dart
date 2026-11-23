@@ -1,12 +1,9 @@
-import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
 
 /// Everything the settings form needs to populate itself.
@@ -18,12 +15,12 @@ typedef AutoswapSettingsData = ({
 });
 
 class LoadAutoswapSettingsUsecase {
-  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
+  final AutoSwapSettings _autoSwapSettings;
   final Preferences _getSettingsUsecase;
   final WalletRepository _walletRepository;
 
   const LoadAutoswapSettingsUsecase({
-    required this._getAutoSwapSettingsUsecase,
+    required this._autoSwapSettings,
     required this._getSettingsUsecase,
     required this._walletRepository,
   });
@@ -35,7 +32,15 @@ class LoadAutoswapSettingsUsecase {
         (value) => value,
         (failure) => throw Exception('Preferences read failed'),
       );
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
+      final AutoSwap autoSwapSettings;
+      switch (await _autoSwapSettings.readAutoSwap()) {
+        case Ok(:final value):
+          autoSwapSettings = value;
+        case Err(failure: SwapsUnsupportedNetworkFailure()):
+          return const Err(AutoswapUnsupportedNetworkFailure());
+        case Err(:final failure):
+          return Err(AutoswapSettingsUnavailableFailure(failure.logMessage));
+      }
 
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(
@@ -62,8 +67,6 @@ class LoadAutoswapSettingsUsecase {
         recipientWalletId:
             autoSwapSettings.recipientWalletId ?? defaultBitcoinWallet?.id,
       ));
-    } on AutoswapNetworkUnavailableException {
-      return const Err(AutoswapUnsupportedNetworkFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to load auto swap settings',

@@ -273,13 +273,6 @@
   "exchangeSettingsTransactionsTitle": "লেনদেনসমূহ",
   "exchangeTransactionsTitle": "লেনদেনসমূহ",
   "exchangeTransactionsComingSoon": "লেনদেনসমূহ - শীঘ্ৰে আহিছে",
-  "exchangeSecurityManage2FAPasswordLabel": "2FA আৰু পাছৱৰ্ড পৰিচালনা কৰক",
-  "exchangeSecurityAccessSettingsButton": "ছেটিংছ প্ৰৱেশ কৰক",
-  "exchangeReferralsTitle": "Referral কোডসমূহ",
-  "exchangeReferralsJoinMissionTitle": "মিছনত যোগ দিয়ক",
-  "exchangeReferralsContactSupportMessage": "আমাৰ referral কাৰ্যক্ৰমৰ বিষয়ে জানিবলৈ সহায়ৰ সৈতে যোগাযোগ কৰক",
-  "exchangeReferralsApplyToJoinMessage": "কাৰ্যক্ৰমত যোগ দিবলৈ ইয়াত আবেদন কৰক",
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
   "exchangeRecipientsTitle": "প্ৰাপকসমূহ",
   "exchangeFileUploadTitle": "সুৰক্ষিত ফাইল আপলোড",
   "exchangeFileUploadDocumentTitle": "যিকোনো দস্তাবেজ আপলোড কৰক",
@@ -2008,36 +2001,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "scanningProgressLabel": "স্কেনিং: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
-  "urProgressLabel": "UR অগ্ৰগতি: {parts} অংশ",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningCompletedMessage": "স্কেনিং সম্পন্ন হৈছে",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
-  },
-  "urDecodingFailedMessage": "UR ডিকোডিং বিফল হৈছে",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
-  "urProcessingFailedMessage": "UR প্ৰক্ৰিয়াকৰণ বিফল হৈছে",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
-  },
   "scanNfcButton": "NFC স্কেন কৰক",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -2062,22 +2025,6 @@
         "type": "String"
       }
     }
-  },
-  "submitButton": "দাখিল কৰক",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
-  "optionalPassphraseHint": "ঐচ্ছিক Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
-  "requiredHint": "প্ৰয়োজনীয়",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
-  "emptyMnemonicWordsError": "আপোনাৰ mnemonic-ৰ সকলো শব্দ লিখক",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "tryAgainButton": "পুনৰ চেষ্টা কৰক",
   "@tryAgainButton": {
@@ -5647,25 +5594,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "এতিয়াও কোনো বাৰ্তা নাই। কথা-বতৰা আৰম্ভ কৰক!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "এটা বাৰ্তা লিখক...",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "এটা বাৰ্তা আৱশ্যক",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "বাৰ্তা খালী হ'ব নোৱাৰে",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "কালি",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "এই চেট কেৱল Funding/Buy/Sell/Withdraw/Pay সম্পৰ্কীয় exchange সমস্যাৰ বাবে।\nWallet সম্পৰ্কীয় সমস্যাৰ বাবে, ইয়াত ক্লিক কৰি telegram গ্ৰুপত যোগ দিয়ক।",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -6580,12 +6511,6 @@
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ খোলক",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
-  "nfcNotAvailable": "এই ডিভাইচত NFC সমৰ্থিত নহয়",
-  "nfcDisabled": "NFC নিষ্ক্ৰিয় কৰা আছে। ছেটিংছত ইয়াক সক্ষম কৰক।",
-  "nfcInvalidData": "কোনো সমৰ্থিত NFC ডাটা পোৱা নগ'ল",
-  "nfcConnectionLost": "NFC সংযোগ বিচ্ছিন্ন হ'ল। আপোনাৰ ডিভাইচ NFC ট্যাগৰ ওচৰত ধৰি ৰাখক আৰু পুনৰ চেষ্টা কৰক।",
-  "nfcWriteFailed": "NFC স্থানান্তৰ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "nfcError": "NFC ত্ৰুটি: {error}",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallet swap ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
   "sendErrorInvoiceExpired": "এই invoice ৰ মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
   "importWalletColdcardMk4": "Coldcard Mk4",
@@ -6728,11 +6653,6 @@
   "recipientsFieldPayeeAccountNumber": "পেয়ী একাউণ্ট নম্বৰ",
   "exchangeFileUploadStatusRejectedBadge": "প্ৰত্যাখ্যান কৰা হৈছে",
   "exchangeFileUploadTapToReupload": "পুনৰ আপলোড কৰিবলৈ টেপ কৰক",
-  "exchangeSupportChatAttachmentImage": "প্ৰতিচ্ছবি",
-  "exchangeSupportChatAttachmentUnknownFile": "অজ্ঞাত ফাইল",
-  "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
   "importWalletBitBox": "BitBox02",
@@ -6808,9 +6728,6 @@
   "settingsSearchErrorReportingKeywords": "Crash report|ত্ৰুটি প্ৰতিবেদন|Diagnostic|Telemetry|ত্ৰুটি লগ",
   "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা",
   "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।",
-  "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
@@ -7029,5 +6946,6 @@
   "permissionsTitle": "অনুমতি",
   "settingsSearchPermissionsKeywords": "জাননী|নেপথ্যৰ কাম|বেটাৰী|সতৰ্কবাণী",
   "wizardBackgroundTasksDescription": "এপ বন্ধ থাকিলেও পেমেণ্ট পৰীক্ষা কৰে।",
-  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।"
+  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।",
+  "sendErrorInvoiceExpiryTooShort": "এই invoice ৰ মেয়াদ অতি সোনকালে উকলিব। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।"
 }

@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus;
 
@@ -91,12 +91,6 @@ final class SwapUnexpectedFailure extends SwapFailure {
 
 final class SwapUnsupportedNetworkFailure extends SwapFailure {
   const SwapUnsupportedNetworkFailure();
-}
-
-/// The swap server cannot change while swaps on the current one are open:
-/// their status and resolution are served by the server that created them.
-final class SwapServerBusyFailure extends SwapInvalidStateFailure {
-  const SwapServerBusyFailure();
 }
 
 /// The app runs on the network it launched with, not the one now selected:

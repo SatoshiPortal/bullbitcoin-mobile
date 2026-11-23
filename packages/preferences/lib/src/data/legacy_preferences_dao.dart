@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:legacy_storage/app_database.dart' show Settings;
 
-import '../../settings_table.dart';
 import 'preferences_dao.dart' show PreferencesMissingRowException;
 import 'legacy_preferences_dao.drift.dart';
 

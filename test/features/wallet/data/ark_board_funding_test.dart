@@ -5,8 +5,8 @@ import 'package:ark/ark.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/data/ark_board_funding.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
-import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:crypto/crypto.dart';
@@ -20,7 +20,7 @@ import 'package:sync/write.dart';
 
 import 'ark_funding_test_fixture.dart';
 
-class _Metadata extends Mock implements WalletMetadataDatasource {}
+class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Client extends Mock implements ArkClient {}
 

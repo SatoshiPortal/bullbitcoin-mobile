@@ -3,9 +3,9 @@ import 'package:primitives/primitives.dart' show Ok;
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:satoshifier/payment_request.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';

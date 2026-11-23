@@ -96,9 +96,12 @@ class _BullPaymentDestinationInputState
           Row(
             children: [
               Expanded(
-                child: Text(
-                  widget.label ?? '',
-                  style: context.bullType.body.copyWith(color: colors.text),
+                child: ExcludeSemantics(
+                  excluding: !valid,
+                  child: Text(
+                    widget.label ?? '',
+                    style: context.bullType.body.copyWith(color: colors.text),
+                  ),
                 ),
               ),
               if (widget.onRemove != null)
@@ -162,29 +165,39 @@ class _BullPaymentDestinationInputState
                     const SizedBox(width: 8),
                   ],
                 )
-              : TextField(
-                  controller: _controller,
-                  enabled: widget.enabled,
-                  onChanged: widget.onChanged,
-                  keyboardType: widget.keyboardType,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  smartQuotesType: SmartQuotesType.disabled,
-                  smartDashesType: SmartDashesType.disabled,
-                  textCapitalization: TextCapitalization.none,
-                  maxLines: 1,
-                  style: context.bullType.body.copyWith(color: colors.text),
-                  decoration: InputDecoration(
-                    hintText: widget.hint,
-                    hintStyle: context.bullType.body.copyWith(
-                      color: colors.textMuted,
+              : Semantics(
+                  label: widget.label ?? widget.hint,
+                  hint: widget.label == null || widget.label == widget.hint
+                      ? null
+                      : widget.hint,
+                  child: TextField(
+                    controller: _controller,
+                    enabled: widget.enabled,
+                    onChanged: widget.onChanged,
+                    keyboardType: widget.keyboardType,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    smartQuotesType: SmartQuotesType.disabled,
+                    smartDashesType: SmartDashesType.disabled,
+                    textCapitalization: TextCapitalization.none,
+                    maxLines: 1,
+                    style: context.bullType.body.copyWith(color: colors.text),
+                    decoration: InputDecoration(
+                      hint: ExcludeSemantics(
+                        child: Text(
+                          widget.hint,
+                          style: context.bullType.body.copyWith(
+                            color: colors.textMuted,
+                          ),
+                        ),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      isDense: true,
                     ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    isDense: true,
                   ),
                 ),
         ),

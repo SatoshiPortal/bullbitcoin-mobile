@@ -1,0 +1,60 @@
+{
+  "@@locale": "hi_Latn",
+  "retry": "Dobara Try Karo",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionStatusPending": "Baaki Hai",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListLoadingTransactions": "Transactions load ho rahe hain...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionListToday": "Aaj",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionListYesterday": "Kal",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copyDialogButton": "Copy Karo",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "amountLabel": "Amount",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "receiveQRCode": "QR Code",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "coinsTitle": "Coins",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "viewerTapToCopy": "Copy karne ke liye tap karo",
+  "viewerViewInExplorer": "Explorer mein dekho",
+  "viewerCopyLink": "Link copy karo",
+  "transactionViewerTitle": "Transaction ID",
+  "copiedToClipboard": "Clipboard par copy kiya gaya"
+}

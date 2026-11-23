@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/wallet_transacti
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -38,6 +38,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:swaps/swaps.dart' as swaps;
+import 'package:swaps/swaps.dart' show SwapRoute;
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_async/fake_async.dart';

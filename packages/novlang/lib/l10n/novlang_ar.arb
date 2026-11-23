@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "حذف الكلمات الاستذكارية للتحويل؟",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "تؤدي هذه العملية إلى إزالة المفتاح الرئيسي للتحويل من التخزين الآمن. سيُشتق من جديد من seed محفظتك عند الحاجة إليه في المرة القادمة، بنفس البصمة. التحويلات الجارية لا تتأثر.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "الكلمات الاستذكارية للتحويل",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "حذف الكلمات الاستذكارية للتحويل؟",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "تؤدي هذه العملية إلى إزالة المفتاح الرئيسي للتحويل من التخزين الآمن. سيُشتق من جديد من seed محفظتك عند الحاجة إليه في المرة القادمة، بنفس البصمة. التحويلات الجارية لا تتأثر."
 }

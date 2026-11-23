@@ -17,7 +17,10 @@ WizardRepository _buildPreInitWizardRepository() =>
 ///
 /// [notificationChannelId] is the channel whose payment notifications the
 /// wizard offers; a user can block that channel alone.
-Future<void> runStartupWizard({required String notificationChannelId}) async {
+Future<void> runStartupWizard({
+  required String notificationChannelId,
+  required bool exchangeAllowed,
+}) async {
   final repository = _buildPreInitWizardRepository();
   final isComplete = await IsWizardCompleteUsecase(repository: repository)
       .execute();
@@ -26,6 +29,7 @@ Future<void> runStartupWizard({required String notificationChannelId}) async {
     runApp(
       WizardApp(
         notificationChannelId: notificationChannelId,
+        exchangeAllowed: exchangeAllowed,
         onDone: (_) => completer.complete(),
       ),
     );

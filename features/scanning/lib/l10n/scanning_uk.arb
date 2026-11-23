@@ -1,0 +1,29 @@
+{
+  "@@locale": "uk",
+  "scanningProgressLabel": "Сканер: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} частини",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Сканування завершено",
+  "urDecodingFailedMessage": "Ур декодування не вдалося",
+  "urProcessingFailedMessage": "UR обробка не вдалося",
+  "scanNfcButton": "Сканер NFC",
+  "nfcConnectionLost": "З'єднання NFC втрачено. Тримайте пристрій біля NFC-мітки та спробуйте ще раз.",
+  "nfcWriteFailed": "Передавання через NFC не вдалося. Спробуйте ще раз.",
+  "nfcDisabled": "NFC вимкнено. Увімкніть його в налаштуваннях.",
+  "nfcNotAvailable": "NFC не підтримується на цьому пристрої",
+  "nfcFailed": "Опери Хтось пішов неправильно",
+  "nfcInvalidData": "Не знайдено підтримуваних даних NFC"
+}

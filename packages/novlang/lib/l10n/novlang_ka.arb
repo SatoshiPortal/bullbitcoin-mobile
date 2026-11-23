@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "წაიშალოს გადარიცხვების მნემონიკა?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება.",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "გადარიცხვების მნემონიკა",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "წაიშალოს გადარიცხვების მნემონიკა?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება."
 }

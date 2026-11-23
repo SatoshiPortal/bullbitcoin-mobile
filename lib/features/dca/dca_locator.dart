@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
@@ -23,12 +22,6 @@ class DcaLocator {
     );
     locator.registerFactory<SetDcaUsecase>(
       () => SetDcaUsecase(
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
         wallet: locator<WalletRepository>(),
         settingsRepository: locator<Preferences>(),
         walletAddressRepository: locator<WalletAddressRepository>(),

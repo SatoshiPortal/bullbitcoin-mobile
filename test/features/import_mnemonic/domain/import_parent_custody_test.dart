@@ -1,24 +1,23 @@
+import 'package:all_seed_view/testing.dart';
+
+import '../../../support/wallet_registrations.dart';
+
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
-import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:preferences/preferences.dart' hide Language;
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
+import 'package:secrets/custody.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -99,8 +98,7 @@ void main() {
   final words = [...List.filled(11, 'abandon'), 'about'];
   final parent = Fingerprint('73c5da0a');
   late Directory directory;
-  late SqliteDatabase database;
-  late WalletMetadataDatasource metadata;
+  late WalletRegistrations metadata;
   late SqliteParentCustodyAdmission admission;
   late Secrets secrets;
   late WalletRepository repository;
@@ -116,8 +114,7 @@ void main() {
     log = Logger.replace(directory: directory);
     FakeSecureStoragePlatform().install();
     secrets = Secrets(scratchDirectory: () async => directory.path);
-    database = SqliteDatabase(NativeDatabase.memory());
-    metadata = WalletMetadataDatasource(sqlite: database);
+    metadata = MemoryWalletRegistrations();
     admission = SqliteParentCustodyAdmission(
       directory: () async => directory.path,
       mayCreate: true,
@@ -127,7 +124,7 @@ void main() {
     values = _Values();
     repository = WalletRepository(
       native: native,
-      walletMetadataDatasource: metadata,
+      walletRegistrations: metadata,
       wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
@@ -136,10 +133,8 @@ void main() {
         allowInitialScan = true,
         reason = SyncReason.auto,
       }) async {},
-      isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
-      electrumSyncResultStream: const Stream.empty(),
     );
     settings = _Settings();
     when(settings.fetch).thenAnswer(
@@ -174,7 +169,6 @@ void main() {
     );
   });
   tearDown(() async {
-    await database.close();
     await log.flush();
     directory.deleteSync(recursive: true);
   });

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:meta/meta.dart';

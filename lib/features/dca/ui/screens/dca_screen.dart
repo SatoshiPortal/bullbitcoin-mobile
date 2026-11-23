@@ -1,13 +1,13 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_amount_input_fields.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show

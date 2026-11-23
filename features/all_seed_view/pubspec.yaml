@@ -1,0 +1,35 @@
+name: all_seed_view
+description: Authenticated display and management of stored recovery phrases.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: '3.14.0'
+  flutter: '3.50.0'
+dependencies:
+  access:
+  bull_logger:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  go_router: ^18.1.4
+  freezed_annotation: ^3.1.0
+  intl: any
+  material_ui: ^1.11.0
+  meta: ^1.17.0
+  preferences:
+  primitives:
+  screen_privacy:
+  secrets:
+  swaps:
+dev_dependencies:
+  build_runner: ^2.10.4
+  flutter_test:
+    sdk: flutter
+  freezed: ^4.0.0
+  mocktail: ^1.0.4
+flutter:
+  uses-material-design: true
+  generate: true

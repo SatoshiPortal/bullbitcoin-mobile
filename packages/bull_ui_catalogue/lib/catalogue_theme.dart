@@ -3,15 +3,8 @@ import 'package:material_ui/material_ui.dart';
 
 /// Catalogue-local sample palettes for the theme addon.
 ///
-/// `bull_ui` is intentionally brightness-agnostic and literal-free: in the real
-/// app the [BullTheme] values are injected from `AppColors` (which lives in the
-/// app and which this package must NOT import). To render the components with
-/// the right fidelity in the catalogue we keep a small *representative* copy of
-/// the app palette here. Literals are acceptable in this dev-only catalogue —
-/// they keep `bull_ui` itself free of any colour values.
-///
-/// These mirror `lib/core/themes/colors.dart` closely enough for visual review;
-/// they are not the single source of truth and may drift slightly.
+/// These representative samples are independent of the app's canonical
+/// palette in `package:bull_ui/app_theme.dart` and may drift slightly.
 class CatalogueColors {
   const CatalogueColors._();
 

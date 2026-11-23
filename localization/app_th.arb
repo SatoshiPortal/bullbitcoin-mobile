@@ -229,10 +229,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "รหัส",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "การกู้คืนกระเป๋าสตางค์ของคุณ",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -856,10 +852,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "การจัดการ 2FA และรหัสผ่าน",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "การสํารองข้อมูลเสร็จสิ้น!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -923,10 +915,6 @@
   "walletDetailsAddressTypeLabel": "ที่อยู่",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
-  },
-  "emptyMnemonicWordsError": "ใส่คําพูดของ mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "testBackupTapWordsInOrder": "แตะคํากู้คืนในคําพูด\nคําสั่งซื้อ",
   "@testBackupTapWordsInOrder": {
@@ -1193,10 +1181,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "บูม",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "Swap กำลังดำเนินการ ธุรกรรม Bitcoin อาจใช้เวลายืนยันสักครู่ คุณสามารถกลับไปหน้าหลักแล้วรอได้",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1228,10 +1212,6 @@
   "payExpired": "วันหมดอายุ",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "การตั้งค่าการเข้าถึง",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "การชําระเงินที่ประสบความสําเร็จ",
   "@payPaymentSuccessful": {
@@ -1708,10 +1688,6 @@
   "logoutConfirmationLogout": "โลโก้",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "ข้อความที่จําเป็น",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "ค่าธรรมเนียมโดยประมาณ",
   "@buyEstimatedFeeValue": {
@@ -3204,10 +3180,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "ให้การสนับสนุนเกี่ยวกับโปรแกรมแนะนําของเรา",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR สมดุล",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -3566,10 +3538,6 @@
   "sellDailyLimitReached": "ราคาประจําวัน",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "ข้อกําหนดที่จําเป็น",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "ชื่อ",
   "@importWatchOnlyXpub": {
@@ -4072,10 +4040,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "เยี่ยมชม กู้คืนข้อมูลเพิ่มเติม.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "ไม่มีข้อความ เริ่มต้นการสนทนา!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "ชําระเงินจากกระเป๋าสตางค์ Bitcoin",
   "@payExternalWalletDescription": {
@@ -5513,10 +5477,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "ติดต่อ",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "ไม่มีสถิติที่มีอยู่",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5574,15 +5534,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "ความคืบหน้า UR: {parts} ส่วน",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "ที่อยู่",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5594,15 +5545,6 @@
   "onboardingRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "การสแกน: {percent}",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "หมายเลขอ้างอิง",
   "@transactionOrderLabelReferenceNumber": {
@@ -5735,10 +5677,6 @@
   "testBackupConfirm": "ยืนยัน",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "กระบวนการประมวลผลล้มเหลว",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "เลือกสถานที่",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6234,10 +6172,6 @@
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
   },
-  "urDecodingFailedMessage": "การถอดรหัสล้มเหลว",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
   "fundExchangeAccountSubtitle": "เลือกประเทศและการชําระเงิน",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
@@ -6566,10 +6500,6 @@
   "settingsThemeTitle": "ธีม",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "exchangeSupportChatYesterday": "สุดท้าย",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "dcaSetupFundAccount": "บัญชีบัญชีของคุณ",
   "@dcaSetupFundAccount": {
@@ -7348,10 +7278,6 @@
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
   },
-  "exchangeSupportChatMessageEmptyError": "ข้อความไม่สามารถเปล่า",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
   "fundExchangeWarningTactic2": "พวกเขาเสนอสินเชื่อ",
   "@fundExchangeWarningTactic2": {
     "description": "Second scammer tactic warning"
@@ -7711,10 +7637,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "เลือกข้อความ",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "ชัดเจน",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7825,10 +7747,6 @@
   "swapTotalFees": "ค่าธรรมเนียม ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "การสแกนเสร็จสิ้น",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "อย่าลืม",
   "@payDone": {
@@ -8437,10 +8355,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "ใช้เข้าร่วมโปรแกรมที่นี่",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "ใส่ป้ายสําหรับผู้รับนี้",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8488,10 +8402,6 @@
   "sellAdvancedSettings": "การตั้งค่าขั้นสูง",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "เข้าร่วมภารกิจ",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "เข้าสู่ระบบ",
   "@exchangeSettingsLogInTitle": {
@@ -9058,12 +8968,6 @@
   "autoswapActiveCardTitle": "Autoswap กำลังทำงานอยู่",
   "autoswapWarningExplanationBold": "โดยอัตโนมัติ",
   "autoswapInfoConsentMessage": "ขณะนี้ Autoswap เปิดใช้งานอยู่ แต่จะยังไม่ทำงานจนกว่าคุณจะยินยอม คุณต้องการเปิดใช้งานต่อไปหรือไม่?",
-  "nfcNotAvailable": "อุปกรณ์นี้ไม่รองรับ NFC",
-  "nfcDisabled": "NFC ถูกปิดใช้งานอยู่ กรุณาเปิดใช้งานในการตั้งค่า",
-  "nfcInvalidData": "ไม่พบข้อมูล NFC ที่รองรับ",
-  "nfcConnectionLost": "การเชื่อมต่อ NFC ขาดหาย กรุณาถืออุปกรณ์ไว้ใกล้แท็ก NFC แล้วลองใหม่อีกครั้ง",
-  "nfcWriteFailed": "การถ่ายโอนผ่าน NFC ล้มเหลว กรุณาลองใหม่อีกครั้ง",
-  "nfcError": "ข้อผิดพลาด NFC: {error}",
   "deleteLogsTitle": "ลบบันทึก",
   "logsDeletedMessage": "ลบบันทึกแล้ว",
   "sendSelfTransfer": "โอนให้ตัวเอง",
@@ -9236,11 +9140,6 @@
   "recipientsFieldPayeeAccountNumber": "หมายเลขบัญชีผู้รับเงิน",
   "exchangeFileUploadStatusRejectedBadge": "ถูกปฏิเสธ",
   "exchangeFileUploadTapToReupload": "แตะเพื่ออัปโหลดใหม่",
-  "exchangeSupportChatAttachmentImage": "รูปภาพ",
-  "exchangeSupportChatAttachmentUnknownFile": "ไฟล์ที่ไม่ทราบชนิด",
-  "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
-  "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
-  "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
   "mempoolErrorUpdateSettingsFailed": "อัปเดตการตั้งค่าไม่สำเร็จ: {error}",
@@ -9318,9 +9217,6 @@
   "settingsSearchErrorReportingKeywords": "รายงานข้อขัดข้อง|รายงานข้อบกพร่อง|การวินิจฉัย|ข้อมูลการใช้งาน|บันทึกข้อผิดพลาด",
   "settingsSearchScreenPrivacyKeywords": "ภาพหน้าจอ|การบันทึกหน้าจอ|การป้องกันการจับภาพ|ความเป็นส่วนตัว",
   "settingsSearchStartTyping": "เริ่มพิมพ์เพื่อดูผลลัพธ์",
-  "exchangeSupportChatLoadMessagesError": "ไม่สามารถโหลดข้อความได้ โปรดลองอีกครั้ง",
-  "exchangeSupportChatSendMessageError": "ไม่สามารถส่งข้อความของคุณได้ โปรดลองอีกครั้ง",
-  "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง",
   "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
   "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
@@ -9539,5 +9435,6 @@
   "permissionsTitle": "สิทธิ์",
   "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
   "wizardBackgroundTasksDescription": "ตรวจสอบการชำระเงินขณะปิดแอป",
-  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า"
+  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า",
+  "sendErrorInvoiceExpiryTooShort": "ใบแจ้งหนี้นี้จะหมดอายุเร็วเกินไป โปรดขอใบแจ้งหนี้ใหม่จากผู้รับ"
 }

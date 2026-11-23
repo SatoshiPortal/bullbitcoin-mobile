@@ -1,0 +1,10 @@
+{
+  "@@locale": "sw",
+  "passphraseLabel": "Passphrase",
+  "optionalPassphraseHint": "Passphrase ya Hiari",
+  "recipientsInfoLabel": "Lebo",
+  "requiredHint": "Inahitajika",
+  "submitButton": "Wasilisha",
+  "emptyMnemonicWordsError": "Weka maneno yote ya msemo wako",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea"
+}

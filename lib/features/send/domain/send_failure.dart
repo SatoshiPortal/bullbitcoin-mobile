@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
 
 sealed class SendFailure extends Failure {
   const SendFailure([super.logMessage]);
@@ -16,6 +16,10 @@ final class SendInvalidPaymentRequestFailure extends SendFailure {
 
 final class SendInvoiceExpiredFailure extends SendFailure {
   const SendInvoiceExpiredFailure([super.logMessage]);
+}
+
+final class SendInvoiceExpiryTooShortFailure extends SendFailure {
+  const SendInvoiceExpiryTooShortFailure();
 }
 
 final class SendInvoiceAmountRequiredFailure extends SendFailure {

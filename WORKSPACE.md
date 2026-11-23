@@ -12,6 +12,8 @@ graph TD
   style ark stroke:#18f150
   background_tasks["background_tasks"]
   style background_tasks stroke:#e69535
+  backups["backups"]
+  style backups stroke:#e0e4c1
   bb_mobile["bb_mobile"]
   style bb_mobile stroke:#8b5641
   bbx_api["bbx_api"]
@@ -90,8 +92,12 @@ graph TD
   style screen_privacy stroke:#7725dd
   secrets["secrets"]
   style secrets stroke:#07e9ae
+  settings["settings"]
+  style settings stroke:#a681c0
   signers["signers"]
   style signers stroke:#5be3aa
+  swap_feature["swap_feature"]
+  style swap_feature stroke:#7988a5
   swaps["swaps"]
   style swaps stroke:#3665e3
   sync["sync"]
@@ -100,6 +106,7 @@ graph TD
   access --> bull_ui
   access --> primitives
   access --> secrets
+  access -.-> legacy_storage
   announcements --> bull_ui
   announcements --> legacy_storage
   announcements --> primitives
@@ -109,6 +116,8 @@ graph TD
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
+  backups --> bull_recoverbull
+  backups --> bull_ui
   bbx_api --> primitives
   bitbox_transport --> rust_bindings
   bitcoin_price --> bull_logger
@@ -127,12 +136,13 @@ graph TD
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
   bull_ark --> notifications
+  bull_exchange --> bitcoin_price
   bull_exchange --> bull_logger
   bull_exchange --> bull_ui
   bull_exchange --> exchange
   bull_exchange --> file_system
+  bull_exchange --> preferences
   bull_exchange --> primitives
-  bull_exchange -.-> preferences
   bull_logs --> bull_logger
   bull_logs --> bull_ui
   bull_logs --> primitives
@@ -189,6 +199,8 @@ graph TD
   labels --> legacy_storage
   labels --> secrets
   labels --> sync
+  legacy_storage --> bull_logger
+  legacy_storage --> bull_reporting
   legacy_storage --> primitives
   mempool --> bull_logger
   mempool --> bull_tor
@@ -217,11 +229,16 @@ graph TD
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings
+  satoshifier --> bull_logger
+  satoshifier --> sync
   screen_awake --> bull_logger
   secrets --> primitives
   secrets --> bull_logger
   secrets --> rust_bindings
   secrets --> legacy_storage
+  settings --> bull_ui
+  settings --> network
+  settings --> primitives
   signers --> secrets
   signers --> legacy_storage
   signers --> bitbox_transport
@@ -232,11 +249,19 @@ graph TD
   signers --> satoshifier
   signers --> screen_awake
   signers --> sync
+  swap_feature --> bull_ui
+  swap_feature --> primitives
+  swap_feature --> swaps
   swaps --> rust_bindings
   swaps --> boltz_stream
+  swaps --> bull_logger
+  swaps --> electrum
+  swaps --> fees
   swaps --> legacy_storage
+  swaps --> preferences
   swaps --> primitives
   swaps --> secrets
+  swaps --> sync
   sync --> legacy_storage
   sync --> rust_bindings
   sync --> bull_logger
@@ -245,6 +270,7 @@ graph TD
   subgraph features0 ["features"]
     access
     announcements
+    backups
     bitcoin_price
     btc_map
     bull_ark
@@ -255,7 +281,9 @@ graph TD
     fees_feature
     label_editor
     network
+    settings
     signers
+    swap_feature
   end
   subgraph packages1 ["packages"]
     ark

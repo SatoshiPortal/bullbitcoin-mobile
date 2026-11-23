@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_backup_passphrase_usecase.dart';
+import 'package:physical_backup_verification/physical_backup_verification.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secrets/secrets.dart' show Secret;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -20,13 +20,11 @@ class TestWalletBackupBloc
   final CompleteBackupVerificationUsecase _completeBackupVerificationUsecase;
   final LoadWalletsForNetworkUsecase _loadWalletsForNetworkUsecase;
   final GetSecretFromFingerprintUsecase _getSecretFromFingerprintUsecase;
-  final VerifyBackupPassphraseUsecase _verifyBackupPassphraseUsecase;
 
   TestWalletBackupBloc({
     required this._completeBackupVerificationUsecase,
     required this._loadWalletsForNetworkUsecase,
     required this._getSecretFromFingerprintUsecase,
-    this._verifyBackupPassphraseUsecase = const VerifyBackupPassphraseUsecase(),
   }) : super(const TestWalletBackupState()) {
     on<LoadWallets>(_onLoadWallets);
     on<WalletSelected>(_onWalletSelected);
@@ -56,12 +54,6 @@ class TestWalletBackupBloc
     }
     return _getSecretFromFingerprintUsecase.execute(wallet.masterFingerprint);
   }
-
-  /// Verifies a transient candidate without retaining it in bloc state.
-  Future<Result<bool, TestWalletBackupFailure>> verifyPassphrase(
-    Secret secret,
-    String candidate,
-  ) => _verifyBackupPassphraseUsecase.execute(secret, candidate);
 
   Future<void> _onLoadWallets(
     LoadWallets event,
@@ -102,14 +94,13 @@ class TestWalletBackupBloc
 
   /// Records a backup the user has just re-entered correctly.
   ///
-  /// The comparison itself happened in `MnemonicChallenge`, through
-  /// `secret.verify.mnemonic` — inside the package, on words this layer never
-  /// saw. What is left here is the bookkeeping.
+  /// Secrets checked the words and any passphrase. Backups owns bookkeeping.
   Future<void> _verifyPhysicalBackup(
     VerifyPhysicalBackup event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    if (state.selectedWallet == null) {
+    final wallet = state.selectedWallet;
+    if (wallet == null) {
       emit(
         state.copyWith(
           failure: const TestWalletBackupNoWalletSelectedFailure(),
@@ -117,10 +108,14 @@ class TestWalletBackupBloc
       );
       return;
     }
+    if (Fingerprint.tryParse(wallet.masterFingerprint) !=
+        event.proof.fingerprint) {
+      return;
+    }
 
-    if (await _completeBackupVerificationUsecase.execute() case Err(
-      :final failure,
-    )) {
+    final result = await _completeBackupVerificationUsecase.execute();
+    if (state.selectedWallet?.id != wallet.id) return;
+    if (result case Err(:final failure)) {
       // The words were right but recording it failed. Reported rather than
       // swallowed: the flow would otherwise claim success while the wallet
       // still shows its backup as untested.

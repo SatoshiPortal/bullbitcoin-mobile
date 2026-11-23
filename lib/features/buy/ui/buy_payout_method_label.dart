@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:flutter/widgets.dart';
 
 /// The network a buy pays out over, worded for the user. Shared by the wallet

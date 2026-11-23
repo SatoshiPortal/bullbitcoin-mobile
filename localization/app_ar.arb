@@ -213,10 +213,6 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "exchangeReferralsTitle": "مدونات الإحالة",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "استرجع محفظتك",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -790,10 +786,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA and password",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "اكتمل الدعم!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -849,10 +841,6 @@
   "walletDetailsAddressTypeLabel": "نوع العنوان",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
-  },
-  "emptyMnemonicWordsError": "أدخل كل كلماتك",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "testBackupTapWordsInOrder": "تخطي كلمات الاسترداد في\nالأمر الصحيح",
   "@testBackupTapWordsInOrder": {
@@ -1079,10 +1067,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "المبادلة قيد التنفيذ. قد تستغرق معاملات Bitcoin بعض الوقت للتأكيد. يمكنك العودة إلى الصفحة الرئيسية والانتظار.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1114,10 +1098,6 @@
   "payExpired": "Expired",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "الدخول",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "المدفوعات الناجحة",
   "@payPaymentSuccessful": {
@@ -1562,10 +1542,6 @@
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "الرسالة مطلوبة",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "القيمة التقديرية للرسوم",
   "@buyEstimatedFeeValue": {
@@ -2966,10 +2942,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "دعم الاتصال للتعلم عن برنامج الإحالة",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR الرصيد",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -3297,10 +3269,6 @@
   "sellDailyLimitReached": "الحد الأقصى للبيع اليومي",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "المطلوبة",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -3759,10 +3727,6 @@
   "receiveRequestInboundLiquidity": "طلب الحصول على القدرة",
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
-  },
-  "exchangeSupportChatEmptyState": "لا رسائل بعد ابدأ المحادثة!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "دفع محفظة بيتكوين أخرى",
   "@payExternalWalletDescription": {
@@ -5060,10 +5024,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "submitButton": "Submit",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "لا توجد إحصاءات متاحة",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5121,15 +5081,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "UR Progress: {parts} parts",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "ملاحظات",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5141,15 +5092,6 @@
   "onboardingRecoverWallet": "Recover Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "المسح: {percent}٪",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "العدد المرجعي",
   "@transactionOrderLabelReferenceNumber": {
@@ -5278,10 +5220,6 @@
   "testBackupConfirm": "Confirm",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "UR processing failed",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "موقع قبو الاختيار",
   "@backupWalletChooseVaultLocationTitle": {
@@ -5748,10 +5686,6 @@
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
   },
-  "urDecodingFailedMessage": "UR decoding failed",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
   "fundExchangeAccountSubtitle": "اختيار بلدكم وطريقة الدفع",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
@@ -6047,10 +5981,6 @@
   "settingsThemeTitle": "الموضوع",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "exchangeSupportChatYesterday": "أمس",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "dcaSetupFundAccount": "صندوق حسابك",
   "@dcaSetupFundAccount": {
@@ -6757,10 +6687,6 @@
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
   },
-  "exchangeSupportChatMessageEmptyError": "الرسالة لا يمكن أن تكون فارغة",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
   "fundExchangeWarningTactic2": "انهم يعرضون عليك قرض",
   "@fundExchangeWarningTactic2": {
     "description": "Second scammer tactic warning"
@@ -7092,10 +7018,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "التصاريح الاختيارية",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "خالي",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7198,10 +7120,6 @@
   "swapTotalFees": "مجموع الرسوم ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "اكتمل المسح",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "تم",
   "@payDone": {
@@ -7769,10 +7687,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "exchangeReferralsApplyToJoinMessage": "تطبيق للانضمام إلى البرنامج هنا",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "أدخل بطاقة تعريف لهذا المتلقي",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -7816,10 +7730,6 @@
   "sellAdvancedSettings": "المراحل المتقدمة",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "انضم إلى البعثة",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "Log In",
   "@exchangeSettingsLogInTitle": {
@@ -9058,12 +8968,6 @@
   "autoswapActiveCardTitle": "النقل الآلي مفعّل",
   "autoswapWarningExplanationBold": "تلقائيًا",
   "autoswapInfoConsentMessage": "النقل الآلي مفعّل حاليًا لكنه لن يُنفَّذ حتى توافق عليه. هل ترغب في إبقائه مفعّلاً؟",
-  "nfcNotAvailable": "خاصية NFC غير مدعومة على هذا الجهاز",
-  "nfcDisabled": "خاصية NFC معطّلة. فعّلها من الإعدادات.",
-  "nfcInvalidData": "لم يُعثر على بيانات NFC مدعومة",
-  "nfcConnectionLost": "انقطع اتصال NFC. قرّب جهازك من علامة NFC وحاول مجددًا.",
-  "nfcWriteFailed": "فشل نقل البيانات عبر NFC. يرجى المحاولة مرة أخرى.",
-  "nfcError": "خطأ NFC: {error}",
   "deleteLogsTitle": "حذف السجلات",
   "logsDeletedMessage": "تم حذف السجلات",
   "sendSelfTransfer": "تحويل ذاتي",
@@ -9235,11 +9139,6 @@
   "recipientsFieldPayeeAccountNumber": "رقم حساب المستفيد",
   "exchangeFileUploadStatusRejectedBadge": "مرفوض",
   "exchangeFileUploadTapToReupload": "اضغط لإعادة الرفع",
-  "exchangeSupportChatAttachmentImage": "صورة",
-  "exchangeSupportChatAttachmentUnknownFile": "ملف غير معروف",
-  "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
@@ -9317,9 +9216,6 @@
   "settingsSearchErrorReportingKeywords": "تقارير الأعطال|تقارير الأخطاء|التشخيص|بيانات الاستخدام|سجلات الأخطاء",
   "settingsSearchScreenPrivacyKeywords": "لقطات الشاشة|تسجيل الشاشة|حماية التقاط الشاشة|الخصوصية",
   "settingsSearchStartTyping": "ابدأ الكتابة لرؤية النتائج.",
-  "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
-  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
   "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
@@ -9538,5 +9434,6 @@
   "permissionsTitle": "الأذونات",
   "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
-  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة.",
+  "sendErrorInvoiceExpiryTooShort": "تنتهي صلاحية هذه الفاتورة مبكرًا جدًا. اطلب من المستلم فاتورة جديدة."
 }

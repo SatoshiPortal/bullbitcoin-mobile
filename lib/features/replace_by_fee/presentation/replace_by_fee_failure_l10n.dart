@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:flutter/widgets.dart';
 

@@ -1,12 +1,15 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:bb_mobile/generated/l10n/localization_as.dart';
 import 'package:bb_mobile/generated/l10n/localization_de.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bb_mobile/generated/l10n/localization_fr.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'search_registry.dart';
+
+const searchSettings = searchRegistry;
 
 void main() {
   group('settings search', () {
@@ -122,10 +125,11 @@ void main() {
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
       );
-      expect(
-        items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import Wallet',
-      );
+      expect(items.byId(SettingsItemId.importWallet).path, [
+        'Settings',
+        'Wallet',
+        'Import Wallet',
+      ]);
       expect(backupSettingsDataItemOrder, [
         SettingsItemId.labels,
         SettingsItemId.transactionHistory,
@@ -282,14 +286,7 @@ void main() {
         'transaction history',
       ).single;
 
-      expect(
-        result.location(TextDirection.ltr),
-        'Settings → Backup → Transaction History',
-      );
-      expect(
-        result.location(TextDirection.rtl),
-        'Settings ← Backup ← Transaction History',
-      );
+      expect(result.path, ['Settings', 'Backup', 'Transaction History']);
     });
 
     test('omits inaccessible superuser settings', () {

@@ -1,0 +1,27 @@
+{
+  "@@locale": "ru",
+  "save": "Сохранить",
+  "copyDialogButton": "Копировать",
+  "delete": "Удалить",
+  "transactionListLoadingTransactions": "Загрузка транзакций...",
+  "receiveQRCode": "Код QR",
+  "cancel": "Отмена",
+  "transactionStatusPending": "Завершение",
+  "transactionListYesterday": "Вчера",
+  "transactionListToday": "Сегодня",
+  "amountLabel": "Сумма",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "viewerTapToCopy": "Нажмите для копирования",
+  "viewerViewInExplorer": "Посмотреть в обозревателе",
+  "transactionViewerTitle": "ID транзакции",
+  "viewerCopyLink": "Копировать ссылку",
+  "coinsTitle": "Монеты",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Скопировано в буфер обмена"
+}

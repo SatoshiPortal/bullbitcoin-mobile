@@ -1,10 +1,8 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 
@@ -15,13 +13,13 @@ import 'package:meta/meta.dart';
 
 class LoadLimitOrderCreationUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final DefaultWalletsFacade _defaultWalletsFacade;
+  final Exchange _exchange;
   final GetWalletsUsecase _getWalletsUsecase;
   final ExchangeLimitOrders _orders;
 
   const LoadLimitOrderCreationUsecase(
     this._getExchangeUserSummaryUsecase,
-    this._defaultWalletsFacade,
+    this._exchange,
     this._getWalletsUsecase,
     this._orders,
   );
@@ -144,26 +142,16 @@ class LoadLimitOrderCreationUsecase {
   }
 
   Future<Result<DefaultWallets, LimitOrdersFailure>>
-  _loadDefaultWallets() async {
-    try {
-      return Ok(await _defaultWalletsFacade.getDefaultWallets());
-    } on Error {
-      rethrow;
-    } on ApiKeyException catch (e) {
-      log.info('Exchange credential refused: ${e.runtimeType}');
-      return Err(LimitOrdersAccountUnavailableFailure('$e'));
-    } on ExchangeCredentialUnavailableException catch (e) {
-      log.info('Exchange credential refused: ${e.runtimeType}');
-      return Err(LimitOrdersAccountUnavailableFailure('$e'));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to read the default wallets for a limit order',
-        error: e,
-        trace: st,
-      );
-      return Err(LimitOrdersUnexpectedFailure('$e'));
-    }
-  }
+  _loadDefaultWallets() async => (await _exchange.getDefaultWallets()).mapErr(
+    (failure) => switch (failure) {
+      ExchangeNotAuthenticatedFailure() ||
+      ExchangeSessionRejectedFailure() ||
+      ExchangeApiKeyStorageFailure() ||
+      ExchangeCredentialReadFailure() =>
+        const LimitOrdersAccountUnavailableFailure(),
+      _ => LimitOrdersUnexpectedFailure(failure.logMessage),
+    },
+  );
 
   Future<List<Wallet>> _loadAppWallets() async {
     try {

@@ -1,0 +1,6 @@
+{
+  "@@locale": "zh",
+  "save": "Save",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "swapServerBusyError": "请先完成进行中的兑换，再更换兑换服务器。"
+}

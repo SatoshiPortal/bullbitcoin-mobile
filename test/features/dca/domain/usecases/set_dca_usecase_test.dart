@@ -1,21 +1,20 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../core/exchange/fake_exchange_users.dart';
+import '../../../exchange/data/bbx_api_test_http.dart';
 
-class MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -23,12 +22,6 @@ class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockWalletAddressRepository extends Mock
     implements WalletAddressRepository {}
-
-class MockExchangeUserRepository extends Mock
-    implements ExchangeUserOperations {}
-
-// The preference write now goes straight to the repository, which is the
-// sanitizing boundary.
 
 class FakeWallet extends Fake implements Wallet {
   @override
@@ -50,11 +43,9 @@ void main() {
     registerFallbackValue(DcaNetwork.bitcoin);
   });
 
-  late MockExchangeOrderRepository mainnetOrders;
-  late MockExchangeOrderRepository testnetOrders;
+  late MockExchangeOrders mainnetOrders;
+  late MockExchangeOrders testnetOrders;
   late MockWalletRepository wallet;
-  late MockExchangeUserRepository mainnetUsers;
-  late MockExchangeUserRepository testnetUsers;
   late MockSettingsRepository settings;
   late MockWalletAddressRepository walletAddress;
 
@@ -64,20 +55,6 @@ void main() {
     environment: Environment.mainnet,
     bitcoinUnit: BitcoinUnit.sats,
     currencyCode: 'CAD',
-  );
-
-  // An account with AutoBuy already on: enabling the recurring buy must not
-  // flip it off, since saveUserPreferences replaces the whole preference set.
-  const userSummary = UserSummary(
-    userNumber: 1,
-    groups: [],
-    profile: UserProfile(firstName: 'First', lastName: 'Last'),
-    email: 'user@example.com',
-    balances: [],
-    language: 'en',
-    currency: 'CAD',
-    dca: UserDca(isActive: false),
-    autoBuy: UserAutoBuy(isActive: true, addresses: UserAutoBuyAddresses()),
   );
 
   final dca = Dca(
@@ -90,21 +67,21 @@ void main() {
   );
 
   setUp(() {
-    mainnetOrders = MockExchangeOrderRepository();
-    testnetOrders = MockExchangeOrderRepository();
+    mainnetOrders = MockExchangeOrders();
+    testnetOrders = MockExchangeOrders();
     wallet = MockWalletRepository();
-    mainnetUsers = MockExchangeUserRepository();
-    testnetUsers = MockExchangeUserRepository();
     settings = MockSettingsRepository();
     walletAddress = MockWalletAddressRepository();
 
     usecase = SetDcaUsecase(
-      mainnetExchangeOrderRepository: mainnetOrders,
-      testnetExchangeOrderRepository: testnetOrders,
       wallet: wallet,
       settingsRepository: settings,
       walletAddressRepository: walletAddress,
-      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
+      exchange: exchangeForTesting(
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? testnetOrders
+            : mainnetOrders,
+      ),
     );
     when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
@@ -120,8 +97,6 @@ void main() {
         (_) async =>
             Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
-      when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
       final result = await usecase.execute(
         amount: 10,
         currency: FiatCurrency.cad,
@@ -130,8 +105,6 @@ void main() {
         lightningAddress: 'user@example.com',
       );
       expect(result, isA<Err<Dca, DcaFailure>>());
-      verifyZeroInteractions(mainnetUsers);
-      verifyZeroInteractions(testnetUsers);
       verifyZeroInteractions(mainnetOrders);
       verifyZeroInteractions(testnetOrders);
       verifyZeroInteractions(wallet);
@@ -231,7 +204,7 @@ void main() {
         () => walletAddress.generateNewReceiveAddress(
           walletId: any(named: 'walletId'),
         ),
-      ).thenThrow(const WalletError.notFound(_sentinelWalletId));
+      ).thenThrow(const WalletNotFoundException(_sentinelWalletId));
 
       final result = await usecase.execute(
         amount: 10,
@@ -251,8 +224,6 @@ void main() {
 
     test('maps an exchange rejection to OrderCreationFailure without carrying '
         'the raw reason', () async {
-      when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetOrders.createDca(
           amount: any(named: 'amount'),
@@ -260,9 +231,14 @@ void main() {
           frequency: any(named: 'frequency'),
           network: any(named: 'network'),
           address: any(named: 'address'),
+          enablePreference: true,
         ),
-      ).thenThrow(
-        Exception('Failed to create DCA: HTTP 500 apiKey=$_sentinelSecret'),
+      ).thenAnswer(
+        (_) async => const Err(
+          ExchangeNetworkFailure(
+            'Failed to create DCA: HTTP 500 apiKey=$_sentinelSecret',
+          ),
+        ),
       );
 
       final result = await usecase.execute(
@@ -275,51 +251,128 @@ void main() {
 
       final failure = failureOf(result);
       expect(failure, isA<DcaOrderCreationFailure>());
-      // A foreign message can embed a credential or a response body. It is
-      // logged, never carried by the failure object.
+      // A foreign diagnostic must not reach the DCA feature failure.
       expect(failure.logMessage, isNot(contains(_sentinelSecret)));
       expect(failure.logMessage, 'createDca rejected');
     });
 
-    test('keeps the flow successful when the order was created but enabling '
-        'the preference failed', () async {
-      when(
-        () => mainnetOrders.createDca(
-          amount: any(named: 'amount'),
-          currency: any(named: 'currency'),
-          frequency: any(named: 'frequency'),
-          network: any(named: 'network'),
-          address: any(named: 'address'),
-        ),
-      ).thenAnswer((_) async => dca);
-      when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Ok(userSummary));
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer(
-        (_) async =>
-            const Err(ExchangePreferencesSaveFailure('prefs write failed')),
-      );
+    for (final (name, scenario) in [
+      (
+        'enables the preference after a successful creation during a session storage failure',
+        'completionRead',
+      ),
+      (
+        'keeps the DCA when the exchange rejects the preference write',
+        'refusedPreference',
+      ),
+      (
+        'keeps the DCA when the session changes before the preference write',
+        'changedSession',
+      ),
+      (
+        'aborts before creating anything when the summary read fails',
+        'refusedSummary',
+      ),
+    ]) {
+      test(name, () async {
+        var reads = 0;
+        final http = FakeBbxHttp(
+          respond: (request) {
+            final method = (request.data as Map)['method'];
+            if ((method == 'getUserSummary' && scenario == 'refusedSummary') ||
+                (method == 'saveUserPreferences' &&
+                    scenario == 'refusedPreference')) {
+              return {
+                'error': {'code': -32603},
+              };
+            }
+            return {
+              'result': switch (method) {
+                'getUserSummary' => {
+                  'userNumber': 1,
+                  'groups': [],
+                  'profile': {'firstName': 'First', 'lastName': 'Last'},
+                  'email': 'user@example.com',
+                  'balances': [],
+                  'language': 'en',
+                  'currency': 'CAD',
+                  'dca': {'isActive': false},
+                  'autoBuy': {'isActive': true, 'addresses': {}},
+                },
+                'createDCA' => {
+                  'element': {
+                    'userId': 'synthetic-user',
+                    'userNbr': 1,
+                    'amountStr': '10',
+                    'currencyCode': 'CAD',
+                    'recurringFrequency': 'DAILY',
+                    'recipientType': 'OUT_LIGHTNING_ADDRESS',
+                    'nextRunAt': '2026-11-24T00:00:00Z',
+                    'createdAt': '2026-11-23T00:00:00Z',
+                    'address': 'user@lightning.address',
+                  },
+                },
+                'saveUserPreferences' => null,
+                _ => fail('Unexpected exchange request'),
+              },
+            };
+          },
+        );
+        final usecase = SetDcaUsecase(
+          wallet: wallet,
+          settingsRepository: settings,
+          walletAddressRepository: walletAddress,
+          exchange: testExchange(
+            http,
+            // The old runner reads credentials a fifth time, after the
+            // successful creation and before the preference can be sent.
+            readApiKey: () async {
+              reads++;
+              if (scenario == 'changedSession' && http.requests.length == 2) {
+                return const Ok('changed-key');
+              }
+              return reads == 5 && scenario == 'completionRead'
+                  ? const Err(ExchangeCredentialReadFailure())
+                  : const Ok('synthetic-key');
+            },
+          ),
+        );
 
-      final result = await usecase.execute(
-        amount: 10,
-        currency: FiatCurrency.cad,
-        frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
-        lightningAddress: 'user@lightning.address',
-      );
+        final result = await usecase.execute(
+          amount: 10,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: DcaNetwork.lightning,
+          lightningAddress: 'user@lightning.address',
+        );
 
-      // The recurring buy exists on the exchange: reporting a failure here
-      // would tell the user nothing happened and invite a duplicate order.
-      expect(result, isA<Ok<Dca, DcaFailure>>());
-      expect((result as Ok<Dca, DcaFailure>).value, same(dca));
-    });
+        if (scenario == 'refusedSummary') {
+          expect(failureOf(result), isA<DcaAccountUnavailableFailure>());
+        } else {
+          expect(result, isA<Ok<Dca, DcaFailure>>());
+        }
+        expect(
+          http.requests.map((request) => (request.data as Map)['method']),
+          [
+            'getUserSummary',
+            if (scenario != 'refusedSummary') 'createDCA',
+            if (scenario == 'completionRead' || scenario == 'refusedPreference')
+              'saveUserPreferences',
+          ],
+        );
+        if (scenario == 'completionRead' || scenario == 'refusedPreference') {
+          expect((http.requests.last.data as Map)['params'], {
+            'userPreferences': {
+              'LANGUAGE': 'en',
+              'DEFAULT_FIAT_CURRENCY_CODE': 'CAD',
+              'DCA_ENABLED': 'true',
+              'AUTO_BUY_ENABLED': 'true',
+              'EMAIL_NOTIFICATIONS': 'true',
+            },
+          });
+        }
+      });
+    }
 
     test('rethrows an Error instead of turning a bug into a failure', () async {
       when(() => settings.fetch()).thenThrow(StateError('bug'));
@@ -344,20 +397,9 @@ void main() {
           frequency: any(named: 'frequency'),
           network: any(named: 'network'),
           address: any(named: 'address'),
+          enablePreference: true,
         ),
-      ).thenAnswer((_) async => dca);
-      when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Ok(userSummary));
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
-
+      ).thenAnswer((_) async => Ok(dca));
       final result = await usecase.execute(
         amount: 10,
         currency: FiatCurrency.cad,
@@ -369,82 +411,5 @@ void main() {
       expect(result, isA<Ok<Dca, DcaFailure>>());
       expect((result as Ok<Dca, DcaFailure>).value, same(dca));
     });
-
-    test('sends the full preference set so an active AutoBuy survives '
-        'enabling the recurring buy', () async {
-      when(
-        () => mainnetOrders.createDca(
-          amount: any(named: 'amount'),
-          currency: any(named: 'currency'),
-          frequency: any(named: 'frequency'),
-          network: any(named: 'network'),
-          address: any(named: 'address'),
-        ),
-      ).thenAnswer((_) async => dca);
-      when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Ok(userSummary));
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
-
-      final result = await usecase.execute(
-        amount: 10,
-        currency: FiatCurrency.cad,
-        frequency: DcaBuyFrequency.daily,
-        network: DcaNetwork.lightning,
-        lightningAddress: 'user@lightning.address',
-      );
-
-      expect(result, isA<Ok<Dca, DcaFailure>>());
-      verify(
-        () => mainnetUsers.saveUserPreference(
-          language: 'en',
-          currency: 'CAD',
-          dcaEnabled: true,
-          autoBuyEnabled: 'true',
-          emailNotificationsEnabled: true,
-        ),
-      ).called(1);
-    });
-
-    test(
-      'aborts before creating anything when the summary read fails',
-      () async {
-        // The DCA flag is operative on the exchange (stopping a recurring buy
-        // writes it), and the enabling write must carry the full current set.
-        // A failed summary read therefore aborts the flow while nothing exists
-        // on the exchange yet, instead of creating a DCA it cannot enable.
-        when(
-          () => mainnetUsers.getUserSummary(),
-        ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
-
-        final result = await usecase.execute(
-          amount: 10,
-          currency: FiatCurrency.cad,
-          frequency: DcaBuyFrequency.daily,
-          network: DcaNetwork.lightning,
-          lightningAddress: 'user@lightning.address',
-        );
-
-        final failure = failureOf(result);
-        expect(failure, isA<DcaAccountUnavailableFailure>());
-        verifyZeroInteractions(mainnetOrders);
-        verifyNever(
-          () => mainnetUsers.saveUserPreference(
-            language: any(named: 'language'),
-            currency: any(named: 'currency'),
-            dcaEnabled: any(named: 'dcaEnabled'),
-            autoBuyEnabled: any(named: 'autoBuyEnabled'),
-            emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-          ),
-        );
-      },
-    );
   });
 }

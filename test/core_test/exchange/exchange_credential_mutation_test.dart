@@ -1,8 +1,8 @@
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
@@ -61,9 +61,8 @@ void main() {
         final storage = _Storage()
           ..install()
           ..failWrite = failWrite;
-        final repository = ExchangeApiKeyRepositoryImpl(
-          secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-              .exchangeKeychain,
+        final repository = ExchangeCredentials.open(
+          Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
         );
         final write = repository.saveApiKey(_credential(), isTestnet: true);
         await storage.started.future;
@@ -74,10 +73,10 @@ void main() {
         expect(
           saved,
           failWrite
-              ? isA<Err<void, ExchangeApiKeyFailure>>()
-              : isA<Ok<void, ExchangeApiKeyFailure>>(),
+              ? isA<Err<void, ExchangeFailure>>()
+              : isA<Ok<void, ExchangeFailure>>(),
         );
-        expect(deleted, isA<Ok<void, ExchangeApiKeyFailure>>());
+        expect(deleted, isA<Ok<void, ExchangeFailure>>());
         expect(storage.operations, [
           failWrite ? 'failed-write' : 'write',
           'delete',

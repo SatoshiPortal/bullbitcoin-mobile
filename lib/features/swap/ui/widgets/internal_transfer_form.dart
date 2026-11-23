@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';

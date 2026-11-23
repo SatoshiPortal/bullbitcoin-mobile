@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
+import 'package:secrets/bip85.dart';
 
 import 'dart:async';
 import 'dart:io';
@@ -7,13 +8,12 @@ import 'dart:ui';
 import 'package:background_tasks/background_tasks.dart';
 
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
-import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
+import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
 import 'package:ark/ark.dart' show ArkClient;
@@ -26,7 +26,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _Bip85 extends Mock implements Bip85Repository {}
+class _Bip85 extends Mock implements Bip85Derivations {}
 
 class _Admission extends Mock implements ParentCustodyAdmissionPort {}
 
@@ -34,7 +34,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Wallets extends Mock implements WalletMetadataDatasource {}
+class _Wallets extends Mock implements WalletRegistrations {}
 
 class _Wallet extends Mock implements WalletMetadataModel {}
 
@@ -122,18 +122,25 @@ class _Paths extends PathProviderPlatform {
   Future<String?> getApplicationDocumentsPath() async => directory;
 }
 
-Bip85DerivationEntity _entry({
+class _Bip85Entry extends Fake implements Bip85Derivation {
+  @override
+  final String parentFingerprint;
+  @override
+  final String path;
+  @override
+  final Bip85Status status;
+
+  _Bip85Entry(this.parentFingerprint, this.path, this.status);
+
+  @override
+  Bip85Application get application => Bip85Application.bip39;
+}
+
+Bip85Derivation _entry({
   required String fingerprint,
   required String path,
   Bip85Status status = Bip85Status.active,
-}) => Bip85DerivationEntity(
-  path: path,
-  xprvFingerprint: fingerprint,
-  alias: null,
-  status: status,
-  application: Bip85Application.bip39,
-  index: 11811,
-);
+}) => _Bip85Entry(fingerprint, path, status);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -144,7 +151,7 @@ void main() {
     setUp(() => registry = _Bip85());
 
     test('a revoked matching derivation still refuses reuse', () async {
-      when(() => registry.fetchAll()).thenAnswer(
+      when(() => registry.list()).thenAnswer(
         (_) async => Ok([
           _entry(
             fingerprint: parent.hex,
@@ -153,9 +160,8 @@ void main() {
           ),
         ]),
       );
-      final result = await ArkDerivationCollision(
-        Bip85Registry(registry.fetchAll),
-      ).hasCollision(parent);
+      final result = await ArkDerivationCollision(registry)
+          .hasCollision(parent);
       expect(result, isA<Ok<bool, ArkFailure>>());
       expect((result as Ok<bool, ArkFailure>).value, true);
     });
@@ -163,51 +169,47 @@ void main() {
     test(
       'a numerically equivalent padded path cannot evade the guard',
       () async {
-        when(() => registry.fetchAll()).thenAnswer(
+        when(() => registry.list()).thenAnswer(
           (_) async => Ok([
             _entry(fingerprint: parent.hex, path: "39'/00'/012'/011811'"),
           ]),
         );
-        final result = await ArkDerivationCollision(
-          Bip85Registry(registry.fetchAll),
-        ).hasCollision(parent);
+        final result = await ArkDerivationCollision(registry)
+            .hasCollision(parent);
         expect(result, isA<Ok<bool, ArkFailure>>());
         expect((result as Ok<bool, ArkFailure>).value, true);
       },
     );
 
     test('other parents and other BIP39 paths are not collisions', () async {
-      when(() => registry.fetchAll()).thenAnswer(
+      when(() => registry.list()).thenAnswer(
         (_) async => Ok([
           _entry(fingerprint: '87654321', path: "39'/0'/12'/11811'"),
           _entry(fingerprint: parent.hex, path: "39'/1'/12'/11811'"),
         ]),
       );
-      final result = await ArkDerivationCollision(
-        Bip85Registry(registry.fetchAll),
-      ).hasCollision(parent);
+      final result = await ArkDerivationCollision(registry)
+          .hasCollision(parent);
       expect(result, isA<Ok<bool, ArkFailure>>());
       expect((result as Ok<bool, ArkFailure>).value, false);
     });
 
     test('an unreadable inventory refuses to authorize child reuse', () async {
-      when(() => registry.fetchAll())
-          .thenAnswer((_) async => const Err(Bip85StorageFailure()));
+      when(() => registry.list())
+          .thenAnswer((_) async => const Err(FetchSecretFailure('Unreadable')));
       expect(
-        await ArkDerivationCollision(Bip85Registry(registry.fetchAll))
-            .hasCollision(parent),
+        await ArkDerivationCollision(registry).hasCollision(parent),
         isA<Err<bool, ArkFailure>>(),
       );
     });
 
     test('malformed recorded owner refuses the complete inventory', () async {
-      when(() => registry.fetchAll()).thenAnswer(
+      when(() => registry.list()).thenAnswer(
         (_) async =>
             Ok([_entry(fingerprint: 'invalid', path: "39'/0'/12'/11811'")]),
       );
       expect(
-        await ArkDerivationCollision(Bip85Registry(registry.fetchAll))
-            .hasCollision(parent),
+        await ArkDerivationCollision(registry).hasCollision(parent),
         isA<Err<bool, ArkFailure>>(),
       );
     });
@@ -215,13 +217,12 @@ void main() {
     test(
       'unknown BIP39 path encoding refuses rather than missing a collision',
       () async {
-        when(() => registry.fetchAll()).thenAnswer(
+        when(() => registry.list()).thenAnswer(
           (_) async =>
               Ok([_entry(fingerprint: parent.hex, path: 'unknown/11811')]),
         );
         expect(
-          await ArkDerivationCollision(Bip85Registry(registry.fetchAll))
-              .hasCollision(parent),
+          await ArkDerivationCollision(registry).hasCollision(parent),
           isA<Err<bool, ArkFailure>>(),
         );
       },
@@ -390,10 +391,8 @@ void main() {
       when(() => wallet.id).thenReturn('owned-regtest-wallet');
       locator.registerSingleton<ActiveEnvironmentReader>(settings);
       locator.registerSingleton<RuntimeDisplayPreferencesReader>(settings);
-      locator.registerSingleton<WalletMetadataDatasource>(wallets);
-      locator.registerSingleton<Bip85Registry>(
-        Bip85Registry(_Bip85().fetchAll),
-      );
+      locator.registerSingleton<WalletRegistrations>(wallets);
+      locator.registerSingleton<Bip85Derivations>(_Bip85());
       FakeSecureStoragePlatform().install();
       locator.registerSingleton<Secrets>(
         Secrets(scratchDirectory: () async => directory.path),

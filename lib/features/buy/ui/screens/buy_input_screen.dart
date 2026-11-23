@@ -1,12 +1,11 @@
 import 'package:bb_mobile/features/buy/ui/widgets/buy_order_failure_message.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
-import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show

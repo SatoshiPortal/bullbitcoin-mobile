@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';

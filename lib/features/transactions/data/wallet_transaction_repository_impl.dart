@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/transactions/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/features/transactions/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/features/transactions/data/mappers/wallet_transaction_mapper.dart';
@@ -13,13 +13,13 @@ import 'package:bb_mobile/features/transactions/domain/repositories/wallet_trans
 import 'package:labels/labels.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final WalletRegistrations _walletRegistrations;
   final Labels _labelsFacade;
   final WalletHistoryDatasource _history;
   final Future<void> Function(WalletMetadataModel) _synchronize;
 
   WalletTransactionRepositoryImpl({
-    required this._walletMetadataDatasource,
+    required this._walletRegistrations,
     required this._labelsFacade,
     required this._history,
     required this._synchronize,
@@ -141,9 +141,9 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }) async {
     List<WalletMetadataModel> walletsMetadata;
     if (walletId == null) {
-      walletsMetadata = await _walletMetadataDatasource.fetchAll();
+      walletsMetadata = await _walletRegistrations.fetchAll();
     } else {
-      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      final metadata = await _walletRegistrations.fetch(walletId);
       if (metadata == null) throw Exception('Wallet metadata not found');
 
       walletsMetadata = [metadata];

@@ -9,7 +9,7 @@ final class BbxApiOrderStatsRepository {
 
   const BbxApiOrderStatsRepository({required this._api});
 
-  Future<Result<OrderStatsResponse, ExchangeFailure>> getOrderStats() async {
+  Future<Result<OrderStatistics, ExchangeFailure>> getOrderStats() async {
     final result = await _api.orders.getOrderStats();
     return switch (result) {
       Ok(:final value) => Ok(_toEntity(value)),
@@ -27,14 +27,14 @@ final class BbxApiOrderStatsRepository {
     };
   }
 
-  static OrderStatsResponse _toEntity(bbx.OrderStatsReport report) {
+  static OrderStatistics _toEntity(bbx.OrderStatsReport report) {
     List<AmountByCurrencyCode> amounts(List<bbx.CurrencyAmount> wire) => [
       for (final a in wire)
         AmountByCurrencyCode(currency: a.currency, value: a.value),
     ];
     final orders = report.orderStats;
     final billers = report.billerStats;
-    return OrderStatsResponse(
+    return OrderStatistics(
       orderStats: OrderStats(
         bitcoinBuyVolume: amounts(orders.bitcoinBuyVolume),
         bitcoinBuyTradeCount: amounts(orders.bitcoinBuyTradeCount),

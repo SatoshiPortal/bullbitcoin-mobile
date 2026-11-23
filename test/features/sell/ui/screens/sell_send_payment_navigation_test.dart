@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart'
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';

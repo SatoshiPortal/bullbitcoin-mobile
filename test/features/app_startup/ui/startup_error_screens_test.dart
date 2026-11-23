@@ -1,11 +1,12 @@
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:legacy_storage/legacy_storage.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
@@ -23,6 +24,31 @@ void main() {
         () => loader.loadBytes(null),
       );
     }
+  });
+
+  testWidgets('startup error exposes a retry for unavailable storage', (
+    tester,
+  ) async {
+    _setDisplay(tester);
+    var attempts = 0;
+    Widget screen(VoidCallback retry) => BullSupportScope(
+      onContactSupport: (_, {message}) {},
+      child: AppInitErrorScreen(
+        error: const LegacyImportUnavailable(),
+        onRetry: retry,
+      ),
+    );
+    await tester.pumpWidget(screen(() => attempts++));
+    final loc = AppLocalizations.of(tester.element(find.byType(Scaffold)));
+    final button = find.text(loc.retry);
+    await tester.tap(button);
+    await tester.pump();
+    await tester.tap(button);
+    expect(attempts, 1);
+
+    await tester.pumpWidget(screen(() => attempts++));
+    await tester.tap(button);
+    expect(attempts, 2);
   });
 
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {

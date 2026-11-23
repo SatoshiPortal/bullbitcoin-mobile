@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network;
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/watch_only_details_widget.dart';

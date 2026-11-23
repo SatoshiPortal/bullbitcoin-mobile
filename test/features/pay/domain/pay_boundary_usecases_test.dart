@@ -60,7 +60,7 @@ void main() {
     test('a read failure is sanitized', () async {
       final orders = _MockGetOrder();
       when(() => orders.execute(orderId: any(named: 'orderId')))
-          .thenThrow(GetOrderException(_rawReason));
+          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       final result = await GetPayOrderUsecase(getOrderUsecase: orders)
           .execute(orderId: 'order-1');
@@ -76,7 +76,7 @@ void main() {
       // non-payment order here would show the wrong thing on the pay screens.
       final orders = _MockGetOrder();
       when(() => orders.execute(orderId: any(named: 'orderId')))
-          .thenAnswer((_) async => _MockSellOrder());
+          .thenAnswer((_) async => Ok(_MockSellOrder()));
 
       final result = await GetPayOrderUsecase(getOrderUsecase: orders)
           .execute(orderId: 'order-1');

@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/boltz_swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:swaps/swaps.dart' as boltz;
+import 'package:swaps/swaps.dart' show SwapRoute, SwapRouting;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,7 +15,7 @@ class _MockBoltzSwaps extends Mock implements boltz.BoltzSwaps {}
 
 class _MockSwapWatcher extends Mock implements boltz.SwapWatcher {}
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
+class _MockSwapRouting extends Mock implements SwapRouting {}
 
 class _MockLnSendSwap extends Mock implements boltz.LnSendSwap {}
 
@@ -68,12 +68,12 @@ void main() {
   });
 
   test('reads the swap route from the swap feature', () async {
-    final facade = _MockSwapFacade();
-    when(() => facade.getRoute())
+    final routing = _MockSwapRouting();
+    when(() => routing.resolveRoute())
         .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
 
     expect(
-      await GetSendSwapRouteUsecase(facade).execute(),
+      await GetSendSwapRouteUsecase(routing).execute(),
       SwapRoute.boltzWithExchangeFallback,
     );
   });

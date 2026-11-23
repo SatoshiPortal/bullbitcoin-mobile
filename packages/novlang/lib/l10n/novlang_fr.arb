@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Supprimer le mnémonique de transfert ?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Cela supprime la clé maître de transfert du stockage sécurisé. Elle sera dérivée à nouveau à partir de la phrase de récupération de votre portefeuille la prochaine fois que l’application en aura besoin, avec la même empreinte. Les transferts en cours ne sont pas affectés.",
   "app__exchangeAccessSettingsDescription_apple": "Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Transférer reste disponible.",
-  "quick_actions__transfer_apple": "Transférer"
+  "quick_actions__transfer_apple": "Transférer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnémonique de transfert",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Supprimer le mnémonique de transfert ?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Cela supprime la clé maître de transfert du stockage sécurisé. Elle sera dérivée à nouveau à partir de la phrase de récupération de votre portefeuille la prochaine fois que l’application en aura besoin, avec la même empreinte. Les transferts en cours ne sont pas affectés."
 }

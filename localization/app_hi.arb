@@ -230,10 +230,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "रेफरल कोड",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "अपना वॉलेट पुनर्प्राप्त करें",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -856,10 +852,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA और पासवर्ड प्रबंधित करें",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "बैकअप पूरा हो गया!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -923,10 +915,6 @@
   "walletDetailsAddressTypeLabel": "पते का प्रकार",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
-  },
-  "emptyMnemonicWordsError": "अपने Mnemonic के सभी शब्दों में प्रवेश करें",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "testBackupTapWordsInOrder": "में वसूली शब्द टैप करें\nसही क्रम",
   "@testBackupTapWordsInOrder": {
@@ -1193,10 +1181,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "स्वैप प्रगति पर है। Bitcoin लेनदेन की पुष्टि होने में कुछ समय लग सकता है। आप होम पर लौटकर प्रतीक्षा कर सकते हैं।",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1228,10 +1212,6 @@
   "payExpired": "शीघ्र",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "सेटिंग्स एक्सेस करें",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "भुगतान सफल",
   "@payPaymentSuccessful": {
@@ -1708,10 +1688,6 @@
   "logoutConfirmationLogout": "लॉग-इन",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "एक संदेश की आवश्यकता है",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "अनुमानित शुल्क मूल्य",
   "@buyEstimatedFeeValue": {
@@ -3204,10 +3180,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "हमारे रेफरल कार्यक्रम के बारे में जानने के लिए सहायता से संपर्क करें",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR शेष",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -3566,10 +3538,6 @@
   "sellDailyLimitReached": "दैनिक विक्रय सीमा तक पहुंची",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "आवश्यक",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -4072,10 +4040,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "अधिक जानकारी के लिए getbull.com पर जाएं।।",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "अभी तक कोई संदेश नहीं। बातचीत शुरू करें!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "किसी अन्य Bitcoin वॉलेट से भुगतान करें",
   "@payExternalWalletDescription": {
@@ -5509,10 +5473,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "जमा करना",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "कोई आँकड़े उपलब्ध नहीं",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5570,15 +5530,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "UR प्रगति: {parts} भागों",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "पते की टिप्पणियां",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5590,15 +5541,6 @@
   "onboardingRecoverWallet": "वॉलेट पुनर्प्राप्त करें",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "स्कैनिंग: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "संदर्भ संख्या",
   "@transactionOrderLabelReferenceNumber": {
@@ -5731,10 +5673,6 @@
   "testBackupConfirm": "पुष्टि",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "UR प्रसंस्करण विफल",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "वॉल्ट स्थान चुनें",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6234,10 +6172,6 @@
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
   },
-  "urDecodingFailedMessage": "UR decoding विफल",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
   "fundExchangeAccountSubtitle": "अपना देश और भुगतान विधि चुनें",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
@@ -6566,10 +6500,6 @@
   "settingsThemeTitle": "थीम",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "exchangeSupportChatYesterday": "कल",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "dcaSetupFundAccount": "अपने खाते को फंड करें",
   "@dcaSetupFundAccount": {
@@ -7348,10 +7278,6 @@
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
   },
-  "exchangeSupportChatMessageEmptyError": "संदेश खाली नहीं हो सकता",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
   "fundExchangeWarningTactic2": "वे आपको कर्ज दे रहे हैं",
   "@fundExchangeWarningTactic2": {
     "description": "Second scammer tactic warning"
@@ -7711,10 +7637,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "वैकल्पिक Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "सब साफ़ करें",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7825,10 +7747,6 @@
   "swapTotalFees": "कुल शुल्क ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "स्कैनिंग पूरा",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "हो गया",
   "@payDone": {
@@ -8437,10 +8355,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "यहाँ कार्यक्रम में शामिल होने के लिए आवेदन करें",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "इस प्राप्तकर्ता के लिए एक लेबल दर्ज करें",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8488,10 +8402,6 @@
   "sellAdvancedSettings": "उन्नत सेटिंग्स",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "मिशन में शामिल हों",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "लॉग इन",
   "@exchangeSettingsLogInTitle": {
@@ -9262,12 +9172,6 @@
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin जोखिम प्रकटीकरण खोलें",
   "liquidRiskDisclosureTitle": "तत्काल भुगतान वॉलेट Liquid Bitcoin जोखिम प्रकटीकरण",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
-  "nfcNotAvailable": "इस डिवाइस पर NFC समर्थित नहीं है",
-  "nfcDisabled": "NFC अक्षम है। इसे सेटिंग्स में सक्षम करें।",
-  "nfcInvalidData": "कोई समर्थित NFC डेटा नहीं मिला",
-  "nfcConnectionLost": "NFC कनेक्शन टूट गया। अपने डिवाइस को NFC टैग के पास रखें और फिर से प्रयास करें।",
-  "nfcWriteFailed": "NFC ट्रांसफर विफल रहा। कृपया फिर से प्रयास करें।",
-  "nfcError": "NFC त्रुटि: {error}",
   "sendErrorInvoiceExpired": "यह चालान समाप्त हो चुका है। प्राप्तकर्ता से नया चालान मांगें।",
   "importWalletColdcardMk4": "कोल्डकार्ड Mk4",
   "broadcastSignedTxNfcButton": "NFC",
@@ -9409,11 +9313,6 @@
   "recipientsFieldPayeeAccountNumber": "भुगतानकर्ता खाता संख्या",
   "exchangeFileUploadStatusRejectedBadge": "अस्वीकृत",
   "exchangeFileUploadTapToReupload": "पुनः अपलोड करने के लिए टैप करें",
-  "exchangeSupportChatAttachmentImage": "छवि",
-  "exchangeSupportChatAttachmentUnknownFile": "अज्ञात फ़ाइल",
-  "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
-  "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
-  "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "पर्याप्त खर्च योग्य शेष नहीं है — {amount} फ्रोज़न है। इसका उपयोग करने के लिए \"कॉइन प्रबंधित करें\" में कॉइन अनफ्रीज़ करें।",
   "importWalletBitBox": "बिटबॉक्स02",
@@ -9489,9 +9388,6 @@
   "settingsSearchErrorReportingKeywords": "Crash report|त्रुटि रिपोर्ट|डायग्नोस्टिक्स|Telemetry|त्रुटि लॉग",
   "settingsSearchScreenPrivacyKeywords": "स्क्रीनशॉट|स्क्रीन रिकॉर्डिंग|स्क्रीन कैप्चर सुरक्षा|गोपनीयता",
   "settingsSearchStartTyping": "परिणाम देखने के लिए टाइप करना शुरू करें।",
-  "exchangeSupportChatLoadMessagesError": "संदेश लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
-  "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
-  "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
   "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
   "sendErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
   "sendErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
@@ -9710,5 +9606,6 @@
   "permissionsTitle": "अनुमतियाँ",
   "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
   "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
-  "wizardNotificationsDescription": "भुगतान आने पर जानें।"
+  "wizardNotificationsDescription": "भुगतान आने पर जानें।",
+  "sendErrorInvoiceExpiryTooShort": "इस चालान की वैधता बहुत जल्द समाप्त हो जाएगी। प्राप्तकर्ता से नया चालान मांगें।"
 }

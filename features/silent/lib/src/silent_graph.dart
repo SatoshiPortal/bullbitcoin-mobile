@@ -1,0 +1,446 @@
+import 'package:silent/src/domain/usecases/get_sp_active_network_usecase.dart';
+
+import 'dart:async';
+
+import 'package:silent/src/domain/usecases/get_sp_secret_usecase.dart';
+import 'package:secrets/secrets.dart' show Secrets;
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:silent/src/data/bwk_sp_account_repository.dart';
+import 'package:silent/src/data/bwk_sp_recipient_address_validator.dart';
+import 'package:silent/src/data/datasources/bwk_sp_account_datasource.dart';
+import 'package:silent/src/data/datasources/sp_account_files_datasource.dart';
+import 'package:silent/src/data/sp_account_files_repository.dart';
+import 'package:silent/src/data/key_value_sp_auto_scan_repository.dart';
+import 'package:silent/src/data/key_value_sp_backend_config_repository.dart';
+import 'package:silent/src/domain/ports/sp_account_files_port.dart';
+import 'package:silent/src/domain/repositories/sp_auto_scan_repository.dart';
+import 'package:silent/src/data/bwk_sp_backend_probe.dart';
+import 'package:silent/src/domain/ports/sp_backend_probe_port.dart';
+import 'package:silent/src/domain/repositories/sp_backend_config_repository.dart';
+import 'package:silent/src/domain/ports/sp_payments_port.dart';
+import 'package:silent/src/domain/ports/sp_scan_control_port.dart';
+import 'package:silent/src/domain/ports/sp_scan_port.dart';
+import 'package:silent/src/domain/ports/sp_recipient_address_validator_port.dart';
+import 'package:silent/src/domain/repositories/sp_account_repository.dart';
+import 'package:silent/src/domain/sp_session_guard.dart';
+import 'package:silent/src/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:silent/src/domain/usecases/clear_sp_scan_state_usecase.dart';
+import 'package:silent/src/domain/usecases/create_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/ensure_sp_session_usecase.dart';
+import 'package:silent/src/domain/usecases/generate_taproot_address_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_auto_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_backend_defaults_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_balance_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_feature_gate_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_network_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/is_sp_scanning_usecase.dart';
+import 'package:silent/src/domain/usecases/is_sp_set_up_now_usecase.dart';
+import 'package:silent/src/domain/usecases/load_sp_backend_config_usecase.dart';
+import 'package:silent/src/domain/usecases/load_sp_wallet_data_usecase.dart';
+import 'package:silent/src/domain/usecases/prepare_sp_payment_usecase.dart';
+import 'package:silent/src/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/restamp_sp_payment_times_usecase.dart';
+import 'package:silent/src/domain/usecases/resync_sp_listener_usecase.dart';
+import 'package:silent/src/domain/usecases/revoke_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/scan_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/send_sp_payment_usecase.dart';
+import 'package:silent/src/domain/usecases/set_sp_auto_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/stop_sp_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/sync_sp_wallet_usecase.dart';
+import 'package:silent/src/domain/usecases/test_sp_backend_usecase.dart';
+import 'package:silent/src/domain/usecases/validate_sp_amount_usecase.dart';
+import 'package:silent/src/domain/usecases/validate_sp_recipient_usecase.dart';
+import 'package:silent/src/domain/usecases/watch_sp_notification_log_usecase.dart';
+import 'package:silent/src/domain/usecases/watch_sp_notifications_usecase.dart';
+import 'package:silent/src/domain/usecases/watch_sp_updates_usecase.dart';
+import 'package:silent/src/presentation/sp_cubit.dart';
+import 'package:silent/src/presentation/sp_settings_cubit.dart';
+import 'package:silent/src/presentation/sp_setup_cubit.dart';
+import 'package:silent/src/silent.dart';
+import 'package:silent/src/watchers/sp_electrum_reconnect_watcher.dart';
+import 'package:silent/src/watchers/sp_header_retry_watcher.dart';
+import 'package:silent/src/watchers/sp_notifications_watcher.dart';
+import 'package:silent/src/watchers/sp_tip_watcher.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/widgets.dart'
+    show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
+import 'package:get_it/get_it.dart';
+
+/// DI wiring for the Silent Payments feature:
+/// adapter (single live session) -> use cases -> capability and presentation.
+///
+/// The host registers wallet inventory before mounting foreground watchers.
+abstract final class SilentGraph {
+  static void setup(
+    GetIt locator, {
+    required ReadSilentFingerprint readDefaultFingerprint,
+  }) {
+    _registerAdapters(locator);
+    _registerUseCases(locator, readDefaultFingerprint);
+    _registerCapability(locator);
+    _registerPresentation(locator);
+    _loadAutoScanSetting(locator);
+  }
+
+  // The choice persists, so seed the in-memory value at startup. Deferred to a
+  // microtask rather than resolved here: setup is still registering, and a
+  // caller that swaps an outbound port right after (the tests do) must get its
+  // own. A read failure must not break startup; enabled is the shipped
+  // behaviour.
+  static void _loadAutoScanSetting(GetIt locator) {
+    scheduleMicrotask(() async {
+      if (await locator<SpAutoScanRepository>().warmUp() case Err()) {
+        log.warning('Silent auto-scan setting load failed');
+      }
+    });
+  }
+
+  // The sync tick usually runs before the header store reports a tip, so the
+  // scan policy has to be re-judged once it lands, and a dropped electrum
+  // connection has to be restarted. Composition explicitly enables these
+  // watchers only in the foreground graph.
+  static void startForegroundWatchers(GetIt locator) {
+    locator<SpTipWatcher>().start();
+    locator<SpElectrumReconnectWatcher>().start();
+  }
+
+  // The Flutter lifecycle as a stream, listened to only while subscribed.
+  static Stream<AppLifecycleState> _appLifecycleStates() {
+    AppLifecycleListener? listener;
+    final controller = StreamController<AppLifecycleState>.broadcast();
+    controller.onListen = () =>
+        listener = AppLifecycleListener(onStateChange: controller.add);
+    controller.onCancel = () {
+      listener?.dispose();
+      listener = null;
+    };
+    return controller.stream;
+  }
+
+  static void _registerAdapters(GetIt locator) {
+    // One datasource each, both lazySingletons: the FFI one owns the live
+    // session, and the files one carries the recreate backup across calls, so a
+    // second instance of either would split state that must stay single.
+    locator.registerLazySingleton<BwkSpAccountDatasource>(
+      BwkSpAccountDatasource.new,
+    );
+    locator.registerLazySingleton<SpAccountFilesDatasource>(
+      SpAccountFilesDatasource.new,
+    );
+    // lazySingleton: exactly one owner of the live SpAccount session. Every
+    // session interface below resolves to that same instance; the split only
+    // narrows what each consumer is handed, notably keeping `scanOnce`
+    // (SpScanPort) away from everything but ScanSpWalletUsecase.
+    locator.registerLazySingleton<BwkSpAccountRepository>(
+      () => BwkSpAccountRepository(
+        ffi: locator<BwkSpAccountDatasource>(),
+        files: locator<SpAccountFilesDatasource>(),
+      ),
+    );
+    locator.registerLazySingleton<SpAccountRepository>(
+      () => locator<BwkSpAccountRepository>(),
+    );
+    // The account directory is its own adapter: none of it touches the FFI.
+    locator.registerLazySingleton<SpAccountFilesPort>(
+      () =>
+          SpAccountFilesRepository(files: locator<SpAccountFilesDatasource>()),
+    );
+    locator.registerLazySingleton<SpScanPort>(
+      () => locator<BwkSpAccountRepository>(),
+    );
+    locator.registerLazySingleton<SpScanControlPort>(
+      () => locator<BwkSpAccountRepository>(),
+    );
+    locator.registerLazySingleton<SpPaymentsPort>(
+      () => locator<BwkSpAccountRepository>(),
+    );
+    locator.registerLazySingleton<SpBackendProbePort>(BwkSpBackendProbe.new);
+    locator.registerLazySingleton<SpRecipientAddressValidatorPort>(
+      BwkSpRecipientAddressValidator.new,
+    );
+    locator.registerLazySingleton<SpBackendConfigRepository>(
+      () => KeyValueSpBackendConfigRepository(
+        storage: locator<Secrets>().silentPaymentKeychain,
+      ),
+    );
+  }
+
+  static void _registerUseCases(
+    GetIt locator,
+    ReadSilentFingerprint readDefaultFingerprint,
+  ) {
+    // Singleton: its in-flight guard serializes session establishment so
+    // concurrent callers never race two live SpAccount instances.
+    locator.registerLazySingleton<EnsureSpSessionUsecase>(
+      () => EnsureSpSessionUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpAccountRepository>(),
+        files: locator<SpAccountFilesPort>(),
+        configRepository: locator<SpBackendConfigRepository>(),
+        getSpSecretUsecase: locator<GetSpSecretUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetSpWalletUsecase>(
+      () => GetSpWalletUsecase(
+        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+      ),
+    );
+    locator.registerLazySingleton<SpAutoScanRepository>(
+      () => KeyValueSpAutoScanRepository(
+        storage: locator<Secrets>().silentPaymentKeychain,
+      ),
+    );
+    locator.registerFactory<IsSpSetUpNowUsecase>(
+      () =>
+          IsSpSetUpNowUsecase(repository: locator<SpBackendConfigRepository>()),
+    );
+    locator.registerFactory<GetSpAutoScanUsecase>(
+      () => GetSpAutoScanUsecase(repository: locator<SpAutoScanRepository>()),
+    );
+    locator.registerFactory<SetSpAutoScanUsecase>(
+      () => SetSpAutoScanUsecase(repository: locator<SpAutoScanRepository>()),
+    );
+    locator.registerFactory<CheckSpWalletSetupUsecase>(
+      () => CheckSpWalletSetupUsecase(
+        configRepository: locator<SpBackendConfigRepository>(),
+        files: locator<SpAccountFilesPort>(),
+      ),
+    );
+    locator.registerFactory<GetSpActiveNetworkUsecase>(
+      () =>
+          GetSpActiveNetworkUsecase(settingsRepository: locator<Preferences>()),
+    );
+    locator.registerFactory<GetSpFeatureGateUsecase>(
+      () => GetSpFeatureGateUsecase(
+        configRepository: locator<SpBackendConfigRepository>(),
+        settingsRepository: locator<Preferences>(),
+      ),
+    );
+    // Singleton: the two use cases holding it are factories, so the exclusion
+    // only works if they share one guard.
+    locator.registerLazySingleton<SpSessionGuard>(SpSessionGuard.new);
+    locator.registerFactory<RevokeSpWalletUsecase>(
+      () => RevokeSpWalletUsecase(
+        repository: locator<SpAccountRepository>(),
+        files: locator<SpAccountFilesPort>(),
+        configRepository: locator<SpBackendConfigRepository>(),
+        guard: locator<SpSessionGuard>(),
+      ),
+    );
+    locator.registerLazySingleton<SpTipWatcher>(
+      () => SpTipWatcher(
+        watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
+        syncSpWalletUsecase: locator<SyncSpWalletUsecase>(),
+      ),
+    );
+    locator.registerLazySingleton<SpElectrumReconnectWatcher>(
+      () => SpElectrumReconnectWatcher(
+        watchSpNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
+        resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),
+        lifecycleStates: _appLifecycleStates(),
+        // Null before the first lifecycle event: the app is starting in the
+        // foreground.
+        initialLifecycleState:
+            WidgetsBinding.instance.lifecycleState ?? AppLifecycleState.resumed,
+      ),
+    );
+    // Singleton so its in-flight guard covers both callers: SpTipWatcher holds
+    // one directly, and the sync coordinator reaches another through Silent.
+    locator.registerLazySingleton<SyncSpWalletUsecase>(
+      () => SyncSpWalletUsecase(
+        repository: locator<SpAccountRepository>(),
+        getSpWalletUsecase: locator<GetSpWalletUsecase>(),
+        isSpScanningUsecase: locator<IsSpScanningUsecase>(),
+        scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
+        getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
+      ),
+    );
+    locator.registerFactory<ScanSpWalletUsecase>(
+      () => ScanSpWalletUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpScanPort>(),
+      ),
+    );
+    locator.registerFactory<StopSpScanUsecase>(
+      () => StopSpScanUsecase(repository: locator<SpScanControlPort>()),
+    );
+    locator.registerFactory<ClearSpScanStateUsecase>(
+      () => ClearSpScanStateUsecase(repository: locator<SpScanControlPort>()),
+    );
+    locator.registerFactory<GenerateTaprootAddressUsecase>(
+      () => GenerateTaprootAddressUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpPaymentsPort>(),
+      ),
+    );
+    locator.registerFactory<PrepareSpPaymentUsecase>(
+      () => PrepareSpPaymentUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpPaymentsPort>(),
+      ),
+    );
+    locator.registerFactory<SendSpPaymentUsecase>(
+      () => SendSpPaymentUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpPaymentsPort>(),
+      ),
+    );
+    locator.registerFactory<GetSpNetworkUsecase>(
+      () => GetSpNetworkUsecase(repository: locator<SpAccountRepository>()),
+    );
+    locator.registerFactory<GetSpBalanceUsecase>(
+      () => GetSpBalanceUsecase(repository: locator<SpAccountRepository>()),
+    );
+    locator.registerFactory<ValidateSpRecipientUsecase>(
+      () => ValidateSpRecipientUsecase(
+        getSpNetworkUsecase: locator<GetSpNetworkUsecase>(),
+        validator: locator<SpRecipientAddressValidatorPort>(),
+      ),
+    );
+    locator.registerFactory<ValidateSpAmountUsecase>(
+      () => ValidateSpAmountUsecase(
+        getSpBalanceUsecase: locator<GetSpBalanceUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetSpBackendDefaultsUsecase>(
+      () => GetSpBackendDefaultsUsecase(probe: locator<SpBackendProbePort>()),
+    );
+    locator.registerFactory<LoadSpBackendConfigUsecase>(
+      () => LoadSpBackendConfigUsecase(
+        configRepository: locator<SpBackendConfigRepository>(),
+      ),
+    );
+    locator.registerFactory<LoadSpWalletDataUsecase>(
+      () => LoadSpWalletDataUsecase(
+        repository: locator<SpAccountRepository>(),
+        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+      ),
+    );
+    locator.registerFactory<RestampSpPaymentTimesUsecase>(
+      () => RestampSpPaymentTimesUsecase(
+        repository: locator<SpAccountRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchSpNotificationsUsecase>(
+      () => WatchSpNotificationsUsecase(
+        repository: locator<SpAccountRepository>(),
+      ),
+    );
+    locator.registerFactory<SpNotificationsWatcher>(
+      () => SpNotificationsWatcher(
+        watchSpNotificationsUsecase: locator<WatchSpNotificationsUsecase>(),
+        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+      ),
+    );
+    locator.registerFactory<IsSpScanningUsecase>(
+      () => IsSpScanningUsecase(repository: locator<SpScanControlPort>()),
+    );
+    locator.registerFactory<GetSpSecretUsecase>(
+      () => GetSpSecretUsecase(
+        readDefaultFingerprint: readDefaultFingerprint,
+        secrets: locator<Secrets>(),
+      ),
+    );
+    locator.registerFactory<CreateSpWalletUsecase>(
+      () => CreateSpWalletUsecase(
+        getSpSecretUsecase: locator<GetSpSecretUsecase>(),
+        settingsRepository: locator<Preferences>(),
+        repository: locator<SpAccountRepository>(),
+        files: locator<SpAccountFilesPort>(),
+        configRepository: locator<SpBackendConfigRepository>(),
+        scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
+      ),
+    );
+    locator.registerFactory<RecreateSpWalletUsecase>(
+      () => RecreateSpWalletUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        getSpSecretUsecase: locator<GetSpSecretUsecase>(),
+        repository: locator<SpAccountRepository>(),
+        files: locator<SpAccountFilesPort>(),
+        configRepository: locator<SpBackendConfigRepository>(),
+        ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+        guard: locator<SpSessionGuard>(),
+      ),
+    );
+    locator.registerFactory<WatchSpUpdatesUsecase>(
+      () => WatchSpUpdatesUsecase(repository: locator<SpAccountRepository>()),
+    );
+    locator.registerFactory<WatchSpNotificationLogUsecase>(
+      () => WatchSpNotificationLogUsecase(
+        repository: locator<SpAccountRepository>(),
+      ),
+    );
+    // Singleton so its in-flight guard covers both watchers that restart the
+    // listener.
+    locator.registerLazySingleton<ResyncSpListenerUsecase>(
+      () => ResyncSpListenerUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpAccountRepository>(),
+        scanControl: locator<SpScanControlPort>(),
+      ),
+    );
+    locator.registerFactory<TestSpBackendUsecase>(
+      () => TestSpBackendUsecase(probe: locator<SpBackendProbePort>()),
+    );
+  }
+
+  static void _registerCapability(GetIt locator) {
+    locator.registerLazySingleton<SilentCapability>(
+      () => SilentCapability(
+        getSpWalletUsecase: locator<GetSpWalletUsecase>(),
+        isSpScanningUsecase: locator<IsSpScanningUsecase>(),
+        checkSpWalletSetupUsecase: locator<CheckSpWalletSetupUsecase>(),
+        isSpSetUpNowUsecase: locator<IsSpSetUpNowUsecase>(),
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        getSpNetworkUsecase: locator<GetSpNetworkUsecase>(),
+        revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
+        watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
+        syncSpWalletUsecase: locator<SyncSpWalletUsecase>(),
+        validateSpRecipientUsecase: locator<ValidateSpRecipientUsecase>(),
+        validateSpAmountUsecase: locator<ValidateSpAmountUsecase>(),
+        prepareSpPaymentUsecase: locator<PrepareSpPaymentUsecase>(),
+        sendSpPaymentUsecase: locator<SendSpPaymentUsecase>(),
+      ),
+    );
+  }
+
+  static void _registerPresentation(GetIt locator) {
+    locator.registerFactory<SpCubit>(
+      () => SpCubit(
+        loadSpWalletDataUsecase: locator<LoadSpWalletDataUsecase>(),
+        restampSpPaymentTimesUsecase: locator<RestampSpPaymentTimesUsecase>(),
+        spNotificationsWatcher: locator<SpNotificationsWatcher>(),
+        scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
+        stopSpScanUsecase: locator<StopSpScanUsecase>(),
+        clearSpScanStateUsecase: locator<ClearSpScanStateUsecase>(),
+        revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
+        generateTaprootAddressUsecase: locator<GenerateTaprootAddressUsecase>(),
+        setSpAutoScanUsecase: locator<SetSpAutoScanUsecase>(),
+        getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
+        headerRetryWatcher: SpHeaderRetryWatcher(
+          resyncSpListenerUsecase: locator<ResyncSpListenerUsecase>(),
+        ),
+      ),
+    );
+    locator.registerFactory<SpSetupCubit>(
+      () => SpSetupCubit(
+        getSpActiveNetworkUsecase: locator<GetSpActiveNetworkUsecase>(),
+        createSpWalletUsecase: locator<CreateSpWalletUsecase>(),
+        testSpBackendUsecase: locator<TestSpBackendUsecase>(),
+        getSpBackendDefaultsUsecase: locator<GetSpBackendDefaultsUsecase>(),
+      ),
+    );
+    locator.registerFactory<SpSettingsCubit>(
+      () => SpSettingsCubit(
+        recreateSpWalletUsecase: locator<RecreateSpWalletUsecase>(),
+        watchNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
+        testSpBackendUsecase: locator<TestSpBackendUsecase>(),
+        loadSpBackendConfigUsecase: locator<LoadSpBackendConfigUsecase>(),
+        getSpBackendDefaultsUsecase: locator<GetSpBackendDefaultsUsecase>(),
+      ),
+    );
+  }
+}

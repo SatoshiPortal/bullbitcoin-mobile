@@ -17,7 +17,11 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     try {
       await tester.pumpWidget(
-        WizardApp(notificationChannelId: 'payments', onDone: (_) {}),
+        WizardApp(
+          notificationChannelId: 'payments',
+          exchangeAllowed: false,
+          onDone: (_) {},
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -32,7 +36,11 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     try {
       await tester.pumpWidget(
-        WizardApp(notificationChannelId: 'payments', onDone: (_) {}),
+        WizardApp(
+          notificationChannelId: 'payments',
+          exchangeAllowed: true,
+          onDone: (_) {},
+        ),
       );
       await tester.pumpAndSettle();
 

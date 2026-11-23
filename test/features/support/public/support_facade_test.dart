@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/support/public/support_links.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:material_ui/material_ui.dart';
@@ -116,7 +116,7 @@ void main() {
       await tester.tap(find.text('help'));
       await tester.pumpAndSettle();
 
-      expect(launched, [SettingsConstants.webSupportLink]);
+      expect(launched, [SupportLinks.webSupportLink]);
       expect(find.text('help'), findsOneWidget);
       final navigator = tester.state<NavigatorState>(find.byType(Navigator));
       expect(navigator.canPop(), isFalse);

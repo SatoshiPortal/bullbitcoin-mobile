@@ -108,7 +108,7 @@ void main() {
           'result': {'elements': <Object>[]},
         },
       );
-      await repository(http).listActive();
+      final _ = await repository(http).listActive();
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"listLimitOrders","params":'
@@ -119,7 +119,7 @@ void main() {
 
     test('get sends the old request', () async {
       final http = FakeBbxHttp(body: {'result': _order});
-      await repository(http).get('lo-1');
+      final _ = await repository(http).get('lo-1');
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"getLimitOrder","params":'
@@ -129,7 +129,7 @@ void main() {
 
     test('create sends the old request with the old rounding', () async {
       final http = FakeBbxHttp(body: {'result': _order});
-      await repository(http).create(
+      final _ = await repository(http).create(
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,
@@ -148,7 +148,7 @@ void main() {
 
     test('cancel sends the old request', () async {
       final http = FakeBbxHttp(body: {'result': _order});
-      await repository(http).cancel('lo-1');
+      final _ = await repository(http).cancel('lo-1');
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"cancelLimitOrder","params":'
@@ -158,7 +158,7 @@ void main() {
 
     test('cancelAll sends the old request', () async {
       final http = FakeBbxHttp(body: {'result': <String, Object?>{}});
-      await repository(http).cancelAll();
+      final _ = await repository(http).cancelAll();
       expect(
         sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"cancelAllLimitOrders",'
@@ -174,7 +174,7 @@ void main() {
           },
         },
       );
-      await repository(http).getRate('EUR');
+      final _ = await repository(http).getRate('EUR');
       expect(
         sent(http, path: '/public/price'),
         '{"jsonrpc":"2.0","id":"0","method":"getUserRate","params":'

@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: bip85_en.arb
+output-localization-file: bip85_localizations.dart
+output-class: Bip85Localizations
+output-dir: lib/generated/l10n
+nullable-getter: false

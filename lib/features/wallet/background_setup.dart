@@ -7,11 +7,9 @@ export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
+import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
+import 'package:background_tasks/native_sync.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
@@ -20,6 +18,8 @@ import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart';
+import 'package:sync/inventory.dart';
 import 'package:sync/write.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
@@ -112,9 +112,19 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   }
   final connections =
       (opened as Ok<Electrum, ElectrumFailure>).value.walletConnections;
-  final catalog = WalletCatalogPortImpl(
-    WalletMetadataDatasource(sqlite: sqlite),
+  final openedDescriptors = await BackgroundWalletDescriptors.open(
+    file: File(p.join(support.path, 'databases', 'secrets.sqlite')),
+    admission: admission,
   );
+  final descriptorsStore = switch (openedDescriptors) {
+    Ok(:final value) => value,
+    Err() => null,
+  };
+  if (descriptorsStore == null) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  resources.onClose(descriptorsStore.close);
+  final catalog = SecretsWalletCatalog.background(descriptorsStore);
   final ExistingStores stores;
   try {
     stores = openExisting(documents.path);

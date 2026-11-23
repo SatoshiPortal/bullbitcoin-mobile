@@ -1,10 +1,10 @@
-import 'ark_funding_signing_guard.dart';
+import 'package:bull_ark/ark_wallet_setup.dart';
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -18,7 +18,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   _wallet;
   final Future<BitcoinSpendStatus> Function(String walletId) _spendStatus;
   final SyncWalletValuesDatasource _values;
-  final WalletMetadataDatasource _metadata;
+  final WalletRegistrations _metadata;
 
   /// [_spendStatus] asks the guard through `wallet.tx.check`.
   const PayjoinWalletAdapter(

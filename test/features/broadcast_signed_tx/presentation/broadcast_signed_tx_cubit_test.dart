@@ -1,7 +1,7 @@
 import '../../../frozen_outpoints_fixture.dart';
 
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:satoshifier/bbqr.dart';
 
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';

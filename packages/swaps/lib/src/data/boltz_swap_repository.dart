@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart' show TextStyle, Widget;
+import 'package:swaps/src/widgets/swap_mnemonic_view.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'dart:async';
@@ -877,7 +879,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   /// What the seed viewer shows about the swap master key for
   /// [walletFingerprint]; null when none is stored. Carries no words — see
-  /// [getSwapMnemonic].
+  /// the sealed recovery widget.
   Future<SwapMasterKeyInfo?> getSwapMasterKeyInfo({
     required String walletFingerprint,
   }) async {
@@ -892,24 +894,6 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       network: model.network,
     );
   }
-
-  /// The swap mnemonic for [walletFingerprint], read at the moment it is
-  /// drawn so the words never sit in screen state.
-  Future<String?> getSwapMnemonic({required String walletFingerprint}) async {
-    final model = await _boltz.getSwapMasterKeyForWallet(
-      walletFingerprint: walletFingerprint,
-      environment: _environment,
-    );
-    return model?.mnemonic;
-  }
-
-  /// Deletes the swap master key (and its index counter) for
-  /// [walletFingerprint]. Super-user action; the next ensure re-derives it.
-  Future<void> deleteSwapMasterKey({required String walletFingerprint}) =>
-      _boltz.deleteSwapMasterKey(
-        walletFingerprint: walletFingerprint,
-        environment: _environment,
-      );
 
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
@@ -2208,19 +2192,61 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         final fingerprint = await defaultBitcoinFingerprint();
         if (fingerprint == null) return null;
         return getSwapMasterKeyInfo(walletFingerprint: fingerprint);
-      });
+      }, classify: _classifyMasterKeyFailure);
 
   @override
-  Future<Result<String?, SwapsFailure>> masterKeyMnemonic({
-    required String walletFingerprint,
-  }) => _guard(() => getSwapMnemonic(walletFingerprint: walletFingerprint));
+  Widget masterKeyView({
+    required SwapMasterKeyInfo key,
+    required TextStyle style,
+    required Widget failure,
+  }) => SwapMnemonicView(
+    identity: (key.network, key.walletFingerprint, key.fingerprint),
+    style: style,
+    failure: failure,
+    readWords: () => _guard(() async {
+      final current = await _boltz.getSwapMasterKeyForWallet(
+        walletFingerprint: key.walletFingerprint,
+        environment: _environment,
+      );
+      if (current == null ||
+          current.network != key.network ||
+          current.fingerprint != key.fingerprint) {
+        return null;
+      }
+      return current.mnemonic;
+    }, classify: _classifyMasterKeyFailure),
+  );
 
   @override
-  Future<Result<void, SwapsFailure>> deleteMasterKey() => _guard(() async {
-    final fingerprint = await defaultBitcoinFingerprint();
-    if (fingerprint == null) return;
-    await deleteSwapMasterKey(walletFingerprint: fingerprint);
-  });
+  Future<Result<void, SwapsFailure>> deleteMasterKey(
+    SwapMasterKeyInfo key,
+  ) async {
+    if (key.network != _environment.name) {
+      return const Err(SwapsMasterKeyUnavailableFailure());
+    }
+    final result = await _guard(
+      () => _boltz.deleteConfirmedSwapMasterKey(
+        walletFingerprint: key.walletFingerprint,
+        keyFingerprint: key.fingerprint,
+        environment: _environment,
+      ),
+      classify: _classifyMasterKeyFailure,
+    );
+    return switch (result) {
+      Err(:final failure) => Err(failure),
+      Ok(value: true) => const Ok(null),
+      Ok(value: false) => const Err(SwapsMasterKeyUnavailableFailure()),
+    };
+  }
+
+  static SwapsFailure _classifyMasterKeyFailure(Object error) =>
+      switch (error) {
+        SwapsException(message: 'Swap key network does not match its engine') =>
+          const SwapsMasterKeyUnavailableFailure(
+            'Swap key network does not match its engine',
+          ),
+        _ => const SwapsMasterKeyUnavailableFailure(),
+      };
 
   // RESOLVE OPERATIONS — the watcher's verbs. Each resolves its own
   // address, estimates fees (floored at relay minimum, capped at half the

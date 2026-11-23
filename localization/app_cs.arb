@@ -402,10 +402,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "Referenční kódy",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "Obnovit peněženku",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -1013,10 +1009,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "Správa 2FA a hesla",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "Zálohování dokončeno!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1080,10 +1072,6 @@
   "walletDetailsAddressTypeLabel": "Typ adresy",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
-  },
-  "emptyMnemonicWordsError": "Zadejte všechny slova svého mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "testBackupTapWordsInOrder": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
   "@testBackupTapWordsInOrder": {
@@ -1338,10 +1326,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bulbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "Swap probíhá. Potvrzení bitcoinových transakcí může chvíli trvat. Můžete se vrátit na domovskou obrazovku a počkat.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1369,10 +1353,6 @@
   "buyAwaitingConfirmation": "Potvrzení o registraci ",
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
-  },
-  "exchangeSecurityAccessSettingsButton": "Nastavení přístupu",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "Platba úspěšná",
   "@payPaymentSuccessful": {
@@ -1837,10 +1817,6 @@
   "logoutConfirmationLogout": "Čeština",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "Zpráva je nutná",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "Odhadovaná hodnota poplatku",
   "@buyEstimatedFeeValue": {
@@ -3244,10 +3220,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "Kontaktní podpora se dozvědět o našem referral programu",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "Kč Čeština",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -3578,10 +3550,6 @@
   "sellDailyLimitReached": "Denní limit prodeje dosáhl",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "Vyžadováno",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "čeština",
   "@importWatchOnlyXpub": {
@@ -4072,10 +4040,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Navštivte obnovitbull.com pro více informací.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "Žádné zprávy. Začněte rozhovor!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "Platit z jiné Bitcoin peněženky",
   "@payExternalWalletDescription": {
@@ -5452,10 +5416,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "Odeslat",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "Žádné statistiky",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5509,15 +5469,6 @@
   "@payEnterValidAmount": {
     "description": "Validation error for invalid amount format"
   },
-  "urProgressLabel": "UR Progress: {parts} díly",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "Poznámky k adresám",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5529,15 +5480,6 @@
   "onboardingRecoverWallet": "Obnovit peněženku",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "Skenování: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "Referenční číslo",
   "@transactionOrderLabelReferenceNumber": {
@@ -5654,10 +5596,6 @@
   "transactionLabelSendNetworkFees": "Odeslat poplatky",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "urProcessingFailedMessage": "UR zpracování selhalo",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "Vyberte umístění klenby",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6145,10 +6083,6 @@
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
   },
-  "urDecodingFailedMessage": "UR dekódování selhalo",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
   "fundExchangeAccountSubtitle": "Vyberte zemi a způsob platby",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
@@ -6453,10 +6387,6 @@
   "quickAndEasyTag": "Rychlé a jednoduché",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
-  },
-  "exchangeSupportChatYesterday": "Včera",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "dcaSetupFundAccount": "Fond vašeho účtu",
   "@dcaSetupFundAccount": {
@@ -7203,10 +7133,6 @@
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
   },
-  "exchangeSupportChatMessageEmptyError": "Zpráva nemůže být prázdný",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
   "fundExchangeWarningTactic2": "Nabízejí vám půjčku",
   "@fundExchangeWarningTactic2": {
     "description": "Second scammer tactic warning"
@@ -7542,10 +7468,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Volitelné Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "Vše",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7656,10 +7578,6 @@
   "swapTotalFees": "Celkové poplatky ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "Skenování dokončeno",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "Čeština",
   "@payDone": {
@@ -8252,10 +8170,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "Přihlaste se k programu",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "Zadejte štítek pro tento příjemce",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8303,10 +8217,6 @@
   "sellAdvancedSettings": "Pokročilé nastavení",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "Připojte se k misii",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "Přihlásit se",
   "@exchangeSettingsLogInTitle": {
@@ -8822,11 +8732,6 @@
   "recipientsFieldPayeeAccountNumber": "Číslo účtu příjemce",
   "exchangeFileUploadStatusRejectedBadge": "Zamítnuto",
   "exchangeFileUploadTapToReupload": "Klepněte pro opětovné nahrání",
-  "exchangeSupportChatAttachmentImage": "Obrázek",
-  "exchangeSupportChatAttachmentUnknownFile": "Neznámý soubor",
-  "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
-  "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
-  "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
   "recipientsFieldSinpePhoneNumberHint": "8 číslic bez kódu země",
   "recipientsCopDocCcRecipientNumber": "Číslo cédula příjemce",
   "recipientsCopDocCeRecipientNumber": "Číslo cédula de extranjería příjemce",
@@ -9162,12 +9067,6 @@
   "autoswapActiveCardTitle": "Autoswap je aktivní",
   "autoswapWarningExplanationBold": "automaticky",
   "autoswapInfoConsentMessage": "Autoswap je momentálně povolen, ale nespustí se, dokud s tím nebudete souhlasit. Chcete ho ponechat zapnutý?",
-  "nfcNotAvailable": "Toto zařízení nepodporuje NFC",
-  "nfcDisabled": "NFC je vypnuté. Zapněte ho v nastavení.",
-  "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC",
-  "nfcConnectionLost": "Připojení NFC bylo ztraceno. Přiložte zařízení k NFC štítku a zkuste to znovu.",
-  "nfcWriteFailed": "Přenos NFC selhal. Zkuste to prosím znovu.",
-  "nfcError": "Chyba NFC: {error}",
   "deleteLogsTitle": "Smazat logy",
   "logsDeletedMessage": "Logy smazány",
   "sendSelfTransfer": "Vlastní převod",
@@ -9314,9 +9213,6 @@
   "settingsSearchErrorReportingKeywords": "hlášení pádů|hlášení chyb|diagnostika|telemetrie|chybové logy",
   "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí",
   "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky.",
-  "exchangeSupportChatLoadMessagesError": "Nepodařilo se načíst zprávy. Zkuste to prosím znovu.",
-  "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
-  "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
   "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
   "sendErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sendErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
@@ -9535,5 +9431,6 @@
   "permissionsTitle": "Oprávnění",
   "settingsSearchPermissionsKeywords": "oznámení|úlohy na pozadí|baterie|upozornění",
   "wizardBackgroundTasksDescription": "Kontroluje platby při zavřené aplikaci.",
-  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba."
+  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba.",
+  "sendErrorInvoiceExpiryTooShort": "Platnost této faktury vyprší příliš brzy. Požádejte příjemce o novou fakturu."
 }

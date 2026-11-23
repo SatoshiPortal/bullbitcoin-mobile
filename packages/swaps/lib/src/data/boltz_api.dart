@@ -315,22 +315,21 @@ class BoltzDatasource {
     return stored.requireEnvironment(environment);
   }
 
-  /// Deletes the swap master key blob, retaining the shared high-water counter for
-  /// [walletFingerprint]. Clears the in-memory binding when it pointed at this
-  /// wallet so a subsequent read forces a fresh derive.
-  Future<void> deleteSwapMasterKey({
+  Future<bool> deleteConfirmedSwapMasterKey({
     required String walletFingerprint,
+    required String keyFingerprint,
     required NetworkEnv environment,
   }) async {
     _requireEnvironment(environment);
-    final network = BoltzNetwork.fromEnvironment(environment);
-    await _boltzStore.deleteSwapMasterKey(
-      network,
+    final deleted = await _boltzStore.deleteSwapMasterKeyIfMatches(
+      BoltzNetwork.fromEnvironment(environment),
       walletFingerprint: walletFingerprint,
+      keyFingerprint: keyFingerprint,
     );
-    if (_swapMasterKeyWalletFingerprint == walletFingerprint) {
+    if (deleted && _swapMasterKeyWalletFingerprint == walletFingerprint) {
       _swapMasterKeyWalletFingerprint = null;
     }
+    return deleted;
   }
 
   // RESTORE — thin wrappers over the new boltz restore API; driven by usecases

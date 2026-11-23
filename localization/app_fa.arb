@@ -114,25 +114,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "هنوز پیام نیست. یک مکالمه را شروع کنید!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "نوع یک پیام ...",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "یک پیام لازم است",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "پیام نمی تواند خالی باشد",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "دیروز",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "این چت تنها برای تبادل مسائل مربوط به صندوق / خرید / خرید / Sell / باdraw /Pay است.\nبرای مسائل مربوط به کیف پول، با کلیک کردن در اینجا به گروه تلگرام بپیوندید.",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -764,10 +748,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "کد های مرجع",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "بازیابی کیف پول",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -1289,10 +1269,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "مدیریت 2FA و رمز عبور",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "پشتیبان گیری کامل!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1348,10 +1324,6 @@
   "walletDetailsAddressTypeLabel": "نوع آدرس",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
-  },
-  "emptyMnemonicWordsError": "تمام کلمات mnemonic خود را وارد کنید",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "testBackupTapWordsInOrder": "روی کلمات بازیابی در\nدستور صحیح",
   "@testBackupTapWordsInOrder": {
@@ -1562,10 +1534,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "مبادله در حال انجام است. تأیید تراکنش‌های Bitcoin می‌تواند مدتی طول بکشد. می‌توانید به صفحه اصلی برگردید و منتظر بمانید.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1597,10 +1565,6 @@
   "payExpired": "تایید شده",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "تنظیمات دسترسی",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "پرداخت موفقیت آمیز",
   "@payPaymentSuccessful": {
@@ -3280,10 +3244,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "پشتیبانی تماس برای یادگیری در مورد برنامه ارجاع ما",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "یورو یورو تعادل تعادل تعادل",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -3576,10 +3536,6 @@
   "sellDailyLimitReached": "محدودیت فروش روزانه",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "نیاز",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -5199,10 +5155,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "submitButton": "ارسال",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "هیچ آماری در دسترس نیست",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5260,15 +5212,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "پیشرفت: {parts}",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "یادداشت های آدرس",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5280,15 +5223,6 @@
   "onboardingRecoverWallet": "بازیابی کیف پول",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "اسکن: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "شماره مرجع",
   "@transactionOrderLabelReferenceNumber": {
@@ -5401,10 +5335,6 @@
   "testBackupConfirm": "تایید",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "پردازش شکست خورد",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "انتخاب موقعیت مکانی",
   "@backupWalletChooseVaultLocationTitle": {
@@ -5830,10 +5760,6 @@
   "fundExchangeSpeiSubtitle": "انتقال وجوه با استفاده از CLABE",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
-  },
-  "urDecodingFailedMessage": "رمزگشایی شکست خورد",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "کشور و روش پرداخت خود را انتخاب کنید",
   "@fundExchangeAccountSubtitle": {
@@ -7069,10 +6995,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "همه چیز روشن",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7167,10 +7089,6 @@
   "swapTotalFees": "مجموع هزینه ها ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "اسکن تکمیل شده",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "انجام کارها",
   "@payDone": {
@@ -7714,10 +7632,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "exchangeReferralsApplyToJoinMessage": "درخواست برای پیوستن به برنامه در اینجا",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "یک برچسب برای این گیرنده وارد کنید",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -7753,10 +7667,6 @@
   "sellAdvancedSettings": "تنظیمات پیشرفته",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "پیوستن به ماموریت",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "ورود در",
   "@exchangeSettingsLogInTitle": {
@@ -9054,12 +8964,6 @@
   "autoswapActiveCardTitle": "Autoswap فعال است",
   "autoswapWarningExplanationBold": "به‌طور خودکار",
   "autoswapInfoConsentMessage": "Autoswap در حال حاضر فعال است اما تا زمانی که رضایت ندهید فعال نخواهد شد. آیا می‌خواهید آن را فعال نگه دارید؟",
-  "nfcNotAvailable": "NFC روی این دستگاه پشتیبانی نمی‌شود",
-  "nfcDisabled": "NFC غیرفعال است. آن را در تنظیمات فعال کنید.",
-  "nfcInvalidData": "هیچ داده‌ی NFC پشتیبانی‌شده‌ای پیدا نشد",
-  "nfcConnectionLost": "اتصال NFC قطع شد. دستگاه خود را نزدیک تگ NFC نگه دارید و دوباره امتحان کنید.",
-  "nfcWriteFailed": "انتقال NFC ناموفق بود. لطفاً دوباره امتحان کنید.",
-  "nfcError": "خطای NFC: {error}",
   "deleteLogsTitle": "حذف گزارش‌ها",
   "logsDeletedMessage": "گزارش‌ها حذف شدند",
   "sendSelfTransfer": "انتقال به خود",
@@ -9232,11 +9136,6 @@
   "recipientsFieldPayeeAccountNumber": "شماره حساب دریافت‌کننده",
   "exchangeFileUploadStatusRejectedBadge": "رد شده",
   "exchangeFileUploadTapToReupload": "ضربه برای دوباره آپلود",
-  "exchangeSupportChatAttachmentImage": "تصویر",
-  "exchangeSupportChatAttachmentUnknownFile": "فایل نامشخص",
-  "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
-  "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
-  "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "خطایی غیرمنتظره رخ داد",
   "mempoolErrorUpdateSettingsFailed": "به‌روزرسانی تنظیمات ممکن نشد: {error}",
@@ -9314,9 +9213,6 @@
   "settingsSearchErrorReportingKeywords": "گزارش های خرابی|گزارش خطا|اطلاعات تشخیصی|تله متری|گزارش های خطا",
   "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی",
   "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید.",
-  "exchangeSupportChatLoadMessagesError": "بارگیری پیام‌ها ممکن نشد. لطفاً دوباره تلاش کنید.",
-  "exchangeSupportChatSendMessageError": "ارسال پیام شما ممکن نشد. لطفاً دوباره تلاش کنید.",
-  "exchangeSupportChatLoadAttachmentError": "باز کردن پیوست ممکن نشد. لطفاً دوباره تلاش کنید.",
   "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
   "sendErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sendErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
@@ -9535,5 +9431,6 @@
   "permissionsTitle": "مجوزها",
   "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
   "wizardBackgroundTasksDescription": "بررسی پرداخت‌ها وقتی برنامه بسته است.",
-  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید."
+  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید.",
+  "sendErrorInvoiceExpiryTooShort": "این invoice خیلی زود منقضی می‌شود. از گیرنده یک invoice جدید بخواهید."
 }

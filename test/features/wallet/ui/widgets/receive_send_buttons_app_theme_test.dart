@@ -1,7 +1,6 @@
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullReceiveSendButtons, BullText;
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/colors.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 

@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

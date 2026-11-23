@@ -14,7 +14,6 @@ import 'package:bb_mobile/features/sell/domain/usecases/read_sell_payin_txid_use
 import 'package:bb_mobile/features/sell/domain/usecases/prepare_sell_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
@@ -1258,7 +1257,9 @@ void main() {
           ),
         );
         when(() => loadSellContext.order(orderId: any(named: 'orderId')))
-            .thenThrow(GetOrderException('dns failure'));
+            .thenAnswer(
+              (_) async => const Err(SellUnexpectedFailure('dns failure')),
+            );
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         await untilCalled(() => watchPayjoin.execute(bip21));
@@ -1297,7 +1298,9 @@ void main() {
         // The post-broadcast order fetch fails, which used to re-enable Confirm
         // with the transaction already on the wire (#2522).
         when(() => loadSellContext.order(orderId: any(named: 'orderId')))
-            .thenThrow(GetOrderException('dns failure'));
+            .thenAnswer(
+              (_) async => const Err(SellUnexpectedFailure('dns failure')),
+            );
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         await bloc.stream.firstWhere(
@@ -1402,7 +1405,9 @@ void main() {
     'the price-lock refresh leaves a confirmation in flight alone',
     () async {
       when(() => loadSellContext.order(orderId: any(named: 'orderId')))
-          .thenThrow(GetOrderException('dns failure'));
+          .thenAnswer(
+            (_) async => const Err(SellUnexpectedFailure('dns failure')),
+          );
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await bloc.stream.firstWhere(
@@ -2144,7 +2149,9 @@ void main() {
       // Nothing must complete the order — the assertion is about the rate the
       // build was asked for.
       when(() => loadSellContext.order(orderId: any(named: 'orderId')))
-          .thenThrow(GetOrderException('dns failure'));
+          .thenAnswer(
+            (_) async => const Err(SellUnexpectedFailure('dns failure')),
+          );
 
       bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
       final recalculated = await awaitRecalculatedFee();
@@ -2163,7 +2170,9 @@ void main() {
 
     test('a typed custom rate is committed on dismissal and paid', () async {
       when(() => loadSellContext.order(orderId: any(named: 'orderId')))
-          .thenThrow(GetOrderException('dns failure'));
+          .thenAnswer(
+            (_) async => const Err(SellUnexpectedFailure('dns failure')),
+          );
       final customFee = NetworkFee.relativeFromSatPerVbyte(3);
 
       // Typing arms the rate without rebuilding; dismissing the modal is what
@@ -2219,7 +2228,9 @@ void main() {
 
     test('fee selection is inert once the payin is broadcast', () async {
       when(() => loadSellContext.order(orderId: any(named: 'orderId')))
-          .thenThrow(GetOrderException('dns failure'));
+          .thenAnswer(
+            (_) async => const Err(SellUnexpectedFailure('dns failure')),
+          );
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await bloc.stream.firstWhere(

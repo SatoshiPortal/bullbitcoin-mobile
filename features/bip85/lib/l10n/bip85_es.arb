@@ -1,0 +1,15 @@
+{
+  "@@locale": "es",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "bip85NoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
+  "bip85Title": "Entropías determinísticas BIP85",
+  "bip85ExperimentalWarning": "Experimental \nRespalde sus rutas de derivación manualmente",
+  "bip85NextMnemonic": "Siguiente mnemónica",
+  "bip85NextHex": "Siguiente HEX",
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "copiedToClipboard": "Copiado al portapapeles",
+  "screenPrivacyUnavailable": "No se pudo activar la protección de pantalla, así que este secreto permanece oculto."
+}

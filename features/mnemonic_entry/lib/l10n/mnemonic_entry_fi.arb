@@ -1,0 +1,10 @@
+{
+  "@@locale": "fi",
+  "passphraseLabel": "Suojaussana",
+  "optionalPassphraseHint": "Valinnainen salafraasi",
+  "recipientsInfoLabel": "Tunniste",
+  "requiredHint": "Pakollinen",
+  "submitButton": "Lähetä",
+  "emptyMnemonicWordsError": "Syötä kaikki siemenlauseen sanat",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen"
+}

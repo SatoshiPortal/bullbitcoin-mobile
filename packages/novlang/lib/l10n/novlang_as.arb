@@ -229,5 +229,8 @@
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্ৰান্সফাৰ ম্নেম'নিক মচিব নেকি?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "ই সুৰক্ষিত ষ্ট'ৰেজৰ পৰা ট্ৰান্সফাৰ মাষ্টাৰ কী আঁতৰাই পেলায়। পৰৱৰ্তী সময়ত এপ্টোৰ প্ৰয়োজন হ'লে একে ফিংগাৰপ্ৰিণ্টৰে ই আপোনাৰ ৱালেট seed ৰ পৰা পুনৰ উৎপন্ন কৰা হ'ব। চলি থকা ট্ৰান্সফাৰ প্ৰভাৱিত নহয়।",
   "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
-  "quick_actions__transfer_apple": "Transfer"
+  "quick_actions__transfer_apple": "Transfer",
+  "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "ট্ৰান্সফাৰ ম্নেম'নিক",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "ট্ৰান্সফাৰ ম্নেম'নিক মচিব নেকি?",
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ই সুৰক্ষিত ষ্ট'ৰেজৰ পৰা ট্ৰান্সফাৰ মাষ্টাৰ কী আঁতৰাই পেলায়। পৰৱৰ্তী সময়ত এপ্টোৰ প্ৰয়োজন হ'লে একে ফিংগাৰপ্ৰিণ্টৰে ই আপোনাৰ ৱালেট seed ৰ পৰা পুনৰ উৎপন্ন কৰা হ'ব। চলি থকা ট্ৰান্সফাৰ প্ৰভাৱিত নহয়।"
 }

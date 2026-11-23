@@ -28,20 +28,32 @@ void main() {
     }
 
     publicLibraries = [
-      for (final name in ['secrets', 'testing', 'migration', 'storage'])
+      for (final name in [
+        'secrets',
+        'testing',
+        'migration',
+        'storage',
+        'bip85',
+        'custody',
+      ])
         await library('package:secrets/$name.dart'),
     ];
-    internals = [
-      for (final file in Directory('$root/lib/src').listSync(recursive: true))
-        // Drift owns the generated constructors. The exported-signature
-        // check below still rejects references to their unexported classes.
-        if (file is File &&
-            file.path.endsWith('.dart') &&
-            !file.path.endsWith('.drift.dart'))
-          await library(
-            'package:secrets/${file.path.substring('$root/lib/'.length)}',
-          ),
-    ];
+    internals = [];
+    for (final file in Directory('$root/lib/src').listSync(recursive: true)) {
+      // Drift owns the generated constructors. The exported-signature check
+      // below still rejects references to their unexported classes.
+      if (file is! File ||
+          !file.path.endsWith('.dart') ||
+          file.path.endsWith('.drift.dart')) {
+        continue;
+      }
+      final uri = 'package:secrets/${file.path.substring('$root/lib/'.length)}';
+      final result = await session.getLibraryByUri(uri);
+      // A part is resolved with its owning library and cannot be imported.
+      if (result is NotLibraryButPartResult) continue;
+      if (result is! LibraryElementResult) throw StateError('$uri: $result');
+      internals.add(result.element);
+    }
   });
 
   Set<Element> exported() => {

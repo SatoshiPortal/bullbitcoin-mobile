@@ -1,0 +1,209 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullThemeX;
+
+import 'dart:async';
+
+import 'package:bull_ui/testing.dart';
+import 'package:primitives/primitives.dart';
+import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/recipients/domain/usecases/get_account_owner_name_usecase.dart';
+import 'package:bull_exchange/src/recipients/domain/entities/account_owner_name.dart';
+import 'package:bull_exchange/src/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
+import 'package:bull_exchange/src/recipients/presentation/virtual_iban_onboarding_cubit.dart';
+import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockWatchVirtualIbanUsecase extends Mock
+    implements WatchVirtualIbanUsecase {}
+
+class _MockGetAccountOwnerNameUsecase extends Mock
+    implements GetAccountOwnerNameUsecase {}
+
+typedef _Event = Result<VirtualIban?, RecipientsFailure>;
+
+void main() {
+  late StreamController<_Event> events;
+  late VirtualIbanOnboardingCubit cubit;
+  late _MockWatchVirtualIbanUsecase watch;
+  late int activated;
+  late int usedRegularSepa;
+  late int returnedHome;
+
+  Future<ExchangeLocalizations> pumpView(
+    WidgetTester tester, {
+    bool withReturnHome = false,
+  }) async {
+    events = StreamController<_Event>.broadcast();
+    watch = _MockWatchVirtualIbanUsecase();
+    final ownerName = _MockGetAccountOwnerNameUsecase();
+    when(() => ownerName.execute()).thenAnswer(
+      (_) async => const Ok(
+        AccountOwnerName(firstName: 'Satoshi', lastName: 'Nakamoto'),
+      ),
+    );
+    when(() => watch.execute(createIfAbsent: any(named: 'createIfAbsent')))
+        .thenAnswer((_) => events.stream);
+    cubit = VirtualIbanOnboardingCubit(
+      watchVirtualIbanUsecase: watch,
+      getAccountOwnerNameUsecase: ownerName,
+    );
+    addTearDown(cubit.close);
+    activated = 0;
+    usedRegularSepa = 0;
+    returnedHome = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates: ExchangeLocalizations.localizationsDelegates,
+        supportedLocales: ExchangeLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: cubit,
+          child: VirtualIbanOnboardingView(
+            onActivated: () => activated++,
+            onUseRegularSepa: () => usedRegularSepa++,
+            onReturnHome: withReturnHome ? () => returnedHome++ : null,
+          ),
+        ),
+      ),
+    );
+    await cubit.start();
+    await tester.pump();
+    return ExchangeLocalizations.of(
+      tester.element(find.byType(VirtualIbanOnboardingView)),
+    );
+  }
+
+  Future<void> emit(WidgetTester tester, _Event event) async {
+    events.add(event);
+    await tester.pump();
+    await tester.pump();
+  }
+
+  testWidgets('retry is the only primary when return home is available', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester, withReturnHome: true);
+    await emit(tester, const Ok(PendingVirtualIban()));
+    await emit(tester, const Err(RecipientsNetworkFailure()));
+    final colors = tester.element(find.byType(BullButton).first).bull;
+    final fills = [
+      for (final element in find.byType(BullButton).evaluate())
+        (tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.byWidget(element.widget),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration)
+            .color,
+    ];
+    expect(fills.where((color) => color == colors.primary), hasLength(1));
+    final returnHome = find.ancestor(
+      of: find.text(loc.recipientsReturnHome),
+      matching: find.byType(BullButton),
+    );
+    final fill =
+        tester
+                .widget<Container>(
+                  find
+                      .descendant(
+                        of: returnHome,
+                        matching: find.byType(Container),
+                      )
+                      .first,
+                )
+                .decoration
+            as BoxDecoration;
+    expect(fill.color, colors.secondary);
+  });
+
+  testWidgets('activating needs the name to be confirmed first', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester);
+    await emit(tester, const Ok(null));
+    expect(find.text('Satoshi Nakamoto'), findsOne);
+
+    await tester.tap(find.text(loc.recipientsVirtualIbanActivate));
+    await tester.pump();
+    verifyNever(() => watch.execute(createIfAbsent: true));
+
+    final confirmation = find.text(loc.recipientsVirtualIbanNameConfirmation);
+    await tester.ensureVisible(confirmation);
+    await tester.tap(confirmation);
+    await tester.pump();
+    await tester.tap(find.text(loc.recipientsVirtualIbanActivate));
+    // Cancelling the previous watch completes on the real event loop.
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pump();
+    verify(() => watch.execute(createIfAbsent: true)).called(1);
+  });
+
+  testWidgets('while it is being created the user can use regular SEPA', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester);
+
+    await emit(tester, const Ok(PendingVirtualIban()));
+    expect(find.text(loc.recipientsVirtualIbanActivatingTitle), findsOne);
+
+    await tester.tap(find.text(loc.recipientsConfidentialSepaUseRegularSepa));
+    expect(usedRegularSepa, 1);
+  });
+
+  testWidgets('no Return Home button is shown when none is provided', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester);
+    await emit(tester, const Ok(PendingVirtualIban()));
+    expect(find.text(loc.recipientsReturnHome), findsNothing);
+  });
+
+  testWidgets('while it is being created the user can return home', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester, withReturnHome: true);
+    await emit(tester, const Ok(PendingVirtualIban()));
+
+    final returnHome = find.text(loc.recipientsReturnHome);
+    await tester.ensureVisible(returnHome);
+    await tester.tap(returnHome);
+    expect(returnedHome, 1);
+  });
+
+  testWidgets('an active virtual IBAN continues the flow', (tester) async {
+    final loc = await pumpView(tester);
+
+    await emit(
+      tester,
+      Ok(
+        VirtualIban.fromBankDetails(
+          iban: 'FR7616958000016918327146718',
+          bicCode: 'FIRPFRP2',
+          bankAddress: '1 Rue de la Paix, Paris',
+        ),
+      ),
+    );
+    expect(find.text(loc.recipientsVirtualIbanActivatedTitle), findsOne);
+
+    await tester.tap(find.text(loc.recipientsContinue));
+    expect(activated, 1);
+  });
+
+  testWidgets('a user outside the EU is told why', (tester) async {
+    final loc = await pumpView(tester);
+    await emit(tester, const Ok(null));
+
+    await emit(tester, const Err(RecipientsEuResidencyRequiredFailure()));
+
+    expect(find.text(loc.recipientsErrorEuResidencyRequired), findsOne);
+  });
+}

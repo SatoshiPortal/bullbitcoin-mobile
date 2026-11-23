@@ -62,7 +62,7 @@ bull-ui-check: typography-check
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
-	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
+	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 	@echo "🧱 text sizes (typography roles, never a typed-in font size)"
 	@if grep -rnE "fontSize:[^,;]*([^A-Za-z0-9_.]|^)[0-9]+(\.[0-9]+)?([^A-Za-z0-9_]|$$)" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/bull_typography.dart:" | grep -vE "$(FONT_SIZE_ALLOWLIST)"; then echo "Read a text size from context.bullType.<role> (or BullText(role: ...)), changing only its weight or colour; size a keypad glyph from BullKeypadMetrics.glyphSize. The numbers live only in BullTypography.standard"; exit 1; fi
 	@if grep -rnE "fontSize: *$$" lib features packages --include='*.dart' | grep -v "/test/"; then echo "Keep a fontSize on one line so the typed-in size check can read it"; exit 1; fi
@@ -134,9 +134,9 @@ onion-codegen:
 
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
-DRIFT_OWNER_PACKAGES := packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
-BUILD_RUNNER_MEMBERS := features/access features/fees packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange
-BUILD_RUNNER_WATCH_MEMBERS := features/fees packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps
+DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
+BUILD_RUNNER_MEMBERS := features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent
+BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -170,7 +170,13 @@ translations:
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@(cd features/signers && fvm flutter gen-l10n)
+	@(cd features/scanning && fvm flutter gen-l10n)
+	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
+	@(cd features/bip85 && fvm flutter gen-l10n)
+	@(cd features/all_seed_view && fvm flutter gen-l10n)
+	@(cd features/silent && fvm flutter gen-l10n)
+	@(cd features/swap && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
 	@(cd features/network && fvm flutter gen-l10n)
@@ -213,7 +219,7 @@ hooks:
 
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
-	fvm dart run drift_dev make-migrations
+	@(cd packages/legacy_storage && fvm dart run drift_dev make-migrations)
 	fvm dart run drift_dev schema dump lib/features/swap/data/order_swaps_database.dart lib/features/swap/data/schemas/order_swaps_database/
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
