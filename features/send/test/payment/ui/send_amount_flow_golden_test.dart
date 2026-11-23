@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/app_theme.dart';

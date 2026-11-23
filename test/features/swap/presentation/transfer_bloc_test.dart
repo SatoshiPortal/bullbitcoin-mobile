@@ -1120,7 +1120,9 @@ void main() {
         walletId: 'wallet-1',
         selectedInputs: {selected.outpoint},
       ),
-    ).thenAnswer((_) async => const Err(SpendSelectedInputsUnavailableFailure()));
+    ).thenAnswer(
+      (_) async => const Err(SpendSelectedInputsUnavailableFailure()),
+    );
     preview = (
       fee: Sats.fromInt(250),
       prepared: SpendFixtures.preparedBitcoin(

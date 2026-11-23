@@ -7,7 +7,6 @@ import '../testing/send_source_fixture.dart';
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:bull_pricer/bull_pricer.dart';
