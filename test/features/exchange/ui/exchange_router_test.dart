@@ -36,6 +36,69 @@ ExchangeRouterConfig _config({
 );
 
 void main() {
+  testWidgets('support login preserves the authentication source and draft', (
+    tester,
+  ) async {
+    final exchange = _Exchange();
+    when(
+      () => exchange.currentAccess,
+    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    locator.registerSingleton<ExchangeFacade>(exchange);
+    addTearDown(() => locator.unregister<ExchangeFacade>());
+    final cubit = _ExchangeCubit();
+    when(cubit.enableForSupport).thenAnswer((_) async => const Ok(null));
+    addTearDown(cubit.close);
+    final feature = ExchangeRouter.mount(
+      _config(unavailable: () async => false),
+      exchange: () => fail('should not open the chat before signing in'),
+    );
+    GoRouterState? authentication;
+    final router = GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(path: '/home', builder: (_, _) => const Scaffold()),
+        ?feature.supportChatRoute,
+        GoRoute(
+          path: '/auth',
+          name: ExchangeRoute.exchangeAuth.name,
+          builder: (_, state) {
+            authentication = state;
+            return const Scaffold(body: Text('Authentication'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      BlocProvider<ExchangeCubit>.value(
+        value: cubit,
+        child: MaterialApp.router(
+          theme: AppTheme.themeData(AppThemeType.light),
+          locale: const Locale('en'),
+          localizationsDelegates: const [
+            ExchangeLocalizations.delegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    const draft = ExchangeSupportChatDraft(initialMessage: 'Help');
+    router.pushNamed(ExchangeSupportChatNavigation.routeName, extra: draft);
+    await tester.pumpAndSettle();
+    final context = tester.element(find.byType(Scaffold).last);
+    await tester.tap(
+      find.text(AppLocalizations.of(context).exchangeLoginButton),
+    );
+    await tester.pumpAndSettle();
+
+    verify(cubit.enableForSupport).called(1);
+    expect(authentication?.extra, same(draft));
+    expect(authentication?.uri.queryParameters['from'], 'support');
+  });
+
   testWidgets(
     'injected network refusal redirects before exchange presentation',
     (tester) async {
