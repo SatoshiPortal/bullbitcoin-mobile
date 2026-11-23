@@ -21,7 +21,7 @@ void main() {
   );
 
   test('Confidential SEPA stays top level and COP input stays nested', () {
-    GoRoute route(FundExchangeRoute target) => feature.routes
+    GoRoute route(FundExchangeRoute target) => feature.fundingRoutes
         .whereType<GoRoute>()
         .singleWhere((route) => route.name == target.name);
 
@@ -35,6 +35,10 @@ void main() {
       route(FundExchangeRoute.fundExchangeConfidentialSepa).path,
       '/fund-exchange-confidential-sepa',
     );
+    expect(
+      feature.routes.whereType<GoRoute>().map((route) => route.name),
+      isNot(contains(FundExchangeRoute.fundExchange.name)),
+    );
   });
 
   testWidgets('a signed-out entry reaches the dashboard without loading data', (
@@ -43,7 +47,7 @@ void main() {
     final router = GoRouter(
       initialLocation: '/fund-exchange',
       routes: [
-        ...feature.routes,
+        ...feature.fundingRoutes,
         GoRoute(
           path: BullExchangeNavigation.dashboardPath,
           builder: (_, _) => const Text('Dashboard'),
