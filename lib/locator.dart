@@ -62,7 +62,7 @@ import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
-import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
+import 'package:bb_mobile/features/swap/boltz_swaps_setup.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
@@ -247,6 +247,8 @@ class AppLocator {
       );
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
+    final swaps = await BoltzSwapsSetup.setup(locator);
+    if (swaps case Err()) return swaps;
     CoreLocator.registerUsecases(locator);
     PayjoinSetup.setup(locator, startRecovery: startPayjoinRecovery);
 
@@ -357,7 +359,7 @@ class AppLocator {
     // Follows network switches from launch on, whether or not the swap
     // watcher has started yet: the engine must match the network the first
     // swap is created on. A switch stops and relaunches the watcher.
-    locator<SwapEngineSwitcher>().start();
+    BoltzSwapsSetup.followEnvironment(locator);
     return const Ok(null);
   }
 }

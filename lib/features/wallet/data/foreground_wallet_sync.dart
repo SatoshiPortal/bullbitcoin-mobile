@@ -15,22 +15,8 @@ final class ForegroundWalletSync {
 
   Stream<String> get started => _sync.started.map((key) => key.id);
   Stream<String> get finished => _sync.finished.map((event) => event.key.id);
-  Stream<ElectrumSyncResult> get results => _sync.finished
-      // Contention or a deferred initial scan says nothing about server reachability. Completion still
-      // reaches finished so callers clear their syncing state.
-      .where(
-        (event) => switch (event.result) {
-          Err(failure: SyncBusyFailure() || SyncInitialScanRequiredFailure()) =>
-            false,
-          _ => true,
-        },
-      )
-      .map(
-        (event) => ElectrumSyncResult(
-          isLiquid: event.key.network is LiquidNetwork,
-          success: event.result is Ok<SyncCompletion, SyncFailure>,
-        ),
-      );
+  Stream<ElectrumSyncResult> get results =>
+      ElectrumSyncResult.watch(_sync.finished);
 
   bool isSyncing({String? walletId}) => _sync.isSyncing(walletId: walletId);
 

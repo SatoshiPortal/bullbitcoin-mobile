@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:sync/write.dart'
@@ -114,10 +114,8 @@ void main() {
         allowInitialScan = true,
         reason = SyncReason.auto,
       }) async {},
-      isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
-      electrumSyncResultStream: const Stream.empty(),
     );
     addTearDown(() async {
       await database.close();

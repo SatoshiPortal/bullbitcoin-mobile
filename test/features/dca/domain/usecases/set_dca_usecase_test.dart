@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -231,7 +231,7 @@ void main() {
         () => walletAddress.generateNewReceiveAddress(
           walletId: any(named: 'walletId'),
         ),
-      ).thenThrow(const WalletError.notFound(_sentinelWalletId));
+      ).thenThrow(const WalletNotFoundException(_sentinelWalletId));
 
       final result = await usecase.execute(
         amount: 10,

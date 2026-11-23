@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
+import 'package:swaps/swaps.dart'
+    show AutoSwap, AutoSwapSettings, SwapsStorageFailure;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockSaveAutoSwapSettingsUsecase extends Mock
-    implements SaveAutoSwapSettingsUsecase {}
+    implements AutoSwapSettings {}
 
 /// A wallet id is the descriptor origin, so it embeds the master key
 /// fingerprint. Routed through the failing path below so the failure can be
@@ -30,9 +30,7 @@ void main() {
 
   setUp(() {
     saveCore = MockSaveAutoSwapSettingsUsecase();
-    usecase = SaveAutoswapSettingsUsecase(
-      saveAutoSwapSettingsUsecase: saveCore,
-    );
+    usecase = SaveAutoswapSettingsUsecase(saveCore);
   });
 
   AutoswapFailure failureOf(Result<void, AutoswapFailure> result) {
@@ -42,12 +40,13 @@ void main() {
 
   group('SaveAutoswapSettingsUsecase', () {
     test('delegates the settings to the shared usecase', () async {
-      when(() => saveCore.execute(any())).thenAnswer((_) async {});
+      when(() => saveCore.saveAutoSwap(any()))
+          .thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute(_settings);
 
       expect(result, isA<Ok<void, AutoswapFailure>>());
-      verify(() => saveCore.execute(_settings)).called(1);
+      verify(() => saveCore.saveAutoSwap(_settings)).called(1);
     });
 
     test('refuses settings the entity rejects, without writing', () async {
@@ -57,13 +56,14 @@ void main() {
       );
 
       expect(failureOf(result), isA<AutoswapBalanceThresholdTooLowFailure>());
-      verifyNever(() => saveCore.execute(any()));
+      verifyNever(() => saveCore.saveAutoSwap(any()));
     });
 
     test(
       'writes disabled settings even when their thresholds are invalid',
       () async {
-        when(() => saveCore.execute(any())).thenAnswer((_) async {});
+        when(() => saveCore.saveAutoSwap(any()))
+            .thenAnswer((_) async => const Ok(null));
         final disabled = _settings.copyWith(
           enabled: false,
           recipientWalletId: null,
@@ -75,7 +75,7 @@ void main() {
         final result = await usecase.execute(disabled);
 
         expect(result, isA<Ok<void, AutoswapFailure>>());
-        verify(() => saveCore.execute(disabled)).called(1);
+        verify(() => saveCore.saveAutoSwap(disabled)).called(1);
       },
     );
 
@@ -98,14 +98,14 @@ void main() {
         ),
         isA<AutoswapFeeThresholdTooHighFailure>(),
       );
-      verifyNever(() => saveCore.execute(any()));
+      verifyNever(() => saveCore.saveAutoSwap(any()));
     });
 
     test('maps a failing write to SaveFailure, keeping the raw reason out of '
         'the failure', () async {
-      when(() => saveCore.execute(any())).thenThrow(
-        Exception('drift write failed for $_sentinelWalletId xprv9sSecret'),
-      );
+      when(
+        () => saveCore.saveAutoSwap(any()),
+      ).thenAnswer((_) async => const Err(SwapsStorageFailure('_Exception')));
 
       final result = await usecase.execute(_settings);
 

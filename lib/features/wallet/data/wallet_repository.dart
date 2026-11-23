@@ -17,7 +17,6 @@ import 'package:sync/sync.dart'
         SyncInvalidCatalogFailure,
         isLiquidStatusConflict;
 
-import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
@@ -29,7 +28,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -52,10 +51,8 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     SyncReason reason,
   })
   _syncWallet;
-  final bool Function({String? walletId}) _isSyncing;
   final Stream<String> _walletSyncStartedStream;
   final Stream<String> _walletSyncFinishedStream;
-  final Stream<ElectrumSyncResult> electrumSyncResultStream;
 
   WalletRepository({
     this._native,
@@ -69,10 +66,8 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       SyncReason reason,
     })
     synchronize,
-    required this._isSyncing,
     required Stream<String> syncStarted,
     required Stream<String> syncFinished,
-    required this.electrumSyncResultStream,
   }) : _values = walletValuesDatasource,
        _syncWallet = synchronize,
        _walletSyncStartedStream = syncStarted,
@@ -89,16 +84,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
-
-  @useResult
-  Result<bool, WalletFailure> isWalletSyncing({String? walletId}) {
-    try {
-      return Ok(_isSyncing(walletId: walletId));
-    } catch (e, st) {
-      log.severe(message: 'isWalletSyncing failed', error: e, trace: st);
-      return Err(_classify(e, 'isWalletSyncing'));
-    }
-  }
 
   /// Catalog existence protects onboarding even when the selected network
   /// has no wallets or a stored network cannot currently be decoded.
@@ -589,7 +574,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw WalletError.notFound(walletId);
+      throw WalletNotFoundException(walletId);
     }
 
     await _walletMetadataDatasource.store(
@@ -610,7 +595,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw WalletError.notFound(walletId);
+      throw WalletNotFoundException(walletId);
     }
 
     await _walletMetadataDatasource.store(
@@ -628,7 +613,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
-      throw WalletError.notFound(walletId);
+      throw WalletNotFoundException(walletId);
     }
     return _getBalance(metadata);
   }

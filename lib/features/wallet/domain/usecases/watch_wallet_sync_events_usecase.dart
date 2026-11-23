@@ -3,21 +3,20 @@ import 'dart:async';
 import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 /// The three sync watchers the wallet home arms, each emitting a `Result`
 /// rather than throwing.
 ///
-/// The shared core watchers can throw on subscribe and push errors into the
+/// The legacy watchers can throw on subscribe and push errors into the
 /// stream; the `await for` covers both. Without this the bloc needed a
 /// `try/catch` around arming them and an `onError` on every listener (#1895).
 class WatchWalletSyncEventsUsecase {
   final WatchStartedWalletSyncsUsecase _watchStarted;
   final WatchFinishedWalletSyncsUsecase _watchFinished;
-  final WatchElectrumSyncResultsUsecase _watchElectrum;
+  final Stream<ElectrumSyncResult> Function() _watchElectrum;
 
   const WatchWalletSyncEventsUsecase({
     required this._watchStarted,
@@ -32,7 +31,7 @@ class WatchWalletSyncEventsUsecase {
       _guard(() => _watchFinished.execute(), 'watch sync finished');
 
   Stream<Result<ElectrumSyncResult, WalletFailure>> electrumResults() =>
-      _guard(() => _watchElectrum.execute(), 'watch electrum results');
+      _guard(_watchElectrum, 'watch electrum results');
 
   /// Turns stream errors into `Err` events **without ending the stream**.
   ///

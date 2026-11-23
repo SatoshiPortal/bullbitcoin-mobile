@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';

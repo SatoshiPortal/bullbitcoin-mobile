@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';

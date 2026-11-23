@@ -130,10 +130,8 @@ void main() {
       wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: bridge.synchronize,
-      isSyncing: bridge.isSyncing,
       syncStarted: bridge.started,
       syncFinished: bridge.finished,
-      electrumSyncResultStream: bridge.results,
     );
   });
 
@@ -203,10 +201,8 @@ void main() {
           wallet: (_) async => throw StateError('no native access expected'),
           walletValuesDatasource: values,
           synchronize: bridge.synchronize,
-          isSyncing: bridge.isSyncing,
           syncStarted: bridge.started,
           syncFinished: bridge.finished,
-          electrumSyncResultStream: bridge.results,
         );
         if (deleteWallet) {
           final swaps = _Swaps();
@@ -330,7 +326,7 @@ void main() {
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
       final started = repository.walletSyncStartedStream.first;
       final finished = repository.walletSyncFinishedStream.first;
-      final result = repository.electrumSyncResultStream.first;
+      final result = bridge.results.first;
       await SyncWalletUsecase(walletRepository: repository).execute(wallet);
       expect(policy.calls, 1);
       expect(await started, id);
@@ -470,10 +466,8 @@ void main() {
           allowInitialScan = true,
           SyncReason reason = SyncReason.auto,
         }) async => requests.add((discover, allowInitialScan)),
-        isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
       );
       final wallet =
           (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
@@ -666,10 +660,8 @@ void main() {
               verify(() => native.create(any())).called(1);
               synchronized = true;
             },
-        isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
       );
       final wallet = await importing.importDescriptor(
         watchOnlyDescriptor: WatchOnlyDescriptorEntity(

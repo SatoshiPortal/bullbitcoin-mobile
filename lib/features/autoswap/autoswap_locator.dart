@@ -3,21 +3,20 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show LiquidWalletRepository;
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:swaps/swaps.dart'
     show
+        AutoSwapSettings,
         CreateLiquidToBitcoinSwapUsecase,
         DropPendingSwapLockupUsecase,
         GetSwapLimitsAndFeesUsecase,
@@ -65,19 +64,17 @@ class AutoSwapLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<LoadAutoswapSettingsUsecase>(
       () => LoadAutoswapSettingsUsecase(
-        getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
+        autoSwapSettings: locator<AutoSwapSettings>(),
         getSettingsUsecase: locator<Preferences>(),
         walletRepository: locator<WalletRepository>(),
       ),
     );
     locator.registerFactory<SaveAutoswapSettingsUsecase>(
-      () => SaveAutoswapSettingsUsecase(
-        saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
-      ),
+      () => SaveAutoswapSettingsUsecase(locator<AutoSwapSettings>()),
     );
     locator.registerFactory<ExecuteAutoswapUsecase>(
       () => ExecuteAutoswapUsecase(
-        locator<GetAutoSwapSettingsUsecase>(),
+        locator<AutoSwapSettings>(),
         locator<SwapFacade>(),
         boltzProvider: locator<BoltzAutoswapProvider>(),
         exchangeProvider: locator<ExchangeAutoswapProvider>(),

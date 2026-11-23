@@ -262,8 +262,16 @@ graph TB
     BTC_PRICE --> BULL_UI
     BTC_PRICE --> BULL_LOGGER
     BTC_PRICE --> PRIMITIVES
-    SWAPS_PKG[Swaps Package<br/>Swap engine: store, resolver, Boltz provider]
+    SWAPS_PKG[Swaps Package<br/>Boltz engine, provider and autoswap settings]
     SWAPS_PKG --> PRIMITIVES
+    SWAPS_PKG --> BULL_LOGGER
+    SWAPS_PKG --> ELECTRUM
+    SWAPS_PKG --> FEES_PACKAGE
+    SWAPS_PKG --> PREFERENCES
+    SWAPS_PKG --> SECRETS
+    SWAPS_PKG --> SYNC
+    SWAPS -->|fresh receive address| ADDRESS_MGMT
+    SWAPS -->|wallet-relative history| TX_HISTORY
     SWAPS --> SWAPS_PKG
     SEND --> SWAPS_PKG
     RECEIVE --> SWAPS_PKG
@@ -420,7 +428,7 @@ graph TB
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
     SP -->|wallet balance view and legacy repository| WALLETS
-    SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
+    SWAPS -->|legacy: wallet choice and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
     ELECTRUM --> TOR
@@ -598,7 +606,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, Bitcoin Price
-- **Swaps** (workspace package `packages/swaps`): the swap engine behind one provider-neutral surface — `SwapStore` (reads), `SwapResolver` (claim, refund, recovery; one per provider) and per-provider create methods (`BoltzSwaps`). Used by Swaps, Send, Receive, Autoswap, Transaction History, Wallets, Settings, All Seed View, App Startup
+- **Swaps** (workspace package `packages/swaps`): `Swaps.open` owns the Boltz engine, its network transitions and the provider and autoswap settings. Its stable `SwapStore`, `SwapResolver` and `BoltzSwaps` handles survive provider replacement. Used by Swaps, Send, Receive, Autoswap, Transaction History, Wallets, Settings, All Seed View, App Startup
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 
@@ -641,7 +649,7 @@ The mnemonic import feature currently imports Wallets internals. Replace that de
 
 ## Wallet failure compatibility edges (2026-11-08)
 
-The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. At composition, the wallet owner supplies the default wallet environment and the network feature turns read failures into a localized service-status error.
+At composition, the app wallet owner supplies the default wallet environment and the network feature turns read failures into a localized service-status error. The former `lib/core/wallet` paths are gone.
 
 ## Networks source-edge review (2026-11-08)
 

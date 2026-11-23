@@ -70,11 +70,6 @@ class ApiServiceConstants {
   static const publicliquidElectrumTestUrlPath =
       ElectrumDefaultEndpoints.publicliquidElectrumTestUrlPath;
 
-  // Boltz API
-  static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
-  static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
-  static const boltzReferralId = 'BULL';
-
   // BullBitcoin API
   static const String bbApiUrl = 'https://api.bullbitcoin.com';
   static const String bbApiTestUrl = 'https://api05.bullbitcoin.dev';

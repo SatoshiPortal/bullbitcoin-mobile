@@ -1,13 +1,13 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Reads the wallet a transaction belongs to.
 ///
-/// [GetWalletUsecase] is a shared core use-case that still throws, so this —
+/// [GetWalletUsecase] is a legacy wallet lookup that still throws, so this —
 /// the first layer the transactions feature owns — is the boundary that
 /// catches it and turns it into a [TransactionFailure] value.
 class GetTransactionWalletUsecase {

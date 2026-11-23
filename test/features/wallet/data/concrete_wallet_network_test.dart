@@ -64,10 +64,8 @@ void main() {
           allowInitialScan = true,
           reason = SyncReason.auto,
         }) async {},
-        isSyncing: ({walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
-        electrumSyncResultStream: const Stream.empty(),
       );
       for (final (environment, expected) in [
         (Environment.mainnet, Network.bitcoinMainnet),
@@ -102,10 +100,8 @@ void main() {
             allowInitialScan = true,
             reason = SyncReason.auto,
           }) async {},
-          isSyncing: ({walletId}) => false,
           syncStarted: const Stream.empty(),
           syncFinished: const Stream.empty(),
-          electrumSyncResultStream: const Stream.empty(),
         );
         final result = await repository.hasSecretReference(
           Fingerprint('73c5da0a'),

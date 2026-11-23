@@ -20,6 +20,30 @@ final class SwapsAuthorizationFailure extends SwapsFailure {
   const SwapsAuthorizationFailure([super.logMessage]);
 }
 
+final class SwapsUnsupportedNetworkFailure extends SwapsFailure {
+  const SwapsUnsupportedNetworkFailure();
+}
+
+final class SwapsInvalidServerFailure extends SwapsFailure {
+  const SwapsInvalidServerFailure(super.logMessage);
+}
+
+final class SwapsInvalidAutoSwapSettingsFailure extends SwapsFailure {
+  const SwapsInvalidAutoSwapSettingsFailure();
+}
+
+final class SwapsStorageFailure extends SwapsFailure {
+  const SwapsStorageFailure([super.logMessage]);
+}
+
+enum SwapLockupIssue { receiveSwap, amountMismatch, unreadable }
+
+final class SwapsInvalidLockupFailure extends SwapsFailure {
+  final SwapLockupIssue issue;
+
+  const SwapsInvalidLockupFailure(this.issue, [super.logMessage]);
+}
+
 /// No default bitcoin wallet seed is available to derive the swap master
 /// key (watch-only, hardware-only or pre-onboarding wallet) — restore and
 /// rescue cannot run.

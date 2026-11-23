@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
+import 'package:swaps/swaps.dart' show AutoSwap, AutoSwapSettings;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -10,8 +9,7 @@ import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settin
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockGetAutoSwapSettingsUsecase extends Mock
-    implements GetAutoSwapSettingsUsecase {}
+class MockGetAutoSwapSettingsUsecase extends Mock implements AutoSwapSettings {}
 
 class MockGetSettingsUsecase extends Mock implements Preferences {}
 
@@ -53,7 +51,7 @@ void main() {
     getSettings = MockGetSettingsUsecase();
     wallets = MockWalletRepository();
     usecase = LoadAutoswapSettingsUsecase(
-      getAutoSwapSettingsUsecase: getAutoSwap,
+      autoSwapSettings: getAutoSwap,
       getSettingsUsecase: getSettings,
       walletRepository: wallets,
     );
@@ -69,8 +67,9 @@ void main() {
 
   group('LoadAutoswapSettingsUsecase', () {
     test('returns only bitcoin wallets and the stored recipient', () async {
-      when(() => getAutoSwap.execute())
-          .thenAnswer((_) async => const AutoSwap(recipientWalletId: 'stored'));
+      when(() => getAutoSwap.readAutoSwap()).thenAnswer(
+        (_) async => const Ok(AutoSwap(recipientWalletId: 'stored')),
+      );
       when(() => wallets.getWallets(environment: any(named: 'environment')))
           .thenAnswer(
             (_) async => Ok<List<Wallet>, WalletFailure>([
@@ -91,8 +90,8 @@ void main() {
     test(
       'falls back to the default bitcoin wallet when none is stored',
       () async {
-        when(() => getAutoSwap.execute())
-            .thenAnswer((_) async => const AutoSwap());
+        when(() => getAutoSwap.readAutoSwap())
+            .thenAnswer((_) async => const Ok(AutoSwap()));
         when(() => wallets.getWallets(environment: any(named: 'environment')))
             .thenAnswer(
               (_) async => Ok<List<Wallet>, WalletFailure>([
@@ -111,7 +110,7 @@ void main() {
 
     test('maps a throwing read to SettingsUnavailable, keeping the raw reason '
         'out of the failure', () async {
-      when(() => getAutoSwap.execute()).thenThrow(
+      when(() => getAutoSwap.readAutoSwap()).thenThrow(
         Exception('drift read failed for $_sentinelWalletId xprv9sSecret'),
       );
 
@@ -124,8 +123,8 @@ void main() {
     });
 
     test('maps a failing wallet lookup to SettingsUnavailable', () async {
-      when(() => getAutoSwap.execute())
-          .thenAnswer((_) async => const AutoSwap());
+      when(() => getAutoSwap.readAutoSwap())
+          .thenAnswer((_) async => const Ok(AutoSwap()));
       when(() => wallets.getWallets(environment: any(named: 'environment')))
           .thenAnswer((_) async => throw Exception('bdk exploded'));
 
