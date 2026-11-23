@@ -21,6 +21,14 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
   factory SecretsWalletCatalog.foreground(SecretsInventory inventory) =>
       SecretsWalletCatalog._(inventory.listDescriptors);
 
+  /// Removes the catalog entry of a deletion the native writer finishes
+  /// after an interruption.
+  static Future<Result<void, SyncFailure>> Function(WalletKey) removal(
+    SecretsInventory inventory,
+  ) => (key) async => (await inventory.removeWallet(
+    key.id,
+  )).mapErr((_) => const SyncStorageFailure());
+
   factory SecretsWalletCatalog.background(
     BackgroundWalletDescriptors catalog,
   ) => SecretsWalletCatalog._(catalog.list);

@@ -39,7 +39,6 @@ void registerWalletProjections(
 abstract interface class WalletRegistrations {
   Future<WalletMetadataModel?> fetch(String id);
   Future<List<WalletMetadataModel>> fetchAll();
-  Future<void> delete(String id);
 }
 
 /// Joins the active inventory to the properties owned by Signers, Sync and
@@ -68,11 +67,6 @@ final class SecretsWalletRegistrations implements WalletRegistrations {
   @override
   Future<List<WalletMetadataModel>> fetchAll() async =>
       Future.wait(_value(await _inventory.listWallets()).map(_metadata));
-
-  @override
-  Future<void> delete(String id) async {
-    _value(await _inventory.removeWallet(id));
-  }
 
   RecoverBullWalletBackups _backupStore(String networkCode) =>
       switch (networkCode) {

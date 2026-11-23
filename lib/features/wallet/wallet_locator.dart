@@ -144,14 +144,9 @@ class WalletLocator {
         catalog: locator<WalletCatalogPort>(),
         reserved: locator<ReservedAddressPort>(),
         inputReservations: locator<InputReservationPort>(),
-        deleteCatalogEntry: (key) async {
-          try {
-            await locator<WalletRegistrations>().delete(key.id);
-            return const Ok(null);
-          } on Exception {
-            return const Err(SyncStorageFailure());
-          }
-        },
+        deleteCatalogEntry: SecretsWalletCatalog.removal(
+          locator<SecretsInventory>(),
+        ),
         sync: locator<ElectrumSync>(),
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
