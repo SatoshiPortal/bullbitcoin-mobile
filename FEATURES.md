@@ -63,7 +63,7 @@ graph TB
     ELECTRUM --> BULL_LOGGER
     NETWORK --> ELECTRUM
     NETWORK --> MEMPOOL
-    BROADCAST_SIGNED_TX --> ELECTRUM
+    SEND_TOOLS --> ELECTRUM
     CORE --> ELECTRUM
     WALLETS --> ELECTRUM
     LABELS --> SYNC
@@ -87,15 +87,15 @@ graph TB
     TRANSFER --> SPEND
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
-    BROADCAST_SIGNED_TX --> SYNC
+    SEND_TOOLS --> SYNC
     SATOSHIFIER[Satoshifier Package]
-    BROADCAST_SIGNED_TX -->|BBQR assembly| SATOSHIFIER
+    SEND_TOOLS -->|BBQR assembly| SATOSHIFIER
     SATOSHIFIER --> SYNC
     SATOSHIFIER --> BULL_LOGGER
     SEND -->|payment requests| SATOSHIFIER
     SWAP -->|payment requests| SATOSHIFIER
     WALLETS -->|payment requests, public extended keys| SATOSHIFIER
-    BROADCAST_SIGNED_TX --> SPEND
+    SEND_TOOLS --> SPEND
     SEND -->|reviewed Payjoin original| TX_HISTORY
     PAY -->|reviewed Payjoin original| TX_HISTORY
     SELL -->|reviewed Payjoin original| TX_HISTORY
@@ -243,10 +243,10 @@ graph TB
     BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
     SWAPS[Swaps]
     SEND[Send]
-    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
+    SEND_TOOLS[Send workspace feature<br/>Signed transaction broadcast, Liquid consolidation and fee replacement]
     SCANNING[QR and NFC Scanning workspace member]
     IMPORT_COLDCARD[Coldcard Import]
-    BROADCAST_SIGNED_TX -->|public QR and NFC scanning| SCANNING
+    SEND_TOOLS -->|public QR and NFC scanning| SCANNING
     IMPORT_COLDCARD -->|public NFC scanning| SCANNING
     CORE -->|composes signer NFC callback| SCANNING
     SCANNING --> SIGNERS
@@ -295,14 +295,12 @@ graph TB
     RECEIVE_REQUEST --> BULL_LOGGER
     RECEIVE_REQUEST --> BULL_PRICER
     RECEIVE_REQUEST --> PREFERENCES
-    REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
     LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
     PAY[Pay]
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
-    CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View<br/>Workspace Feature]
     AUTOSWAP[Autoswap]
     SP[Silent Payments<br/>Workspace Feature]
@@ -466,7 +464,7 @@ graph TB
     SELL -->|recipient selection and activation| BULL_EXCHANGE
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
-    SEND --> CONSOLIDATION
+    SEND -->|signed transaction handoff and consolidation status| SEND_TOOLS
     SEND --> FEES_UI
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
@@ -514,7 +512,7 @@ graph TB
     RECOVERBULL --> BULL_LOGGER
     RECOVERBULL --> BULL_UI
     RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
-    TRANSFER --> CONSOLIDATION
+    TRANSFER -->|consolidation status| SEND_TOOLS
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY -->|wallet history projections and revisions| SYNC
@@ -522,7 +520,8 @@ graph TB
     SWAPS -->|wallet transaction evidence| TX_HISTORY
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
-    WALLETS --> CONSOLIDATION
+    WALLETS -->|consolidation banner| SEND_TOOLS
+    SETTINGS -->|signed transaction reader| SEND_TOOLS
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
     WALLETS --> SECRETS
@@ -531,7 +530,6 @@ graph TB
     WALLETS -->|public orders + swap scheduling port| SWAPS
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
-    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     MEMPOOL[Mempool Package<br/>Servers, validation and explorer links]
     MEMPOOL --> PRIMITIVES
     MEMPOOL --> TOR
@@ -547,23 +545,20 @@ graph TB
     AUTOSWAP --> SPEND
     AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
-    CONSOLIDATION --> SPEND
     EXCHANGE -->|supplies shared destination validation and input| WALLETS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
     PAY --> FEES_PACKAGE
     SELL --> FEES_PACKAGE
-    REPLACE_BY_FEE --> FEES_PACKAGE
+    SEND_TOOLS --> FEES_PACKAGE
     SWAPS --> FEES_PACKAGE
     AUTOSWAP --> FEES_PACKAGE
-    CONSOLIDATION --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
     PAY --> FEES_UI
     SEND --> SIGNERS
-    REPLACE_BY_FEE --> FEES_UI
-    REPLACE_BY_FEE --> SPEND
+    SEND_TOOLS --> FEES_UI
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
@@ -581,7 +576,7 @@ graph TB
     COINS -->|coin selection address viewer| ADDRESS_LABELS
     EXCHANGE -->|address viewer| ADDRESS_LABELS
     TX_HISTORY -->|address viewer| ADDRESS_LABELS
-    BROADCAST_SIGNED_TX -->|address viewer| ADDRESS_LABELS
+    SEND_TOOLS -->|address viewer| ADDRESS_LABELS
     IMPORT_MNEMONIC --> SYNC
 
     %% Styling
@@ -591,7 +586,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -723,14 +718,11 @@ The architecture test records source dependencies, including internal imports an
 | `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `autoswap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
-| `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
-| `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `replace_by_fee → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `settings → swap` | Owner relocation: Keep existing restore/rescue entry points on the swap facade. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> lib/features/swap/public/swap_facade.dart` |

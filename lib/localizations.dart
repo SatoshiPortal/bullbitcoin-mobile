@@ -1,3 +1,4 @@
+import 'package:send/setup.dart' show SendLocalizations;
 import 'package:transactions/setup.dart' show TransactionsLocalizations;
 import 'package:access/setup.dart' show AccessLocalizations;
 import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
@@ -26,6 +27,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   AccessLocalizations.delegate,
   ImportLocalizations.delegate,
   AddressViewLocalizations.delegate,
+  SendLocalizations.delegate,
   AnnouncementsLocalizations.delegate,
   BitcoinPriceLocalizations.delegate,
   ExchangeLocalizations.delegate,

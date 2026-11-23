@@ -1,0 +1,130 @@
+{
+  "replaceByFeeErrorNoFeeRateSelected": "Lütfen bir ücret oranını seçin",
+  "@replaceByFeeErrorNoFeeRateSelected": {
+    "description": "Error message when no fee rate is selected"
+  },
+  "broadcastSignedTxNfcTitle": "NFC",
+  "@broadcastSignedTxNfcTitle": {
+    "description": "Title for NFC scanning page"
+  },
+  "broadcastSignedTxCameraButton": "Kamera",
+  "@broadcastSignedTxCameraButton": {
+    "description": "Button to open camera QR scanner"
+  },
+  "broadcastSignedTxDoneButton": "Done",
+  "@broadcastSignedTxDoneButton": {
+    "description": "Button to finish after successful broadcast"
+  },
+  "broadcastSignedTxPasteHint": "Bir PSBT veya işlem HEX",
+  "@broadcastSignedTxPasteHint": {
+    "description": "Hint text for paste input field"
+  },
+  "broadcastSignedTxBroadcast": "Yayın Yayın Yayını",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "broadcastSignedTxPageTitle": "Yayınlama işlemi imzalandı",
+  "@broadcastSignedTxPageTitle": {
+    "description": "Page title for broadcast signed transaction screen"
+  },
+  "coreScreensAmountLabel": "$",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "broadcastSignedTxPushTxButton": "PushTx",
+  "@broadcastSignedTxPushTxButton": {
+    "description": "Button to use PushTx NFC device"
+  },
+  "replaceByFeeScreenTitle": "Taksitle",
+  "@replaceByFeeScreenTitle": {
+    "description": "Screen title for replace by fee feature"
+  },
+  "replaceByFeeBroadcastButton": "Yayın Yayın Yayını",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "coreScreensNetworkFeesLabel": "Network ücretleri",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "replaceByFeeFastestTitle": "En hızlı",
+  "@replaceByFeeFastestTitle": {
+    "description": "Title for fastest fee option"
+  },
+  "replaceByFeeOriginalTransactionTitle": "Orijinal işlem",
+  "@replaceByFeeOriginalTransactionTitle": {
+    "description": "Title for original transaction section"
+  },
+  "coreScreensFromLabel": "From",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "replaceByFeeFastestDescription": "Tahmin edilen teslimat - 10 dakika",
+  "@replaceByFeeFastestDescription": {
+    "description": "Description for fastest fee option"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "replaceByFeeErrorFeeRateTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
+  "@replaceByFeeErrorFeeRateTooLow": {
+    "description": "Error message when new fee rate is not high enough"
+  },
+  "continueButton": "Devam etmeye devam et",
+  "@continueButton": {
+    "description": "Default button text for success state"
+  },
+  "coreScreensToLabel": "To",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "broadcastSignedTxBroadcastError": "İşleminizi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+  "broadcastSignedTxErrorInvalidTransaction": "Bu, geçerli bir imzalı işlem gibi görünmüyor. PSBT'nin ya da işlemin tamamını yapıştırdığınızdan emin olun.",
+  "broadcastSignedTxErrorInvalidPushTx": "Bu etiketten bir işlem okuyamadık. Lütfen tekrar taramayı deneyin.",
+  "replaceByFeeFeeRateDisplay": "Ücret Oranı: {feeRate} oturdu/vbay",
+  "@replaceByFeeFeeRateDisplay": {
+    "description": "Display text showing the fee rate",
+    "placeholders": {
+      "feeRate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
+  "coreScreensFeeRateLabel": "Ücret oranı",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Para üstü çıktısı bilinmiyor — tüm çıktılar eşit gösteriliyor",
+  "coreScreensUnknown": "Bilinmiyor",
+  "coreScreensFetchFailed": "İşlem {txid} Electrum'dan alınamadı.",
+  "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
+  "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
+  "mempoolServerStatusUnknown": "Bilinmiyor",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "İmzalanmış işlemi NFC ile almak için Coldcard'ınıza dokunun",
+  "consolidationDone": "Tamam",
+  "consolidationFailedBody": "Beklenmeyen bir hata oluştu. Paranız güvende: hiçbir işlem yayınlanmadı. Lütfen tekrar deneyin.",
+  "consolidationFailedTitle": "Birleştirme başarısız",
+  "consolidationInProgress": "Birleştiriliyor…",
+  "consolidationRequiredTitle": "Cüzdanı birleştir",
+  "consolidationRequiredTitleNamed": "{walletName} cüzdanını birleştir",
+  "consolidationRowAmount": "Tutar",
+  "consolidationRowNetworkFees": "Ağ ücretleri",
+  "consolidationRowOutputs": "Çıkışlar",
+  "consolidationRowTransactions": "İşlemler",
+  "consolidationScreenDescription": "Çok fazla çıkış cüzdanı kararsız hale getirebilir. Birleştirmek onları daha aza indirir, böylece cüzdanınız düzgün çalışır.",
+  "consolidationScreenTitle": "Birleştir",
+  "consolidationSuccessBody": "Coinleriniz birleştiriliyor. Ağ onayladığında tamamlanacak.",
+  "consolidationSuccessTitle": "Birleştirme başladı",
+  "walletLoadFailed": "Cüzdanlarınız yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "broadcastSignedTxErrorPsbtFinalization": "İmzalanmış işlem sonlandırılamadı. Gerekli tüm imzaları içerdiğinden emin olup tekrar deneyin.",
+  "coreScreensOutputsExceedInputs": "Çıktılar girdileri aşıyor: bu işlem geçersiz ve ağ tarafından reddedilecek.",
+  "broadcastSignedTxErrorAlreadyInChain": "Bu işlem zaten blokzincirde. Yayınlanacak başka bir şey yok.",
+  "broadcastSignedTxErrorRejected": "Ağ bu işlemi reddetti. İşlem eksik imzalanmış, geçersiz veya başka bir ödemeyle çakışıyor olabilir.",
+  "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil."
+}

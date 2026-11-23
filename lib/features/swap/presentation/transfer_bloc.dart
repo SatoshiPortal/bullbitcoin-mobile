@@ -33,8 +33,8 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/consolidation/domain/consolidation_required_exception.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:bb_mobile/features/send/domain/consolidation_required_exception.dart';
+import 'package:send/send.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
@@ -97,7 +97,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._getReceiveAddressUsecase,
     required this._getWalletUtxosUsecase,
     required this._getSwapExchangeRateUsecase,
-    required this._checkLiquidConsolidationUsecase,
+    required this._consolidation,
     required this._getSwapRouteUsecase,
     required this._getSwapLimitsAndFeesUsecase,
     required this._createBitcoinToLiquidSwapUsecase,
@@ -205,7 +205,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final AddressView _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetSwapExchangeRateUsecase _getSwapExchangeRateUsecase;
-  final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
+  final Consolidation _consolidation;
   final GetSwapRouteUsecase _getSwapRouteUsecase;
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFeesUsecase;
   final CreateBitcoinToLiquidSwapUsecase _createBitcoinToLiquidSwapUsecase;
@@ -572,14 +572,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     // Proactively flag consolidation when the source is a Liquid wallet with
     // too many UTXOs, so the card shows before the swap build is attempted.
     // The ConsolidationRequiredException remains the backstop on the build.
-    // Routed through CheckLiquidConsolidationUsecase (the same check the
+    // Routed through Consolidation (the same check the
     // consolidation banner and `send` use) rather than re-deriving the
     // comparison here from this bloc's own UTXO read, so all three surfaces
     // can never disagree about whether the wallet needs consolidating.
     if (newFromWallet.isLiquid) {
       try {
-        final consolidationRequired = await _checkLiquidConsolidationUsecase
-            .execute(walletId: newFromWallet.id);
+        final consolidationRequired = (await _consolidation.isRequired(
+          newFromWallet.id,
+        )).fold((value) => value, (_) => false);
         if (generation != _transactionGeneration) return;
         emit(state.copyWith(consolidationRequired: consolidationRequired));
       } catch (_) {

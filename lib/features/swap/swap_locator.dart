@@ -19,7 +19,7 @@ import 'package:swaps/setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:transactions/transactions.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -281,8 +281,7 @@ class SwapLocator {
         getReceiveAddressUsecase: locator<AddressView>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         getSwapExchangeRateUsecase: locator<GetSwapExchangeRateUsecase>(),
-        checkLiquidConsolidationUsecase:
-            locator<CheckLiquidConsolidationUsecase>(),
+        consolidation: Consolidation.open(locator<Spend>()),
         getSwapRouteUsecase: locator<GetSwapRouteUsecase>(),
         getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
         createBitcoinToLiquidSwapUsecase:

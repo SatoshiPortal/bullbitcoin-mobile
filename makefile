@@ -146,6 +146,7 @@ build-runner: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
 	@set -e; for member in $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS)); do (cd "$$member" && fvm dart run build_runner build --force-jit); done
+	@(cd features/send && fvm dart run build_runner build --force-jit)
 
 .PHONY: btc-map-build-runner
 btc-map-build-runner:
@@ -179,6 +180,7 @@ translations:
 	@(cd features/swap && fvm flutter gen-l10n)
 	@(cd features/wallet_import && fvm flutter gen-l10n)
 	@(cd features/transactions && fvm flutter gen-l10n)
+	@(cd features/send && fvm flutter gen-l10n)
 	@(cd features/address_view && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)

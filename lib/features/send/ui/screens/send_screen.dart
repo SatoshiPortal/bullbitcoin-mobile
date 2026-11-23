@@ -55,7 +55,7 @@ import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_info_row.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';

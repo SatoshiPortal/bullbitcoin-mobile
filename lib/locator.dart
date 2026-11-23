@@ -49,7 +49,7 @@ import 'package:bb_mobile/features/wallet/public/payjoin_setup.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/replace_by_fee/router.dart';
+import 'package:send/send.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:address_view/address_view.dart';
@@ -64,9 +64,7 @@ import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart'
 import 'package:signers/routes.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
-import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
@@ -75,7 +73,6 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
@@ -404,7 +401,7 @@ class AppLocator {
           ),
           showReceipt: showSinpeReceiptBottomSheet,
           accelerateWalletTransaction: (context, transaction) =>
-              ReplaceByFeeRouter.openForTransaction(
+              ReplaceByFee.openForTransaction(
                 context,
                 walletId: transaction.walletId,
                 txId: transaction.txId,
@@ -423,11 +420,9 @@ class AppLocator {
     ReceiveLocator.setup(locator);
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
-    ConsolidationLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
-    BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
     locator.registerSingleton(
       SwapFeature.mount(
@@ -472,7 +467,6 @@ class AppLocator {
       ),
     );
     ImportMnemonicLocator.setup(locator);
-    ReplaceByFeeLocator.setup(locator);
 
     locator.registerSingleton(
       ForegroundWalletStartup(

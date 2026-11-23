@@ -10,7 +10,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/settings_links.dart';
 import 'package:backups/backups.dart';
 import 'package:bip85/bip85.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:send/send.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
 import 'package:bull_exchange/bull_exchange.dart';

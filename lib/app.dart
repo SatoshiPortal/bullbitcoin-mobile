@@ -1,3 +1,6 @@
+import 'package:send/setup.dart' show SendLocalizations;
+import 'package:send/send.dart' show Consolidation;
+import 'package:spend/spend.dart' show Spend;
 import 'package:bb_mobile/generated/novlang/novlang_all_seed_view_localizations.dart';
 import 'package:bip85/bip85.dart';
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
@@ -194,8 +197,15 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           : AppThemeType.light;
                   }
 
-                  return RepositoryProvider<MempoolLinks>.value(
-                    value: locator<Mempool>().links,
+                  return MultiRepositoryProvider(
+                    providers: [
+                      RepositoryProvider<MempoolLinks>.value(
+                        value: locator<Mempool>().links,
+                      ),
+                      RepositoryProvider<Consolidation>(
+                        create: (_) => Consolidation.open(locator<Spend>()),
+                      ),
+                    ],
                     child: MaterialApp.router(
                       title: 'BullBitcoin Wallet',
                       debugShowCheckedModeBanner: kDebugMode,
@@ -204,6 +214,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       locale: language?.locale,
                       localizationsDelegates: [
                         AddressViewLocalizations.delegate,
+                        SendLocalizations.delegate,
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
                         NovlangAnnouncementsLocalizationsDelegate(
                           novlangPolicy,
