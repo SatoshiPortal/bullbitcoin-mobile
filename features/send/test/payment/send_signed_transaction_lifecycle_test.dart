@@ -5,8 +5,8 @@ import 'package:primitives/primitives.dart'
     show BitcoinNetwork, LiquidNetwork, Outpoint, Result;
 import 'package:spend/spend.dart' show SpendFailure;
 
-import '../../../features/send/test/payment/testing/send_source_fixture.dart';
-import '../../../features/send/test/payment/testing/send_spend_test_double.dart';
+import 'testing/send_source_fixture.dart';
+import 'testing/send_spend_test_double.dart';
 
 import 'package:spend/testing.dart';
 import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';

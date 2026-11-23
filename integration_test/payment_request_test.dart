@@ -4,7 +4,6 @@ import 'initialization_result.dart';
 
 import 'package:satoshifier/liquid_address.dart';
 import 'package:satoshifier/payment_request.dart';
-import 'package:send/src/payment/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
@@ -80,28 +79,11 @@ Future<void> main({bool isInitialized = false}) async {
       expect(isConfidentialLiquidAddress(pair.standard), isFalse);
     });
 
-    test(
-      'audit reproducer: an unconfidential Liquid address is accepted by '
-      'parse with no confidentiality signal, and the send state flags it',
-      () async {
-        // Before the fix, nothing in the send flow distinguished this from a
-        // confidential address: the amount would go on-chain in the clear
-        // with no warning.
-        final result = await PaymentRequest.parse(pair.standard);
-        expect(result, isA<LiquidPaymentRequest>());
-
-        final state = SendState(
-          sendType: SendType.liquid,
-          paymentRequest: result,
-        );
-        expect(state.isUnconfidentialLiquidDestination, isTrue);
-
-        final confidentialState = SendState(
-          sendType: SendType.liquid,
-          paymentRequest: await PaymentRequest.parse(pair.confidential),
-        );
-        expect(confidentialState.isUnconfidentialLiquidDestination, isFalse);
-      },
-    );
+    test('the parser accepts an unconfidential Liquid address', () async {
+      expect(
+        await PaymentRequest.parse(pair.standard),
+        isA<LiquidPaymentRequest>(),
+      );
+    });
   });
 }

@@ -1,12 +1,13 @@
-import '../../../../features/send/test/payment/testing/send_test_localizations.dart';
+import '../testing/send_test_localizations.dart';
 
 import 'package:send/setup.dart' show SendLocalizations;
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
-import '../../../../features/send/test/payment/testing/send_source_fixture.dart';
+import '../testing/send_source_fixture.dart';
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -15,6 +16,7 @@ import 'package:send/src/payment/ui/widgets/send_whole_balance_dialog.dart';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_screen.dart';
+import 'package:send/src/payment/ui/send_payment_ui.dart';
 
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
@@ -31,10 +33,21 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
+final _workspace = File('assets/fonts/GolosText.ttf').existsSync()
+    ? '.'
+    : '../..';
+
+late Uint8List _arrowBytes;
+late Uint8List _successBytes;
+
 class _Cubit extends Mock implements SendCubit {}
 
 void main() {
   setUpAll(() async {
+    _arrowBytes = await File('$_workspace/assets/icons/right-arrow.png')
+        .readAsBytes();
+    _successBytes = await File('$_workspace/assets/animations/success_tick.gif')
+        .readAsBytes();
     registerFallbackValue(const RelativeFee(500));
     await (FontLoader(
       'MaterialIcons',
@@ -42,7 +55,8 @@ void main() {
     await (FontLoader('Golos Text')..addFont(
           Future.value(
             ByteData.sublistView(
-              await File('assets/fonts/GolosText.ttf').readAsBytes(),
+              await File('$_workspace/assets/fonts/GolosText.ttf')
+                  .readAsBytes(),
             ),
           ),
         ))
@@ -128,9 +142,16 @@ void main() {
             ...sendTestLocalizationsDelegates,
           ],
           supportedLocales: SendLocalizations.supportedLocales,
-          home: BlocProvider<SendCubit>.value(
-            value: cubit,
-            child: const SendScreen(),
+          home: SendPaymentUi(
+            openHome: (_) {},
+            openCoins: (_, _) {},
+            orderUnderReview: (_) => const SizedBox.shrink(),
+            arrowImage: MemoryImage(_arrowBytes),
+            successImage: MemoryImage(_successBytes),
+            child: BlocProvider<SendCubit>.value(
+              value: cubit,
+              child: const SendScreen(),
+            ),
           ),
         ),
       ),
@@ -363,7 +384,7 @@ void main() {
         await expectLater(
           find.byKey(const ValueKey('mono-review')),
           matchesGoldenFile(
-            '../../../goldens/send-mono/$scene-${dark ? 'dark' : 'light'}.png',
+            'goldens/send-mono/$scene-${dark ? 'dark' : 'light'}.png',
           ),
         );
         await tester.pumpWidget(const SizedBox());

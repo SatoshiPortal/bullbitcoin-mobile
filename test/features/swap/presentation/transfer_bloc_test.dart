@@ -1,7 +1,6 @@
 import '../../../../features/send/test/payment/testing/send_spend_test_double.dart'
     show
         PreparedBitcoinSend,
-        PrepareLiquidSendUsecase,
         SignLiquidTxUsecase,
         BroadcastLiquidTransactionUsecase,
         CalculateLiquidAbsoluteFeesUsecase,
@@ -29,7 +28,6 @@ import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:send/src/payment/domain/send_failure.dart';
 
 import 'package:sync/sync.dart' as native;
 
@@ -43,7 +41,6 @@ import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:sync/sync.dart' show BitcoinSpendStatus;
 import 'package:address_view/address_view.dart';
-import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:send/send.dart';
 import 'package:address_view/payment_destination.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -53,6 +50,25 @@ import 'package:material_ui/material_ui.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+
+abstract interface class _ValidateBitcoinSelection {
+  Future<Result<void, SpendFailure>> execute({
+    required String walletId,
+    Set<primitives.Outpoint>? selectedInputs,
+  });
+}
+
+abstract interface class PrepareLiquidSendUsecase {
+  Future<Result<String, SpendFailure>> execute({
+    required String walletId,
+    required String address,
+    required RelativeFee feeRate,
+    int? amountSat,
+    bool drain = false,
+    Set<primitives.Outpoint>? selectedInputs,
+    bool hasFrozenInputs = false,
+  });
+}
 
 abstract interface class PrepareBitcoinSendUsecase {
   Future<Result<PreparedBitcoinSend, WalletFailure>> execute({
@@ -74,7 +90,7 @@ class _MockGetNetworkFees extends Mock implements Fees {}
 class _MockPrepareBitcoin extends Mock implements PrepareBitcoinSendUsecase {}
 
 class _MockValidateBitcoinSelection extends Mock
-    implements ValidateBitcoinSelectionUsecase {}
+    implements _ValidateBitcoinSelection {}
 
 class _MockPrepareLiquid extends Mock implements PrepareLiquidSendUsecase {}
 
@@ -762,7 +778,7 @@ void main() {
   });
 
   void stubLiquidCreation(
-    Future<Result<String, SendFailure>> Function() prepare,
+    Future<Result<String, SpendFailure>> Function() prepare,
   ) {
     when(
       () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
@@ -833,9 +849,9 @@ void main() {
     );
   }
 
-  for (final failure in <SendFailure>[
-    const SendConsolidationRequiredFailure(),
-    const SendTransactionBuildFailure(),
+  for (final failure in <SpendFailure>[
+    const SpendConsolidationRequiredFailure(),
+    const SpendBuildRefusedFailure(),
   ]) {
     test(
       'Liquid ${failure.runtimeType} stops verification and signing',
@@ -855,7 +871,7 @@ void main() {
         expect(bloc.state.signedPsbt, isEmpty);
         expect(
           bloc.state.consolidationRequired,
-          failure is SendConsolidationRequiredFailure,
+          failure is SpendConsolidationRequiredFailure,
         );
         expect(bloc.state.swapCreationException, isNotNull);
         expect(bloc.state.isCreatingSwap, isFalse);
@@ -1104,7 +1120,7 @@ void main() {
         walletId: 'wallet-1',
         selectedInputs: {selected.outpoint},
       ),
-    ).thenAnswer((_) async => const Err(SendSelectedCoinsUnavailableFailure()));
+    ).thenAnswer((_) async => const Err(SpendSelectedInputsUnavailableFailure()));
     preview = (
       fee: Sats.fromInt(250),
       prepared: SpendFixtures.preparedBitcoin(
@@ -1532,7 +1548,7 @@ void main() {
           selectedInputs: {selected.outpoint},
         ),
       ).thenAnswer(
-        (_) async => const Err(SendSelectedCoinsUnavailableFailure()),
+        (_) async => const Err(SpendSelectedInputsUnavailableFailure()),
       );
       bloc.emit(
         TransferState(
@@ -1581,7 +1597,7 @@ void main() {
           selectedInputs: {selected.outpoint},
         ),
       ).thenAnswer(
-        (_) async => const Err(SendSelectedCoinsUnavailableFailure()),
+        (_) async => const Err(SpendSelectedInputsUnavailableFailure()),
       );
       bloc.emit(
         TransferState(
@@ -2713,7 +2729,7 @@ void main() {
         if (readable) {
           stub.thenAnswer((_) async => const Ok(null));
         } else {
-          stub.thenAnswer((_) async => const Err(SendSpendBlockedFailure()));
+          stub.thenAnswer((_) async => const Err(SpendUnavailableFailure()));
         }
       }
 
@@ -2815,7 +2831,7 @@ void main() {
             drain: any(named: 'drain'),
           ),
         ).thenAnswer(
-          (_) async => const Err(SendConsolidationRequiredFailure()),
+          (_) async => const Err(SpendConsolidationRequiredFailure()),
         );
         bloc.emit(fromLiquid());
 
@@ -3670,7 +3686,7 @@ WalletUtxo _legacyCoin(native.Coin coin, String walletId) => switch (coin) {
 final class _SwapSpend extends FakeSpend {
   final TransferState Function() read;
   final PrepareBitcoinSendUsecase btc;
-  final ValidateBitcoinSelectionUsecase selection;
+  final _ValidateBitcoinSelection selection;
   final PrepareLiquidSendUsecase lbtc;
   final CalculateBitcoinAbsoluteFeesUsecase btcFees;
   final CalculateLiquidAbsoluteFeesUsecase liquidFees;
@@ -3715,17 +3731,9 @@ final class _SwapSpend extends FakeSpend {
     required String walletId,
     Set<primitives.Outpoint>? selectedInputs,
   }) async {
-    final result = await selection.execute(
+    return selection.execute(
       walletId: walletId,
       selectedInputs: selectedInputs,
-    );
-    return result.mapErr(
-      (failure) => switch (failure) {
-        SendSpendBlockedFailure(:final busy) => SpendUnavailableFailure(
-          busy: busy,
-        ),
-        _ => const SpendSelectedInputsUnavailableFailure(),
-      },
     );
   }
 
@@ -3821,10 +3829,10 @@ final class _SwapSpend extends FakeSpend {
           amountSent: Sats.fromInt(amountSat ?? 0),
         ),
       ),
-      Err(failure: SendConsolidationRequiredFailure()) => const Err(
+      Err(failure: SpendConsolidationRequiredFailure()) => const Err(
         SpendConsolidationRequiredFailure(),
       ),
-      Err(failure: SendInsufficientBalanceFailure()) => const Err(
+      Err(failure: SpendInsufficientFundsFailure()) => const Err(
         SpendInsufficientFundsFailure(),
       ),
       Err() => const Err(SpendBuildRefusedFailure()),
