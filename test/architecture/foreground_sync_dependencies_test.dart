@@ -43,8 +43,7 @@ const _allowedTargets = <String, String>{
   'import_watch_only_wallet': 'scanning signers wallet wallet_import',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
-  'onboarding':
-      'import_mnemonic mnemonic_entry network recoverbull settings wallet wallet_import',
+  'onboarding': 'import_mnemonic mnemonic_entry network recoverbull settings wallet wallet_import',
   'pay': 'address_view bitcoin_price bull_exchange coins exchange fees send transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',

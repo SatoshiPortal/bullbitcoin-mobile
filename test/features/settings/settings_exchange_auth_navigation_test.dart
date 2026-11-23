@@ -138,7 +138,7 @@ void main() {
         onExit: (_) {},
       ).settingsRoutes,
       appSettingsRoutes: const [],
-      onBackupTestSucceeded: (_) {},
+      backupRoutes: const [],
       priceRoutes: const [],
     );
     final manage = settingsRoutes.whereType<GoRoute>().singleWhere(
