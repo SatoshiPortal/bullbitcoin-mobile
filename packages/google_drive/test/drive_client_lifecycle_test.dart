@@ -170,7 +170,7 @@ void main() {
         isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>().having(
           (result) => result.failure,
           'failure',
-          isA<GoogleDriveUnavailableFailure>(),
+          isA<GoogleDriveAuthorizationRequiredFailure>(),
         ),
       );
 
