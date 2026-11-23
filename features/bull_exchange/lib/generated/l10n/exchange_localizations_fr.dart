@@ -379,4 +379,60 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
 
   @override
   String get exchangeSupportChatLogDraft => 'Voici mes journaux';
+
+  @override
+  String get settingsAccountSettingsTitle => 'Account Settings';
+
+  @override
+  String get settingsErrorSavingSetting =>
+      'Ce paramètre n\'a pas pu être enregistré. Veuillez réessayer.';
+
+  @override
+  String get exchangeAccessSettingsTitle => 'BULL Exchange';
+
+  @override
+  String get exchangeAccessSettingsLabel => 'Fonctionnalités de l’exchange';
+
+  @override
+  String get exchangeAccessSettingsDescription =>
+      'Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Échanger reste disponible.';
+
+  @override
+  String get exchangeAccessSettingsOffHint =>
+      'Activez cette option pour vous connecter ou créer un compte Bull Bitcoin.';
+
+  @override
+  String get exchangeAccessSettingsOnHint =>
+      'Les fonctionnalités de l’exchange sont activées.';
+
+  @override
+  String get exchangeAccessSignIn => 'Se connecter ou créer un compte';
+
+  @override
+  String get exchangeAccessDisableTitle =>
+      'Désactiver les fonctionnalités de l’exchange ?';
+
+  @override
+  String get exchangeAccessDisableBody =>
+      'Cette action vous déconnecte sur cet appareil. Les ordres existants, AutoBuy et les achats récurrents ne sont pas annulés.';
+
+  @override
+  String get exchangeAccessDisableConfirm => 'Se déconnecter et désactiver';
+
+  @override
+  String get exchangeTradingRetry => 'Réessayer';
+
+  @override
+  String get exchangeAccessUnreadable =>
+      'Impossible de lire l’accès à la plateforme. Réessayez ou réinitialisez-le.';
+
+  @override
+  String get exchangeAccessReset => 'Réinitialiser l’accès à la plateforme';
+
+  @override
+  String get exchangeAccessLogoutIncomplete =>
+      'La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.';
+
+  @override
+  String get exchangeAccessRetryLogout => 'Terminer la déconnexion';
 }

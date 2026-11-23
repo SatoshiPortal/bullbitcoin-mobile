@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Sie sind nicht angemeldet",
   "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
   "retry": "Erneut versuchen",
-  "settingsAppSettingsTitle": "App-Einstellungen"
+  "settingsAppSettingsTitle": "App-Einstellungen",
+  "settingsAccountSettingsTitle": "Kontoeinstellungen",
+  "settingsErrorSavingSetting": "Diese Einstellung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
 }

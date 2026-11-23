@@ -97,5 +97,7 @@
   "notLoggedInTitle": "თქვენ არ ხართ ავტორიზებული",
   "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",
   "retry": "ხელახლა ცდა",
-  "settingsAppSettingsTitle": "აპლიკაციის პარამეტრები"
+  "settingsAppSettingsTitle": "აპლიკაციის პარამეტრები",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "ამ პარამეტრის შენახვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
 }

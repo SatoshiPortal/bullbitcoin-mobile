@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Δεν είστε προσκολλημένοι στο",
   "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις"
+  "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Δεν ήταν δυνατή η αποθήκευση αυτής της ρύθμισης. Παρακαλώ δοκιμάστε ξανά."
 }

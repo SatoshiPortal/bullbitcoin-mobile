@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Aap Logged In Nahi Ho",
   "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
   "retry": "Dobara Try Karo",
-  "settingsAppSettingsTitle": "App Settings"
+  "settingsAppSettingsTitle": "App Settings",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Woh setting save nahin ho saki. Kripya dobara koshish karein."
 }

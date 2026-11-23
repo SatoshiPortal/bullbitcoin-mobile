@@ -372,4 +372,58 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
 
   @override
   String get exchangeSupportChatLogDraft => 'Here are my logs';
+
+  @override
+  String get settingsAccountSettingsTitle => 'Account Settings';
+
+  @override
+  String get settingsErrorSavingSetting =>
+      'این تنظیم ذخیره نشد. لطفاً دوباره تلاش کنید.';
+
+  @override
+  String get exchangeAccessSettingsTitle => 'BULL Exchange';
+
+  @override
+  String get exchangeAccessSettingsLabel => 'Exchange features';
+
+  @override
+  String get exchangeAccessSettingsDescription =>
+      'Show Buy, Sell and Pay on the home screen. Swap remains available.';
+
+  @override
+  String get exchangeAccessSettingsOffHint =>
+      'Enable to sign in or create a Bull Bitcoin account.';
+
+  @override
+  String get exchangeAccessSettingsOnHint => 'Exchange features are enabled.';
+
+  @override
+  String get exchangeAccessSignIn => 'Sign in or create an account';
+
+  @override
+  String get exchangeAccessDisableTitle => 'Disable exchange features?';
+
+  @override
+  String get exchangeAccessDisableBody =>
+      'This signs you out on this device. Existing orders, AutoBuy and recurring buys are not cancelled.';
+
+  @override
+  String get exchangeAccessDisableConfirm => 'Sign out and disable';
+
+  @override
+  String get exchangeTradingRetry => 'Retry';
+
+  @override
+  String get exchangeAccessUnreadable =>
+      'Exchange access could not be read. Retry or reset it.';
+
+  @override
+  String get exchangeAccessReset => 'Reset exchange access';
+
+  @override
+  String get exchangeAccessLogoutIncomplete =>
+      'Sign out is incomplete. Finish signing out before enabling exchange.';
+
+  @override
+  String get exchangeAccessRetryLogout => 'Finish signing out';
 }

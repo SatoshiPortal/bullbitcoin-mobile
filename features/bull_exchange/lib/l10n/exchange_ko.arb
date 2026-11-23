@@ -97,5 +97,7 @@
   "notLoggedInTitle": "로그인하지 않습니다",
   "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
   "retry": "이름 *",
-  "settingsAppSettingsTitle": "앱 설정"
+  "settingsAppSettingsTitle": "앱 설정",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요."
 }

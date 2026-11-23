@@ -97,5 +97,7 @@
   "notLoggedInTitle": "页: 1",
   "oopsSomethingWentWrong": "Oops! 某些错误",
   "retry": "学历",
-  "settingsAppSettingsTitle": "申请情况"
+  "settingsAppSettingsTitle": "申请情况",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "无法保存该设置。请重试。"
 }

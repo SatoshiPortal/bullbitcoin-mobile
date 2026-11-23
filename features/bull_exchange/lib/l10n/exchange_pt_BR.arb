@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Você não está conectado",
   "oopsSomethingWentWrong": "Oops! Algo correu mal",
   "retry": "Repito",
-  "settingsAppSettingsTitle": "Configurações do aplicativo"
+  "settingsAppSettingsTitle": "Configurações do aplicativo",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Não foi possível salvar essa configuração. Por favor, tente novamente."
 }

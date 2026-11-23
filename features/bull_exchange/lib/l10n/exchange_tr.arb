@@ -97,5 +97,7 @@
   "notLoggedInTitle": "You Are Not Logged in In",
   "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "App Ayarları"
+  "settingsAppSettingsTitle": "App Ayarları",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Bu ayar kaydedilemedi. Lütfen tekrar deneyin."
 }

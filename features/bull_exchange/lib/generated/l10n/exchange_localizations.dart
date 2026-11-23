@@ -760,6 +760,102 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Here are my logs'**
   String get exchangeSupportChatLogDraft;
+
+  /// Title for the account settings screen (shown to non-superusers)
+  ///
+  /// In en, this message translates to:
+  /// **'Account Settings'**
+  String get settingsAccountSettingsTitle;
+
+  /// settings user-facing failure message (#1895).
+  ///
+  /// In en, this message translates to:
+  /// **'That setting could not be saved. Please try again.'**
+  String get settingsErrorSavingSetting;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'BULL Exchange'**
+  String get exchangeAccessSettingsTitle;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange features'**
+  String get exchangeAccessSettingsLabel;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Buy, Sell and Pay on the home screen. Swap remains available.'**
+  String get exchangeAccessSettingsDescription;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable to sign in or create a Bull Bitcoin account.'**
+  String get exchangeAccessSettingsOffHint;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange features are enabled.'**
+  String get exchangeAccessSettingsOnHint;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account'**
+  String get exchangeAccessSignIn;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable exchange features?'**
+  String get exchangeAccessDisableTitle;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'This signs you out on this device. Existing orders, AutoBuy and recurring buys are not cancelled.'**
+  String get exchangeAccessDisableBody;
+
+  /// Optional exchange access or wallet quick action setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out and disable'**
+  String get exchangeAccessDisableConfirm;
+
+  /// Exchange access recovery and navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get exchangeTradingRetry;
+
+  /// Exchange access recovery and navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange access could not be read. Retry or reset it.'**
+  String get exchangeAccessUnreadable;
+
+  /// Exchange access recovery and navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Reset exchange access'**
+  String get exchangeAccessReset;
+
+  /// Exchange access recovery and navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out is incomplete. Finish signing out before enabling exchange.'**
+  String get exchangeAccessLogoutIncomplete;
+
+  /// Exchange access recovery and navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Finish signing out'**
+  String get exchangeAccessRetryLogout;
 }
 
 class _ExchangeLocalizationsDelegate

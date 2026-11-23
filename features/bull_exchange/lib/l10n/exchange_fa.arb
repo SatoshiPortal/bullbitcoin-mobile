@@ -97,5 +97,7 @@
   "notLoggedInTitle": "شما وارد نشده اید",
   "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "App Settings"
+  "settingsAppSettingsTitle": "App Settings",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "این تنظیم ذخیره نشد. لطفاً دوباره تلاش کنید."
 }

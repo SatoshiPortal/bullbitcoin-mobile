@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Et ole kirjautunut sisään",
   "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
   "retry": "Yritä uudelleen",
-  "settingsAppSettingsTitle": "Sovellusasetukset"
+  "settingsAppSettingsTitle": "Sovellusasetukset",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Asetusta ei voitu tallentaa. Yritä uudelleen."
 }

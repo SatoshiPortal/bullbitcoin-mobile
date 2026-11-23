@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Hujaingia",
   "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
   "retry": "Jaribu Tena",
-  "settingsAppSettingsTitle": "Mipangilio ya Programu"
+  "settingsAppSettingsTitle": "Mipangilio ya Programu",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Mpangilio huo haukuweza kuhifadhiwa. Tafadhali jaribu tena."
 }

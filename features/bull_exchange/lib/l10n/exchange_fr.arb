@@ -101,5 +101,21 @@
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
   "retry": "Réessayer",
   "settingsAppSettingsTitle": "Paramètres de l'application",
-  "exchangeSupportChatLogDraft": "Voici mes journaux"
+  "exchangeSupportChatLogDraft": "Voici mes journaux",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Ce paramètre n'a pas pu être enregistré. Veuillez réessayer.",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Fonctionnalités de l’exchange",
+  "exchangeAccessSettingsDescription": "Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Échanger reste disponible.",
+  "exchangeAccessSettingsOffHint": "Activez cette option pour vous connecter ou créer un compte Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "Les fonctionnalités de l’exchange sont activées.",
+  "exchangeAccessSignIn": "Se connecter ou créer un compte",
+  "exchangeAccessDisableTitle": "Désactiver les fonctionnalités de l’exchange ?",
+  "exchangeAccessDisableBody": "Cette action vous déconnecte sur cet appareil. Les ordres existants, AutoBuy et les achats récurrents ne sont pas annulés.",
+  "exchangeAccessDisableConfirm": "Se déconnecter et désactiver",
+  "exchangeTradingRetry": "Réessayer",
+  "exchangeAccessUnreadable": "Impossible de lire l’accès à la plateforme. Réessayez ou réinitialisez-le.",
+  "exchangeAccessReset": "Réinitialiser l’accès à la plateforme",
+  "exchangeAccessLogoutIncomplete": "La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.",
+  "exchangeAccessRetryLogout": "Terminer la déconnexion"
 }

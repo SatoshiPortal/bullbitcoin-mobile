@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Ви не зареєстровані",
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
   "retry": "Птиця",
-  "settingsAppSettingsTitle": "Налаштування додатків"
+  "settingsAppSettingsTitle": "Налаштування додатків",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Не вдалося зберегти це налаштування. Будь ласка, спробуйте ще раз."
 }

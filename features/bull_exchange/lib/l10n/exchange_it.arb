@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Non hai effettuato l'accesso",
   "oopsSomethingWentWrong": "Ops! Qualcosa non va",
   "retry": "Riprova",
-  "settingsAppSettingsTitle": "Impostazioni app"
+  "settingsAppSettingsTitle": "Impostazioni app",
+  "settingsAccountSettingsTitle": "Impostazioni account",
+  "settingsErrorSavingSetting": "Non è stato possibile salvare questa impostazione. Riprova."
 }

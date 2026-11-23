@@ -100,5 +100,21 @@
   "notLoggedInTitle": "No ha iniciado sesión",
   "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
   "retry": "Reintentar",
-  "settingsAppSettingsTitle": "Configuración de la aplicación"
+  "settingsAppSettingsTitle": "Configuración de la aplicación",
+  "settingsAccountSettingsTitle": "Configuración de la cuenta",
+  "settingsErrorSavingSetting": "No se pudo guardar ese ajuste. Por favor, inténtelo de nuevo.",
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "exchangeAccessSettingsLabel": "Funciones del exchange",
+  "exchangeAccessSettingsDescription": "Muestra Comprar, Vender y Pagar en la pantalla de inicio. Los intercambios siguen disponibles.",
+  "exchangeAccessSettingsOffHint": "Actívalo para iniciar sesión o crear una cuenta de Bull Bitcoin.",
+  "exchangeAccessSettingsOnHint": "Las funciones del exchange están activadas.",
+  "exchangeAccessSignIn": "Iniciar sesión o crear una cuenta",
+  "exchangeAccessDisableTitle": "¿Desactivar las funciones del exchange?",
+  "exchangeAccessDisableBody": "Esto cierra tu sesión en este dispositivo. Las órdenes existentes, la compra automática y las compras recurrentes no se cancelan.",
+  "exchangeAccessDisableConfirm": "Cerrar sesión y desactivar",
+  "exchangeTradingRetry": "Reintentar",
+  "exchangeAccessUnreadable": "No se pudo leer el acceso al exchange. Reinténtalo o restablécelo.",
+  "exchangeAccessReset": "Restablecer el acceso al exchange",
+  "exchangeAccessLogoutIncomplete": "El cierre de sesión no se completó. Termina de cerrar sesión antes de activar el exchange.",
+  "exchangeAccessRetryLogout": "Terminar de cerrar sesión"
 }

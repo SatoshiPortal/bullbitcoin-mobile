@@ -97,5 +97,7 @@
   "notLoggedInTitle": "आप लॉग इन नहीं हैं",
   "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
   "retry": "पुनः प्रयास करें",
-  "settingsAppSettingsTitle": "ऐप सेटिंग्स"
+  "settingsAppSettingsTitle": "ऐप सेटिंग्स",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "वह सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।"
 }

@@ -381,4 +381,60 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
 
   @override
   String get exchangeSupportChatLogDraft => 'Here are my logs';
+
+  @override
+  String get settingsAccountSettingsTitle => 'Configuración de la cuenta';
+
+  @override
+  String get settingsErrorSavingSetting =>
+      'No se pudo guardar ese ajuste. Por favor, inténtelo de nuevo.';
+
+  @override
+  String get exchangeAccessSettingsTitle => 'BULL Exchange';
+
+  @override
+  String get exchangeAccessSettingsLabel => 'Funciones del exchange';
+
+  @override
+  String get exchangeAccessSettingsDescription =>
+      'Muestra Comprar, Vender y Pagar en la pantalla de inicio. Los intercambios siguen disponibles.';
+
+  @override
+  String get exchangeAccessSettingsOffHint =>
+      'Actívalo para iniciar sesión o crear una cuenta de Bull Bitcoin.';
+
+  @override
+  String get exchangeAccessSettingsOnHint =>
+      'Las funciones del exchange están activadas.';
+
+  @override
+  String get exchangeAccessSignIn => 'Iniciar sesión o crear una cuenta';
+
+  @override
+  String get exchangeAccessDisableTitle =>
+      '¿Desactivar las funciones del exchange?';
+
+  @override
+  String get exchangeAccessDisableBody =>
+      'Esto cierra tu sesión en este dispositivo. Las órdenes existentes, la compra automática y las compras recurrentes no se cancelan.';
+
+  @override
+  String get exchangeAccessDisableConfirm => 'Cerrar sesión y desactivar';
+
+  @override
+  String get exchangeTradingRetry => 'Reintentar';
+
+  @override
+  String get exchangeAccessUnreadable =>
+      'No se pudo leer el acceso al exchange. Reinténtalo o restablécelo.';
+
+  @override
+  String get exchangeAccessReset => 'Restablecer el acceso al exchange';
+
+  @override
+  String get exchangeAccessLogoutIncomplete =>
+      'El cierre de sesión no se completó. Termina de cerrar sesión antes de activar el exchange.';
+
+  @override
+  String get exchangeAccessRetryLogout => 'Terminar de cerrar sesión';
 }

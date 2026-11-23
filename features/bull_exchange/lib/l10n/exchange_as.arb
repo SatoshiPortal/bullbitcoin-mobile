@@ -97,5 +97,7 @@
   "notLoggedInTitle": "আপুনি লগইন কৰা নাই",
   "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
   "retry": "পুনৰ চেষ্টা কৰক",
-  "settingsAppSettingsTitle": "এপ্প ছেটিংছ"
+  "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "সেই ছেটিংটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

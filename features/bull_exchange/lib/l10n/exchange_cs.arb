@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Jsi ne logged v",
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
   "retry": "Hledat",
-  "settingsAppSettingsTitle": "Nastavení aplikace"
+  "settingsAppSettingsTitle": "Nastavení aplikace",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Toto nastavení se nepodařilo uložit. Zkuste to prosím znovu."
 }

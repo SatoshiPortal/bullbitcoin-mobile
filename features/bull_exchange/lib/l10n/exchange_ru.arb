@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Вы не вошли",
   "oopsSomethingWentWrong": "Упс! Что-то не так",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "Параметры приложения"
+  "settingsAppSettingsTitle": "Параметры приложения",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Не удалось сохранить эту настройку. Пожалуйста, попробуйте снова."
 }

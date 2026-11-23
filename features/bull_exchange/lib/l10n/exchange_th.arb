@@ -97,5 +97,7 @@
   "notLoggedInTitle": "คุณไม่ได้",
   "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
   "retry": "ปรึกษา",
-  "settingsAppSettingsTitle": "การตั้งค่า"
+  "settingsAppSettingsTitle": "การตั้งค่า",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "ไม่สามารถบันทึกการตั้งค่านี้ได้ โปรดลองอีกครั้ง"
 }

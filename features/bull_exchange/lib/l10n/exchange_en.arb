@@ -430,5 +430,69 @@
   "exchangeSupportChatLogDraft": "Here are my logs",
   "@exchangeSupportChatLogDraft": {
     "description": "Editable support chat draft after attaching diagnostic logs."
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "settingsErrorSavingSetting": "That setting could not be saved. Please try again.",
+  "@settingsErrorSavingSetting": {
+    "description": "settings user-facing failure message (#1895)."
+  },
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "@exchangeAccessSettingsTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsLabel": "Exchange features",
+  "@exchangeAccessSettingsLabel": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Swap remains available.",
+  "@exchangeAccessSettingsDescription": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsOffHint": "Enable to sign in or create a Bull Bitcoin account.",
+  "@exchangeAccessSettingsOffHint": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsOnHint": "Exchange features are enabled.",
+  "@exchangeAccessSettingsOnHint": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSignIn": "Sign in or create an account",
+  "@exchangeAccessSignIn": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableTitle": "Disable exchange features?",
+  "@exchangeAccessDisableTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableBody": "This signs you out on this device. Existing orders, AutoBuy and recurring buys are not cancelled.",
+  "@exchangeAccessDisableBody": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableConfirm": "Sign out and disable",
+  "@exchangeAccessDisableConfirm": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeTradingRetry": "Retry",
+  "@exchangeTradingRetry": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessUnreadable": "Exchange access could not be read. Retry or reset it.",
+  "@exchangeAccessUnreadable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessReset": "Reset exchange access",
+  "@exchangeAccessReset": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessLogoutIncomplete": "Sign out is incomplete. Finish signing out before enabling exchange.",
+  "@exchangeAccessLogoutIncomplete": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessRetryLogout": "Finish signing out",
+  "@exchangeAccessRetryLogout": {
+    "description": "Exchange access recovery and navigation"
   }
 }

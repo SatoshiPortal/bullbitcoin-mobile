@@ -97,5 +97,7 @@
   "notLoggedInTitle": "أنتِ لستِ محبوسة",
   "oopsSomethingWentWrong": "! شيء ما حدث",
   "retry": "Retry",
-  "settingsAppSettingsTitle": "App Settings"
+  "settingsAppSettingsTitle": "App Settings",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "تعذر حفظ هذا الإعداد. يرجى المحاولة مرة أخرى."
 }

@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Bạn chưa đăng nhập",
   "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
   "retry": "Thử lại",
-  "settingsAppSettingsTitle": "Cài đặt ứng dụng"
+  "settingsAppSettingsTitle": "Cài đặt ứng dụng",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Không thể lưu cài đặt đó. Vui lòng thử lại."
 }

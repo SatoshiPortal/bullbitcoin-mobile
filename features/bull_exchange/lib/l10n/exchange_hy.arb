@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Դուք մուտք չեք գործել",
   "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
   "retry": "Կրկին փորձել",
-  "settingsAppSettingsTitle": "Հավելվածի կարգավորումներ"
+  "settingsAppSettingsTitle": "Հավելվածի կարգավորումներ",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Չհաջողվեց պահպանել այդ կարգավորումը։ Խնդրում ենք փորձել կրկին։"
 }

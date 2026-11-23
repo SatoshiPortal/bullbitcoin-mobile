@@ -97,5 +97,7 @@
   "notLoggedInTitle": "Не сте влезли в акаунта си.",
   "oopsSomethingWentWrong": "Опа! Нещо се обърка",
   "retry": "Повтори",
-  "settingsAppSettingsTitle": "Настройки на приложението"
+  "settingsAppSettingsTitle": "Настройки на приложението",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "Тази настройка не можа да бъде запазена. Моля, опитайте отново."
 }

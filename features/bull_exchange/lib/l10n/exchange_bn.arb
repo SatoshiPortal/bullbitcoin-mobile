@@ -97,5 +97,7 @@
   "notLoggedInTitle": "আপনি লগইন করেননি",
   "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
   "retry": "পুনরায় চেষ্টা করুন",
-  "settingsAppSettingsTitle": "অ্যাপ সেটিংস"
+  "settingsAppSettingsTitle": "অ্যাপ সেটিংস",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsErrorSavingSetting": "সেই সেটিংটি সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }
