@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart' show LegacyImportDeferred;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart'
@@ -58,6 +59,16 @@ final class SecretsInventory implements WalletInventory {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
+        if (await reconcileInventoryAccess(value.database) case Err(
+          :final failure,
+        )) {
+          await value.close();
+          return Err(
+            failure is LegacyImportDeferred
+                ? const DatabaseKeyUnavailable(DatabaseKeyProblem.locked)
+                : const DatabaseFileUnavailable(DatabaseFileProblem.unreadable),
+          );
+        }
         final access = AccessRepository(value.database);
         switch (await access.isProtected()) {
           case Err():
