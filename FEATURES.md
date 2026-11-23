@@ -109,6 +109,7 @@ graph TB
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
+    BULL_EXCHANGE -->|dashboard price display| BTC_PRICE
     DCA -->|amount input| BULL_EXCHANGE
     EXCHANGE --> EXCHANGE_DOMAIN
     BUY --> EXCHANGE_DOMAIN
