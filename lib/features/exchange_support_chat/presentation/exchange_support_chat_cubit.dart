@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
@@ -27,9 +25,9 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required this._resolveUserIdUsecase,
     required this._createLogAttachmentUsecase,
     required this._pickImageAttachmentsUsecase,
-    required this._exchangeNotificationService,
+    required Stream<NotificationMessage> notifications,
   }) : super(const ExchangeSupportChatState()) {
-    _notificationSubscription = _exchangeNotificationService.messageStream
+    _notificationSubscription = notifications
         .where((message) => message.kind == NotificationMessageKind.message)
         .listen((_) => loadMessages(page: 1));
   }
@@ -40,7 +38,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   final ResolveSupportChatUserIdUsecase _resolveUserIdUsecase;
   final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
   final PickImageAttachmentsUsecase _pickImageAttachmentsUsecase;
-  final ExchangeNotificationService _exchangeNotificationService;
   StreamSubscription<NotificationMessage>? _notificationSubscription;
 
   bool _limitFetchingOlderMessages = false;

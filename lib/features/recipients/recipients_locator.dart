@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
@@ -128,8 +128,7 @@ class RecipientsLocator {
         virtualIbanRepository: locator<VirtualIbanRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
-        exchangeNotificationRepository:
-            locator<ExchangeNotificationRepository>(),
+        notifications: locator<Exchange>().notifications,
       ),
     );
     locator.registerFactory<WatchSepaVirtualPayeeActivationUsecase>(

@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/src/data/bbx_api_notification_datasource.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -76,7 +75,7 @@ class _Handshake {
 
 BbxApiNotificationDatasource _fakeDatasource({
   required String baseUrl,
-  required Future<Result<String?, ExchangeApiKeyFailure>> Function() readApiKey,
+  required Future<Result<String?, ExchangeFailure>> Function() readApiKey,
   required BbxWebSocketConnector connector,
 }) => BbxApiNotificationDatasource.forTesting(
   baseUrl: baseUrl,
@@ -114,8 +113,8 @@ void main() {
 
   group('with a fake socket', () {
     for (final (baseUrl, url) in [
-      (ApiServiceConstants.bbApiUrl, 'wss://api.bullbitcoin.com'),
-      (ApiServiceConstants.bbApiTestUrl, 'wss://api05.bullbitcoin.dev'),
+      ('https://api.bullbitcoin.com', 'wss://api.bullbitcoin.com'),
+      ('https://api05.bullbitcoin.dev', 'wss://api05.bullbitcoin.dev'),
     ]) {
       test('connects to $url/ak/api-commcenter with the active key', () async {
         final datasource = _fakeDatasource(
@@ -137,7 +136,7 @@ void main() {
       'emits owned notifications and a failure per malformed frame',
       () async {
         final datasource = _fakeDatasource(
-          baseUrl: ApiServiceConstants.bbApiUrl,
+          baseUrl: 'https://api.bullbitcoin.com',
           readApiKey: () async => const Ok('k'),
           connector: connector,
         );
@@ -164,9 +163,9 @@ void main() {
     test(
       'disconnect during the credential read prevents a connection',
       () async {
-        final credential = Completer<Result<String?, ExchangeApiKeyFailure>>();
+        final credential = Completer<Result<String?, ExchangeFailure>>();
         final datasource = _fakeDatasource(
-          baseUrl: ApiServiceConstants.bbApiUrl,
+          baseUrl: 'https://api.bullbitcoin.com',
           readApiKey: () => credential.future,
           connector: connector,
         );
@@ -189,7 +188,7 @@ void main() {
           baseUrl: 'https://example.invalid',
           readApiKey: () async {
             reads++;
-            return const Err(ExchangeApiKeyReadFailure());
+            return const Err(ExchangeCredentialReadFailure());
           },
           connector: connector,
         );
@@ -207,7 +206,7 @@ void main() {
         time.flushMicrotasks();
         expect(
           logger.calls.join(),
-          isNot(contains('ExchangeApiKeyReadFailure')),
+          isNot(contains('ExchangeCredentialReadFailure')),
         );
       });
     });
@@ -215,7 +214,7 @@ void main() {
     test('each handshake reads the latest credential', () async {
       String? key = 'first';
       final datasource = _fakeDatasource(
-        baseUrl: ApiServiceConstants.bbApiUrl,
+        baseUrl: 'https://api.bullbitcoin.com',
         readApiKey: () async => Ok(key),
         connector: connector,
       );
@@ -243,11 +242,11 @@ void main() {
       fakeAsync((time) {
         var reads = 0;
         var available = false;
-        Future<Result<String?, ExchangeApiKeyFailure>> readApiKey() async {
+        Future<Result<String?, ExchangeFailure>> readApiKey() async {
           reads++;
           return available
               ? const Ok(null)
-              : const Err(ExchangeApiKeyReadFailure());
+              : const Err(ExchangeCredentialReadFailure());
         }
 
         final datasource = _fakeDatasource(
@@ -299,7 +298,7 @@ void main() {
         await handle(request);
       });
       final baseUrl = 'http://127.0.0.1:${server.port}/';
-      Future<Result<String?, ExchangeApiKeyFailure>> readApiKey() async =>
+      Future<Result<String?, ExchangeFailure>> readApiKey() async =>
           const Ok('synthetic-header');
       final datasource = BbxApiNotificationDatasource(
         baseUrl: baseUrl,

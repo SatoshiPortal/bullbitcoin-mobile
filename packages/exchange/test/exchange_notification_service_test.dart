@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
-import 'package:preferences/preferences.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/src/data/bbx_api_notification_datasource.dart';
+import 'package:exchange/src/data/exchange_notification_service.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -12,8 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
-class _Settings extends Mock implements Preferences {}
 
 class _Logger extends Mock implements Logger {}
 
@@ -58,7 +54,7 @@ class _Connector {
 
 BbxApiNotificationDatasource _fakeDatasource({
   required String baseUrl,
-  required Future<Result<String?, ExchangeApiKeyFailure>> Function() readApiKey,
+  required Future<Result<String?, ExchangeFailure>> Function() readApiKey,
   required BbxWebSocketConnector connector,
 }) => BbxApiNotificationDatasource.forTesting(
   baseUrl: baseUrl,
@@ -72,31 +68,18 @@ BbxApiNotificationDatasource _fakeDatasource({
 );
 
 void main() {
-  late _Settings settings;
+  late ExchangeEnvironment currentEnvironment;
   late _Connector mainnetConnector;
   late _Connector testnetConnector;
   late BbxApiNotificationDatasource mainnet;
   late BbxApiNotificationDatasource testnet;
-  late Result<String?, ExchangeApiKeyFailure> mainnetCredential;
+  late Result<String?, ExchangeFailure> mainnetCredential;
   late ExchangeNotificationService service;
   late List<NotificationMessage> messages;
   late StreamSubscription<NotificationMessage> subscription;
 
-  void currentEnvironment(Environment environment) {
-    when(settings.fetch).thenAnswer(
-      (_) async => Ok(
-        SettingsEntity(
-          environment: environment,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
-      ),
-    );
-  }
-
   setUp(() {
-    settings = _Settings();
-    currentEnvironment(Environment.mainnet);
+    currentEnvironment = ExchangeEnvironment.mainnet;
     mainnetConnector = _Connector();
     testnetConnector = _Connector();
     mainnetCredential = const Ok('synthetic');
@@ -113,7 +96,7 @@ void main() {
     service = ExchangeNotificationService(
       mainnetDatasource: mainnet,
       testnetDatasource: testnet,
-      settingsRepository: settings,
+      readEnvironment: () async => Ok(currentEnvironment),
     );
     messages = [];
     subscription = service.messageStream.listen(messages.add);
@@ -121,9 +104,7 @@ void main() {
 
   tearDown(() async {
     await subscription.cancel();
-    service.dispose();
-    mainnet.dispose();
-    testnet.dispose();
+    await service.dispose();
   });
 
   test('forwards the current network only, with its owned fields', () async {
@@ -150,7 +131,7 @@ void main() {
 
   test('reconnect follows the environment switch', () async {
     await service.connect();
-    currentEnvironment(Environment.testnet);
+    currentEnvironment = ExchangeEnvironment.testnet;
     await service.reconnect();
     expect(mainnet.isConnected, isFalse);
     expect(testnet.isConnected, isTrue);
@@ -194,7 +175,7 @@ void main() {
       final logger = _Logger();
       log = logger;
       addTearDown(() => log = previous);
-      mainnetCredential = const Err(ExchangeApiKeyReadFailure());
+      mainnetCredential = const Err(ExchangeCredentialReadFailure());
 
       await service.connect();
       await pumpEventQueue();

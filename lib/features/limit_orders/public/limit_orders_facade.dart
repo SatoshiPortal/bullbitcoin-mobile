@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
@@ -35,7 +35,7 @@ class LimitOrdersFacade {
   final CancelLimitOrderUsecase _cancelOrder;
   final ResolveWalletAddressUsecase _resolveAddress;
   final ValidateLightningAddressUsecase _validateLnAddress;
-  final ExchangeNotificationService _notifications;
+  final Stream<NotificationMessage> _notifications;
 
   final _dashboardRefreshRequests = StreamController<void>.broadcast();
 

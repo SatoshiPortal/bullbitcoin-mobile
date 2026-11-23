@@ -6,4 +6,6 @@ Account reads, preferences, announcements, order statistics and KYC uploads use 
 
 Support chat uses the standard timeout for identity lookup and an untimed client for message and attachment calls. Both clients check the same session before sending requests, and are disposed when the operation ends.
 
+`Exchange.notifications` publishes decoded notification events for the active environment. Session management owns when to connect and disconnect. `Exchange.close()` releases the socket and its subscriptions; obsolete connect and reconnect attempts do not reopen it.
+
 `package:exchange/migration.dart` supplies the Exchange participant for the storage coordinator. It opens the owner database through `Secrets.databaseOpener` and the shared native-close admission, projects both fixed keychain records and all historical Basic Auth rows, and verifies the destination and its import or fresh receipt. The participant is not mounted until coordinator preflight and legacy writer admission are wired. It never deletes or updates either legacy source.

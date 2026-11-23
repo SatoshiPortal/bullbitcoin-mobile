@@ -3,6 +3,7 @@ library;
 
 export 'src/domain/entities/announcement.dart';
 export 'src/domain/entities/dca.dart';
+export 'src/domain/entities/notification_message.dart';
 export 'src/domain/entities/order.dart';
 export 'src/domain/entities/order_stats.dart';
 export 'src/domain/entities/support_chat_message.dart';

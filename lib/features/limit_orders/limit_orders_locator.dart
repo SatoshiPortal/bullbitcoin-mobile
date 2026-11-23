@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
@@ -82,7 +82,7 @@ final class LimitOrdersLocator {
         locator<CancelLimitOrderUsecase>(),
         locator<ResolveWalletAddressUsecase>(),
         locator<ValidateLightningAddressUsecase>(),
-        locator<ExchangeNotificationService>(),
+        locator<Exchange>().notifications,
       ),
     );
   }

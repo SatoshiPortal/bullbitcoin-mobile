@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
@@ -49,7 +48,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
           resolveUserIdUsecase: locator<ResolveSupportChatUserIdUsecase>(),
           createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
           pickImageAttachmentsUsecase: locator<PickImageAttachmentsUsecase>(),
-          exchangeNotificationService: locator<ExchangeNotificationService>(),
+          notifications: locator<Exchange>().notifications,
         );
         if (initialMessage case final message? when message.isNotEmpty) {
           cubit.updateMessageText(message);

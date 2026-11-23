@@ -18,19 +18,12 @@ readLegacyExchangeSession({
   readKey,
 }) async {
   final epoch = readEpoch();
-  final settings = await preferences.fetch();
-  if (settings case Err()) {
-    return const Err(ExchangeAccountUnavailableFailure());
-  }
-  final environment = switch (settings) {
-    Ok(value: SettingsEntity(environment: Environment.mainnet)) =>
-      ExchangeEnvironment.mainnet,
-    Ok(value: SettingsEntity(environment: Environment.testnet)) =>
-      ExchangeEnvironment.testnet,
-    _ => null,
-  };
-  if (environment == null) {
-    return const Err(ExchangeUnsupportedNetworkFailure());
+  final ExchangeEnvironment environment;
+  switch (await readLegacyExchangeEnvironment(preferences)) {
+    case Ok(:final value):
+      environment = value;
+    case Err(:final failure):
+      return Err(failure);
   }
   final key = await readKey(
     isTestnet: environment == ExchangeEnvironment.testnet,
@@ -47,3 +40,16 @@ readLegacyExchangeSession({
     Err() => const Err(ExchangeCredentialReadFailure()),
   };
 }
+
+Future<Result<ExchangeEnvironment, ExchangeFailure>>
+readLegacyExchangeEnvironment(Preferences preferences) async =>
+    switch (await preferences.fetch()) {
+      Err() => const Err(ExchangeAccountUnavailableFailure()),
+      Ok(value: SettingsEntity(environment: Environment.mainnet)) => const Ok(
+        ExchangeEnvironment.mainnet,
+      ),
+      Ok(value: SettingsEntity(environment: Environment.testnet)) => const Ok(
+        ExchangeEnvironment.testnet,
+      ),
+      Ok() => const Err(ExchangeUnsupportedNetworkFailure()),
+    };

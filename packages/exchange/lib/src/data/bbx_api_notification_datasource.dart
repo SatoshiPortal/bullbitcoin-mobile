@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+
+typedef NotificationKeyReader = Future<Result<String?, Failure>> Function();
 
 /// The exchange notification socket of one environment, on `bbx_api`.
 ///
@@ -12,35 +13,41 @@ import 'package:primitives/primitives.dart';
 /// [BbxNotification]s and [BbxFailure]s leave it: no frame reaches the app.
 class BbxApiNotificationDatasource {
   final BbxNotificationSocket _socket;
+  final Bbx? _client;
 
-  BbxApiNotificationDatasource({
+  factory BbxApiNotificationDatasource({
     required String baseUrl,
-    required ReadExchangeApiKey readApiKey,
-  }) : _socket = Bbx.open(
-         endpoint: baseUrl,
-         readActiveApiKey: () => _apiKey(readApiKey),
-         notificationLog: _log,
-       ).notifications;
+    required NotificationKeyReader readApiKey,
+  }) {
+    final client = Bbx.open(
+      endpoint: baseUrl,
+      readActiveApiKey: () => _apiKey(readApiKey),
+      notificationLog: _log,
+    );
+    return BbxApiNotificationDatasource._(client.notifications, client);
+  }
+
+  const BbxApiNotificationDatasource._(this._socket, this._client);
 
   /// Keeps the adapter's credential and log mapping under test while the BBX
   /// testing library owns the foreign channel. Production uses [Bbx.open].
   @visibleForTesting
   BbxApiNotificationDatasource.forTesting({
     required String baseUrl,
-    required ReadExchangeApiKey readApiKey,
+    required NotificationKeyReader readApiKey,
     required BbxNotificationSocket Function(
       String baseUrl,
       Future<Result<String?, BbxFailure>> Function() readApiKey,
       BbxNotificationLog log,
     )
     openSocket,
-  }) : _socket = openSocket(baseUrl, () => _apiKey(readApiKey), _log);
+  }) : this._(openSocket(baseUrl, () => _apiKey(readApiKey), _log), null);
 
   /// Reads the app credential as the socket's own failure family: a missing
   /// key is `Ok(null)` (signed out, no retry) and a storage failure is
   /// [BbxCredentialUnavailableFailure], which retries like any other failure.
   static Future<Result<String?, BbxFailure>> _apiKey(
-    ReadExchangeApiKey readApiKey,
+    NotificationKeyReader readApiKey,
   ) async => switch (await readApiKey()) {
     Ok(:final value) => Ok(value),
     Err() => const Err(BbxCredentialUnavailableFailure()),
@@ -73,5 +80,11 @@ class BbxApiNotificationDatasource {
 
   Future<Result<void, BbxFailure>> reconnect() => _socket.reconnect();
 
-  void dispose() => _socket.dispose();
+  void dispose() {
+    if (_client case final client?) {
+      client.dispose();
+    } else {
+      _socket.dispose();
+    }
+  }
 }

@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:primitives/primitives.dart';
+
+import '../domain/entities/notification_message.dart';
+import '../domain/exchange_environment.dart';
+import '../domain/exchange_failure.dart';
+import 'bbx_api_notification_datasource.dart';
 
 /// Primary/driving adapter that receives WebSocket notification events
 /// and exposes them as a stream for the application to consume.
@@ -15,7 +17,8 @@ import 'package:primitives/primitives.dart';
 class ExchangeNotificationService {
   final BbxApiNotificationDatasource _mainnetDatasource;
   final BbxApiNotificationDatasource _testnetDatasource;
-  final Preferences _settingsRepository;
+  final Future<Result<ExchangeEnvironment, ExchangeFailure>> Function()
+  _readEnvironment;
 
   final StreamController<NotificationMessage> _messageController =
       StreamController<NotificationMessage>.broadcast();
@@ -23,11 +26,12 @@ class ExchangeNotificationService {
   StreamSubscription<Result<BbxNotification, BbxFailure>>? _mainnetSubscription;
   StreamSubscription<Result<BbxNotification, BbxFailure>>? _testnetSubscription;
   bool _isTestnet = false;
+  int _generation = 0;
 
   ExchangeNotificationService({
     required this._mainnetDatasource,
     required this._testnetDatasource,
-    required this._settingsRepository,
+    required this._readEnvironment,
   }) {
     _setupInternalListeners();
   }
@@ -86,27 +90,34 @@ class ExchangeNotificationService {
         BbxNotificationKind.unknown => NotificationMessageKind.unknown,
       };
 
-  Future<BbxApiNotificationDatasource> _getDatasource() async {
-    final settings = (await _settingsRepository.fetch()).fold(
-      (value) => value,
-      (failure) => throw Exception('Preferences read failed'),
-    );
-    _isTestnet = settings.environment.requireHistoricalTestnet();
-    return _isTestnet ? _testnetDatasource : _mainnetDatasource;
-  }
-
-  /// Connect to the WebSocket for the current environment (mainnet/testnet)
-  ///
-  /// The datasource reports a failed attempt on its event stream and in its own
-  /// diagnostics, so this keeps the legacy completed-future contract its
-  /// callers rely on.
-  Future<void> connect() async {
-    final datasource = await _getDatasource();
-    await datasource.connect();
+  /// Connects without holding the access queue during a native handshake.
+  Future<Result<void, ExchangeFailure>> connect() async {
+    final generation = ++_generation;
+    final environment = await _readEnvironment();
+    if (generation != _generation) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    switch (environment) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        _isTestnet = value == ExchangeEnvironment.testnet;
+        final datasource = _isTestnet ? _testnetDatasource : _mainnetDatasource;
+        final other = _isTestnet ? _mainnetDatasource : _testnetDatasource;
+        other.disconnect();
+        final result = await datasource.connect();
+        if (generation != _generation) {
+          return const Err(ExchangeOperationStaleFailure());
+        }
+        return result.mapErr(
+          (_) => const ExchangeNotificationsUnavailableFailure(),
+        );
+    }
   }
 
   /// Disconnect from both mainnet and testnet WebSockets
   void disconnect() {
+    _generation++;
     _mainnetDatasource.disconnect();
     _testnetDatasource.disconnect();
   }
@@ -114,23 +125,27 @@ class ExchangeNotificationService {
   /// Single stream of notification messages from the active network
   Stream<NotificationMessage> get messageStream => _messageController.stream;
 
-  /// Check if the current environment's WebSocket is connected
-  Future<bool> get isConnected async {
-    final datasource = await _getDatasource();
-    return datasource.isConnected;
-  }
+  bool get isConnected =>
+      (_isTestnet ? _testnetDatasource : _mainnetDatasource).isConnected;
 
   /// Reconnect to the WebSocket for the current environment
   /// Call this when the network changes to switch connections
-  Future<void> reconnect() async {
+  Future<Result<void, ExchangeFailure>> reconnect() async {
     disconnect();
+    final generation = _generation;
     await Future.delayed(const Duration(milliseconds: 500));
-    await connect();
+    if (generation != _generation) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    return connect();
   }
 
-  void dispose() {
-    _mainnetSubscription?.cancel();
-    _testnetSubscription?.cancel();
-    _messageController.close();
+  Future<void> dispose() async {
+    disconnect();
+    await _mainnetSubscription?.cancel();
+    await _testnetSubscription?.cancel();
+    _mainnetDatasource.dispose();
+    _testnetDatasource.dispose();
+    await _messageController.close();
   }
 }

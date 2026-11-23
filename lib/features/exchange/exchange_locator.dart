@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_acco
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
@@ -49,7 +48,7 @@ class ExchangeLocator {
             )).environment.requireHistoricalTestnet(),
         platformAllowed: platformAllowed,
         disconnectNotifications: () async =>
-            locator<ExchangeNotificationRepository>().disconnect(),
+            locator<Exchange>().disconnectNotifications(),
         clearCookies: () async {
           await WebViewCookieManager().clearCookies();
         },
@@ -163,8 +162,7 @@ class ExchangeLocator {
       () => WatchExchangeNotificationsUsecase(
         access: locator<ExchangeAccessRepository>(),
         settingsRepository: locator<settings_contract.Preferences>(),
-        exchangeNotificationRepository:
-            locator<ExchangeNotificationRepository>(),
+        exchange: locator<Exchange>(),
       ),
     );
   }

@@ -4,11 +4,14 @@ import 'package:primitives/primitives.dart';
 
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_kyc_repository.dart';
+import 'data/bbx_api_notification_datasource.dart';
 import 'data/bbx_api_order_stats_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
+import 'data/exchange_notification_service.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';
 import 'domain/entities/support_chat_message_attachment.dart';
@@ -48,6 +51,20 @@ typedef ExchangeChatOperations = ({
   getAttachment,
 });
 
+typedef ExchangeNotificationBindings = ({
+  Future<Result<ExchangeEnvironment, ExchangeFailure>> Function()
+  readEnvironment,
+  Future<Result<String?, Failure>> Function({required bool isTestnet}) readKey,
+});
+
+typedef ExchangeNotificationOperations = ({
+  Stream<NotificationMessage> Function() messages,
+  Future<Result<void, ExchangeFailure>> Function() connect,
+  Future<Result<void, ExchangeFailure>> Function() reconnect,
+  void Function() disconnect,
+  Future<void> Function() close,
+});
+
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
@@ -68,6 +85,7 @@ final class Exchange {
   _listAnnouncements;
   final _SaveUserPreference _saveUserPreference;
   final ExchangeChatOperations _chat;
+  final ExchangeNotificationOperations _notifications;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -78,6 +96,7 @@ final class Exchange {
     this._listAnnouncements,
     this._saveUserPreference,
     this._chat,
+    this._notifications,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -88,10 +107,12 @@ final class Exchange {
     required Uri mainnetEndpoint,
     required Uri testnetEndpoint,
     required ExchangeSessionReader readSession,
+    ExchangeNotificationBindings? notifications,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
     readSession: readSession,
+    notifications: notifications,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -107,6 +128,7 @@ final class Exchange {
     required ExchangeSessionReader readSession,
     required OpenInventoryClient openClient,
     required OpenInventoryClient openUntimedClient,
+    ExchangeNotificationBindings? notifications,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -175,6 +197,37 @@ final class Exchange {
       readSession: sessionSnapshot,
       openClient: openClient,
     );
+    ExchangeNotificationService? notificationService;
+    bool closed = false;
+    ExchangeNotificationService service() {
+      if (closed) throw StateError('Exchange has closed');
+      Future<Result<String?, Failure>> readKey(bool isTestnet) async {
+        if (notifications case final bindings?) {
+          return bindings.readKey(isTestnet: isTestnet);
+        }
+        return (await readSession()).map(
+          (session) =>
+              (session.environment == ExchangeEnvironment.testnet) == isTestnet
+              ? session.apiKey
+              : null,
+        );
+      }
+
+      return notificationService ??= ExchangeNotificationService(
+        mainnetDatasource: BbxApiNotificationDatasource(
+          baseUrl: mainnetEndpoint.toString(),
+          readApiKey: () => readKey(false),
+        ),
+        testnetDatasource: BbxApiNotificationDatasource(
+          baseUrl: testnetEndpoint.toString(),
+          readApiKey: () => readKey(true),
+        ),
+        readEnvironment:
+            notifications?.readEnvironment ??
+            () async => (await readSession()).map((s) => s.environment),
+      );
+    }
+
     return Exchange._(
       inventory.hasPendingOrders,
       () => withClient(
@@ -243,6 +296,17 @@ final class Exchange {
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
         ),
       ),
+      (
+        messages: () => service().messageStream,
+        connect: () => service().connect(),
+        reconnect: () => service().reconnect(),
+        disconnect: () => notificationService?.disconnect(),
+        close: () async {
+          if (closed) return;
+          closed = true;
+          await notificationService?.dispose();
+        },
+      ),
     );
   }
 
@@ -304,6 +368,18 @@ final class Exchange {
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
+
+  Stream<NotificationMessage> get notifications => _notifications.messages();
+
+  Future<Result<void, ExchangeFailure>> connectNotifications() =>
+      _notifications.connect();
+
+  Future<Result<void, ExchangeFailure>> reconnectNotifications() =>
+      _notifications.reconnect();
+
+  void disconnectNotifications() => _notifications.disconnect();
+
+  Future<void> close() => _notifications.close();
 }
 
 /// Builds the public capability with scenario-controlled results.
@@ -333,6 +409,7 @@ Exchange exchangeForTesting({
   })?
   saveUserPreference,
   ExchangeChatOperations? chat,
+  ExchangeNotificationOperations? notifications,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -360,6 +437,14 @@ Exchange exchangeForTesting({
             throw StateError('Unexpected chat send'),
         getAttachment: (_) =>
             throw StateError('Unexpected chat attachment request'),
+      ),
+  notifications ??
+      (
+        messages: () => const Stream.empty(),
+        connect: () => throw StateError('Unexpected notification connect'),
+        reconnect: () => throw StateError('Unexpected notification reconnect'),
+        disconnect: () {},
+        close: () async {},
       ),
 );
 

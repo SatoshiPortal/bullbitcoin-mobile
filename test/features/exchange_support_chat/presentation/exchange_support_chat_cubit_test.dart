@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
@@ -33,9 +32,6 @@ class _MockPickImageAttachmentsUsecase extends Mock
 class _MockCreateLogAttachmentUsecase extends Mock
     implements CreateLogAttachmentUsecase {}
 
-class _MockNotificationService extends Mock
-    implements ExchangeNotificationService {}
-
 /// Serves the test's temp directory as the platform temp directory.
 class _FakePathProviderPlatform extends PathProviderPlatform {
   _FakePathProviderPlatform(this._temporaryPath);
@@ -55,10 +51,6 @@ void main() {
 
   setUp(() {
     getAttachmentUsecase = _MockGetAttachmentUsecase();
-    final notificationService = _MockNotificationService();
-    when(() => notificationService.messageStream)
-        .thenAnswer((_) => const Stream.empty());
-
     tempDir = Directory.systemTemp.createTempSync('support_chat_test');
     PathProviderPlatform.instance = _FakePathProviderPlatform(tempDir.path);
 
@@ -69,7 +61,7 @@ void main() {
       resolveUserIdUsecase: _MockResolveUserIdUsecase(),
       createLogAttachmentUsecase: _MockCreateLogAttachmentUsecase(),
       pickImageAttachmentsUsecase: _MockPickImageAttachmentsUsecase(),
-      exchangeNotificationService: notificationService,
+      notifications: const Stream.empty(),
     );
   });
 

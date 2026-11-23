@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_rep
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
     as core_exchange;
 import 'package:bb_mobile/features/exchange/exchange_locator.dart'
@@ -242,12 +241,18 @@ void main() {
               ),
             };
         final api = Bbx.open(endpoint: baseUrl, readActiveApiKey: credential);
-        final socket = BbxApiNotificationDatasource(
-          baseUrl: baseUrl,
-          readApiKey: () => repository.readActiveApiKey(isTestnet: true),
+        final exchange = Exchange.open(
+          mainnetEndpoint: Uri.parse(baseUrl),
+          testnetEndpoint: Uri.parse(baseUrl),
+          readSession: () async => const Err(ExchangeUnexpectedFailure()),
+          notifications: (
+            readEnvironment: () async => const Ok(ExchangeEnvironment.testnet),
+            readKey: repository.readActiveApiKey,
+          ),
         );
         addTearDown(() async {
-          socket.dispose();
+          await exchange.close();
+          api.dispose();
           for (final connection in sockets) {
             await connection.close();
           }
@@ -270,9 +275,8 @@ void main() {
           jsonEncode({'key': 'socket-synthetic', 'isActive': true}),
           isTestnet: true,
         );
-        await socket.connect();
-        expect(socket.isConnected, isTrue);
-        socket.disconnect();
+        expect(await exchange.connectNotifications(), isA<Ok>());
+        exchange.disconnectNotifications();
         probe.refuseReads = true;
         expect(
           await api.users.registerResponsibilityConsent(),

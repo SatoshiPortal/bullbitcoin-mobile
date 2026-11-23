@@ -1,8 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -13,7 +10,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
@@ -50,7 +46,14 @@ class ExchangeLocator {
           readEpoch: () => locator<ExchangeAccessRepository>().epoch,
           readKey: locator<ExchangeApiKeyRepository>().readActiveApiKey,
         ),
+        notifications: (
+          readEnvironment: () =>
+              readLegacyExchangeEnvironment(locator<Preferences>()),
+          readKey: ({required isTestnet}) => locator<ExchangeApiKeyRepository>()
+              .readActiveApiKey(isTestnet: isTestnet),
+        ),
       ),
+      dispose: (exchange) => exchange.close(),
     );
     for (final isTestnet in [false, true]) {
       final environment = isTestnet ? 'testnet' : 'mainnet';
@@ -75,26 +78,10 @@ class ExchangeLocator {
         ),
         instanceName: '${environment}BbxApiClientWithoutTimeout',
       );
-      locator.registerLazySingleton<BbxApiNotificationDatasource>(
-        () => BbxApiNotificationDatasource(
-          baseUrl: isTestnet
-              ? ApiServiceConstants.bbApiTestUrl
-              : ApiServiceConstants.bbApiUrl,
-          readApiKey: () => locator<ExchangeApiKeyRepository>()
-              .readActiveApiKey(isTestnet: isTestnet),
-        ),
-        instanceName: '${environment}ExchangeNotificationDatasource',
-      );
     }
   }
 
   static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<ExchangeNotificationRepository>(
-      () => ExchangeNotificationRepositoryImpl(
-        exchangeNotificationService: locator<ExchangeNotificationService>(),
-      ),
-    );
-
     locator.registerLazySingleton<ExchangeApiKeyRepository>(
       () => ExchangeApiKeyRepositoryImpl(
         secureStorage: locator<Secrets>().exchangeKeychain,
@@ -160,21 +147,6 @@ class ExchangeLocator {
 
     locator.registerFactory<CreateLogAttachmentUsecase>(
       () => CreateLogAttachmentUsecase(),
-    );
-  }
-
-  static void registerServices(GetIt locator) {
-    // WebSocket Notification Service (primary/driving adapter)
-    locator.registerLazySingleton<ExchangeNotificationService>(
-      () => ExchangeNotificationService(
-        mainnetDatasource: locator<BbxApiNotificationDatasource>(
-          instanceName: 'mainnetExchangeNotificationDatasource',
-        ),
-        testnetDatasource: locator<BbxApiNotificationDatasource>(
-          instanceName: 'testnetExchangeNotificationDatasource',
-        ),
-        settingsRepository: locator<Preferences>(),
-      ),
     );
   }
 }

@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:exchange/src/data/bbx_api_notification_datasource.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:primitives/primitives.dart';
 import 'package:fake_async/fake_async.dart';
@@ -23,7 +23,7 @@ void main() {
         requests++;
         unawaited(request.response.close());
       });
-      final credential = Completer<Result<String?, ExchangeApiKeyFailure>>();
+      final credential = Completer<Result<String?, ExchangeFailure>>();
       final datasource = BbxApiNotificationDatasource(
         baseUrl: 'http://127.0.0.1:${server.port}',
         readApiKey: () => credential.future,
@@ -143,7 +143,7 @@ void main() {
           reads++;
           return available
               ? const Ok(null)
-              : const Err(ExchangeApiKeyReadFailure());
+              : const Err(ExchangeCredentialReadFailure());
         },
       );
       unawaited(datasource.connect());

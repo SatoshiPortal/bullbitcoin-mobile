@@ -115,10 +115,6 @@ class CoreLocator {
     return const Ok(null);
   }
 
-  static void registerServices(GetIt locator) {
-    ExchangeLocator.registerServices(locator);
-  }
-
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);

@@ -228,7 +228,6 @@ class AppLocator {
       regtestProfile: regtestProfile,
     );
     if (repositories case Err()) return repositories;
-    CoreLocator.registerServices(locator);
     final mempool = await openMempool(
       () => locator<Tor>(),
       locator<TorHttpClientFactory>(),

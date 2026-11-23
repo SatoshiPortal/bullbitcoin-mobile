@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
@@ -18,13 +17,13 @@ import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_r
 class WatchVirtualIbanUsecase {
   final VirtualIbanRepository _virtualIbanRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
-  final ExchangeNotificationRepository _exchangeNotificationRepository;
+  final Stream<NotificationMessage> _notifications;
   final Duration _pollInterval;
 
   const WatchVirtualIbanUsecase({
     required this._virtualIbanRepository,
     required this._getRecipientsEnvironmentUsecase,
-    required this._exchangeNotificationRepository,
+    required this._notifications,
     this._pollInterval = const Duration(seconds: 5),
   });
 
@@ -64,7 +63,7 @@ class WatchVirtualIbanUsecase {
     yield Ok(virtualIban);
 
     Completer<void>? pendingWake;
-    final activation = _exchangeNotificationRepository.messages
+    final activation = _notifications
         .where(
           (message) =>
               message.kind == NotificationMessageKind.recipient &&
