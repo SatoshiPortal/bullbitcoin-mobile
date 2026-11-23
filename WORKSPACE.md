@@ -96,6 +96,8 @@ graph TD
   style swaps stroke:#3665e3
   sync["sync"]
   style sync stroke:#5262f9
+  transactions["transactions"]
+  style transactions stroke:#8d1cdf
   access --> bull_logger
   access --> bull_ui
   access --> primitives
@@ -238,11 +240,26 @@ graph TD
   swaps --> legacy_storage
   swaps --> primitives
   swaps --> secrets
+  swaps --> sync
   sync --> legacy_storage
   sync --> rust_bindings
   sync --> bull_logger
   sync --> primitives
   sync --> secrets
+  transactions --> bitcoin_price
+  transactions --> bull_logger
+  transactions --> bull_payjoin
+  transactions --> bull_ui
+  transactions --> exchange
+  transactions --> file_system
+  transactions --> label_editor
+  transactions --> labels
+  transactions --> mempool
+  transactions --> preferences
+  transactions --> primitives
+  transactions --> secrets
+  transactions --> swaps
+  transactions --> sync
   subgraph features0 ["features"]
     access
     announcements
@@ -257,6 +274,7 @@ graph TD
     label_editor
     network
     signers
+    transactions
   end
   subgraph packages1 ["packages"]
     ark
