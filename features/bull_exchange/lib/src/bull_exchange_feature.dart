@@ -30,12 +30,14 @@ final class BullExchangeFeature {
   final GoRoute? supportChatRoute;
   final GoRoute? kycRoute;
   final List<RouteBase> settingsRoutes;
+  final List<RouteBase> fundingRoutes;
 
   const BullExchangeFeature._(
     this.routes,
     this.supportChatRoute,
     this.kycRoute,
     this.settingsRoutes,
+    this.fundingRoutes,
   );
 
   static BullExchangeFeature mount({
@@ -52,7 +54,6 @@ final class BullExchangeFeature {
     ExchangeFundingHost? funding,
   }) => BullExchangeFeature._(
     List.unmodifiable([
-      if (funding != null) ...FundExchangeRouter.routes(funding),
       GoRoute(
         name: BullExchangeNavigation.landingName,
         path: BullExchangeNavigation.landingPath,
@@ -100,5 +101,8 @@ final class BullExchangeFeature {
     settings == null
         ? const []
         : List.unmodifiable(ExchangeSettingsRouter.routes(settings)),
+    funding == null
+        ? const []
+        : List.unmodifiable(FundExchangeRouter.routes(funding)),
   );
 }

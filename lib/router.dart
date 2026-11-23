@@ -257,6 +257,7 @@ class AppRouter {
       SwapRouter.route,
       SwapRouter.settingsRoute,
       ...BuyRouter.routes,
+      ..._exchangeFeature.fundingRoutes,
       SellRouter.route,
       WithdrawRouter.route,
       PayRouter.route,
