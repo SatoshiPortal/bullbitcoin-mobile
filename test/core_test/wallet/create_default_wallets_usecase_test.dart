@@ -96,7 +96,10 @@ void main() {
     },
   );
 
-  for (final failedNetwork in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
+  for (final failedNetwork in <Network>[
+    BitcoinNetwork.mainnet,
+    LiquidNetwork.mainnet,
+  ]) {
     test('restoration resumes after failure on $failedNetwork', () async {
       final words = [...List.filled(11, 'abandon'), 'about'];
       failNetwork = failedNetwork;
@@ -196,7 +199,10 @@ void main() {
 
   test('complete defaults are reused without custody access and cannot be restored over', () async {
     final fingerprint = Fingerprint('deadbeef');
-    for (final network in [BitcoinNetwork.mainnet, LiquidNetwork.mainnet]) {
+    for (final network in <Network>[
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]) {
       registrations.add(
         walletRegistrationForTesting(
           id: network.toString(),

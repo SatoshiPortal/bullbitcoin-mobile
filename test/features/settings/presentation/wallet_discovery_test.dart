@@ -1,5 +1,5 @@
 import 'package:overview/overview.dart';
-import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:primitives/primitives.dart' show Ok, Err, Result;
 
 import 'dart:async';
 

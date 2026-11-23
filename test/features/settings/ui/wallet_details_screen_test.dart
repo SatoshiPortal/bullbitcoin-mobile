@@ -1,7 +1,5 @@
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletFacade;
 import 'package:primitives/primitives.dart' show Ok, ScriptType;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
