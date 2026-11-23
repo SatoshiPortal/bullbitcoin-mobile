@@ -26,7 +26,7 @@ void main() {
       SharedPreferences.setMockInitialValues({
         'wizard_pending_version': 1,
         'wizard_pending_currency': 'CAD',
-        if (consent != null) 'wizard_pending_error_reporting': consent,
+        'wizard_pending_error_reporting': ?consent,
       });
       expect(
         await WizardFeature.mount().readReportingConsent(),
