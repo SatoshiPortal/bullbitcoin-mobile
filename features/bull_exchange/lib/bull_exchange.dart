@@ -25,3 +25,4 @@ export 'src/ui/widgets/exchange_amount_currency_dropdown.dart'
     show ExchangeAmountCurrencyDropdown;
 export 'src/ui/widgets/exchange_amount_input_field.dart'
     show ExchangeAmountInputField;
+export 'src/ui/widgets/wizard_exchange_option.dart' show WizardExchangeOption;

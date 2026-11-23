@@ -284,6 +284,7 @@ graph TB
 
     %% Optional exchange access and wallet quick actions
     WIZARD --> EXCHANGE
+    WIZARD -->|Exchange option| BULL_EXCHANGE
     APP_STARTUP -->|wizard platform availability| EXCHANGE_DOMAIN
     SETTINGS --> QUICK_ACTIONS
     WALLETS --> QUICK_ACTIONS

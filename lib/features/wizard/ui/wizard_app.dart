@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -112,9 +113,12 @@ class _WizardAppView extends StatelessWidget {
           locale: state.choices.language.locale,
           // The wizard runs before the main app and its settings exist: the
           // store constraint of the platform applies (superuser unknown).
-          localizationsDelegates: novlangLocalizationsDelegates(
-            resolveNovlangPolicy(defaultTargetPlatform, null),
-          ),
+          localizationsDelegates: [
+            ...novlangLocalizationsDelegates(
+              resolveNovlangPolicy(defaultTargetPlatform, null),
+            ),
+            ExchangeLocalizations.delegate,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: WizardScreen(
             backgroundTasksAvailable: backgroundSyncAvailable,
