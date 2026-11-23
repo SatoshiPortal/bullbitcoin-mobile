@@ -92,3 +92,8 @@ final class ExchangeOperationStaleFailure extends ExchangeFailure {
 final class ExchangeUnsupportedNetworkFailure extends ExchangeFailure {
   const ExchangeUnsupportedNetworkFailure();
 }
+
+/// The server did not provide enough evidence to establish the order inventory.
+final class ExchangeOrderInventoryUnavailableFailure extends ExchangeFailure {
+  const ExchangeOrderInventoryUnavailableFailure();
+}

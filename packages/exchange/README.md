@@ -1,3 +1,3 @@
 # Exchange
 
-Owns Bull Bitcoin exchange account and order values, including recurring purchases and KYC rules. `package:exchange/exchange.dart` is the consumer entry point. Transport adapters, session orchestration and credential persistence are separate follow-up slices; this slice does not change the exchange backend or storage.
+`Exchange.open` exposes a strict pending-order inventory and owns the scan's short-lived BBX client. It only returns false after a complete scan with a stable environment, credential and session epoch. The ordinary library publishes owned account and order values, including recurring purchases and KYC rules, without exposing BBX codecs. The application still owns the session and its credential persistence during this slice; no legacy data is moved.

@@ -33,6 +33,7 @@ extension ExchangeFailureL10n on ExchangeFailure {
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
     ExchangeUnexpectedFailure() ||
+    ExchangeOrderInventoryUnavailableFailure() ||
     ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

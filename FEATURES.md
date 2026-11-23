@@ -86,7 +86,7 @@ graph TB
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
-    EXCHANGE_DOMAIN[Exchange Package<br/>Account, order and DCA domain values]
+    EXCHANGE_DOMAIN[Exchange Package<br/>Account and order values, strict pending inventory]
     EXCHANGE --> EXCHANGE_DOMAIN
     EXCHANGE_SETTINGS --> EXCHANGE_DOMAIN
     BUY --> EXCHANGE_DOMAIN
@@ -101,6 +101,7 @@ graph TB
     TX_HISTORY --> EXCHANGE_DOMAIN
     CORE --> EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN --> PRIMITIVES
+    EXCHANGE_DOMAIN -->|complete order pages| BBX_API
     EXCHANGE_SETTINGS -->|order statistics| BBX_API
 
     SIGNERS[Signers<br/>Workspace Feature]
