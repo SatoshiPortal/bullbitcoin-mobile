@@ -111,12 +111,14 @@ void main() {
     }
   });
 
-  test('reading consent preserves the standalone database bytes', () async {
+  test('reading the source URL preserves the standalone database bytes', () async {
+    const sourceUrl = 'http://legacy-test.onion';
     final source = _openV1(file);
     try {
       source.execute(
         'INSERT INTO recoverbull_state '
-        '(permission_granted, legacy_import_complete) VALUES (1, 1)',
+        '(server, permission_granted, legacy_import_complete) VALUES (?, 1, 1)',
+        [sourceUrl],
       );
     } finally {
       source.close();
@@ -125,9 +127,9 @@ void main() {
     expect(
       await readLegacyRecoverBullPermission(file),
       isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
-        (result) => result.value?.permissionGranted,
-        'permission',
-        true,
+        (result) => result.value,
+        'consent and source URL',
+        (permissionGranted: true, sourceUrl: sourceUrl),
       ),
     );
     expect(await file.readAsBytes(), before);
