@@ -53,6 +53,7 @@ export 'src/data/codec/bitcoin_psbt_facts.dart';
 export 'src/data/codec/bitcoin_codec.dart'
     show
         bitcoinPsbtFee,
+        bitcoinPsbtSkeleton,
         inspectBitcoinPsbt,
         bitcoinPublicDescriptor,
         bitcoinScriptAddress,

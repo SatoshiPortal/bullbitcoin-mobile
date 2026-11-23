@@ -72,3 +72,11 @@ final class PayjoinSenderKeptFailure extends PayjoinFailure {
   const PayjoinSenderKeptFailure(this.originalTxId, [String? logMessage])
     : super(logMessage ?? 'Sender retained after directory publication failed');
 }
+
+/// The signed original may have reached a relay. Do not start a new payment
+/// or immediately broadcast a fallback; the durable session must settle it.
+final class PayjoinPublicationUnknownFailure extends PayjoinFailure {
+  final String originalTxId;
+
+  const PayjoinPublicationUnknownFailure(this.originalTxId);
+}

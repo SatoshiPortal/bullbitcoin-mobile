@@ -124,10 +124,12 @@ final class SendTransactionConfirmationFailure extends SendFailure {
   /// persisted and armed the session: the stored row carrying this original
   /// is this payment's and can be settled with it right away.
   final String? keptPayjoinOriginalTxId;
+  final bool payjoinPublicationUnknown;
 
   const SendTransactionConfirmationFailure({
     this.isBroadcastFailure = false,
     this.keptPayjoinOriginalTxId,
+    this.payjoinPublicationUnknown = false,
     String? logMessage,
   }) : super(logMessage);
 }

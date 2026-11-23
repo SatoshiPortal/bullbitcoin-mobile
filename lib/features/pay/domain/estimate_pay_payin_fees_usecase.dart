@@ -1,6 +1,6 @@
+import 'package:spend/spend.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
@@ -36,7 +36,6 @@ class EstimatePayPayinFeesUsecase {
   final LoadPayNetworkFeesUsecase _loadPayNetworkFeesUsecase;
   final PreparePayBitcoinPayinUsecase _preparePayBitcoinPayinUsecase;
   final PreparePayLiquidPayinUsecase _preparePayLiquidPayinUsecase;
-  final CalculatePayAbsoluteFeesUsecase _calculatePayAbsoluteFeesUsecase;
 
   const EstimatePayPayinFeesUsecase({
     required this._getPayExchangeRateUsecase,
@@ -44,7 +43,6 @@ class EstimatePayPayinFeesUsecase {
     required this._loadPayNetworkFeesUsecase,
     required this._preparePayBitcoinPayinUsecase,
     required this._preparePayLiquidPayinUsecase,
-    required this._calculatePayAbsoluteFeesUsecase,
   });
 
   @useResult
@@ -90,7 +88,7 @@ class EstimatePayPayinFeesUsecase {
     }
 
     if (wallet.isLiquid) {
-      final String pset;
+      final PreparedLiquidSpend pset;
       switch (await _preparePayLiquidPayinUsecase.execute(
         walletId: wallet.id,
         address: throwawayAddress,
@@ -103,18 +101,13 @@ class EstimatePayPayinFeesUsecase {
           pset = value;
       }
 
-      switch (await _calculatePayAbsoluteFeesUsecase.liquid(pset: pset)) {
-        case Err(:final failure):
-          return Err(failure);
-        case Ok(:final value):
-          return Ok((
-            exchangeRateEstimate: exchangeRateEstimate,
-            requiredAmountSat: requiredAmountSat,
-            absoluteFees: value,
-            bitcoinFees: null,
-            bitcoinTxSize: null,
-          ));
-      }
+      return Ok((
+        exchangeRateEstimate: exchangeRateEstimate,
+        requiredAmountSat: requiredAmountSat,
+        absoluteFees: pset.fee.value.toInt(),
+        bitcoinFees: null,
+        bitcoinTxSize: null,
+      ));
     }
 
     final FeeOptions bitcoinFees;
@@ -127,7 +120,7 @@ class EstimatePayPayinFeesUsecase {
 
     // Fastest is the default selection, so the estimate shown on arrival is the
     // estimate for the tier the payin would be built at.
-    final PreparedPayBitcoinPayin payin;
+    final PreparedBitcoinSpend payin;
     switch (await _preparePayBitcoinPayinUsecase.execute(
       walletId: wallet.id,
       address: throwawayAddress,
@@ -140,19 +133,12 @@ class EstimatePayPayinFeesUsecase {
         payin = value;
     }
 
-    switch (await _calculatePayAbsoluteFeesUsecase.bitcoin(
-      psbt: payin.unsignedPsbt,
-    )) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        return Ok((
-          exchangeRateEstimate: exchangeRateEstimate,
-          requiredAmountSat: requiredAmountSat,
-          absoluteFees: value,
-          bitcoinFees: bitcoinFees,
-          bitcoinTxSize: payin.txSize,
-        ));
-    }
+    return Ok((
+      exchangeRateEstimate: exchangeRateEstimate,
+      requiredAmountSat: requiredAmountSat,
+      absoluteFees: payin.fee.value.toInt(),
+      bitcoinFees: bitcoinFees,
+      bitcoinTxSize: payin.txSize,
+    ));
   }
 }

@@ -27,6 +27,8 @@ extension PayFailureL10n on PayFailure {
     // BDK/LWK/Dio text straight onto the payment screen.
     PayUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     PayUnexpectedFailure() => context.loc.payUnexpectedError,
+    PayPayinOutcomeUnknownFailure() =>
+      context.loc.broadcastSignedTxErrorOutcomeUnknown,
   };
 }
 

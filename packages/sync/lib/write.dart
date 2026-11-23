@@ -14,3 +14,5 @@ export 'src/public/sync.dart' show SyncForegroundStores;
 
 export 'src/data/runtime/wallet_native_runtime.dart'
     show WalletNativeRuntime, WalletNativeLifecycle;
+export 'src/data/runtime/broadcast_observation_follow_up.dart'
+    show BroadcastObservationFollowUp, BroadcastSpend;

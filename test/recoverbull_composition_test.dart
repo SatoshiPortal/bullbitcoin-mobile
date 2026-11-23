@@ -143,6 +143,7 @@ void main() {
             );
         CoreLocator.register(services, database);
         services.registerSingleton<Secrets>(secrets);
+        inventory.register(services);
         await SettingsLocator.registerRepositories(services, preferences);
         // Replace native initialization through the published host seam; keep
         // the real backend, repository and owner registrations.
@@ -162,7 +163,6 @@ void main() {
           ),
         );
         await WalletLocator.registerDatasources(services);
-        WalletLocator.registerRepositories(services);
         WalletLocator.registerUsecases(services);
         final walletSync = WalletLocator.syncAccess(services);
         setupLabels(

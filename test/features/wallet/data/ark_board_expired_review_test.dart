@@ -1,3 +1,4 @@
+import 'package:ark/funding.dart';
 import 'dart:convert';
 
 import 'package:bull_ark/ark_wallet_setup.dart';
@@ -101,8 +102,11 @@ void main() {
         WalletKey(id: 'alias', network: BitcoinNetwork.regtest),
       ]) {
         expect(
-          await ArkFundingSigningGuard(Ok(reopened))
-              .admit(key: key, unsignedPsbt: binding.unsignedPsbt),
+          await ArkFundingSigningGuard(authority: reopened).admit(
+            walletId: key.id,
+            network: key.network,
+            unsignedPsbt: binding.unsignedPsbt,
+          ),
           isA<Err>(),
         );
       }

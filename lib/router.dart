@@ -42,7 +42,8 @@ import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/send/public/send_route.dart';
+import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -249,10 +250,10 @@ class AppRouter {
       ...locator<TransactionsFeature>().routes,
       ReceiveRouter.route,
       SendRouter.route(
-        openSignedTransactionReader: (context, psbt, wallet) =>
-            context.pushNamed<void>(
+        openSignedTransactionReader: (context, prepared, network) =>
+            context.pushNamed<String>(
               BroadcastSignedTxRoute.broadcastHome.name,
-              extra: (psbt: psbt, wallet: wallet),
+              extra: (prepared: prepared, network: network),
             ),
       ),
       CoinsRouter.route(

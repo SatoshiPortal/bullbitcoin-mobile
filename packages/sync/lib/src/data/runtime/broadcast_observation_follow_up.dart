@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:clock/clock.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/sync.dart'
+
+import '../../../sync.dart'
     show
         BitcoinSpendStatus,
         SignedBitcoinTransaction,
@@ -54,7 +55,7 @@ final class BroadcastObservationFollowUp {
     required this._pollWallet,
   });
 
-  /// [broadcast] with the follow-up started after an accepted Bitcoin
+  /// Wraps [broadcast] with the follow-up started after an accepted Bitcoin
   /// broadcast only: Liquid has no guard to wait for. The result is
   /// returned unchanged.
   BroadcastSpend wrap(BroadcastSpend broadcast) =>
@@ -83,13 +84,22 @@ final class BroadcastObservationFollowUp {
       };
 
   /// Starts a follow-up for [walletId], replacing the one in progress.
-  void start(String walletId) {
+  void start(
+    String walletId, {
+    bool guarded = true,
+    bool pollImmediately = false,
+  }) {
     if (_disposed) return;
     _runs.remove(walletId)?.cancel();
     final run = _Run();
     _runs[walletId] = run;
     unawaited(
-      _follow(walletId, run).catchError((Object error) {
+      _follow(
+        walletId,
+        run,
+        guarded: guarded,
+        pollImmediately: pollImmediately,
+      ).catchError((Object error) {
         log.warning(
           'Broadcast observation follow-up stopped error=${error.runtimeType}',
         );
@@ -108,12 +118,30 @@ final class BroadcastObservationFollowUp {
   bool _isCurrent(String walletId, _Run run) =>
       !_disposed && !run.cancelled && identical(_runs[walletId], run);
 
-  Future<void> _follow(String walletId, _Run run) async {
+  Future<void> _follow(
+    String walletId,
+    _Run run, {
+    required bool guarded,
+    required bool pollImmediately,
+  }) async {
     final elapsed = clock.stopwatch()..start();
     // No new request after the last deadline, even when a late timer or a
     // slow status read lands past it; a request already started may finish.
     bool withinBudget() => elapsed.elapsed <= deadlines.last;
     try {
+      if (pollImmediately) {
+        try {
+          await _pollWallet(
+            walletId,
+            isActive: () => _isCurrent(walletId, run),
+          );
+        } on Exception catch (error) {
+          log.warning(
+            'Post-broadcast sync request failed error=${error.runtimeType}',
+          );
+        }
+      }
+      if (!guarded || !_isCurrent(walletId, run)) return;
       for (final deadline in deadlines) {
         final wait = deadline - elapsed.elapsed;
         if (wait.isNegative) continue;

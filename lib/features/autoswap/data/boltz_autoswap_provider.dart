@@ -1,18 +1,14 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show LiquidWalletRepository;
+import 'package:spend/spend.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:labels/labels.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFees;
@@ -22,9 +18,8 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final DropPendingSwapLockupUsecase _dropPendingLockup;
   final WalletRepository _walletRepository;
   final Preferences _settingsRepository;
-  final LiquidWalletRepository _liquidWalletRepository;
+  final Spend _spend;
   final GetReceiveAddressUsecase _getReceiveAddress;
-  final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
   final Labels _labelsFacade;
 
   const BoltzAutoswapProvider(
@@ -35,9 +30,8 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
     this._dropPendingLockup,
     this._walletRepository,
     this._settingsRepository,
-    this._liquidWalletRepository,
+    this._spend,
     this._getReceiveAddress,
-    this._broadcastLiquidTransaction,
     this._labelsFacade,
   );
 
@@ -48,6 +42,9 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         (value) => value,
         (failure) => throw Exception('Preferences read failed'),
       )).environment;
+      if (environment.networkEnv == NetworkEnv.regtest) {
+        return const Err(AutoswapUnsupportedWalletFailure());
+      }
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(environment: environment)) {
         case Ok(:final value):
@@ -139,26 +136,21 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         case Err(:final failure):
           return Err(_creationFailure(failure));
       }
-      final preparation = await _liquidWalletRepository.buildPset(
+      final preparation = await _spend.prepareLiquid(
         walletId: liquidWallet.id,
         address: swap.paymentAddress,
         amountSat: swap.paymentAmount,
         feeRate: NetworkFeeRelayPolicy.minRelay,
       );
-      final String pset;
+      final PreparedLiquidSpend prepared;
       switch (preparation) {
         case Ok(:final value):
-          pset = value;
+          prepared = value;
         case Err(:final failure):
           return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
       }
-      final actualAmount = await _liquidWalletRepository.getAmountSentToAddress(
-        pset: pset,
-        address: swap.paymentAddress,
-        walletId: liquidWallet.id,
-      );
-      final (_, actualFeeSat) = await _liquidWalletRepository
-          .getPsetSizeAndAbsoluteFees(pset: pset);
+      final actualAmount = prepared.amountSent.value.toInt();
+      final actualFeeSat = prepared.fee.value.toInt();
       if (actualAmount != swap.paymentAmount) {
         return const Err(AutoswapPayinMismatchFailure());
       }
@@ -177,29 +169,32 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
           ),
         );
       }
-      final signed = await _liquidWalletRepository.signPset(
-        walletId: liquidWallet.id,
-        pset: pset,
-      );
+      final SignedLiquidSpend signed;
+      switch (await _spend.signLiquid(prepared: prepared)) {
+        case Ok(:final value):
+          signed = value;
+        case Err(:final failure):
+          return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+      }
       // Stored before the broadcast so an unclear outcome is settled from
       // this exact transaction and the swap can never be funded twice.
-      if (await _recordPendingLockup.execute(swapId: swap.id, signedTx: signed)
+      if (await _recordPendingLockup.execute(
+            swapId: swap.id,
+            signedTx: signed.signedPset,
+          )
           case Err(:final failure)) {
         return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
       }
       final String txid;
-      try {
-        txid = await _broadcastLiquidTransaction.execute(
-          signed,
-          isTestnet: environment.requireHistoricalTestnet(),
-        );
-      } on BroadcastTransactionException catch (e) {
-        final category = BroadcastFailureCategory.of(e);
-        if (category == BroadcastFailureCategory.rejected ||
-            category == BroadcastFailureCategory.authorization) {
-          final _ = await _dropPendingLockup.execute(swap.id);
-        }
-        rethrow;
+      switch (await _spend.broadcastLiquid(signed)) {
+        case Ok(:final value):
+          txid = value.txid;
+        case Err(:final failure):
+          if (failure is SpendBroadcastRejectedFailure ||
+              failure is SpendDeveloperAuthorizationFailure) {
+            final _ = await _dropPendingLockup.execute(swap.id);
+          }
+          return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
       }
       final recorded = await _recordSwapLockup.execute(
         swapId: swap.id,
@@ -238,21 +233,16 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
     required String address,
     required int amountSat,
   }) async {
-    final preparation = await _liquidWalletRepository.buildPset(
+    final preparation = await _spend.prepareLiquid(
       walletId: walletId,
       address: address,
       amountSat: amountSat,
       feeRate: NetworkFeeRelayPolicy.minRelay,
     );
-    final String pset;
-    switch (preparation) {
-      case Ok(:final value):
-        pset = value;
-      case Err(:final failure):
-        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
-    }
-    final (_, feeSat) = await _liquidWalletRepository
-        .getPsetSizeAndAbsoluteFees(pset: pset);
-    return Ok(feeSat);
+    return preparation
+        .map((value) => value.fee.value.toInt())
+        .mapErr(
+          (failure) => AutoswapExecutionFailure(failure.runtimeType.toString()),
+        );
   }
 }

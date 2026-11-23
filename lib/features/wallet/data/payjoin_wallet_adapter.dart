@@ -1,4 +1,4 @@
-import 'package:bull_ark/ark_wallet_setup.dart';
+import 'package:ark/funding.dart';
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:secrets/secrets.dart';
@@ -53,7 +53,8 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     await _requireSpend(walletId);
     final metadata = await _loadMetadata(walletId, network);
     if (await _arkFundingGuard.admit(
-          key: WalletKey(id: walletId, network: network),
+          walletId: walletId,
+          network: network,
           unsignedPsbt: psbt,
         )
         case Err()) {

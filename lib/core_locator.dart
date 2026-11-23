@@ -106,9 +106,7 @@ class CoreLocator {
         }
       },
     );
-    BlockchainLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
-    WalletLocator.registerRepositories(locator);
     return const Ok(null);
   }
 

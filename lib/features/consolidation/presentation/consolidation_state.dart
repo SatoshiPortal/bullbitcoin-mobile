@@ -13,26 +13,25 @@ abstract class ConsolidationState with _$ConsolidationState {
   const factory ConsolidationState({
     required String walletId,
     @Default(ConsolidationStatus.idle) ConsolidationStatus status,
-    // Confirmed L-BTC UTXO count (outputs "before"); null until loaded.
+    // Unspent L-BTC output count; null until loaded.
     int? utxoCount,
-    // Built PSETs + total fee; null until `prepare` succeeds (needs lwk
-    // `consolidate`, so null — fee shows "—" — until the SDK is bumped).
+    // Opaque prepared batches and total fee; null before preparation.
     ConsolidationPreview? preview,
   }) = _ConsolidationState;
 
   const ConsolidationState._();
 
   /// Whether a non-empty preview (built PSETs) is available.
-  bool get _hasPreview => preview != null && preview!.unsignedPsets.isNotEmpty;
+  bool get hasPreview => (preview?.transactionCount ?? 0) > 0;
 
   /// Total network fee across all consolidation transactions, or null if not
   /// yet known (no PSETs built).
-  int? get feeSat => _hasPreview ? preview!.totalFeeSat : null;
+  int? get feeSat => hasPreview ? preview?.totalFeeSat : null;
 
   /// Resulting output/transaction count (`ceil(utxos / maxInputs)`). Prefers the
   /// exact value from [preview], falling back to a client-side estimate.
   int? get transactionCount {
-    if (_hasPreview) return preview!.transactionCount;
+    if (hasPreview) return preview?.transactionCount;
     final count = utxoCount;
     if (count == null) return null;
     final mi = ConsolidationConfig.maximumInputs;

@@ -14,6 +14,7 @@ import 'package:primitives/primitives.dart'
         Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:fees/fees.dart';
+import 'package:spend/spend.dart';
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:satoshifier/liquid_address.dart';
@@ -110,6 +111,8 @@ SendStep sendStepAfterBroadcastPersistenceFailure({
 @freezed
 abstract class SendState with _$SendState {
   const factory SendState({
+    PreparedBitcoinSpend? bitcoinPreparation,
+    SignedBitcoinSpend? bitcoinSignature,
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
     @Default('') String scannedRawPaymentRequest,

@@ -1,3 +1,4 @@
+import 'package:ark/funding.dart';
 import 'package:bull_exchange/bull_exchange.dart' show AccelerateTransactionListTile, BuyRoute;
 import 'dart:async';
 
@@ -92,6 +93,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
+import 'package:spend/setup.dart' show SpendCatalog;
+import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
     show
         Sync,
@@ -211,8 +214,11 @@ class AppLocator {
           );
     locator.registerSingleton<ArkFundingSigningGuard>(
       ArkFundingSigningGuard(
-        arkFunding,
-        arkFundingDatabasePath == null ? null : installation,
+        authority: switch (arkFunding) {
+          Ok(:final value) => value,
+          Err() => null,
+        },
+        installation: arkFundingDatabasePath == null ? null : installation,
       ),
     );
     if (arkFunding case Ok(:final value)) {
@@ -284,6 +290,14 @@ class AppLocator {
 
     // Register feature-specific dependencies
     final inventory = locator<SecretsInventory>();
+    locator.registerLazySingleton<Spend>(
+      () => Spend.open(
+        sync: locator<WalletNativeRuntime>(),
+        secrets: locator<Secrets>(),
+        arkFunding: locator<ArkFundingSigningGuard>(),
+        catalog: SpendCatalog.fromInventory(inventory),
+      ),
+    );
     final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(

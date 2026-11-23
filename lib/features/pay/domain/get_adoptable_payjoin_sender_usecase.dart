@@ -30,6 +30,7 @@ class GetAdoptablePayjoinSenderUsecase {
     required String sessionId,
     required String walletId,
     required int amountSat,
+    String? expectedOriginalTxId,
   }) async {
     final session = switch (await _sessions.byId(sessionId)) {
       Ok(:final value) => value,
@@ -38,7 +39,9 @@ class GetAdoptablePayjoinSenderUsecase {
     if (session is! PayjoinSenderSession ||
         !session.isOngoing ||
         session.walletId != walletId ||
-        session.amountSat != amountSat) {
+        session.amountSat != amountSat ||
+        (expectedOriginalTxId != null &&
+            session.originalTxId != expectedOriginalTxId)) {
       return null;
     }
     return session;

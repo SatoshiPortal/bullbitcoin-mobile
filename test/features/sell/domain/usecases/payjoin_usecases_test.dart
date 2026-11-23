@@ -1,3 +1,5 @@
+import 'package:spend/spend.dart';
+import 'package:spend/testing.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/send_with_payjoin_usecase.dart';
@@ -43,11 +45,14 @@ void main() {
   group('SendWithPayjoinUsecase', () {
     Future<Result<PayjoinSenderSession, SellFailure>> start(
       PayjoinSender sender,
-    ) => SendWithPayjoinUsecase(sender).execute(
+    ) => SendWithPayjoinUsecase(sender, _SigningSpend()).execute(
       walletId: 'wallet-1',
       network: BitcoinNetwork.mainnet,
       bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
-      unsignedOriginalPsbt: 'cHNidP8=',
+      prepared: SpendFixtures.preparedBitcoin(
+        unsignedPsbt: 'cHNidP8=',
+        fee: Sats.zero,
+      ),
       amountSat: 100000,
       networkFeesSatPerVb: 2,
     );
@@ -222,4 +227,11 @@ void main() {
       }
     });
   });
+}
+
+final class _SigningSpend extends FakeSpend {
+  @override
+  Future<Result<SignedBitcoinSpend, SpendFailure>> signBitcoin({
+    required PreparedBitcoinSpend prepared,
+  }) async => Ok(SpendFixtures.signedBitcoin('signed-original'));
 }

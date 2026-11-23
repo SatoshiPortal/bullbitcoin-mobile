@@ -1,9 +1,14 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/send/data/broadcast_observation_follow_up.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show BitcoinSpendStatus, SignedPset, SignedPsbt, SpendReceipt, SyncFailure;
-import 'package:sync/sync.dart' show SyncSpendBlockedFailure;
+import 'package:sync/write.dart' show BroadcastObservationFollowUp;
+import 'package:sync/sync.dart'
+    show
+        BitcoinSpendStatus,
+        SignedPset,
+        SignedPsbt,
+        SpendReceipt,
+        SyncFailure,
+        SyncSpendBlockedFailure;
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -47,6 +52,25 @@ List<Duration> _seconds(List<int> values) => [
 ];
 
 void main() {
+  test('accepted unguarded spend requests exactly one immediate sync', () {
+    fakeAsync((fake) {
+      final h = _Harness(fake);
+      h.followUp.start(_wallet, guarded: false, pollImmediately: true);
+      fake.elapse(const Duration(minutes: 5));
+      expect(h.polls, _seconds([0]));
+      expect(h.statuses, isEmpty);
+    });
+  });
+
+  test('accepted guarded spend refreshes immediately and keeps observing', () {
+    fakeAsync((fake) {
+      final h = _Harness(fake);
+      h.followUp.start(_wallet, pollImmediately: true);
+      fake.elapse(const Duration(minutes: 5));
+      expect(h.polls, _seconds([0, 3, 10, 30, 90]));
+    });
+  });
+
   test('pending keeps asking at 3, 10, 30 and 90 s, then stops', () {
     fakeAsync((fake) {
       final h = _Harness(fake);
@@ -198,11 +222,11 @@ void main() {
   });
 
   group('wrap', () {
-    test('an accepted Bitcoin broadcast starts the follow-up, unchanged', () {
+    test('an accepted but not durable Bitcoin broadcast starts follow-up', () {
       fakeAsync((fake) {
         final h = _Harness(fake);
         var broadcasts = 0;
-        const receipt = SpendReceipt('txid', durable: true, guarded: true);
+        const receipt = SpendReceipt('txid', durable: false, guarded: true);
         final wrapped = h.followUp.wrap((
           walletId,
           transaction, {

@@ -4,10 +4,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
@@ -27,12 +24,6 @@ class _MockPreferences extends Mock implements Preferences {}
 class _MockGetNetworkFees extends Mock implements Fees {}
 
 class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
-
-class _MockCalculateBitcoinFees extends Mock
-    implements CalculateBitcoinAbsoluteFeesUsecase {}
-
-class _MockLiquidWalletRepository extends Mock
-    implements LiquidWalletRepository {}
 
 class _MockSellOrder extends Mock implements SellOrder {}
 
@@ -156,45 +147,6 @@ void main() {
       ).execute(walletId: 'wallet-1');
 
       expect((result as Ok<String, PayFailure>).value, 'bc1qown');
-    });
-  });
-
-  group('CalculatePayAbsoluteFeesUsecase', () {
-    late _MockCalculateBitcoinFees bitcoin;
-    late _MockLiquidWalletRepository liquid;
-    late CalculatePayAbsoluteFeesUsecase usecase;
-
-    setUp(() {
-      bitcoin = _MockCalculateBitcoinFees();
-      liquid = _MockLiquidWalletRepository();
-      usecase = CalculatePayAbsoluteFeesUsecase(
-        calculateBitcoinAbsoluteFeesUsecase: bitcoin,
-        liquidWalletRepository: liquid,
-      );
-    });
-
-    test('a PSBT fee read failure is sanitized', () async {
-      when(() => bitcoin.execute(psbt: any(named: 'psbt')))
-          .thenThrow(CalculateBitcoinAbsoluteFeesException(_rawReason));
-
-      final result = await usecase.bitcoin(psbt: 'psbt');
-
-      expect(
-        (result as Err<int, PayFailure>).failure,
-        isA<PayUnexpectedFailure>(),
-      );
-    });
-
-    test('a PSET fee read failure is sanitized', () async {
-      when(() => liquid.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
-          .thenThrow(Exception(_rawReason));
-
-      final result = await usecase.liquid(pset: 'pset');
-
-      expect(
-        (result as Err<int, PayFailure>).failure,
-        isA<PayUnexpectedFailure>(),
-      );
     });
   });
 }

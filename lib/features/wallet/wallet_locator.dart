@@ -8,8 +8,6 @@ import 'package:bull_ark/ark_wallet_setup.dart';
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BroadcastObservationFollowUp;
 
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
@@ -209,6 +207,7 @@ class WalletLocator {
             (await getApplicationDocumentsDirectory()).path,
         freezes: locator<FreezeStorePort>(),
         connections: locator<WalletConnectionPort>(),
+        broadcastObservation: locator<BroadcastObservationFollowUp>(),
         fundingReservations:
             locator.isRegistered<SqliteArkFundingReservations>()
             ? locator<SqliteArkFundingReservations>()

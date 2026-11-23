@@ -397,7 +397,11 @@ class _BottomButtons extends StatelessWidget {
       },
     );
     final isReady = context.select(
-      (SellBloc bloc) => bloc.state is SellPaymentState,
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final error) =>
+          error is! SellPayinOutcomeUnknownFailure,
+        _ => false,
+      },
     );
     final paused = context.select(
       (SellBloc bloc) => switch (bloc.state) {

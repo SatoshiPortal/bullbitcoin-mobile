@@ -75,6 +75,16 @@ graph TB
     FEES_PACKAGE --> PRIMITIVES
     CORE --> SYNC
     SEND --> SYNC
+    SPEND[Spend Package<br/>Wallet-bound Bitcoin and Liquid preparation, signing and broadcast]
+    SPEND --> SYNC
+    SPEND --> SECRETS
+    SPEND --> ARK_PROTOCOL
+    SPEND --> FEES_PACKAGE
+    SPEND --> PRIMITIVES
+    SEND --> SPEND
+    PAY --> SPEND
+    SELL --> SPEND
+    TRANSFER --> SPEND
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
@@ -85,6 +95,11 @@ graph TB
     SEND -->|payment requests| SATOSHIFIER
     SWAP -->|payment requests| SATOSHIFIER
     WALLETS -->|payment requests, public extended keys| SATOSHIFIER
+    BROADCAST_SIGNED_TX --> SPEND
+    SEND -->|reviewed Payjoin original| TX_HISTORY
+    PAY -->|reviewed Payjoin original| TX_HISTORY
+    SELL -->|reviewed Payjoin original| TX_HISTORY
+    TX_HISTORY -->|write-ahead Payjoin admission| SPEND
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
@@ -174,6 +189,12 @@ graph TB
     WALLETS --> PREFERENCES
     BTC_PRICE --> PREFERENCES
     COINS --> PREFERENCES
+    COIN_SELECTION[Coins Workspace Feature<br/>Selection sheet]
+    COIN_SELECTION --> BULL_UI
+    COIN_SELECTION --> PRIMITIVES
+    SELL --> COIN_SELECTION
+    PAY --> COIN_SELECTION
+    TRANSFER --> COIN_SELECTION
     EXCHANGE --> PREFERENCES
     SWAPS --> PREFERENCES
     SEND --> PREFERENCES
@@ -428,7 +449,6 @@ graph TB
     SELL -->|recipient selection and activation| BULL_EXCHANGE
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
-    BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
     SEND --> FEES_UI
     SEND --> NETWORK
@@ -478,7 +498,6 @@ graph TB
     RECOVERBULL --> BULL_UI
     RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
     TRANSFER --> CONSOLIDATION
-    TRANSFER --> SEND
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY -->|wallet history projections and revisions| SYNC
@@ -508,10 +527,10 @@ graph TB
     WALLETS --> MEMPOOL
     WIZARD[Wizard]
     APP_STARTUP --> SETTINGS
-    AUTOSWAP --> SEND
+    AUTOSWAP --> SPEND
     AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
-    CONSOLIDATION --> SEND
+    CONSOLIDATION --> SPEND
     EXCHANGE -->|supplies shared destination validation and input| WALLETS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
@@ -527,7 +546,7 @@ graph TB
     PAY --> FEES_UI
     SEND --> SIGNERS
     REPLACE_BY_FEE --> FEES_UI
-    REPLACE_BY_FEE --> SEND
+    REPLACE_BY_FEE --> SPEND
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
@@ -636,7 +655,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
-- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
+- **Send**: Depends on Spend, Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
 - **Backups**: Depends on Tor and Wallets
 
@@ -751,7 +770,7 @@ Send uses `sync.broadcastLiquidTransaction` for wallet-independent Liquid broadc
 
 The wallet module supplies inventory and protocol ports to the runtime in `sync`. Ark and Payjoin consumers pass exact wallet keys to the same runtime instance. The global foreground queue still orders native, swap and Silent Payments work; catalog metadata and presentation enrichment stay outside sync.
 
-Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
+Spend resolves exact wallet IDs in the admitted Secrets inventory and uses Sync for preparation, guarded submission and consolidation. Pay, Sell, transfers and AutoSwap use its typed results; fee review keeps the opaque preparation rather than reconstructing it from PSBT bytes. Payjoin holds its session lock while Spend and Sync admit and persist the exact original before relay publication. Imported Bitcoin remains wallet-free and uses the global freeze queue. Hardware signing stays with Signers. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in Sync.
 
 ### Wallet reader ownership
 

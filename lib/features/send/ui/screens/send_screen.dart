@@ -34,10 +34,10 @@ import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer, FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
-import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/localizations.dart' show OnchainSendLabelsL10n;
 import 'package:satoshifier/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
@@ -47,6 +47,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart' show NetworkX;
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
@@ -67,6 +68,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullAlertCard,
         BullAmount,
         BullKeyboardActions,
+        BullOnchainSendInfoSection,
         BullAdvancedOptionsLink,
         BullFieldAction,
         BullIcons,
@@ -1758,7 +1760,7 @@ class ConfirmSendButton extends StatelessWidget {
 ///
 /// Reads directly from [SendState] — all data (amount, address, fees) is
 /// already available after [createTransaction] + [signTransaction].
-/// Uses [OnchainSendInfoSection] for the layout, same as Liquid.
+/// Uses [BullOnchainSendInfoSection] for the layout, same as Liquid.
 class _OnchainTransactionReview extends StatelessWidget {
   const _OnchainTransactionReview();
 
@@ -1848,7 +1850,8 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        OnchainSendInfoSection(
+        BullOnchainSendInfoSection(
+          labels: context.loc.onchainSendLabels,
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           addressBuilder: (style, color) =>
               AddressViewer(paymentRequestAddress, style: style, color: color),
@@ -1950,7 +1953,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
 /// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
 /// using [TransactionReviewView] (which requires a [ReviewableTransaction]), this
 /// widget reads directly from [SendState] and delegates to
-/// [OnchainSendInfoSection].
+/// [BullOnchainSendInfoSection].
 class _LiquidOnchainSendInfoSection extends StatelessWidget {
   const _LiquidOnchainSendInfoSection();
 
@@ -1982,7 +1985,8 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        OnchainSendInfoSection(
+        BullOnchainSendInfoSection(
+          labels: context.loc.onchainSendLabels,
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           addressBuilder: (style, color) =>
               AddressViewer(paymentRequestAddress, style: style, color: color),
@@ -3084,19 +3088,33 @@ class ShowPsbtButton extends StatelessWidget {
       label: context.loc.sendShowPsbt,
       onPressed: () async {
         // Retain the original wallet and unsigned transaction through handoff.
-        final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
+        final send = context.read<SendCubit>();
+        final prepared = send.preparedBitcoin;
+        final wallet = switch (send.state.selectedWallet) {
           SendWalletBitcoin(:final wallet) => wallet,
           _ => null,
         };
-        if (unsignedPsbt == null) return;
+        if (prepared == null ||
+            wallet == null ||
+            wallet.network.isLiquid ||
+            prepared.unsignedPsbt != unsignedPsbt) {
+          return;
+        }
         final result = await SignersNavigation.showPsbt(
           context,
-          psbt: unsignedPsbt,
+          psbt: prepared.unsignedPsbt,
           signerDevice: signerDevice,
         );
         if (result == PsbtHandoffResult.readyToReadSignedTransaction &&
-            context.mounted) {
-          await SendPsbtHandoff.of(context)(context, unsignedPsbt, wallet);
+            context.mounted &&
+            identical(send.preparedBitcoin, prepared)) {
+          final signed = await SendPsbtHandoff.of(context)(
+            context,
+            prepared,
+            wallet.network.bitcoin,
+          );
+          if (signed == null || !context.mounted) return;
+          await send.updateSignedBitcoinTx(signed, prepared: prepared);
         }
       },
     );
@@ -3127,8 +3145,11 @@ class SignLedgerButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
-        final wallet = context.read<SendCubit>().state.selectedWallet;
-        if (unsignedPsbt == null ||
+        final send = context.read<SendCubit>();
+        final prepared = send.preparedBitcoin;
+        final wallet = send.state.selectedWallet;
+        if (prepared == null ||
+            prepared.unsignedPsbt != unsignedPsbt ||
             wallet == null ||
             derivationPath == null ||
             scriptType == null) {
@@ -3138,16 +3159,17 @@ class SignLedgerButton extends StatelessWidget {
         final result = await SignersNavigation.signLedger(
           context,
           network: wallet.network.environment,
-          psbt: unsignedPsbt,
+          psbt: prepared.unsignedPsbt,
           derivationPath: derivationPath,
           requestedDeviceType: deviceType,
           scriptType: scriptType,
         );
 
         if (result != null && context.mounted) {
-          final accepted = await context
-              .read<SendCubit>()
-              .updateSignedBitcoinTx(result);
+          final accepted = await send.updateSignedBitcoinTx(
+            result,
+            prepared: prepared,
+          );
           if (accepted && context.mounted) {
             BullSnackBar.show(
               context,
@@ -3184,8 +3206,11 @@ class SignBitBoxButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
-        final wallet = context.read<SendCubit>().state.selectedWallet;
-        if (unsignedPsbt == null ||
+        final send = context.read<SendCubit>();
+        final prepared = send.preparedBitcoin;
+        final wallet = send.state.selectedWallet;
+        if (prepared == null ||
+            prepared.unsignedPsbt != unsignedPsbt ||
             wallet == null ||
             derivationPath == null ||
             scriptType == null) {
@@ -3195,7 +3220,7 @@ class SignBitBoxButton extends StatelessWidget {
         final result = await SignersNavigation.signBitBox(
           context,
           network: wallet.network.environment,
-          psbt: unsignedPsbt,
+          psbt: prepared.unsignedPsbt,
           derivationPath: derivationPath,
           requestedDeviceType: deviceType,
           scriptType: scriptType,
@@ -3214,7 +3239,7 @@ class SignBitBoxButton extends StatelessWidget {
             return;
           }
           if (context.mounted) {
-            await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
+            await send.updateSignedBitcoinTx(finalizedTx, prepared: prepared);
           }
         }
       },

@@ -10,6 +10,7 @@ environment:
 workspace:
   - features/announcements
   - features/backups
+  - features/coins
   - features/bitcoin_price
   - features/bull_exchange
   - packages/labels
@@ -45,6 +46,7 @@ workspace:
   - packages/background_tasks
   - packages/notifications
   - packages/sync
+  - packages/spend
   - packages/electrum
   - packages/bull_tor
   - packages/mempool
@@ -75,6 +77,7 @@ dependencies:
   wallet_import:
   announcements:
   backups:
+  coins:
   bitcoin_price:
   labels:
   label_editor:
@@ -109,6 +112,7 @@ dependencies:
   notifications:
   flutter_local_notifications: ^23.0.2
   sync:
+  spend:
   electrum:
   bull_tor:
   mempool:
