@@ -162,7 +162,6 @@ void main() {
   test(
     'Payjoin never authorizes a public fingerprint as a local key',
     () async {
-      await fixture.reserve('ark');
       when(() => inventory.readWallet(fundingWalletId)).thenAnswer(
         (_) async => Ok(
           walletRegistrationForTesting(
@@ -180,7 +179,13 @@ void main() {
           network: BitcoinNetwork.regtest,
           psbt: otherUnsignedTransaction(),
         ),
-        throwsException,
+        throwsA(
+          isA<Exception>().having(
+            (failure) => failure.toString(),
+            'reason',
+            contains('local mnemonic'),
+          ),
+        ),
       );
       expect(keystore.reads, 0);
       expect(nativeAccesses, 0);

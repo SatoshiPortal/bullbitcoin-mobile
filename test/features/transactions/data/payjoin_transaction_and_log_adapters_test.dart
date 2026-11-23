@@ -11,6 +11,7 @@ import 'package:sync/sync.dart'
         SyncUnrecognizedReplyFailure,
         WalletKey;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:transactions/testing.dart';
@@ -458,6 +459,41 @@ void main() {
 
     expect(visible, isFalse);
     expect(servers.networks, isEmpty);
+  });
+
+  test('sync completion requires admission for the exact account', () async {
+    final finished = StreamController<WalletKey>();
+    final adapter = AppPayjoinTransactionAdapter(
+      inventory,
+      transactions,
+      servers,
+      synchronize: synchronization.execute,
+      finished: finished.stream,
+      protectSpend: (_, _) async => false,
+    );
+    final completions = <Object?>[];
+    final subscription = adapter
+        .watchWallet(_walletId)
+        .listen((_) => completions.add(null));
+    addTearDown(subscription.cancel);
+    addTearDown(finished.close);
+
+    when(() => inventory.readWallet(_walletId))
+        .thenAnswer((_) async => const Err(KeystoreLockedFailure()));
+    finished.add(key);
+    await pumpEventQueue();
+    expect(completions, isEmpty);
+
+    when(() => inventory.readWallet(_walletId)).thenAnswer(
+      (_) async =>
+          Ok(walletRegistrationForTesting(id: _walletId, network: key.network)),
+    );
+    finished.add(
+      const WalletKey(id: _walletId, network: BitcoinNetwork.mainnet),
+    );
+    finished.add(key);
+    await pumpEventQueue();
+    expect(completions, hasLength(1));
   });
 
   test('asks the server for the one transaction instead of syncing', () async {
