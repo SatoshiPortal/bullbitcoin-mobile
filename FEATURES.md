@@ -120,7 +120,6 @@ graph TB
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
     BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy and DCA]
     EXCHANGE --> BULL_EXCHANGE
-    BULL_EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
@@ -444,11 +443,9 @@ graph TB
     SETTINGS --> PAY
     SETTINGS --> TX_HISTORY
     LIMIT_ORDERS --> EXCHANGE
-    EXCHANGE --> BTC_PRICE
-    EXCHANGE --> TX_HISTORY
+    EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
     PAY -->|public spend admission and routine sync| WALLETS
-    PAY -->|public protected broadcast| SEND
     PAY --> EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
@@ -465,7 +462,6 @@ graph TB
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
     SELL -->|public spend admission and routine sync| WALLETS
-    SELL -->|public protected broadcast| SEND
     SELL --> EXCHANGE
     SELL -->|recipient selection and activation| BULL_EXCHANGE
     SELL --> BULL_PAYJOIN
@@ -582,6 +578,8 @@ graph TB
     SEND --> ADDRESS_LABELS
     SWAPS --> ADDRESS_LABELS
     WALLETS -->|address viewer| ADDRESS_LABELS
+    COINS -->|coin selection address viewer| ADDRESS_LABELS
+    EXCHANGE -->|address viewer| ADDRESS_LABELS
     TX_HISTORY -->|address viewer| ADDRESS_LABELS
     BROADCAST_SIGNED_TX -->|address viewer| ADDRESS_LABELS
     IMPORT_MNEMONIC --> SYNC
@@ -669,7 +667,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, Bitcoin Price
 - **Swaps** (workspace package `packages/swaps`): `Swaps.open` owns the Boltz engine, its network transitions and the provider and autoswap settings. Its stable `SwapStore`, `SwapResolver` and `BoltzSwaps` handles survive provider replacement. `SwapRouting` resolves the operator choices for Send, Receive, transfers and AutoSwap; the settings narrow view exposes typed reads and writes.
-- **Swap settings** (workspace feature `features/swap`): `SwapFeature.mount` contributes the standalone settings route and `SwapNavigation` exposes its title and navigation to Settings. Transfer and AutoSwap payment orchestration still call legacy Send from the app.
+- **Swap settings** (workspace feature `features/swap`): `SwapFeature.mount` contributes the standalone settings route and `SwapNavigation` exposes its title and navigation to Settings. Transfer and AutoSwap payment orchestration call Spend from the app.
 - **Recipient selection and activation**: Owned by Bull Exchange and used by Pay, Sell and Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 
