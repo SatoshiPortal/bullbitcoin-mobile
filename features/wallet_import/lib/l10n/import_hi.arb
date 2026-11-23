@@ -357,5 +357,204 @@
   "importColdcardMk4Step10": "\"Scan NFC\" बटन पर क्लिक करें",
   "importColdcardMk4Step11": "फ़ोन के NFC को कोल्डकार्ड के NFC के ऊपर रखें",
   "importColdcardMk4Step12": "यही है!",
-  "recipientsInfoLabel": "लेबल"
+  "recipientsInfoLabel": "लेबल",
+  "bitboxScreenDefaultWalletLabel": "बिटबॉक्स वॉलेट",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "निर्देश",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "कैमरा खोलें",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "अपने {deviceName} से वॉलेट descriptor आयात करें",
+  "importColdcardConnectTitle": "कनेक्ट {deviceName}",
+  "importColdcardInvalidWalletData": "अमान्य कोल्डकार्ड वॉलेट डेटा",
+  "importColdcardScanNfcSheetTitle": "वॉलेट descriptor को NFC के ज़रिए आयात करने के लिए अपने {deviceName} को टैप करें",
+  "importMnemonicBalanceLabel": "शेष: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "जारी",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
+  "importMnemonicEmptyLabelError": "मेमोनिक आयात करने के लिए एक लेबल आवश्यक है",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "विरासत",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "नेस्टेड Segwit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "सभी तीन प्रकार के वॉलेट सिंक होते हैं और उनके शेष और लेनदेन जल्द ही दिखाई देते हैं। यदि आप यह सुनिश्चित करते हैं कि आप किस वॉलेट प्रकार का आयात करना चाहते हैं, तो आप सिंक पूरा होने तक इंतजार कर सकते हैं या आयात करने के लिए आगे बढ़ सकते हैं।।",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "लेनदेन: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "बिटबॉक्स02",
+  "importWalletBitBoxNova": "बिटबॉक्स02 Nova",
+  "importWalletColdcardMk4": "कोल्डकार्ड Mk4",
+  "importWalletColdcardQ": "कोल्डकार्ड Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "केवल घड़ी आयात करें",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "ब्लॉकस्ट्रीम जेड",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "कीस्टोन",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "क्रूक्स",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "लेजर",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "फाउंडेशन पासपोर्ट",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "जेनेरिक वॉलेट",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "हार्डवेयर वॉलेट",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "बीजगणक",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "दर्शक",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "एक नया वॉलेट जोड़ें",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "कोपिड टू क्लिपबोर्ड",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "वर्णनकर्ता",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "यह सुनिश्चित करने के लिए कि आपके द्वारा चुनी गई निष्क्रियता पथ उस से मेल खाती है जिसने उपयोग से पहले वॉलेट से प्राप्त पहले पते की पुष्टि करके दिए गए xpub का उत्पादन किया। गलत रास्ते का उपयोग करने से धन की हानि हो सकती है",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "डेरिवेशन पथ चेतावनी",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "यह वॉलेट पहले से इम्पोर्ट किया गया है।",
+  "importWatchOnlyErrorImportFailed": "हम इस वॉच-ओनली वॉलेट को इम्पोर्ट नहीं कर सके। कृपया जानकारी जाँचें और फिर से कोशिश करें।",
+  "importWatchOnlyErrorInvalidFormat": "यह एक मान्य पब्लिक की या डिस्क्रिप्टर नहीं लगता। आपने जो पेस्ट किया है उसे दोबारा जाँच लें।",
+  "importWatchOnlyErrorLabelRequired": "इम्पोर्ट करने से पहले अपने वॉलेट को एक नाम दें।",
+  "importWatchOnlyErrorNetworkMismatch": "यह वॉलेट अभी किसी दूसरे Bitcoin नेटवर्क का उपयोग कर रहा है। Mainnet और Testnet के बीच बदलें, फिर दोबारा कोशिश करें।",
+  "importWatchOnlyErrorNoWalletSelected": "पहले कोई पब्लिक की या डिस्क्रिप्टर पेस्ट या स्कैन करें।",
+  "importWatchOnlyExtendedPublicKey": "विस्तारित सार्वजनिक कुंजी",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "आयात",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "लेबल",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "नेटवर्क: Bitcoin मेननेट",
+  "importWatchOnlyNetworkBitcoinTestnet": "नेटवर्क: Bitcoin टेस्टनेट",
+  "importWatchOnlyPasteHint": "पेस्ट xpub, ypub, zpub या descriptor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "आवश्यक",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "स्कैन क्यूआर",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "हस्ताक्षर उपकरण",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "केवल घड़ी आयात करें",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "प्रकार",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "अज्ञात",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "लेजर वॉलेट",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "पुनः प्रयास करें",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "एनएफसी स्कैन करें",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

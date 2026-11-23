@@ -17,13 +17,12 @@ void main() {
       final creationPaths = [
         method(
           'Future<Wallet> createWallet(',
-          'Future<Wallet> importDescriptor(',
+          'Future<Wallet> _createdWallet(',
         ),
         method(
-          'Future<Wallet> importDescriptor(',
-          'Future<Wallet> importWatchOnlyXpub(',
+          'Future<Result<Wallet, ImportWatchOnlyFailure>> _importWatchOnly(',
+          '  @override',
         ),
-        method('Future<Wallet> importWatchOnlyXpub(', '  @useResult'),
       ];
       for (final path in creationPaths) {
         expect(path, contains('await _provision(metadata);'));
@@ -36,7 +35,10 @@ void main() {
           path.indexOf('_walletRegistrations.fetchAll()'),
           lessThan(path.indexOf('await _provision(metadata);')),
         );
-        expect(path, contains('WalletAlreadyExistsException(metadata.id)'));
+        expect(
+          path,
+          contains('return const Err(WalletAlreadyExistsFailure())'),
+        );
       }
       final provision = method(
         'Future<void> _provision(',

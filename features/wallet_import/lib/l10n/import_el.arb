@@ -356,5 +356,204 @@
   "importColdcardMk4Step9": "Πατήστε τον αριθμό 3 για να ξεκινήσετε το NFC του Coldcard",
   "importColdcardMk4Step10": "Πατήστε το κουμπί «Scan NFC»",
   "importColdcardMk4Step11": "Τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
-  "importColdcardMk4Step12": "Αυτό είναι όλο!"
+  "importColdcardMk4Step12": "Αυτό είναι όλο!",
+  "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "Οδηγίες",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "Ανοίξτε την κάμερα",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "Εισαγωγή του descriptor πορτοφολιού από το {deviceName} σας",
+  "importColdcardConnectTitle": "Σύνδεση {deviceName}",
+  "importColdcardInvalidWalletData": "Μη έγκυρα δεδομένα πορτοφολιού Coldcard",
+  "importColdcardScanNfcSheetTitle": "Πλησιάστε το {deviceName} σας για εισαγωγή του descriptor πορτοφολιού μέσω NFC",
+  "importMnemonicBalanceLabel": "Balance: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Συνεχίστε να συνεχίζετε",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
+  "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "Εισαγωγή Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "Και οι τρεις τύποι πορτοφολιού συγχρονίζονται και η ισορροπία και οι συναλλαγές τους θα εμφανιστούν σύντομα. Μπορείτε να περιμένετε μέχρι να ολοκληρωθεί η συγχρονισμό ή να προχωρήσετε στην εισαγωγή, εάν είστε σίγουροι ποιο είδος πορτοφολιού που επιθυμείτε να εισάγετε.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "Εισαγωγή Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "Συναλλαγές: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "Εισαγωγή Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "Εισαγωγή ρολόι μόνο",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "Blockstream Jade",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "Keystone",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "Krux",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "Ledger",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "Ίδρυμα Passport",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "Generic πορτοφόλια",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "Hardware πορτοφόλια",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "SeedSigner",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "Πουτερ",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "Προσθέστε ένα νέο πορτοφόλι",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "Κόπηκε να πετάξε",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "Descriptor",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "Βεβαιωθείτε ότι η διαδρομή αναχώρησης που επιλέγετε ταιριάζει με αυτή που παρήγαγε το δεδομένο xpub επαληθεύοντας την πρώτη διεύθυνση που προέρχεται από το πορτοφόλι πριν από τη χρήση. Χρησιμοποιώντας το λάθος μονοπάτι μπορεί να οδηγήσει σε απώλεια κεφαλαίων",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "Προνομή Path Warning",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "Αυτό το πορτοφόλι έχει ήδη εισαχθεί.",
+  "importWatchOnlyErrorImportFailed": "Δεν μπορέσαμε να εισαγάγουμε αυτό το πορτοφόλι μόνο για παρακολούθηση. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
+  "importWatchOnlyErrorInvalidFormat": "Αυτό δεν μοιάζει με έγκυρο δημόσιο κλειδί ή descriptor. Ελέγξτε ξανά αυτό που επικολλήσατε.",
+  "importWatchOnlyErrorLabelRequired": "Δώστε ένα όνομα στο πορτοφόλι σας πριν την εισαγωγή.",
+  "importWatchOnlyErrorNetworkMismatch": "Αυτό το πορτοφόλι χρησιμοποιεί αυτήν τη στιγμή διαφορετικό δίκτυο Bitcoin. Αλλάξτε μεταξύ Mainnet και Testnet και δοκιμάστε ξανά.",
+  "importWatchOnlyErrorNoWalletSelected": "Επικολλήστε ή σαρώστε πρώτα ένα δημόσιο κλειδί ή έναν descriptor.",
+  "importWatchOnlyExtendedPublicKey": "Extended Public Key Key Key",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "Εισαγόμενη εισαγωγή",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "Label",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "Δίκτυο: Κύριο δίκτυο Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Δίκτυο: Δοκιμαστικό δίκτυο Bitcoin",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub ήscriptor",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "Απαιτείται",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "Scan QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "Signing Device",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "Εισαγωγή ρολόι μόνο",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "Τύπος τύπου Type Type",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "Άγνωστο",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scan NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

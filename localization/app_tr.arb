@@ -253,10 +253,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "Copied to klibi",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "Lütfen geçerli bir Lightning adresi girin",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -716,10 +712,6 @@
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
   },
-  "importWatchOnlyDescriptor": "Descriptor",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "İlerlemede Ödeme!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -1078,10 +1070,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "Devam etmeye devam et",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1256,10 +1244,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "İthalat",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1374,10 +1358,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "Özellik Yakında Yakında Geliyor",
   "@featureComingSoonTitle": {
@@ -1552,14 +1532,6 @@
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWatchOnlyType": "Tipi",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "Donanım cüzdanları",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "connectHardwareWalletDescription": "Bağlantı cüzdanını seçmek istediğiniz donanım cüzdanını seçin",
   "@connectHardwareWalletDescription": {
@@ -1749,10 +1721,6 @@
   "swapValidationInsufficientBalance": "Yeterli bakiye",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "Genişletilmiş Halk Anahtar Anahtar Anahtar Anahtar",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "Her zaman Block High Fees",
   "@autoswapAlwaysBlock": {
@@ -2053,10 +2021,6 @@
   "testCompletedSuccessMessage": "Kayıp bir Bitcoin cüzdanına erişmek mümkün",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "Scan QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "İlerleme",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2467,15 +2431,6 @@
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
   },
-  "importMnemonicBalanceLabel": "Denge: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeWarningConfirmation": "Bitcoin'i başka biri tarafından satın almamı istemediğimi doğrulıyorum.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
@@ -2879,10 +2834,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "Değiştir-by-fee etkinleştirildi",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2934,10 +2885,6 @@
   "automaticallyFetchKeyButton": "Otomatik olarak Fetch anahtarı >>",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "importColdcardButtonOpenCamera": "Kamerayı açın",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "Ücret Önceliği",
   "@payFeePriority": {
@@ -3244,10 +3191,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "Yeni bir cüzdan ekleyin",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "Bir ödeme adresi veya fatura",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3341,10 +3284,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "Bilinmeyen",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "Devam etmeye devam et",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3386,10 +3325,6 @@
   "ledgerDefaultWalletLabel": "Ledger Wallet",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
-  },
-  "importWalletSpecter": "Specter",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "customLocationProvider": "Özel konum",
   "@customLocationProvider": {
@@ -3468,15 +3403,6 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "İşlemler: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "Referrals",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
@@ -3484,10 +3410,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Etkinleştirildiğinde, ücreti belirlenen sınırın üzerinde olan otomatik takaslar her zaman engellenecektir",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
-  },
-  "importMnemonicSelectScriptType": "Import Mnemonik",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "CAD CAD CAD Denge dengesi",
   "@sellSendPaymentCadBalance": {
@@ -3722,10 +3644,6 @@
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "importWalletImportWatchOnly": "Import watch-sadece",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "İşlem Soğuk Kartınızda ithal edildikten sonra, varış adresini ve miktarı gözden geçirin.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3895,10 +3813,6 @@
       }
     }
   },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "Invalid in bill",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -4067,10 +3981,6 @@
   "recoverYourWalletTitle": "Cüzdanını yeniden keşfedin",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "Label",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "App Ayarları",
   "@settingsAppSettingsTitle": {
@@ -4297,10 +4207,6 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "importWalletPassport": "Vakıf Pasaportu",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
   "sellDailyLimit": "Günlük limit: {amount}",
   "@sellDailyLimit": {
     "description": "Shows maximum daily sell amount",
@@ -4488,10 +4394,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importColdcardButtonInstructions": "Talimatlar",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "Hangi cüzdandan satmak istiyorsunuz?",
   "@sellWhichWalletQuestion": {
@@ -4932,10 +4834,6 @@
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
   },
-  "importWatchOnlyTitle": "Import watch-sadece",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -4963,10 +4861,6 @@
   "importQrDeviceScanning": "Scanning...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "Yeni alıcılar",
   "@payNewRecipients": {
@@ -5181,10 +5075,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "Gerekli",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "Cüzdan senkronize edilmedi. Lütfen bekleyin",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -5196,10 +5086,6 @@
   "sellExchangeRate": "Değişim oranı",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "Mirası",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "Bu mod risklidir. Buna izin vererek, para kaybettiğinizi kabul ediyorsunuz",
   "@settingsDevModeWarningMessage": {
@@ -5347,10 +5233,6 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "importWatchOnlySigningDevice": "Signing Device",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
   "receiveInvoiceExpired": "Fatura süresi doldu",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
@@ -5493,10 +5375,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "Genric cüzdanlar",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "Test edilmedi",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -5585,10 +5463,6 @@
   "autoswapRecipientWalletInfo": "Bitcoin cüzdanının transfer edilen fonları alacağını seçin (required)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "Devam etmeye devam et",
   "@swapContinueButton": {
@@ -5922,10 +5796,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub veya tanımlayıcı",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "Hesap Numarası",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -6001,10 +5871,6 @@
       }
     }
   },
-  "importMnemonicTitle": "Import Mnemonik",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "Değiştir-by-fee etkinleştirildi",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -6036,10 +5902,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "Yararlayıcının adı LEONOD olmalıdır. Başka bir şey koyarsanız, ödemeniz reddedilecektir.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -6764,10 +6626,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "importWatchOnlyDisclaimerDescription": "Verilen xpub'u ilk adresi kullanmadan önce cüzdandan elde edilen ilk adresi doğrulamayı seçtiğinizden emin olun. Yanlış yolu kullanarak fonların kaybına yol açabilir",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "Hızlı hareket etmen için size baskı yapıyorlar",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -6817,10 +6675,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "Türleme Path Uyarı",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "IBAN",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -6861,10 +6715,6 @@
   "paySwapInProgress": "Swap ilerlemede...",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "Tüm üç cüzdan türü senkronize edilir ve onların dengesi ve işlemleri yakında görünecektir. Tamamlanana kadar bekleyebilir veya ithal etmek istediğiniz cüzdan türü olduğundan emin olun.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "coreSwapsLnSendClaimable": "Swap iddia edilmeye hazır.",
   "@coreSwapsLnSendClaimable": {
@@ -7209,10 +7059,6 @@
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
   "broadcastSignedTxBroadcastError": "İşleminizi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin.",
-  "importWatchOnlyErrorNoWalletSelected": "Önce bir genel anahtar veya tanımlayıcı yapıştırın ya da tarayın.",
-  "importWatchOnlyErrorLabelRequired": "İçe aktarmadan önce cüzdanınıza bir ad verin.",
-  "importWatchOnlyErrorInvalidFormat": "Bu, geçerli bir genel anahtar veya tanımlayıcı gibi görünmüyor. Yapıştırdığınızı tekrar kontrol edin.",
-  "importWatchOnlyErrorImportFailed": "Bu yalnızca-izleme cüzdanını içe aktaramadık. Lütfen bilgileri kontrol edip tekrar deneyin.",
   "broadcastSignedTxErrorInvalidTransaction": "Bu, geçerli bir imzalı işlem gibi görünmüyor. PSBT'nin ya da işlemin tamamını yapıştırdığınızdan emin olun.",
   "broadcastSignedTxErrorInvalidPushTx": "Bu etiketten bir işlem okuyamadık. Lütfen tekrar taramayı deneyin.",
   "@broadcastSignedTxBroadcasting": {
@@ -7221,10 +7067,6 @@
   "receivePayjoinActivated": "Payjoin aktive etti",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "Devam etmeye devam et",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "chooseVaultLocationTitle": "Select away location",
   "@chooseVaultLocationTitle": {
@@ -7302,10 +7144,6 @@
   "enterBackupKeyManuallyTitle": "Yedekleme anahtarı manuel olarak girin",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "Start Backup",
   "@backupSettingsStartBackup": {
@@ -7646,7 +7484,6 @@
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
   "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
-  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
   "coreScreensFeeRateLabel": "Ücret oranı",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7692,10 +7529,6 @@
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
   "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
-  "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "saatler",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -8004,13 +7837,8 @@
   "sendCoordinatingPayjoinTransaction": "Bir Payjoin işlemi koordine ediliyor.",
   "sendErrorInvoiceExpired": "Bu faturanın süresi doldu. Alıcıdan yeni bir fatura isteyin.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Daha küçük ödemeler yapmak için Anında Ödemeleri fonlamayı düşünün.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "İmzalanmış işlemi NFC ile almak için Coldcard'ınıza dokunun",
-  "importColdcardInvalidWalletData": "Geçersiz Coldcard cüzdan verisi",
-  "importColdcardConnectTitle": "{deviceName} Bağlayın",
-  "importColdcardConnectDescription": "{deviceName} cihazınızdan cüzdan tanımlayıcısını içe aktarın",
-  "importColdcardScanNfcSheetTitle": "Cüzdan tanımlayıcısını NFC ile içe aktarmak için {deviceName} cihazınıza dokunun",
   "fundExchangeCopDailyLimitWarning": "Günlük işlem limitinizi aşarsanız işlem başarısız olur. Müşteri desteğiyle iletişime geçmeniz gerekecektir.",
   "fundExchangeCopSenderName": "Gönderen Adı",
   "fundExchangeCopIssuingBank": "Banka",
@@ -8143,12 +7971,9 @@
   "recipientsFieldPayeeAccountNumber": "Alıcı Hesap Numarası",
   "exchangeFileUploadStatusRejectedBadge": "Reddedildi",
   "exchangeFileUploadTapToReupload": "Yeniden yüklemek için dokunun",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Beklenmeyen bir hata oluştu",
   "mempoolErrorUpdateSettingsFailed": "Ayarlar güncellenemedi: {error}",
   "sendErrorInsufficientBalanceFrozenHint": "Yeterli harcanabilir bakiye yok — {amount} donduruldu. Kullanmak için Coin'leri yönet bölümünden dondurmayı kaldırın.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Tamam",
   "consolidationFailedBody": "Beklenmeyen bir hata oluştu. Paranız güvende: hiçbir işlem yayınlanmadı. Lütfen tekrar deneyin.",
   "consolidationFailedTitle": "Birleştirme başarısız",
@@ -8271,10 +8096,6 @@
   "autoBuyWalletRequiredError": "En az bir varsayılan Bitcoin, Lightning veya Liquid adresi ekleyin.",
   "autoBuyUpdateError": "Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.",
   "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
-  "importWatchOnlyErrorNetworkMismatch": "Bu cüzdan şu anda farklı bir Bitcoin ağı kullanıyor. Mainnet ile Testnet arasında geçiş yapıp tekrar deneyin.",
-  "importWatchOnlyErrorAlreadyExists": "Bu cüzdan zaten içe aktarıldı.",
-  "importWatchOnlyNetworkBitcoinMainnet": "Ağ: Bitcoin ana ağı",
-  "importWatchOnlyNetworkBitcoinTestnet": "Ağ: Bitcoin test ağı",
   "broadcastSignedTxErrorPsbtFinalization": "İmzalanmış işlem sonlandırılamadı. Gerekli tüm imzaları içerdiğinden emin olup tekrar deneyin.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",

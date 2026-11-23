@@ -165,7 +165,6 @@ graph TB
     APP_STARTUP --> ARK
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature<br/>Catalogue and layout storage]
     WIZARD[Startup Wizard<br/>Workspace Feature]
-    IMPORT_MNEMONIC[Mnemonic Import]
     MNEMONIC_ENTRY[Mnemonic Entry]
     PHYSICAL_BACKUP_VERIFICATION[Physical Backup Verification]
     ONBOARDING[Onboarding]
@@ -236,27 +235,22 @@ graph TB
     SEND[Send]
     SEND_TOOLS[Send workspace feature<br/>Signed transaction broadcast, Liquid consolidation and fee replacement]
     SCANNING[QR and NFC Scanning workspace member]
-    IMPORT_COLDCARD[Coldcard Import]
     SEND_TOOLS -->|public QR and NFC scanning| SCANNING
-    IMPORT_COLDCARD -->|public NFC scanning| SCANNING
     CORE -->|composes signer NFC callback| SCANNING
     SCANNING --> SIGNERS
     RECEIVE --> SIGNERS
     WALLETS --> SIGNERS
-    IMPORT_COLDCARD --> SIGNERS
     WALLET_IMPORT[Wallet Import member]
+    SETTINGS -->|typed import navigation| WALLET_IMPORT
+    WALLETS -->|public import input and failures| WALLET_IMPORT
+    WALLET_IMPORT -->|public QR and NFC scanning| SCANNING
+    WALLET_IMPORT --> MNEMONIC_ENTRY
     WALLET_IMPORT --> SIGNERS
     WALLET_IMPORT --> BULL_UI
     WALLET_IMPORT --> SECRETS
     WALLET_IMPORT --> ELECTRUM
     WALLET_IMPORT --> SYNC
     WALLET_IMPORT --> PREFERENCES
-    IMPORT_COLDCARD --> WALLET_IMPORT
-    IMPORT_WATCH_ONLY --> WALLET_IMPORT
-    IMPORT_MNEMONIC --> WALLET_IMPORT
-    IMPORT_WALLET --> WALLET_IMPORT
-    IMPORT_WATCH_ONLY[Watch-Only Wallet Import]
-    IMPORT_WATCH_ONLY -->|public QR scanning| SCANNING
     WALLETS -->|public QR scanning| SCANNING
     SCANNING --> BULL_UI
     RECEIVE[Receive routes, requests and address selection<br/>Workspace Feature]
@@ -369,17 +363,13 @@ graph TB
     WALLETS --> QUICK_ACTIONS
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES
-    IMPORT_MNEMONIC --> WALLETS
-    IMPORT_MNEMONIC --> SECRETS
     ONBOARDING --> WALLET_IMPORT
-    IMPORT_MNEMONIC --> MNEMONIC_ENTRY
     ONBOARDING --> MNEMONIC_ENTRY
     APP_STARTUP --> MNEMONIC_ENTRY
     MNEMONIC_ENTRY --> BULL_UI
     BACKUPS --> PHYSICAL_BACKUP_VERIFICATION
     PHYSICAL_BACKUP_VERIFICATION --> BULL_UI
     PHYSICAL_BACKUP_VERIFICATION --> SECRETS
-    ONBOARDING --> IMPORT_MNEMONIC
     ONBOARDING --> SETTINGS
     ONBOARDING --> WALLETS
 
@@ -426,8 +416,7 @@ graph TB
     RECEIVE --> LABELS
     SETTINGS --> LABELS
     COINS -->|public revision stream| WALLETS
-    IMPORT_WALLET[Wallet Import]
-    IMPORT_WALLET --> SETTINGS
+    SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> TX_HISTORY
     LIMIT_ORDERS --> EXCHANGE
@@ -516,13 +505,11 @@ graph TB
     TX_HISTORY --> MEMPOOL
     WALLETS --> MEMPOOL
     APP_STARTUP --> SETTINGS
-    IMPORT_WALLET --> SIGNERS
     EXCHANGE -->|shared destination validation and input| ADDRESS_LABELS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
     SEND_TOOLS --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
-    IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| ADDRESS_LABELS
     SEND --> SIGNERS
     SEND_TOOLS --> FEES_UI
@@ -544,7 +531,6 @@ graph TB
     EXCHANGE -->|address viewer| ADDRESS_LABELS
     TX_HISTORY -->|address viewer| ADDRESS_LABELS
     SEND_TOOLS -->|address viewer| ADDRESS_LABELS
-    IMPORT_MNEMONIC --> SYNC
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
@@ -553,7 +539,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -683,7 +669,7 @@ The architecture test records source dependencies, including internal imports an
 | `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
+| `settings → wallet_import` | Opens the import hub through its typed navigation. The shell supplies the active environment for hardware visibility. | `lib/features/settings/ui/settings_item.dart -> package:wallet_import/wallet_import.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
@@ -707,7 +693,7 @@ RecoverBull navigation is a public, stateless module entry point; onboarding, ba
 
 Electrum owns foreground preparation of its current-schema storage and exposes it through `electrum.foregroundStorage` (`package:electrum/setup.dart`). Startup passes the single normalized Settings snapshot through SettingsBootstrap before awaiting this passive barrier; it performs no network IO. Regtest provisions both Bitcoin and Liquid rows in one idempotent transaction, preserves custom endpoints and options, and replaces only obsolete managed defaults. The regtest endpoint host comes from BULL_REGTEST_HOST at build time, with a loopback default, and is read only for a captured regtest selection. Mainnet/testnet preparation validates both production views for their existing hot switch and never creates fixture rows. Background entry points inspect readiness without seeding or repairing storage.
 
-`ImportFeature.mount` contributes the QR device instruction routes and composes the mnemonic prescan. The member owns mnemonic entry, hardware instructions, QR descriptor selection, public watch-only validation and their translations. The app import flows own confirmation and scanner acquisition. Mnemonic duplicate checks read the active, network-scoped Secrets inventory, and confirmation registers mnemonic and watch-only wallets in Secrets through the foreground wallet provisioning path.
+`ImportFeature.mount` contributes the import hub, mnemonic entry and confirmation, watch-only scanning and confirmation, and hardware instructions. The member owns their translations. Mnemonic duplicate checks still read the unlocked Secrets inventory scoped to the active Bitcoin network. Composition supplies the existing foreground Wallet provisioning methods directly; Wallet retains custody admission, catalog insertion and native creation.
 
 Watch-only import captures the selected Bitcoin environment before parsing. Test-family public-key versions may represent testnet or regtest; the captured selection resolves that ambiguity while preserving the public key. Regtest accepts software BIP84 watch-only input, retains the original network identity and refuses hardware provenance or a mainnet key. The existing capability policy controls explorer actions and Lightning availability. Receive uses that same Lightning capability when choosing its initial Liquid/Lightning mode, so a regtest Liquid wallet opens a supported selection.
 

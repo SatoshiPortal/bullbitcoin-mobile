@@ -3392,10 +3392,6 @@
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
   },
-  "importMnemonicTitle": "Import Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "howToDecideBackupTitle": "How to decide",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
@@ -6374,10 +6370,6 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importWalletTitle": "Add a new wallet",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
@@ -6385,78 +6377,6 @@
   "importWalletImportMnemonic": "Import Mnemonic",
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
-  },
-  "importWalletImportWatchOnly": "Import watch-only",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
-  "importWalletSectionGeneric": "Generic wallets",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
-  "importWalletSectionHardware": "Hardware wallets",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
-  },
-  "importWalletColdcardMk4": "Coldcard Mk4",
-  "@importWalletColdcardMk4": {
-    "description": "Button label for Coldcard Mk4 hardware wallet"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
-  },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
-  },
-  "importWalletPassport": "Foundation Passport",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
-  },
-  "importWalletSpecter": "Specter",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
-  },
-  "importMnemonicContinue": "Continue",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
-  },
-  "importMnemonicSelectScriptType": "Import Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
-  },
-  "importMnemonicSyncMessage": "All three wallet types are syncing and their balance and transactions will appear soon. You can wait until sync completes or proceed to import if you are sure which wallet type you wish to import.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
-  },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
-  "importMnemonicLegacy": "Legacy",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "importMnemonicChecking": "Checking…",
   "@importMnemonicChecking": {
@@ -6500,48 +6420,6 @@
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
   },
-  "importMnemonicBalanceLabel": "Balance: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "importMnemonicTransactionsLabel": "Transactions: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
-  "importWatchOnlyTitle": "Import watch-only",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
-  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub or descriptor",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
-  "importWatchOnlyErrorNoWalletSelected": "Paste or scan a public key or descriptor first.",
-  "@importWatchOnlyErrorNoWalletSelected": {
-    "description": "Shown when import is attempted before a wallet has been provided"
-  },
-  "importWatchOnlyErrorLabelRequired": "Give your wallet a name before importing.",
-  "@importWatchOnlyErrorLabelRequired": {
-    "description": "Shown when the wallet label is empty on import"
-  },
-  "importWatchOnlyErrorInvalidFormat": "This doesn't look like a valid public key or descriptor. Double-check what you pasted.",
-  "@importWatchOnlyErrorInvalidFormat": {
-    "description": "Shown when the pasted/scanned watch-only input cannot be parsed"
-  },
-  "importWatchOnlyErrorImportFailed": "We couldn't import this watch-only wallet. Please check the details and try again.",
-  "@importWatchOnlyErrorImportFailed": {
-    "description": "Shown when the wallet layer rejects the descriptor or xpub"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -6553,14 +6431,6 @@
   "importWatchOnlyZpub": "zpub",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
-  },
-  "importWatchOnlyDescriptor": "Descriptor",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
-  "importWatchOnlyScanQR": "Scan QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "importWatchOnlyScriptType": "Script Type",
   "@importWatchOnlyScriptType": {
@@ -6581,46 +6451,6 @@
   "importWatchOnlyCancel": "Cancel",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  },
-  "importWatchOnlyCopiedToClipboard": "Copied to clipboard",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
-  "importWatchOnlyType": "Type",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWatchOnlySigningDevice": "Signing Device",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
-  "importWatchOnlyUnknown": "Unknown",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
-  "importWatchOnlyLabel": "Label",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
-  },
-  "importWatchOnlyRequired": "Required",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
-  "importWatchOnlyImport": "Import",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
-  "importWatchOnlyExtendedPublicKey": "Extended Public Key",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
-  },
-  "importWatchOnlyDisclaimerTitle": "Derivation Path Warning",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
-  "importWatchOnlyDisclaimerDescription": "Make sure the derivation path you choose matches the one that produced the given xpub by verifying the first address derived from the wallet before use. Using the wrong path can lead to loss of funds",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
   },
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
@@ -6830,45 +6660,6 @@
   "importColdcardError": "Failed to import Coldcard",
   "@importColdcardError": {
     "description": "Error message"
-  },
-  "importColdcardInvalidWalletData": "Invalid Coldcard wallet data",
-  "@importColdcardInvalidWalletData": {
-    "description": "Error for invalid Coldcard wallet import data"
-  },
-  "importColdcardConnectTitle": "Connect {deviceName}",
-  "@importColdcardConnectTitle": {
-    "description": "AppBar title for Coldcard import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importColdcardConnectDescription": "Import the wallet descriptor from your {deviceName}",
-  "@importColdcardConnectDescription": {
-    "description": "Main instruction text on Coldcard import page",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importColdcardScanNfcSheetTitle": "Tap your {deviceName} to import wallet descriptor via NFC",
-  "@importColdcardScanNfcSheetTitle": {
-    "description": "NFC scan sheet title for Coldcard wallet import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importColdcardButtonOpenCamera": "Open the camera",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "importColdcardButtonInstructions": "Instructions",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -8661,14 +8452,6 @@
   "@exchangeFileUploadTapToReupload": {
     "description": "Call-to-action shown when a rejected upload can be retried by tapping."
   },
-  "importMnemonicDuplicateError": "This mnemonic already exists",
-  "@importMnemonicDuplicateError": {
-    "description": "Error message when user tries to import a mnemonic that already exists"
-  },
-  "importMnemonicEmptyLabelError": "A label is required to import a mnemonic",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "homeActionBuy": "Buy",
   "@homeActionBuy": {
     "description": "Label for the Buy action button on the wallet home screen"
@@ -8733,10 +8516,6 @@
   "@importWalletBitboxAndroidOnly": {
     "description": "Snackbar shown when tapping BitBox import on a non-Android device"
   },
-  "importWatchOnlyXpubLabel": "XPUB",
-  "@importWatchOnlyXpubLabel": {
-    "description": "Label for the derived XPUB value in watch-only wallet details"
-  },
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {
     "description": "Error shown when exchange rate cannot be fetched"
@@ -8767,14 +8546,6 @@
         "type": "String"
       }
     }
-  },
-  "importWalletBitBox": "BitBox",
-  "@importWalletBitBox": {
-    "description": "Button label for BitBox02 hardware wallet"
-  },
-  "importWalletBitBoxNova": "BitBox Nova",
-  "@importWalletBitBoxNova": {
-    "description": "Button label for BitBox02 Nova hardware wallet"
   },
   "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "@coreScreensUnexpectedError": {
@@ -9775,22 +9546,6 @@
   "@withdrawUnexpectedError": {
     "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
   },
-  "importWatchOnlyErrorNetworkMismatch": "The key does not match the selected Bitcoin network.",
-  "@importWatchOnlyErrorNetworkMismatch": {
-    "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
-  },
-  "importWatchOnlyErrorAlreadyExists": "This wallet is already imported.",
-  "@importWatchOnlyErrorAlreadyExists": {
-    "description": "Shown when the user tries to import a watch-only wallet that already exists"
-  },
-  "importWatchOnlyNetworkBitcoinMainnet": "Network: Bitcoin Mainnet",
-  "@importWatchOnlyNetworkBitcoinMainnet": {
-    "description": "Bitcoin mainnet label shown when reviewing a watch-only wallet"
-  },
-  "importWatchOnlyNetworkBitcoinTestnet": "Network: Bitcoin Testnet",
-  "@importWatchOnlyNetworkBitcoinTestnet": {
-    "description": "Bitcoin testnet label shown when reviewing a watch-only wallet"
-  },
   "broadcastSignedTxErrorPsbtFinalization": "The signed transaction could not be finalized. Make sure it contains all required signatures and try again.",
   "@broadcastSignedTxErrorPsbtFinalization": {
     "description": "Shown when a signed PSBT cannot be finalized before broadcast"
@@ -10638,14 +10393,6 @@
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
   },
-  "importMnemonicScanServerUnavailable": "Couldn't reach a server to check this wallet. You can still import it.",
-  "@importMnemonicScanServerUnavailable": {
-    "description": "ImportMnemonic: scan of one wallet type failed because no Electrum server could be reached; the import stays possible"
-  },
-  "importMnemonicScanUnavailable": "Balance check unavailable. You can still import this wallet.",
-  "@importMnemonicScanUnavailable": {
-    "description": "ImportMnemonic: generic message when the scan of one wallet type failed for an unexpected reason; the import stays possible"
-  },
   "sendRemainingBalance": "Send remaining balance",
   "@sendRemainingBalance": {
     "description": "Toggle label that assigns the balance left after fixed outputs and fees to a recipient"
@@ -10949,10 +10696,6 @@
   "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
   "@networkWalletReuseNoRecoveryPhrase": {
     "description": "Shown when a test-network wallet setup tries to reuse a wallet stored as a raw seed, which has no recovery phrase."
-  },
-  "importMnemonicUnsupportedScript": "This wallet type is not supported on the selected Bitcoin network.",
-  "@importMnemonicUnsupportedScript": {
-    "description": "Shown when the selected Bitcoin network does not support this wallet script type; retrying the scan cannot enable it."
   },
   "walletTypeBitcoinNetwork": "Bitcoin network",
   "@walletTypeBitcoinNetwork": {

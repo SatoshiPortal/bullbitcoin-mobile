@@ -1,6 +1,6 @@
 import 'package:fees/fees.dart';
 
-import '../spend.dart';
+import 'package:spend/spend.dart';
 
 /// The fee modal needs display values; the owning flow needs the exact spend
 /// it reviewed. Associate them without exposing spend authority to the modal.

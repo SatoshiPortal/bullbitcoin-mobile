@@ -44,11 +44,7 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:swap_feature/swap_feature.dart'
     show SwapFeature, SwapNavigation;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/import_coldcard/router.dart';
-import 'package:bb_mobile/features/import_mnemonic/router.dart';
-import 'package:wallet_import/wallet_import.dart';
-import 'package:bb_mobile/features/import_wallet/router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:wallet_import/setup.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -348,12 +344,8 @@ class AppRouter {
       ?_exchangeFeature.sellRoute,
       ?_exchangeFeature.withdrawalRoute,
       ?_exchangeFeature.payRoute,
-      ImportMnemonicRouter.route,
-      ImportWatchOnlyRouter.route,
       _sendRoutes.broadcastSignedTx,
       ...locator<SignersFeature>().routes,
-      ImportWalletRouter.route,
-      ...ImportColdcardRouter.routes,
       ?_exchangeFeature.dcaRoute,
       ?_exchangeFeature.autoBuy,
       LimitOrdersRouter.create,

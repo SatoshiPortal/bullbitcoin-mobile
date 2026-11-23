@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
 import 'package:material_ui/material_ui.dart' show AssetImage;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:wallet_import/wallet_import.dart';
+import 'package:wallet_import/setup.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:secrets/bip85.dart';
@@ -70,8 +70,6 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/import_mnemonic/locator.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
@@ -446,7 +444,6 @@ class AppLocator {
     );
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
-    ImportWatchOnlyLocator.setup(locator);
     locator.registerSingleton(
       SwapFeature.mount(
         swaps: locator<Swaps>(),
@@ -499,15 +496,26 @@ class AppLocator {
       ),
     );
 
-    locator.registerLazySingleton(
-      () => ImportFeature.mount(
+    locator.registerLazySingleton(() {
+      final operations = WalletLocator.importOperations(locator);
+      return ImportFeature.mount(
         preferences: locator<Preferences>(),
         servers: locator<ElectrumServersPort>(),
         secrets: locator<Secrets>(),
+        inventory: inventory,
+        admission: locator<ParentCustodyAdmissionPort>(),
+        provisionMnemonic: operations.mnemonic,
+        provisionDescriptor: operations.descriptor,
+        provisionXpub: operations.xpub,
+        networkOf: SettingsFacade.networkOf,
+        onImported: (context) {
+          context.read<WalletBloc>().add(const WalletStarted());
+          context.goNamed(WalletRoute.walletHome.name);
+        },
+        onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
         qrIllustration: AssetImage(Assets.misc.qRPlaceholder.path),
-      ),
-    );
-    ImportMnemonicLocator.setup(locator);
+      );
+    });
 
     locator.registerSingleton(
       ForegroundWalletStartup(

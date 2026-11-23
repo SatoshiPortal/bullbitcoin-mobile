@@ -229,10 +229,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "importWatchOnlyCopiedToClipboard": "مركب على لوح مشبك",
-  "@importWatchOnlyCopiedToClipboard": {
-    "description": "Snackbar message shown when QR code content is copied"
-  },
   "dcaLightningAddressInvalidError": "من فضلك أدخل عنوان البرق الصحيح",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -658,10 +654,6 @@
   "@importQrDeviceFingerprint": {
     "description": "Label for device fingerprint"
   },
-  "importWatchOnlyDescriptor": "الوصف",
-  "@importWatchOnlyDescriptor": {
-    "description": "Label for descriptor import method"
-  },
   "payPaymentInProgress": "الدفع في التقدم!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -976,10 +968,6 @@
   "@exchangeHomeWithdraw": {
     "description": "Withdraw button label"
   },
-  "importMnemonicSegwit": "Segwit",
-  "@importMnemonicSegwit": {
-    "description": "Label for Segwit (BIP84) wallet type"
-  },
   "buyContinue": "استمر",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1150,10 +1138,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "importWatchOnlyImport": "الواردات",
-  "@importWatchOnlyImport": {
-    "description": "Button label to import watch-only wallet"
-  },
   "backupWalletBackupButton": "الدعم",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
@@ -1254,10 +1238,6 @@
   "fundExchangeCrIbanUsdLabelIban": "IBAN account Number (US dollars only)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
-  },
-  "importWalletSeedSigner": "SeedSigner",
-  "@importWalletSeedSigner": {
-    "description": "Button label for SeedSigner hardware wallet"
   },
   "featureComingSoonTitle": "جذابة قادمة قريبا",
   "@featureComingSoonTitle": {
@@ -1418,14 +1398,6 @@
   "importWalletConnectHardware": "Connect hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWatchOnlyType": "النوع",
-  "@importWatchOnlyType": {
-    "description": "Label for wallet script type field"
-  },
-  "importWalletSectionHardware": "محفظات المعدات",
-  "@importWalletSectionHardware": {
-    "description": "Section header for hardware wallet types"
   },
   "connectHardwareWalletDescription": "اختر محفظة المعدات التي ترغب في ربطها",
   "@connectHardwareWalletDescription": {
@@ -1611,10 +1583,6 @@
   "swapValidationInsufficientBalance": "الرصيد غير الكافي",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
-  },
-  "importWatchOnlyExtendedPublicKey": "الجمهور الموسع المفتاح",
-  "@importWatchOnlyExtendedPublicKey": {
-    "description": "Label for extended public key (xpub/ypub/zpub) display"
   },
   "autoswapAlwaysBlock": "\"دائماً \"بلوك هاي فيز",
   "@autoswapAlwaysBlock": {
@@ -1895,10 +1863,6 @@
   "testCompletedSuccessMessage": "أنت قادر على استعادة الدخول إلى محفظة بيتكوين المفقودة",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "importWatchOnlyScanQR": "Scan QR",
-  "@importWatchOnlyScanQR": {
-    "description": "Button to scan QR code for watch-only import"
   },
   "walletBalanceUnconfirmedIncoming": "التقدم المحرز",
   "@walletBalanceUnconfirmedIncoming": {
@@ -2276,15 +2240,6 @@
   "payPayeeAccountNumber": "حساب الأجور",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
-  },
-  "importMnemonicBalanceLabel": "الرصيد: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "description": "ImportMnemonic: Balance label with amount in wallet type card",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeWarningConfirmation": "أُؤكّدُ بأنّني لَنْ يُطلبَ مِنْ أَنْ أَشتري بيتكوين مِن قِبل شخص آخر.",
   "@fundExchangeWarningConfirmation": {
@@ -2676,10 +2631,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "importMnemonicNestedSegwit": "Nested Segwit",
-  "@importMnemonicNestedSegwit": {
-    "description": "Label for Nested Segwit (BIP49) wallet type"
-  },
   "sendReplaceByFeeActivated": "الاستبدال بالتفريغ",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -2731,10 +2682,6 @@
   "automaticallyFetchKeyButton": "مفتاح الرسم الآلي",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "importColdcardButtonOpenCamera": "افتح الكاميرا",
-  "@importColdcardButtonOpenCamera": {
-    "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
   "payFeePriority": "الأولوية",
   "@payFeePriority": {
@@ -3019,10 +2966,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "importWalletTitle": "إضافة محفظة جديدة",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "sendPasteAddressOrInvoice": "تقديم عنوان دفع أو فاتورة",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3116,10 +3059,6 @@
   "@sellTotalFees": {
     "description": "Label for sum of all fees"
   },
-  "importWatchOnlyUnknown": "غير معروف",
-  "@importWatchOnlyUnknown": {
-    "description": "Default value when signing device is unknown"
-  },
   "payContinue": "استمر",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3157,10 +3096,6 @@
   "payRbfActivated": "الاستبدال بالتفريغ",
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
-  },
-  "importWalletSpecter": "Specter",
-  "@importWalletSpecter": {
-    "description": "Button label for Specter hardware wallet"
   },
   "coreSwapsLnSendRefundable": "(سواب) مستعد لإستعادة التمويل.",
   "@coreSwapsLnSendRefundable": {
@@ -3231,22 +3166,9 @@
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
   },
-  "importMnemonicTransactionsLabel": "المعاملات: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "description": "ImportMnemonic: Transactions label with count in wallet type card",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "الإحالة",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
-  },
-  "importMnemonicSelectScriptType": "Import Mnemonic",
-  "@importMnemonicSelectScriptType": {
-    "description": "AppBar title for script type selection"
   },
   "sellSendPaymentCadBalance": "CAD الرصيد",
   "@sellSendPaymentCadBalance": {
@@ -3449,10 +3371,6 @@
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "importWalletImportWatchOnly": "مراقبة الاستيراد فقط",
-  "@importWalletImportWatchOnly": {
-    "description": "Button to import watch-only wallet"
-  },
   "coldcardStep9": "بمجرد أن يتم استيراد الصفقة في البطاقة الباردة، استعراض عنوان الوجهة والمبلغ.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
@@ -3608,10 +3526,6 @@
   "@buyExternalBitcoinWallet": {
     "description": "Label for external wallet option"
   },
-  "importWalletJade": "Blockstream Jade",
-  "@importWalletJade": {
-    "description": "Button label for Blockstream Jade hardware wallet"
-  },
   "payInvalidInvoice": "فاتورة غير صالحة",
   "@payInvalidInvoice": {
     "description": "Error message when invoice format is invalid"
@@ -3764,10 +3678,6 @@
   "recoverYourWalletTitle": "استرجع محفظتك",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
-  },
-  "importWatchOnlyLabel": "Label",
-  "@importWatchOnlyLabel": {
-    "description": "Label for wallet name/label input field"
   },
   "settingsAppSettingsTitle": "App Settings",
   "@settingsAppSettingsTitle": {
@@ -3982,10 +3892,6 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "importWalletPassport": "المؤسسة",
-  "@importWalletPassport": {
-    "description": "Button label for Foundation Passport hardware wallet"
-  },
   "buyExpressWithdrawalFee": "الرسم السريع: {amount}",
   "@buyExpressWithdrawalFee": {
     "description": "Additional fee for instant withdrawal",
@@ -4156,10 +4062,6 @@
   "exchangeStatisticsSellStats": "إحصاءات البيع",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
-  },
-  "importColdcardButtonInstructions": "التعليمات",
-  "@importColdcardButtonInstructions": {
-    "description": "ImportColdcardQ: Button to show setup instructions"
   },
   "sellWhichWalletQuestion": "أي محفظة تريدين بيعها؟?",
   "@sellWhichWalletQuestion": {
@@ -4585,10 +4487,6 @@
   "@buyConfirmYouPay": {
     "description": "Field label for payment amount"
   },
-  "importWatchOnlyTitle": "مراقبة الاستيراد فقط",
-  "@importWatchOnlyTitle": {
-    "description": "AppBar title for watch-only import screen"
-  },
   "cancel": "إلغاء",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -4616,10 +4514,6 @@
   "importQrDeviceScanning": "مسح...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "importWalletKeystone": "Keystone",
-  "@importWalletKeystone": {
-    "description": "Button label for Keystone hardware wallet"
   },
   "payNewRecipients": "المستفيدون الجدد",
   "@payNewRecipients": {
@@ -4847,10 +4741,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "importWatchOnlyRequired": "المطلوبة",
-  "@importWatchOnlyRequired": {
-    "description": "Placeholder hint for required input fields"
-  },
   "payWalletNotSynced": "الجدار لا يتزامن. من فضلك انتظر",
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
@@ -4862,10 +4752,6 @@
   "sellExchangeRate": "سعر الصرف",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "importMnemonicLegacy": "Legacy",
-  "@importMnemonicLegacy": {
-    "description": "Label for Legacy (BIP44) wallet type"
   },
   "settingsDevModeWarningMessage": "هذه الطريقة خطرة بتمكينها، تعترفين بأنكِ قد تخسرين المال",
   "@settingsDevModeWarningMessage": {
@@ -5001,10 +4887,6 @@
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
   },
-  "importWatchOnlySigningDevice": "جهاز التوقيع",
-  "@importWatchOnlySigningDevice": {
-    "description": "Label for signing device selection field"
-  },
   "receiveInvoiceExpired": "فاتورة انتهت صلاحيتها",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
@@ -5130,10 +5012,6 @@
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "importWalletSectionGeneric": "المحافظ العامة",
-  "@importWalletSectionGeneric": {
-    "description": "Section header for generic wallet types"
-  },
   "backupSettingsNotTested": "لم يختبر",
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
@@ -5209,10 +5087,6 @@
   "autoswapRecipientWalletInfo": "الاختيار الذي ستحصل عليه محفظة بيتكوين من الأموال المحولة (المطلوبة)",
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
-  },
-  "importWalletKrux": "Krux",
-  "@importWalletKrux": {
-    "description": "Button label for Krux hardware wallet"
   },
   "swapContinueButton": "استمر",
   "@swapContinueButton": {
@@ -5524,10 +5398,6 @@
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
-  "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub or descriptor",
-  "@importWatchOnlyPasteHint": {
-    "description": "Placeholder hint for paste input field"
-  },
   "sellAccountNumber": "الحساب",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -5595,10 +5465,6 @@
       }
     }
   },
-  "importMnemonicTitle": "Import Mnemonic",
-  "@importMnemonicTitle": {
-    "description": "AppBar title for mnemonic import screen"
-  },
   "payReplaceByFeeActivated": "الاستبدال بالتفريغ",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
@@ -5630,10 +5496,6 @@
   "fundExchangeInfoBeneficiaryNameLeonod": "The name of the beneficiary should be LEONOD. إذا وضعت أي شيء آخر، سيتم رفض دفعك.",
   "@fundExchangeInfoBeneficiaryNameLeonod": {
     "description": "Critical info about beneficiary name being LEONOD"
-  },
-  "importWalletLedger": "Ledger",
-  "@importWalletLedger": {
-    "description": "Button label for Ledger hardware wallet"
   },
   "exchangeLandingTitle": "BUL BITCOIN",
   "@exchangeLandingTitle": {
@@ -6292,10 +6154,6 @@
   "@fundExchangeCanadaPostStep7": {
     "description": "Step 7 for Canada Post payment process - timeframe"
   },
-  "importWatchOnlyDisclaimerDescription": "تأكدي من أن طريق التنشيط الذي تختارينه يطابق المسار الذي أنتج الـ(إكسبوب) بالتحقق من العنوان الأول المستمد من المحفظة قبل استخدامها استخدام الطريق الخطأ يمكن أن يؤدي إلى فقدان الأموال",
-  "@importWatchOnlyDisclaimerDescription": {
-    "description": "Description explaining derivation path matching requirement"
-  },
   "fundExchangeWarningTactic8": "إنهم يضغطون عليك لتتصرف بسرعة",
   "@fundExchangeWarningTactic8": {
     "description": "Eighth scammer tactic warning"
@@ -6354,10 +6212,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "importWatchOnlyDisclaimerTitle": "الإنذار بالمرحلة",
-  "@importWatchOnlyDisclaimerTitle": {
-    "description": "Title for derivation path warning disclaimer"
-  },
   "withdrawConfirmIban": "IBAN",
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
@@ -6394,10 +6248,6 @@
   "paySwapInProgress": "اسبحوا.",
   "@paySwapInProgress": {
     "description": "Status message during submarine swap"
-  },
-  "importMnemonicSyncMessage": "جميع أنواع المحفظة الثلاثة متزامنة وسيظهر رصيدها ومعاملاتها قريبا. يمكنك الانتظار حتى يكتمل تزامن أو ينتقل إلى الاستيراد إذا كنت متأكد من أي نوع من المحفظة ترغب في استيراد.",
-  "@importMnemonicSyncMessage": {
-    "description": "Message explaining wallet type syncing process"
   },
   "coreSwapsLnSendClaimable": "(سواب) جاهز للإدعاء.",
   "@coreSwapsLnSendClaimable": {
@@ -6734,10 +6584,6 @@
   },
   "broadcastSignedTxBroadcasting": "البث...",
   "broadcastSignedTxBroadcastError": "تعذّر علينا بث معاملتك. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
-  "importWatchOnlyErrorNoWalletSelected": "الصق أو امسح مفتاحًا عامًا أو واصفًا أولًا.",
-  "importWatchOnlyErrorLabelRequired": "امنح محفظتك اسمًا قبل الاستيراد.",
-  "importWatchOnlyErrorInvalidFormat": "لا يبدو هذا مفتاحًا عامًا أو واصفًا صالحًا. تحقق مجددًا مما لصقته.",
-  "importWatchOnlyErrorImportFailed": "تعذّر علينا استيراد هذه المحفظة للعرض فقط. يُرجى التحقق من التفاصيل والمحاولة مرة أخرى.",
   "broadcastSignedTxErrorInvalidTransaction": "لا تبدو هذه معاملة موقّعة صالحة. تأكد من أنك لصقت PSBT أو المعاملة كاملةً.",
   "broadcastSignedTxErrorInvalidPushTx": "تعذّر علينا قراءة معاملة من هذا الوسم. يُرجى المحاولة بالمسح مرة أخرى.",
   "@broadcastSignedTxBroadcasting": {
@@ -6746,10 +6592,6 @@
   "receivePayjoinActivated": "تم تنشيط بيجوين",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
-  },
-  "importMnemonicContinue": "استمر",
-  "@importMnemonicContinue": {
-    "description": "Button text to proceed after entering mnemonic"
   },
   "testBackupEncryptedVaultTitle": "الخزنة المشفرة",
   "@testBackupEncryptedVaultTitle": {
@@ -6823,10 +6665,6 @@
   "enterBackupKeyManuallyTitle": "إدخال مفتاح الدعم يدويا",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "importWalletColdcardQ": "Coldcard Q",
-  "@importWalletColdcardQ": {
-    "description": "Button label for Coldcard Q hardware wallet"
   },
   "backupSettingsStartBackup": "ابدأوا",
   "@backupSettingsStartBackup": {
@@ -7638,7 +7476,6 @@
   },
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
-  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
   "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
   "coreScreensFeeRateLabel": "معدل الرسوم",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -7684,10 +7521,6 @@
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
-  "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
-  "@importMnemonicEmptyLabelError": {
-    "description": "Error message when user tries to import a mnemonic without a label"
-  },
   "sendEstimatedDeliveryHours": "ساعات",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -7996,13 +7829,8 @@
   "sendCoordinatingPayjoinTransaction": "جارٍ تنسيق معاملة Payjoin.",
   "sendErrorInvoiceExpired": "انتهت صلاحية هذه الفاتورة. اطلب من المستلم فاتورة جديدة.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "فكّر في تمويل محفظة المدفوعات الفورية لإجراء مدفوعات أصغر.",
-  "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "قرّب جهاز Coldcard لاستلام المعاملة الموقّعة عبر NFC",
-  "importColdcardInvalidWalletData": "بيانات محفظة Coldcard غير صالحة",
-  "importColdcardConnectTitle": "الاتصال بـ {deviceName}",
-  "importColdcardConnectDescription": "استورد واصف المحفظة من جهاز {deviceName} الخاص بك",
-  "importColdcardScanNfcSheetTitle": "قرّب جهاز {deviceName} لاستيراد واصف المحفظة عبر NFC",
   "fundExchangeCopDailyLimitWarning": "إذا تجاوزت حد المعاملات اليومي، ستفشل المعاملة. سيتعيّن عليك الاتصال بدعم العملاء.",
   "fundExchangeCopSenderName": "اسم المرسل",
   "fundExchangeCopIssuingBank": "البنك المُصدِر",
@@ -8134,12 +7962,9 @@
   "recipientsFieldPayeeAccountNumber": "رقم حساب المستفيد",
   "exchangeFileUploadStatusRejectedBadge": "مرفوض",
   "exchangeFileUploadTapToReupload": "اضغط لإعادة الرفع",
-  "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
   "sendErrorInsufficientBalanceFrozenHint": "الرصيد القابل للإنفاق غير كافٍ — {amount} مجمّد. أزِل التجميد عن العملات من إدارة العملات لاستخدامها.",
-  "importWalletBitBox": "BitBox02",
-  "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "تم",
   "consolidationFailedBody": "حدث خطأ غير متوقع. أموالك آمنة: لم يتم بث أي معاملة. يرجى المحاولة مرة أخرى.",
   "consolidationFailedTitle": "فشل الدمج",
@@ -8262,10 +8087,6 @@
   "autoBuyWalletRequiredError": "أضف عنوانًا افتراضيًا واحدًا على الأقل لـ Bitcoin أو Lightning أو Liquid.",
   "autoBuyUpdateError": "تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.",
   "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
-  "importWatchOnlyErrorNetworkMismatch": "تستخدم هذه المحفظة حاليًا شبكة بيتكوين مختلفة. بدّل بين الشبكة الرئيسية وشبكة الاختبار، ثم حاول مرة أخرى.",
-  "importWatchOnlyErrorAlreadyExists": "هذه المحفظة مستوردة بالفعل.",
-  "importWatchOnlyNetworkBitcoinMainnet": "الشبكة: شبكة Bitcoin الرئيسية",
-  "importWatchOnlyNetworkBitcoinTestnet": "الشبكة: شبكة Bitcoin التجريبية",
   "broadcastSignedTxErrorPsbtFinalization": "تعذّر إنهاء المعاملة الموقّعة. تأكد من أنها تحتوي على جميع التوقيعات المطلوبة، ثم حاول مرة أخرى.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
