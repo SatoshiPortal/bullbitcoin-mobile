@@ -87,7 +87,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account and access settings, support chat, funding, default payouts, AutoBuy]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, KYC, account and access settings, support chat, funding, default payouts, AutoBuy]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI

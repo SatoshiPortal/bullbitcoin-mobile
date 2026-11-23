@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -12,6 +17,42 @@ class ExchangeScope extends StatelessWidget {
   final Widget child;
 
   const ExchangeScope({required this.child, super.key});
+
+  static final ExchangeAuthHost authHost = (
+    loadConfiguration: () => locator<GetExchangeWebSettingsUsecase>().execute(),
+    authenticate:
+        (
+          context,
+          evaluateJavaScript, {
+          required isTestnet,
+          required isCurrent,
+        }) => context.read<ExchangeCubit>().completeAuthentication(
+          locator<CompleteExchangeAuthenticationUsecase>(
+            param1: evaluateJavaScript,
+            param2: (isTestnet: isTestnet, isOpen: isCurrent),
+          ),
+          isCurrent: isCurrent,
+        ),
+    failureMessage: (context, failure) => failure.toTranslated(context),
+    mainnetSignInUrl: Uri.parse(ApiServiceConstants.bbAuthUrl),
+    testnetSignInUrl: Uri.parse(ApiServiceConstants.bbAuthTestUrl),
+    returnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
+    testnetKycUrl: Uri.parse(ApiServiceConstants.bbKycTestUrl),
+    currentAccess: () => locator<ExchangeFacade>().currentAccess,
+    watchAccess: ExchangeScope.accessChanges,
+    accountSignedInChanges: (context) {
+      final cubit = context.read<ExchangeCubit>();
+      return Stream<bool>.multi((controller) {
+        controller.addSync(!cubit.state.notLoggedIn);
+        final subscription = cubit.stream.listen(
+          (state) => controller.addSync(!state.notLoggedIn),
+          onDone: controller.closeSync,
+        );
+        controller.onCancel = subscription.cancel;
+      });
+    },
+    retryAccess: (context) => context.read<ExchangeCubit>().retryAccess(),
+  );
 
   static bool isLoggedIn(BuildContext context) =>
       _signedIn(locator<ExchangeFacade>().currentAccess);

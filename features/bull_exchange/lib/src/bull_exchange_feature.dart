@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
 import 'autobuy/autobuy_mount.dart';
+import 'auth/exchange_auth_route.dart';
+import 'auth/exchange_auth_screen.dart';
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
 import 'funding/fund_exchange_router.dart';
@@ -33,6 +35,7 @@ final class BullExchangeFeature {
   final List<RouteBase> settingsRoutes;
   final List<RouteBase> fundingRoutes;
   final GoRoute? autoBuy;
+  final GoRoute? authRoute;
 
   const BullExchangeFeature._(
     this.routes,
@@ -41,6 +44,7 @@ final class BullExchangeFeature {
     this.settingsRoutes,
     this.fundingRoutes,
     this.autoBuy,
+    this.authRoute,
   );
 
   static BullExchangeFeature mount({
@@ -56,6 +60,7 @@ final class BullExchangeFeature {
     ExchangeSettingsHost? settings,
     ExchangeFundingHost? funding,
     AutoBuyHost? autoBuy,
+    ExchangeAuthHost? auth,
   }) => BullExchangeFeature._(
     List.unmodifiable([
       GoRoute(
@@ -109,5 +114,14 @@ final class BullExchangeFeature {
         ? const []
         : List.unmodifiable(FundExchangeRouter.routes(funding)),
     autoBuy == null ? null : autoBuyRoute(autoBuy),
+    auth == null
+        ? null
+        : exchangeAuthRoute(
+            host: auth,
+            networkUnavailable: networkUnavailable,
+            showWebsiteOnly: showWebsiteOnly,
+            homePath: unavailableRedirectPath,
+            onExit: onExit,
+          ),
   );
 }

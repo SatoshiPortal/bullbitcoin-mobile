@@ -213,7 +213,7 @@ class AppRouter {
           ),
         ],
       ),
-      ExchangeRouter.authRoute(_exchangeConfig),
+      ?_exchangeFeature.authRoute,
       ?_exchangeFeature.supportChatRoute,
       OnboardingRouter.route,
       ...locator<AccessFeature>().routes.root,

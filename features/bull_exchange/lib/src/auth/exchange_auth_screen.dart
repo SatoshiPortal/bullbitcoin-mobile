@@ -1,3 +1,5 @@
+import '../exchange_l10n.dart';
+
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 
 import 'dart:async';
@@ -5,28 +7,46 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialog, BullShapesX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullInfoCard, BullShapesX;
+
+typedef ExchangeAuthHost = ({
+  Future<Result<ExchangeWebPreferences, ExchangeFailure>> Function()
+  loadConfiguration,
+  Future<Result<void, ExchangeFailure>> Function(
+    BuildContext,
+    Future<Object> Function(String), {
+    required bool isTestnet,
+    required bool Function() isCurrent,
+  })
+  authenticate,
+  String Function(BuildContext, ExchangeFailure) failureMessage,
+  Uri mainnetSignInUrl,
+  Uri testnetSignInUrl,
+  Uri returnUrl,
+  Uri testnetKycUrl,
+  ExchangeAccess Function() currentAccess,
+  Stream<ExchangeAccess> Function() watchAccess,
+  Stream<bool> Function(BuildContext) accountSignedInChanges,
+  Future<void> Function(BuildContext) retryAccess,
+});
 
 class ExchangeAuthScreen extends StatefulWidget {
   final VoidCallback onExit;
+  final ExchangeAuthHost host;
 
-  const ExchangeAuthScreen({required this.onExit, super.key});
+  const ExchangeAuthScreen({
+    required this.onExit,
+    required this.host,
+    super.key,
+  });
 
   @override
   State<ExchangeAuthScreen> createState() => _ExchangeAuthScreenState();
@@ -35,8 +55,7 @@ class ExchangeAuthScreen extends StatefulWidget {
 class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   late final WebViewController _controller = WebViewController();
   late final WebViewCookieManager _cookieManager = WebViewCookieManager();
-  late final String _bbAuthUrl;
-  late final CompleteExchangeAuthenticationUsecase _authentication;
+  late final Uri _bbAuthUrl;
   String? _basicAuthUsername;
   String? _basicAuthPassword;
   bool _isGeneratingApiKey = false;
@@ -61,7 +80,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   }
 
   Future<void> _load() async {
-    final result = await locator<GetExchangeWebSettingsUsecase>().execute();
+    final result = await widget.host.loadConfiguration();
     if (!mounted) return;
     final ExchangeWebPreferences settingsState;
     switch (result) {
@@ -75,13 +94,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
         return;
     }
     final isTestnet = settingsState.environment == Environment.testnet;
-    _authentication = locator<CompleteExchangeAuthenticationUsecase>(
-      param1: _controller.runJavaScriptReturningResult,
-      param2: (isTestnet: isTestnet, isOpen: () => mounted && !_isClosing),
-    );
     _bbAuthUrl = isTestnet
-        ? ApiServiceConstants.bbAuthTestUrl
-        : ApiServiceConstants.bbAuthUrl;
+        ? widget.host.testnetSignInUrl
+        : widget.host.mainnetSignInUrl;
     if (isTestnet) {
       _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
       _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
@@ -89,8 +104,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
     // Hosts of the Bull web app the site links back to.
     final appHosts = {
-      Uri.parse(ApiServiceConstants.bbAppUrl).host,
-      if (isTestnet) Uri.parse(ApiServiceConstants.bbKycTestUrl).host,
+      widget.host.returnUrl.host,
+      if (isTestnet) widget.host.testnetKycUrl.host,
     }.toList();
 
     _controller
@@ -157,12 +172,12 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             var retry = false;
             setState(() => _isGeneratingApiKey = true);
             try {
-              final result = await context
-                  .read<ExchangeCubit>()
-                  .completeAuthentication(
-                    _authentication,
-                    isCurrent: () => mounted && !_isClosing,
-                  );
+              final result = await widget.host.authenticate(
+                context,
+                _controller.runJavaScriptReturningResult,
+                isTestnet: isTestnet,
+                isCurrent: () => mounted && !_isClosing,
+              );
               final failure = switch (result) {
                 Err(:final failure) => failure,
                 Ok() => null,
@@ -192,7 +207,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               return NavigationDecision.prevent;
             }
 
-            final authHost = Uri.parse(_bbAuthUrl).host;
+            final authHost = _bbAuthUrl.host;
             if (uri.host == authHost) {
               return NavigationDecision.navigate;
             }
@@ -226,7 +241,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       ..setUserAgent(
         'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15.0 Safari/604.1',
       )
-      ..loadRequest(Uri.parse(_bbAuthUrl));
+      ..loadRequest(_bbAuthUrl);
 
     if (Platform.isAndroid) {
       AndroidWebViewController.enableDebugging(false);
@@ -254,7 +269,12 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CloseButton(onPressed: widget.onExit),
-            ExchangeFailureBanner(failure: failure, onRetry: _retry),
+            BullInfoCard(
+              description: widget.host.failureMessage(context, failure),
+              tagColor: context.appColors.error,
+              bgColor: context.appColors.errorContainer,
+              onTap: _retry,
+            ),
           ],
         ),
       );
@@ -286,7 +306,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             ),
             title: Text(context.loc.exchangeAuthLoginFailedTitle),
             content: Text(
-              failure?.toTranslated(context) ??
+              (failure == null
+                      ? null
+                      : widget.host.failureMessage(context, failure)) ??
                   context.loc.exchangeAuthLoginFailedMessage,
             ),
             actions: [

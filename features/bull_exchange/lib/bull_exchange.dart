@@ -1,6 +1,7 @@
 /// Exchange navigation contributed to the application.
 library;
 
+export 'src/auth/exchange_auth_screen.dart' show ExchangeAuthHost;
 export 'src/autobuy/autobuy_mount.dart'
     show AutoBuyHost, AutoBuyNavigation, ExchangeAutoBuyCard;
 export 'src/bull_exchange_feature.dart' show BullExchangeFeature;
