@@ -98,22 +98,26 @@ Then pass `--apk ~/bullbitcoin-splits/` to the script.
 
 ## Verifying the release signature
 
-Each [GitHub release](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases) ships `HASHSUMS256`, the SHA-256 of the APK, and `HASHSUMS256.asc`, its detached GPG signature. The signing key is published in this repository at [`keys/i5hi.asc`](../keys/i5hi.asc).
+[GitHub releases](https://github.com/SatoshiPortal/bullbitcoin-mobile/releases) from 6.12.2 onward ship `HASHSUMS256`, the SHA-256 of the APK, and `HASHSUMS256.asc`, its detached GPG signature. 6.13.0 and 6.13.1 were published without a signature. The signing key is published in this repository at [`keys/i5hi.asc`](../keys/i5hi.asc).
 
 | | Fingerprint |
 |---|---|
 | Primary key (Vishal Menon, [i5hi](https://github.com/i5hi)) | `BC5A D8A2 6AAC D383 EF63  0D45 5AE8 AC51 D171 F109` |
 | Signing subkey | `7247 8AF1 8BD0 F955 3A16  B9F1 9F4E 17C3 203E 0D49` |
 
-With the APK, `HASHSUMS256` and `HASHSUMS256.asc` of a release in the current directory, from a checkout of this repository:
+The same key is on [keyserver.ubuntu.com](https://keyserver.ubuntu.com/pks/lookup?search=0x72478AF18BD0F9553A16B9F19F4E17C3203E0D49&fingerprint=on&op=index) and at <https://github.com/i5hi.gpg>. Compare the fingerprints there with the ones above before trusting the copy in this repository: whoever can change this file can change this page too.
+
+Download the APK, `HASHSUMS256` and `HASHSUMS256.asc` of a release into the root of a checkout of this repository, then run from that directory:
 
 ```bash
-gpg --import keys/i5hi.asc
-gpg --verify HASHSUMS256.asc HASHSUMS256
-sha256sum --check HASHSUMS256
+gpg --no-default-keyring --keyring ./bull-release.kbx --import keys/i5hi.asc
+gpg --no-default-keyring --keyring ./bull-release.kbx --status-fd 1 \
+  --verify HASHSUMS256.asc HASHSUMS256 \
+  | grep '^\[GNUPG:\] VALIDSIG 72478AF18BD0F9553A16B9F19F4E17C3203E0D49 '
+sha256sum --ignore-missing --check HASHSUMS256
 ```
 
-`gpg --verify` must report a good signature made with the signing subkey above, and `sha256sum` must report `OK` for the APK (on macOS, `shasum -a 256 --check HASHSUMS256`).
+The dedicated keyring holds only this key, so the `grep` prints a `VALIDSIG` line, and exits with success, only when the signing subkey above made the signature. `gpg` also warns that the key is not certified with a trusted signature: that is expected for a key you have not signed yourself, and is why the fingerprint is checked explicitly. `sha256sum` must then report `OK` for the APK (on macOS, `shasum -a 256 --ignore-missing --check HASHSUMS256`).
 
 ## Known gaps that need infra/org access to close
 
