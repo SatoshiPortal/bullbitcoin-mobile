@@ -1,4 +1,7 @@
 {
+  "backupSettingsMoneySection": "Money backup",
+  "backupSettingsDataSection": "Data backup",
+  "backupSettingsAutomaticBackup": "Automatic backup",
   "@@locale": "en",
   "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
   "@walletDetailsUnnamedWalletFallback": {

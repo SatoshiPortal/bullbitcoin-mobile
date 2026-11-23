@@ -23,6 +23,7 @@ import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
+import '../domain/metadata_backup_wallet.dart';
 import '../domain/recorded_derivation.dart';
 import '../domain/registered_wallet.dart';
 import '../domain/wallet_registration.dart';
@@ -303,6 +304,41 @@ final class SecretsInventory implements WalletInventory {
     lock();
     return _store.close();
   }
+}
+
+/// The metadata backup client cannot fetch raw descriptors from this view.
+extension MetadataBackupInventory on SecretsInventory {
+  @useResult
+  Future<Result<List<MetadataBackupWallet>, SecretFailure>>
+  metadataBackupWallets(Secrets secrets) => _inSession((_) async {
+    final projection = await _wallets.metadataBackupWallets(defaultViewId);
+    if (projection case Err(:final failure)) return Err(failure);
+    final wallets =
+        (projection as Ok<List<MetadataBackupWallet>, SecretFailure>).value;
+    final available = <Fingerprint, bool>{};
+    final verified = <MetadataBackupWallet>[];
+    for (final wallet in wallets) {
+      final reference = wallet.secret;
+      if (reference == null) {
+        verified.add(wallet);
+        continue;
+      }
+      var present = available[reference];
+      if (present == null) {
+        switch (await secrets.fetch(reference)) {
+          case Ok():
+            present = true;
+          case Err(failure: SecretNotFoundFailure()):
+            present = false;
+          case Err(:final failure):
+            return Err(failure);
+        }
+        available[reference] = present;
+      }
+      verified.add(present ? wallet : MetadataBackupWallet(id: wallet.id));
+    }
+    return Ok(List.unmodifiable(verified));
+  });
 }
 
 /// Scope for background sync. Only descriptors in views with an active

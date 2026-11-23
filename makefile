@@ -170,6 +170,7 @@ translations:
 	@(cd features/scanning && fvm flutter gen-l10n)
 	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
 	@(cd features/backups && fvm flutter gen-l10n)
+	@(cd features/backup_metadata && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
 	@(cd features/startup && fvm flutter gen-l10n)
 	@(cd features/bip85 && fvm flutter gen-l10n)
