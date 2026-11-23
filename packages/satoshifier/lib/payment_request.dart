@@ -1,12 +1,18 @@
-import 'package:primitives/primitives.dart' show ConvertAmount;
-import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart' show msatsToSats;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
-import 'package:rust_bindings/boltz.dart' as boltz;
+import 'package:bull_logger/bull_logger.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, LiquidNetwork, Ok;
+    show
+        BitcoinNetwork,
+        ConvertAmount,
+        Err,
+        LiquidNetwork,
+        Network,
+        NetworkEnv,
+        Ok,
+        UnsupportedNetworkException,
+        msatsToSats;
+import 'package:rust_bindings/boltz.dart' as boltz;
 import 'package:sync/sync.dart'
     show canonicalBitcoinPsbt, liquidAddressNetwork, parseBitcoinAddress;
 
@@ -185,25 +191,25 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (address.startsWith('1') ||
             address.startsWith('3') ||
             address.startsWith('bc1')) {
-          network = Network.bitcoinMainnet;
+          network = BitcoinNetwork.mainnet;
           _requireBitcoinAddress(address, BitcoinNetwork.mainnet);
         } else if (address.startsWith('2') ||
             address.startsWith('m') ||
             address.startsWith('n') ||
             address.startsWith('tb1')) {
-          network = Network.bitcoinTestnet;
+          network = BitcoinNetwork.testnet;
           _requireBitcoinAddress(address, BitcoinNetwork.testnet);
         } else {
           network = await _validateBitcoinAddress(address);
         }
       } else if (uri.scheme == 'liquidnetwork' || uri.scheme == 'liquid') {
-        network = Network.liquidMainnet;
+        network = LiquidNetwork.mainnet;
         if (await liquidAddressNetwork(address)
             case Ok(value: != LiquidNetwork.mainnet) || Err()) {
           throw 'Invalid liquid mainnet address';
         }
       } else if (uri.scheme == 'liquidtestnet') {
-        network = Network.liquidTestnet;
+        network = LiquidNetwork.testnet;
         if (await liquidAddressNetwork(address)
             case Ok(value: != LiquidNetwork.testnet) || Err()) {
           throw 'Invalid liquid testnet address';
@@ -235,10 +241,10 @@ sealed class PaymentRequest with _$PaymentRequest {
 
   static Future<Network> _validateBitcoinAddress(String address) async {
     if (parseBitcoinAddress(address, BitcoinNetwork.mainnet) is Ok) {
-      return Network.bitcoinMainnet;
+      return BitcoinNetwork.mainnet;
     }
     if (parseBitcoinAddress(address, BitcoinNetwork.testnet) is Ok) {
-      return Network.bitcoinTestnet;
+      return BitcoinNetwork.testnet;
     }
     throw 'Invalid bitcoin address';
   }
@@ -250,8 +256,8 @@ sealed class PaymentRequest with _$PaymentRequest {
   }
 
   static Future<PaymentRequest?> _tryParseLiquidAddress(String data) async {
-    // The app has no Liquid regtest environment: an Elements regtest
-    // address is not a destination, rather than a mainnet one.
+    // The historical parser handles mainnet and testnet only. The caller
+    // validates regtest addresses against its active environment.
     final network = await liquidAddressNetwork(data);
     if (network case Err(:final failure)) {
       log.warning('Not a Liquid address category=${failure.logCode}');
@@ -348,8 +354,11 @@ sealed class PaymentRequest with _$PaymentRequest {
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
-    Bip21PaymentRequest(network: final network) =>
-      network.requireHistoricalTestnet(),
+    Bip21PaymentRequest(network: final network) => switch (network.env) {
+      NetworkEnv.mainnet => false,
+      NetworkEnv.testnet => true,
+      _ => throw const UnsupportedNetworkException(),
+    },
     LnAddressPaymentRequest() => false,
     PsbtPaymentRequest() => false,
   };

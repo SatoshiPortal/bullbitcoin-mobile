@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';

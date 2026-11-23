@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart'
     show Err, Failure, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

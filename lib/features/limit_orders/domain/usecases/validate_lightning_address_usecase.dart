@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:meta/meta.dart';
 
 typedef PaymentRequestParser = Future<PaymentRequest> Function(String data);

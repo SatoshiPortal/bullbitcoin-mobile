@@ -1,8 +1,9 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
 import 'initialization_result.dart';
 
-import 'package:bb_mobile/core/utils/liquid_address.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:satoshifier/liquid_address.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
@@ -37,7 +38,7 @@ Future<void> main({bool isInitialized = false}) async {
       expect(bip21.lightning, lnurlStr);
       expect(bip21.label, 'Donation');
       expect(bip21.message, 'Thanks');
-      expect(bip21.network, Network.bitcoinMainnet);
+      expect(bip21.network, BitcoinNetwork.mainnet);
     });
 
     test('BIP21 with Bolt11 lightning param', () async {
@@ -47,7 +48,7 @@ Future<void> main({bool isInitialized = false}) async {
       final bip21 = result as Bip21PaymentRequest;
       expect(bip21.address.toLowerCase(), btcAddress);
       expect(bip21.lightning, bolt11Invoice);
-      expect(bip21.network, Network.bitcoinMainnet);
+      expect(bip21.network, BitcoinNetwork.mainnet);
     });
 
     test('HTTPS URL with a percent-encoded LNAddress is rejected', () async {

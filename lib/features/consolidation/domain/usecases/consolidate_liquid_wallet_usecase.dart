@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show LiquidWalletRepository;

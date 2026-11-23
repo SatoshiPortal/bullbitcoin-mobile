@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 
 /// The wallet's spendable coins don't cover the amount plus the network fee.
 ///

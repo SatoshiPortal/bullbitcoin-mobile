@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:material_ui/material_ui.dart' show Scaffold, Center, Text;
 import 'package:bb_mobile/features/replace_by_fee/domain/replacement_target.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';

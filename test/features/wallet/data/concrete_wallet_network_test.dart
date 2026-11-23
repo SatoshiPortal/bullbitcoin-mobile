@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/write.dart' show nativeWalletStoragePath;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';

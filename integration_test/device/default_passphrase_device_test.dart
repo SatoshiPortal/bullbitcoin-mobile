@@ -2,8 +2,7 @@ import '../initialization_result.dart';
 
 import 'dart:math';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:access/access.dart';
 import 'package:access/testing.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';

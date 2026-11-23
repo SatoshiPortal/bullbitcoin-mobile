@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipient_type_text.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';

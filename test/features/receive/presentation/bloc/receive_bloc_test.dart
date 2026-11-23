@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/wallet_transacti
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
@@ -191,7 +191,7 @@ class _IntroStep extends StatelessWidget {
                 link: true,
                 child: TextButton(
                   onPressed: () => launchUrl(
-                    Uri.parse(SettingsConstants.exchangeTermsAndConditionsLink),
+                    Uri.parse(ExchangeDefaults.exchangeTermsAndConditionsLink),
                     mode: LaunchMode.inAppBrowserView,
                   ),
                   child: Text(

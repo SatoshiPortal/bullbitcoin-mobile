@@ -1,3 +1,5 @@
+import 'package:swaps/setup.dart';
+
 /// The Boltz backend the swap engine talks to, in the engine's form: a bare
 /// host path that it prefixes with https:// and wss://. An explicitly typed
 /// `http://` is kept so a local or staging backend works on testnet; mainnet
@@ -7,8 +9,12 @@ class SwapServer {
 
   const SwapServer._(this.host);
 
-  static const mainnetDefault = SwapServer._('api.boltz.exchange/v2');
-  static const testnetDefault = SwapServer._('api.testnet.boltz.exchange/v2');
+  static const mainnetDefault = SwapServer._(
+    SwapServiceDefaults.boltzMainnetUrlPath,
+  );
+  static const testnetDefault = SwapServer._(
+    SwapServiceDefaults.boltzTestnetUrlPath,
+  );
 
   static SwapServer defaultFor({required bool isTestnet}) =>
       isTestnet ? testnetDefault : mainnetDefault;

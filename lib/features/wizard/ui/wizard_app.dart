@@ -9,8 +9,7 @@ import 'package:notifications/notifications.dart'
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
     show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';

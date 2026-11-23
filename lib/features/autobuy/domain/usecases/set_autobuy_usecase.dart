@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_exceptions.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';

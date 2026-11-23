@@ -1,10 +1,10 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 // Run with: fvm flutter test test/core_test/utils/payment_request_test.dart
 // Requires native FFI (bdk) — use `flutter test`, not `dart test`.
 // The HTTPS/LNAddress test (needs boltz FFI + network) lives in
 // integration_test/payment_request_test.dart.
 
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -34,7 +34,7 @@ void main() {
       expect(bip21.lightning, lnurlStr);
       expect(bip21.label, 'Donation');
       expect(bip21.message, 'Thanks');
-      expect(bip21.network, Network.bitcoinMainnet);
+      expect(bip21.network, BitcoinNetwork.mainnet);
     });
 
     // bitcoin: URI whose lightning param is a standard Bolt11 invoice
@@ -46,7 +46,7 @@ void main() {
       final bip21 = result as Bip21PaymentRequest;
       expect(bip21.address.toLowerCase(), btcAddress);
       expect(bip21.lightning, bolt11Invoice);
-      expect(bip21.network, Network.bitcoinMainnet);
+      expect(bip21.network, BitcoinNetwork.mainnet);
     });
   });
 }

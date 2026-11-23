@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_addr
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:labels/labels.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {

@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart' show debugPrint;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -25,7 +25,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';
@@ -77,7 +76,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_u
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart' as boltz;
 import 'package:swaps/swaps.dart' show SwapRoute;
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
@@ -456,7 +455,7 @@ const _sweepFeeOptions = FeeOptions(
 );
 
 Bip21PaymentRequest _payjoinBip21() => const PaymentRequest.bip21(
-  network: Network.bitcoinMainnet,
+  network: BitcoinNetwork.mainnet,
   uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
   address: 'bc1qaddr',
   amountSat: 50000,
@@ -1083,7 +1082,7 @@ void main() {
       when(() => detectBitcoinStringUsecase.execute(data: 'bitcoin:fixture'))
           .thenAnswer(
             (_) async => const PaymentRequest.bip21(
-              network: Network.bitcoinMainnet,
+              network: BitcoinNetwork.mainnet,
               uri: 'bitcoin:fixture?amount=0.00001',
               address: 'bc1qfixture',
               amountSat: 1000,
@@ -2134,7 +2133,7 @@ void main() {
         sats: 75000,
       );
       const request = PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
         address: 'bc1qfirst',
         lightning: 'lnbc1invoice',
@@ -2310,7 +2309,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -2429,7 +2428,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?amount=0.0005',
           address: 'bc1qrecipient',
           amountSat: 50000,
@@ -2502,7 +2501,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qrecipient?label=rent',
           address: 'bc1qrecipient',
           label: 'rent',
@@ -3475,7 +3474,7 @@ void main() {
         const uri = 'bitcoin:bc1qsecond?amount=0.0005';
         when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
           (_) async => const PaymentRequest.bip21(
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             uri: uri,
             address: 'bc1qsecond',
             amountSat: 50000,
@@ -3537,7 +3536,7 @@ void main() {
         const uri = 'bitcoin:bc1qsecond?amount=0.0005';
         when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
           (_) async => const PaymentRequest.bip21(
-            network: Network.bitcoinMainnet,
+            network: BitcoinNetwork.mainnet,
             uri: uri,
             address: 'bc1qsecond',
             amountSat: 50000,
@@ -3586,7 +3585,7 @@ void main() {
       const uri = 'bitcoin:bc1qsecond?amount=0.0005';
       when(() => detectBitcoinStringUsecase.execute(data: uri)).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: uri,
           address: 'bc1qsecond',
           amountSat: 50000,
@@ -4008,7 +4007,7 @@ void main() {
     test('keeps a multi-recipient BIP21 send on chain', () async {
       final wallet = _bitcoinLocalWallet();
       const request = PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
         address: 'bc1qfirst',
         lightning: 'lnbc1invoice',
@@ -6620,7 +6619,7 @@ void main() {
       () async {
         final wallet = _bitcoinLocalWallet();
         const request = PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
           address: 'bc1qfirst',
           lightning: 'lnbc1invoice',
@@ -7040,7 +7039,7 @@ void main() {
         sendType: SendType.bitcoin,
         selectedWallet: SendWalletBitcoin(wallet),
         paymentRequest: const PaymentRequest.bip21(
-          network: Network.bitcoinRegtest,
+          network: BitcoinNetwork.regtest,
           uri: 'bitcoin:bcrt1qrecipient',
           address: 'bcrt1qrecipient',
         ),
@@ -7107,7 +7106,7 @@ void main() {
             sendType: SendType.bitcoin,
             selectedWallet: SendWalletBitcoin(wallet),
             paymentRequest: const PaymentRequest.bip21(
-              network: Network.bitcoinRegtest,
+              network: BitcoinNetwork.regtest,
               uri: 'bitcoin:bcrt1qrecipient',
               address: 'bcrt1qrecipient',
             ),
@@ -8532,7 +8531,7 @@ void main() {
 
   group('Boltz-first cross-chain send', () {
     const liquidRequest = PaymentRequest.bip21(
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       uri: 'liquidnetwork:lq1recipient?amount=0.0005',
       address: 'lq1recipient',
       amountSat: 50000,
@@ -8788,7 +8787,7 @@ void main() {
         cubit.setStateForTest(
           crossChainState(
             paymentRequest: const PaymentRequest.bip21(
-              network: Network.liquidTestnet,
+              network: LiquidNetwork.testnet,
               uri: 'liquidtestnet:tlq1recipient?amount=0.0005',
               address: 'tlq1recipient',
               amountSat: 50000,
@@ -8916,7 +8915,7 @@ void main() {
             sendType: SendType.bitcoin,
             selectedWallet: SendWalletBitcoin(wallet),
             paymentRequest: PaymentRequest.bip21(
-              network: destination,
+              network: destination.shared,
               uri: 'bitcoin:public-fixture',
               address: 'public-fixture',
               amountSat: 50000,

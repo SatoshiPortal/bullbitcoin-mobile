@@ -10,10 +10,11 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>API Clients, Tor Adapters,<br/>DI & Router setup,<br/>Domain Primitives/Value Objects]
-    PRIMITIVES[Primitives Package]
+    PRIMITIVES[Primitives Package<br/>Shared values, signer classification and payment networks]
     ARK[Ark]
     ARK_PROTOCOL[Ark Protocol Package]
     BULL_UI[Bull UI Package]
+    APP_STARTUP -->|app theme| BULL_UI
     WALLETS --> ARK
     SETTINGS --> ARK
     SEND --> ARK
@@ -74,6 +75,13 @@ graph TB
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
+    SATOSHIFIER[Satoshifier Package]
+    BROADCAST_SIGNED_TX -->|BBQR assembly| SATOSHIFIER
+    SATOSHIFIER --> SYNC
+    SATOSHIFIER --> BULL_LOGGER
+    SEND -->|payment requests| SATOSHIFIER
+    SWAP -->|payment requests| SATOSHIFIER
+    WALLETS -->|payment requests, public extended keys| SATOSHIFIER
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER

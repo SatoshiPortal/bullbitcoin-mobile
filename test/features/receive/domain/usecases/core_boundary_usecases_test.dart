@@ -5,7 +5,6 @@ import '../../../../fake_index_price_reader.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';

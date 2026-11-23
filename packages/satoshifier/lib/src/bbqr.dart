@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:rust_bindings/bbqr.dart' as bbqr;
+import 'package:sync/sync.dart' show BitcoinTx;
+
+import 'bbqr_options.dart';
 
 enum TxFormat { psbt, hex }
 

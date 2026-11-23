@@ -21,7 +21,8 @@ import 'dart:async';
 
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:primitives/primitives.dart'
+    show AssetConstants, ConversionConstants;
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;

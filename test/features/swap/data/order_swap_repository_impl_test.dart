@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
 import 'package:bb_mobile/features/swap/data/order_swaps_table.drift.dart';
 import 'package:primitives/primitives.dart';

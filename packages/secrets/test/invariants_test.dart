@@ -91,7 +91,7 @@ void main() {
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
     };
-
+    const inventoryRepository = 'lib/src/data/inventory_repository.dart';
     // These failures describe unsupported requests or the results of an
     // inventory read. They do not translate an exception from storage.
     const inventoryReadFailures = {
@@ -105,7 +105,7 @@ void main() {
       final constructions = _FailureConstructions(failures);
       parseString(content: file.readAsStringSync()).unit.accept(constructions);
       for (final failure in constructions.names) {
-        if (file.path == 'lib/src/data/inventory_repository.dart' &&
+        if (file.path == inventoryRepository &&
             inventoryReadFailures.contains(failure)) {
           continue;
         }
@@ -321,6 +321,11 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     const declared = {
       // lifecycle and handle
       'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
+      // scoped inventory reads expose wallet metadata, not descriptors
+      'WalletInventory',
+      'WalletRegistration',
+      'WalletSelection',
+      'WalletSigner',
       // exhaustive custody references supplied by seed owners
       'SeedReferencePort', 'SeedReferencesUnavailable',
       // host exclusion between publishing obligations and deleting a parent

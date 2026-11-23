@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart' as app;
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -38,7 +37,7 @@ void main() {
         );
         expect(result, isA<Bip21PaymentRequest>());
         final request = result as Bip21PaymentRequest;
-        expect(request.network, app.Network.bitcoinRegtest);
+        expect(request.network, BitcoinNetwork.regtest);
         expect(request.address, address);
         if (input.startsWith('bitcoin:')) expect(request.amountSat, 1);
       }
@@ -53,7 +52,7 @@ void main() {
     );
     expect(result, isA<Bip21PaymentRequest>());
     final request = result as Bip21PaymentRequest;
-    expect(request.network, app.Network.bitcoinRegtest);
+    expect(request.network, BitcoinNetwork.regtest);
     expect(request.pj, pj);
     expect(request.pjos, '0');
     expect(request.amountSat, 10000);

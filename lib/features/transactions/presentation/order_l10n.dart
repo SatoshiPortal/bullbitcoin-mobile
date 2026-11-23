@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:flutter/widgets.dart';
 
 /// User-facing name of an exchange order's type.

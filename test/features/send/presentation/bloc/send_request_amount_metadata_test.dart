@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,7 +8,7 @@ void main() {
     for (final amount in <int?>[null, 0, 2500]) {
       final state = SendState(
         paymentRequest: PaymentRequest.bip21(
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           uri: 'bitcoin:address',
           address: 'address',
           amountSat: amount,

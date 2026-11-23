@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:satoshifier/payment_request.dart';
 
 import 'payment_destination.dart';
 
@@ -37,7 +38,7 @@ final class ValidatePaymentDestinationUsecase {
           PaymentDestination(
             raw: raw,
             address: address,
-            type: network.isBitcoin
+            type: network is BitcoinNetwork
                 ? PaymentDestinationType.bitcoin
                 : PaymentDestinationType.liquid,
             amountSat: amountSat,

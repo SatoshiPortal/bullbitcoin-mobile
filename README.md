@@ -11,7 +11,7 @@ During setup, BULL creates two default wallets that share the same mnemonic:
 - **Secure Bitcoin Wallet**: a Bitcoin wallet using native SegWit addresses.
 - **Instant Payments Wallet**: a Liquid wallet using confidential SegWit addresses.
 
-Lightning invoices can be paid from either wallet; incoming Lightning payments are received into the Instant Payments Wallet. These payments and Bitcoin/Liquid transfers use the [configured swap service](lib/core/utils/constants.dart).
+Lightning invoices can be paid from either wallet; incoming Lightning payments are received into the Instant Payments Wallet. These payments and Bitcoin/Liquid transfers use the [configured swap service](packages/swaps/lib/setup.dart).
 
 ## Features
 
@@ -70,7 +70,7 @@ Development is tracked in [GitHub issues](https://github.com/SatoshiPortal/bullb
 - [Architecture](ARCHITECTURE.md) and [feature dependencies](FEATURES.md).
 - [Toolchain, setup and development conventions](AGENTS.md). Start with an issue before implementation work; see [CONTRIBUTING.md](CONTRIBUTING.md).
 - Translations are AI-generated and community-reviewed. See the [translation tooling guide](tools/README.md) for changes to [`localization/`](localization/).
-- [Dependencies](pubspec.yaml) and [default service providers](lib/core/utils/constants.dart).
+- [Dependencies](pubspec.yaml) and default [Electrum](packages/electrum/lib/setup.dart), [Mempool](packages/mempool/lib/migration.dart) and [swap](packages/swaps/lib/setup.dart) endpoints.
 - [Android reproducible build and verification instructions](reproducibility/) and [BULL Wallet on WalletScrutiny](https://walletscrutiny.com/mobile/com.bullbitcoin.mobile/).
 - Report vulnerabilities privately using the [security policy](SECURITY.md).
 - Licensed under [MIT](LICENSE).

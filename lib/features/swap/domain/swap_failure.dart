@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus;
 

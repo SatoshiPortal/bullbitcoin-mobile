@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart'
@@ -29,7 +30,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bb_mobile/features/consolidation/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:fees/fees.dart';
@@ -37,7 +38,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fe
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -1552,7 +1553,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           bip21AmountSat = bip21.amountSat;
 
           if (fromWallet.isLiquid) {
-            if (!bip21.network.isBitcoin) {
+            if (bip21.network is! BitcoinNetwork) {
               emit(
                 state.copyWith(
                   externalAddress: sanitizedText,
@@ -1564,7 +1565,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               return;
             }
           } else {
-            if (!bip21.network.isLiquid) {
+            if (bip21.network is! LiquidNetwork) {
               emit(
                 state.copyWith(
                   externalAddress: sanitizedText,
@@ -2677,8 +2678,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         environment: fromWallet.network.environment,
       );
       if (request case Bip21PaymentRequest(:final network)) {
-        return network.environment == fromWallet.network.environment &&
-            (fromWallet.isLiquid ? network.isBitcoin : network.isLiquid);
+        return network.env == fromWallet.network.environment &&
+            (fromWallet.isLiquid
+                ? network is BitcoinNetwork
+                : network is LiquidNetwork);
       }
       final onDestinationChain = fromWallet.isLiquid
           ? request.isBitcoinAddress

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:signers/signers.dart' as signers;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:legacy_storage/app_database.dart'
@@ -8,7 +7,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart' show Fingerprint, ScriptType;
+import 'package:primitives/primitives.dart' show Fingerprint, ScriptType, SignerEntity;
 
 part 'wallet_metadata_model.freezed.dart';
 

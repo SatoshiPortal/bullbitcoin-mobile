@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 
 /// Binds one WebView operation to its original environment and view lifetime.
 /// The callback avoids retaining a platform controller in a singleton.
@@ -20,8 +20,8 @@ final class ExchangeWebAuthDatasource {
   Future<Object> generateApiKeyResponse() async {
     if (!isOpen) throw const _ClosedSessionException();
     final baseUrl = _isTestnet
-        ? ApiServiceConstants.bbAuthTestUrl
-        : ApiServiceConstants.bbAuthUrl;
+        ? ExchangeDefaults.bbAuthTestUrl
+        : ExchangeDefaults.bbAuthUrl;
     final url = jsonEncode('$baseUrl/api/generate-api-key');
     final response = await _evaluateJavaScript('''
       (function() {

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/new_recipient_tab.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipients_list_tab.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';

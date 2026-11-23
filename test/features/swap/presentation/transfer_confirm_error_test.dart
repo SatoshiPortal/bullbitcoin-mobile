@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 

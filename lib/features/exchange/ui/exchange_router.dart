@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart'
     show BullScaffold, BullTopBar, BullButton, BullText, Gap, BullTypographyX;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
 import 'dart:async';

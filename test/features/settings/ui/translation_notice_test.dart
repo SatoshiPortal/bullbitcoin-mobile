@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show TranslationWarningBottomSheet;
 import 'package:bb_mobile/localizations.dart';

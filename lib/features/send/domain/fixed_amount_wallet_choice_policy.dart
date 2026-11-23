@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 /// A fixed request must not silently choose between eligible direct wallets.
 final class FixedAmountWalletChoicePolicy {
@@ -23,7 +24,7 @@ final class FixedAmountWalletChoicePolicy {
     final eligible = <String, Wallet>{};
     for (final wallet in wallets) {
       final balance = wallet.balanceSat;
-      if (wallet.network == request.network &&
+      if (wallet.network.shared == request.network &&
           !wallet.isWatchOnly &&
           balance != null &&
           balance > BigInt.from(amount)) {

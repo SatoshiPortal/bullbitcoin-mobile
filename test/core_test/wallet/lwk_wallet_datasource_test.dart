@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.d
 import 'package:primitives/primitives.dart' show LiquidNetwork;
 import 'package:sync/sync.dart' show WalletKey, LiquidCoin;
 import 'package:sync/testing.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:primitives/primitives.dart' show AssetConstants;
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

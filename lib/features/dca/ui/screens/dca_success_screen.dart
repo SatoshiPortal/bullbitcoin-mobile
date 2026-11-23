@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';

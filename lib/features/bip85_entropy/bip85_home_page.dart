@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/bip85_entropy/ui/bip85_derivation_widget.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/bip85_failure_l10n.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';

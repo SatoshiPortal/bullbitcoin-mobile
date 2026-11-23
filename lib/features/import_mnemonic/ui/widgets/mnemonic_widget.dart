@@ -4,9 +4,9 @@ import 'package:bull_logger/bull_logger.dart';
 import 'dart:math';
 
 import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/mnemonic_entry_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard_layout.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
