@@ -14,11 +14,9 @@ import 'package:sync/write.dart' show BroadcastSpend;
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show NetworkEnv, Result, Err;
 
-import '../domain/wallet_discovery_failure.dart';
+import 'package:overview/overview.dart';
 
 export 'package:primitives/primitives.dart' show NetworkEnv, Result;
-
-export '../domain/wallet_discovery_failure.dart';
 
 export 'package:sync/sync.dart'
     show
@@ -37,11 +35,6 @@ export 'package:sync/sync.dart'
         WalletLifecycle;
 
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
-export '../background_setup.dart'
-    show
-        setupBackgroundWalletTask,
-        prepareBackgroundWalletStores,
-        paymentNotificationChannelId;
 
 /// Wallet-owned invalidations. A revision is not a successful network sync.
 final class WalletFacade {

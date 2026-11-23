@@ -1,0 +1,48 @@
+import 'package:settings/src/l10n.dart';
+import 'package:settings/src/presentation/bloc/settings_cubit.dart';
+import 'package:settings/src/ui/settings_item.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class WalletSettingsScreen extends StatefulWidget {
+  const WalletSettingsScreen({super.key});
+
+  @override
+  State<WalletSettingsScreen> createState() => _WalletSettingsScreenState();
+}
+
+class _WalletSettingsScreenState extends State<WalletSettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the SP setup flag on entry so the SP entry reflects a setup that
+    // happened elsewhere (the settings cubit is a singleton).
+    context.read<SettingsCubit>().checkSpWalletSetup();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = settingsItemsOf(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(context.loc.settingsWalletSettingsTitle)),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                for (final id in walletSettingsItemOrder)
+                  for (final item in items.where((item) => item.id == id))
+                    item.buildTile(context),
+                for (final item in items.inSection(SettingsItemSection.wallet))
+                  if (!walletSettingsItemOrder.contains(item.id))
+                    item.buildTile(context),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

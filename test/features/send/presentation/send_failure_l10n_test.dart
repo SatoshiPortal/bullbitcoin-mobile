@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show PaymentNetwork;
 import 'package:bb_mobile/features/send/domain/boltz_swap_failure_to_send_failure.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';

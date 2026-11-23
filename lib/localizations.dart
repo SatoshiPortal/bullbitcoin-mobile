@@ -1,9 +1,11 @@
 import 'package:send/setup.dart' show SendLocalizations;
+import 'package:coins/setup.dart' show CoinsLocalizations;
 import 'package:transactions/setup.dart' show TransactionsLocalizations;
 import 'package:backups/backups.dart';
 import 'package:access/setup.dart' show AccessLocalizations;
 import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
+import 'package:receive/setup.dart' show ReceiveLocalizations;
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:announcements/announcements.dart'
@@ -15,7 +17,9 @@ import 'package:silent/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
+import 'package:onboarding/onboarding.dart';
 import 'package:scanning/scanning.dart';
+import 'package:settings/settings.dart' show SettingsLocalizations;
 
 export 'package:bb_mobile/generated/l10n/localization.dart'
     show AppLocalizations, lookupAppLocalizations;
@@ -29,7 +33,9 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   ImportLocalizations.delegate,
   AddressViewLocalizations.delegate,
   SendLocalizations.delegate,
+  CoinsLocalizations.delegate,
   BackupsFeature.localizationsDelegate,
+  ReceiveLocalizations.delegate,
   AnnouncementsLocalizations.delegate,
   BitcoinPriceLocalizations.delegate,
   ExchangeLocalizations.delegate,
@@ -38,5 +44,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   LabelEditorLocalizations.delegate,
   ScanningLocalizations.delegate,
   MnemonicEntryLocalizations.delegate,
+  OnboardingLocalizations.delegate,
+  SettingsLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,
 ];

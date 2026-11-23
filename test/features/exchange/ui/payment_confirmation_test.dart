@@ -1,18 +1,16 @@
+import '../support/payin_ui_fixture.dart';
+
+import 'package:bull_exchange/testing.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/pay/ui/screens/pay_send_payment_screen.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:sync/sync.dart' show WalletKey;
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -23,8 +21,6 @@ import 'package:mocktail/mocktail.dart';
 class _SellBloc extends Mock implements SellBloc {}
 
 class _PayBloc extends Mock implements PayBloc {}
-
-class _Wallet extends Mock implements Wallet {}
 
 class _SellOrder extends Mock implements SellOrder {}
 
@@ -39,10 +35,10 @@ void main() {
     testWidgets(
       '${sell ? 'sell' : 'pay'} preparation, error, ready and sending (${locale.languageCode})',
       (tester) async {
-        final wallet = _Wallet();
-        when(() => wallet.label).thenReturn('Test wallet');
-        when(() => wallet.isDefault).thenReturn(false);
-        when(() => wallet.isLiquid).thenReturn(false);
+        final wallet = ExchangePayinWallet(
+          key: WalletKey(id: 'test-wallet', network: BitcoinNetwork.mainnet),
+          balanceSat: BigInt.from(1000000),
+        );
         const summary = UserSummary(
           userNumber: 1,
           groups: [],
@@ -102,14 +98,17 @@ void main() {
             locale: locale,
             localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: MultiBlocProvider(
-              providers: [
-                BlocProvider<SellBloc>.value(value: sellBloc),
-                BlocProvider<PayBloc>.value(value: payBloc),
-              ],
-              child: sell
-                  ? const SellSendPaymentScreen()
-                  : const PaySendPaymentScreen(),
+            home: RepositoryProvider.value(
+              value: payinTestUi(),
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider<SellBloc>.value(value: sellBloc),
+                  BlocProvider<PayBloc>.value(value: payBloc),
+                ],
+                child: sell
+                    ? const SellSendPaymentScreen()
+                    : const PaySendPaymentScreen(),
+              ),
             ),
           ),
         );

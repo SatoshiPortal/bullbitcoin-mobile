@@ -65,3 +65,5 @@ export 'src/util.dart'
         SwapWalletInfo,
         SwapWalletTx,
         SwapsException;
+
+export 'src/domain/swap_startup.dart' show SwapStartup;

@@ -1,10 +1,12 @@
 import 'package:swaps/order_swaps.dart';
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:overview/overview.dart';
 import 'package:swap_feature/swap_feature.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 
 final class CoordinatedSwapSync implements SwapSyncPort {
-  final SyncCoordinator _coordinator;
+  final SyncCoordinator<Wallet, WalletFailure> _coordinator;
 
   const CoordinatedSwapSync(this._coordinator);
 

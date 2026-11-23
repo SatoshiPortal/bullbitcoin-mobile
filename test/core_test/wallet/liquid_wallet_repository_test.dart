@@ -19,7 +19,7 @@ import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
@@ -44,7 +44,7 @@ class _Pset extends Mock implements lwk.PartiallySignedElementsTransaction {}
 
 class _Transaction extends Mock implements lwk.LiquidTransaction {}
 
-class _MockFrozenDatasource extends Mock implements SyncFreezesDatasource {}
+class _MockFrozenDatasource extends Mock implements CoinFreezes {}
 
 void main() {
   const walletId = 'elwpkh([73c5da0a/84h/1h/0h])';

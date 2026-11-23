@@ -1,5 +1,4 @@
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,9 +29,9 @@ class WalletDiscoveryButton extends StatelessWidget {
                   context.loc.walletDiscoverySucceeded,
                   style: context.bullType.body,
                 ),
-              if (state case WalletDiscoveryFailed(:final failure))
+              if (state is WalletDiscoveryFailed)
                 BullText(
-                  failure.toTranslated(context),
+                  context.loc.walletDiscoveryFailed,
                   style: context.bullType.body,
                 ),
             ],

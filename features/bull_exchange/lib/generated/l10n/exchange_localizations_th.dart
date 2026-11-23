@@ -2391,4 +2391,709 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'ขาย Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'เลือกกระเป๋าสตางค์';
+
+  @override
+  String get sellWhichWalletQuestion => 'กระเป๋าเงินที่คุณต้องการขายจาก?';
+
+  @override
+  String get sellExternalWallet => 'กระเป๋าภายนอก';
+
+  @override
+  String get sellFromAnotherWallet => 'ขายจากกระเป๋าสตางค์ Bitcoin';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'คุณพยายามที่จะขายด้านล่างขั้นต่ําที่สามารถขายกับกระเป๋าสตางค์นี้.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'สมดุลไม่เพียงพอในกระเป๋าเงินที่เลือกเสร็จสมบูรณ์.';
+
+  @override
+  String get sellUnauthenticatedError => 'คุณไม่ได้ กรุณาเข้าสู่ระบบ.';
+
+  @override
+  String get sellOrderNotFoundError => 'ราคาขายไม่ได้ กรุณาลองอีกครั้ง.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError => 'การขายนี้ได้รับการยืนยัน.';
+
+  @override
+  String get sellSelectNetwork => 'เลือกเครือข่าย';
+
+  @override
+  String get sellHowToPayInvoice => 'วิธีที่คุณต้องการชําระเงินนี้?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin บนโซ่';
+
+  @override
+  String get sellLightningNetwork => 'เครือข่ายไร้สาย';
+
+  @override
+  String get sellLiquidNetwork => 'เครือข่ายของเหลว';
+
+  @override
+  String get sellConfirmPayment => 'ยืนยันการชําระเงิน';
+
+  @override
+  String get sellPriceWillRefreshIn => 'ราคาจะผ่อนคลาย ';
+
+  @override
+  String get sellOrderNumber => 'ราคา';
+
+  @override
+  String get sellPayoutRecipient => 'ผู้รับชําระเงิน';
+
+  @override
+  String get sellCadBalance => 'CAD สมดุล';
+
+  @override
+  String get sellCrcBalance => 'ซีดี สมดุล';
+
+  @override
+  String get sellEurBalance => 'EUR สมดุล';
+
+  @override
+  String get sellUsdBalance => 'USD สมดุล';
+
+  @override
+  String get sellMxnBalance => 'LTC สมดุล';
+
+  @override
+  String get sellArsBalance => 'แกรม';
+
+  @override
+  String get sellCopBalance => 'COP สมดุล';
+
+  @override
+  String get sellPayinAmount => 'จํานวนเงิน';
+
+  @override
+  String get sellPayoutAmount => 'จํานวนเงิน';
+
+  @override
+  String get sellExchangeRate => 'อัตราแลกเปลี่ยน';
+
+  @override
+  String get sellPayFromWallet => 'ชําระเงินจากกระเป๋าเงิน';
+
+  @override
+  String get sellInstantPayments => 'การชําระเงินทันที';
+
+  @override
+  String get sellSecureBitcoinWallet => 'ลายนิ้วมือ Bitcoin';
+
+  @override
+  String get sellFeePriority => 'ค่าธรรมเนียม';
+
+  @override
+  String get sellFastest => 'รวดเร็ว';
+
+  @override
+  String get sellAdvancedSettings => 'การตั้งค่าขั้นสูง';
+
+  @override
+  String get sellAdvancedOptions => 'ตัวเลือกขั้นสูง';
+
+  @override
+  String get sellReplaceByFeeActivated => 'แทนที่การเปิดใช้งาน';
+
+  @override
+  String get sellSelectCoinsManually => 'เลือกเหรียญด้วยตนเอง';
+
+  @override
+  String get sellDone => 'อย่าลืม';
+
+  @override
+  String get sellPleasePayInvoice => 'กรุณาชําระเงิน';
+
+  @override
+  String get sellBitcoinAmount => 'จํานวน Bitcoin';
+
+  @override
+  String get sellCopyInvoice => 'ใบแจ้งหนี้';
+
+  @override
+  String get sellShowQrCode => 'แสดงรหัส QR';
+
+  @override
+  String get sellQrCode => 'รหัส QR';
+
+  @override
+  String get sellNoInvoiceData => 'ไม่มีข้อมูล';
+
+  @override
+  String get sellInProgress => 'ขายในความคืบหน้า ...';
+
+  @override
+  String get sellGoHome => 'กลับบ้าน';
+
+  @override
+  String get sellOrderCompleted => 'สั่งซื้อ!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'ยอดคงเหลือบัญชีของคุณจะได้รับเครดิตหลังจากการทําธุรกรรมของคุณได้รับ 1 เพื่อยืนยัน.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'ชําระเงิน';
+
+  @override
+  String get payDescriptionLabel => 'รายละเอียดการชำระเงิน (ไม่บังคับ)';
+
+  @override
+  String get payDescriptionHint => 'เพิ่มหมายเหตุสำหรับการชำระเงินนี้';
+
+  @override
+  String get payPaymentDescription => 'รายละเอียดการชำระเงิน';
+
+  @override
+  String get payRecipientType => 'ประเภทประเภท';
+
+  @override
+  String get payRecipientName => 'ชื่อ';
+
+  @override
+  String get payRecipientDetails => 'รายละเอียดรายละเอียด';
+
+  @override
+  String get payNoDetailsAvailable => 'รายละเอียด';
+
+  @override
+  String get paySelectWallet => 'เลือกกระเป๋าสตางค์';
+
+  @override
+  String get payExternalWallet => 'กระเป๋าภายนอก';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'จำนวนเงินสูงสุดที่คุณสามารถชำระด้วยกระเป๋าเงินนี้คือ $amount';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'จำนวนเงินขั้นต่ำที่คุณสามารถชำระด้วยกระเป๋าเงินนี้คือ $amount';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'ยอดคงเหลือไม่เพียงพอในกระเป๋าเงินที่เลือก.';
+
+  @override
+  String get payUnauthenticatedError => 'คุณไม่ได้ กรุณาเข้าสู่ระบบ.';
+
+  @override
+  String get paySelectNetwork => 'เลือกเครือข่าย';
+
+  @override
+  String get payHowToPayInvoice => 'วิธีที่คุณต้องการชําระเงินนี้?';
+
+  @override
+  String get payLightningNetwork => 'เครือข่ายไร้สาย';
+
+  @override
+  String get payLiquidNetwork => 'เครือข่ายของเหลว';
+
+  @override
+  String get payConfirmPayment => 'ยืนยันการชําระเงิน';
+
+  @override
+  String get payOrderNumber => 'ราคา';
+
+  @override
+  String get payPayinAmount => 'จํานวนเงิน';
+
+  @override
+  String get payPayoutAmount => 'จํานวนเงิน';
+
+  @override
+  String get payExchangeRate => 'อัตราแลกเปลี่ยน';
+
+  @override
+  String get payPayFromWallet => 'ชําระเงินจากกระเป๋าเงิน';
+
+  @override
+  String get payInstantPayments => 'การชําระเงินทันที';
+
+  @override
+  String get paySecureBitcoinWallet => 'ลายนิ้วมือ Bitcoin';
+
+  @override
+  String get payFeePriority => 'ค่าธรรมเนียม';
+
+  @override
+  String get payFastest => 'รวดเร็ว';
+
+  @override
+  String get payNetworkFees => 'ค่าธรรมเนียมเครือข่าย';
+
+  @override
+  String get payAdvancedSettings => 'การตั้งค่าขั้นสูง';
+
+  @override
+  String get payAdvancedOptions => 'ตัวเลือกขั้นสูง';
+
+  @override
+  String get paySelectCoinsManually => 'เลือกเหรียญด้วยตนเอง';
+
+  @override
+  String get payDone => 'อย่าลืม';
+
+  @override
+  String get payContinue => 'อ่านต่อ';
+
+  @override
+  String get payPleasePayInvoice => 'กรุณาชําระเงิน';
+
+  @override
+  String get payBitcoinAmount => 'จํานวน Bitcoin';
+
+  @override
+  String get payBitcoinPrice => 'ราคา';
+
+  @override
+  String get payCopyInvoice => 'ใบแจ้งหนี้';
+
+  @override
+  String get payShowQrCode => 'แสดงรหัส QR';
+
+  @override
+  String get payQrCode => 'รหัส QR';
+
+  @override
+  String get payNoInvoiceData => 'ไม่มีข้อมูล';
+
+  @override
+  String get payInvalidState => 'ตามกฎ';
+
+  @override
+  String get payViewDetails => 'ดูรายละเอียด';
+
+  @override
+  String get paySinpeReceipt => 'ใบเสร็จ SINPE';
+
+  @override
+  String get payCompleted => 'ชําระเงิน!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'รายละเอียด';
+
+  @override
+  String get paySinpeMonto => 'จํานวน';
+
+  @override
+  String get paySinpeNumeroOrden => 'ราคา';
+
+  @override
+  String get paySinpeNumeroComprobante => 'รายการ';
+
+  @override
+  String get paySinpeBeneficiario => 'ครีม';
+
+  @override
+  String get paySinpeOrigen => 'สถานที่กําเนิด';
+
+  @override
+  String get payNotAvailable => 'N/A';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin บนโซ่';
+
+  @override
+  String get payPaymentInProgress => 'การชําระเงินในความคืบหน้า!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'ราคาจะผ่อนคลาย ';
+
+  @override
+  String get payWhichWallet => 'กระเป๋าเงินที่คุณต้องการจ่ายจาก?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'ชําระเงินจากกระเป๋าสตางค์ Bitcoin';
+
+  @override
+  String get payRbfActivated => 'แทนที่การเปิดใช้งาน';
+
+  @override
+  String get copyDialogButton => 'คัดลอก';
+
+  @override
+  String get closeDialogButton => 'ปิด';
+
+  @override
+  String get sellCompleteKYC => 'สมบูรณ์แบบ';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'ค่าธรรมเนียมเครือข่าย';
+
+  @override
+  String get sellSendPaymentContinue => 'อ่านต่อ';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'ราคา';
+
+  @override
+  String get sellViewDetailsButton => 'ดูรายละเอียด';
+
+  @override
+  String get sellKycPendingTitle => 'สําเนารหัส';
+
+  @override
+  String get sellKycPendingDescription => 'คุณต้องตรวจสอบรหัสล่วงหน้า';
+
+  @override
+  String get sellLoadingGeneric => 'โหลด ...';
+
+  @override
+  String get viewerTapToCopy => 'แตะเพื่อคัดลอก';
+
+  @override
+  String get invoiceViewerTitle => 'ใบแจ้งหนี้';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'คัดลอกไปยังคลิปบอร์ดแล้ว';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน';
+
+  @override
+  String get sellPayoutSepaDescription => 'รายการถอนจะแสดงว่าผู้ส่งคือ Leonod';
+
+  @override
+  String get sellPayoutTitle => 'เลือกผู้รับเงิน';
+
+  @override
+  String get sellPayoutNewBadge => 'ใหม่';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'เลือก utxos ไม่ได้ครอบคลุมจํานวน';
+
+  @override
+  String get selectAmountTitle => 'เลือกจํานวน';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'ปริมาณ: $amount';
+  }
+
+  @override
+  String get addressLabel => 'ที่อยู่: ';
+
+  @override
+  String get typeLabel => 'ประเภท: ';
+
+  @override
+  String get coinsKeychainReceive => 'รับ';
+
+  @override
+  String get coinsKeychainChange => 'เงินทอน';
+
+  @override
+  String get limitOrdersIntroTitle => 'Open a limit order';
+
+  @override
+  String get limitOrdersIntroDescription =>
+      'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.';
+
+  @override
+  String get limitOrdersIntroBulletPrice =>
+      'Your order remains active until the target index price is reached.';
+
+  @override
+  String get limitOrdersIntroBulletBalance =>
+      'The purchase uses the selected fiat balance when the order executes.';
+
+  @override
+  String get limitOrdersIntroBulletExecution =>
+      'Bitcoin is sent to the default wallet you select.';
+
+  @override
+  String get limitOrdersTargetTitle => 'Choose your target price';
+
+  @override
+  String get limitOrdersPaymentMethod => 'Payment method';
+
+  @override
+  String get limitOrdersCurrentPrice => 'Current index price';
+
+  @override
+  String get limitOrdersDiscount => 'Discount from current price';
+
+  @override
+  String get limitOrdersAmountTitle => 'Set the amount';
+
+  @override
+  String limitOrdersAvailableBalance(String amount) {
+    return 'Available: $amount';
+  }
+
+  @override
+  String limitOrdersEstimatedBitcoin(String amount) {
+    return 'Estimated bitcoin: $amount';
+  }
+
+  @override
+  String get limitOrdersWalletTitle => 'Choose a payout wallet';
+
+  @override
+  String get limitOrdersWalletDescription =>
+      'Bitcoin will be sent to this default wallet when the order executes.';
+
+  @override
+  String get limitOrdersManageDefaultWallets => 'Manage default wallets';
+
+  @override
+  String get limitOrdersWalletBitcoin => 'Bitcoin address';
+
+  @override
+  String get limitOrdersWalletLightning => 'Lightning address';
+
+  @override
+  String get limitOrdersWalletLiquid => 'Liquid address';
+
+  @override
+  String get limitOrdersConfirmationTitle => 'Confirm limit order';
+
+  @override
+  String limitOrdersBalancePayment(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get limitOrdersTermsNotice =>
+      'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.';
+
+  @override
+  String get limitOrdersConfirm => 'Confirm limit order';
+
+  @override
+  String get limitOrdersCreatedTitle => 'Limit order active';
+
+  @override
+  String limitOrdersCreatedMessage(String amount, String price) {
+    return 'Your order will buy $amount when the index price reaches $price.';
+  }
+
+  @override
+  String get limitOrdersBackToExchange => 'Back to Exchange';
+
+  @override
+  String get limitOrderInvalidTargetError =>
+      'Choose a target price below the current index price.';
+
+  @override
+  String get limitOrderInvalidAmountError =>
+      'Enter an amount greater than zero and no more than your available balance.';
+
+  @override
+  String get limitOrdersYourWalletsTitle => 'Your wallets';
+
+  @override
+  String get limitOrdersLightningAddressLabel => 'Lightning address';
+
+  @override
+  String get limitOrdersLightningAddressError =>
+      'Enter a valid lightning address, not an invoice';
+
+  @override
+  String limitOrdersAmountBelowOnchainMin(String amount) {
+    return 'Amount is below the on-chain minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountBelowLiquidMin(String amount) {
+    return 'Amount is below the Liquid minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountAboveLightningMax(String amount) {
+    return 'Amount is above the Lightning maximum of $amount';
+  }
+
+  @override
+  String get limitOrdersViewOrder => 'View order details';
+
+  @override
+  String get limitOrdersInsufficientBalance => 'สมดุล';
+
+  @override
+  String get limitOrdersInsufficientBalanceMessage =>
+      'คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.';
+
+  @override
+  String get limitOrdersFundAccount => 'บัญชีบัญชีของคุณ';
+
+  @override
+  String get exchangeBrandName => 'สหรัฐ';
+
+  @override
+  String get exchangeLandingConnectAccount => 'เชื่อมต่อบัญชี Bitcoin';
+
+  @override
+  String get exchangeLandingRecommendedExchange => 'อัตราแลกเปลี่ยน Bitcoin';
+
+  @override
+  String get exchangeFeatureSelfCustody => '• ซื้อ Bitcoin ตรงกับตนเอง';
+
+  @override
+  String get exchangeFeatureDcaOrders => '• DCA, การสั่งซื้อและอัตโนมัติ';
+
+  @override
+  String get exchangeFeatureSellBitcoin =>
+      '•ขาย Bitcoin ได้ชําระเงินกับ Bitcoin';
+
+  @override
+  String get exchangeFeatureBankTransfers => '• • • การโอนเงินและชําระเงิน';
+
+  @override
+  String get exchangeFeatureCustomerSupport => '• • • แชทกับลูกค้า';
+
+  @override
+  String get exchangeFeatureUnifiedHistory => '•ประวัติการทําธุรกรรม';
+
+  @override
+  String get exchangeLandingDisclaimerLegal =>
+      'เข้าถึงบริการแลกเปลี่ยนจะ จํากัด ไปยังประเทศที่ Bull Bitcoin สามารถใช้งานตามกฎหมายและอาจจําเป็นต้องใช้ CYC.';
+
+  @override
+  String get exchangeLandingDisclaimerNotAvailable =>
+      'บริการแลกเปลี่ยนสกุลเงิน cryptocurrency ไม่สามารถใช้ได้ในโปรแกรมโทรศัพท์มือถือ.';
+
+  @override
+  String get exchangeLoginButton => 'เข้าสู่ระบบ';
+
+  @override
+  String get exchangeGoToWebsiteButton =>
+      'ไปที่ Google Bitcoin แลกเปลี่ยนเว็บไซต์';
 }

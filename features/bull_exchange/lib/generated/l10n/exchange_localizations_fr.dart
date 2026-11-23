@@ -2475,4 +2475,725 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.';
+
+  @override
+  String get sellTitle => 'Vendre du Bitcoin';
+
+  @override
+  String get sellSelectWallet => 'Sélectionner le portefeuille';
+
+  @override
+  String get sellWhichWalletQuestion =>
+      'De quel portefeuille voulez-vous vendre ?';
+
+  @override
+  String get sellExternalWallet => 'Portefeuille externe';
+
+  @override
+  String get sellFromAnotherWallet =>
+      'Vendre depuis un autre portefeuille Bitcoin';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'Vous essayez de vendre au-dessus du montant maximum qui peut être vendu avec ce portefeuille.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'Vous essayez de vendre en dessous du montant minimum qui peut être vendu avec ce portefeuille.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'Solde insuffisant dans le portefeuille sélectionné pour compléter cette commande de vente.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'Vous n\'êtes pas authentifié. Veuillez vous connecter pour continuer.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'La commande de vente n\'a pas été trouvée. Veuillez réessayer.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'Cette commande de vente a déjà été confirmée.';
+
+  @override
+  String get sellSelectNetwork => 'Sélectionner le réseau';
+
+  @override
+  String get sellHowToPayInvoice => 'Comment voulez-vous payer cette facture ?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin on-chain';
+
+  @override
+  String get sellLightningNetwork => 'Réseau Lightning';
+
+  @override
+  String get sellLiquidNetwork => 'Réseau Liquid';
+
+  @override
+  String get sellConfirmPayment => 'Confirmer le paiement';
+
+  @override
+  String get sellPriceWillRefreshIn => 'Le prix sera actualisé dans ';
+
+  @override
+  String get sellOrderNumber => 'Numéro de commande';
+
+  @override
+  String get sellPayoutRecipient => 'Bénéficiaire du paiement';
+
+  @override
+  String get sellCadBalance => 'Solde CAD';
+
+  @override
+  String get sellCrcBalance => 'Solde CRC';
+
+  @override
+  String get sellEurBalance => 'Solde EUR';
+
+  @override
+  String get sellUsdBalance => 'Solde USD';
+
+  @override
+  String get sellMxnBalance => 'Solde MXN';
+
+  @override
+  String get sellArsBalance => 'Solde ARS';
+
+  @override
+  String get sellCopBalance => 'Solde COP';
+
+  @override
+  String get sellPayinAmount => 'Montant à payer';
+
+  @override
+  String get sellPayoutAmount => 'Montant à recevoir';
+
+  @override
+  String get sellExchangeRate => 'Taux de change';
+
+  @override
+  String get sellPayFromWallet => 'Payer depuis le portefeuille';
+
+  @override
+  String get sellInstantPayments => 'Paiements instantanés';
+
+  @override
+  String get sellSecureBitcoinWallet => 'Portefeuille Bitcoin sécurisé';
+
+  @override
+  String get sellFeePriority => 'Priorité des frais';
+
+  @override
+  String get sellFastest => 'Le plus rapide';
+
+  @override
+  String get sellAdvancedSettings => 'Paramètres avancés';
+
+  @override
+  String get sellAdvancedOptions => 'Options avancées';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Remplacement par frais activé';
+
+  @override
+  String get sellSelectCoinsManually => 'Sélectionner les pièces manuellement';
+
+  @override
+  String get sellDone => 'Terminé';
+
+  @override
+  String get sellPleasePayInvoice => 'Veuillez payer cette facture';
+
+  @override
+  String get sellBitcoinAmount => 'Montant Bitcoin';
+
+  @override
+  String get sellCopyInvoice => 'Copier la facture';
+
+  @override
+  String get sellShowQrCode => 'Afficher le code QR';
+
+  @override
+  String get sellQrCode => 'Code QR';
+
+  @override
+  String get sellNoInvoiceData => 'Aucune donnée de facture disponible';
+
+  @override
+  String get sellInProgress => 'Vente en cours...';
+
+  @override
+  String get sellGoHome => 'Aller à l\'accueil';
+
+  @override
+  String get sellOrderCompleted => 'Commande terminée !';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'Le solde de votre compte sera crédité après que votre transaction reçoive 1 confirmation on-chain.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'Payer';
+
+  @override
+  String get payDescriptionLabel => 'Description du paiement (facultatif)';
+
+  @override
+  String get payDescriptionHint => 'Ajoutez une note à ce paiement';
+
+  @override
+  String get payPaymentDescription => 'Description du paiement';
+
+  @override
+  String get payRecipientType => 'Type de destinataire';
+
+  @override
+  String get payRecipientName => 'Nom du destinataire';
+
+  @override
+  String get payRecipientDetails => 'Détails du destinataire';
+
+  @override
+  String get payNoDetailsAvailable => 'Aucun détail disponible';
+
+  @override
+  String get paySelectWallet => 'Sélectionner le Portefeuille';
+
+  @override
+  String get payExternalWallet => 'Portefeuille externe';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'Le montant maximum que vous pouvez payer avec ce portefeuille est de $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'Le montant minimum que vous pouvez payer avec ce portefeuille est de $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'Solde insuffisant dans le portefeuille sélectionné pour compléter cette commande de paiement.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'Vous n\'êtes pas authentifié. Veuillez vous connecter pour continuer.';
+
+  @override
+  String get paySelectNetwork => 'Sélectionner le réseau';
+
+  @override
+  String get payHowToPayInvoice => 'Comment voulez-vous payer cette facture ?';
+
+  @override
+  String get payLightningNetwork => 'Réseau Lightning';
+
+  @override
+  String get payLiquidNetwork => 'Réseau Liquid';
+
+  @override
+  String get payConfirmPayment => 'Confirmer le Paiement';
+
+  @override
+  String get payOrderNumber => 'Numéro de commande';
+
+  @override
+  String get payPayinAmount => 'Montant à payer';
+
+  @override
+  String get payPayoutAmount => 'Montant à recevoir';
+
+  @override
+  String get payExchangeRate => 'Taux de change';
+
+  @override
+  String get payPayFromWallet => 'Payer depuis le portefeuille';
+
+  @override
+  String get payInstantPayments => 'Paiements instantanés';
+
+  @override
+  String get paySecureBitcoinWallet => 'Portefeuille Bitcoin sécurisé';
+
+  @override
+  String get payFeePriority => 'Priorité des frais';
+
+  @override
+  String get payFastest => 'Le plus rapide';
+
+  @override
+  String get payNetworkFees => 'Frais de réseau';
+
+  @override
+  String get payAdvancedSettings => 'Paramètres avancés';
+
+  @override
+  String get payAdvancedOptions => 'Options avancées';
+
+  @override
+  String get paySelectCoinsManually => 'Sélectionner les pièces manuellement';
+
+  @override
+  String get payDone => 'Terminé';
+
+  @override
+  String get payContinue => 'Continuer';
+
+  @override
+  String get payPleasePayInvoice => 'Veuillez payer cette facture';
+
+  @override
+  String get payBitcoinAmount => 'Montant Bitcoin';
+
+  @override
+  String get payBitcoinPrice => 'Prix du Bitcoin';
+
+  @override
+  String get payCopyInvoice => 'Copier la Facture';
+
+  @override
+  String get payShowQrCode => 'Afficher le code QR';
+
+  @override
+  String get payQrCode => 'Code QR';
+
+  @override
+  String get payNoInvoiceData => 'Aucune donnée de facture disponible';
+
+  @override
+  String get payInvalidState => 'État invalide';
+
+  @override
+  String get payViewDetails => 'Voir les détails';
+
+  @override
+  String get paySinpeReceipt => 'Reçu SINPE';
+
+  @override
+  String get payCompleted => 'Paiement terminé !';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO !';
+
+  @override
+  String get payOrderDetails => 'Détails de la commande';
+
+  @override
+  String get paySinpeMonto => 'Montant';
+
+  @override
+  String get paySinpeNumeroOrden => 'Numéro de commande';
+
+  @override
+  String get paySinpeNumeroComprobante => 'Numéro de référence';
+
+  @override
+  String get paySinpeBeneficiario => 'Bénéficiaire';
+
+  @override
+  String get paySinpeOrigen => 'Origine';
+
+  @override
+  String get payNotAvailable => 'N/D';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin on-chain';
+
+  @override
+  String get payPaymentInProgress => 'Paiement en cours!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'Le prix sera actualisé dans ';
+
+  @override
+  String get payWhichWallet => 'De quel portefeuille souhaitez-vous payer?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'Payer depuis un autre portefeuille Bitcoin';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee activé';
+
+  @override
+  String get copyDialogButton => 'Copier';
+
+  @override
+  String get closeDialogButton => 'Fermer';
+
+  @override
+  String get sellCompleteKYC => 'Compléter le KYC';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'Frais de réseau';
+
+  @override
+  String get sellSendPaymentContinue => 'Continuer';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Prix Bitcoin';
+
+  @override
+  String get sellViewDetailsButton => 'Voir les détails';
+
+  @override
+  String get sellKycPendingTitle => 'Vérification KYC en attente';
+
+  @override
+  String get sellKycPendingDescription =>
+      'Vous devez d\'abord compléter la vérification d\'identité';
+
+  @override
+  String get sellLoadingGeneric => 'Chargement...';
+
+  @override
+  String get viewerTapToCopy => 'Appuyez pour copier';
+
+  @override
+  String get invoiceViewerTitle => 'Facture';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'par une transaction ordinaire';
+
+  @override
+  String get sellDepositAddress => 'Adresse de dépôt';
+
+  @override
+  String get payDepositAddress => 'Adresse de dépôt';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'L\'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'L\'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.';
+
+  @override
+  String get sellUnexpectedError =>
+      'Votre ordre de vente n\'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'Frais de réseau trop bas. Choisissez des frais plus élevés.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'Les frais de réseau n\'ont pas pu être chargés. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'Copié dans le presse-papiers';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Paiement envoyé. L’exchange indique que le délai de paiement de cette commande a expiré. Conservez l’identifiant de transaction ci-dessous et contactez le support si la commande n’est pas mise à jour.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Quitter';
+
+  @override
+  String get payQuoteExpiredError =>
+      'Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.';
+
+  @override
+  String get sellPayoutBalance => 'Ajouter à mon solde de compte';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'Les retraits apparaissent comme envoyés par Leonod';
+
+  @override
+  String get sellPayoutTitle => 'Sélectionner le destinataire';
+
+  @override
+  String get sellPayoutNewBadge => 'NOUVEAU';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Les dépenses sont indisponibles tant que ce portefeuille n’est pas synchronisé et n’a pas vu ses paiements précédents sur le réseau. Actualisez le portefeuille ou recherchez les transactions manquantes, puis réessayez.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'Ce paiement Payjoin est en pause car le portefeuille ne peut pas continuer en toute sécurité. Ses entrées restent réservées. Actualisez le portefeuille ou utilisez Rechercher les transactions manquantes, puis réessayez cette proposition tant qu’elle est valide. Si elle a expiré, vérifiez le paiement dans Transactions avant toute autre action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'Le portefeuille sélectionné ne correspond pas au réseau de cet ordre ou à l’environnement actuel de l’application. Choisissez un portefeuille compatible et réessayez.';
+
+  @override
+  String get walletSpendBusy =>
+      'Le portefeuille est occupé. Réessayez dans un instant.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'Impossible de confirmer que votre transaction a été diffusée. Vérifiez dans un explorateur de blocs avant de réessayer.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'Les UTXO sélectionnés ne couvrent pas le montant requis';
+
+  @override
+  String get selectAmountTitle => 'Sélectionner le montant';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'Montant demandé : $amount';
+  }
+
+  @override
+  String get addressLabel => 'Adresse : ';
+
+  @override
+  String get typeLabel => 'Type : ';
+
+  @override
+  String get coinsKeychainReceive => 'Réception';
+
+  @override
+  String get coinsKeychainChange => 'Monnaie';
+
+  @override
+  String get limitOrdersIntroTitle => 'Open a limit order';
+
+  @override
+  String get limitOrdersIntroDescription =>
+      'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.';
+
+  @override
+  String get limitOrdersIntroBulletPrice =>
+      'Your order remains active until the target index price is reached.';
+
+  @override
+  String get limitOrdersIntroBulletBalance =>
+      'The purchase uses the selected fiat balance when the order executes.';
+
+  @override
+  String get limitOrdersIntroBulletExecution =>
+      'Bitcoin is sent to the default wallet you select.';
+
+  @override
+  String get limitOrdersTargetTitle => 'Choose your target price';
+
+  @override
+  String get limitOrdersPaymentMethod => 'Payment method';
+
+  @override
+  String get limitOrdersCurrentPrice => 'Current index price';
+
+  @override
+  String get limitOrdersDiscount => 'Discount from current price';
+
+  @override
+  String get limitOrdersAmountTitle => 'Set the amount';
+
+  @override
+  String limitOrdersAvailableBalance(String amount) {
+    return 'Available: $amount';
+  }
+
+  @override
+  String limitOrdersEstimatedBitcoin(String amount) {
+    return 'Estimated bitcoin: $amount';
+  }
+
+  @override
+  String get limitOrdersWalletTitle => 'Choose a payout wallet';
+
+  @override
+  String get limitOrdersWalletDescription =>
+      'Bitcoin will be sent to this default wallet when the order executes.';
+
+  @override
+  String get limitOrdersManageDefaultWallets => 'Manage default wallets';
+
+  @override
+  String get limitOrdersWalletBitcoin => 'Bitcoin address';
+
+  @override
+  String get limitOrdersWalletLightning => 'Lightning address';
+
+  @override
+  String get limitOrdersWalletLiquid => 'Liquid address';
+
+  @override
+  String get limitOrdersConfirmationTitle => 'Confirm limit order';
+
+  @override
+  String limitOrdersBalancePayment(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get limitOrdersTermsNotice =>
+      'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.';
+
+  @override
+  String get limitOrdersConfirm => 'Confirm limit order';
+
+  @override
+  String get limitOrdersCreatedTitle => 'Limit order active';
+
+  @override
+  String limitOrdersCreatedMessage(String amount, String price) {
+    return 'Your order will buy $amount when the index price reaches $price.';
+  }
+
+  @override
+  String get limitOrdersBackToExchange => 'Back to Exchange';
+
+  @override
+  String get limitOrderInvalidTargetError =>
+      'Choose a target price below the current index price.';
+
+  @override
+  String get limitOrderInvalidAmountError =>
+      'Enter an amount greater than zero and no more than your available balance.';
+
+  @override
+  String get limitOrdersYourWalletsTitle => 'Your wallets';
+
+  @override
+  String get limitOrdersLightningAddressLabel => 'Lightning address';
+
+  @override
+  String get limitOrdersLightningAddressError =>
+      'Enter a valid lightning address, not an invoice';
+
+  @override
+  String limitOrdersAmountBelowOnchainMin(String amount) {
+    return 'Amount is below the on-chain minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountBelowLiquidMin(String amount) {
+    return 'Amount is below the Liquid minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountAboveLightningMax(String amount) {
+    return 'Amount is above the Lightning maximum of $amount';
+  }
+
+  @override
+  String get limitOrdersViewOrder => 'View order details';
+
+  @override
+  String get limitOrdersInsufficientBalance => 'Solde insuffisant';
+
+  @override
+  String get limitOrdersInsufficientBalanceMessage =>
+      'Vous n\'avez pas assez de solde pour créer cette commande.';
+
+  @override
+  String get limitOrdersFundAccount => 'Financer votre compte';
+
+  @override
+  String get exchangeBrandName => 'BULL BITCOIN';
+
+  @override
+  String get exchangeLandingConnectAccount =>
+      'Connectez votre compte d\'échange Bull Bitcoin';
+
+  @override
+  String get exchangeLandingRecommendedExchange =>
+      'Plateforme d\'échange Bitcoin recommandée';
+
+  @override
+  String get exchangeFeatureSelfCustody =>
+      '• Achetez du Bitcoin directement en auto-garde';
+
+  @override
+  String get exchangeFeatureDcaOrders =>
+      '• DCA, ordres limités et achat automatique';
+
+  @override
+  String get exchangeFeatureSellBitcoin =>
+      '• Vendez du Bitcoin, soyez payé en Bitcoin';
+
+  @override
+  String get exchangeFeatureBankTransfers =>
+      '• Envoyez des virements bancaires et payez des factures';
+
+  @override
+  String get exchangeFeatureCustomerSupport =>
+      '• Discutez avec le support client';
+
+  @override
+  String get exchangeFeatureUnifiedHistory =>
+      '• Historique des transactions unifié';
+
+  @override
+  String get exchangeLandingDisclaimerLegal =>
+      'L\'accès aux services d\'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.';
+
+  @override
+  String get exchangeLandingDisclaimerNotAvailable =>
+      'Les services d\'échange de cryptomonnaies ne sont pas disponibles dans l\'application mobile Bull Bitcoin.';
+
+  @override
+  String get exchangeLoginButton => 'Se connecter ou s\'inscrire';
+
+  @override
+  String get exchangeGoToWebsiteButton =>
+      'Aller sur le site web de l\'échange Bull Bitcoin';
 }

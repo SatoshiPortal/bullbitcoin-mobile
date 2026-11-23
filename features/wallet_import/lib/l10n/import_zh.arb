@@ -120,5 +120,85 @@
   "importColdcardMk4Step10": "点击“扫描 NFC”按钮",
   "importColdcardMk4Step11": "将手机 NFC 对准 Coldcard 的 NFC",
   "importColdcardMk4Step12": "完成！",
-  "recipientsInfoLabel": "标签"
+  "recipientsInfoLabel": "标签",
+  "bitboxScreenDefaultWalletLabel": "BiBox Wallet",
+  "importColdcardButtonInstructions": "指示",
+  "importColdcardButtonOpenCamera": "开放照相机",
+  "importColdcardConnectDescription": "从您的 {deviceName} 导入钱包描述符",
+  "importColdcardConnectTitle": "连接 {deviceName}",
+  "importColdcardInvalidWalletData": "无效的 Coldcard 钱包数据",
+  "importColdcardScanNfcSheetTitle": "轻触您的 {deviceName} 以通过 NFC 导入钱包描述符",
+  "importMnemonicBalanceLabel": "余额:{amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "继续",
+  "importMnemonicDuplicateError": "该助记词已存在",
+  "importMnemonicEmptyLabelError": "导入助记词需要标签",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "遗产",
+  "importMnemonicNestedSegwit": "Nest",
+  "importMnemonicSegwit": "Segwit",
+  "importMnemonicSelectScriptType": "导入助记词",
+  "importMnemonicSyncMessage": "所有三类隔离墙都是yn,其平衡和交易将很快出现。 如果你确信你希望进口哪条围墙,你可以等到yn完成或着手进口.",
+  "importMnemonicTitle": "导入助记词",
+  "importMnemonicTransactionsLabel": "交易:{count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "导入助记词",
+  "importWalletImportWatchOnly": "导入观察钱包",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Foundation Passport",
+  "importWalletSectionGeneric": "通用钱包",
+  "importWalletSectionHardware": "硬件钱包",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "添加一个新钱包",
+  "importWatchOnlyCopiedToClipboard": "涂料",
+  "importWatchOnlyDescriptor": "说明",
+  "importWatchOnlyDisclaimerDescription": "• 确保你选择的衍生途径与生产特定共和国的产品相匹配,在使用前核实从隔离墙中得出的第一种地址。 使用错误的道路可能导致资金损失",
+  "importWatchOnlyDisclaimerTitle": "D. 抵达道路警报",
+  "importWatchOnlyErrorAlreadyExists": "此钱包已导入。",
+  "importWatchOnlyErrorImportFailed": "无法导入此只读钱包。请检查信息后重试。",
+  "importWatchOnlyErrorInvalidFormat": "这看起来不是有效的公钥或描述符。请仔细检查您粘贴的内容。",
+  "importWatchOnlyErrorLabelRequired": "导入前请为您的钱包命名。",
+  "importWatchOnlyErrorNetworkMismatch": "此钱包当前正在使用其他 Bitcoin 网络。请在 Mainnet 和 Testnet 之间切换，然后重试。",
+  "importWatchOnlyErrorNoWalletSelected": "请先粘贴或扫描公钥或描述符。",
+  "importWatchOnlyExtendedPublicKey": "扩大公众 关键",
+  "importWatchOnlyImport": "导入",
+  "importWatchOnlyLabel": "标签",
+  "importWatchOnlyNetworkBitcoinMainnet": "网络：比特币主网",
+  "importWatchOnlyNetworkBitcoinTestnet": "网络：比特币测试网",
+  "importWatchOnlyPasteHint": "Paste xpub, ypub,zpub or descriptor",
+  "importWatchOnlyRequired": "所需",
+  "importWatchOnlyScanQR": "Scan",
+  "importWatchOnlySigningDevice": "信号装置",
+  "importWatchOnlyTitle": "导入观察钱包",
+  "importWatchOnlyType": "类型",
+  "importWatchOnlyUnknown": "不详",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Ledger Wallet",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "页: 1"
 }

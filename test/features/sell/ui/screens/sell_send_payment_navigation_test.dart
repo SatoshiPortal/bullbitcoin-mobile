@@ -1,3 +1,6 @@
+import '../../../exchange/support/payin_ui_fixture.dart';
+
+import 'package:bull_exchange/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Sats;
@@ -6,8 +9,6 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -98,9 +99,12 @@ void main() {
           routes: [
             GoRoute(
               path: 'payment',
-              builder: (_, _) => BlocProvider<SellBloc>.value(
-                value: bloc,
-                child: const SellSendPaymentScreen(),
+              builder: (_, _) => RepositoryProvider.value(
+                value: payinTestUi(walletHome: WalletRoute.walletHome.path),
+                child: BlocProvider<SellBloc>.value(
+                  value: bloc,
+                  child: const SellSendPaymentScreen(),
+                ),
               ),
             ),
           ],

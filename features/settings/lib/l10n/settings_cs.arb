@@ -1,0 +1,214 @@
+{
+  "translationWarningTitle": "Poznámka k překladu",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "translationWarningDescription": "Většina překladů v této aplikaci byla vytvořena pomocí AI a může obsahovat nepřesnosti. Pokud si všimnete chyb nebo chcete pomoci zlepšit překlady, můžete odeslat opravu do našeho GitHub repozitáře.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningContributeButton": "Chci pomoci vylepšit překlad",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "settingsScreenTitle": "Nastavení",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "settingsSecurityPinTitle": "Bezpečnostní Pin",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "settingsCurrencyTitle": "Čeština",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "Nastavení aplikace",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "settingsTermsOfServiceTitle": "Obchodní podmínky",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsAppVersionLabel": "Verze aplikace: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "settingsLanguageTitle": "Čeština",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsThemeTitle": "Čeština",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "settingsDevModeWarningTitle": "Režim Dev",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Tento režim je rizikový. Tím, že to umožňuje, Berete na vědomí, že můžete ztratit peníze",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Souhlasím",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsSuperuserModeDisabledMessage": "Režim Superuser vypnutý.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Režim Superuser odemknout!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet režim",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "Přihlášení",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Výchozí fiat měna",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "Import Peněženka",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "Stav služby",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "Štítky",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "electrumTestnet": "Čeština",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "Nastavení výměny",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Režim Dev",
+  "exchangeTestnetBasicAuthTitle": "Přihlašovací údaje testnet burzy",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth pro webové stránky testnet burzy (přihlášení a KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Uživatelské jméno",
+  "exchangeTestnetBasicAuthPasswordLabel": "Heslo",
+  "exchangeTestnetBasicAuthClearButton": "Vymazat",
+  "exchangeTestnetBasicAuthSaveButton": "Uložit",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "Čeština",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Čeština",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "Historie transakcí",
+  "allSeedViewTitle": "Semena Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Vysílání transakcí",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "Čeština",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 determinační entropies",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "Nastavení automatického swapu",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "torSettingsTitle": "Nastavení Toru",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "Obnovení swapu",
+  "settingsErrorReportingTitle": "Hlášení chyb",
+  "errorReportingProgramTitle": "Program hlášení chyb",
+  "errorReportingProgramDescriptionP1": "Pomozte nám vylepšit Bull tím, že se zapojíte do našeho programu hlášení chyb.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin odesílá anonymizovaná hlášení o chybách, když něco přestane fungovat.",
+  "errorReportingProgramDescriptionP3": "Díky tomu vidíme, kolik uživatelů daná chyba postihuje, a můžeme podle toho stanovit prioritu oprav. Bez toho nemáme žádný způsob, jak dopad změřit.",
+  "errorReportingProgramDescriptionP4": "Hlášení jsou odesílána pouze na server Bull, nikdy třetím stranám.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin je open source, takže si můžete ověřit, co se odesílá.",
+  "errorReportingAcceptButton": "Přijmout",
+  "errorReportingCancelButton": "Zrušit",
+  "errorReportingRestartSnackbar": "Restartujte aplikaci, aby se tato změna projevila",
+  "settingsPayjoinDisclaimerRowLabel": "Upozornění k Payjoin",
+  "settingsPayjoinAdvancedTitle": "Rozšířená nastavení Payjoin",
+  "settingsScreenPrivacyTitle": "Soukromí obrazovky",
+  "settingsScreenPrivacyDisabledMessage": "Snímky obrazovky jsou nyní na citlivých obrazovkách povoleny",
+  "settingsSearchHint": "Hledat v nastavení",
+  "settingsSearchNoResults": "Nebyla nalezena žádná nastavení.",
+  "settingsSearchMempoolKeywords": "průzkumník bloků|odhad poplatků|transakční poplatky|mempool API",
+  "settingsSearchExchangeKeywords": "účet|účet u směnárny|obchodování|nákup a prodej",
+  "settingsSearchStartBackupKeywords": "vytvořit zálohu|uložit zálohu|zálohovat peněženku",
+  "settingsSearchRecoverbullKeywords": "šifrovaná záloha|cloudová záloha|šifrovaný trezor|obnovení z trezoru|Recoverbull",
+  "settingsSearchLabelsKeywords": "štítky peněženky|štítky transakcí|BIP329|import štítků|export štítků",
+  "settingsSearchTransactionHistoryKeywords": "export transakcí|vyexportovat transakce|CSV|historie peněženky",
+  "settingsSearchAppSettingsKeywords": "předvolby aplikace|nastavení aplikace|obecná nastavení",
+  "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",
+  "settingsSearchServicesStatusKeywords": "stav služeb|stav systému|online|výpadek",
+  "settingsSearchImportWalletKeywords": "přidat peněženku|obnovit peněženku|importovat mnemonickou frázi|peněženka pouze pro sledování|hardwarová peněženka",
+  "settingsSearchBroadcastTransactionKeywords": "odeslat podepsanou transakci|publikovat transakci|surová transakce|hex transakce|PSBT",
+  "settingsSearchPayjoinKeywords": "soukromí Payjoin|společná transakce|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "automatická směna|automatický swap|automatický převod|zůstatek okamžité peněženky|Autoswap",
+  "settingsSearchElectrumKeywords": "bitcoinový uzel|uzel Electrum|vlastní server|osobní uzel|Electrum",
+  "settingsSearchTestnetModeKeywords": "testovací síť|Bitcoin testnet|Liquid testnet|testovací režim|Testnet",
+  "settingsSearchSeedViewerKeywords": "seed fráze|fráze pro obnovení|mnemonická fráze|záložní slova|zobrazit seed",
+  "settingsSearchBip85Keywords": "deterministická entropie|odvozené seedy|odvozená entropie|BIP85",
+  "settingsSearchLanguageKeywords": "národní prostředí|překlad|jazyk zobrazení|preferovaný jazyk",
+  "settingsSearchThemeKeywords": "vzhled|tmavý režim|světlý režim|systémový motiv",
+  "settingsSearchCurrencyKeywords": "fiat měna|místní měna|výchozí měna|směnná měna",
+  "settingsSearchSecurityPinKeywords": "PIN kód|přístupový kód|zámek aplikace|ověření|změnit PIN",
+  "settingsSearchLogsKeywords": "debug logy|diagnostické logy|protokoly aplikace|exportovat logy",
+  "settingsSearchDevModeKeywords": "vývojářský režim|vývojová nastavení|debug režim|pokročilé testování",
+  "settingsSearchTestnetCredentialsKeywords": "přihlašovací údaje testnetu|přihlášení k testnetu|uživatelské jméno testnetu|heslo testnetu|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "hlášení pádů|hlášení chyb|diagnostika|telemetrie|chybové logy",
+  "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí",
+  "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky.",
+  "settingsErrorSavingSetting": "Toto nastavení se nepodařilo uložit. Zkuste to prosím znovu.",
+  "settingsErrorConsentNotGiven": "Toto nastavení vyžaduje před změnou vaše potvrzení.",
+  "settingsErrorLoadingLogs": "Diagnostické protokoly se nepodařilo připravit. Zkuste to prosím znovu.",
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí",
+  "bitcoinSettingsAutoTransferTitle": "Automatický swap",
+  "settingsDarkModeTitle": "Tmavý režim",
+  "settingsSourceCodeTitle": "Zdrojový kód",
+  "backgroundTasksTitle": "Úlohy na pozadí",
+  "notificationsBlockedMessage": "Oznámení jsou v nastavení systému zablokována.",
+  "notificationsTitle": "Oznámení",
+  "openSystemSettings": "Otevřít nastavení systému",
+  "permissionsTitle": "Oprávnění",
+  "settingsSearchPermissionsKeywords": "oznámení|úlohy na pozadí|baterie|upozornění"
+}

@@ -144,5 +144,87 @@
   "mnemonicWordCountLabel": "Palabras",
   "passphraseOptionOffSubtitle": "Palabra adicional opcional (BIP39)",
   "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra",
-  "importMnemonicUnsupportedScript": "Este tipo de billetera no es compatible con la red Bitcoin seleccionada."
+  "importMnemonicUnsupportedScript": "Este tipo de billetera no es compatible con la red Bitcoin seleccionada.",
+  "bitboxScreenDefaultWalletLabel": "Billetera BitBox",
+  "electrumRegtest": "Regtest",
+  "importColdcardButtonInstructions": "Instrucciones",
+  "importColdcardButtonOpenCamera": "Abrir la cámara",
+  "importColdcardConnectDescription": "Importe el descriptor de billetera desde su {deviceName}",
+  "importColdcardConnectTitle": "Conectar {deviceName}",
+  "importColdcardInvalidWalletData": "Datos de billetera Coldcard inválidos",
+  "importColdcardScanNfcSheetTitle": "Toque su {deviceName} para importar el descriptor de billetera vía NFC",
+  "importMnemonicBalanceLabel": "Saldo: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Continuar",
+  "importMnemonicDuplicateError": "Esta frase mnemónica ya existe",
+  "importMnemonicEmptyLabelError": "Se requiere una etiqueta para importar un mnemónico",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "importMnemonicNestedSegwit": "Nested Segwit",
+  "importMnemonicSegwit": "Segwit",
+  "importMnemonicSelectScriptType": "Importar mnemónica",
+  "importMnemonicSyncMessage": "Los tres tipos de billetera se están sincronizando y su saldo y transacciones aparecerán pronto. Puede esperar hasta que se complete la sincronización o proceder a importar si está seguro del tipo de billetera que desea importar.",
+  "importMnemonicTitle": "Importar mnemónica",
+  "importMnemonicTransactionsLabel": "Transacciones: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox",
+  "importWalletBitBoxNova": "BitBox Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "Importar mnemónica",
+  "importWalletImportWatchOnly": "Importar solo lectura",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Foundation Passport",
+  "importWalletSectionGeneric": "Billeteras genéricos",
+  "importWalletSectionHardware": "Billeteras hardware",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "Agregar una billetera nueva",
+  "importWatchOnlyCopiedToClipboard": "Copiado al portapapeles",
+  "importWatchOnlyDescriptor": "Descriptor",
+  "importWatchOnlyDisclaimerDescription": "Asegúrate de que la ruta de derivación que elijas coincida con la que produjo la xpub dada, ya que usar la ruta incorrecta puede llevar a la pérdida de fondos",
+  "importWatchOnlyDisclaimerTitle": "Advertencia sobre la ruta de derivación",
+  "importWatchOnlyErrorAlreadyExists": "Esta billetera ya está importada.",
+  "importWatchOnlyErrorImportFailed": "No pudimos importar este monedero de solo lectura. Revisa los datos e inténtalo de nuevo.",
+  "importWatchOnlyErrorInvalidFormat": "Esto no parece una clave pública o un descriptor válido. Revisa lo que pegaste.",
+  "importWatchOnlyErrorLabelRequired": "Ponle un nombre a tu monedero antes de importarlo.",
+  "importWatchOnlyErrorNetworkMismatch": "Este monedero está usando una red de Bitcoin diferente. Cambia entre Mainnet y Testnet e inténtalo de nuevo.",
+  "importWatchOnlyErrorNoWalletSelected": "Primero pega o escanea una clave pública o un descriptor.",
+  "importWatchOnlyExtendedPublicKey": "Clave pública extendida",
+  "importWatchOnlyImport": "Importar",
+  "importWatchOnlyLabel": "Etiqueta",
+  "importWatchOnlyNetworkBitcoinMainnet": "Red: red principal de Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Red: red de pruebas de Bitcoin",
+  "importWatchOnlyPasteHint": "Pegar xpub, ypub, zpub o descriptor",
+  "importWatchOnlyRequired": "Requerido",
+  "importWatchOnlyScanQR": "Escanear QR",
+  "importWatchOnlySigningDevice": "Dispositivo de firma",
+  "importWatchOnlyTitle": "Importar solo lectura",
+  "importWatchOnlyType": "Tipo",
+  "importWatchOnlyUnknown": "Desconocido",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Billetera Ledger",
+  "parentCustodyMetadataUnavailable": "Faltan los registros de seguridad de la billetera o están dañados. Se ha detenido esta acción para proteger tu semilla. Contacta con soporte antes de volver a intentarlo.",
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Escanear NFC"
 }

@@ -1,0 +1,245 @@
+{
+  "@@locale": "hi_Latn",
+  "translationWarningTitle": "AI-Generated Anuvad",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "translationWarningDescription": "Is app ke zyaadatar anuvad AI ke zariye banaye gaye hain aur inme galtiyan ho sakti hain. Agar aapko koi galti mile ya anuvad sudharne mein madad karna ho, toh aap hamare community translation platform ke zariye yogdan de sakte hain.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningContributeButton": "Anuvad Sudharne Mein Madad Karein",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  },
+  "settingsScreenTitle": "Settings",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "settingsExchangeSettingsTitle": "Exchange Settings",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "Security PIN",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "settingsCurrencyTitle": "Currency",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "App Settings",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "settingsTermsOfServiceTitle": "Terms of Service",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsAppVersionLabel": "App version: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "settingsServiceStatusTitle": "Services Status",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsLanguageTitle": "Bhaasha",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsThemeTitle": "Theme",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "settingsDevModeWarningTitle": "Dev Mode",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Yeh mode risky hai. Ise on karne par aap maan lete hain ki aap paisa kho sakte hain",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Mujhe samajh aa gaya",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsSuperuserModeDisabledMessage": "Superuser mode band ho gaya.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Superuser mode unlock ho gaya!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "walletSettingsImportWalletTitle": "Wallet Import Karo",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Transaction Broadcast Karo",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "Logs",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Testnet exchange credentials",
+  "exchangeTestnetBasicAuthDescription": "Testnet exchange web pages ke liye HTTP basic auth (login aur KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Username",
+  "exchangeTestnetBasicAuthPasswordLabel": "Password",
+  "exchangeTestnetBasicAuthClearButton": "Clear karein",
+  "exchangeTestnetBasicAuthSaveButton": "Save karein",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "autoswapSettingsTitle": "Auto Swap Settings",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "doneButton": "Ho Gaya",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "backupSettingsStartBackup": "Backup Shuru Karo",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "backupSettingsLabelsButton": "Labels",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "transactionHistoryTitle": "Lenden Itihaas",
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "torSettingsTitle": "Tor Settings",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "settingsErrorReportingTitle": "Error reporting",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Error Reporting Program",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingAcceptButton": "Accept",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Cancel",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Ye change apply karne ke liye app restart karo",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "errorReportingProgramDescriptionP1": "Hamare error reporting program mein contribute karke Bull ko behtar banane mein hamari madad karein.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Jab kuch break hota hai toh Bull Bitcoin anonymized error reports bhejta hai.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Isse hum dekh paate hain ki har bug se kitne users prabhavit hain aur usi hisaab se fixes ko priority dete hain, iske bina humare paas impact maapne ka koi tareeka nahi hai.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Reports sirf Bull ke server par jaati hain, kabhi bhi third parties ko nahi.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin open source hai, isliye aap verify kar sakte hain ki kya bheja jaata hai.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "swapRestoreTitle": "Swap Restore",
+  "settingsPayjoinDisclaimerRowLabel": "Payjoin Disclaimer",
+  "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
+  "settingsScreenPrivacyTitle": "Screen Privacy",
+  "settingsScreenPrivacyDisabledMessage": "Ab sanvedansheel screen par screenshot lene ki anumati hai",
+  "settingsSearchHint": "Settings khojein",
+  "settingsSearchNoResults": "Koi setting nahi mili.",
+  "settingsSearchMempoolKeywords": "block explorer|fee estimate|transaction fees|mempool API",
+  "settingsSearchExchangeKeywords": "khata|exchange khata|trading|kharidna aur bechna",
+  "settingsSearchStartBackupKeywords": "backup banayein|backup save karein|wallet ka backup lein",
+  "settingsSearchRecoverbullKeywords": "encrypted backup|cloud backup|encrypted vault|vault recovery",
+  "settingsSearchLabelsKeywords": "wallet ke labels|transaction ke labels|BIP329|labels import karein|labels export karein",
+  "settingsSearchTransactionHistoryKeywords": "transaction export karein|transaction history export karein|CSV|wallet history",
+  "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
+  "settingsSearchTermsOfServiceKeywords": "niyam aur shartein|kanooni|user agreement|TOS",
+  "settingsSearchServicesStatusKeywords": "service health|system status|online|service outage",
+  "settingsSearchImportWalletKeywords": "wallet add karein|wallet recover karein|recovery phrase import karein|watch-only wallet|hardware wallet",
+  "settingsSearchBroadcastTransactionKeywords": "signed transaction broadcast karein|transaction bhejein|raw transaction|transaction hex|PSBT",
+  "settingsSearchPayjoinKeywords": "Payjoin privacy|milkar ki gayi transaction|P2EP",
+  "settingsSearchAutoswapKeywords": "Autoswap|automatic swap|auto transfer|instant wallet balance",
+  "settingsSearchElectrumKeywords": "bitcoin node|Electrum node|custom server|apna node",
+  "settingsSearchTestnetModeKeywords": "test network|Bitcoin Testnet|Liquid Testnet|testing mode",
+  "settingsSearchSeedViewerKeywords": "seed phrase|recovery phrase|Mnemonic|backup words|seeds dikhayein",
+  "settingsSearchBip85Keywords": "deterministic entropy|child seeds|derived entropy|BIP85",
+  "settingsSearchLanguageKeywords": "app ki bhaasha|anuvaad|display bhaasha|pasandeeda bhaasha",
+  "settingsSearchThemeKeywords": "dikhaawat|andhera mode|halka mode|system theme|dark mode|light mode",
+  "settingsSearchCurrencyKeywords": "fiat currency|local currency|default currency|exchange currency",
+  "settingsSearchSecurityPinKeywords": "PIN code|passcode|app lock|authentication|PIN badlein",
+  "settingsSearchLogsKeywords": "debug logs|diagnostic logs|app logs|logs export karein",
+  "settingsSearchDevModeKeywords": "developer mode|development settings|debug mode|advanced testing",
+  "settingsSearchTestnetCredentialsKeywords": "Testnet user credentials|Testnet login|Testnet username|Testnet password|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "crash reports|error reports|diagnostics|telemetry|error logs",
+  "settingsSearchScreenPrivacyKeywords": "screenshot|screen recording|screen capture suraksha|gopniyata",
+  "settingsSearchStartTyping": "Results dekhne ke liye type karna shuru karein.",
+  "settingsErrorSavingSetting": "Woh setting save nahin ho saki. Kripya dobara koshish karein.",
+  "settingsErrorConsentNotGiven": "Is setting ko badalne se pehle aapki confirmation zaroori hai.",
+  "settingsErrorLoadingLogs": "Diagnostic logs taiyar nahin ho sake. Kripya dobara koshish karein.",
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network",
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "settingsDarkModeTitle": "Dark mode",
+  "settingsSourceCodeTitle": "Source code",
+  "backgroundTasksTitle": "Background kaam",
+  "notificationsBlockedMessage": "Notifications system settings mein blocked hain.",
+  "notificationsTitle": "Notifications",
+  "openSystemSettings": "System settings kholein",
+  "permissionsTitle": "Anumatiyan",
+  "settingsSearchPermissionsKeywords": "notifications|background kaam|battery|alerts"
+}

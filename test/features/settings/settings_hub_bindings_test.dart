@@ -4,10 +4,10 @@ import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:settings/testing.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:exchange/exchange.dart'
     show ExchangeAccess, ExchangeAccessEnabled, ExchangeAccessSession;
@@ -50,9 +50,7 @@ void main() {
     addTearDown(accessChanges.close);
 
     final hub = SettingsFeature.mount(
-      menuOf: SettingsHubBindings.menuOf,
-      labelsOf: SettingsHubBindings.labelsOf,
-      menuScope: SettingsHubBindings.menuScope,
+      menuScope: SettingsRouter.menuScope,
       status: networkStatusForTest(
         () async => const Err(NoDefaultWalletFailure()),
       ),

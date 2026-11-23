@@ -1,5 +1,4 @@
 import 'package:signers/routes.dart';
-import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Sats, ScriptType;
 import 'package:spend/spend.dart';

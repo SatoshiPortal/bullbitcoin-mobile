@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2636 scanner latch', () {
     test('cancelled derivation choice releases the scanner latch', () {
       final source = File(
-        'lib/features/import_watch_only_wallet/presentation/scan_watch_only_screen.dart',
+        'features/wallet_import/lib/src/ui/watch_only/scan_watch_only_screen.dart',
       ).readAsStringSync();
 
       final latch = source.indexOf('_handled = true;');

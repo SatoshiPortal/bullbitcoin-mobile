@@ -2,10 +2,10 @@ import 'package:transactions/transactions.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
 
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:settings/settings.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -15,15 +15,13 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_amount.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullDisclosureLink,
         BullPullableBody,
         BullShapesX,
-        BullShimmerBox,
-        BullShimmerLine,
         BullText,
         Gap,
         BullTypographyX;
@@ -58,46 +56,27 @@ class WalletDetailScreen extends StatelessWidget {
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
 
     final balanceSat = wallet?.balanceSat;
-    return Scaffold(
-      appBar: AppBar(
-        title: walletName.isEmpty
-            ? const BullShimmerLine(width: 150)
-            : BullText(
-                walletName,
-                style: context.bullType.subtitle.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-        actions: [
-          IconButton(
-            tooltip: context.loc.settingsWalletSettingsTitle,
-            onPressed: () {
-              context.pushNamed(
-                SettingsRoute.walletDetailsSelectedWallet.name,
-                pathParameters: {'walletId': walletId},
-              );
-            },
-            icon: Image.asset(
-              Assets.icons.settingsLine.path,
-              width: 24,
-              height: 24,
-              color: context.appColors.onSurface,
-            ),
-          ),
-        ],
+    return OverviewDetail(
+      walletName: walletName,
+      settings: IconButton(
+        tooltip: context.loc.settingsWalletSettingsTitle,
+        onPressed: () {
+          context.pushNamed(
+            SettingsRoute.walletDetailsSelectedWallet.name,
+            pathParameters: {'walletId': walletId},
+          );
+        },
+        icon: Image.asset(
+          Assets.icons.settingsLine.path,
+          width: 24,
+          height: 24,
+          color: context.appColors.onSurface,
+        ),
       ),
-      body: wallet == null
-          ? const BullShimmerBox(height: 100)
-          : balanceSat == null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  context.loc.walletLoadFailed,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
+      isLoading: wallet == null,
+      unavailableMessage: context.loc.walletLoadFailed,
+      body: wallet == null || balanceSat == null
+          ? null
           : scopeWalletHistory(
               walletId,
               Builder(
@@ -119,8 +98,7 @@ class WalletDetailScreen extends StatelessWidget {
                         ),
                         eyeToggle: const EyeToggle(),
                         fiatBalance: HomeFiatBalance(
-                          onCurrencyChanged:
-                              SettingsFacade.changeDisplayCurrency,
+                          onCurrencyChanged: Settings.changeDisplayCurrency,
                           balanceSat: balanceSat.toInt(),
                         ),
                         syncingIndicator: const TxsSyncingIndicator(),
@@ -158,13 +136,7 @@ class WalletDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
-          child: WalletBottomButtons(wallet: wallet),
-        ),
-      ),
+      bottomActions: WalletBottomButtons(wallet: wallet),
     );
   }
 }

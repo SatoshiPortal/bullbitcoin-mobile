@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:satoshifier/payment_request.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';

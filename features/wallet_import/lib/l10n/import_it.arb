@@ -130,5 +130,85 @@
   "mnemonicUnknownWordError": "Alcune parole non fanno parte dell'elenco delle parole di recupero: i numeri in rosso indicano quali.",
   "mnemonicWordCountLabel": "Parole",
   "passphraseOptionOffSubtitle": "Parola aggiuntiva facoltativa (BIP39)",
-  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata"
+  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata",
+  "bitboxScreenDefaultWalletLabel": "Portafoglio BitBox",
+  "importColdcardButtonInstructions": "Istruzioni",
+  "importColdcardButtonOpenCamera": "Aprire la fotocamera",
+  "importColdcardConnectDescription": "Importa il descrittore del portafoglio dal tuo {deviceName}",
+  "importColdcardConnectTitle": "Collega {deviceName}",
+  "importColdcardInvalidWalletData": "Dati del portafoglio Coldcard non validi",
+  "importColdcardScanNfcSheetTitle": "Tocca il tuo {deviceName} per importare il descrittore del portafoglio via NFC",
+  "importMnemonicBalanceLabel": "Saldo: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "Continua",
+  "importMnemonicDuplicateError": "Questa frase di recupero è già stata importata",
+  "importMnemonicEmptyLabelError": "Per importare la frase di recupero devi impostare un'etichetta",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "Legacy",
+  "importMnemonicNestedSegwit": "Segwit annidato",
+  "importMnemonicSegwit": "Segwit",
+  "importMnemonicSelectScriptType": "Importa frase di recupero",
+  "importMnemonicSyncMessage": "Tutti e tre i tipi di portafoglio si stanno sincronizzando: i saldi e le transazioni appariranno presto. Puoi attendere fino a quando la sincronizzazione sarà completa o procedere all'importazione se sei sicuro del tipo di portafoglio che desideri importare.",
+  "importMnemonicTitle": "Importa frase di recupero",
+  "importMnemonicTransactionsLabel": "Transazioni: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "Coldcard Q",
+  "importWalletImportMnemonic": "Importazione della mnemonica",
+  "importWalletImportWatchOnly": "Portafoglio in sola lettura (watch-only)",
+  "importWalletJade": "Blockstream Jade",
+  "importWalletKeystone": "Keystone",
+  "importWalletKrux": "Krux",
+  "importWalletLedger": "Ledger",
+  "importWalletPassport": "Foundation Passport",
+  "importWalletSectionGeneric": "Portafogli generici",
+  "importWalletSectionHardware": "Portafogli hardware",
+  "importWalletSeedSigner": "SeedSigner",
+  "importWalletSpecter": "Specter",
+  "importWalletTitle": "Aggiungi un nuovo portafoglio",
+  "importWatchOnlyCopiedToClipboard": "Copiato negli appunti",
+  "importWatchOnlyDescriptor": "Descrittore",
+  "importWatchOnlyDisclaimerDescription": "Prima di usare il portafoglio, verifica il primo indirizzo derivato per assicurarti che il percorso di derivazione scelto corrisponda a quello che ha generato l'xpub. Usare il percorso sbagliato può causare la perdita di fondi",
+  "importWatchOnlyDisclaimerTitle": "Avviso sul percorso di derivazione",
+  "importWatchOnlyErrorAlreadyExists": "Questo portafoglio è già stato importato.",
+  "importWatchOnlyErrorImportFailed": "Non siamo riusciti a importare questo portafoglio di sola lettura. Controlla i dettagli e riprova.",
+  "importWatchOnlyErrorInvalidFormat": "Questo non sembra una chiave pubblica o un descriptor valido. Controlla ciò che hai incollato.",
+  "importWatchOnlyErrorLabelRequired": "Dai un nome al tuo portafoglio prima di importarlo.",
+  "importWatchOnlyErrorNetworkMismatch": "Questo portafoglio sta usando una rete Bitcoin diversa. Passa da Mainnet a Testnet o viceversa, quindi riprova.",
+  "importWatchOnlyErrorNoWalletSelected": "Incolla o scansiona prima una chiave pubblica o un descriptor.",
+  "importWatchOnlyExtendedPublicKey": "Chiave pubblica estesa",
+  "importWatchOnlyImport": "Importa",
+  "importWatchOnlyLabel": "Etichetta",
+  "importWatchOnlyNetworkBitcoinMainnet": "Rete: Mainnet Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "Rete: Testnet Bitcoin",
+  "importWatchOnlyPasteHint": "Incolla xpub, ypub, zpub o descrittore",
+  "importWatchOnlyRequired": "Obbligatorio",
+  "importWatchOnlyScanQR": "Scansione del QR",
+  "importWatchOnlySigningDevice": "Dispositivo di firma",
+  "importWatchOnlyTitle": "Importa watch-only",
+  "importWatchOnlyType": "Tipo",
+  "importWatchOnlyUnknown": "Sconosciuto",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "Portafoglio Ledger",
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "Scansione NFC"
 }

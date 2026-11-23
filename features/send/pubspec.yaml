@@ -1,5 +1,5 @@
 name: send
-description: Signed transaction broadcast and fee replacement journeys.
+description: Send payment views, quotes, and transaction tools.
 publish_to: none
 version: 0.1.0
 
@@ -13,6 +13,7 @@ dependencies:
   address_view:
   bitcoin_base: ^7.0.0
   bull_logger:
+  bull_pricer:
   bull_ui:
   convert: ^3.1.2
   crypto: ^3.0.7

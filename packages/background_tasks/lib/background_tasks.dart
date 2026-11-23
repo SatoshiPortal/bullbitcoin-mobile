@@ -1,6 +1,7 @@
 library;
 
 export 'src/background_rollout.dart';
+export 'src/background_schedule.dart' show BackgroundSchedule;
 export 'src/background_tasks_factories.dart';
 export 'src/domain/background_sync_interval.dart';
 export 'src/domain/background_task.dart';

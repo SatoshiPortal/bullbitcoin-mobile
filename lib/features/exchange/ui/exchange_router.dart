@@ -1,7 +1,6 @@
 import 'package:transactions/routes.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:address_view/address_view.dart';
@@ -63,34 +62,17 @@ class ExchangeRouter {
     Preferences Function()? preferences,
     ExchangeSettingsHost? settings,
     ExchangePurchaseHost? purchases,
+    ExchangePayinHost? payins,
   }) => BullExchangeFeature.mount(
     networkUnavailable: config.networkUnavailable,
     showWebsiteOnly: (context) =>
         Platform.isIOS && !config.isSuperuser(context),
     unavailableRedirectPath: config.homePath,
     brandAssetPath: Assets.logos.bbLogoSmall.path,
-    copy: (context) {
-      final loc = context.loc;
-      return ExchangeLandingCopy(
-        brandName: loc.exchangeBrandName,
-        connectAccount: loc.exchangeLandingConnectAccount,
-        recommendedExchange: loc.exchangeLandingRecommendedExchange,
-        selfCustody: loc.exchangeFeatureSelfCustody,
-        recurringOrders: loc.exchangeFeatureDcaOrders,
-        sellBitcoin: loc.exchangeFeatureSellBitcoin,
-        bankTransfers: loc.exchangeFeatureBankTransfers,
-        customerSupport: loc.exchangeFeatureCustomerSupport,
-        unifiedHistory: loc.exchangeFeatureUnifiedHistory,
-        legalDisclaimer: loc.exchangeLandingDisclaimerLegal,
-        unavailableDisclaimer: loc.exchangeLandingDisclaimerNotAvailable,
-        signIn: loc.exchangeLoginButton,
-        openWebsite: loc.exchangeGoToWebsiteButton,
-      );
-    },
-    onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
     settings: settings,
     purchases: purchases,
+    payins: payins,
     auth: ExchangeScope.authHost,
     limitOrders: exchange,
     withdrawal: exchange == null || preferences == null

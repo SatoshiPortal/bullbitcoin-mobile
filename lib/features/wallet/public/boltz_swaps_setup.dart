@@ -56,16 +56,16 @@ class BoltzSwapsSetup {
             ? null
             : Fingerprint(fingerprint);
       },
-      newAddressFor: (id) async =>
-          (await locator<AddressView>().receiveAddress(
-                walletId: id,
-                advance: true,
-              ))
-              .map((address) => address.address)
-              .mapErr(
-                (_) =>
-                    const SwapsUnexpectedFailure('Receive address unavailable'),
-              ),
+      newAddressFor: (id) async => switch (await locator<AddressView>()
+          .receiveAddress(walletId: id, advance: true)) {
+        Ok(:final value) => Ok(value.address),
+        Err(failure: AddressViewWriterBusyFailure()) => const Err(
+          SwapsBusyFailure(),
+        ),
+        Err() => const Err(
+          SwapsUnexpectedFailure('Receive address unavailable'),
+        ),
+      },
       walletTx: (txid, {required walletId}) async {
         final result = await locator<Transactions>().getWalletTransaction(
           txid,
@@ -194,6 +194,10 @@ class BoltzSwapsSetup {
     );
     locator.registerFactory<DropPendingSwapLockupUsecase>(
       () => DropPendingSwapLockupUsecase(locator<SwapResolver>()),
+    );
+    locator.registerFactory<SwapStartup>(
+      () =>
+          SwapStartup(locator<LogSwapCensusUsecase>(), locator<SwapWatcher>()),
     );
     locator.registerFactory<LogSwapCensusUsecase>(
       () => LogSwapCensusUsecase(locator<SwapStore>()),

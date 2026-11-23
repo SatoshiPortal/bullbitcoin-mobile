@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/liquid_send_port.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 
 class PrepareLiquidSendUsecase {
   final LiquidSendPort _liquidWalletRepository;

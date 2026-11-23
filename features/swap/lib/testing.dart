@@ -14,6 +14,7 @@ export 'src/domain/entities/swap_wallet.dart';
 export 'src/domain/swap_amount_conversion.dart';
 export 'src/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 export 'src/domain/usecases/check_swap_spend_admission_usecase.dart';
+export 'src/domain/usecases/create_receive_order_swap_usecase.dart';
 export 'src/domain/usecases/get_swap_amount_quotes_usecase.dart';
 export 'src/domain/usecases/get_swap_exchange_rate_usecase.dart';
 export 'src/domain/usecases/get_swap_route_usecase.dart';

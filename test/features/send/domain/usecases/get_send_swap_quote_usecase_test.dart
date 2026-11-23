@@ -1,8 +1,8 @@
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:swaps/order_swaps.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,0 +1,214 @@
+{
+  "translationWarningContributeButton": "Βοηθήστε στη βελτίωση των μεταφράσεων",
+  "@translationWarningContributeButton": {
+    "description": "Button to open GitHub repository for translations"
+  },
+  "translationWarningDescription": "Οι περισσότερες μεταφράσεις σε αυτήν την εφαρμογή δημιουργήθηκαν με χρήση AI και ενδέχεται να περιέχουν ανακρίβειες. Εάν παρατηρήσετε σφάλματα ή θέλετε να βοηθήσετε στη βελτίωση των μεταφράσεων, μπορείτε να υποβάλετε μια διόρθωση στο αποθετήριό μας στο GitHub.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningTitle": "AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
+  "@bitcoinSettingsTestnetModeTitle": {
+    "description": "Title for the testnet mode toggle in Bitcoin settings"
+  },
+  "logSettingsLogsTitle": "Logs",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Προεπιλεγμένο νόμισμα fiat",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "walletSettingsImportWalletTitle": "Εισαγωγή Wallet",
+  "@walletSettingsImportWalletTitle": {
+    "description": "Title for the import wallet option in Bitcoin settings"
+  },
+  "settingsServiceStatusTitle": "Υπηρεσίες status",
+  "@settingsServiceStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsSecurityPinTitle": "Ασφάλεια Pin Pin",
+  "@settingsSecurityPinTitle": {
+    "description": "Title for the security PIN section in the settings menu"
+  },
+  "backupSettingsLabelsButton": "Ετικέτες",
+  "@backupSettingsLabelsButton": {
+    "description": "Button text to manage transaction labels"
+  },
+  "backupSettingsRecoverBullSettings": "Recoverbull",
+  "@backupSettingsRecoverBullSettings": {
+    "description": "Button text for Recoverbull"
+  },
+  "settingsDevModeUnderstandButton": "Καταλαβαίνω ότι καταλαβαίνω",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsCurrencyTitle": "Νόμισμα νόμισμα",
+  "@settingsCurrencyTitle": {
+    "description": "Title for the currency settings section in the settings menu"
+  },
+  "settingsLanguageTitle": "Γλώσσα",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "settingsExchangeSettingsTitle": "Ρυθμίσεις ανταλλαγής",
+  "@settingsExchangeSettingsTitle": {
+    "description": "Title for the exchange settings section in the settings menu"
+  },
+  "settingsAppSettingsTitle": "Εφαρμογή ρυθμίσεις",
+  "@settingsAppSettingsTitle": {
+    "description": "Title for the app settings section in the settings menu"
+  },
+  "appSettingsDevModeTitle": "Dev Mode",
+  "exchangeTestnetBasicAuthTitle": "Διαπιστευτήρια ανταλλακτηρίου testnet",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth για τις ιστοσελίδες του ανταλλακτηρίου testnet (σύνδεση και KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Όνομα χρήστη",
+  "exchangeTestnetBasicAuthPasswordLabel": "Κωδικός πρόσβασης",
+  "exchangeTestnetBasicAuthClearButton": "Εκκαθάριση",
+  "exchangeTestnetBasicAuthSaveButton": "Αποθήκευση",
+  "@appSettingsDevModeTitle": {
+    "description": "Title for the developer mode toggle in app settings"
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "onboardingBullBitcoin": "Bull Bitcoin",
+  "@onboardingBullBitcoin": {
+    "description": "Brand name displayed in onboarding"
+  },
+  "transactionHistoryTitle": "Ιστορικό συναλλαγών",
+  "allSeedViewTitle": "Seed Viewer",
+  "@allSeedViewTitle": {
+    "description": "Title for the seed viewer screen"
+  },
+  "settingsSuperuserModeDisabledMessage": "Superuser mode με αναπηρία.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsTermsOfServiceTitle": "Όροι Υπηρεσίας",
+  "@settingsTermsOfServiceTitle": {
+    "description": "Title for the terms of service section in the settings menu"
+  },
+  "settingsDevModeWarningMessage": "Αυτή η λειτουργία είναι επικίνδυνη. Επιτρέποντάς το, αναγνωρίζετε ότι μπορείτε να χάσετε χρήματα",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
+  "@bitcoinSettingsBroadcastTransactionTitle": {
+    "description": "Title for the broadcast transaction option in Bitcoin settings"
+  },
+  "settingsThemeTitle": "Theme",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
+  "settingsDevModeWarningTitle": "Dev Mode",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsAppVersionLabel": "Εφαρμογή έκδοση: ",
+  "@settingsAppVersionLabel": {
+    "description": "Label displayed before the app version number in settings"
+  },
+  "doneButton": "Έγινε",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Η λειτουργία Superuser ξεκλειδώθηκε!",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
+  "settingsScreenTitle": "Ρυθμίσεις",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 προσδιοριστικές εντροπίες",
+  "@bitcoinSettingsBip85EntropiesTitle": {
+    "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
+  },
+  "autoswapSettingsTitle": "Ρυθμίσεις αυτόματης ανταλλαγής",
+  "@autoswapSettingsTitle": {
+    "description": "Main header/title of the auto swap settings bottom sheet"
+  },
+  "torSettingsTitle": "Οι ρυθμίσεις Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "backupSettingsStartBackup": "Ξεκινήστε το Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "swapRestoreTitle": "Επαναφορά ανταλλαγών",
+  "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
+  "errorReportingProgramTitle": "Πρόγραμμα Αναφοράς Σφαλμάτων",
+  "errorReportingProgramDescriptionP1": "Βοηθήστε μας να βελτιώσουμε το Bull συμμετέχοντας στο πρόγραμμα αναφοράς σφαλμάτων μας.",
+  "errorReportingProgramDescriptionP2": "Η Bull Bitcoin στέλνει ανώνυμες αναφορές σφαλμάτων όταν κάτι δεν λειτουργεί σωστά.",
+  "errorReportingProgramDescriptionP3": "Αυτό μας επιτρέπει να δούμε πόσους χρήστες επηρεάζει κάθε σφάλμα και να ιεραρχήσουμε ανάλογα τις διορθώσεις· χωρίς αυτό, δεν έχουμε τρόπο να μετρήσουμε τον αντίκτυπο.",
+  "errorReportingProgramDescriptionP4": "Οι αναφορές αποστέλλονται μόνο στον διακομιστή της Bull, ποτέ σε τρίτους.",
+  "errorReportingProgramDescriptionP5": "Η Bull Bitcoin είναι ανοιχτού κώδικα, οπότε μπορείτε να επαληθεύσετε τι αποστέλλεται.",
+  "errorReportingAcceptButton": "Αποδοχή",
+  "errorReportingCancelButton": "Ακύρωση",
+  "errorReportingRestartSnackbar": "Επανεκκινήστε την εφαρμογή για να εφαρμοστεί αυτή η αλλαγή",
+  "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
+  "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
+  "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
+  "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες",
+  "settingsSearchHint": "Αναζήτηση ρυθμίσεων",
+  "settingsSearchNoResults": "Δεν βρέθηκαν ρυθμίσεις.",
+  "settingsSearchMempoolKeywords": "εξερευνητής μπλοκ|εκτίμηση προμηθειών|προμήθειες συναλλαγών|mempool API",
+  "settingsSearchExchangeKeywords": "λογαριασμός|λογαριασμός ανταλλακτηρίου|συναλλαγές|αγορά και πώληση",
+  "settingsSearchStartBackupKeywords": "δημιουργία αντιγράφου ασφαλείας|αποθήκευση αντιγράφου ασφαλείας|αντίγραφο πορτοφολιού",
+  "settingsSearchRecoverbullKeywords": "κρυπτογραφημένο αντίγραφο ασφαλείας|αντίγραφο στο cloud|κρυπτογραφημένο θησαυροφυλάκιο|ανάκτηση θησαυροφυλακίου|Recoverbull",
+  "settingsSearchLabelsKeywords": "ετικέτες πορτοφολιού|ετικέτες συναλλαγών|BIP329|εισαγωγή ετικετών|εξαγωγή ετικετών",
+  "settingsSearchTransactionHistoryKeywords": "εξαγωγή συναλλαγών|εξαγωγή ιστορικού|CSV|ιστορικό πορτοφολιού",
+  "settingsSearchAppSettingsKeywords": "προτιμήσεις εφαρμογής|ρυθμίσεις εφαρμογής|γενικές ρυθμίσεις",
+  "settingsSearchTermsOfServiceKeywords": "όροι και προϋποθέσεις|νομικά|συμφωνία χρήστη|TOS",
+  "settingsSearchServicesStatusKeywords": "κατάσταση υπηρεσιών|κατάσταση συστήματος|σε σύνδεση|διακοπή λειτουργίας",
+  "settingsSearchImportWalletKeywords": "προσθήκη πορτοφολιού|ανάκτηση πορτοφολιού|εισαγωγή μνημονικής φράσης|πορτοφόλι μόνο παρακολούθησης|πορτοφόλι υλικού",
+  "settingsSearchBroadcastTransactionKeywords": "μετάδοση υπογεγραμμένης συναλλαγής|δημοσίευση συναλλαγής|ακατέργαστη συναλλαγή|hex συναλλαγής|PSBT",
+  "settingsSearchPayjoinKeywords": "ιδιωτικότητα Payjoin|συνεργατική συναλλαγή|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "αυτόματη ανταλλαγή|αυτόματο swap|αυτόματη μεταφορά|υπόλοιπο άμεσου πορτοφολιού|Autoswap",
+  "settingsSearchElectrumKeywords": "κόμβος Bitcoin|κόμβος Electrum|προσαρμοσμένος διακομιστής|προσωπικός κόμβος|Electrum",
+  "settingsSearchTestnetModeKeywords": "δοκιμαστικό δίκτυο|Bitcoin testnet|Liquid testnet|λειτουργία δοκιμής|Testnet",
+  "settingsSearchSeedViewerKeywords": "φράση seed|φράση ανάκτησης|μνημονική φράση|λέξεις αντιγράφου ασφαλείας|προβολή seed",
+  "settingsSearchBip85Keywords": "ντετερμινιστική εντροπία|παράγωγα seed|παράγωγη εντροπία|BIP85",
+  "settingsSearchLanguageKeywords": "τοπικές ρυθμίσεις|μετάφραση|γλώσσα εμφάνισης|προτιμώμενη γλώσσα",
+  "settingsSearchThemeKeywords": "εμφάνιση|σκοτεινή λειτουργία|φωτεινή λειτουργία|θέμα συστήματος",
+  "settingsSearchCurrencyKeywords": "παραστατικό νόμισμα|τοπικό νόμισμα|προεπιλεγμένο νόμισμα|νόμισμα μετατροπής",
+  "settingsSearchSecurityPinKeywords": "κωδικός PIN|κωδικός πρόσβασης|κλείδωμα εφαρμογής|έλεγχος ταυτότητας|αλλαγή PIN",
+  "settingsSearchLogsKeywords": "αρχεία καταγραφής debug|διαγνωστικά αρχεία|αρχεία εφαρμογής|εξαγωγή αρχείων καταγραφής",
+  "settingsSearchDevModeKeywords": "λειτουργία προγραμματιστή|ρυθμίσεις ανάπτυξης|λειτουργία debug|προηγμένες δοκιμές",
+  "settingsSearchTestnetCredentialsKeywords": "διαπιστευτήρια testnet|σύνδεση testnet|όνομα χρήστη testnet|κωδικός testnet|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "αναφορές σφαλμάτων λειτουργίας|αναφορές προβλημάτων|διαγνωστικά|τηλεμετρία|αρχεία σφαλμάτων",
+  "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο",
+  "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα.",
+  "settingsErrorSavingSetting": "Δεν ήταν δυνατή η αποθήκευση αυτής της ρύθμισης. Παρακαλώ δοκιμάστε ξανά.",
+  "settingsErrorConsentNotGiven": "Αυτή η ρύθμιση απαιτεί την επιβεβαίωσή σας πριν αλλάξει.",
+  "settingsErrorLoadingLogs": "Δεν ήταν δυνατή η προετοιμασία των αρχείων διαγνωστικών. Παρακαλώ δοκιμάστε ξανά.",
+  "settingsSearchTorKeywords": "διακομιστής μεσολάβησης Tor|Orbot|δρομολόγηση onion|ενσωματωμένο Tor|δίκτυο ιδιωτικότητας",
+  "bitcoinSettingsAutoTransferTitle": "Αυτόματη ανταλλαγή",
+  "settingsDarkModeTitle": "Σκούρα λειτουργία",
+  "settingsSourceCodeTitle": "Πηγαίος κώδικας",
+  "backgroundTasksTitle": "Εργασίες στο παρασκήνιο",
+  "notificationsBlockedMessage": "Οι ειδοποιήσεις έχουν αποκλειστεί στις ρυθμίσεις συστήματος.",
+  "notificationsTitle": "Ειδοποιήσεις",
+  "openSystemSettings": "Άνοιγμα ρυθμίσεων συστήματος",
+  "permissionsTitle": "Άδειες",
+  "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών"
+}

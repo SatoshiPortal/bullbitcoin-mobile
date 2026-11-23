@@ -1,0 +1,73 @@
+{
+  "appStartupErrorMessage": "앱을 시작하지 못했습니다. 앱을 완전히 종료한 후 다시 시작해 보세요. 오류가 계속되면 지원팀에 문의하고 로그를 공유하세요.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "errorSharingLogsMessage": "오류 공유 로그: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "이름 *",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "onboardingRecover": "읽기",
+  "@onboardingRecover": {
+    "description": "Button label for recovering a wallet in onboarding"
+  },
+  "appStartupErrorTitle": "시작 오류",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "appStartupContactSupportButton": "연락처",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "사이트 맵",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appInitErrorTitle": "앱 시작 실패",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "로그 공유",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "백업을 사용하세요",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "백업 덕분에 자금은 안전합니다.\n먼저 앱을 다시 시작해 보세요. 여전히 실행되지 않으면 앱을 재설치하고 백업으로 복구하세요.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "백업이 없나요?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "앱을 삭제하지 마세요.\n구조를 시도하려면 지원팀에 문의하세요.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "지원 문의",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "오류 세부 정보 표시",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
+  "logsShareOptionExport": "내보내기",
+  "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
+  "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
+  "deleteLogsTitle": "로그 삭제",
+  "logsDeletedMessage": "로그가 삭제되었습니다"
+}

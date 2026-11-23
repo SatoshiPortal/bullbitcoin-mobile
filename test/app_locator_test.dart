@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:go_router/go_router.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:labels/testing.dart';
@@ -15,7 +16,7 @@ import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:spend/spend.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Wallet;
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
@@ -33,11 +34,11 @@ import 'dart:io';
 
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/app_database_testing.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:startup/startup.dart';
 import 'package:drift/native.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -120,13 +121,16 @@ void main() {
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      inventoryFixture = await InventoryFixture.open(directory);
+      inventoryFixture = await InventoryFixture.open(
+        directory,
+        withSignerDevices: true,
+      );
       inventoryFixture.register(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
       if (composed) {
-        locator<SyncCoordinator>().dispose();
+        locator<SyncCoordinator<Wallet, WalletFailure>>().dispose();
       }
       await locator.reset();
       await inventoryFixture.close();
@@ -416,14 +420,17 @@ void main() {
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       registerTestOwnerDatabases(locator);
-      final inventoryFixture = await InventoryFixture.open(directory);
+      final inventoryFixture = await InventoryFixture.open(
+        directory,
+        withSignerDevices: true,
+      );
       inventoryFixture.register(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
       var composed = false;
       addTearDown(() async {
         if (composed) {
-          locator<SyncCoordinator>().dispose();
+          locator<SyncCoordinator<Wallet, WalletFailure>>().dispose();
         }
         await locator.reset();
         await inventoryFixture.close();
@@ -538,7 +545,10 @@ void main() {
     final electrumDatabase = ElectrumTestDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
     registerTestOwnerDatabases(locator);
-    final inventoryFixture = await InventoryFixture.open(directory);
+    final inventoryFixture = await InventoryFixture.open(
+      directory,
+      withSignerDevices: true,
+    );
     inventoryFixture.register(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
@@ -594,7 +604,10 @@ void main() {
       isA<ElectrumSaveFailure>(),
     );
     expect(locator.isRegistered<WalletRepository>(), isFalse);
-    expect(locator.isRegistered<SyncCoordinator>(), isFalse);
+    expect(
+      locator.isRegistered<SyncCoordinator<Wallet, WalletFailure>>(),
+      isFalse,
+    );
     expect(locator.isRegistered<SilentFeature>(), isFalse);
     expect(
       await electrumDatabase.select(electrumDatabase.electrumServers).get(),

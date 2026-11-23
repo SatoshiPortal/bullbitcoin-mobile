@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: onboarding_en.arb
+output-localization-file: onboarding_localizations.dart
+output-class: OnboardingLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false

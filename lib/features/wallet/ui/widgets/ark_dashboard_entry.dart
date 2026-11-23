@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/settings/public/network_capability_visibility.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ui/bull_ui.dart';

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -6,14 +7,14 @@ import 'dart:async';
 
 import 'package:preferences/preferences.dart';
 
-import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:silent/silent.dart';
 import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/features/wallet/data/coordinated_swap_sync.dart';
-import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_sp_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/wallet_sync_locator.dart';
@@ -45,7 +46,7 @@ void main() {
   late _Swaps swaps;
   late _Sp sp;
   late GetIt locator;
-  late SyncCoordinator coordinator;
+  late SyncCoordinator<Wallet, WalletFailure> coordinator;
 
   setUp(() {
     binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
@@ -66,7 +67,7 @@ void main() {
     locator.registerSingleton<WalletRepository>(_WalletRepository());
     SyncLocator.setupForeground(locator);
     // Resolution before either facade exists must remain safe.
-    coordinator = locator<SyncCoordinator>();
+    coordinator = locator<SyncCoordinator<Wallet, WalletFailure>>();
     swaps = _Swaps();
     sp = _Sp();
     locator.registerSingleton<SwapActivity>(swaps);

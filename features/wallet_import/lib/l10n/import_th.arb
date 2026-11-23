@@ -356,5 +356,204 @@
   "importColdcardMk4Step10": "กดปุ่ม \"Scan NFC\"",
   "importColdcardMk4Step11": "วางโทรศัพท์ไว้บน NFC ของ Coldcard",
   "importColdcardMk4Step12": "เท่านี้ก็เสร็จแล้ว!",
-  "recipientsInfoLabel": "ป้ายกำกับ"
+  "recipientsInfoLabel": "ป้ายกำกับ",
+  "bitboxScreenDefaultWalletLabel": "เหรียญ",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "importColdcardButtonInstructions": "คําแนะนํา",
+  "@importColdcardButtonInstructions": {
+    "description": "ImportColdcardQ: Button to show setup instructions"
+  },
+  "importColdcardButtonOpenCamera": "เปิดกล้อง",
+  "@importColdcardButtonOpenCamera": {
+    "description": "ImportColdcardQ: Button to open camera for QR scanning"
+  },
+  "importColdcardConnectDescription": "นำเข้า wallet descriptor จาก {deviceName} ของคุณ",
+  "importColdcardConnectTitle": "เชื่อมต่อ {deviceName}",
+  "importColdcardInvalidWalletData": "ข้อมูลกระเป๋า Coldcard ไม่ถูกต้อง",
+  "importColdcardScanNfcSheetTitle": "แตะ {deviceName} เพื่อนำเข้า wallet descriptor ผ่าน NFC",
+  "importMnemonicBalanceLabel": "สมดุล: {amount}",
+  "@importMnemonicBalanceLabel": {
+    "description": "ImportMnemonic: Balance label with amount in wallet type card",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicContinue": "อ่านต่อ",
+  "@importMnemonicContinue": {
+    "description": "Button text to proceed after entering mnemonic"
+  },
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "importMnemonicLegacy": "การลงโทษ",
+  "@importMnemonicLegacy": {
+    "description": "Label for Legacy (BIP44) wallet type"
+  },
+  "importMnemonicNestedSegwit": "พระราชวัง",
+  "@importMnemonicNestedSegwit": {
+    "description": "Label for Nested Segwit (BIP49) wallet type"
+  },
+  "importMnemonicSegwit": "Segwit",
+  "@importMnemonicSegwit": {
+    "description": "Label for Segwit (BIP84) wallet type"
+  },
+  "importMnemonicSelectScriptType": "นําเข้า Mnemonic",
+  "@importMnemonicSelectScriptType": {
+    "description": "AppBar title for script type selection"
+  },
+  "importMnemonicSyncMessage": "กระเป๋าเงินทั้งหมดสามรายการจะถูกซิงค์และยอดคงเหลือและการทําธุรกรรมของพวกเขาจะปรากฏขึ้น คุณสามารถรอจนกว่าการซิงค์สมบูรณ์หรือดําเนินการเพื่อนําเข้าหากคุณแน่ใจว่ากระดาษที่คุณต้องการ.",
+  "@importMnemonicSyncMessage": {
+    "description": "Message explaining wallet type syncing process"
+  },
+  "importMnemonicTitle": "นําเข้า Mnemonic",
+  "@importMnemonicTitle": {
+    "description": "AppBar title for mnemonic import screen"
+  },
+  "importMnemonicTransactionsLabel": "การทําธุรกรรม: {count}",
+  "@importMnemonicTransactionsLabel": {
+    "description": "ImportMnemonic: Transactions label with count in wallet type card",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "importWalletColdcardQ": "รถบัส",
+  "@importWalletColdcardQ": {
+    "description": "Button label for Coldcard Q hardware wallet"
+  },
+  "importWalletImportMnemonic": "นําเข้า Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "importWalletImportWatchOnly": "การนําเข้า",
+  "@importWalletImportWatchOnly": {
+    "description": "Button to import watch-only wallet"
+  },
+  "importWalletJade": "บล็อก",
+  "@importWalletJade": {
+    "description": "Button label for Blockstream Jade hardware wallet"
+  },
+  "importWalletKeystone": "แจ็ค",
+  "@importWalletKeystone": {
+    "description": "Button label for Keystone hardware wallet"
+  },
+  "importWalletKrux": "แม่",
+  "@importWalletKrux": {
+    "description": "Button label for Krux hardware wallet"
+  },
+  "importWalletLedger": "ไฟ LED",
+  "@importWalletLedger": {
+    "description": "Button label for Ledger hardware wallet"
+  },
+  "importWalletPassport": "หนังสือเดินทาง",
+  "@importWalletPassport": {
+    "description": "Button label for Foundation Passport hardware wallet"
+  },
+  "importWalletSectionGeneric": "กระเป๋าเงิน",
+  "@importWalletSectionGeneric": {
+    "description": "Section header for generic wallet types"
+  },
+  "importWalletSectionHardware": "ฮาร์ดแวร์",
+  "@importWalletSectionHardware": {
+    "description": "Section header for hardware wallet types"
+  },
+  "importWalletSeedSigner": "เมล็ด",
+  "@importWalletSeedSigner": {
+    "description": "Button label for SeedSigner hardware wallet"
+  },
+  "importWalletSpecter": "ตัวอย่าง",
+  "@importWalletSpecter": {
+    "description": "Button label for Specter hardware wallet"
+  },
+  "importWalletTitle": "เพิ่มกระเป๋าสตางค์ใหม่",
+  "@importWalletTitle": {
+    "description": "AppBar title for wallet import selection screen"
+  },
+  "importWatchOnlyCopiedToClipboard": "ติดตามคลิปบอร์ด",
+  "@importWatchOnlyCopiedToClipboard": {
+    "description": "Snackbar message shown when QR code content is copied"
+  },
+  "importWatchOnlyDescriptor": "ข้อความ",
+  "@importWatchOnlyDescriptor": {
+    "description": "Label for descriptor import method"
+  },
+  "importWatchOnlyDisclaimerDescription": "ตรวจสอบให้แน่ใจว่าเส้นทางที่คุณเลือกการแข่งขันที่ผลิตขึ้นโดยระบุตามชื่อที่ Xasa เพื่อตรวจสอบที่อยู่แรกจากกระเป๋าเงินก่อน การใช้เส้นทางที่ไม่ถูกต้องสามารถสูญเสียเงิน",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "importWatchOnlyDisclaimerTitle": "การเตือนภัย",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyErrorAlreadyExists": "นำเข้ากระเป๋าเงินนี้แล้ว",
+  "importWatchOnlyErrorImportFailed": "เราไม่สามารถนำเข้ากระเป๋าเงินแบบดูอย่างเดียวนี้ได้ กรุณาตรวจสอบรายละเอียดแล้วลองอีกครั้ง",
+  "importWatchOnlyErrorInvalidFormat": "นี่ดูเหมือนจะไม่ใช่กุญแจสาธารณะหรือดิสคริปเตอร์ที่ถูกต้อง กรุณาตรวจสอบสิ่งที่คุณวางอีกครั้ง",
+  "importWatchOnlyErrorLabelRequired": "ตั้งชื่อกระเป๋าเงินของคุณก่อนนำเข้า",
+  "importWatchOnlyErrorNetworkMismatch": "กระเป๋าเงินนี้กำลังใช้เครือข่าย Bitcoin อื่น โปรดสลับระหว่าง Mainnet และ Testnet แล้วลองอีกครั้ง",
+  "importWatchOnlyErrorNoWalletSelected": "กรุณาวางหรือสแกนกุญแจสาธารณะหรือดิสคริปเตอร์ก่อน",
+  "importWatchOnlyExtendedPublicKey": "ขยายสาธารณะ คีย์",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyImport": "การนําเข้า",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyLabel": "ป้ายฉลาก",
+  "@importWatchOnlyLabel": {
+    "description": "Label for wallet name/label input field"
+  },
+  "importWatchOnlyNetworkBitcoinMainnet": "เครือข่าย: เครือข่ายหลักของ Bitcoin",
+  "importWatchOnlyNetworkBitcoinTestnet": "เครือข่าย: เครือข่ายทดสอบของ Bitcoin",
+  "importWatchOnlyPasteHint": "วางชื่อ xem, yem, zasa หรือ descript",
+  "@importWatchOnlyPasteHint": {
+    "description": "Placeholder hint for paste input field"
+  },
+  "importWatchOnlyRequired": "ข้อกําหนดที่จําเป็น",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyScanQR": "การสแกน QR",
+  "@importWatchOnlyScanQR": {
+    "description": "Button to scan QR code for watch-only import"
+  },
+  "importWatchOnlySigningDevice": "ตรวจสอบอุปกรณ์",
+  "@importWatchOnlySigningDevice": {
+    "description": "Label for signing device selection field"
+  },
+  "importWatchOnlyTitle": "การนําเข้า",
+  "@importWatchOnlyTitle": {
+    "description": "AppBar title for watch-only import screen"
+  },
+  "importWatchOnlyType": "ประเภท",
+  "@importWatchOnlyType": {
+    "description": "Label for wallet script type field"
+  },
+  "importWatchOnlyUnknown": "เป็นที่รู้จัก",
+  "@importWatchOnlyUnknown": {
+    "description": "Default value when signing device is unknown"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "ledgerDefaultWalletLabel": "จอแสดงผล LED",
+  "@ledgerDefaultWalletLabel": {
+    "description": "Default label for imported Ledger wallet"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "scanNfcButton": "การสแกน NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  }
 }

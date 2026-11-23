@@ -59,6 +59,17 @@ final class InventoryRepository {
     );
   }
 
+  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints(
+    String view,
+  ) => boundary(() async {
+    final rows = await _listRows(view);
+    final fingerprints = <Fingerprint>{
+      for (final row in rows)
+        ?Fingerprint.tryParse(row.read<String>('master_fingerprint')),
+    };
+    return List.unmodifiable(fingerprints);
+  }, orElse: FetchSecretFailure.new);
+
   Future<Result<List<WalletRegistration>, SecretFailure>> listDefaults(
     String view,
   ) => boundary(() async {
@@ -67,6 +78,47 @@ final class InventoryRepository {
       for (final row in rows) ?decodeWalletRegistration(row.data),
     ]);
   }, orElse: FetchSecretFailure.new);
+
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>> recoveryWallets(
+    String view,
+  ) async {
+    final rows = await boundary(
+      () => _listRows(view),
+      orElse: FetchSecretFailure.new,
+    );
+    if (rows case Err(:final failure)) return Err(failure);
+    final wallets = <BitcoinRecoveryWallet>[];
+    for (final row in (rows as Ok<List<QueryRow>, SecretFailure>).value) {
+      if (row.data case {'signer': 'local', 'network': final String code}
+          when code.startsWith('bitcoin')) {
+        final registration = decodeWalletRegistration(row.data);
+        if (registration case WalletRegistration(
+          network: final BitcoinNetwork network,
+          secretFingerprint: final Fingerprint fingerprint,
+        )) {
+          final data = row.data;
+          if (data case {
+            'external_descriptor': final String external,
+            'internal_descriptor': final String internal,
+          }) {
+            wallets.add(
+              BitcoinRecoveryWallet(
+                id: registration.id,
+                network: network,
+                fingerprint: fingerprint,
+                scriptType: registration.scriptType,
+                isDefault: registration.isDefault,
+                descriptors: (external: external, internal: internal),
+              ),
+            );
+            continue;
+          }
+        }
+        return const Err(UnreadableWalletFailure());
+      }
+    }
+    return Ok(List.unmodifiable(wallets));
+  }
 
   Future<Result<WalletSelection, SecretFailure>> listForNetwork(
     String view,

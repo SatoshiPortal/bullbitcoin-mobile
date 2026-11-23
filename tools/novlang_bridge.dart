@@ -6,7 +6,8 @@
 // `packages/novlang/manifest.yaml` and, for each catalogue it declares, the
 // code gen-l10n already generated for that catalogue (located through the
 // `l10n.yaml` of the catalogue's package), and writes (git-ignored)
-// `lib/generated/novlang/novlang_<catalogue>_localizations.dart`:
+// `novlang_<catalogue>_localizations.dart` to the catalogue's configured
+// output directory (default: `lib/generated/novlang`):
 //
 //   * one `Novlang<Class><Lang>` class per generated `<Class><Lang>` class,
 //     extending it, so locale/script/region resolution stays entirely
@@ -209,7 +210,7 @@ void _generate(_Catalogue c, List<_Entry> entries) {
       );
   }
 
-  final path = '$_outputDir/novlang_${c.id}_localizations.dart';
+  final path = '${c.novlangDir}/novlang_${c.id}_localizations.dart';
   File(path)
     ..createSync(recursive: true)
     ..writeAsStringSync(out.toString());
@@ -227,7 +228,8 @@ class _Manifest {
 
 /// A gen-l10n catalogue, located through the `l10n.yaml` of its package.
 class _Catalogue {
-  factory _Catalogue(String id, String dir) {
+  factory _Catalogue(String id, YamlMap catalogue) {
+    final dir = catalogue['path'] as String;
     final l10n = loadYaml(File('$dir/l10n.yaml').readAsStringSync()) as YamlMap;
     final pubspec =
         loadYaml(File('$dir/pubspec.yaml').readAsStringSync()) as YamlMap;
@@ -246,6 +248,7 @@ class _Catalogue {
       l10nDir: '$dir/$outputDir',
       outputFile: l10n['output-localization-file'] as String,
       className: (l10n['output-class'] as String?) ?? 'AppLocalizations',
+      novlangDir: (catalogue['output-dir'] as String?) ?? _outputDir,
       importPrefix:
           'package:${pubspec['name']}/${outputDir.substring('lib/'.length)}',
     );
@@ -259,6 +262,7 @@ class _Catalogue {
     required this.outputFile,
     required this.className,
     required this.importPrefix,
+    required this.novlangDir,
   });
 
   final String id;
@@ -268,6 +272,7 @@ class _Catalogue {
   final String outputFile;
   final String className;
   final String importPrefix;
+  final String novlangDir;
 
   bool get isRoot => id == 'app';
 }
@@ -305,7 +310,7 @@ _Manifest _readManifest() {
   final catalogues = [
     for (final MapEntry(:key, :value)
         in (yaml['catalogues'] as YamlMap).entries)
-      _Catalogue(key as String, (value as YamlMap)['path'] as String),
+      _Catalogue(key as String, value as YamlMap),
   ];
   final ids = {for (final c in catalogues) c.id};
   if (!ids.contains('app')) {

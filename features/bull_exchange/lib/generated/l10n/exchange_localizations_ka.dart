@@ -2453,4 +2453,722 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellTitle => 'Bitcoin-ის გაყიდვა';
+
+  @override
+  String get sellSelectWallet => 'აირჩიეთ საფულე';
+
+  @override
+  String get sellWhichWalletQuestion => 'რომელი საფულიდან გსურთ გაყიდვა?';
+
+  @override
+  String get sellExternalWallet => 'გარე საფულე';
+
+  @override
+  String get sellFromAnotherWallet => 'გაყიდეთ სხვა Bitcoin საფულედან';
+
+  @override
+  String get sellAboveMaxAmountError =>
+      'თქვენ ცდილობთ გაყიდოთ იმაზე მეტი, ვიდრე ამ საფულით ნებადართული მაქსიმალური თანხაა.';
+
+  @override
+  String get sellBelowMinAmountError =>
+      'თქვენ ცდილობთ გაყიდოთ იმაზე ნაკლები, ვიდრე ამ საფულით ნებადართული მინიმალური თანხაა.';
+
+  @override
+  String get sellInsufficientBalanceError =>
+      'არჩეულ საფულეში არასაკმარისი ბალანსია ამ გაყიდვის შეკვეთის დასასრულებლად.';
+
+  @override
+  String get sellUnauthenticatedError =>
+      'თქვენ არ ხართ ავთენტიფიცირებული. გასაგრძელებლად გთხოვთ შეხვიდეთ სისტემაში.';
+
+  @override
+  String get sellOrderNotFoundError =>
+      'გაყიდვის შეკვეთა ვერ მოიძებნა. გთხოვთ, სცადოთ ხელახლა.';
+
+  @override
+  String get sellOrderAlreadyConfirmedError =>
+      'ეს გაყიდვის შეკვეთა უკვე დადასტურებულია.';
+
+  @override
+  String get sellSelectNetwork => 'აირჩიეთ ქსელი';
+
+  @override
+  String get sellHowToPayInvoice => 'როგორ გსურთ ამ ინვოისის გადახდა?';
+
+  @override
+  String get sellBitcoinOnChain => 'Bitcoin ჯაჭვში (on-chain)';
+
+  @override
+  String get sellLightningNetwork => 'Lightning ქსელი';
+
+  @override
+  String get sellLiquidNetwork => 'Liquid ქსელი';
+
+  @override
+  String get sellConfirmPayment => 'გადახდის დადასტურება';
+
+  @override
+  String get sellPriceWillRefreshIn => 'ფასი განახლდება ';
+
+  @override
+  String get sellOrderNumber => 'შეკვეთის ნომერი';
+
+  @override
+  String get sellPayoutRecipient => 'გადახდის მიმღები';
+
+  @override
+  String get sellCadBalance => 'CAD ბალანსი';
+
+  @override
+  String get sellCrcBalance => 'CRC ბალანსი';
+
+  @override
+  String get sellEurBalance => 'EUR ბალანსი';
+
+  @override
+  String get sellUsdBalance => 'USD ბალანსი';
+
+  @override
+  String get sellMxnBalance => 'MXN ბალანსი';
+
+  @override
+  String get sellArsBalance => 'ARS ბალანსი';
+
+  @override
+  String get sellCopBalance => 'COP ბალანსი';
+
+  @override
+  String get sellPayinAmount => 'შემომავალი თანხა';
+
+  @override
+  String get sellPayoutAmount => 'გადასახდელი თანხა';
+
+  @override
+  String get sellExchangeRate => 'გაცვლითი კურსი';
+
+  @override
+  String get sellPayFromWallet => 'გადახდა საფულიდან';
+
+  @override
+  String get sellInstantPayments => 'მყისიერი გადახდები';
+
+  @override
+  String get sellSecureBitcoinWallet => 'დაცული Bitcoin საფულე';
+
+  @override
+  String get sellFeePriority => 'საკომისიოს პრიორიტეტი';
+
+  @override
+  String get sellFastest => 'ყველაზე სწრაფი';
+
+  @override
+  String get sellAdvancedSettings => 'დამატებითი პარამეტრები';
+
+  @override
+  String get sellAdvancedOptions => 'დამატებითი პარამეტრები';
+
+  @override
+  String get sellReplaceByFeeActivated => 'Replace-by-fee გააქტიურებულია';
+
+  @override
+  String get sellSelectCoinsManually => 'მონეტების ხელით არჩევა';
+
+  @override
+  String get sellDone => 'დასრულდა';
+
+  @override
+  String get sellPleasePayInvoice => 'გთხოვთ, გადაიხადოთ ეს ინვოისი';
+
+  @override
+  String get sellBitcoinAmount => 'Bitcoin-ის თანხა';
+
+  @override
+  String get sellCopyInvoice => 'ინვოისის კოპირება';
+
+  @override
+  String get sellShowQrCode => 'QR კოდის ჩვენება';
+
+  @override
+  String get sellQrCode => 'QR კოდი';
+
+  @override
+  String get sellNoInvoiceData => 'ინვოისის მონაცემები მიუწვდომელია';
+
+  @override
+  String get sellInProgress => 'გაყიდვა მიმდინარეობს...';
+
+  @override
+  String get sellGoHome => 'მთავარ გვერდზე დაბრუნება';
+
+  @override
+  String get sellOrderCompleted => 'შეკვეთა დასრულებულია!';
+
+  @override
+  String get sellBalanceWillBeCredited =>
+      'თქვენი ანგარიშის ბალანსი შეივსება მას შემდეგ, რაც თქვენი ტრანზაქცია მიიღებს 1 დადასტურებას ჯაჭვში.';
+
+  @override
+  String sellYouSold(String amount, String fiatAmount) {
+    return 'You sold $amount for $fiatAmount';
+  }
+
+  @override
+  String get payTitle => 'გადახდა';
+
+  @override
+  String get payDescriptionLabel => 'გადახდის აღწერა (არასავალდებულო)';
+
+  @override
+  String get payDescriptionHint => 'დაამატეთ შენიშვნა ამ გადახდისთვის';
+
+  @override
+  String get payPaymentDescription => 'გადახდის აღწერა';
+
+  @override
+  String get payRecipientType => 'მიმღების ტიპი';
+
+  @override
+  String get payRecipientName => 'მიმღების სახელი';
+
+  @override
+  String get payRecipientDetails => 'მიმღების დეტალები';
+
+  @override
+  String get payNoDetailsAvailable => 'დეტალები მიუწვდომელია';
+
+  @override
+  String get paySelectWallet => 'აირჩიეთ საფულე';
+
+  @override
+  String get payExternalWallet => 'გარე საფულე';
+
+  @override
+  String payAboveMaxAmountError(String amount) {
+    return 'მაქსიმალური თანხა, რომელიც ამ საფულით შეგიძლიათ გადაიხადოთ, არის $amount.';
+  }
+
+  @override
+  String payBelowMinAmountError(String amount) {
+    return 'მინიმალური თანხა, რომელიც ამ საფულით შეგიძლიათ გადაიხადოთ, არის $amount.';
+  }
+
+  @override
+  String get payInsufficientBalanceError =>
+      'არჩეულ საფულეში არასაკმარისი ბალანსია ამ გადახდის შეკვეთის დასასრულებლად.';
+
+  @override
+  String get payUnauthenticatedError =>
+      'თქვენ არ ხართ ავთენტიფიცირებული. გასაგრძელებლად გთხოვთ შეხვიდეთ სისტემაში.';
+
+  @override
+  String get paySelectNetwork => 'აირჩიეთ ქსელი';
+
+  @override
+  String get payHowToPayInvoice => 'როგორ გსურთ ამ ინვოისის გადახდა?';
+
+  @override
+  String get payLightningNetwork => 'Lightning ქსელი';
+
+  @override
+  String get payLiquidNetwork => 'Liquid ქსელი';
+
+  @override
+  String get payConfirmPayment => 'გადახდის დადასტურება';
+
+  @override
+  String get payOrderNumber => 'შეკვეთის ნომერი';
+
+  @override
+  String get payPayinAmount => 'შემომავალი თანხა';
+
+  @override
+  String get payPayoutAmount => 'გადასახდელი თანხა';
+
+  @override
+  String get payExchangeRate => 'გაცვლითი კურსი';
+
+  @override
+  String get payPayFromWallet => 'გადახდა საფულიდან';
+
+  @override
+  String get payInstantPayments => 'მყისიერი გადახდები';
+
+  @override
+  String get paySecureBitcoinWallet => 'დაცული Bitcoin საფულე';
+
+  @override
+  String get payFeePriority => 'საკომისიოს პრიორიტეტი';
+
+  @override
+  String get payFastest => 'ყველაზე სწრაფი';
+
+  @override
+  String get payNetworkFees => 'ქსელის საკომისიო';
+
+  @override
+  String get payAdvancedSettings => 'დამატებითი პარამეტრები';
+
+  @override
+  String get payAdvancedOptions => 'დამატებითი პარამეტრები';
+
+  @override
+  String get paySelectCoinsManually => 'მონეტების ხელით არჩევა';
+
+  @override
+  String get payDone => 'დასრულდა';
+
+  @override
+  String get payContinue => 'გაგრძელება';
+
+  @override
+  String get payPleasePayInvoice => 'გთხოვთ, გადაიხადოთ ეს ინვოისი';
+
+  @override
+  String get payBitcoinAmount => 'Bitcoin-ის თანხა';
+
+  @override
+  String get payBitcoinPrice => 'Bitcoin-ის ფასი';
+
+  @override
+  String get payCopyInvoice => 'ინვოისის კოპირება';
+
+  @override
+  String get payShowQrCode => 'QR კოდის ჩვენება';
+
+  @override
+  String get payQrCode => 'QR კოდი';
+
+  @override
+  String get payNoInvoiceData => 'ინვოისის მონაცემები მიუწვდომელია';
+
+  @override
+  String get payInvalidState => 'არასწორი მდგომარეობა';
+
+  @override
+  String get payViewDetails => 'დეტალების ნახვა';
+
+  @override
+  String get paySinpeReceipt => 'SINPE ქვითარი';
+
+  @override
+  String get payCompleted => 'გადახდა დასრულებულია!';
+
+  @override
+  String payCompletedDescriptionDetails(String fiatAmount, String recipient) {
+    return 'The payment of $fiatAmount to $recipient has been completed.';
+  }
+
+  @override
+  String get paySinpeEnviado => 'SINPE ENVIADO!';
+
+  @override
+  String get payOrderDetails => 'შეკვეთის დეტალები';
+
+  @override
+  String get paySinpeMonto => 'თანხა';
+
+  @override
+  String get paySinpeNumeroOrden => 'შეკვეთის ნომერი';
+
+  @override
+  String get paySinpeNumeroComprobante => 'საცნობარო ნომერი';
+
+  @override
+  String get paySinpeBeneficiario => 'ბენეფიციარი';
+
+  @override
+  String get paySinpeOrigen => 'წყარო';
+
+  @override
+  String get payNotAvailable => 'მიუწვდომელია';
+
+  @override
+  String get payBitcoinOnchain => 'Bitcoin ჯაჭვში (on-chain)';
+
+  @override
+  String get payPaymentInProgress => 'გადახდა მიმდინარეობს!';
+
+  @override
+  String payPaymentInProgressDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'The payment of $fiatAmount to $recipient will be sent after your transaction receives 1 confirmation onchain.';
+  }
+
+  @override
+  String payPaymentPayinConfirmedDescriptionDetails(
+    String fiatAmount,
+    String recipient,
+  ) {
+    return 'Your transaction is confirmed. The payment of $fiatAmount to $recipient is being processed.';
+  }
+
+  @override
+  String get payPriceRefreshIn => 'ფასი განახლდება ';
+
+  @override
+  String get payWhichWallet => 'რომელი საფულიდან გსურთ გადახდა?';
+
+  @override
+  String get payExternalWalletDescription =>
+      'გადაიხადეთ სხვა Bitcoin საფულედან';
+
+  @override
+  String get payRbfActivated => 'Replace-by-fee გააქტიურებულია';
+
+  @override
+  String get copyDialogButton => 'კოპირება';
+
+  @override
+  String get closeDialogButton => 'დახურვა';
+
+  @override
+  String get sellCompleteKYC => 'KYC-ის დასრულება';
+
+  @override
+  String get sellSendPaymentNetworkFees => 'ქსელის საკომისიო';
+
+  @override
+  String get sellSendPaymentContinue => 'გაგრძელება';
+
+  @override
+  String get exchangeSendingPayment => 'Sending payment…';
+
+  @override
+  String get exchangePaymentSentRefreshingOrder =>
+      'Payment sent, refreshing your order…';
+
+  @override
+  String get sellBitcoinPriceLabel => 'Bitcoin-ის ფასი';
+
+  @override
+  String get sellViewDetailsButton => 'დეტალების ნახვა';
+
+  @override
+  String get sellKycPendingTitle => 'KYC პირადობის დადასტურება მოლოდინშია';
+
+  @override
+  String get sellKycPendingDescription =>
+      'ჯერ უნდა დაასრულოთ პირადობის დადასტურება';
+
+  @override
+  String get sellLoadingGeneric => 'იტვირთება...';
+
+  @override
+  String get viewerTapToCopy => 'კოპირებისთვის შეეხეთ ღილაკს';
+
+  @override
+  String get invoiceViewerTitle => 'ინვოისი';
+
+  @override
+  String get payjoinViaPayjoin => 'via Payjoin';
+
+  @override
+  String get payjoinViaRegularSend => 'via regular send';
+
+  @override
+  String get sellDepositAddress => 'Deposit address';
+
+  @override
+  String get payDepositAddress => 'Deposit address';
+
+  @override
+  String get sellDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get payDepositAddressChangedError =>
+      'The deposit address of this order changed unexpectedly. For your security, do not pay this order: go back and create a new one.';
+
+  @override
+  String get sellUnexpectedError =>
+      'თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.';
+
+  @override
+  String get sellErrorFeeBelowRelayFloor =>
+      'ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.';
+
+  @override
+  String get sellErrorFeesUnavailable =>
+      'ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.';
+
+  @override
+  String get payUnexpectedError =>
+      'Your payment could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get payErrorFeeBelowRelayFloor =>
+      'Network fee too low. Choose a higher fee.';
+
+  @override
+  String get payErrorFeesUnavailable =>
+      'Network fees could not be loaded. Check your connection and try again.';
+
+  @override
+  String get withdrawRecipientsPrompt =>
+      'Where and how should we send the money?';
+
+  @override
+  String get copiedToClipboard => 'დაკოპირდა ბუფერში';
+
+  @override
+  String get sellQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get exchangePaymentSentPastDeadline =>
+      'Payment sent. The exchange reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.';
+
+  @override
+  String get exchangePaymentSentLeave => 'Leave';
+
+  @override
+  String get payQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get sellPayoutBalance => 'ჩემი ანგარიშის ბალანსზე დამატება';
+
+  @override
+  String get sellPayoutSepaDescription =>
+      'გატანილი თანხა ჩანს, როგორც Leonod-ის მიერ გამოგზავნილი';
+
+  @override
+  String get sellPayoutTitle => 'აირჩიეთ მიმღები';
+
+  @override
+  String get sellPayoutNewBadge => 'ახალი';
+
+  @override
+  String get walletSpendAwaitingObservation =>
+      'Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.';
+
+  @override
+  String get sendPayjoinSpendPaused =>
+      'This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.';
+
+  @override
+  String get exchangePayinNetworkMismatch =>
+      'The selected wallet does not match this order’s network or the app’s current environment. Select a compatible wallet and try again.';
+
+  @override
+  String get walletSpendBusy => 'The wallet is busy. Try again in a moment.';
+
+  @override
+  String get broadcastSignedTxErrorOutcomeUnknown =>
+      'ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.';
+
+  @override
+  String get sendSelectedUtxosInsufficient =>
+      'არჩეული utxo-ები არ ფარავს საჭირო თანხას';
+
+  @override
+  String get selectAmountTitle => 'აირჩიეთ თანხა';
+
+  @override
+  String amountRequestedLabel(String amount) {
+    return 'მოთხოვნილი თანხა: $amount';
+  }
+
+  @override
+  String get addressLabel => 'მისამართი: ';
+
+  @override
+  String get typeLabel => 'ტიპი: ';
+
+  @override
+  String get coinsKeychainReceive => 'მიღება';
+
+  @override
+  String get coinsKeychainChange => 'ხურდა';
+
+  @override
+  String get limitOrdersIntroTitle => 'Open a limit order';
+
+  @override
+  String get limitOrdersIntroDescription =>
+      'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.';
+
+  @override
+  String get limitOrdersIntroBulletPrice =>
+      'Your order remains active until the target index price is reached.';
+
+  @override
+  String get limitOrdersIntroBulletBalance =>
+      'The purchase uses the selected fiat balance when the order executes.';
+
+  @override
+  String get limitOrdersIntroBulletExecution =>
+      'Bitcoin is sent to the default wallet you select.';
+
+  @override
+  String get limitOrdersTargetTitle => 'Choose your target price';
+
+  @override
+  String get limitOrdersPaymentMethod => 'Payment method';
+
+  @override
+  String get limitOrdersCurrentPrice => 'Current index price';
+
+  @override
+  String get limitOrdersDiscount => 'Discount from current price';
+
+  @override
+  String get limitOrdersAmountTitle => 'Set the amount';
+
+  @override
+  String limitOrdersAvailableBalance(String amount) {
+    return 'Available: $amount';
+  }
+
+  @override
+  String limitOrdersEstimatedBitcoin(String amount) {
+    return 'Estimated bitcoin: $amount';
+  }
+
+  @override
+  String get limitOrdersWalletTitle => 'Choose a payout wallet';
+
+  @override
+  String get limitOrdersWalletDescription =>
+      'Bitcoin will be sent to this default wallet when the order executes.';
+
+  @override
+  String get limitOrdersManageDefaultWallets => 'Manage default wallets';
+
+  @override
+  String get limitOrdersWalletBitcoin => 'Bitcoin address';
+
+  @override
+  String get limitOrdersWalletLightning => 'Lightning address';
+
+  @override
+  String get limitOrdersWalletLiquid => 'Liquid address';
+
+  @override
+  String get limitOrdersConfirmationTitle => 'Confirm limit order';
+
+  @override
+  String limitOrdersBalancePayment(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get limitOrdersTermsNotice =>
+      'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.';
+
+  @override
+  String get limitOrdersConfirm => 'Confirm limit order';
+
+  @override
+  String get limitOrdersCreatedTitle => 'Limit order active';
+
+  @override
+  String limitOrdersCreatedMessage(String amount, String price) {
+    return 'Your order will buy $amount when the index price reaches $price.';
+  }
+
+  @override
+  String get limitOrdersBackToExchange => 'Back to Exchange';
+
+  @override
+  String get limitOrderInvalidTargetError =>
+      'Choose a target price below the current index price.';
+
+  @override
+  String get limitOrderInvalidAmountError =>
+      'Enter an amount greater than zero and no more than your available balance.';
+
+  @override
+  String get limitOrdersYourWalletsTitle => 'Your wallets';
+
+  @override
+  String get limitOrdersLightningAddressLabel => 'Lightning address';
+
+  @override
+  String get limitOrdersLightningAddressError =>
+      'Enter a valid lightning address, not an invoice';
+
+  @override
+  String limitOrdersAmountBelowOnchainMin(String amount) {
+    return 'Amount is below the on-chain minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountBelowLiquidMin(String amount) {
+    return 'Amount is below the Liquid minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountAboveLightningMax(String amount) {
+    return 'Amount is above the Lightning maximum of $amount';
+  }
+
+  @override
+  String get limitOrdersViewOrder => 'View order details';
+
+  @override
+  String get limitOrdersInsufficientBalance => 'არასაკმარისი ბალანსი';
+
+  @override
+  String get limitOrdersInsufficientBalanceMessage =>
+      'ამ შეკვეთის შესაქმნელად საკმარისი ბალანსი არ გაქვთ.';
+
+  @override
+  String get limitOrdersFundAccount => 'შეავსეთ თქვენი ანგარიში';
+
+  @override
+  String get exchangeBrandName => 'BULL BITCOIN';
+
+  @override
+  String get exchangeLandingConnectAccount =>
+      'დააკავშირეთ თქვენი Bull Bitcoin გაცვლის ანგარიში';
+
+  @override
+  String get exchangeLandingRecommendedExchange =>
+      'რეკომენდებული Bitcoin გაცვლა';
+
+  @override
+  String get exchangeFeatureSelfCustody =>
+      '• იყიდეთ Bitcoin პირდაპირ თვითდაცვაში';
+
+  @override
+  String get exchangeFeatureDcaOrders =>
+      '• DCA, ლიმიტირებული შეკვეთები და ავტომატური ყიდვა';
+
+  @override
+  String get exchangeFeatureSellBitcoin =>
+      '• გაყიდეთ Bitcoin, მიიღეთ თანხა Bitcoin-ით';
+
+  @override
+  String get exchangeFeatureBankTransfers =>
+      '• გააგზავნეთ საბანკო გადარიცხვები და გადაიხადეთ ინვოისები';
+
+  @override
+  String get exchangeFeatureCustomerSupport =>
+      '• ჩაატარეთ მიმოწერა მომხმარებელთა მხარდაჭერასთან';
+
+  @override
+  String get exchangeFeatureUnifiedHistory =>
+      '• გაერთიანებული ტრანზაქციების ისტორია';
+
+  @override
+  String get exchangeLandingDisclaimerLegal =>
+      'გაცვლის სერვისებზე წვდომა შეზღუდულია იმ ქვეყნებით, სადაც Bull Bitcoin-ს კანონიერად შეუძლია საქმიანობა, და შესაძლოა მოითხოვდეს KYC-ს.';
+
+  @override
+  String get exchangeLandingDisclaimerNotAvailable =>
+      'კრიპტოვალუტის გაცვლის სერვისები მიუწვდომელია Bull Bitcoin მობილურ აპლიკაციაში.';
+
+  @override
+  String get exchangeLoginButton => 'შესვლა ან რეგისტრაცია';
+
+  @override
+  String get exchangeGoToWebsiteButton =>
+      'გადადით Bull Bitcoin-ის გაცვლის ვებგვერდზე';
 }

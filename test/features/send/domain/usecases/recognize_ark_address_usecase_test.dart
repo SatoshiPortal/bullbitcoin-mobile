@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:ark/ark.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/recognize_ark_address_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/send_ark_cubit.dart';
 import 'package:bull_ark/bull_ark.dart'

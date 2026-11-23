@@ -1,0 +1,30 @@
+import 'package:bull_ui/app_theme.dart';
+import 'package:onboarding/src/onboarding_l10n.dart';
+import 'package:onboarding/src/presentation/bloc/onboarding_bloc.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTopBar;
+
+class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const OnboardingAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: context.appColors.primary,
+      flexibleSpace: BullTopBar(
+        title: context.loc.onboardingRecoverWallet,
+        onBack: () {
+          context.read<OnboardingBloc>().add(const OnboardingGoBack());
+          context.pop();
+        },
+      ),
+      automaticallyImplyLeading: false,
+      forceMaterialTransparency: true,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size(double.maxFinite, kToolbarHeight);
+}

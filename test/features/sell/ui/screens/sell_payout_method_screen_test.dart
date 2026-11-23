@@ -1,17 +1,13 @@
+import '../../../exchange/support/payin_ui_fixture.dart';
+
+import 'package:bull_exchange/testing.dart';
+
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen.dart';
-import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullShimmerLine;
 import 'package:material_ui/material_ui.dart';
@@ -75,15 +71,14 @@ void main() {
           when(() => methods.execute(any())).thenAnswer(
             (_) async => const Ok(ConfidentialSepaAvailability.ready),
           );
-          locator.registerSingleton<GetSellConfidentialSepaAvailabilityUsecase>(
-            methods,
-          );
-          addTearDown(
-            () => locator
-                .unregister<GetSellConfidentialSepaAvailabilityUsecase>(),
-          );
           addTearDown(sell.close);
-          final sellRoot = SellRouter.route.routes.single as GoRoute;
+          final sellRoot =
+              SellRouter.route(
+                    createBloc: () => sell,
+                    availability: () => methods,
+                    ui: payinTestUi(),
+                  ).routes.single
+                  as GoRoute;
           final payoutRoute = sellRoot.routes.whereType<GoRoute>().singleWhere(
             (route) => route.name == SellRoute.sellPayout.name,
           );

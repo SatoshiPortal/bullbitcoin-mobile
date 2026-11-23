@@ -1,5 +1,5 @@
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:receive/testing.dart';
 import 'package:primitives/primitives.dart';
 
 import 'dart:io';

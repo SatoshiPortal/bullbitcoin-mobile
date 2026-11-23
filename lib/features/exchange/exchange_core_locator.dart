@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
 import 'package:get_it/get_it.dart';

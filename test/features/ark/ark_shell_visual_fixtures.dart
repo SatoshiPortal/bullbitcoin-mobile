@@ -2,10 +2,10 @@ import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
+import 'package:settings/testing.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_settings_localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ark/ark_ui.dart' show ArkLocalizations;
@@ -29,7 +30,6 @@ import 'package:network/network.dart' show NoDefaultWalletFailure;
 import 'package:network/testing.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
 import 'package:novlang/novlang.dart' show NovlangPolicy;
-import 'package:settings/settings.dart';
 
 class _Wallet extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
@@ -111,9 +111,7 @@ class ArkShellVisualFixtures {
       initialLocation: '/settings',
       routes: [
         SettingsFeature.mount(
-          menuOf: SettingsHubBindings.menuOf,
-          labelsOf: SettingsHubBindings.labelsOf,
-          menuScope: SettingsHubBindings.menuScope,
+          menuScope: SettingsRouter.menuScope,
           status: networkStatusForTest(
             () async => const Err(NoDefaultWalletFailure()),
           ),
@@ -260,6 +258,7 @@ class ArkShellVisualFixtures {
         builder: (context) => Localizations.override(
           context: context,
           delegates: [
+            const NovlangSettingsLocalizationsDelegate(NovlangPolicy.apple),
             ...novlangLocalizationsDelegates(NovlangPolicy.apple),
             bullUiLocalizationsDelegate,
             ArkLocalizations.delegate,
@@ -268,10 +267,7 @@ class ArkShellVisualFixtures {
               QuickActionsFallbackDelegate(),
             ),
           ],
-          child: SettingsFacade.amountScope(
-            navigatorKey: navigatorKey,
-            child: child,
-          ),
+          child: Settings.amountScope(navigatorKey: navigatorKey, child: child),
         ),
       ),
     );

@@ -1,0 +1,73 @@
+{
+  "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "লগ শ্বেয়াৰ কৰক",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "আপোনাৰ বেকআপ ব্যৱহাৰ কৰক",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "আপোনাৰ বেকআপৰ বাবে আপোনাৰ ধন সুৰক্ষিত।\nপ্ৰথমে এপটো পুনৰ আৰম্ভ কৰাৰ চেষ্টা কৰক, যদি এতিয়াও ব্যৰ্থ হয়, পুনৰ ইনষ্টল কৰক আৰু আপোনাৰ বেকআপৰ সৈতে উদ্ধাৰ কৰক।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "কোনো বেকআপ নাই?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "এপটো মচি নেপেলাব।\nৰেস্কিউৰ চেষ্টা কৰিবলৈ আমাৰ সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "সহায় দলৰ সৈতে যোগাযোগ কৰক",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "ভুলৰ বিৱৰণ দেখুৱাওক",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "onboardingRecover": "পুনৰুদ্ধাৰ কৰক",
+  "deleteLogsTitle": "লগ মচক",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "লগ মচা হৈছে",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "errorSharingLogsMessage": "লগ শ্বেয়াৰ কৰোঁতে ত্ৰুটি: {error}",
+  "@errorSharingLogsMessage": {
+    "description": "Error message when log sharing fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appStartupErrorTitle": "আৰম্ভণিৰ ত্ৰুটি",
+  "@appStartupErrorTitle": {
+    "description": "Title shown when the app fails to start up properly"
+  },
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "appStartupContactSupportButton": "সহায়ৰ সৈতে যোগাযোগ কৰক",
+  "@appStartupContactSupportButton": {
+    "description": "Button label to contact support when app startup fails"
+  },
+  "coreScreensPageNotFound": "পৃষ্ঠা পোৱা নগ'ল",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support ত সহায়ৰ সৈতে যোগাযোগ কৰক",
+  "logsShareOptionExport": "ৰপ্তানি কৰক",
+  "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
+  "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে"
+}

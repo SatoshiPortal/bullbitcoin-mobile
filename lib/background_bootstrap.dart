@@ -9,10 +9,9 @@ import 'package:primitives/primitives.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/wallet/background_setup.dart'
-    show setupArkBackgroundTask;
-import 'package:bull_logger/bull_logger.dart';
+import 'package:background_tasks/wallet_jobs.dart';
+import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
+import 'package:bull_ark/ark_background_setup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;
 import 'package:path_provider/path_provider.dart';
@@ -25,7 +24,7 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
 }) async {
   if (!backgroundSyncAvailable && task != BackgroundTask.arkRenewal) {
     return BackgroundTaskRunner(
-      logger: LoggerBackgroundTaskLogger(log),
+      logger: LoggerBackgroundTaskLogger.current,
       handlers: const {},
     );
   }
@@ -39,8 +38,7 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
   required Stopwatch clock,
 }) async {
   final documents = await getApplicationDocumentsDirectory();
-  await initializeLogging(directory: documents, background: true);
-  final logger = LoggerBackgroundTaskLogger(log);
+  final logger = await LoggerBackgroundTaskLogger.open(documents);
   const intervals = SharedPreferencesBackgroundSyncIntervalRepository();
   final support = await getApplicationSupportDirectory();
   final preferencesFile = File('${support.path}/databases/preferences.sqlite');
@@ -86,10 +84,7 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
         documents,
         preferencesFile: preferencesFile,
       ),
-      BackgroundTask.logsPrune: (resources) async => () async {
-        await log.prune();
-        return const BackgroundTaskExecutionResult.success();
-      },
+      BackgroundTask.logsPrune: (_) async => logger.prune,
       BackgroundTask.walletsSync: (resources) async {
         return setupBackgroundWalletTask(
           resources,
@@ -97,6 +92,8 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
           clock,
           intervals: intervals,
           preferencesFile: preferencesFile,
+          openNotifications: PaymentNotifications.initializeBackground,
+          paymentCopy: PaymentNotifications.copy,
         );
       },
     },

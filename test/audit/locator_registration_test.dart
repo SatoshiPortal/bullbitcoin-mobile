@@ -60,9 +60,11 @@ void main() {
     // separate cleanup, not something to smuggle into this test.
     const purchaseRoutes =
         'features/bull_exchange/lib/src/exchange_purchase_routes.dart';
+    const payMount = 'features/bull_exchange/lib/src/pay/mount_pay.dart';
+    const sellMount = 'features/bull_exchange/lib/src/sell/mount_sell.dart';
     const owners = {
-      'PlacePayOrderUsecase': 'lib/features/pay/pay_locator.dart',
-      'RefreshSellOrderUsecase': 'lib/features/sell/sell_locator.dart',
+      'PlacePayOrderUsecase': payMount,
+      'RefreshSellOrderUsecase': sellMount,
       'ConfirmBuyOrderUsecase': purchaseRoutes,
       'RefreshBuyOrderUsecase': purchaseRoutes,
       'AccelerateBuyOrderUsecase': purchaseRoutes,
@@ -82,15 +84,15 @@ void main() {
       }
     }
 
-    // Buy now constructs its use cases directly in the route-owned Bloc.
-    final purchases = File(purchaseRoutes).readAsStringSync();
-    for (final entry in owners.entries) {
-      if (entry.value == purchaseRoutes) {
-        final calls = RegExp('\\b${entry.key}\\s*\\(').allMatches(purchases);
-        wiring
-            .putIfAbsent(entry.key, () => [])
-            .addAll(calls.map((_) => purchaseRoutes));
+    // Count each route-owned construction, even under the wrong route.
+    for (final path in owners.values.toSet()) {
+      final source = File(path).readAsStringSync();
+      for (final type in owners.keys) {
+        final calls = RegExp('\\b$type\\s*\\(').allMatches(source);
+        wiring.putIfAbsent(type, () => []).addAll(calls.map((_) => path));
       }
+    }
+    for (final entry in owners.entries) {
       expect(wiring[entry.key], [
         entry.value,
       ], reason: '${entry.key} should be wired exactly once by its owner');

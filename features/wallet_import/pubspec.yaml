@@ -8,30 +8,43 @@ environment:
   flutter: "3.50.0"
 
 dependencies:
+  bip32_keys: ^3.1.1
   bip39_mnemonic: ^4.1.0
   bull_logger:
   bull_ui:
+  cupertino_ui: ^1.1.6
   electrum:
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
+  flutter_zxing: ^3.1.1
+  freezed_annotation: ^3.1.0
   go_router: ^18.1.4
   intl: any
   material_ui: ^1.11.0
   meta: ^1.17.0
+  mnemonic_entry:
   preferences:
   primitives:
   satoshifier:
+  scanning:
+  screen_privacy:
   secrets:
   signers:
   sync:
+  synchronized: ^3.4.0
   unorm_dart: ^0.3.2
 
 dev_dependencies:
+  bloc_test: ^10.0.0
+  build_runner: ^2.10.4
   flutter_test:
     sdk: flutter
+  freezed: ^4.0.0
   mocktail: ^1.0.4
+  rust_bindings:
 
 flutter:
   uses-material-design: true

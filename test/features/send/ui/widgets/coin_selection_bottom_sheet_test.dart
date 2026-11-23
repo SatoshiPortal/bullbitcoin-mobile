@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.dart';
 import 'package:flutter_test/flutter_test.dart';
 

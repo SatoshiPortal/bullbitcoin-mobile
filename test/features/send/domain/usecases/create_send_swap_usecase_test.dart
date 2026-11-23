@@ -1,12 +1,12 @@
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:swaps/order_swaps.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:signers/signers.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:send/send.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
