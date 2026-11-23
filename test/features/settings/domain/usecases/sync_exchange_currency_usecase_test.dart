@@ -49,13 +49,15 @@ void main() {
   });
 
   group('SyncExchangeCurrencyUsecase', () {
-    test('regtest refuses exchange currency sync before backend IO', () async {
+    test('regtest skips optional exchange currency sync', () async {
       when(settings.fetch).thenAnswer(
         (_) async =>
             Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
-      final result = await usecase.execute('CAD');
-      expect(result, isA<Err>());
+      for (final currency in ['CAD', 'USD']) {
+        final result = await usecase.execute(currency);
+        expect(result, isA<Ok<void, SettingsFailure>>());
+      }
       verifyZeroInteractions(mainnetUsers);
       verifyZeroInteractions(testnetUsers);
     });

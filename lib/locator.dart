@@ -11,6 +11,7 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
+import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -340,7 +341,9 @@ class AppLocator {
     AutoSwapLocator.setup(locator);
 
     ExchangeLocator.setup(locator);
-    DefaultWalletsLocator.setup(locator);
+    locator.registerLazySingleton<DefaultWalletsFacade>(
+      () => DefaultWalletsFacade(locator<Exchange>()),
+    );
     AutoBuyLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
     BuyLocator.setup(locator);

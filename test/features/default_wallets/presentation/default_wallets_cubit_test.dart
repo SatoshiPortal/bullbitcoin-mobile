@@ -1,49 +1,39 @@
 import 'dart:async';
 
 import 'package:bb_mobile/features/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-class MockGetDefaultWalletsUsecase extends Mock
-    implements GetDefaultWalletsUsecase {}
-
-class MockSaveDefaultWalletUsecase extends Mock
-    implements SaveDefaultWalletUsecase {}
-
-class MockDeleteDefaultWalletUsecase extends Mock
-    implements DeleteDefaultWalletUsecase {}
+import 'package:primitives/primitives.dart';
 
 class MockValidateDestination extends Mock
     implements ValidateDefaultWalletDestinationUsecase {}
 
 void main() {
   late MockValidateDestination validateDestination;
-  late MockGetDefaultWalletsUsecase getWallets;
-  late MockSaveDefaultWalletUsecase saveWallet;
-  late MockDeleteDefaultWalletUsecase deleteWallet;
+  late Exchange exchange;
+  late int saveCalls;
 
   DefaultWalletsCubit buildCubit() => DefaultWalletsCubit(
     validateDestination: validateDestination,
-    getDefaultWalletsUsecase: getWallets,
-    saveDefaultWalletUsecase: saveWallet,
-    deleteDefaultWalletUsecase: deleteWallet,
+    exchange: exchange,
   );
-
-  setUpAll(() => registerFallbackValue(WalletAddressType.bitcoin));
 
   setUp(() {
     validateDestination = MockValidateDestination();
-    getWallets = MockGetDefaultWalletsUsecase();
-    saveWallet = MockSaveDefaultWalletUsecase();
-    deleteWallet = MockDeleteDefaultWalletUsecase();
+    saveCalls = 0;
+    exchange = exchangeForTesting(
+      saveDefaultWallet:
+          ({required walletType, required address, existingRecipientId}) async {
+            saveCalls++;
+            return const Err(ExchangeUnexpectedFailure());
+          },
+    );
   });
 
   const savedWallets = DefaultWallets(
@@ -60,7 +50,9 @@ void main() {
   blocTest<DefaultWalletsCubit, DefaultWalletsState>(
     'loads the saved wallet addresses',
     setUp: () {
-      when(() => getWallets.execute()).thenAnswer((_) async => savedWallets);
+      exchange = exchangeForTesting(
+        getDefaultWallets: () async => const Ok(savedWallets),
+      );
     },
     build: buildCubit,
     act: (cubit) => cubit.init(),
@@ -132,13 +124,7 @@ void main() {
       DefaultWalletsState(saveError: DefaultWalletsEmptyAddressFailure()),
     ],
     verify: (_) {
-      verifyNever(
-        () => saveWallet.execute(
-          walletType: any(named: 'walletType'),
-          address: any(named: 'address'),
-          existingRecipientId: any(named: 'existingRecipientId'),
-        ),
-      );
+      expect(saveCalls, 0);
     },
   );
 
@@ -157,13 +143,7 @@ void main() {
       await cubit.saveWallet(WalletAddressType.bitcoin);
       expect(cubit.state.saveError, isA<DefaultWalletsInvalidAddressFailure>());
       expect(cubit.state.isSaving, isFalse);
-      verifyNever(
-        () => saveWallet.execute(
-          walletType: any(named: 'walletType'),
-          address: any(named: 'address'),
-          existingRecipientId: any(named: 'existingRecipientId'),
-        ),
-      );
+      expect(saveCalls, 0);
       await cubit.close();
     },
   );
@@ -182,13 +162,7 @@ void main() {
       await saving;
       expect(cubit.state.bitcoinAddressInput, 'new');
       expect(cubit.state.isSaving, isFalse);
-      verifyNever(
-        () => saveWallet.execute(
-          walletType: any(named: 'walletType'),
-          address: any(named: 'address'),
-          existingRecipientId: any(named: 'existingRecipientId'),
-        ),
-      );
+      expect(saveCalls, 0);
       await cubit.close();
     },
   );
@@ -205,13 +179,7 @@ void main() {
     await saving;
     expect(cubit.state.editingWalletType, isNull);
     expect(cubit.state.isSaving, isFalse);
-    verifyNever(
-      () => saveWallet.execute(
-        walletType: any(named: 'walletType'),
-        address: any(named: 'address'),
-        existingRecipientId: any(named: 'existingRecipientId'),
-      ),
-    );
+    expect(saveCalls, 0);
     await cubit.close();
   });
 }

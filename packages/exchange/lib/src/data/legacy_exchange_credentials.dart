@@ -1,28 +1,29 @@
 import 'dart:convert';
 
-import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/exchange/data/mappers/exchange_api_key_mapper.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
 import 'package:synchronized/synchronized.dart';
 
+import '../domain/entities/exchange_api_key.dart';
+import '../domain/exchange_failure.dart';
+import '../setup/exchange_credentials.dart';
+import 'exchange_api_key_mapper.dart';
+
 /// Owns credential persistence and maps storage exceptions without logging their payload.
-class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
+class LegacyExchangeCredentials implements ExchangeCredentials {
   final ExchangeKeychain _secureStorage;
   final _mainnetMutationLock = Lock();
   final _testnetMutationLock = Lock();
   final _readFailureTypes = <bool, Type>{};
 
-  ExchangeApiKeyRepositoryImpl({required this._secureStorage});
+  LegacyExchangeCredentials({required this._secureStorage});
 
   Lock _mutationLock(bool isTestnet) =>
       isTestnet ? _testnetMutationLock : _mainnetMutationLock;
 
   @override
-  Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
+  Future<Result<String?, ExchangeFailure>> readActiveApiKey({
     required bool isTestnet,
   }) async {
     final result = await _readActiveApiKey(isTestnet: isTestnet);
@@ -41,7 +42,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     return result;
   }
 
-  Future<Result<String?, ExchangeApiKeyFailure>> _readActiveApiKey({
+  Future<Result<String?, ExchangeFailure>> _readActiveApiKey({
     required bool isTestnet,
   }) async {
     final String? stored;
@@ -50,10 +51,10 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
         case Ok(:final value):
           stored = value;
         case Err():
-          return const Err(ExchangeApiKeyReadFailure());
+          return const Err(ExchangeCredentialReadFailure());
       }
     } on Exception {
-      return const Err(ExchangeApiKeyReadFailure());
+      return const Err(ExchangeCredentialReadFailure());
     }
     if (stored == null || stored.isEmpty) return const Ok(null);
     try {
@@ -71,7 +72,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   }
 
   @override
-  Future<Result<void, ExchangeApiKeyFailure>> saveApiKey(
+  Future<Result<void, ExchangeFailure>> saveApiKey(
     ExchangeApiKey apiKey, {
     required bool isTestnet,
   }) => _mutationLock(isTestnet).synchronized(() async {
@@ -106,7 +107,7 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   });
 
   @override
-  Future<Result<void, ExchangeApiKeyFailure>> deleteApiKey({
+  Future<Result<void, ExchangeFailure>> deleteApiKey({
     required bool isTestnet,
   }) => _mutationLock(isTestnet).synchronized(() async {
     try {

@@ -1,24 +1,18 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:primitives/primitives.dart';
 
-/// [ExchangeRecipientRepository] on the `bbx_api` package: the default
-/// Bitcoin, Lightning and Liquid payout addresses of one environment.
-class BbxApiExchangeRecipientRepository implements ExchangeRecipientRepository {
+import '../domain/entities/default_wallet.dart';
+import '../domain/exchange_failure.dart';
+
+/// Default Bitcoin, Lightning and Liquid payouts for one session.
+final class BbxApiExchangeRecipientRepository {
   final bbx.Bbx _api;
 
   BbxApiExchangeRecipientRepository({required this._api});
 
-  @override
-  Future<DefaultWallets> getDefaultWallets() async {
+  Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() async {
     final result = await _api.recipients.listMyRecipients(
-      recipientTypes: [
-        'OUT_BITCOIN_ADDRESS',
-        'OUT_LIGHTNING_ADDRESS',
-        'OUT_LIQUID_ADDRESS',
-      ],
+      recipientTypes: WalletAddressType.values.map(_recipientType).toList(),
       isDefault: true,
     );
     switch (result) {
@@ -37,18 +31,19 @@ class BbxApiExchangeRecipientRepository implements ExchangeRecipientRepository {
               liquid = wallet;
           }
         }
-        return DefaultWallets(
-          bitcoin: bitcoin,
-          lightning: lightning,
-          liquid: liquid,
+        return Ok(
+          DefaultWallets(
+            bitcoin: bitcoin,
+            lightning: lightning,
+            liquid: liquid,
+          ),
         );
       case Err(:final failure):
-        _throwFailure(failure, 'Failed to get default wallets');
+        return Err(_mapFailure(failure));
     }
   }
 
-  @override
-  Future<DefaultWallet> saveDefaultWallet({
+  Future<Result<DefaultWallet, ExchangeFailure>> saveDefaultWallet({
     required WalletAddressType walletType,
     required String address,
     String? existingRecipientId,
@@ -56,55 +51,56 @@ class BbxApiExchangeRecipientRepository implements ExchangeRecipientRepository {
     final result = existingRecipientId != null && existingRecipientId.isNotEmpty
         ? await _api.recipients.updateMyRecipient(
             recipientId: existingRecipientId,
-            recipientType: walletType.recipientTypeValue,
+            recipientType: _recipientType(walletType),
             address: address,
             isDefault: true,
           )
         : await _api.recipients.createMyRecipient(
-            recipientType: walletType.recipientTypeValue,
+            recipientType: _recipientType(walletType),
             address: address,
             isOwner: true,
             isDefault: true,
           );
     return switch (result) {
-      Ok(:final value) => _toDefaultWallet(value),
-      Err(:final failure) => _throwFailure(
-        failure,
-        'Failed to save default wallet',
-      ),
+      Ok(:final value) => Ok(_toDefaultWallet(value)),
+      Err(:final failure) => Err(_mapFailure(failure)),
     };
   }
 
-  @override
-  Future<void> deleteDefaultWallet({
+  Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
     required String recipientId,
     required WalletAddressType walletType,
     required String address,
   }) async {
     final result = await _api.recipients.updateMyRecipient(
       recipientId: recipientId,
-      recipientType: walletType.recipientTypeValue,
+      recipientType: _recipientType(walletType),
       address: address,
       isDefault: false,
     );
-    switch (result) {
-      case Ok():
-        return;
-      case Err(:final failure):
-        _throwFailure(failure, 'Failed to delete default wallet');
-    }
+    return result.map((_) {}).mapErr(_mapFailure);
   }
 
-  static Never _throwFailure(bbx.BbxFailure failure, String context) {
-    switch (failure) {
-      case bbx.BbxMissingCredentialFailure():
-        throw ApiKeyNotFoundException();
-      case bbx.BbxCredentialUnavailableFailure():
-        throw const ExchangeCredentialUnavailableException();
-      default:
-        throw Exception('$context: ${_describe(failure)}');
-    }
-  }
+  static String _recipientType(WalletAddressType type) => switch (type) {
+    WalletAddressType.bitcoin => 'OUT_BITCOIN_ADDRESS',
+    WalletAddressType.lightning => 'OUT_LIGHTNING_ADDRESS',
+    WalletAddressType.liquid => 'OUT_LIQUID_ADDRESS',
+  };
+
+  static ExchangeFailure _mapFailure(bbx.BbxFailure failure) =>
+      switch (failure) {
+        bbx.BbxMissingCredentialFailure() =>
+          const ExchangeNotAuthenticatedFailure(),
+        bbx.BbxCredentialUnavailableFailure() =>
+          const ExchangeApiKeyStorageFailure(),
+        bbx.BbxHttpFailure(status: 401) =>
+          const ExchangeSessionRejectedFailure(),
+        bbx.BbxTimeoutFailure() ||
+        bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
+        _ => ExchangeUnexpectedFailure(
+          'Exchange destination request failed: ${_describe(failure)}',
+        ),
+      };
 
   /// An unknown recipient type is read as a Bitcoin address.
   static DefaultWallet _toDefaultWallet(bbx.MyRecipient recipient) =>

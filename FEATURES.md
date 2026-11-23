@@ -87,7 +87,7 @@ graph TB
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
-    EXCHANGE_DOMAIN[Exchange Package<br/>Account, order inventory, KYC uploads and stats]
+    EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC and stats]
     BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account settings and support chat]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account settings routes| BULL_EXCHANGE
@@ -101,16 +101,16 @@ graph TB
     PAY -->|KYC navigation| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
     DCA --> EXCHANGE_DOMAIN
+    DEFAULT_WALLETS -->|default payout reads and writes| EXCHANGE_DOMAIN
     AUTOBUY --> EXCHANGE_DOMAIN
     FUNDING --> EXCHANGE_DOMAIN
     LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
     TX_HISTORY --> EXCHANGE_DOMAIN
-    CORE --> EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN --> PRIMITIVES
     EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
-    EXCHANGE_DOMAIN -->|database key and legacy credential reads| SECRETS
-    EXCHANGE_DOMAIN -->|account, KYC, statistics, chat, notifications, funding, virtual IBANs and orders| BBX_API
+    EXCHANGE_DOMAIN -->|database key and legacy credential lifecycle| SECRETS
+    EXCHANGE_DOMAIN -->|account, KYC, statistics, chat, notifications, funding, virtual IBANs, orders and default payouts| BBX_API
     BULL_EXCHANGE -->|support chat, account and statistics| EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
 
@@ -368,7 +368,7 @@ graph TB
     PAY --> EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     WITHDRAWAL --> EXCHANGE
-    LIMIT_ORDERS --> DEFAULT_WALLETS
+    LIMIT_ORDERS -->|default-wallet editor navigation| DEFAULT_WALLETS
     LIMIT_ORDERS --> FUNDING
     FUNDING --> EXCHANGE
     FUNDING --> RECIPIENTS
@@ -612,7 +612,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 ### Exchange-Related Features
 
-- **Exchange, Exchange Settings, Default Wallets, Funding, Limit Orders and Recipients** use the `packages/bbx_api` workspace member for exchange operations. `Bbx.open` provides the authenticated HTTP groups and notification socket. Their operations publish owned values in `Result`s from `packages/primitives`. Wire JSON and protocol exceptions stay internal. WebSocket injection is available through `bbx_api_testing.dart`.
+- **Exchange, Exchange Settings, Default Wallets, Buy, Sell, Pay, Withdraw, DCA, Transaction History, Funding and Limit Orders** use `packages/exchange` for exchange operations. The package maps the authenticated BBX transport to owned values and typed failures. Recipients still uses the workspace BBX capability directly for general recipient management; its default payout operations belong to Exchange. Wire JSON and protocol exceptions stay internal.
 
 - **Buy, Sell, Funding**: All depend on Exchange
 - **Recipients**: Depends on Exchange
@@ -660,10 +660,8 @@ The architecture test records source dependencies, including internal imports an
 | `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `dca → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/dca/domain/usecases/set_dca_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `default_wallets → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/default_wallets/public/default_wallets_facade.dart -> lib/features/exchange/domain/usecases/save_default_wallet_usecase.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `exchange_support_chat → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/exchange_support_chat/exchange_support_chat_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |

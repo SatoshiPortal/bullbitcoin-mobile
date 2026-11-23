@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart'
-    show Builder, Container, BoxDecoration;
+    show Builder, Container, BoxDecoration, Size;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -10,6 +10,7 @@ void main() {
     Future<Future<bool>> open(
       WidgetTester tester, {
       bool destructive = false,
+      String message = 'The server will be removed.',
     }) async {
       late BuildContext ctx;
       await tester.pumpWidget(
@@ -25,7 +26,7 @@ void main() {
       final result = BullConfirmDialog.show(
         ctx,
         title: 'Delete server?',
-        message: 'The server will be removed.',
+        message: message,
         confirmLabel: 'Delete',
         cancelLabel: 'Cancel',
         destructive: destructive,
@@ -48,6 +49,34 @@ void main() {
 
       expect(await result, isTrue);
       expect(find.text('Delete server?'), findsNothing);
+    });
+
+    testWidgets('scrolls the entire confirmation on a short viewport', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 320);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final result = await open(
+        tester,
+        message: List.filled(20, 'The server will be removed.').join('\n'),
+      );
+      expect(tester.takeException(), isNull);
+
+      final title = find.text('Delete server?').hitTestable();
+      final confirm = find.text('Delete').hitTestable();
+      expect(title, findsOneWidget);
+      expect(confirm, findsNothing);
+      await tester.dragUntilVisible(
+        confirm,
+        find.byType(SingleChildScrollView),
+        const Offset(0, -160),
+      );
+      await tester.pumpAndSettle();
+      expect(title, findsNothing);
+      await tester.tap(confirm);
+      await tester.pumpAndSettle();
+      expect(await result, isTrue);
     });
 
     testWidgets('announces itself as a route named by its title', (

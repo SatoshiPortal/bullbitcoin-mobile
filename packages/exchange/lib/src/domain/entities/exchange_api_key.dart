@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+
+import '../exchange_failure.dart';
 
 /// A validated credential in transit between authentication and persistence.
 /// It must never be retained in presentation state or a service cache.
@@ -28,7 +29,7 @@ final class ExchangeApiKey {
   });
 
   @useResult
-  static Result<ExchangeApiKey, ExchangeApiKeyFailure> create({
+  static Result<ExchangeApiKey, ExchangeFailure> create({
     required String id,
     required String key,
     required String name,

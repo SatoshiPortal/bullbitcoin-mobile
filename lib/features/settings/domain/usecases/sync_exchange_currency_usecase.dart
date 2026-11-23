@@ -6,8 +6,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Mirrors an app currency change onto the exchange account, when there is
-/// one. Skips silently when the user is signed out or the currency is not
-/// offered on the exchange — the app-side setting is already saved either way.
+/// one. Skips when the network has no exchange, the user is signed out or the
+/// currency is not offered on the exchange.
 class SyncExchangeCurrencyUsecase {
   final Preferences _settingsRepository;
   final Exchange _exchange;
@@ -45,7 +45,7 @@ class SyncExchangeCurrencyUsecase {
       BitcoinNetwork.fromName(environment.name),
       NetworkCapability.exchange,
     )) {
-      return Err(SettingsNetworkUnavailableFailure(environment.networkEnv));
+      return const Ok(null);
     }
     final exchangeEnvironment = environment.requireHistoricalTestnet()
         ? ExchangeEnvironment.testnet

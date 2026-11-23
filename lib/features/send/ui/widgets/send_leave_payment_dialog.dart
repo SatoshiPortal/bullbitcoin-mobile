@@ -18,30 +18,28 @@ class SendLeavePaymentDialog extends StatelessWidget {
   final VoidCallback onOpen;
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: context.bullType.subtitle),
-        const Gap(BullSpacing.sm),
-        Text(description, style: context.bullType.body),
-        const Gap(BullSpacing.lg),
-        Row(
-          children: [
-            Expanded(
-              child: BullButton.secondary(
-                label: cancelLabel,
-                onPressed: onCancel,
-              ),
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(title, style: context.bullType.subtitle),
+      const Gap(BullSpacing.sm),
+      Text(description, style: context.bullType.body),
+      const Gap(BullSpacing.lg),
+      Row(
+        children: [
+          Expanded(
+            child: BullButton.secondary(
+              label: cancelLabel,
+              onPressed: onCancel,
             ),
-            const Gap(BullSpacing.sm),
-            Expanded(
-              child: BullButton.primary(label: openLabel, onPressed: onOpen),
-            ),
-          ],
-        ),
-      ],
-    ),
+          ),
+          const Gap(BullSpacing.sm),
+          Expanded(
+            child: BullButton.primary(label: openLabel, onPressed: onOpen),
+          ),
+        ],
+      ),
+    ],
   );
 }

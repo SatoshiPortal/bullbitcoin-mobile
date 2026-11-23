@@ -1,19 +1,23 @@
 import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxCredentialUnavailableFailure, BbxTimeouts;
 import 'package:primitives/primitives.dart';
+import 'package:meta/meta.dart';
 
 import 'data/bbx_api_account_repository.dart';
+import 'data/bbx_api_exchange_recipient_repository.dart';
 import 'data/bbx_api_funding_repository.dart';
 import 'data/bbx_api_kyc_repository.dart';
 import 'data/bbx_api_limit_order_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
 import 'data/bbx_api_order_stats_repository.dart';
+import 'data/bbx_api_order_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
 import 'data/bbx_api_virtual_iban_repository.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/default_wallet.dart';
 import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';
@@ -23,6 +27,7 @@ import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
 import 'domain/exchange_limit_orders.dart';
+import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
@@ -32,6 +37,21 @@ typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   bool? dcaEnabled,
   String? autoBuyEnabled,
   bool? emailNotificationsEnabled,
+});
+typedef _DefaultWalletOperations = ({
+  Future<Result<DefaultWallets, ExchangeFailure>> Function() get,
+  Future<Result<DefaultWallet, ExchangeFailure>> Function({
+    required WalletAddressType walletType,
+    required String address,
+    String? existingRecipientId,
+  })
+  save,
+  Future<Result<void, ExchangeFailure>> Function({
+    required String recipientId,
+    required WalletAddressType walletType,
+    required String address,
+  })
+  delete,
 });
 typedef ExchangeSessionReader =
     Future<
@@ -71,6 +91,8 @@ typedef ExchangeNotificationOperations = ({
   Future<void> Function() close,
 });
 
+enum _CompletionCheck { none, read, write }
+
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
@@ -94,6 +116,8 @@ final class Exchange {
   )
   _listAnnouncements;
   final _SaveUserPreference _saveUserPreference;
+  final _DefaultWalletOperations _defaultWallets;
+  final ExchangeOrders Function(ExchangeEnvironment) _orders;
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
   final ExchangeLimitOrders limitOrders;
@@ -108,6 +132,8 @@ final class Exchange {
     this._getUserSummary,
     this._listAnnouncements,
     this._saveUserPreference,
+    this._defaultWallets,
+    this._orders,
     this._chat,
     this._notifications,
     this.limitOrders,
@@ -168,6 +194,7 @@ final class Exchange {
       ExchangeEnvironment? environment,
       ExchangeFailure Function()? credentialReadFailure,
       bool untimed = false,
+      _CompletionCheck completionCheck = _CompletionCheck.none,
     }) async {
       switch (await sessionSnapshot()) {
         case Err(failure: ExchangeCredentialReadFailure())
@@ -204,7 +231,22 @@ final class Exchange {
                       readKey,
                     ),
             );
-            return stale ? const Err(ExchangeOperationStaleFailure()) : result;
+            // A committed write remains successful even if the session
+            // changes before its response arrives.
+            if (completionCheck == _CompletionCheck.write &&
+                result is Ok<T, ExchangeFailure>) {
+              return result;
+            }
+            if (stale) return const Err(ExchangeOperationStaleFailure());
+            if (completionCheck != _CompletionCheck.none) {
+              switch (await sessionSnapshot()) {
+                case Ok(value: final current) when current == value:
+                  break;
+                case _:
+                  return const Err(ExchangeOperationStaleFailure());
+              }
+            }
+            return result;
           } finally {
             untimedClient?.dispose();
             client.dispose();
@@ -314,6 +356,49 @@ final class Exchange {
           emailNotificationsEnabled: emailNotificationsEnabled,
         ),
         environment: environment,
+      ),
+      (
+        get: () => withClient(
+          (client, _) =>
+              BbxApiExchangeRecipientRepository(api: client)
+                  .getDefaultWallets(),
+          completionCheck: _CompletionCheck.read,
+        ),
+        save: ({required walletType, required address, existingRecipientId}) =>
+            withClient(
+              (client, _) =>
+                  BbxApiExchangeRecipientRepository(api: client)
+                      .saveDefaultWallet(
+                        walletType: walletType,
+                        address: address,
+                        existingRecipientId: existingRecipientId,
+                      ),
+              completionCheck: _CompletionCheck.write,
+            ),
+        delete:
+            ({required recipientId, required walletType, required address}) =>
+                withClient(
+                  (client, _) => BbxApiExchangeRecipientRepository(api: client)
+                      .deleteDefaultWallet(
+                        recipientId: recipientId,
+                        walletType: walletType,
+                        address: address,
+                      ),
+                  completionCheck: _CompletionCheck.write,
+                ),
+      ),
+      (environment) => BbxApiOrderRepository(
+        isTestnet: environment == ExchangeEnvironment.testnet,
+        read: <T>(operation) => withClient<T>(
+          (client, _) => operation(client),
+          environment: environment,
+          completionCheck: _CompletionCheck.read,
+        ),
+        write: <T>(operation) => withClient<T>(
+          (client, _) => operation(client),
+          environment: environment,
+          completionCheck: _CompletionCheck.write,
+        ),
       ),
       (
         getMessages: ({page, pageSize}) => withClient(
@@ -448,6 +533,37 @@ final class Exchange {
     emailNotificationsEnabled: emailNotificationsEnabled,
   );
 
+  /// Binds operations to the caller's selected backend, not to a credential.
+  /// Every request checks that the active session still matches that backend.
+  ExchangeOrders orders(ExchangeEnvironment environment) =>
+      _orders(environment);
+
+  @useResult
+  Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
+      _defaultWallets.get();
+
+  @useResult
+  Future<Result<DefaultWallet, ExchangeFailure>> saveDefaultWallet({
+    required WalletAddressType walletType,
+    required String address,
+    String? existingRecipientId,
+  }) => _defaultWallets.save(
+    walletType: walletType,
+    address: address,
+    existingRecipientId: existingRecipientId,
+  );
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
+    required String recipientId,
+    required WalletAddressType walletType,
+    required String address,
+  }) => _defaultWallets.delete(
+    recipientId: recipientId,
+    walletType: walletType,
+    address: address,
+  );
+
   Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
     int? page,
     int? pageSize,
@@ -501,6 +617,20 @@ Exchange exchangeForTesting({
     bool? emailNotificationsEnabled,
   })?
   saveUserPreference,
+  Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
+  Future<Result<DefaultWallet, ExchangeFailure>> Function({
+    required WalletAddressType walletType,
+    required String address,
+    String? existingRecipientId,
+  })?
+  saveDefaultWallet,
+  Future<Result<void, ExchangeFailure>> Function({
+    required String recipientId,
+    required WalletAddressType walletType,
+    required String address,
+  })?
+  deleteDefaultWallet,
+  ExchangeOrders Function(ExchangeEnvironment)? orders,
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
   ExchangeLimitOrders? limitOrders,
@@ -525,6 +655,20 @@ Exchange exchangeForTesting({
         autoBuyEnabled,
         emailNotificationsEnabled,
       }) => throw StateError('Unexpected preference write'),
+  (
+    get:
+        getDefaultWallets ??
+        () => throw StateError('Unexpected default wallet read'),
+    save:
+        saveDefaultWallet ??
+        ({required walletType, required address, existingRecipientId}) =>
+            throw StateError('Unexpected default wallet write'),
+    delete:
+        deleteDefaultWallet ??
+        ({required recipientId, required walletType, required address}) =>
+            throw StateError('Unexpected default wallet removal'),
+  ),
+  orders ?? (_) => throw StateError('Unexpected order request'),
   chat ??
       (
         getMessages: ({page, pageSize}) =>

@@ -1,6 +1,7 @@
+import 'package:exchange/setup.dart';
+
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
@@ -15,7 +16,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late _Logger logger;
   late Logger previousLogger;
-  late ExchangeApiKeyRepositoryImpl repository;
+  late ExchangeCredentials repository;
 
   Future<String?> readKey() async =>
       switch (await repository.readActiveApiKey(isTestnet: true)) {
@@ -30,9 +31,8 @@ void main() {
     logger = _Logger();
     previousLogger = log;
     log = logger;
-    repository = ExchangeApiKeyRepositoryImpl(
-      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
-          .exchangeKeychain,
+    repository = ExchangeCredentials.open(
+      Secrets(scratchDirectory: () async => '/tmp').exchangeKeychain,
     );
   });
   tearDown(() => log = previousLogger);

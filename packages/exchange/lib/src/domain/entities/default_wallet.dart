@@ -1,4 +1,4 @@
-/// Represents the type of wallet address
+/// Payment rail for an Exchange payout destination.
 enum WalletAddressType {
   bitcoin,
   lightning,
@@ -15,17 +15,6 @@ enum WalletAddressType {
     }
   }
 
-  String get recipientTypeValue {
-    switch (this) {
-      case WalletAddressType.bitcoin:
-        return 'OUT_BITCOIN_ADDRESS';
-      case WalletAddressType.lightning:
-        return 'OUT_LIGHTNING_ADDRESS';
-      case WalletAddressType.liquid:
-        return 'OUT_LIQUID_ADDRESS';
-    }
-  }
-
   String get addressHint {
     switch (this) {
       case WalletAddressType.bitcoin:
@@ -38,7 +27,7 @@ enum WalletAddressType {
   }
 }
 
-/// Entity representing a default wallet address
+/// A default Exchange payout destination, not a local wallet.
 class DefaultWallet {
   final String? recipientId;
   final WalletAddressType walletType;
@@ -83,7 +72,7 @@ class DefaultWallet {
   int get hashCode => Object.hash(recipientId, walletType, address, isDefault);
 }
 
-/// Entity representing all default wallets for a user
+/// The default Exchange payout destinations for a user.
 class DefaultWallets {
   final DefaultWallet? bitcoin;
   final DefaultWallet? lightning;

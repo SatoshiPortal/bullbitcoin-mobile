@@ -1,39 +1,34 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class GetOrderUsecase {
-  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
-  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
 
-  GetOrderUsecase({
-    required this._mainnetExchangeOrderRepository,
-    required this._testnetExchangeOrderRepository,
-    required this._settingsRepository,
-  });
+  GetOrderUsecase({required this._exchange, required this._settingsRepository});
 
-  Future<Order> execute({required String orderId}) async {
-    try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      final isTestnet = settings.environment.requireHistoricalTestnet();
-      final repo = isTestnet
-          ? _testnetExchangeOrderRepository
-          : _mainnetExchangeOrderRepository;
-      final order = await repo.getOrder(orderId);
-      return order;
-    } on Exception catch (e) {
-      log.warning('Exchange order unavailable: ${e.runtimeType}');
-      throw GetOrderException('Exchange order unavailable: ${e.runtimeType}');
+  @useResult
+  Future<Result<Order, ExchangeFailure>> execute({
+    required String orderId,
+  }) async {
+    final ExchangeEnvironment environment;
+    switch (await _settingsRepository.fetch()) {
+      case Err():
+        return const Err(ExchangeOrderLoadFailure());
+      case Ok(value: SettingsEntity(environment: Environment.regtest)):
+        return const Err(ExchangeUnsupportedNetworkFailure());
+      case Ok(value: final settings):
+        environment = settings.environment == Environment.testnet
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet;
     }
+    final result = await _exchange.orders(environment).getOrder(orderId);
+    if (result case Err(:final failure)) {
+      log.warning('Exchange order unavailable: ${failure.runtimeType}');
+    }
+    return result;
   }
-}
-
-class GetOrderException extends BullException {
-  GetOrderException(super.message);
 }

@@ -1,5 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 
 class ValidateDefaultWalletDestinationUsecase {

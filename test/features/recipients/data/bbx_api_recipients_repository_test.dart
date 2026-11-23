@@ -1,7 +1,8 @@
+import 'package:exchange/exchange.dart';
+
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
@@ -799,7 +800,8 @@ void main() {
           final http = FakeBbxHttp(body: {'result': <String, Object?>{}});
           final repository = BbxApiRecipientsRepository(
             api: http.client(
-              readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+              readApiKey: () async =>
+                  const Err(ExchangeCredentialReadFailure()),
             ),
           );
 

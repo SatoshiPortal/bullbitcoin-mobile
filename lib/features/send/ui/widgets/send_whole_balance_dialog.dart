@@ -33,40 +33,38 @@ class SendWholeBalanceDialog extends StatelessWidget {
   final VoidCallback? onSendAll;
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: context.bullType.subtitle),
-        const Gap(BullSpacing.sm),
-        Text(description, style: context.bullType.body),
-        const Gap(BullSpacing.lg),
-        _PreviewRow(label: balanceLabel, value: balance),
-        const Gap(BullSpacing.sm),
-        _PreviewRow(label: feeLabel, value: fee),
-        const Gap(BullSpacing.sm),
-        _PreviewRow(label: receivesLabel, value: receives, strong: true),
-        const Gap(BullSpacing.lg),
-        Row(
-          children: [
-            Expanded(
-              child: BullButton.secondary(
-                label: cancelLabel,
-                onPressed: onCancel,
-              ),
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Text(title, style: context.bullType.subtitle),
+      const Gap(BullSpacing.sm),
+      Text(description, style: context.bullType.body),
+      const Gap(BullSpacing.lg),
+      _PreviewRow(label: balanceLabel, value: balance),
+      const Gap(BullSpacing.sm),
+      _PreviewRow(label: feeLabel, value: fee),
+      const Gap(BullSpacing.sm),
+      _PreviewRow(label: receivesLabel, value: receives, strong: true),
+      const Gap(BullSpacing.lg),
+      Row(
+        children: [
+          Expanded(
+            child: BullButton.secondary(
+              label: cancelLabel,
+              onPressed: onCancel,
             ),
-            const Gap(BullSpacing.sm),
-            Expanded(
-              child: BullButton.primary(
-                label: sendAllLabel,
-                onPressed: onSendAll,
-              ),
+          ),
+          const Gap(BullSpacing.sm),
+          Expanded(
+            child: BullButton.primary(
+              label: sendAllLabel,
+              onPressed: onSendAll,
             ),
-          ],
-        ),
-      ],
-    ),
+          ),
+        ],
+      ),
+    ],
   );
 }
 
