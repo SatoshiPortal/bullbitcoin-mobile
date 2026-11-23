@@ -7,9 +7,10 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart';
 
-import 'src/data/wallet_utxo_repository.dart';
+import 'src/data/wallet_utxo_repository_impl.dart';
 import 'src/domain/coins_failure.dart';
 import 'src/domain/wallet_utxo.dart';
+import 'src/domain/wallet_utxo_repository.dart';
 
 export 'src/coin_selection_sheet.dart'
     show CoinSelectionEntry, CoinSelectionLabels, CoinSelectionSheet;
@@ -25,7 +26,7 @@ abstract interface class Coins {
     required Future<Result<Wallet, SyncFailure>> Function(WalletKey) loadWallet,
     required CoinFreezes freezes,
   }) => _Coins(
-    WalletUtxoRepository(
+    WalletUtxoRepositoryImpl(
       inventory: inventory,
       labelsFacade: labels,
       loadWallet: loadWallet,

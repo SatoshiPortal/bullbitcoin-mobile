@@ -6,28 +6,28 @@ import 'package:sync/sync.dart';
 
 import '../domain/coins_failure.dart';
 import '../domain/wallet_utxo.dart';
+import '../domain/wallet_utxo_repository.dart';
 import 'wallet_utxo_mapper.dart';
 
-class WalletUtxoRepository {
+final class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletInventory _inventory;
   final Labels _labels;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
   final CoinFreezes _freezes;
 
-  WalletUtxoRepository({
-    required WalletInventory inventory,
+  WalletUtxoRepositoryImpl({
+    required this._inventory,
     required Labels labelsFacade,
-    required Future<Result<Wallet, SyncFailure>> Function(WalletKey) loadWallet,
+    required this._loadWallet,
     required CoinFreezes freezesDatasource,
-  }) : _inventory = inventory,
-       _labels = labelsFacade,
-       _loadWallet = loadWallet,
+  }) : _labels = labelsFacade,
        _freezes = freezesDatasource;
 
   Future<List<Label>> _fetchLabels(String reference) async =>
       (await _labels.fetch(reference: reference))
           .fold((labels) => labels, (_) => const <Label>[]);
 
+  @override
   Future<Result<List<WalletUtxo>, CoinsFailure>> coins(String walletId) async {
     try {
       final key = await _readKey(walletId);
@@ -70,6 +70,7 @@ class WalletUtxoRepository {
     }
   }
 
+  @override
   Future<Result<void, CoinsFailure>> freeze(
     String walletId,
     List<Outpoint> outpoints,
@@ -87,6 +88,7 @@ class WalletUtxoRepository {
     }
   }
 
+  @override
   Future<Result<void, CoinsFailure>> unfreeze(List<Outpoint> outpoints) async {
     try {
       await _freezes.unfreeze(outpoints);
