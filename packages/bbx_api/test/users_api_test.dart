@@ -88,6 +88,38 @@ void main() {
       expect(summary.kycDocumentStatus, isNull);
     });
 
+    test(
+      'a missing or malformed display field reads as empty (INT-16)',
+      () async {
+        final body = _summary()
+          ..remove('profile')
+          ..['autoBuy'] = {'isActive': true, 'addresses': 'not an object'}
+          ..['kycDocumentStatus'] = {
+            'secureFileUpload': 'ACCEPTED',
+            'documents': null,
+          };
+        final summary = valueOf(
+          await bbx(FakeHttp(body: {'result': body})).users.getUserSummary(),
+        );
+
+        if (summary == null) fail('Expected a user summary');
+        expect(summary.profile.firstName, '');
+        expect(summary.profile.lastName, '');
+        expect(summary.autoBuy.isActive, isTrue);
+        expect(summary.autoBuy.addresses.bitcoin, isNull);
+        expect(summary.kycDocumentStatus?.documents.id, 'NOT_UPLOADED');
+      },
+    );
+
+    test('a profile name that is not text is empty', () async {
+      final body = _summary()..['profile'] = {'firstName': 7};
+      final summary = valueOf(
+        await bbx(FakeHttp(body: {'result': body})).users.getUserSummary(),
+      );
+      expect(summary?.profile.firstName, '');
+      expect(summary?.profile.lastName, '');
+    });
+
     test('no result is null', () async {
       final summary = valueOf(
         await bbx(FakeHttp(body: {'result': null})).users.getUserSummary(),
@@ -95,7 +127,14 @@ void main() {
       expect(summary, isNull);
     });
 
-    for (final field in ['userNumber', 'groups', 'profile', 'email', 'dca']) {
+    for (final field in [
+      'userNumber',
+      'groups',
+      'email',
+      'balances',
+      'dca',
+      'autoBuy',
+    ]) {
       test('a missing $field is a format failure', () async {
         final body = _summary()..remove(field);
         expect(

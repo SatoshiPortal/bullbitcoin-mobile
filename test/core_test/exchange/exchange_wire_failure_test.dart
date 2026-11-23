@@ -78,8 +78,8 @@ void main() {
     {
       'userNumber': 1,
       'groups': <String>[],
-      'profile': {'firstName': 42, 'lastName': 'synthetic'},
-      'email': 'synthetic@example.invalid',
+      'profile': {'firstName': 'synthetic', 'lastName': 'synthetic'},
+      'email': 42,
       'balances': <Object>[],
       'dca': {'isActive': false},
       'autoBuy': {'isActive': false, 'addresses': <String, Object>{}},
