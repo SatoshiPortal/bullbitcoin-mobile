@@ -1,4 +1,5 @@
 import 'package:access/access.dart' show Access;
+import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
 import 'package:secrets/custody.dart';
@@ -29,6 +30,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:labels/labels.dart';
 import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
@@ -42,6 +44,7 @@ import 'package:secrets/testing.dart';
 import '../../support/inventory_fixture.dart';
 
 import 'package:silent/setup.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 class PricePreferences extends Mock
     implements
@@ -77,6 +80,10 @@ class _UnusedSwapRouting extends Mock implements SwapRouting {}
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 
 class _UnusedSwaps extends Mock implements BoltzSwaps {}
+
+class _UnusedLabels extends Mock implements Labels {}
+
+class _UnusedNative extends Mock implements WalletNativeLifecycle {}
 
 class _UnusedReferences extends Mock implements SeedReferencePort {}
 
@@ -219,6 +226,15 @@ void main() {
           scope: (child) => child,
         ),
       );
+      locator.registerSingleton(
+        AddressViewFeature.mount(
+          labels: _UnusedLabels(),
+          inventory: inventory,
+          native: _UnusedNative(),
+          loadWallet: (_) => throw StateError('Unexpected address wallet read'),
+          revisions: const Stream.empty(),
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -241,6 +257,7 @@ void main() {
         await locator.unregister<BitcoinPriceFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
+        await locator.unregister<AddressViewFeature>();
         await transactionServices.reset();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
@@ -256,6 +273,10 @@ void main() {
       expect(
         router.namedLocation('backupOptions'),
         '/settings/backup-settings/backup-options',
+      );
+      expect(
+        router.namedLocation('testPhysicalBackupFlow'),
+        '/settings/backup-settings/test-physical-backup-flow',
       );
       expect(
         router.namedLocation('torSettings'),
