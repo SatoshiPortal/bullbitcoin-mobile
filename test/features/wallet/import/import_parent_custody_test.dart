@@ -183,7 +183,10 @@ void main() {
         language: Language.english,
       );
       expect(first, isA<Ok<void, ImportMnemonicFailure>>());
-      expect(await delete.execute(walletId: (first as Ok).value.id), isA<Ok>());
+      expect(
+        await delete.execute(walletId: (await metadata.fetchAll()).single.id),
+        isA<Ok>(),
+      );
       expect((await secrets.exists(parent) as Ok).value, isFalse);
       final second = await importer.execute(
         mnemonicWords: words,
@@ -191,7 +194,7 @@ void main() {
       );
       expect(second, isA<Ok<void, ImportMnemonicFailure>>());
       expect(
-        await delete.execute(walletId: (second as Ok).value.id),
+        await delete.execute(walletId: (await metadata.fetchAll()).single.id),
         isA<Ok>(),
       );
       expect(await metadata.fetchAll(), isEmpty);
@@ -392,7 +395,7 @@ void main() {
       isA<Ok>(),
     );
     expect(
-      await delete.execute(walletId: (imported as Ok).value.id),
+      await delete.execute(walletId: (await metadata.fetchAll()).single.id),
       isA<Ok>(),
     );
     await fixture.close();

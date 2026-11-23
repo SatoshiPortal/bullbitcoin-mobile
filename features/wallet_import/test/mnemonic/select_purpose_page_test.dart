@@ -15,7 +15,7 @@ class _MockImportMnemonicCubit extends MockCubit<ImportMnemonicState>
 
 void main() {
   late _MockImportMnemonicCubit cubit;
-  late AppLocalizations loc;
+  late ImportLocalizations loc;
   late ImportLocalizations importLoc;
 
   setUpAll(() async {

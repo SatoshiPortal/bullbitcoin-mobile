@@ -176,7 +176,7 @@ void main() {
   }
 
   group('ImportWalletUsecase', () {
-    test('returns Ok(wallet) and stores the secret', () async {
+    test('returns success and stores the secret', () async {
       final wallet = _MockWallet();
       stubCreateWallet(() async => wallet);
 
@@ -186,6 +186,7 @@ void main() {
         language: bip39.Language.english,
       );
 
+      expect(result, isA<Ok<void, ImportMnemonicFailure>>());
       expect(
         storage.entries.keys.where((k) => k.startsWith('seed_')),
         hasLength(1),

@@ -674,10 +674,10 @@ void main() {
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
       );
-      final descriptor = WatchOnlyInput.fromDescriptor(watchOnly);
+      final input = WatchOnlyInput.fromDescriptor(watchOnly);
       final result = await importing.importDescriptor(
         descriptor:
-            (descriptor as Ok<WatchOnlyDescriptorInput, ImportFailure>).value,
+            (input as Ok<WatchOnlyDescriptorInput, ImportFailure>).value,
         signer: SignerEntity.remote,
         label: '',
         sync: true,

@@ -263,7 +263,7 @@ void main() {
             Wallet(
               origin: 'other-import',
               label: 'Other',
-              network: BitcoinNetwork.mainnet,
+              network: Network.bitcoinMainnet,
               isDefault: false,
               masterFingerprint: '73c5da0a',
               xpubFingerprint: '73c5da0a',

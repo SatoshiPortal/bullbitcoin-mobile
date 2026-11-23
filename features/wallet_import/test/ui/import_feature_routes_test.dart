@@ -2,7 +2,6 @@ import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:wallet_import/setup.dart';

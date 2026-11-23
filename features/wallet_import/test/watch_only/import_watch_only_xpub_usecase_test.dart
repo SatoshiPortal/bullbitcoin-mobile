@@ -11,10 +11,10 @@ void main() {
     derivation: satoshifier.Derivation.bip84,
     network: satoshifier.Network.bitcoinMainnet,
   );
-  entity = WatchOnlyWalletEntity.xpub(
+  final entity = WatchOnlyXpubEntity(
     watchOnlyXpub: satoshifier.WatchOnlyXpub(extendedPubkey: extendedPubkey),
     label: 'My xpub wallet',
-  ) as WatchOnlyXpubEntity;
+  );
   for (final outcome in <Result<void, ImportWatchOnlyFailure>>[
     const Ok(null),
     const Err(WalletAlreadyExistsFailure()),
