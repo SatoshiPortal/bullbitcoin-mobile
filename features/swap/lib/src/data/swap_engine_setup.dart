@@ -1,6 +1,5 @@
 import 'package:address_view/address_view.dart';
 import 'package:transactions/transactions.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:electrum/setup.dart';
 import 'package:fees/fees.dart';
 import 'package:get_it/get_it.dart';
@@ -10,9 +9,13 @@ import 'package:secrets/secrets.dart';
 import 'package:swaps/swaps.dart';
 import 'package:sync/sync.dart' show WalletConnectionPort;
 
-/// Composes the Boltz package with the remaining legacy feature projections.
-class BoltzSwapsSetup {
-  static Future<Result<void, SwapsFailure>> setup(GetIt locator) async {
+/// Opens the Boltz engine over the authorized inventory and registers the
+/// engine capabilities still resolved through the service locator.
+class SwapEngineSetup {
+  static Future<Result<void, SwapsFailure>> open(
+    GetIt locator, {
+    required WalletInventory inventory,
+  }) async {
     final opened = await Swaps.open(
       database: locator<BoltzSwapsDatabase>(),
       regtestDatabase: locator<BoltzSwapsDatabase>(instanceName: 'regtest'),
@@ -21,40 +24,20 @@ class BoltzSwapsSetup {
       electrum: locator<ElectrumServersPort>(),
       connections: locator<WalletConnectionPort>(),
       fees: locator<Fees>(),
-      wallets: (environment) async {
-        final result = await locator<WalletRepository>().getWallets(
-          environment: settings.Environment.fromName(environment.name),
-        );
-        return switch (result) {
-          Ok(:final value) => [
-            for (final wallet in value)
-              SwapWalletInfo(
-                id: wallet.id,
-                isLiquid: wallet.isLiquid,
-                isDefault: wallet.isDefault,
-                fingerprint: wallet.masterFingerprint,
-              ),
-          ],
-          Err(:final failure) => throw SwapsException(
-            'wallets read failed: ${failure.runtimeType}',
+      wallets: (environment) async => [
+        for (final wallet in await _wallets(inventory, environment))
+          SwapWalletInfo(
+            id: wallet.id,
+            isLiquid: wallet.network is LiquidNetwork,
+            isDefault: wallet.isDefault,
+            fingerprint: wallet.masterFingerprint?.hex ?? '',
           ),
-        };
-      },
+      ],
       defaultBitcoinFingerprint: (environment) async {
-        final result = await locator<WalletRepository>().getWallets(
-          onlyDefaults: true,
-          onlyBitcoin: true,
-          environment: settings.Environment.fromName(environment.name),
+        final defaults = (await _wallets(inventory, environment)).where(
+          (wallet) => wallet.isDefault && wallet.network is BitcoinNetwork,
         );
-        final fingerprint = switch (result) {
-          Ok(:final value) => value.firstOrNull?.masterFingerprint,
-          Err(:final failure) => throw SwapsException(
-            'default wallets read failed: ${failure.runtimeType}',
-          ),
-        };
-        return fingerprint == null || fingerprint.isEmpty
-            ? null
-            : Fingerprint(fingerprint);
+        return defaults.firstOrNull?.masterFingerprint;
       },
       newAddressFor: (id) async => switch (await locator<AddressView>()
           .receiveAddress(walletId: id, advance: true)) {
@@ -107,6 +90,27 @@ class BoltzSwapsSetup {
         _registerUsecases(locator);
         return const Ok(null);
     }
+  }
+
+  /// Readable accounts of [environment]; an unreadable row is skipped as the
+  /// legacy catalogue did, an unavailable inventory refuses the read.
+  static Future<List<WalletRegistration>> _wallets(
+    WalletInventory inventory,
+    NetworkEnv environment,
+  ) async {
+    final bitcoin = BitcoinNetwork.tryFromName(environment.name);
+    final liquid = LiquidNetwork.tryFromName(environment.name);
+    if (bitcoin == null || liquid == null) return const [];
+    final wallets = <WalletRegistration>[];
+    for (final network in <Network>[bitcoin, liquid]) {
+      switch (await inventory.walletsForNetwork(network)) {
+        case Ok(:final value):
+          wallets.addAll(value.wallets);
+        case Err(:final failure):
+          throw SwapsException('wallets read failed: ${failure.runtimeType}');
+      }
+    }
+    return wallets;
   }
 
   static void followEnvironment(GetIt locator) =>

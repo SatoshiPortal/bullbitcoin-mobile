@@ -83,7 +83,7 @@ import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/features/wallet/public/boltz_swaps_setup.dart';
+import 'package:swap_feature/setup.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -294,7 +294,10 @@ class AppLocator {
       );
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
-    final swaps = await BoltzSwapsSetup.setup(locator);
+    final swaps = await SwapEngineSetup.open(
+      locator,
+      inventory: locator<SecretsInventory>(),
+    );
     if (swaps case Err()) return swaps;
     CoreLocator.registerUsecases(locator);
     mountPayjoin(locator, startRecovery: false);
@@ -573,7 +576,7 @@ class AppLocator {
             watchOrders: startOrderSwapWatcher,
             watchAutoswap: startAutoswapWatcher,
           );
-          BoltzSwapsSetup.followEnvironment(locator);
+          SwapEngineSetup.followEnvironment(locator);
         },
         payjoin: startPayjoinRecovery
             ? () => locator<PayjoinLifecycle>()
