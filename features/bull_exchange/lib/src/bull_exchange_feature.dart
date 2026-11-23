@@ -27,6 +27,7 @@ import 'exchange_payout_destinations.dart';
 import 'session/exchange_access_builder.dart';
 import 'session/exchange_session_scope.dart';
 import 'auth/exchange_auth_route.dart';
+import 'auth/exchange_auth_host.dart';
 import 'auth/exchange_auth_screen.dart';
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
@@ -160,35 +161,7 @@ final class BullExchangeFeature {
               ),
             ),
       payins: payins,
-      auth: (
-        loadConfiguration: () => exchange().loadWebPreferences(),
-        authenticate:
-            (
-              context,
-              evaluateJavaScript, {
-              required isTestnet,
-              required isCurrent,
-            }) => ExchangeSessionScope.finishAuthentication(
-              context,
-              ({required isCurrent}) => exchange().authenticateWebSession(
-                isTestnet: isTestnet,
-                evaluateJavaScript: evaluateJavaScript,
-                isCurrent: isCurrent,
-              ),
-              isCurrent: isCurrent,
-            ),
-        failureMessage: failureMessage,
-        mainnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthUrl),
-        testnetSignInUrl: Uri.parse(ExchangeDefaults.bbAuthTestUrl),
-        returnUrl: Uri.parse(ExchangeDefaults.bbAppUrl),
-        testnetKycUrl: Uri.parse(ExchangeDefaults.bbKycTestUrl),
-        currentAccess: () => exchange().currentAccess,
-        watchAccess: () => exchange().watchAccess(),
-        accountSignedInChanges: ExchangeSessionScope.accountChanges,
-        retryAccess: (_) async {
-          final _ = await exchange().resolveAccess();
-        },
-      ),
+      auth: exchangeAuthHost(exchange),
       limitOrders: exchange,
       withdrawal: (
         exchange: exchange,
