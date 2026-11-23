@@ -202,6 +202,7 @@ graph TD
   btc_map --> bull_logger
   btc_map --> bull_ui
   btc_map --> primitives
+  bull_ark --> fees
   bull_ark --> ark
   bull_ark --> secrets
   bull_ark --> primitives
@@ -313,13 +314,19 @@ graph TD
   network --> mempool
   network --> preferences
   network --> primitives
+  network --> secrets
   notifications --> bull_logger
   notifications --> primitives
   overview --> bitcoin_price
   overview --> bull_logger
   overview --> bull_quick_actions
   overview --> bull_ui
+  overview --> preferences
   overview --> primitives
+  overview --> secrets
+  overview --> silent
+  overview --> swap_feature
+  overview --> swaps
   overview --> sync
   physical_backup_verification --> bull_ui
   physical_backup_verification --> primitives
