@@ -3,6 +3,8 @@ library;
 
 export 'src/exchange.dart'
     show exchangeForTesting, exchangeWithTransportForTesting;
+export 'src/data/unknown_write_journal_store.dart'
+    show InMemoryUnknownWriteJournal;
 export 'src/recipients/data/bbx_api_recipients_repository.dart';
 export 'src/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
 export 'src/recipients/data/sepa_virtual_payee_status_mapper.dart';
