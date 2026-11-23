@@ -260,32 +260,36 @@ void main() {
     );
   }
 
-  test(
-    'standalone permission read failure rolls back the entire owner import',
-    () async {
-      legacy();
-      final lease = await exclusive();
-      final result = await participant(
-        readPermission: () async => const Err(LegacyImportUnavailable()),
-      ).prepare(lease, OwnerOrigin.legacy);
-      final owner = (result as Ok<PreparedOwner, LegacyImportFailure>).value;
-      expect(await owner.importLegacy(source), isA<Err>());
-      final store = await open(lease);
-      for (final table in [
-        'settings',
-        'recoverbull',
-        'recoverbull_permission_overrides',
-        'sqlite_sequence',
-        'legacy_import_receipts',
-      ]) {
-        expect(
-          await store.database.customSelect('SELECT * FROM $table').get(),
-          isEmpty,
-        );
-      }
-      await lease.close();
-    },
-  );
+  test('deferred standalone consent preserves the failure and rolls back the import', () async {
+    legacy();
+    final lease = await exclusive();
+    final result = await participant(
+      readPermission: () async => const Err(LegacyImportDeferred()),
+    ).prepare(lease, OwnerOrigin.legacy);
+    final owner = (result as Ok<PreparedOwner, LegacyImportFailure>).value;
+    expect(
+      await owner.importLegacy(source),
+      isA<Err<void, LegacyImportFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<LegacyImportDeferred>(),
+      ),
+    );
+    final store = await open(lease);
+    for (final table in [
+      'settings',
+      'recoverbull',
+      'recoverbull_permission_overrides',
+      'sqlite_sequence',
+      'legacy_import_receipts',
+    ]) {
+      expect(
+        await store.database.customSelect('SELECT * FROM $table').get(),
+        isEmpty,
+      );
+    }
+    await lease.close();
+  });
 
   for (final table in ['settings', 'recoverbull']) {
     test('$table next allocation and replay never reuse deleted high-water', () async {
