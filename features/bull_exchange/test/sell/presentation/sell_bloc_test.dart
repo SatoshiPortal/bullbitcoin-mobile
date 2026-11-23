@@ -480,7 +480,8 @@ void main() {
 
   group('SellBloc — broadcast latch', () {
     test(
-      'confirmation Error persists and reports only safe metadata',
+      'an Error from the broadcast reports only safe metadata and is treated '
+      'as an unknown outcome, not a re-armed Confirm',
       () async {
         const foreign =
             'tcp://private-electrum.invalid:50001 foreign-rejection';
@@ -502,7 +503,7 @@ void main() {
         );
         bloc.add(const SellEvent.sendPaymentConfirmed());
         await bloc.stream.firstWhere(
-          (state) => state is SellPaymentState && state.error != null,
+          (state) => state is SellPaymentState && state.isPayinOutcomeUnknown,
         );
         await pumpEventQueue();
         await log.flush();
@@ -520,9 +521,69 @@ void main() {
         ).captured;
         expect(captured[0].toString(), 'Exception: $code');
         expect(captured[1].toString(), isNot(contains(foreign)));
-        expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
+        final state = bloc.state as SellPaymentState;
+        expect(state.payinBroadcastTxid, expectedTxid);
+        expect(state.error, isNull);
+        expect(state.isConfirmingPayment, isTrue);
       },
     );
+
+    group('a broadcast whose outcome is unknown (SELL-2)', () {
+      setUp(() {
+        when(() => broadcastSellPayin.bitcoin(any())).thenAnswer(
+          (_) async =>
+              const Err<String, SellFailure>(SellPayinOutcomeUnknownFailure()),
+        );
+        // The order does not show the payin (yet).
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer(
+              (_) async => const Err(SellUnexpectedFailure('dns failure')),
+            );
+      });
+
+      test(
+        'is latched for verification against the order and never paid twice',
+        () async {
+          bloc.add(const SellEvent.sendPaymentConfirmed());
+          await bloc.stream.firstWhere(
+            (state) => state is SellPaymentState && state.isPayinBroadcast,
+          );
+          final verifying = bloc.state as SellPaymentState;
+          expect(verifying.payinBroadcastTxid, expectedTxid);
+          expect(verifying.isPayinOutcomeUnknown, isTrue);
+          expect(verifying.error, isNull);
+          expect(verifying.isConfirmingPayment, isTrue);
+          expect(verifying.canLeavePaymentScreen, isFalse);
+
+          await Future<void>.delayed(const Duration(seconds: 6));
+          bloc.add(const SellEvent.sendPaymentConfirmed());
+          await Future<void>.delayed(const Duration(seconds: 6));
+
+          verify(() => broadcastSellPayin.bitcoin(any())).called(1);
+          final state = bloc.state as SellPaymentState;
+          expect(state.error, isNull);
+          expect(state.isConfirmingPayment, isTrue);
+        },
+        timeout: const Timeout(Duration(seconds: 60)),
+      );
+    });
+
+    test('a refused broadcast re-arms Confirm with the failure', () async {
+      when(() => broadcastSellPayin.bitcoin(any())).thenAnswer(
+        (_) async => const Err<String, SellFailure>(
+          SellUnexpectedFailure('sell_payin_broadcast_failed'),
+        ),
+      );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      final state = await bloc.stream.firstWhere(
+        (state) => state is SellPaymentState && state.error != null,
+      ) as SellPaymentState;
+      await pumpEventQueue();
+
+      expect(state.isPayinBroadcast, isFalse);
+      expect(state.isPayinOutcomeUnknown, isFalse);
+      expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
+    });
 
     test('audit reproducer (H6): a wallet selection during confirmation '
         'is ignored', () async {

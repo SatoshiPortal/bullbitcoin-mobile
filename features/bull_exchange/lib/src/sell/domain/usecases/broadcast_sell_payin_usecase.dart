@@ -38,8 +38,9 @@ class BroadcastSellPayinUsecase {
       SpendUnavailableFailure(:final busy) => SellSpendBlockedFailure(
         busy: busy,
       ),
-      SpendBroadcastOutcomeUnknownFailure() =>
-        const SellPayinOutcomeUnknownFailure(),
+      // Already in a block is this payin on the network: never pay again.
+      SpendBroadcastOutcomeUnknownFailure() ||
+      SpendAlreadyInChainFailure() => const SellPayinOutcomeUnknownFailure(),
       _ => const SellUnexpectedFailure(code),
     };
   });

@@ -723,6 +723,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
     emit(sellPaymentState.copyWith(isConfirmingPayment: true));
     var waitingForPayjoin = false;
+    // Set just before a broadcast starts: from then on a failure may have put
+    // the payin on the network.
+    String? broadcastAttemptTxid;
     try {
       final wallet = sellPaymentState.selectedWallet;
       if (wallet == null) {
@@ -786,12 +789,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
           _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
           return;
         }
+        broadcastAttemptTxid = txid;
         final broadcast = await _broadcastSellPayinUsecase.liquid(signedPset);
-        if (broadcast case Err(:final failure)) {
-          _emitSendPaymentError(emit, failure);
-          return;
-        }
-        _latchBroadcast(emit, txid);
+        if (!_latchBroadcastResult(emit, broadcast, txid)) return;
         await _storeSellTransactionLabel.execute(
           transactionId: txid,
           origin: wallet.id,
@@ -1021,12 +1021,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
             _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
             return;
           }
+          broadcastAttemptTxid = txid;
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(signedTx);
-          if (broadcast case Err(:final failure)) {
-            _emitSendPaymentError(emit, failure);
-            return;
-          }
-          _latchBroadcast(emit, txid);
+          if (!_latchBroadcastResult(emit, broadcast, txid)) return;
           await _storeSellTransactionLabel.execute(
             transactionId: txid,
             origin: wallet.id,
@@ -1041,6 +1038,13 @@ class SellBloc extends Bloc<SellEvent, SellState>
         error: Exception(code),
         trace: StackTrace.current,
       );
+      final attempted = broadcastAttemptTxid;
+      if (attempted != null &&
+          _currentPaymentState?.isPayinBroadcast == false) {
+        // The throw came from the broadcast: the payin may be on the network.
+        _latchBroadcast(emit, attempted, outcomeUnknown: true);
+        return;
+      }
       _emitSendPaymentError(emit, SellUnexpectedFailure(code));
     } finally {
       final current = _currentPaymentState;
@@ -1274,7 +1278,37 @@ class SellBloc extends Bloc<SellEvent, SellState>
     return currentState is SellPaymentState ? currentState : null;
   }
 
-  void _latchBroadcast(Emitter<SellState> emit, String txid) {
+  /// Latches [txid] after a broadcast that was accepted, or whose outcome is
+  /// unknown: either way the payin may be on the network, so Confirm is never
+  /// re-armed and the order poll decides. Returns false, after showing the
+  /// failure, only for a broadcast that definitely did not happen.
+  bool _latchBroadcastResult(
+    Emitter<SellState> emit,
+    Result<String, SellFailure> broadcast,
+    String txid,
+  ) {
+    switch (broadcast) {
+      case Ok():
+        _latchBroadcast(emit, txid);
+        return true;
+      case Err(failure: SellPayinOutcomeUnknownFailure()):
+        log.warning(
+          'Sell payin broadcast outcome unknown; verifying it against the '
+          'order instead of re-arming Confirm',
+        );
+        _latchBroadcast(emit, txid, outcomeUnknown: true);
+        return true;
+      case Err(:final failure):
+        _emitSendPaymentError(emit, failure);
+        return false;
+    }
+  }
+
+  void _latchBroadcast(
+    Emitter<SellState> emit,
+    String txid, {
+    bool outcomeUnknown = false,
+  }) {
     // The payin pays this quote; there is nothing left to refresh.
     _quoteScheduler.cancel();
     final current = _currentPaymentState;
@@ -1282,6 +1316,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     emit(
       current.copyWith(
         payinBroadcastTxid: txid,
+        isPayinOutcomeUnknown: outcomeUnknown,
         pausedPayjoinSession: null,
         isRetryingPayjoinProposal: false,
         isConfirmingPayment: true,

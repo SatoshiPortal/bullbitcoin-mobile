@@ -39,6 +39,10 @@ sealed class SellState with _$SellState {
     // order's payment deadline expired before it saw the payment. The latch
     // above stays: the order is paid as far as this device is concerned.
     @Default(false) bool isPayinPastDeadline,
+    // Set with the latch when the broadcast failed in a way that may still
+    // have put the payin on the network: the flow verifies it against the
+    // order instead of re-arming Confirm.
+    @Default(false) bool isPayinOutcomeUnknown,
     SellFailure? error,
     int? absoluteFees,
     @Default([]) List<Coin> utxos,
