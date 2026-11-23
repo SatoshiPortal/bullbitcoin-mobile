@@ -78,25 +78,38 @@ void main() {
 
   test('save sends the edited preferences', () async {
     final cubit = await buildLoaded();
-    when(() => updatePreferences.execute(any()))
-        .thenAnswer((_) async => const Ok(null));
+    when(
+      () => updatePreferences.execute(
+        loaded: any(named: 'loaded'),
+        edited: any(named: 'edited'),
+      ),
+    ).thenAnswer((_) async => const Ok(null));
 
     cubit.updateLanguage('FR');
     await cubit.savePreferences();
 
-    final sent =
-        verify(() => updatePreferences.execute(captureAny())).captured.single
-            as ExchangePreferences;
-    expect(sent.language, 'FR');
-    expect(sent.currency, 'CAD');
-    expect(sent.emailNotificationsEnabled, isTrue);
+    final [loaded, edited] = verify(
+      () => updatePreferences.execute(
+        loaded: captureAny(named: 'loaded'),
+        edited: captureAny(named: 'edited'),
+      ),
+    ).captured.cast<ExchangePreferences>();
+    expect(loaded, same(_preferences));
+    expect(edited.language, 'FR');
+    expect(edited.currency, 'CAD');
+    expect(edited.emailNotificationsEnabled, isTrue);
     expect(cubit.state.isSaving, isFalse);
     expect(cubit.state.saveFailure, isNull);
   });
 
   test('a failed save holds the save failure', () async {
     final cubit = await buildLoaded();
-    when(() => updatePreferences.execute(any())).thenAnswer(
+    when(
+      () => updatePreferences.execute(
+        loaded: any(named: 'loaded'),
+        edited: any(named: 'edited'),
+      ),
+    ).thenAnswer(
       (_) async => const Err(ExchangeSettingsPreferencesSaveFailure()),
     );
 
@@ -120,6 +133,11 @@ void main() {
 
     await cubit.savePreferences();
 
-    verifyNever(() => updatePreferences.execute(any()));
+    verifyNever(
+      () => updatePreferences.execute(
+        loaded: any(named: 'loaded'),
+        edited: any(named: 'edited'),
+      ),
+    );
   });
 }

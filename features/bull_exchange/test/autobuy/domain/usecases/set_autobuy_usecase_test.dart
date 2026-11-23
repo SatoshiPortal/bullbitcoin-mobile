@@ -35,7 +35,10 @@ class MockExchangeUserRepository extends Mock implements _PreferenceWriter {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
 
-UserSummary _summaryWithGroups(List<String> groups) => UserSummary(
+UserSummary _summaryWithGroups(
+  List<String> groups, {
+  bool autoBuyActive = false,
+}) => UserSummary(
   userNumber: 1,
   groups: groups,
   profile: const UserProfile(firstName: 'Satoshi', lastName: 'Nakamoto'),
@@ -44,9 +47,9 @@ UserSummary _summaryWithGroups(List<String> groups) => UserSummary(
   language: 'FR',
   currency: 'CAD',
   dca: const UserDca(isActive: true),
-  autoBuy: const UserAutoBuy(
-    isActive: false,
-    addresses: UserAutoBuyAddresses(),
+  autoBuy: UserAutoBuy(
+    isActive: autoBuyActive,
+    addresses: const UserAutoBuyAddresses(),
   ),
   emailNotificationsEnabled: false,
 );
@@ -56,6 +59,20 @@ final _restrictedSummary = _summaryWithGroups([
   'KYC_IDENTITY_VERIFIED',
   'RESTRICTED_FULL',
 ]);
+// AutoBuy is on, so turning it off is a change the writer sends.
+final _autoBuySummary = _summaryWithGroups([
+  'KYC_IDENTITY_VERIFIED',
+], autoBuyActive: true);
+final _restrictedAutoBuySummary = _summaryWithGroups([
+  'KYC_IDENTITY_VERIFIED',
+  'RESTRICTED_FULL',
+], autoBuyActive: true);
+
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'test',
+);
 
 const _wallets = DefaultWallets(
   bitcoin: DefaultWallet(
@@ -107,6 +124,7 @@ void main() {
     usecase = SetAutoBuyUsecase(
       settings,
       exchangeForTesting(
+        access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
         getUserSummary: (_) => getUserSummary.execute(),
         getDefaultWallets: getDefaultWallets.execute,
         saveUserPreference:
@@ -194,7 +212,8 @@ void main() {
   );
 
   test('does not read the default wallets when disabling AutoBuy', () async {
-    when(() => getUserSummary.execute()).thenAnswer((_) async => Ok(_summary));
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => Ok(_autoBuySummary));
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: false);
@@ -220,7 +239,7 @@ void main() {
 
   test('still allows disabling AutoBuy on a restricted account', () async {
     when(() => getUserSummary.execute())
-        .thenAnswer((_) async => Ok(_restrictedSummary));
+        .thenAnswer((_) async => Ok(_restrictedAutoBuySummary));
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: false);
@@ -300,8 +319,18 @@ void main() {
     verifyZeroInteractions(savePreferences);
   });
 
-  test('maps a rejected preference update to a typed failure', () async {
+  test('AutoBuy already off sends nothing', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => Ok(_summary));
+
+    final result = await usecase.execute(enabled: false);
+
+    expect(result, isA<Ok<void, AutoBuyFailure>>());
+    verifyZeroInteractions(savePreferences);
+  });
+
+  test('maps a rejected preference update to a typed failure', () async {
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => Ok(_autoBuySummary));
     when(
       () => savePreferences.saveUserPreference(
         language: any(named: 'language'),

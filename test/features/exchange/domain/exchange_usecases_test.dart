@@ -64,19 +64,6 @@ void main() {
       when(settings.fetch).thenThrow(Exception('database is locked'));
     });
 
-    test('SaveExchangePreferencesUsecase', () async {
-      final failure = _failureOf(
-        await SaveExchangePreferencesUsecase(
-          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-          settingsRepository: settings,
-          access: access,
-        ).execute(language: 'en'),
-      );
-
-      expect(failure, isA<ExchangePreferencesSaveFailure>());
-      expect(failure.logMessage, reason);
-    });
-
     test('GetExchangeAnnouncementsUsecase', () async {
       final failure = _failureOf(
         await GetExchangeAnnouncementsUsecase(
@@ -109,11 +96,6 @@ void main() {
           settingsRepository: settings,
           access: access,
         ).execute(),
-        await SaveExchangePreferencesUsecase(
-          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-          settingsRepository: settings,
-          access: access,
-        ).execute(language: 'fr'),
         await GetExchangeWebSettingsUsecase(preferences: settings).execute(),
       ];
       for (final result in results) {
@@ -123,97 +105,6 @@ void main() {
       verifyZeroInteractions(testnetUsers);
     },
   );
-
-  group('SaveExchangePreferencesUsecase', () {
-    // An account whose stored preferences all differ from the test inputs,
-    // so a field surviving or being overwritten is always distinguishable.
-    const summary = UserSummary(
-      userNumber: 1,
-      groups: [],
-      profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
-      email: 'sat@example.com',
-      balances: [],
-      language: 'en',
-      currency: 'CAD',
-      dca: UserDca(isActive: true),
-      autoBuy: UserAutoBuy(isActive: true, addresses: UserAutoBuyAddresses()),
-    );
-
-    SaveExchangePreferencesUsecase build() => SaveExchangePreferencesUsecase(
-      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-      settingsRepository: settings,
-      access: access,
-    );
-
-    test('a repository failure is lifted into the feature family', () async {
-      when(mainnetUsers.getUserSummary)
-          .thenAnswer((_) async => const Ok(summary));
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer(
-        (_) async => const Err(ExchangePreferencesSaveFailure('nope')),
-      );
-
-      final result = await build().execute(language: 'en');
-
-      expect(_failureOf(result), isA<ExchangePreferencesSaveFailure>());
-    });
-
-    // The exchange replaces the whole stored set, so every field the caller
-    // leaves out must be carried over from a fresh summary.
-    test('fields the caller leaves out are filled from a fresh '
-        'summary', () async {
-      when(mainnetUsers.getUserSummary)
-          .thenAnswer((_) async => const Ok(summary));
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
-
-      final result = await build().execute(currency: 'EUR');
-
-      expect(result, isA<Ok<void, ExchangeFailure>>());
-      verify(
-        () => mainnetUsers.saveUserPreference(
-          language: 'en',
-          currency: 'EUR',
-          dcaEnabled: true,
-          autoBuyEnabled: 'true',
-          emailNotificationsEnabled: true,
-        ),
-      ).called(1);
-    });
-
-    test('a failed summary read aborts the write', () async {
-      when(
-        mainnetUsers.getUserSummary,
-      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
-
-      final result = await build().execute(currency: 'EUR');
-
-      expect(_failureOf(result), isA<ExchangeNetworkFailure>());
-      verifyNever(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      );
-    });
-  });
 
   group('GetExchangeAnnouncementsUsecase', () {
     GetExchangeAnnouncementsUsecase build() => GetExchangeAnnouncementsUsecase(
@@ -266,38 +157,5 @@ void main() {
     epoch++;
     pending.complete(const Err(ExchangeAnnouncementsUnavailableFailure()));
     expect(_failureOf(await operation), isA<ExchangeOperationStaleFailure>());
-  });
-
-  test('a late summary failure cannot affect a newer session', () async {
-    var epoch = 1;
-    when(() => access.session).thenAnswer(
-      (_) => access.current.isSignedIn
-          ? ExchangeSession(
-              environment: ExchangeEnvironment.mainnet,
-              epoch: epoch,
-              sessionId: 'test',
-            )
-          : null,
-    );
-    final pending = Completer<Result<UserSummary, ExchangeFailure>>();
-    when(mainnetUsers.getUserSummary).thenAnswer((_) => pending.future);
-    final operation = SaveExchangePreferencesUsecase(
-      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
-      settingsRepository: settings,
-      access: access,
-    ).execute(currency: 'EUR');
-    await Future<void>.delayed(Duration.zero);
-    epoch++;
-    pending.complete(const Err(ExchangeNetworkFailure()));
-    expect(_failureOf(await operation), isA<ExchangeOperationStaleFailure>());
-    verifyNever(
-      () => mainnetUsers.saveUserPreference(
-        language: any(named: 'language'),
-        currency: any(named: 'currency'),
-        dcaEnabled: any(named: 'dcaEnabled'),
-        autoBuyEnabled: any(named: 'autoBuyEnabled'),
-        emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-      ),
-    );
   });
 }

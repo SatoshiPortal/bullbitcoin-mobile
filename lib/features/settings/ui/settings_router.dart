@@ -31,12 +31,8 @@ class SettingsRouter {
 
   static final exchangeSettingsHost = ExchangeSettingsHost(
     exchange: () => locator<Exchange>(),
-    savePreferences: ({language, currency, emailNotificationsEnabled}) =>
-        locator<Exchange>().updateCurrentPreferences(
-          language: language,
-          currency: currency,
-          emailNotificationsEnabled: emailNotificationsEnabled,
-        ),
+    savePreferences: (patch) =>
+        locator<Exchange>().updateCurrentPreferences(patch),
     refreshSession: ExchangeSessionScope.refresh,
     isSuperuser: (context) => Settings.isSuperuserOf(context),
     securityUrl: (context) => switch (Settings.networkOf(context)) {

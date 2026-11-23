@@ -94,11 +94,6 @@ abstract interface class ExchangeOrders {
     OrderType? type,
   });
 
-  /// When [enablePreference] is set, the existing preference set is read
-  /// before creating the DCA. Enabling it after creation is best-effort on
-  /// the same session. A failed read is [WriteNotSent] (or
-  /// [WriteSessionRejected] on a 401): the DCA was not sent.
-  ///
   /// A create that may have reached the server without a readable answer,
   /// including a created DCA whose reply can't be mapped, is
   /// [WriteOutcomeUnknown]: the recurring buy may exist.
@@ -109,6 +104,5 @@ abstract interface class ExchangeOrders {
     required DcaBuyFrequency frequency,
     required BtcNetwork network,
     required String address,
-    bool enablePreference = false,
   });
 }

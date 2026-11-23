@@ -29,6 +29,7 @@ export 'src/domain/entities/virtual_iban.dart';
 export 'src/domain/exchange_access.dart';
 export 'src/domain/exchange_account_deletion_outcome.dart';
 export 'src/domain/exchange_availability.dart';
+export 'src/domain/exchange_preferences_patch.dart';
 export 'src/domain/exchange_call_result.dart';
 export 'src/domain/exchange_kyc_configuration.dart';
 export 'src/domain/exchange_failure.dart';

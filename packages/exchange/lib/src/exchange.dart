@@ -55,7 +55,8 @@ import 'session/get_exchange_account_usecase.dart';
 import 'session/get_exchange_announcements_usecase.dart';
 import 'session/get_exchange_web_settings_usecase.dart';
 import 'session/reconcile_unknown_writes_usecase.dart';
-import 'session/save_exchange_preferences_usecase.dart';
+import 'session/update_exchange_preferences.dart';
+import 'domain/exchange_preferences_patch.dart';
 import 'session/watch_exchange_notifications_usecase.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
@@ -752,32 +753,30 @@ final class Exchange {
     ).execute();
   }
 
-  /// Merges partial updates with a fresh account summary before saving.
+  /// The current session, when signed in.
+  ExchangeSession? get currentSession => _access?.session;
+
+  /// Changes the fields of [patch] that differ from the account of
+  /// [session]; see [UpdateExchangePreferences]. This is the only way the
+  /// app writes account preferences.
   @useResult
-  Future<Result<void, ExchangeFailure>> updateCurrentPreferences({
-    String? language,
-    String? currency,
-    bool? emailNotificationsEnabled,
-    bool? dcaEnabled,
-    String? autoBuyEnabled,
-  }) async {
-    final access = _access;
-    final preferences = _sessionPreferences;
-    if (access == null || preferences == null) {
-      return const Err(ExchangePreferencesSaveFailure());
-    }
-    return SaveExchangePreferencesUsecase(
-      exchange: this,
-      settingsRepository: preferences,
-      access: access,
-    ).execute(
-      language: language,
-      currency: currency,
-      emailNotificationsEnabled: emailNotificationsEnabled,
-      dcaEnabled: dcaEnabled,
-      autoBuyEnabled: autoBuyEnabled,
-    );
-  }
+  Future<Result<void, ExchangeFailure>> updatePreferences(
+    ExchangeSession session,
+    ExchangePreferencesPatch patch,
+  ) => UpdateExchangePreferences(
+    readSummary: getUserSummary,
+    write: saveUserPreference,
+    currentSession: () => _access?.session,
+  ).execute(session, patch);
+
+  /// [updatePreferences] for the session signed in now.
+  @useResult
+  Future<Result<void, ExchangeFailure>> updateCurrentPreferences(
+    ExchangePreferencesPatch patch,
+  ) async => switch (_access?.session) {
+    null => const Err(ExchangeNotAuthenticatedFailure()),
+    final session => updatePreferences(session, patch),
+  };
 
   WatchExchangeNotificationsUsecase? get _currentNotifications {
     final access = _access;
@@ -876,8 +875,8 @@ final class Exchange {
     ExchangeEnvironment environment,
   ) => _listAnnouncements(environment);
 
-  /// Replaces the account's preference set. Supply all existing values that
-  /// should be retained when changing only one field.
+  /// Replaces the account's preference set: the wire call under
+  /// [updatePreferences], which is what callers use.
   /// With a journal, a save whose outcome is unknown is recorded (the fields
   /// sent) before it is returned.
   @useResult

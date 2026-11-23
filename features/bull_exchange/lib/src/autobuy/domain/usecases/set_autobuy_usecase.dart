@@ -80,13 +80,8 @@ class SetAutoBuyUsecase {
       return const Err(AutoBuyFundingRestrictedFailure());
     }
 
-    final saved = await _exchange.saveUserPreference(
-      environment,
-      language: summary.language,
-      currency: summary.currency,
-      dcaEnabled: summary.dca.isActive,
-      autoBuyEnabled: enabled.toString(),
-      emailNotificationsEnabled: summary.emailNotificationsEnabled,
+    final saved = await _exchange.updateCurrentPreferences(
+      ExchangePreferencesPatch(autoBuyEnabled: enabled),
     );
     // The repository is the boundary and has already logged the raw reason.
     if (saved case Err(:final failure)) {

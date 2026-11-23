@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
 
@@ -21,10 +22,12 @@ Exchange fakeExchangeUsers(
   ExchangeUserOperations testnet, {
   ExchangeOrders Function(ExchangeEnvironment)? orders,
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
+  ExchangeAccessLifecycle? access,
 }) {
   ExchangeUserOperations select(ExchangeEnvironment? environment) =>
       environment == ExchangeEnvironment.mainnet ? mainnet : testnet;
   return exchangeForTesting(
+    access: access,
     orders: orders,
     getDefaultWallets: getDefaultWallets,
     getUserSummary: (environment) => select(environment).getUserSummary(),

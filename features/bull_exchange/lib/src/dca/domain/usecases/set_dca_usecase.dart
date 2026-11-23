@@ -76,10 +76,19 @@ class SetDcaUsecase {
           frequency: frequency,
           network: network,
           address: address,
-          enablePreference: true,
         );
     switch (result) {
       case WriteDone(:final value):
+        // The recurring buy exists either way; the preference is best-effort.
+        final enabled = await _exchange.updateCurrentPreferences(
+          const ExchangePreferencesPatch(dcaEnabled: true),
+        );
+        if (enabled case Err(:final failure)) {
+          log.warning(
+            'DCA created but enabling the preference failed',
+            error: failure.runtimeType,
+          );
+        }
         return Ok(value);
       case WriteRefused(:final reason):
         log.warning('Exchange rejected DCA creation: $reason');

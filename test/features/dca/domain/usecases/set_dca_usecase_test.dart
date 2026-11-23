@@ -6,8 +6,6 @@ import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../exchange/data/bbx_api_test_http.dart';
-
 class MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
@@ -125,7 +123,6 @@ void main() {
             frequency: any(named: 'frequency'),
             network: any(named: 'network'),
             address: any(named: 'address'),
-            enablePreference: true,
           ),
         ).thenAnswer((_) async => WriteDone(dca));
 
@@ -145,7 +142,6 @@ void main() {
             frequency: DcaBuyFrequency.daily,
             network: network,
             address: destination,
-            enablePreference: true,
           ),
         ).called(1);
       });
@@ -160,7 +156,6 @@ void main() {
           frequency: any(named: 'frequency'),
           network: any(named: 'network'),
           address: any(named: 'address'),
-          enablePreference: true,
         ),
       ).thenAnswer(
         (_) async => const WriteRefused(ExchangeRefusal(httpStatus: 500)),
@@ -181,121 +176,113 @@ void main() {
       expect(failure.logMessage, 'createDca rejected');
     });
 
-    for (final (name, scenario) in [
-      (
-        'enables the preference after a successful creation during a session storage failure',
-        'completionRead',
-      ),
-      (
-        'keeps the DCA when the exchange rejects the preference write',
-        'refusedPreference',
-      ),
-      (
-        'keeps the DCA when the session changes before the preference write',
-        'changedSession',
-      ),
-      (
-        'aborts before creating anything when the summary read fails',
-        'refusedSummary',
-      ),
-    ]) {
-      test(name, () async {
-        var reads = 0;
-        final http = FakeBbxHttp(
-          respond: (request) {
-            final method = (request.data as Map)['method'];
-            if ((method == 'getUserSummary' && scenario == 'refusedSummary') ||
-                (method == 'saveUserPreferences' &&
-                    scenario == 'refusedPreference')) {
-              return {
-                'error': {'code': -32603},
-              };
-            }
-            return {
-              'result': switch (method) {
-                'getUserSummary' => {
-                  'userNumber': 1,
-                  'groups': [],
-                  'profile': {'firstName': 'First', 'lastName': 'Last'},
-                  'email': 'user@example.com',
-                  'balances': [],
-                  'language': 'en',
-                  'currency': 'CAD',
-                  'dca': {'isActive': false},
-                  'autoBuy': {'isActive': true, 'addresses': {}},
-                },
-                'createDCA' => {
-                  'element': {
-                    'userId': 'synthetic-user',
-                    'userNbr': 1,
-                    'amountStr': '10',
-                    'currencyCode': 'CAD',
-                    'recurringFrequency': 'DAILY',
-                    'recipientType': 'OUT_LIGHTNING_ADDRESS',
-                    'nextRunAt': '2026-11-24T00:00:00Z',
-                    'createdAt': '2026-11-23T00:00:00Z',
-                    'address': 'user@lightning.address',
-                  },
-                },
-                'saveUserPreferences' => null,
-                _ => fail('Unexpected exchange request'),
-              },
-            };
-          },
-        );
-        final usecase = SetDcaUsecase(
-          settingsRepository: settings,
-          exchange: testExchange(
-            http,
-            // The old runner reads credentials a fifth time, after the
-            // successful creation and before the preference can be sent.
-            readApiKey: () async {
-              reads++;
-              if (scenario == 'changedSession' && http.requests.length == 2) {
-                return const Ok('changed-key');
-              }
-              return reads == 5 && scenario == 'completionRead'
-                  ? const Err(ExchangeCredentialReadFailure())
-                  : const Ok('synthetic-key');
-            },
-          ),
-        );
+    group('enabling the DCA preference after the creation', () {
+      const session = ExchangeSession(
+        environment: ExchangeEnvironment.mainnet,
+        epoch: 1,
+        sessionId: 'test',
+      );
+      const account = UserSummary(
+        userNumber: 1,
+        groups: [],
+        profile: UserProfile(firstName: 'First', lastName: 'Last'),
+        email: 'user@example.com',
+        balances: [],
+        language: 'en',
+        currency: 'CAD',
+        dca: UserDca(isActive: false),
+        autoBuy: UserAutoBuy(isActive: true, addresses: UserAutoBuyAddresses()),
+      );
 
-        final result = await usecase.execute(
-          amount: 10,
-          currency: FiatCurrency.cad,
-          frequency: DcaBuyFrequency.daily,
-          network: BtcNetwork.lightning,
-          address: 'user@lightning.address',
-        );
-
-        if (scenario == 'refusedSummary') {
-          expect(failureOf(result), isA<DcaAccountUnavailableFailure>());
-        } else {
-          expect(result, isA<Ok<Dca, DcaFailure>>());
-        }
-        expect(
-          http.requests.map((request) => (request.data as Map)['method']),
+      for (final (name, summary, saved, expected) in [
+        (
+          'goes through the one preference writer',
+          const Ok<UserSummary, ExchangeFailure>(account),
+          const Ok<void, ExchangeFailure>(null),
           [
-            'getUserSummary',
-            if (scenario != 'refusedSummary') 'createDCA',
-            if (scenario == 'completionRead' || scenario == 'refusedPreference')
-              'saveUserPreferences',
-          ],
-        );
-        if (scenario == 'completionRead' || scenario == 'refusedPreference') {
-          expect((http.requests.last.data as Map)['params'], {
-            'userPreferences': {
-              'LANGUAGE': 'en',
-              'DEFAULT_FIAT_CURRENCY_CODE': 'CAD',
-              'DCA_ENABLED': 'true',
-              'AUTO_BUY_ENABLED': 'true',
-              'EMAIL_NOTIFICATIONS': 'true',
+            {
+              'language': 'en',
+              'currency': 'CAD',
+              'dcaEnabled': true,
+              'autoBuyEnabled': 'true',
+              'emailNotificationsEnabled': true,
             },
-          });
-        }
-      });
-    }
+          ],
+        ),
+        (
+          'keeps the DCA when the preference write is refused',
+          const Ok<UserSummary, ExchangeFailure>(account),
+          const Err<void, ExchangeFailure>(ExchangePreferencesSaveFailure()),
+          [
+            {
+              'language': 'en',
+              'currency': 'CAD',
+              'dcaEnabled': true,
+              'autoBuyEnabled': 'true',
+              'emailNotificationsEnabled': true,
+            },
+          ],
+        ),
+        (
+          'keeps the DCA and writes nothing when the summary is unreadable',
+          const Err<UserSummary, ExchangeFailure>(ExchangeNetworkFailure()),
+          const Ok<void, ExchangeFailure>(null),
+          <Map<String, Object?>>[],
+        ),
+      ]) {
+        test(name, () async {
+          final sent = <Map<String, Object?>>[];
+          when(
+            () => mainnetOrders.createDca(
+              amount: any(named: 'amount'),
+              currency: any(named: 'currency'),
+              frequency: any(named: 'frequency'),
+              network: any(named: 'network'),
+              address: any(named: 'address'),
+            ),
+          ).thenAnswer((_) async => WriteDone(dca));
+          final usecase = SetDcaUsecase(
+            settingsRepository: settings,
+            exchange: exchangeForTesting(
+              access: fixedAccessForTesting(
+                const ExchangeAccessSignedIn(session),
+              ),
+              orders: (_) => mainnetOrders,
+              getUserSummary: (_) async => summary,
+              saveUserPreference:
+                  (
+                    _, {
+                    language,
+                    currency,
+                    dcaEnabled,
+                    autoBuyEnabled,
+                    emailNotificationsEnabled,
+                  }) async {
+                    sent.add({
+                      'language': language,
+                      'currency': currency,
+                      'dcaEnabled': dcaEnabled,
+                      'autoBuyEnabled': autoBuyEnabled,
+                      'emailNotificationsEnabled': emailNotificationsEnabled,
+                    });
+                    return saved;
+                  },
+            ),
+          );
+
+          final result = await usecase.execute(
+            amount: 10,
+            currency: FiatCurrency.cad,
+            frequency: DcaBuyFrequency.daily,
+            network: BtcNetwork.lightning,
+            address: 'user@lightning.address',
+          );
+
+          expect(result, isA<Ok<Dca, DcaFailure>>());
+          expect(sent, expected);
+        });
+      }
+    });
 
     test('an unknown create outcome is never reported as a failure to retry '
         '(DCA-2)', () async {
@@ -306,7 +293,6 @@ void main() {
           frequency: any(named: 'frequency'),
           network: any(named: 'network'),
           address: any(named: 'address'),
-          enablePreference: true,
         ),
       ).thenAnswer((_) async => const WriteOutcomeUnknown('receive timeout'));
 
@@ -334,7 +320,6 @@ void main() {
             frequency: any(named: 'frequency'),
             network: any(named: 'network'),
             address: any(named: 'address'),
-            enablePreference: true,
           ),
         ).thenAnswer((_) async => write);
 
@@ -373,7 +358,6 @@ void main() {
           frequency: any(named: 'frequency'),
           network: any(named: 'network'),
           address: any(named: 'address'),
-          enablePreference: true,
         ),
       ).thenAnswer((_) async => WriteDone(dca));
       final result = await usecase.execute(

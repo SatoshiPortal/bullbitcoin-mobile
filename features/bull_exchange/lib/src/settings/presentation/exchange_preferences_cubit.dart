@@ -2,6 +2,8 @@ import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
 import 'exchange_preferences_state.dart';
 
+import '../domain/entities/exchange_preferences.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
@@ -14,6 +16,9 @@ class ExchangePreferencesCubit extends Cubit<ExchangePreferencesState> {
     required this._updateExchangePreferencesUsecase,
   }) : super(const ExchangePreferencesState());
 
+  /// The preferences as the account last had them.
+  ExchangePreferences? _loaded;
+
   Future<void> loadPreferences() async {
     emit(state.copyWith(isLoading: true, loadFailure: null));
 
@@ -21,7 +26,10 @@ class ExchangePreferencesCubit extends Cubit<ExchangePreferencesState> {
     if (isClosed) return;
 
     emit(switch (result) {
-      Ok(:final value) => state.copyWith(isLoading: false, preferences: value),
+      Ok(:final value) => state.copyWith(
+        isLoading: false,
+        preferences: _loaded = value,
+      ),
       Err(:final failure) => state.copyWith(
         isLoading: false,
         loadFailure: failure,
@@ -53,13 +61,20 @@ class ExchangePreferencesCubit extends Cubit<ExchangePreferencesState> {
 
   Future<void> savePreferences() async {
     final preferences = state.preferences;
-    if (preferences == null || !preferences.isComplete) return;
+    final loaded = _loaded;
+    if (preferences == null || loaded == null || !preferences.isComplete) {
+      return;
+    }
 
     emit(state.copyWith(isSaving: true, saveFailure: null));
 
-    final result = await _updateExchangePreferencesUsecase.execute(preferences);
+    final result = await _updateExchangePreferencesUsecase.execute(
+      loaded: loaded,
+      edited: preferences,
+    );
     if (isClosed) return;
 
+    if (result is Ok) _loaded = preferences;
     emit(switch (result) {
       Ok() => state.copyWith(isSaving: false),
       Err(:final failure) => state.copyWith(

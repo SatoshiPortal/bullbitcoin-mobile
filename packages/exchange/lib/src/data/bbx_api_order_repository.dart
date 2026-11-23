@@ -226,21 +226,8 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     required DcaBuyFrequency frequency,
     required BtcNetwork network,
     required String address,
-    bool enablePreference = false,
   }) async {
     final result = await _write<ExchangeWrite<Dca>>((api) async {
-      bbx.UserSummary? summary;
-      if (enablePreference) {
-        switch (await api.users.getUserSummary()) {
-          case Ok(value: final value?):
-            summary = value;
-          case Ok():
-            return const Ok(WriteNotSent(ExchangeNotSentReason.unreachable));
-          case Err(:final failure):
-            return Ok(_dcaNotSent(failure));
-        }
-      }
-
       final write = await exchangeWrite<bbx.Dca, Dca>(
         'createDca',
         () => api.orderTriggers.createDca(
@@ -252,23 +239,6 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         ),
         _toDca,
       );
-      if (write is WriteDone<Dca> && summary != null) {
-        final preference = await api.users.saveUserPreferences(
-          bbx.UserPreferences(
-            language: summary.language,
-            defaultFiatCurrencyCode: summary.currency,
-            dcaEnabled: 'true',
-            autoBuyEnabled: summary.autoBuy.isActive.toString(),
-            emailNotifications: summary.emailNotificationsEnabled.toString(),
-          ),
-        );
-        if (preference case Err(:final failure)) {
-          log.warning(
-            'DCA created but enabling the preference failed',
-            error: failure.runtimeType,
-          );
-        }
-      }
       return Ok(write);
     });
     return switch (result) {
@@ -309,19 +279,6 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       nextPurchaseDate: nextPurchase,
     );
   }
-
-  /// The DCA was not sent because the preference read before it failed.
-  static ExchangeWrite<Dca> _dcaNotSent(bbx.BbxFailure failure) =>
-      switch (failure) {
-        bbx.BbxHttpFailure(status: 401) => const WriteSessionRejected(),
-        bbx.BbxMissingCredentialFailure() => const WriteNotSent(
-          ExchangeNotSentReason.signedOut,
-        ),
-        bbx.BbxCredentialUnavailableFailure() => const WriteNotSent(
-          ExchangeNotSentReason.credentialUnavailable,
-        ),
-        _ => const WriteNotSent(ExchangeNotSentReason.unreachable),
-      };
 
   Future<Result<T, ExchangeFailure>> _readOrder<T extends Order>(
     Future<Result<bbx.OrderSummary, bbx.BbxFailure>> request, {

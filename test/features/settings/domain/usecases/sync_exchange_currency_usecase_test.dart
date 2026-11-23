@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:settings/testing.dart';
@@ -42,7 +43,19 @@ void main() {
     testnetUsers = MockExchangeUserRepository();
     usecase = SyncExchangeCurrencyUsecase(
       settingsRepository: settings,
-      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
+      exchange: fakeExchangeUsers(
+        mainnetUsers,
+        testnetUsers,
+        access: fixedAccessForTesting(
+          const ExchangeAccessSignedIn(
+            ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: 1,
+              sessionId: 'test',
+            ),
+          ),
+        ),
+      ),
     );
     when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
@@ -88,32 +101,35 @@ void main() {
       );
     });
 
-    test('writes the full preference set with the new currency', () async {
-      when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Ok(userSummary));
-      when(
-        () => mainnetUsers.saveUserPreference(
-          language: any(named: 'language'),
-          currency: any(named: 'currency'),
-          dcaEnabled: any(named: 'dcaEnabled'),
-          autoBuyEnabled: any(named: 'autoBuyEnabled'),
-          emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
-        ),
-      ).thenAnswer((_) async => const Ok(null));
+    test(
+      'changes the currency and sends the other preferences as read',
+      () async {
+        when(() => mainnetUsers.getUserSummary())
+            .thenAnswer((_) async => const Ok(userSummary));
+        when(
+          () => mainnetUsers.saveUserPreference(
+            language: any(named: 'language'),
+            currency: any(named: 'currency'),
+            dcaEnabled: any(named: 'dcaEnabled'),
+            autoBuyEnabled: any(named: 'autoBuyEnabled'),
+            emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+          ),
+        ).thenAnswer((_) async => const Ok(null));
 
-      final result = await usecase.execute('EUR');
+        final result = await usecase.execute('EUR');
 
-      expect(result, isA<Ok<void, SettingsFailure>>());
-      verify(
-        () => mainnetUsers.saveUserPreference(
-          language: 'en',
-          currency: 'EUR',
-          dcaEnabled: true,
-          autoBuyEnabled: 'true',
-          emailNotificationsEnabled: true,
-        ),
-      ).called(1);
-    });
+        expect(result, isA<Ok<void, SettingsFailure>>());
+        verify(
+          () => mainnetUsers.saveUserPreference(
+            language: 'en',
+            currency: 'EUR',
+            dcaEnabled: true,
+            autoBuyEnabled: 'true',
+            emailNotificationsEnabled: true,
+          ),
+        ).called(1);
+      },
+    );
 
     test('an exchange already on the chosen currency is left alone', () async {
       when(() => mainnetUsers.getUserSummary())

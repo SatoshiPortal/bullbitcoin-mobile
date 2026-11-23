@@ -117,7 +117,6 @@ final class JournalingExchangeOrders implements ExchangeOrders {
     required DcaBuyFrequency frequency,
     required BtcNetwork network,
     required String address,
-    bool enablePreference = false,
   }) async => _recorder.afterWrite(
     await _orders.createDca(
       amount: amount,
@@ -125,7 +124,6 @@ final class JournalingExchangeOrders implements ExchangeOrders {
       frequency: frequency,
       network: network,
       address: address,
-      enablePreference: enablePreference,
     ),
     () => _draft(UnknownWriteKind.dcaCreate, {
       'amount': '$amount',

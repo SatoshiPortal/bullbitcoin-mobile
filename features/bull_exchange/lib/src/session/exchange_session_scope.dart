@@ -76,7 +76,10 @@ class _ExchangeSessionScopeState extends State<ExchangeSessionScope> {
   late final ExchangeBloc _bloc = ExchangeBloc(
     getAccount: (_) => _capability.loadCurrentAccount(),
     getAnnouncements: (_) => _capability.loadCurrentAnnouncements(),
-    stopDca: (_) => _capability.updateCurrentPreferences(dcaEnabled: false),
+    stopDca: (session) => _capability.updatePreferences(
+      session,
+      const ExchangePreferencesPatch(dcaEnabled: false),
+    ),
     currentAccess: () => _capability.currentAccess,
     accessChanges: _capability.watchAccess(),
     accountChanges: _capability.watchAccountChanges(),

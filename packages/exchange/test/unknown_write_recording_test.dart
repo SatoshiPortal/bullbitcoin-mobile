@@ -50,7 +50,6 @@ final class _Orders extends Fake implements ExchangeOrders {
     required DcaBuyFrequency frequency,
     required BtcNetwork network,
     required String address,
-    bool enablePreference = false,
   }) async => _write();
 }
 
