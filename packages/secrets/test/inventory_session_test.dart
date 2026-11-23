@@ -325,6 +325,49 @@ void main() {
     },
   );
 
+  test(
+    'custody references keep local seeds and fail closed when locked',
+    () async {
+      _value(
+        await inventory.registerWallet(
+          _wallet('wpkh([0a1b2c3d/84h/0h/0h])', '0a1b2c3d'),
+        ),
+      );
+      // A watch-only origin with another spelling never keeps a seed (#2634).
+      _value(
+        await inventory.registerWallet(
+          _registration(
+            'wpkh([01234567/84h/1h/0h])',
+            network: 'bitcoinTestnet',
+          ),
+        ),
+      );
+      _value(
+        await inventory.registerWallet(
+          _registration(
+            'wpkh([01234567/49h/1h/0h])',
+            network: 'bitcoinTestnet',
+            signer: 'remote',
+          ),
+        ),
+      );
+
+      expect(_value(await inventory.getCustodyFingerprints()), {
+        Fingerprint('0a1b2c3d'),
+      });
+
+      inventory.lock();
+      expect(
+        await inventory.getCustodyFingerprints(),
+        isA<Err<Set<Fingerprint>, Failure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SeedReferencesUnavailable>(),
+        ),
+      );
+    },
+  );
+
   test('reads distinct public origins across the authorized view', () async {
     for (final (id, network, fingerprint) in [
       ('a', 'bitcoinMainnet', '73C5DA0A'),

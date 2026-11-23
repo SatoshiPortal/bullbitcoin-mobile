@@ -45,6 +45,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
+  late _MockSeedOwner catalog;
   late _MockSwapStore swapStore;
   late SeedReferences references;
   late DeleteWalletUsecase usecase;
@@ -79,9 +80,10 @@ void main() {
     fingerprint = stored.value.id.hex;
 
     walletRepository = _MockWalletRepository();
+    catalog = _MockSeedOwner();
     swapStore = _MockSwapStore();
     references = SeedReferences(
-      walletRepository,
+      catalog,
       admission: SqliteParentCustodyAdmission(
         directory: () async => logDirectory.path,
         mayCreate: true,
@@ -102,7 +104,7 @@ void main() {
   for (final outcome in ['referenced', 'incomplete', 'throws']) {
     test('additional custody owner $outcome preserves seed', () async {
       when(
-        () => walletRepository.getCustodyFingerprints(),
+        () => catalog.getCustodyFingerprints(),
       ).thenAnswer((_) async => const Ok<Set<Fingerprint>, WalletFailure>({}));
       final owner = _MockSeedOwner();
       references.register(owner);
@@ -139,7 +141,7 @@ void main() {
     test('deletes the secret once no remaining wallet references it', () async {
       when(() => walletRepository.getWallet(walletId))
           .thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-      when(() => walletRepository.getCustodyFingerprints())
+      when(() => catalog.getCustodyFingerprints())
           .thenAnswer((_) async => Ok(<Fingerprint>{}));
 
       final result = await usecase.execute(walletId: walletId);
@@ -156,7 +158,7 @@ void main() {
       () async {
         when(() => walletRepository.getWallet(walletId))
             .thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-        when(() => walletRepository.getCustodyFingerprints())
+        when(() => catalog.getCustodyFingerprints())
             .thenAnswer((_) async => Ok({Fingerprint(fingerprint)}));
 
         final result = await usecase.execute(walletId: walletId);
@@ -176,7 +178,7 @@ void main() {
 
       expect(result, isA<Ok<void, WalletFailure>>());
       expect(storage.entries, contains(key()));
-      verifyNever(() => walletRepository.getCustodyFingerprints());
+      verifyNever(() => catalog.getCustodyFingerprints());
     });
 
     test('keeps the secret when another wallet spells the same fingerprint in lowercase', () async {
@@ -190,7 +192,7 @@ void main() {
           buildWallet(masterFingerprint: fingerprint.toUpperCase()),
         ),
       );
-      when(() => walletRepository.getCustodyFingerprints()).thenAnswer(
+      when(() => catalog.getCustodyFingerprints()).thenAnswer(
         (_) async =>
             Ok<Set<Fingerprint>, WalletFailure>({Fingerprint(fingerprint)}),
       );
@@ -212,7 +214,7 @@ void main() {
       // very words the user still had on paper (the #2634 class).
       when(() => walletRepository.getWallet(walletId))
           .thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-      when(() => walletRepository.getCustodyFingerprints())
+      when(() => catalog.getCustodyFingerprints())
           .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
 
       expect(
@@ -240,14 +242,14 @@ void main() {
       verify(() => walletRepository.deleteWallet(walletId: walletId)).called(1);
       // A watch-only wallet never owned a seed entry, so nothing is even
       // looked up — the same shape as the empty-fingerprint case.
-      verifyNever(() => walletRepository.getCustodyFingerprints());
+      verifyNever(() => catalog.getCustodyFingerprints());
       expect(storage.entries, contains(key()));
     });
 
     test('completes the wallet deletion even when secret cleanup fails — cleanup is best effort and must not surface as a wallet error', () async {
       when(() => walletRepository.getWallet(walletId))
           .thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-      when(() => walletRepository.getCustodyFingerprints())
+      when(() => catalog.getCustodyFingerprints())
           .thenAnswer((_) async => Ok(<Fingerprint>{}));
       // Scripted on the MUTATION queue, not the read queue. `trash` performs
       // no read, so an exception queued on `scripted` was never consumed and
@@ -265,7 +267,7 @@ void main() {
     test('keeps the secret when the remaining wallets cannot be read — deleting key material on a failed read is unrecoverable', () async {
       when(() => walletRepository.getWallet(walletId))
           .thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-      when(() => walletRepository.getCustodyFingerprints())
+      when(() => catalog.getCustodyFingerprints())
           .thenAnswer((_) async => const Err(WalletUnexpectedFailure('read')));
 
       final result = await usecase.execute(walletId: walletId);

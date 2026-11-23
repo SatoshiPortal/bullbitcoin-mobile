@@ -157,7 +157,7 @@ void main() {
       provision: repository.importWallet,
       admission: admission,
     );
-    references = SeedReferences(repository, admission: admission);
+    references = SeedReferences(fixture.inventory, admission: admission);
     final swaps = _Swaps();
     when(() => swaps.ongoing(walletId: any(named: 'walletId')))
         .thenAnswer((_) async => const Ok([]));

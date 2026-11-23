@@ -1,4 +1,3 @@
-import 'package:secrets/custody.dart';
 import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -6,11 +5,7 @@ import 'package:background_tasks/native_sync.dart';
 
 import 'dart:async';
 
-import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
-import 'package:all_seed_view/testing.dart';
 import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 
 import 'dart:io';
@@ -31,8 +26,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
-
-class _Swaps extends Mock implements SwapStore {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -167,111 +160,6 @@ void main() {
       await resultSubscription.cancel();
       await finishedSubscription.cancel();
     }
-  });
-
-  for (final deleteWallet in [false, true]) {
-    test(
-      'invalid-origin local row protects seed; deleteWallet=$deleteWallet',
-      () async {
-        final storage = FakeSecureStoragePlatform()..install();
-        final secrets = Secrets(scratchDirectory: () async => directory.path);
-        final secret = await secrets.import(
-          words: [...List.filled(11, 'abandon'), 'about'],
-          language: Language.english,
-        ) as Ok<Secret, SecretFailure>;
-        final local = row.copyWith(
-          signer: Signer.local,
-          masterFingerprint: secret.value.id.hex,
-        );
-        final remaining = local.copyWith(id: 'invalid');
-        when(() => metadata.fetch(id)).thenAnswer((_) async => local);
-        when(() => metadata.fetchAll()).thenAnswer((_) async => [remaining]);
-        final native = _Native();
-        when(() => native.delete(any()))
-            .thenAnswer((_) async => const Ok(null));
-        when(() => native.catalogDeleted(any()))
-            .thenAnswer((_) async => const Ok(null));
-        when(() => metadata.delete(id)).thenAnswer((_) async {});
-        final guardedRepository = WalletRepository(
-          native: native,
-          walletRegistrations: metadata,
-          walletValuesDatasource: values,
-          synchronize: bridge.synchronize,
-          syncStarted: bridge.started,
-          syncFinished: bridge.finished,
-        );
-        if (deleteWallet) {
-          final swaps = _Swaps();
-          when(() => swaps.ongoing(walletId: id))
-              .thenAnswer((_) async => const Ok([]));
-          expect(
-            await DeleteWalletUsecase(
-              walletRepository: guardedRepository,
-              seedReferences: SeedReferences(
-                guardedRepository,
-                admission: SqliteParentCustodyAdmission(
-                  directory: () async => directory.path,
-                  mayCreate: true,
-                ),
-              ),
-              swapStore: swaps,
-              secrets: secrets,
-            ).execute(walletId: id),
-            isA<Ok>(),
-          );
-        } else {
-          final result = await DeleteSecretUsecase(
-            secrets: secrets,
-            seedReferences: SeedReferences(
-              guardedRepository,
-              admission: SqliteParentCustodyAdmission(
-                directory: () async => directory.path,
-                mayCreate: true,
-              ),
-            ),
-          ).execute(secret.value.id);
-          expect(result, isA<Err>());
-        }
-        expect(
-          storage.entries.keys.where((key) => key.startsWith('seed_')),
-          hasLength(1),
-        );
-      },
-    );
-  }
-
-  test(
-    'custody query ignores origins, balances and nonlocal fingerprints',
-    () async {
-      when(() => metadata.fetchAll()).thenAnswer(
-        (_) async => [
-          row.copyWith(
-            id: 'invalid',
-            signer: Signer.local,
-            masterFingerprint: 'AABBCCDD',
-          ),
-          row.copyWith(signer: Signer.none, masterFingerprint: 'invalid'),
-          row.copyWith(signer: Signer.remote, masterFingerprint: '11223344'),
-        ],
-      );
-      final result = await repository.getCustodyFingerprints();
-      expect(result, isA<Ok>());
-      expect((result as Ok).value, {Fingerprint('aabbccdd')});
-      verifyNever(() => values.getBalance(key: any(named: 'key')));
-    },
-  );
-
-  test('custody query refuses an incomplete local fingerprint set', () async {
-    when(() => metadata.fetchAll()).thenAnswer(
-      (_) async => [
-        row.copyWith(signer: Signer.local),
-        row.copyWith(signer: Signer.local, masterFingerprint: 'invalid'),
-      ],
-    );
-    expect(await repository.getCustodyFingerprints(), isA<Err>());
-    when(() => metadata.fetchAll())
-        .thenThrow(const FormatException('unreadable row'));
-    expect(await repository.getCustodyFingerprints(), isA<Err>());
   });
 
   test('invalid catalog origin does not hide a healthy wallet', () async {
