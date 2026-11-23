@@ -64,7 +64,9 @@ class SettingsLocator {
             ? QuickActionsLayout.iosDefaults
             : QuickActionsLayout.defaults,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
-          exchange: locator<ExchangeFacade>(),
+          exchange: locator<Exchange>(),
+          networkUnavailable: () =>
+              locator<ExchangeFacade>().networkUnavailable(),
           settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<SettingsCubit>().stream

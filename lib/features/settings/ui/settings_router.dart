@@ -81,8 +81,8 @@ class SettingsRouter {
     },
     title: (context) => context.loc.settingsExchangeSettingsTitle,
     signedOutMessage: (context) => context.loc.notLoggedInMessage,
-    buildAccountActions: (showDeleteAccount) =>
-        ExchangeAccountActions(showDeleteAccount: showDeleteAccount),
+    hasAccount: ExchangeScope.watchHasAccount,
+    accountFailureMessage: (context, failure) => failure.toTranslated(context),
     onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
     onOpenTransactions: (context) =>
         context.pushNamed(TransactionsRoute.exchangeTransactions.name),

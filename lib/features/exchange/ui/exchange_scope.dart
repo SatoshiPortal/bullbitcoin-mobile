@@ -61,6 +61,9 @@ class ExchangeScope extends StatelessWidget {
   static bool hasAccountSummary(BuildContext context) =>
       !context.read<ExchangeCubit>().state.notLoggedIn;
 
+  static bool watchHasAccount(BuildContext context) =>
+      context.select((ExchangeCubit cubit) => cubit.state.hasUser);
+
   static Exchange exchange() => locator<Exchange>();
 
   static Preferences preferences() => locator<Preferences>();

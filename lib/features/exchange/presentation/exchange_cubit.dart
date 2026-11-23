@@ -6,7 +6,6 @@ import '../domain/usecases/get_exchange_account_usecase.dart';
 import '../domain/usecases/get_exchange_announcements_usecase.dart';
 import '../domain/usecases/save_exchange_preferences_usecase.dart';
 import '../domain/usecases/complete_exchange_authentication_usecase.dart';
-import '../domain/usecases/delete_exchange_account_usecase.dart';
 import '../domain/usecases/enable_exchange_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';
 import '../domain/usecases/sign_out_exchange_usecase.dart';
@@ -17,16 +16,12 @@ import 'exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-export '../domain/usecases/delete_exchange_account_usecase.dart'
-    show ExchangeAccountDeletionOutcome;
-
 /// Presents account data and forwards access operations to their use cases.
 class ExchangeCubit extends Cubit<ExchangeState> {
   ExchangeCubit({
     required GetExchangeAccountUsecase getExchangeAccountUsecase,
     required SaveExchangePreferencesUsecase saveExchangePreferencesUsecase,
     required GetExchangeAnnouncementsUsecase getExchangeAnnouncementsUsecase,
-    required this._deleteAccount,
     required this._enableAccess,
     required this._resolveAccess,
     required this._signOut,
@@ -61,7 +56,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final GetExchangeAccountUsecase _getAccount;
   final SaveExchangePreferencesUsecase _savePreferences;
   final GetExchangeAnnouncementsUsecase _getAnnouncements;
-  final DeleteExchangeAccountUsecase _deleteAccount;
   final EnableExchangeUsecase _enableAccess;
   final ResolveExchangeAccessUsecase _resolveAccess;
   final SignOutExchangeUsecase _signOut;
@@ -140,8 +134,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   void clearStopDcaFailure() => emit(state.copyWith(stopDcaFailure: null));
-  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
-  deleteAccount() => _deleteAccount.execute();
   Future<void> loadAnnouncements() async {
     if (isClosed || !state.hasUser) return;
     final result = await _getAnnouncements.execute();

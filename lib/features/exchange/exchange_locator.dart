@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_us
 import 'package:bb_mobile/features/exchange/domain/usecases/expire_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
 
 import 'dart:io';
 
@@ -14,7 +13,6 @@ import 'package:preferences/preferences.dart' as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
@@ -158,20 +156,6 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
-      () => RequestExchangeAccountDeletionUsecase(
-        settingsRepository: locator<settings_contract.Preferences>(),
-        exchange: locator<Exchange>(),
-      ),
-    );
-
-    locator.registerFactory<DeleteExchangeAccountUsecase>(
-      () => DeleteExchangeAccountUsecase(
-        locator<RequestExchangeAccountDeletionUsecase>(),
-        locator<SignOutExchangeUsecase>(),
-        locator<ExchangeAccessLifecycle>(),
-      ),
-    );
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
         access: locator<ExchangeAccessLifecycle>(),
@@ -189,7 +173,6 @@ class ExchangeLocator {
             locator<SaveExchangePreferencesUsecase>(),
         getExchangeAnnouncementsUsecase:
             locator<GetExchangeAnnouncementsUsecase>(),
-        deleteAccount: locator<DeleteExchangeAccountUsecase>(),
         enableAccess: locator<EnableExchangeUsecase>(),
         resolveAccess: locator<ResolveExchangeAccessUsecase>(),
         signOut: locator<SignOutExchangeUsecase>(),

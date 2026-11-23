@@ -1,21 +1,29 @@
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
+
+import 'exchange_account_sheets.dart';
+import '../../../exchange_l10n.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, BullSnackBar;
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExchangeAccountActions extends StatelessWidget {
   final bool showDeleteAccount;
+  final Exchange Function() exchange;
+  final String Function(BuildContext, ExchangeFailure) failureMessage;
+  final bool Function(BuildContext) hasAccount;
 
-  const ExchangeAccountActions({required this.showDeleteAccount, super.key});
+  const ExchangeAccountActions({
+    required this.showDeleteAccount,
+    required this.exchange,
+    required this.failureMessage,
+    required this.hasAccount,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = context.select(
-      (ExchangeCubit cubit) => cubit.state.hasUser,
-    );
-    if (!isLoggedIn) return const SizedBox.shrink();
+    if (!hasAccount(context)) return const SizedBox.shrink();
     return Column(
       children: [
         if (showDeleteAccount)
@@ -23,11 +31,10 @@ class ExchangeAccountActions extends StatelessWidget {
             icon: Icons.delete_forever,
             title: context.loc.exchangeSettingsDeleteAccountTitle,
             onTap: () {
-              final cubit = context.read<ExchangeCubit>();
               ExchangeAccountSheets.confirmDeletion(
                 context,
                 onConfirm: () async {
-                  final result = await cubit.deleteAccount();
+                  final result = await exchange().deleteAccount();
                   if (!context.mounted) return;
                   switch (result) {
                     case Ok(value: ExchangeAccountDeletionOutcome.completed):
@@ -39,7 +46,7 @@ class ExchangeAccountActions extends StatelessWidget {
                     case Err(:final failure):
                       BullSnackBar.show(
                         context,
-                        message: failure.toTranslated(context),
+                        message: failureMessage(context, failure),
                       );
                   }
                 },
@@ -53,7 +60,7 @@ class ExchangeAccountActions extends StatelessWidget {
             ExchangeAccountSheets.confirmLogout(
               context,
               onConfirm: () async {
-                final result = await context.read<ExchangeCubit>().logout();
+                final result = await exchange().signOut();
                 final failure = switch (result) {
                   Err(:final failure) => failure,
                   Ok() => null,
@@ -64,7 +71,7 @@ class ExchangeAccountActions extends StatelessWidget {
                 // imply the account is gone from this device.
                 BullSnackBar.show(
                   context,
-                  message: failure.toTranslated(context),
+                  message: failureMessage(context, failure),
                 );
               },
             );

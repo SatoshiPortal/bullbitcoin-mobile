@@ -26,6 +26,8 @@ import 'domain/entities/support_chat_message.dart';
 import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/entities/virtual_iban.dart';
+import 'domain/exchange_access.dart';
+import 'domain/exchange_account_deletion_outcome.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
@@ -531,6 +533,50 @@ final class Exchange {
       await _access?.enable(onlyIfUnset: true, choice: enabled) ??
       const Err(ExchangeSessionClearFailure());
 
+  ExchangeAccess get currentAccess =>
+      _access?.current ?? const ExchangeAccessUnreadable();
+
+  Stream<ExchangeAccess> watchAccess() =>
+      _access?.watch() ?? Stream.value(currentAccess);
+
+  @useResult
+  Future<Result<void, ExchangeFailure>> signOut() async =>
+      await _access?.signOut() ?? const Err(ExchangeSessionClearFailure());
+
+  /// Sends the account deletion request to support, then signs out only if
+  /// the account still belongs to the session that sent it.
+  @useResult
+  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
+  deleteAccount() async {
+    final access = _access;
+    if (access == null) {
+      return const Err(ExchangeNotAuthenticatedFailure());
+    }
+    final current = access.current;
+    if (current is! ExchangeAccessEnabled ||
+        current.session != ExchangeAccessSession.signedIn) {
+      return const Err(ExchangeNotAuthenticatedFailure());
+    }
+    final epoch = access.epoch;
+    final result = await sendSupportMessage(
+      text: 'I want to delete my account',
+    );
+    if (access.epoch != epoch) {
+      return const Ok(ExchangeAccountDeletionOutcome.stale);
+    }
+    if (result case Err(:final failure)) {
+      return Err(switch (failure) {
+        ExchangeUnsupportedNetworkFailure() => failure,
+        _ => ExchangeAccountDeletionRequestFailure(
+          'sendSupportChatMessage failed: ${failure.runtimeType}',
+        ),
+      });
+    }
+    return (await access.signOut()).map(
+      (_) => ExchangeAccountDeletionOutcome.completed,
+    );
+  }
+
   /// Returns false only after scanning a complete, stable session inventory.
   /// A signed-out account cannot establish absence.
   @useResult
@@ -708,6 +754,7 @@ Exchange exchangeForTesting({
   Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
   getConfidentialSepaAvailability,
   ExchangeRecipients? recipients,
+  ExchangeAccessLifecycle? access,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -781,7 +828,7 @@ Exchange exchangeForTesting({
   null,
   getConfidentialSepaAvailability ??
       () => throw StateError('Unexpected Confidential SEPA availability check'),
-  null,
+  access,
   recipients ??
       ExchangeRecipientsImpl(
         <T>(_, _) => throw StateError('Unexpected fiat recipient operation'),

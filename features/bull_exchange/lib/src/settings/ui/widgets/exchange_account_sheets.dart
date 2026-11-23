@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import '../../../exchange_l10n.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart' show Builder, Icons;
 

@@ -24,6 +24,7 @@ import 'screens/referrals_screen.dart';
 import 'screens/secure_file_upload_screen.dart';
 import 'screens/security_screen.dart';
 import 'screens/statistics_screen.dart';
+import 'widgets/exchange_account_actions.dart';
 
 final class ExchangeSettingsHost {
   final Exchange Function() exchange;
@@ -35,7 +36,8 @@ final class ExchangeSettingsHost {
   final Uri? Function(BuildContext) securityUrl;
   final String Function(BuildContext) title;
   final String Function(BuildContext) signedOutMessage;
-  final Widget Function(bool showDeleteAccount) buildAccountActions;
+  final bool Function(BuildContext) hasAccount;
+  final String Function(BuildContext, ExchangeFailure) accountFailureMessage;
   final void Function(BuildContext) onOpenRecipients;
   final void Function(BuildContext) onOpenTransactions;
   final void Function(BuildContext) onOpenDefaultWallets;
@@ -53,7 +55,8 @@ final class ExchangeSettingsHost {
     required this.securityUrl,
     required this.title,
     required this.signedOutMessage,
-    required this.buildAccountActions,
+    required this.hasAccount,
+    required this.accountFailureMessage,
     required this.onOpenRecipients,
     required this.onOpenTransactions,
     required this.onOpenDefaultWallets,
@@ -82,7 +85,12 @@ class ExchangeSettingsRouter {
         isSuperuser: config.isSuperuser(context),
         title: config.title,
         signedOutMessage: config.signedOutMessage,
-        buildAccountActions: config.buildAccountActions,
+        buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
+          showDeleteAccount: showDeleteAccount,
+          exchange: config.exchange,
+          failureMessage: config.accountFailureMessage,
+          hasAccount: config.hasAccount,
+        ),
         onOpenRecipients: () => config.onOpenRecipients(context),
         onOpenTransactions: () => config.onOpenTransactions(context),
         onOpenDefaultWallets: () => config.onOpenDefaultWallets(context),
