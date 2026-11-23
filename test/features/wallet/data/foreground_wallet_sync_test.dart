@@ -125,7 +125,6 @@ void main() {
     );
     repository = WalletRepository(
       walletRegistrations: metadata,
-      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: bridge.synchronize,
       syncStarted: bridge.started,
@@ -196,7 +195,6 @@ void main() {
         final guardedRepository = WalletRepository(
           native: native,
           walletRegistrations: metadata,
-          wallet: (_) async => throw StateError('no native access expected'),
           walletValuesDatasource: values,
           synchronize: bridge.synchronize,
           syncStarted: bridge.started,
@@ -454,7 +452,6 @@ void main() {
       final requests = <(bool, bool)>[];
       final repository = WalletRepository(
         walletRegistrations: metadata,
-        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize: (
           metadata, {
@@ -652,7 +649,6 @@ void main() {
       final importing = WalletRepository(
         native: native,
         walletRegistrations: metadata,
-        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize:
             (

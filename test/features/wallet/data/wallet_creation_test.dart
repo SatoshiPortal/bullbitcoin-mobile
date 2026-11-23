@@ -112,7 +112,6 @@ void main() {
     repository = WalletRepository(
       native: native,
       walletRegistrations: metadata,
-      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
         _, {
