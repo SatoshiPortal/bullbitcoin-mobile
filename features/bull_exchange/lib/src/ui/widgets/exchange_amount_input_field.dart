@@ -1,7 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -11,6 +9,8 @@ import 'package:bull_ui/bull_ui.dart'
         Gap,
         BullTypographyX;
 import 'package:intl/intl.dart';
+
+import '../../exchange_l10n.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
@@ -38,20 +38,21 @@ class ExchangeAmountInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = context.loc;
     final amountInputDecimals = _isFiatCurrencyInput
-        ? _fiatCurrency?.decimals ?? 2
-        : _bitcoinUnit!.decimals;
+        ? _fiatCurrency?.decimals
+        : _bitcoinUnit?.decimals;
     final inputCurrency = _isFiatCurrencyInput
-        ? _fiatCurrency?.code ?? 'CAD'
-        : _bitcoinUnit?.code ?? 'BTC';
+        ? _fiatCurrency?.code
+        : _bitcoinUnit?.code;
+    final alternateCurrency = _isFiatCurrencyInput
+        ? _bitcoinUnit?.code
+        : _fiatCurrency?.code;
 
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(
-          context.loc.exchangeAmountInputTitle,
-          style: context.bullType.body,
-        ),
+        Text(loc.exchangeAmountInputTitle, style: context.bullType.body),
         const Gap(4.0),
         Card(
           elevation: 1,
@@ -67,7 +68,9 @@ class ExchangeAmountInputField extends StatelessWidget {
               mainAxisSize: .min,
               crossAxisAlignment: .start,
               children: [
-                if (_isLoading)
+                if (_isLoading ||
+                    inputCurrency == null ||
+                    amountInputDecimals == null)
                   const BullShimmerLine(
                     padding: EdgeInsets.symmetric(vertical: 12.0),
                   )
@@ -103,39 +106,28 @@ class ExchangeAmountInputField extends StatelessWidget {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return context
-                                  .loc
-                                  .exchangeAmountInputValidationEmpty;
+                              return loc.exchangeAmountInputValidationEmpty;
                             }
 
                             if (_isFiatCurrencyInput ||
                                 _bitcoinUnit == BitcoinUnit.btc) {
                               final amount = double.tryParse(value);
                               if (amount == null) {
-                                return context
-                                    .loc
-                                    .exchangeAmountInputValidationInvalid;
+                                return loc.exchangeAmountInputValidationInvalid;
                               } else if (amount <= 0) {
-                                return context
-                                    .loc
-                                    .exchangeAmountInputValidationZero;
+                                return loc.exchangeAmountInputValidationZero;
                               }
                             } else if (int.tryParse(value) == null) {
-                              return context
-                                  .loc
-                                  .exchangeAmountInputValidationInvalid;
+                              return loc.exchangeAmountInputValidationInvalid;
                             } else if (int.parse(value) <= 0) {
-                              return context
-                                  .loc
-                                  .exchangeAmountInputValidationZero;
+                              return loc.exchangeAmountInputValidationZero;
                             }
                             if (!_canExceedBalance &&
                                 _isFiatCurrencyInput &&
                                 _fiatBalance != null) {
                               final amount = double.parse(value);
                               if (amount > _fiatBalance.amount) {
-                                return context
-                                    .loc
+                                return loc
                                     .exchangeAmountInputValidationInsufficient;
                               }
                             }
@@ -146,11 +138,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                       ),
                       const Gap(8.0),
                       Text(
-                        _bitcoinUnit == null
-                            ? _fiatCurrency!.code
-                            : _isFiatCurrencyInput
-                            ? _fiatCurrency!.code
-                            : _bitcoinUnit.code,
+                        inputCurrency,
                         style: context.bullType.headline.copyWith(
                           color: context.appColors.primary,
                         ),
@@ -164,13 +152,14 @@ class ExchangeAmountInputField extends StatelessWidget {
                     const BullShimmerLine(
                       padding: EdgeInsets.symmetric(vertical: 12.0),
                     )
-                  else
+                  else if (alternateCurrency != null)
                     Row(
                       mainAxisAlignment: .start,
                       mainAxisSize: .min,
                       children: [
-                        InkWell(
-                          onTap: () {
+                        IconButton(
+                          tooltip: loc.exchangeCurrencyDropdownTitle,
+                          onPressed: () {
                             _onIsFiatCurrencyInputChanged(
                               !_isFiatCurrencyInput,
                             );
@@ -179,16 +168,14 @@ class ExchangeAmountInputField extends StatelessWidget {
                             // and since the input formatters will change.
                             _amountController.clear();
                           },
-                          child: Icon(
+                          icon: Icon(
                             Icons.swap_vert,
                             color: context.appColors.outline,
                           ),
                         ),
                         const Gap(8.0),
                         Text(
-                          _isFiatCurrencyInput
-                              ? _bitcoinUnit?.code ?? BitcoinUnit.btc.code
-                              : _fiatCurrency!.code,
+                          alternateCurrency,
                           style: context.bullType.body.copyWith(
                             color: context.appColors.outline,
                           ),

@@ -349,6 +349,8 @@ The startup wizard receives the platform visibility decision from bootstrap befo
 
 The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange`. Until the Recipients extraction, the app supplies the existing virtual IBAN funding view, not a forwarding repository.
 
+The Exchange amount and currency controls are intentionally reusable widgets. DCA, Limit Orders, Sell, Pay and Withdrawal import them from `bull_exchange`, not from the legacy Exchange UI.
+
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 
 `packages/google_drive` owns Google sign-in and listing, reading, writing and deleting files in the app data folder. `GoogleDrive.open()` creates the transport. Its operations return typed results, `revokeAccess()` revokes the user grant, and synchronous `dispose()` releases local resources. RecoverBull owns the vault format, metadata mapping and account-scoped vault selection.

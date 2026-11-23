@@ -15,3 +15,7 @@ export 'src/settings/ui/exchange_settings_router.dart'
 export 'generated/l10n/exchange_localizations.dart' show ExchangeLocalizations;
 export 'src/support_chat/exchange_support_chat_navigation.dart'
     show ExchangeSupportChatNavigation, ExchangeSupportChatDraft;
+export 'src/ui/widgets/exchange_amount_currency_dropdown.dart'
+    show ExchangeAmountCurrencyDropdown;
+export 'src/ui/widgets/exchange_amount_input_field.dart'
+    show ExchangeAmountInputField;

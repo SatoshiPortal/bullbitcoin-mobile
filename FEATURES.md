@@ -91,13 +91,15 @@ graph TB
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
+    DCA -->|amount input| BULL_EXCHANGE
+    WITHDRAWAL -->|amount input| BULL_EXCHANGE
     EXCHANGE --> EXCHANGE_DOMAIN
     BUY --> EXCHANGE_DOMAIN
     SELL --> EXCHANGE_DOMAIN
     PAY --> EXCHANGE_DOMAIN
     BUY -->|KYC navigation| BULL_EXCHANGE
-    SELL -->|KYC navigation| BULL_EXCHANGE
-    PAY -->|KYC navigation| BULL_EXCHANGE
+    SELL -->|KYC navigation and amount input| BULL_EXCHANGE
+    PAY -->|KYC navigation and amount input| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
     DCA --> EXCHANGE_DOMAIN
     DEFAULT_WALLETS -->|default payout reads and writes| EXCHANGE_DOMAIN
@@ -366,7 +368,7 @@ graph TB
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS -->|default-wallet editor navigation| DEFAULT_WALLETS
-    LIMIT_ORDERS -->|funding navigation| BULL_EXCHANGE
+    LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
     EXCHANGE -->|composes virtual IBAN funding view| RECIPIENTS
     HW_WALLETS --> CORE
     CORE --> LABELS

@@ -28,10 +28,6 @@ export '../ui/widgets/exchange_home_actions.dart' show ExchangeHomeAction;
 export '../ui/widgets/exchange_account_sheets.dart' show ExchangeAccountSheets;
 export '../ui/widgets/exchange_account_actions.dart'
     show ExchangeAccountActions;
-export '../ui/widgets/exchange_amount_currency_dropdown.dart'
-    show ExchangeAmountCurrencyDropdown;
-export '../ui/widgets/exchange_amount_input_field.dart'
-    show ExchangeAmountInputField;
 export 'exchange_account.dart' show ExchangeAccount;
 
 export '../ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
