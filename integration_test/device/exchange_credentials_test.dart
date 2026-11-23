@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
 import 'package:bb_mobile/features/exchange/exchange_locator.dart'
     as feature_exchange;
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxCredentialUnavailableFailure, BbxFailure;

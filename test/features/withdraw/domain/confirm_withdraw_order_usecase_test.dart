@@ -2,7 +2,6 @@ import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +11,7 @@ class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
+class _MockExchangeRecipients extends Mock implements ExchangeRecipients {}
 
 class _MockWithdrawOrder extends Mock implements WithdrawOrder {}
 
@@ -32,7 +31,7 @@ void main() {
   late _MockExchangeOrders mainnetRepository;
   late _MockExchangeOrders testnetRepository;
   late _MockSettingsRepository settingsRepository;
-  late _MockRecipientsFacade recipientsFacade;
+  late _MockExchangeRecipients recipientsFacade;
   late ConfirmWithdrawOrderUsecase usecase;
   late InteracSecurityDetails interacSecurityDetails;
 
@@ -40,15 +39,15 @@ void main() {
     mainnetRepository = _MockExchangeOrders();
     testnetRepository = _MockExchangeOrders();
     settingsRepository = _MockSettingsRepository();
-    recipientsFacade = _MockRecipientsFacade();
+    recipientsFacade = _MockExchangeRecipients();
     usecase = ConfirmWithdrawOrderUsecase(
       exchange: exchangeForTesting(
+        recipients: recipientsFacade,
         orders: (environment) => environment == ExchangeEnvironment.testnet
             ? testnetRepository
             : mainnetRepository,
       ),
       settingsRepository: settingsRepository,
-      recipientsFacade: recipientsFacade,
     );
     interacSecurityDetails = _ok(
       InteracSecurityDetails.create(
@@ -103,6 +102,7 @@ void main() {
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
+        isTestnet: any(named: 'isTestnet'),
       ),
     ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
 
@@ -120,6 +120,7 @@ void main() {
         email: 'person@example.com',
         securityQuestion: 'Favourite city?',
         securityAnswer: 'Montreal',
+        isTestnet: false,
       ),
     ]);
   });
@@ -134,6 +135,7 @@ void main() {
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
         securityAnswer: any(named: 'securityAnswer'),
+        isTestnet: any(named: 'isTestnet'),
       ),
     ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
 
@@ -150,6 +152,7 @@ void main() {
         email: 'person@example.com',
         securityQuestion: null,
         securityAnswer: null,
+        isTestnet: false,
       ),
     ).called(1);
   });
@@ -166,6 +169,7 @@ void main() {
           email: any(named: 'email'),
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
+          isTestnet: any(named: 'isTestnet'),
         ),
       ).thenAnswer(
         (_) async => const Err<void, RecipientsFailure>(

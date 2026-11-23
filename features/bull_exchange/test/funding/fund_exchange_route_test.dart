@@ -15,8 +15,6 @@ void main() {
     funding: (
       exchange: () => fail('unexpected exchange operation'),
       isLoggedIn: (_) => false,
-      buildVirtualIbanFunding: ({required onUseRegularSepa, required onDone}) =>
-          const SizedBox.shrink(),
     ),
   );
 
