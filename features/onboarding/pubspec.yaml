@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   bip39_mnemonic: ^4.1.0
+  bull_logger:
   bull_recoverbull:
   bull_ui:
   flutter:
@@ -26,7 +27,9 @@ dependencies:
   novlang:
   preferences:
   primitives:
+  provisioning:
   screen_privacy:
+  secrets:
   settings:
   wallet_import:
 

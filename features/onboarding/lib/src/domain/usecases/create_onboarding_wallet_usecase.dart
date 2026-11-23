@@ -1,7 +1,8 @@
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:onboarding/onboarding.dart';
-import 'package:meta/meta.dart';
+
+import '../onboarding_failure.dart';
 
 class CreateOnboardingWalletUsecase {
   final DefaultWalletProvisioning _defaultWallets;
