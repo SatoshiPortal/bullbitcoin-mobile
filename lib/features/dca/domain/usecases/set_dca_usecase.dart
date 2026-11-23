@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
@@ -18,8 +17,7 @@ class SetDcaUsecase {
   final WalletRepository _wallet;
   final Preferences _settingsRepository;
   final WalletAddressRepository _walletAddressRepository;
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Exchange _exchange;
 
   SetDcaUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
@@ -27,8 +25,7 @@ class SetDcaUsecase {
     required this._wallet,
     required this._settingsRepository,
     required this._walletAddressRepository,
-    required this._mainnetExchangeUserRepository,
-    required this._testnetExchangeUserRepository,
+    required this._exchange,
   }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
        _testnetDcaRepository = testnetExchangeOrderRepository;
 
@@ -111,12 +108,12 @@ class SetDcaUsecase {
     // by writing it — and saveUserPreferences replaces the whole stored set,
     // so the enabling write must carry the current values. Aborting here is
     // clean: nothing exists on the exchange yet.
-    final userRepository = environment.requireHistoricalTestnet()
-        ? _testnetExchangeUserRepository
-        : _mainnetExchangeUserRepository;
+    final exchangeEnvironment = environment.requireHistoricalTestnet()
+        ? ExchangeEnvironment.testnet
+        : ExchangeEnvironment.mainnet;
 
     final UserSummary summary;
-    switch (await userRepository.getUserSummary()) {
+    switch (await _exchange.getUserSummary(exchangeEnvironment)) {
       case Ok(:final value):
         summary = value;
       case Err(:final failure):
@@ -147,7 +144,8 @@ class SetDcaUsecase {
       return const Err(DcaOrderCreationFailure('createDca rejected'));
     }
 
-    if (await userRepository.saveUserPreference(
+    if (await _exchange.saveUserPreference(
+          exchangeEnvironment,
           language: summary.language,
           currency: summary.currency,
           dcaEnabled: true,

@@ -1,8 +1,6 @@
 import '../repositories/exchange_access_repository.dart';
 import '../exchange_access.dart';
 
-import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
@@ -12,14 +10,12 @@ import 'package:meta/meta.dart';
 /// Reads the announcement banner content. The repository sanitizes; this only
 /// lifts the core failure into the feature's family.
 class GetExchangeAnnouncementsUsecase {
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
   final ExchangeAccessRepository _access;
 
   const GetExchangeAnnouncementsUsecase({
-    required this._mainnetExchangeUserRepository,
-    required this._testnetExchangeUserRepository,
+    required this._exchange,
     required this._settingsRepository,
     required this._access,
   });
@@ -49,11 +45,11 @@ class GetExchangeAnnouncementsUsecase {
     if (_access.epoch != epoch) {
       return const Err(ExchangeOperationStaleFailure());
     }
-    final repo = (environment == Environment.testnet)
-        ? _testnetExchangeUserRepository
-        : _mainnetExchangeUserRepository;
-
-    final result = await repo.listAnnouncements();
+    final result = await _exchange.listAnnouncements(
+      environment == Environment.testnet
+          ? ExchangeEnvironment.testnet
+          : ExchangeEnvironment.mainnet,
+    );
 
     if (_access.epoch != epoch) {
       return const Err(ExchangeOperationStaleFailure());

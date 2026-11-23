@@ -158,6 +158,7 @@ graph TD
   electrum --> secrets
   electrum --> sync
   exchange --> bbx_api
+  exchange --> bull_logger
   exchange --> legacy_storage
   exchange --> preferences
   exchange --> primitives

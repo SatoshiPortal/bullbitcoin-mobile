@@ -110,3 +110,7 @@ final class ExchangeStatisticsUnavailableFailure extends ExchangeFailure {
 final class ExchangeDocumentUploadFailure extends ExchangeFailure {
   const ExchangeDocumentUploadFailure([super.logMessage]);
 }
+
+final class ExchangeConsentRegistrationFailure extends ExchangeFailure {
+  const ExchangeConsentRegistrationFailure([super.logMessage]);
+}

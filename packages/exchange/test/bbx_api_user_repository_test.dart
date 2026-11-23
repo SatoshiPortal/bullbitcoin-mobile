@@ -1,7 +1,6 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
+import 'package:exchange/src/data/bbx_api_user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -61,7 +60,7 @@ BbxApiUserRepository _signedOut(FakeBbxHttp http) => BbxApiUserRepository(
 
 BbxApiUserRepository _unreadableKey(FakeBbxHttp http) => BbxApiUserRepository(
   api: http.client(
-    readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+    readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
   ),
 );
 
@@ -131,7 +130,7 @@ void main() {
         _failureOf(
           await _repository(FakeBbxHttp(body: _rpcError)).getUserSummary(),
         ),
-        isA<ExchangeUserNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
     });
 
@@ -141,7 +140,7 @@ void main() {
           await _repository(FakeBbxHttp(body: {'result': null}))
               .getUserSummary(),
         ),
-        isA<ExchangeUserNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
     });
 
@@ -149,7 +148,7 @@ void main() {
       final http = FakeBbxHttp(body: {'result': _summary});
       expect(
         _failureOf(await _signedOut(http).getUserSummary()),
-        isA<ExchangeUserNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
       expect(http.requests, isEmpty);
     });
@@ -158,7 +157,7 @@ void main() {
       final http = FakeBbxHttp(body: {'result': _summary});
       expect(
         _failureOf(await _unreadableKey(http).getUserSummary()),
-        isA<ExchangeUserCredentialUnavailableFailure>(),
+        isA<ExchangeCredentialReadFailure>(),
       );
       expect(http.requests, isEmpty);
     });
@@ -168,7 +167,7 @@ void main() {
         await _repository(FakeBbxHttp(error: DioExceptionType.connectionError))
             .getUserSummary(),
       );
-      expect(failure, isA<ExchangeUserNetworkFailure>());
+      expect(failure, isA<ExchangeNetworkFailure>());
       expect(failure.logMessage, 'getUserSummary unreachable: connectionError');
     });
 
@@ -178,7 +177,7 @@ void main() {
           await _repository(FakeBbxHttp(status: 503, body: const {}))
               .getUserSummary(),
         ),
-        isA<ExchangeUserSummaryUnavailableFailure>(),
+        isA<ExchangeAccountUnavailableFailure>(),
       );
     });
 
@@ -192,7 +191,7 @@ void main() {
           ),
         ).getUserSummary(),
       );
-      expect(failure, isA<ExchangeUserSummaryUnavailableFailure>());
+      expect(failure, isA<ExchangeAccountUnavailableFailure>());
       expect(
         failure.logMessage,
         'getUserSummary failed: BbxResponseFormatFailure',
@@ -209,7 +208,7 @@ void main() {
       );
       expect(
         await _repository(http).registerScamWarningConsent(),
-        isA<Ok<void, ExchangeUserFailure>>(),
+        isA<Ok<void, ExchangeFailure>>(),
       );
       expect(
         (http.requests.single.data as Map)['method'],
@@ -228,7 +227,7 @@ void main() {
             ),
           ).registerScamWarningConsent(),
         ),
-        isA<ExchangeUserConsentRegistrationFailure>(),
+        isA<ExchangeConsentRegistrationFailure>(),
       );
     });
 
@@ -237,7 +236,7 @@ void main() {
         _failureOf(
           await _signedOut(FakeBbxHttp()).registerScamWarningConsent(),
         ),
-        isA<ExchangeUserNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
     });
   });
@@ -253,7 +252,7 @@ void main() {
         emailNotificationsEnabled: true,
       );
 
-      expect(result, isA<Ok<void, ExchangeUserFailure>>());
+      expect(result, isA<Ok<void, ExchangeFailure>>());
       final request = http.requests.single;
       expect(request.path, '/ak/api-users');
       expect((request.data as Map)['method'], 'saveUserPreferences');
@@ -273,7 +272,7 @@ void main() {
         await _repository(FakeBbxHttp(body: _rpcError))
             .saveUserPreference(language: 'en'),
       );
-      expect(failure, isA<ExchangeUserPreferencesSaveFailure>());
+      expect(failure, isA<ExchangePreferencesSaveFailure>());
       expect(failure.logMessage, isNot(contains('sat@example.com')));
     });
 
@@ -286,7 +285,7 @@ void main() {
           _failureOf(
             await _repository(http).saveUserPreference(autoBuyEnabled: 'true'),
           ),
-          isA<ExchangeUserPreferencesSaveFailure>(),
+          isA<ExchangePreferencesSaveFailure>(),
         );
       });
     }
@@ -296,7 +295,7 @@ void main() {
         _failureOf(
           await _signedOut(FakeBbxHttp()).saveUserPreference(language: 'en'),
         ),
-        isA<ExchangeUserNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
     });
 
@@ -306,7 +305,7 @@ void main() {
           await _unreadableKey(FakeBbxHttp())
               .saveUserPreference(language: 'en'),
         ),
-        isA<ExchangeUserCredentialUnavailableFailure>(),
+        isA<ExchangeCredentialReadFailure>(),
       );
     });
   });
@@ -346,7 +345,7 @@ void main() {
     test('an unreadable key is a credential failure', () async {
       expect(
         _failureOf(await _unreadableKey(FakeBbxHttp()).listAnnouncements()),
-        isA<ExchangeUserCredentialUnavailableFailure>(),
+        isA<ExchangeCredentialReadFailure>(),
       );
     });
 
@@ -354,7 +353,7 @@ void main() {
       final failure = _failureOf(
         await _repository(FakeBbxHttp(body: _rpcError)).listAnnouncements(),
       );
-      expect(failure, isA<ExchangeUserAnnouncementsUnavailableFailure>());
+      expect(failure, isA<ExchangeAnnouncementsUnavailableFailure>());
       expect(failure.logMessage, isNot(contains('sat@example.com')));
     });
   });

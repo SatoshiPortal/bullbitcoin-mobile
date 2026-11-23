@@ -6,11 +6,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dar
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
@@ -58,7 +57,7 @@ class _Settings extends Fake implements Preferences {
 void main() {
   late _NoNetwork network;
   late Bbx api;
-  late BbxApiUserRepository user;
+  late Exchange user;
   late BbxApiSupportChatRepository support;
   late BbxApiOrderRepository orders;
   Result<String?, ExchangeApiKeyFailure> credential = const Ok(null);
@@ -76,7 +75,21 @@ void main() {
         ),
       },
     );
-    user = BbxApiUserRepository(api: api);
+    user = exchangeWithTransportForTesting(
+      readSession: () async => switch (credential) {
+        Ok(:final value) => Ok((
+          environment: ExchangeEnvironment.testnet,
+          epoch: 0,
+          apiKey: value,
+        )),
+        Err() => const Err(ExchangeCredentialReadFailure()),
+      },
+      openClient: (endpoint, readKey) => bbxForTesting(
+        endpoint: endpoint.toString(),
+        adapter: network,
+        readActiveApiKey: readKey,
+      ),
+    );
     support = BbxApiSupportChatRepository(
       users: api.users,
       commcenter: api.commcenter,
@@ -114,16 +127,18 @@ void main() {
   test(
     'no session yields contextual empty results or authentication failures',
     () async {
-      final profile = await user.getUserSummary();
+      final profile = await user.getUserSummary(ExchangeEnvironment.testnet);
       expect(
         profile,
         isA<Err>().having(
           (r) => r.failure,
           'profile',
-          isA<ExchangeUserNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
-      final announcements = await user.listAnnouncements();
+      final announcements = await user.listAnnouncements(
+        ExchangeEnvironment.testnet,
+      );
       expect(
         announcements,
         isA<Ok>().having((r) => r.value, 'announcements', isEmpty),
@@ -151,19 +166,19 @@ void main() {
     () async {
       credential = const Err(ExchangeApiKeyReadFailure());
       expect(
-        await user.getUserSummary(),
+        await user.getUserSummary(ExchangeEnvironment.testnet),
         isA<Err>().having(
           (r) => r.failure,
           'profile',
-          isA<ExchangeUserCredentialUnavailableFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
       expect(
-        await user.listAnnouncements(),
+        await user.listAnnouncements(ExchangeEnvironment.testnet),
         isA<Err>().having(
           (r) => r.failure,
           'announcements',
-          isA<ExchangeUserCredentialUnavailableFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
       expect(

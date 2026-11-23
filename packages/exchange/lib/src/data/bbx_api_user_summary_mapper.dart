@@ -1,5 +1,8 @@
-import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
+
+import '../domain/entities/dca.dart';
+import '../domain/entities/order.dart' show FiatCurrency;
+import '../domain/entities/user_summary.dart';
 
 /// Maps the `bbx_api` user summary to the app entity.
 UserSummary userSummaryFromBbxApi(bbx.UserSummary s) => UserSummary(

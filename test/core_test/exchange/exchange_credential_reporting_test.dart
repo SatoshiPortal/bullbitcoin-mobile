@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -73,21 +73,23 @@ final class _Thrown extends _Refusal {
   bool get isProgrammerError => error is Error;
 }
 
-BbxApiUserRepository _users(_Refusal refusal) => BbxApiUserRepository(
-  api: bbxForTesting(
-    endpoint: testBbxEndpoint,
+Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
+  readSession: () async => switch (refusal) {
+    _UnreadableKey() => const Err(ExchangeCredentialReadFailure()),
+    _ => Ok((
+      environment: ExchangeEnvironment.testnet,
+      epoch: 0,
+      apiKey: refusal is _MissingKey ? null : anonymousTestApiKey,
+    )),
+  },
+  openClient: (endpoint, readKey) => bbxForTesting(
+    endpoint: endpoint.toString(),
     adapter: _Throwing(switch (refusal) {
       _Thrown(:final error) => error,
       // Never reached: a credential refusal stops the request first.
       _ => StateError('no request expected'),
     }),
-    readActiveApiKey: switch (refusal) {
-      _MissingKey() => bbxCredentialRead(() async => const Ok(null)),
-      _UnreadableKey() => bbxCredentialRead(
-        () async => const Err(ExchangeApiKeyReadFailure()),
-      ),
-      _Thrown() => bbxCredentialRead(null),
-    },
+    readActiveApiKey: readKey,
   ),
 );
 
@@ -156,8 +158,7 @@ void main() {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
         final summary = GetExchangeUserSummaryUsecase(
-          mainnetExchangeUserRepository: repo,
-          testnetExchangeUserRepository: repo,
+          exchange: repo,
           settingsRepository: _Settings(),
         );
         final defaults = _Defaults();
@@ -177,7 +178,6 @@ void main() {
             summary,
             _ReadDefaults(),
             _Settings(),
-            repo,
             repo,
           ).execute(enabled: false),
           'account' => GetAccountInfoUsecase(
@@ -332,7 +332,6 @@ void main() {
                 summary,
                 read,
                 _Settings(),
-                repo,
                 repo,
               ).execute(enabled: true);
         if (refusal is Error) {

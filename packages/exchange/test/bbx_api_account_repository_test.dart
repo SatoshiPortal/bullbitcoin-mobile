@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
+import 'package:bbx_api/bbx_api.dart'
+    show BbxCredentialUnavailableFailure, BbxFailure;
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_account_repository.dart';
+import 'package:exchange/src/data/bbx_api_account_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -20,7 +20,7 @@ const _summary = {
 
 Future<Result<UserSummary, ExchangeFailure>> _account(
   FakeBbxHttp http, {
-  ReadExchangeApiKey? readApiKey,
+  Future<Result<String?, BbxFailure>> Function()? readApiKey,
 }) => BbxApiAccountRepository(http.client(readApiKey: readApiKey)).getAccount();
 
 ExchangeFailure _failureOf(Result<UserSummary, ExchangeFailure> result) =>
@@ -73,7 +73,7 @@ void main() {
       _failureOf(
         await _account(
           FakeBbxHttp(),
-          readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+          readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
         ),
       ),
       isA<ExchangeAccountUnavailableFailure>(),

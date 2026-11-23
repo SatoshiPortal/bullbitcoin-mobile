@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_acce
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
@@ -116,12 +116,7 @@ class SettingsLocator {
     locator.registerFactory<SyncExchangeCurrencyUsecase>(
       () => SyncExchangeCurrencyUsecase(
         settingsRepository: locator<Preferences>(),
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
+        exchange: locator<Exchange>(),
       ),
     );
     locator.registerFactory<SetCurrencyUsecase>(

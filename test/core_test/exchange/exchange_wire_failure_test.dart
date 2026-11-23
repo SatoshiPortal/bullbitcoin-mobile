@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bbx_api/bbx_api.dart' show Bbx;
@@ -99,15 +99,24 @@ void main() {
     },
   ]) {
     test('account wire mismatch ${value.runtimeType} is recoverable', () async {
-      final repository = BbxApiUserRepository(
-        api: FakeBbxHttp(body: {'result': value}).client(),
+      final exchange = exchangeWithTransportForTesting(
+        readSession: () async => const Ok((
+          environment: ExchangeEnvironment.testnet,
+          epoch: 0,
+          apiKey: anonymousTestApiKey,
+        )),
+        openClient: (endpoint, readKey) => bbxForTesting(
+          endpoint: endpoint.toString(),
+          adapter: FakeBbxHttp(body: {'result': value}),
+          readActiveApiKey: readKey,
+        ),
       );
       expect(
-        await repository.getUserSummary(),
-        isA<Err<dynamic, ExchangeUserFailure>>().having(
+        await exchange.getUserSummary(ExchangeEnvironment.testnet),
+        isA<Err<dynamic, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<ExchangeUserSummaryUnavailableFailure>(),
+          isA<ExchangeAccountUnavailableFailure>(),
         ),
       );
     });

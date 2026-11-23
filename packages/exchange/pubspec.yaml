@@ -10,6 +10,7 @@ resolution: workspace
 
 dependencies:
   bbx_api:
+  bull_logger:
   drift: ^2.35.4
   freezed_annotation: ^3.1.0
   legacy_storage:

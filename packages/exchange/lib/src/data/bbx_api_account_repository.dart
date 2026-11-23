@@ -1,16 +1,15 @@
-import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_summary_mapper.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_account_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
-/// [ExchangeAccountRepository] through the `bbx_api` package.
-class BbxApiAccountRepository implements ExchangeAccountRepository {
-  const BbxApiAccountRepository(this._api);
+import '../domain/entities/user_summary.dart';
+import '../domain/exchange_failure.dart';
+import 'bbx_api_user_summary_mapper.dart';
 
+final class BbxApiAccountRepository {
   final bbx.Bbx _api;
 
-  @override
+  const BbxApiAccountRepository(this._api);
+
   Future<Result<UserSummary, ExchangeFailure>> getAccount() async {
     try {
       final result = await _api.users.getUserSummary();

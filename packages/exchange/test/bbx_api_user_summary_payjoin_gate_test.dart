@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_summary_mapper.dart';
+import 'package:exchange/src/data/bbx_api_user_summary_mapper.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 

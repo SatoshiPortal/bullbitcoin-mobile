@@ -1,23 +1,18 @@
-import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
-import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_summary_mapper.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
-/// [ExchangeUserRepository] through the `bbx_api` package.
-///
-/// Failures are logged by type only before a sanitized [ExchangeUserFailure]
-/// travels on.
-class BbxApiUserRepository implements ExchangeUserRepository {
+import '../domain/entities/announcement.dart';
+import '../domain/entities/user_summary.dart';
+import '../domain/exchange_failure.dart';
+import 'bbx_api_user_summary_mapper.dart';
+
+final class BbxApiUserRepository {
   final bbx.Bbx _api;
 
-  BbxApiUserRepository({required this._api});
+  const BbxApiUserRepository({required this._api});
 
-  @override
-  Future<Result<UserSummary, ExchangeUserFailure>> getUserSummary() async {
+  Future<Result<UserSummary, ExchangeFailure>> getUserSummary() async {
     try {
       final result = await _api.users.getUserSummary();
       return switch (result) {
@@ -29,7 +24,7 @@ class BbxApiUserRepository implements ExchangeUserRepository {
             failure,
             StackTrace.current,
             'getUserSummary',
-            ExchangeUserSummaryUnavailableFailure.new,
+            ExchangeAccountUnavailableFailure.new,
           ),
         ),
       };
@@ -39,40 +34,39 @@ class BbxApiUserRepository implements ExchangeUserRepository {
           e,
           st,
           'getUserSummary',
-          ExchangeUserSummaryUnavailableFailure.new,
+          ExchangeAccountUnavailableFailure.new,
         ),
       );
     }
   }
 
-  Result<UserSummary, ExchangeUserFailure> _emptySummary() {
+  Result<UserSummary, ExchangeFailure> _emptySummary() {
     // A key that resolves to no account is an auth problem, not transport.
     log.warning('Exchange user summary came back empty');
-    return const Err(ExchangeUserNotAuthenticatedFailure());
+    return const Err(ExchangeNotAuthenticatedFailure());
   }
 
-  Result<UserSummary, ExchangeUserFailure> _refusedSummary(int? code) {
+  Result<UserSummary, ExchangeFailure> _refusedSummary(int? code) {
     // The old client read an error reply as no account.
     log.warning('Exchange user summary refused: $code');
-    return const Err(ExchangeUserNotAuthenticatedFailure());
+    return const Err(ExchangeNotAuthenticatedFailure());
   }
 
-  @override
-  Future<Result<void, ExchangeUserFailure>> registerScamWarningConsent() async {
+  Future<Result<void, ExchangeFailure>> registerScamWarningConsent() async {
     try {
       final result = await _api.users.registerResponsibilityConsent();
       switch (result) {
         case Ok(value: true):
           return const Ok(null);
         case Ok():
-          throw const _ConsentNotRecorded();
+          return const Err(ExchangeConsentRegistrationFailure());
         case Err(:final failure):
           return Err(
             _failureFrom(
               failure,
               StackTrace.current,
               'registerResponsibilityConsent',
-              ExchangeUserConsentRegistrationFailure.new,
+              ExchangeConsentRegistrationFailure.new,
             ),
           );
       }
@@ -82,14 +76,13 @@ class BbxApiUserRepository implements ExchangeUserRepository {
           e,
           st,
           'registerResponsibilityConsent',
-          ExchangeUserConsentRegistrationFailure.new,
+          ExchangeConsentRegistrationFailure.new,
         ),
       );
     }
   }
 
-  @override
-  Future<Result<void, ExchangeUserFailure>> saveUserPreference({
+  Future<Result<void, ExchangeFailure>> saveUserPreference({
     String? language,
     String? currency,
     bool? dcaEnabled,
@@ -112,14 +105,13 @@ class BbxApiUserRepository implements ExchangeUserRepository {
           failure,
           StackTrace.current,
           'saveUserPreference',
-          ExchangeUserPreferencesSaveFailure.new,
+          ExchangePreferencesSaveFailure.new,
         ),
       ),
     };
   }
 
-  @override
-  Future<Result<List<Announcement>, ExchangeUserFailure>>
+  Future<Result<List<Announcement>, ExchangeFailure>>
   listAnnouncements() async {
     try {
       final result = await _api.commcenter.listAnnouncements();
@@ -138,7 +130,7 @@ class BbxApiUserRepository implements ExchangeUserRepository {
             failure,
             StackTrace.current,
             'listAnnouncements',
-            ExchangeUserAnnouncementsUnavailableFailure.new,
+            ExchangeAnnouncementsUnavailableFailure.new,
           ),
         ),
       };
@@ -148,23 +140,23 @@ class BbxApiUserRepository implements ExchangeUserRepository {
           e,
           st,
           'listAnnouncements',
-          ExchangeUserAnnouncementsUnavailableFailure.new,
+          ExchangeAnnouncementsUnavailableFailure.new,
         ),
       );
     }
   }
 
-  ExchangeUserFailure _failureFrom(
+  ExchangeFailure _failureFrom(
     bbx.BbxFailure failure,
     StackTrace st,
     String operation,
-    ExchangeUserFailure Function([String?]) onFailure,
+    ExchangeFailure Function([String?]) onFailure,
   ) {
     switch (failure) {
       case bbx.BbxMissingCredentialFailure():
-        return const ExchangeUserNotAuthenticatedFailure();
+        return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
-        return const ExchangeUserCredentialUnavailableFailure();
+        return const ExchangeCredentialReadFailure();
       case bbx.BbxTimeoutFailure(:final kind):
         final reason = switch (kind) {
           bbx.BbxTimeoutKind.connect => 'connectionTimeout',
@@ -172,12 +164,12 @@ class BbxApiUserRepository implements ExchangeUserRepository {
           bbx.BbxTimeoutKind.receive => 'receiveTimeout',
         };
         log.warning('Could not reach the exchange API to $operation: $reason');
-        return ExchangeUserNetworkFailure('$operation unreachable: $reason');
+        return ExchangeNetworkFailure('$operation unreachable: $reason');
       case bbx.BbxConnectionFailure():
         log.warning(
           'Could not reach the exchange API to $operation: connectionError',
         );
-        return ExchangeUserNetworkFailure(
+        return ExchangeNetworkFailure(
           '$operation unreachable: connectionError',
         );
       default:
@@ -186,19 +178,14 @@ class BbxApiUserRepository implements ExchangeUserRepository {
     }
   }
 
-  ExchangeUserFailure _unexpected(
+  ExchangeFailure _unexpected(
     Object e,
     StackTrace st,
     String operation,
-    ExchangeUserFailure Function([String?]) onFailure,
+    ExchangeFailure Function([String?]) onFailure,
   ) {
     if (e is Error) Error.throwWithStackTrace(e, st);
     log.warning('$operation failed: ${e.runtimeType}', trace: st);
     return onFailure('$operation failed: ${e.runtimeType}');
   }
-}
-
-/// The server answered without `success: true`.
-final class _ConsentNotRecorded implements Exception {
-  const _ConsentNotRecorded();
 }

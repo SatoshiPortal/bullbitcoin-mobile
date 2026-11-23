@@ -1,6 +1,4 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -8,10 +6,12 @@ import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_curren
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../core/exchange/fake_exchange_users.dart';
+
 class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockExchangeUserRepository extends Mock
-    implements ExchangeUserRepository {}
+    implements ExchangeUserOperations {}
 
 void main() {
   late MockSettingsRepository settings;
@@ -43,8 +43,7 @@ void main() {
     testnetUsers = MockExchangeUserRepository();
     usecase = SyncExchangeCurrencyUsecase(
       settingsRepository: settings,
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
     );
     when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
@@ -70,9 +69,9 @@ void main() {
     });
 
     test('a signed-out user is not an error and nothing is written', () async {
-      when(() => mainnetUsers.getUserSummary()).thenAnswer(
-        (_) async => const Err(ExchangeUserNotAuthenticatedFailure()),
-      );
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
       final result = await usecase.execute('EUR');
 
@@ -136,9 +135,9 @@ void main() {
     test('a summary read failure blocks the write and is reported', () async {
       // Writing without the summary would reset the other preferences, since
       // the exchange replaces the whole set.
-      when(() => mainnetUsers.getUserSummary()).thenAnswer(
-        (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
-      );
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
 
       final result = await usecase.execute('EUR');
 
@@ -170,8 +169,7 @@ void main() {
           emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
         ),
       ).thenAnswer(
-        (_) async =>
-            const Err(ExchangeUserPreferencesSaveFailure('write failed')),
+        (_) async => const Err(ExchangePreferencesSaveFailure('write failed')),
       );
 
       final result = await usecase.execute('EUR');

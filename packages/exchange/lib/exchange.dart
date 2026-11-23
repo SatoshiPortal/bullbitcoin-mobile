@@ -1,6 +1,7 @@
 /// Bull Bitcoin exchange account and order capabilities.
 library;
 
+export 'src/domain/entities/announcement.dart';
 export 'src/domain/entities/dca.dart';
 export 'src/domain/entities/order.dart';
 export 'src/domain/entities/order_stats.dart';

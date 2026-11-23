@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_rep
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
@@ -18,7 +17,6 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:exchange/exchange.dart';
@@ -105,15 +103,6 @@ class ExchangeLocator {
       ),
     );
 
-    for (final environment in ['mainnet', 'testnet']) {
-      locator.registerLazySingleton<ExchangeUserRepository>(
-        () => BbxApiUserRepository(
-          api: locator<bbx.Bbx>(instanceName: '${environment}BbxApiClient'),
-        ),
-        instanceName: '${environment}ExchangeUserRepository',
-      );
-    }
-
     for (final isTestnet in [false, true]) {
       final environment = isTestnet ? 'testnet' : 'mainnet';
       locator.registerLazySingleton<ExchangeOrderRepository>(
@@ -142,12 +131,7 @@ class ExchangeLocator {
   static void registerUseCases(GetIt locator) {
     locator.registerFactory<GetExchangeUserSummaryUsecase>(
       () => GetExchangeUserSummaryUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
       ),
     );

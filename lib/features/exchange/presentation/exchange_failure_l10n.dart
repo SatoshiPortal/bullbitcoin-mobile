@@ -36,6 +36,7 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeCredentialReadFailure() ||
     ExchangeStatisticsUnavailableFailure() ||
     ExchangeDocumentUploadFailure() ||
+    ExchangeConsentRegistrationFailure() ||
     ExchangeOrderInventoryUnavailableFailure() ||
     ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
   };

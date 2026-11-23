@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:exchange/exchange.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

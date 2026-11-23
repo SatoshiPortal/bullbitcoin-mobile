@@ -1,24 +1,20 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-/// Legacy throwing adapter over [ExchangeUserRepository].
+/// Legacy throwing adapter over the Exchange account summary.
 ///
 /// The repository is the sanitizing boundary now. This use-case exists only so
 /// the features that have not migrated yet keep their exception-based contract;
-/// migrated features take the repository directly. Delete it once the last
+/// migrated features use [Exchange] directly. Delete it once the last
 /// caller is gone (#1895).
 class GetExchangeUserSummaryUsecase {
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Exchange _exchange;
   final Preferences _settingsRepository;
 
   GetExchangeUserSummaryUsecase({
-    required this._mainnetExchangeUserRepository,
-    required this._testnetExchangeUserRepository,
+    required this._exchange,
     required this._settingsRepository,
   });
 
@@ -39,17 +35,17 @@ class GetExchangeUserSummaryUsecase {
         'settings fetch failed: ${e.runtimeType}',
       );
     }
-    final repo = settings.environment.requireHistoricalTestnet()
-        ? _testnetExchangeUserRepository
-        : _mainnetExchangeUserRepository;
+    final environment = settings.environment.requireHistoricalTestnet()
+        ? ExchangeEnvironment.testnet
+        : ExchangeEnvironment.mainnet;
 
-    return switch (await repo.getUserSummary()) {
+    return switch (await _exchange.getUserSummary(environment)) {
       Ok(:final value) => value,
-      Err(failure: final ExchangeUserNotAuthenticatedFailure failure) =>
+      Err(failure: final ExchangeNotAuthenticatedFailure failure) =>
         throw GetExchangeUserSummaryCredentialException(
           failure.runtimeType.toString(),
         ),
-      Err(failure: final ExchangeUserCredentialUnavailableFailure failure) =>
+      Err(failure: final ExchangeCredentialReadFailure failure) =>
         throw GetExchangeUserSummaryCredentialException(
           failure.runtimeType.toString(),
         ),
