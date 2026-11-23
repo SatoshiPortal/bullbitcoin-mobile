@@ -11,6 +11,8 @@ import 'package:bull_exchange/bull_exchange.dart'
 import 'package:backups/backups.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bull_recoverbull/storage.dart';
+import 'package:bull_recoverbull/setup.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:startup/setup.dart';
 import 'package:startup/startup.dart';
 import 'package:provisioning/provisioning.dart';
@@ -118,7 +120,17 @@ class AppLocator {
       locator,
       databasePath: databasePath,
     );
-    WalletRecoverBullBindings.setup(locator);
+    final wallets = RecoverBullWalletAdapter(
+      locator<SecretsInventory>(),
+      locator<DeveloperEnvironmentReader>(),
+      locator<Secrets>(),
+      (secret, network) => WalletRecoverBullBindings.restoreDefaults(
+        locator<CreateDefaultWalletsUsecase>(),
+        secret,
+        network,
+      ),
+    );
+    locator.registerSingleton<RecoverBullWalletPort>(wallets);
     final family = settings.path == databasePath ? null : 'regtest';
     final feature = await RecoverBullFeature.mount(
       server: settings.server,
