@@ -1,5 +1,6 @@
+import '../fixtures/legacy_access.dart';
+
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
@@ -67,15 +68,15 @@ class _Keys extends Fake implements ExchangeCredentials {
   }
 }
 
-Future<ExchangeAccessRepositoryImpl> _access(_Keys keys, bool isTestnet) async {
-  final access = ExchangeAccessRepositoryImpl(
+Future<ExchangeAccessLifecycle> _access(_Keys keys, bool isTestnet) async {
+  final access = legacyAccessForTesting(
     apiKeyRepository: keys,
     readEnvironment: () async => isTestnet,
     platformAllowed: () async => true,
     disconnectNotifications: () async {},
     clearCookies: () async {},
   );
-  await access.enable();
+  final _ = await access.enable();
   return access;
 }
 
@@ -89,14 +90,14 @@ void main() {
         'exchange_access': '{"enabled":true,"signOutPending":false}',
       });
       final keys = _Keys();
-      final access = ExchangeAccessRepositoryImpl(
+      final access = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => false,
         disconnectNotifications: () async {},
         clearCookies: () async {},
       );
-      await access.resolve();
+      final _ = await access.resolve();
       final result = await CompleteExchangeAuthenticationUsecase(
         authRepository: _repository(() async => fields),
         access: access,
@@ -111,14 +112,14 @@ void main() {
     'support can prepare login while ordinary activation is platform-blocked',
     () async {
       final keys = _Keys();
-      final access = ExchangeAccessRepositoryImpl(
+      final access = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => false,
         disconnectNotifications: () async {},
         clearCookies: () async {},
       );
-      await access.resolve();
+      final _ = await access.resolve();
       expect(await access.enable(), isA<Err<void, ExchangeFailure>>());
       expect(
         await access.enable(forSupport: true),

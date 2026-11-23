@@ -1,7 +1,8 @@
+import 'package:exchange/setup.dart';
+
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Access extends Mock implements ExchangeAccessRepository {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Request extends Mock implements RequestExchangeAccountDeletionUsecase {}
 

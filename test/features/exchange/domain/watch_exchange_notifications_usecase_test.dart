@@ -1,7 +1,7 @@
+import '../fixtures/legacy_access.dart';
+
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:preferences/preferences.dart';
 
 import 'dart:async';
@@ -38,7 +38,7 @@ Exchange _exchange(_Notifications notifications) => exchangeForTesting(
   ),
 );
 
-class _Access extends Mock implements ExchangeAccessRepository {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 class _Keys extends Mock implements ExchangeCredentials {}
 
@@ -171,7 +171,7 @@ void main() {
       final pending = Completer<Result<void, ExchangeFailure>>();
       when(repository.connect).thenAnswer((_) => pending.future);
       var disconnects = 0;
-      final realAccess = ExchangeAccessRepositoryImpl(
+      final realAccess = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -180,7 +180,7 @@ void main() {
         },
         clearCookies: () async {},
       );
-      await realAccess.resolve();
+      final _ = await realAccess.resolve();
       final usecase = WatchExchangeNotificationsUsecase(
         exchange: _exchange(repository),
         access: realAccess,
@@ -289,7 +289,7 @@ void main() {
       connected = false;
     });
     var testnet = false;
-    final realAccess = ExchangeAccessRepositoryImpl(
+    final realAccess = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => testnet,
       platformAllowed: () async => true,
@@ -298,7 +298,7 @@ void main() {
       },
       clearCookies: () async {},
     );
-    await realAccess.resolve();
+    final _ = await realAccess.resolve();
     final usecase = WatchExchangeNotificationsUsecase(
       exchange: _exchange(repository),
       access: realAccess,
@@ -310,7 +310,7 @@ void main() {
     testnet = true;
     final newSession = () async {
       await logout;
-      await realAccess.enable();
+      final _ = await realAccess.enable();
       return usecase.connect();
     }();
     await Future<void>.delayed(Duration.zero);

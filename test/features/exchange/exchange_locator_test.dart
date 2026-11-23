@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
+import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 import 'package:bb_mobile/features/exchange/exchange_locator.dart';
 import 'package:exchange/exchange.dart';
@@ -10,7 +10,7 @@ import 'package:primitives/primitives.dart';
 
 class _Preferences extends Mock implements Preferences {}
 
-class _Access extends Mock implements ExchangeAccessRepository {}
+class _Access extends Mock implements ExchangeAccessLifecycle {}
 
 void main() {
   late GetIt locator;
@@ -22,12 +22,12 @@ void main() {
     preferences = _Preferences();
     locator.registerSingleton<Preferences>(preferences);
     ExchangeLocator.setup(locator, platform: platform);
-    await locator.unregister<ExchangeAccessRepository>();
+    await locator.unregister<ExchangeAccessLifecycle>();
     final access = _Access();
     when(
       () => access.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
-    locator.registerSingleton<ExchangeAccessRepository>(access);
+    locator.registerSingleton<ExchangeAccessLifecycle>(access);
   }
 
   test('unreadable iOS preferences hide trading without failing', () async {

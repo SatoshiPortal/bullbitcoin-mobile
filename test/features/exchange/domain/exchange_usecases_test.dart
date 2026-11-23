@@ -1,6 +1,7 @@
+import 'package:exchange/setup.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
@@ -22,7 +23,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 
 class _MockUserRepository extends Mock implements ExchangeUserOperations {}
 
-class _MockAccess extends Mock implements ExchangeAccessRepository {}
+class _MockAccess extends Mock implements ExchangeAccessLifecycle {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 

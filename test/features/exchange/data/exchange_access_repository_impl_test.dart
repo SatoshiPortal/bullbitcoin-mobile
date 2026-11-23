@@ -1,3 +1,5 @@
+import '../fixtures/legacy_access.dart';
+
 import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 
@@ -5,7 +7,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,6 +16,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _Keys extends Mock implements ExchangeCredentials {}
 
 class _Auth extends Mock implements ExchangeAuthRepository {}
+
+Exchange _exchange(ExchangeAccessLifecycle lifecycle) => Exchange.open(
+  mainnetEndpoint: Uri.https('mainnet.example.invalid'),
+  testnetEndpoint: Uri.https('testnet.example.invalid'),
+  readSession: () async => throw StateError('Unexpected session read'),
+  access: lifecycle,
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -46,17 +54,17 @@ void main() {
         when(auth.generateApiKey).thenAnswer(
           (_) async => const Err(ExchangeAuthenticationDeferredFailure()),
         );
-        final repository = ExchangeAccessRepositoryImpl(
+        final repository = legacyAccessForTesting(
           apiKeyRepository: keys,
           readEnvironment: () async => false,
           platformAllowed: () async => allowed,
           disconnectNotifications: () async {},
           clearCookies: () async {},
         );
-        await repository.resolve();
+        final _ = await repository.resolve();
         expect(
           await repository.completeAuthentication(
-            authRepository: auth,
+            generateApiKey: auth.generateApiKey,
             isTestnet: false,
             isCurrent: () => true,
           ),
@@ -77,7 +85,7 @@ void main() {
       when(() => keys.deleteApiKey(isTestnet: true))
           .thenAnswer((_) async => const Ok(null));
       var cookiesCleared = false;
-      final repository = ExchangeAccessRepositoryImpl(
+      final repository = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -101,7 +109,7 @@ void main() {
     when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async => const Ok(null));
     var cookies = 0;
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
@@ -110,9 +118,9 @@ void main() {
         cookies++;
       },
     );
-    await repository.resolve();
+    final _ = await repository.resolve();
     expect(repository.current, isA<ExchangeAccessUnreadable>());
-    await repository.signOut();
+    final _ = await repository.signOut();
     expect(repository.current, isA<ExchangeAccessDisabled>());
     expect(cookies, 1);
     verify(() => keys.deleteApiKey(isTestnet: false)).called(1);
@@ -124,7 +132,7 @@ void main() {
     final keys = _Keys();
     when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async => const Ok(null));
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
@@ -132,9 +140,9 @@ void main() {
       clearCookies: () async {},
     );
     final oldEpoch = repository.epoch;
-    await repository.signOut();
+    final _ = await repository.signOut();
     clearInteractions(keys);
-    await repository.expireSession(epoch: oldEpoch, isTestnet: false);
+    final _ = await repository.expireSession(epoch: oldEpoch, isTestnet: false);
     verifyNever(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')));
     expect(repository.current, isA<ExchangeAccessDisabled>());
   });
@@ -149,7 +157,7 @@ void main() {
     when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async => const Ok(null));
     final environment = Completer<bool>();
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () => environment.future,
       platformAllowed: () async => true,
@@ -181,14 +189,14 @@ void main() {
     final keys = _Keys();
     when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async => const Ok(null));
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
       disconnectNotifications: () async {},
       clearCookies: () async {},
     );
-    await repository.resolve();
+    final _ = await repository.resolve();
     expect(repository.current, isA<ExchangeAccessDisabled>());
     verify(() => keys.deleteApiKey(isTestnet: false)).called(1);
     verify(() => keys.deleteApiKey(isTestnet: true)).called(1);
@@ -206,20 +214,20 @@ void main() {
     final auth = _Auth();
     final generated = Completer<Result<ExchangeApiKey, ExchangeFailure>>();
     when(() => auth.generateApiKey()).thenAnswer((_) => generated.future);
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
       disconnectNotifications: () async {},
       clearCookies: () async {},
     );
-    await repository.resolve();
+    final _ = await repository.resolve();
     final authentication = repository.completeAuthentication(
-      authRepository: auth,
+      generateApiKey: auth.generateApiKey,
       isTestnet: false,
       isCurrent: () => true,
     );
-    await repository.signOut();
+    final _ = await repository.signOut();
     final key = ExchangeApiKey.create(
       id: 'id',
       key: 'test',
@@ -243,7 +251,7 @@ void main() {
     when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async => const Ok(null));
     var cookies = 0;
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
@@ -265,16 +273,18 @@ void main() {
     final keys = _Keys();
     when(() => keys.readActiveApiKey(isTestnet: false))
         .thenAnswer((_) async => const Ok(null));
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
       disconnectNotifications: () async {},
       clearCookies: () async {},
     );
-    await repository.resolve();
+    final _ = await repository.resolve();
     expect(repository.current, isA<ExchangeAccessDisabled>());
-    await repository.enable(onlyIfUnset: true, choice: true);
+    final exchange = _exchange(repository);
+    addTearDown(exchange.close);
+    expect(await exchange.applyInitialChoice(true), isA<Ok>());
     expect(repository.current, isA<ExchangeAccessEnabled>());
     expect(
       (repository.current as ExchangeAccessEnabled).session,
@@ -295,7 +305,7 @@ void main() {
           .thenAnswer((_) async => const Ok(null));
       var environment = false;
       var cookies = 0;
-      final repository = ExchangeAccessRepositoryImpl(
+      final repository = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => environment,
         platformAllowed: () async => true,
@@ -304,10 +314,13 @@ void main() {
           cookies++;
         },
       );
-      await repository.resolve();
+      final _ = await repository.resolve();
       final requestEpoch = repository.epoch;
       environment = true;
-      await repository.expireSession(epoch: requestEpoch, isTestnet: false);
+      final _ = await repository.expireSession(
+        epoch: requestEpoch,
+        isTestnet: false,
+      );
       verifyNever(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')));
       expect(cookies, 0);
     },
@@ -322,7 +335,7 @@ void main() {
           .thenAnswer((_) async => const Ok(null));
       final writeStarted = Completer<void>();
       final releaseWrite = Completer<void>();
-      final repository = ExchangeAccessRepositoryImpl(
+      final repository = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -337,7 +350,9 @@ void main() {
       );
       final explicit = repository.enable();
       await writeStarted.future;
-      final initial = repository.enable(onlyIfUnset: true, choice: false);
+      final exchange = _exchange(repository);
+      addTearDown(exchange.close);
+      final initial = exchange.applyInitialChoice(false);
       releaseWrite.complete();
       expect(await explicit, isA<Ok>());
       expect(await initial, isA<Ok>());
@@ -362,17 +377,17 @@ void main() {
           .thenAnswer((_) async => const Ok('active'));
       when(() => keys.readActiveApiKey(isTestnet: true))
           .thenAnswer((_) async => const Ok(null));
-      ExchangeAccessRepositoryImpl repository(bool isTestnet) =>
-          ExchangeAccessRepositoryImpl(
+      ExchangeAccessLifecycle repository(bool isTestnet) =>
+          legacyAccessForTesting(
             apiKeyRepository: keys,
             readEnvironment: () async => isTestnet,
             platformAllowed: () async => true,
             disconnectNotifications: () async {},
             clearCookies: () async {},
           );
-      await repository(false).resolve();
+      expect(await repository(false).resolve(), isA<Ok>());
       final restarted = repository(true);
-      await restarted.resolve();
+      final _ = await restarted.resolve();
       expect(
         restarted.current,
         isA<ExchangeAccessEnabled>().having(
@@ -396,7 +411,7 @@ void main() {
         active = false;
         return const Ok(null);
       });
-      ExchangeAccessRepositoryImpl repository() => ExchangeAccessRepositoryImpl(
+      ExchangeAccessLifecycle repository() => legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -404,14 +419,14 @@ void main() {
         clearCookies: () async {},
       );
       final first = repository();
-      await first.resolve();
+      final _ = await first.resolve();
       expect(first.current, isA<ExchangeAccessEnabled>());
       expect(
         await first.expireSession(epoch: first.epoch, isTestnet: false),
         isA<Ok>(),
       );
       final restarted = repository();
-      await restarted.resolve();
+      final _ = await restarted.resolve();
       expect(
         restarted.current,
         isA<ExchangeAccessEnabled>().having(
@@ -428,19 +443,19 @@ void main() {
     final keys = _Keys();
     when(() => keys.readActiveApiKey(isTestnet: false))
         .thenAnswer((_) async => const Ok(null));
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
       disconnectNotifications: () async {},
       clearCookies: () async {},
     );
-    await repository.resolve();
+    final _ = await repository.resolve();
     final events = <ExchangeAccess>[];
     final subscription = repository.watch().listen(events.add);
     await Future<void>.delayed(Duration.zero);
     events.clear();
-    await repository.resolve();
+    final _ = await repository.resolve();
     await Future<void>.delayed(Duration.zero);
     await subscription.cancel();
     expect(events.whereType<ExchangeAccessResolving>(), isEmpty);
@@ -451,7 +466,7 @@ void main() {
     final keys = _Keys();
     when(() => keys.readActiveApiKey(isTestnet: false))
         .thenAnswer((_) async => const Ok('active'));
-    final repository = ExchangeAccessRepositoryImpl(
+    final repository = legacyAccessForTesting(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
       platformAllowed: () async => true,
@@ -474,7 +489,7 @@ void main() {
       when(() => keys.readActiveApiKey(isTestnet: false))
           .thenAnswer((_) async => const Ok('active'));
       var disconnected = false;
-      final repository = ExchangeAccessRepositoryImpl(
+      final repository = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -484,7 +499,7 @@ void main() {
         clearCookies: () async {},
         writePreference: (_) async => false,
       );
-      await repository.resolve();
+      final _ = await repository.resolve();
       disconnected = false;
       expect(
         await repository.expireSession(
@@ -512,7 +527,7 @@ void main() {
       final started = Completer<void>();
       final release = Completer<void>();
       var writes = 0;
-      final repository = ExchangeAccessRepositoryImpl(
+      final repository = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => false,
         platformAllowed: () async => true,
@@ -527,7 +542,7 @@ void main() {
           return preferences.setString('exchange_access', value);
         },
       );
-      await repository.resolve();
+      final _ = await repository.resolve();
       final expiry = repository.expireSession(
         epoch: repository.epoch,
         isTestnet: false,
@@ -562,14 +577,14 @@ void main() {
         readStarted.complete();
         return nextKey.future;
       });
-      final repository = ExchangeAccessRepositoryImpl(
+      final repository = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => isTestnet,
         platformAllowed: () async => true,
         disconnectNotifications: () async {},
         clearCookies: () async {},
       );
-      await repository.resolve();
+      final _ = await repository.resolve();
       isTestnet = true;
       final resolving = repository.resolve();
       await readStarted.future;

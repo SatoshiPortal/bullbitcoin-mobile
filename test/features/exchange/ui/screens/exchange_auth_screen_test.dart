@@ -1,5 +1,6 @@
+import '../../fixtures/legacy_access.dart';
+
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
@@ -105,14 +106,14 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       when(() => keys.readActiveApiKey(isTestnet: true))
           .thenAnswer((_) async => const Ok(null));
-      final access = ExchangeAccessRepositoryImpl(
+      final access = legacyAccessForTesting(
         apiKeyRepository: keys,
         readEnvironment: () async => true,
         platformAllowed: () async => true,
         disconnectNotifications: () async {},
         clearCookies: () async {},
       );
-      await access.enable();
+      final _ = await access.enable();
       when(settings.execute).thenAnswer(
         (_) async => const Ok((
           environment: Environment.testnet,
