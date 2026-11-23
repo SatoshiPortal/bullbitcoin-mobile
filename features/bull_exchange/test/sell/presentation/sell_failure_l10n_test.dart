@@ -13,6 +13,7 @@ const _rawReason =
 
 final _everyFailure = <SellFailure>[
   const SellPayjoinPausedFailure(),
+  const SellPayinNetworkMismatchFailure(),
   const SellUnauthenticatedFailure(_rawReason),
   const SellBelowMinAmountFailure(
     minAmount: 10,

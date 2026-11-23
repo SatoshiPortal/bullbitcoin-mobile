@@ -77,6 +77,31 @@ void main() {
     network: OrderBitcoinNetwork.bitcoin,
   );
 
+  test(
+    'refuses a wallet on the wrong chain before contacting Exchange',
+    () async {
+      spendStatus = BitcoinSpendStatus.pending;
+      final result = await buildPlace().execute(
+        walletKey: WalletKey(id: 'wallet-1', network: LiquidNetwork.mainnet),
+        orderAmount: const FiatAmount(100),
+        recipientId: 'recipient-1',
+        network: OrderBitcoinNetwork.bitcoin,
+      );
+
+      expect(
+        result,
+        isA<Err<FiatPaymentOrder, PayFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<PayPayinNetworkMismatchFailure>(),
+        ),
+      );
+      verifyZeroInteractions(mainnet);
+      verifyZeroInteractions(testnet);
+      verifyZeroInteractions(payjoinPolicy);
+    },
+  );
+
   test('gated Bitcoin wallet creates no exchange order', () async {
     spendStatus = BitcoinSpendStatus.pending;
     final result = await place();

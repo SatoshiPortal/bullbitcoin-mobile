@@ -79,6 +79,30 @@ void main() {
     ).thenAnswer((_) async => Err(error));
   }
 
+  test(
+    'refuses a wallet in the wrong environment before creating an order',
+    () async {
+      spendStatus = BitcoinSpendStatus.pending;
+      final result = await usecase.execute(
+        walletKey: WalletKey(id: 'wallet-1', network: BitcoinNetwork.testnet),
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        network: OrderBitcoinNetwork.bitcoin,
+      );
+
+      expect(
+        result,
+        isA<Err<Order, SellFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SellPayinNetworkMismatchFailure>(),
+        ),
+      );
+      verifyZeroInteractions(mainnet);
+      verifyZeroInteractions(payjoinPolicy);
+    },
+  );
+
   test('gated Bitcoin wallet creates no exchange order', () async {
     spendStatus = BitcoinSpendStatus.pending;
     final result = await run();

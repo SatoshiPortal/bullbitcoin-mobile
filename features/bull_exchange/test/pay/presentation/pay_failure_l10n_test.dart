@@ -13,6 +13,7 @@ const _rawReason =
 
 final _everyFailure = <PayFailure>[
   const PayPayjoinPausedFailure(),
+  const PayPayinNetworkMismatchFailure(),
   const PayUnauthenticatedFailure(_rawReason),
   const PayBelowMinAmountFailure(
     minAmount: 10,
