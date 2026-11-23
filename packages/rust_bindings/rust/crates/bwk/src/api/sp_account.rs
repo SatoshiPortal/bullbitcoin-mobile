@@ -235,10 +235,63 @@ pub fn validate_recipient_address(
 /// Test a blindbit URL by fetching its current block height. Standalone (no live
 /// account); async so the HTTP GET runs off the Dart UI isolate.
 pub fn test_blindbit_url(url: String) -> Result<(), String> {
+    blindbit_tip(url).map(|_| ())
+}
+
+/// Latest block height announced by a Blindbit server. Standalone; async so the
+/// HTTP GET runs off the Dart UI isolate.
+pub fn blindbit_tip(url: String) -> Result<u32, String> {
     let agent = bwk_sp::blindbit::agent().map_err(|e| e.to_string())?;
     bwk_sp::blindbit::block_height(&agent, &url)
-        .map(|_| ())
+        .map(|tip| tip.to_consensus_u32())
         .map_err(|e| e.to_string())
+}
+
+/// Check that a Blindbit server serves the tweaks and both filters the scanner
+/// reads at its announced tip, and return that tip.
+pub fn test_blindbit_scan_data(url: String) -> Result<u32, String> {
+    let agent = bwk_sp::blindbit::agent().map_err(|e| e.to_string())?;
+    let tip = bwk_sp::blindbit::block_height(&agent, &url).map_err(|e| e.to_string())?;
+    // Use the same cut-through fallback as the scanner on servers without /info.
+    let cut_through = bwk_sp::blindbit::info(&agent, &url)
+        .is_ok_and(|info| info.tweaks_cut_through_with_dust_filter);
+    let tweak_route = if cut_through { "tweaks" } else { "tweak-index" };
+    let base = url.trim_end_matches('/');
+    let get = |route: &str| {
+        agent
+            .get(format!("{base}/{route}/{tip}"))
+            .call()
+            .and_then(|mut response| response.body_mut().read_to_string())
+            .map_err(|e| e.to_string())
+    };
+    let tweaks: Vec<String> =
+        serde_json::from_str(&get(tweak_route)?).map_err(|e| e.to_string())?;
+    if tweaks
+        .iter()
+        .any(|tweak| tweak.len() != 66 || !tweak.bytes().all(|byte| byte.is_ascii_hexdigit()))
+    {
+        return Err("Blindbit returned an invalid tweak".to_string());
+    }
+
+    #[derive(serde::Deserialize)]
+    struct ReceiveFilter {
+        block_hash: BlockHash,
+        data: String,
+    }
+    let receive: ReceiveFilter =
+        serde_json::from_str(&get("filter/new-utxos")?).map_err(|e| e.to_string())?;
+    if receive.data.is_empty()
+        || receive.data.len() % 2 != 0
+        || !receive.data.bytes().all(|byte| byte.is_ascii_hexdigit())
+    {
+        return Err("Blindbit returned an invalid receive filter".to_string());
+    }
+    let spent =
+        bwk_sp::blindbit::spent_filter(&agent, &url, tip, None).map_err(|e| e.to_string())?;
+    if spent.block_hash != receive.block_hash {
+        return Err("Blindbit filters disagree about the tip block".to_string());
+    }
+    Ok(tip.to_consensus_u32())
 }
 
 /// Test an electrum URL by connecting and requesting `server.version`. Standalone;
