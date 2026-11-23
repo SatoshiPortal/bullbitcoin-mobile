@@ -1,14 +1,13 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/features/recipients/data/bbx_api_virtual_iban_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
-import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bbx_api/bbx_api.dart' show Bbx, BbxCredentialUnavailableFailure;
 import 'package:dio/dio.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/bbx_api_test_http.dart';
+import 'bbx_api_test_http.dart';
 
 const _activeElement = {
   'recipientId': 'viban-1',
@@ -32,25 +31,56 @@ Map<String, Object?> _apiError(String code) => {
   },
 };
 
-BbxApiVirtualIbanRepository _repository(
-  FakeBbxHttp mainnet, [
-  FakeBbxHttp? testnet,
-]) => BbxApiVirtualIbanRepository(
-  mainnet: mainnet.client(),
-  testnet: (testnet ?? FakeBbxHttp()).client(),
-);
+class _Repository {
+  final Bbx mainnet;
+  final Bbx testnet;
+
+  const _Repository({required this.mainnet, required this.testnet});
+
+  Exchange _exchange(ExchangeEnvironment environment) =>
+      exchangeWithTransportForTesting(
+        readSession: () async =>
+            Ok((environment: environment, epoch: 0, apiKey: 'synthetic-key')),
+        openClient: (endpoint, _) =>
+            endpoint.host.startsWith('testnet') ? testnet : mainnet,
+      );
+
+  Future<Result<VirtualIban?, ExchangeFailure>> find({
+    required bool isTestnet,
+  }) {
+    final environment = isTestnet
+        ? ExchangeEnvironment.testnet
+        : ExchangeEnvironment.mainnet;
+    return _exchange(environment).virtualIbans.find(environment);
+  }
+
+  Future<Result<VirtualIban, ExchangeFailure>> create({
+    required bool isTestnet,
+  }) {
+    final environment = isTestnet
+        ? ExchangeEnvironment.testnet
+        : ExchangeEnvironment.mainnet;
+    return _exchange(environment).virtualIbans.create(environment);
+  }
+}
+
+_Repository _repository(FakeBbxHttp mainnet, [FakeBbxHttp? testnet]) =>
+    _Repository(
+      mainnet: mainnet.client(),
+      testnet: (testnet ?? FakeBbxHttp()).client(),
+    );
 
 List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
   for (final r in http.requests)
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
 ];
 
-T _valueOf<T>(Result<T, RecipientsFailure> result) => switch (result) {
+T _valueOf<T>(Result<T, ExchangeFailure> result) => switch (result) {
   Ok(:final value) => value,
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
+ExchangeFailure _failureOf<T>(Result<T, ExchangeFailure> result) =>
     switch (result) {
       Ok() => fail('expected an Err, got Ok'),
       Err(:final failure) => failure,
@@ -131,7 +161,7 @@ void main() {
             .find(isTestnet: false),
       );
 
-      expect(failure, isA<RecipientsUnexpectedFailure>());
+      expect(failure, isA<ExchangeUnexpectedFailure>());
       expect(
         failure.logMessage,
         'BbxRpcFailure(code: -32602, apiCode: ERR_RCP_500)',
@@ -147,42 +177,42 @@ void main() {
         ),
       ).find(isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsUnexpectedFailure>());
+      expect(_failureOf(result), isA<ExchangeUnexpectedFailure>());
     });
 
     test('a status other than 200 is unexpected', () async {
       final result = await _repository(FakeBbxHttp(status: 204))
           .find(isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsUnexpectedFailure>());
+      expect(_failureOf(result), isA<ExchangeUnexpectedFailure>());
     });
 
     test('no credential is not authenticated', () async {
       final http = FakeBbxHttp();
-      final repository = BbxApiVirtualIbanRepository(
+      final repository = _Repository(
         mainnet: http.client(readApiKey: () async => const Ok(null)),
         testnet: FakeBbxHttp().client(),
       );
 
       expect(
         _failureOf(await repository.find(isTestnet: false)),
-        isA<RecipientsNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
       expect(http.requests, isEmpty);
     });
 
-    test('an unreadable credential is unexpected', () async {
-      final repository = BbxApiVirtualIbanRepository(
+    test('an unreadable credential is not an absent account', () async {
+      final repository = _Repository(
         mainnet: FakeBbxHttp().client(
-          readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+          readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
         ),
         testnet: FakeBbxHttp().client(),
       );
 
       final failure = _failureOf(await repository.find(isTestnet: false));
 
-      expect(failure, isA<RecipientsUnexpectedFailure>());
-      expect(failure.logMessage, 'Exchange credential unavailable');
+      expect(failure, isA<ExchangeCredentialReadFailure>());
+      expect(failure.logMessage, isNull);
     });
   });
 
@@ -206,9 +236,9 @@ void main() {
     });
 
     final refusals = {
-      'ERR_RCP_PO404': isA<RecipientsVirtualIbanNotAvailableFailure>(),
-      'ERR_RCP_400_001': isA<RecipientsEuResidencyRequiredFailure>(),
-      'ERR_RCP_400': isA<RecipientsUnexpectedFailure>(),
+      'ERR_RCP_PO404': isA<ExchangeVirtualIbanNotAvailableFailure>(),
+      'ERR_RCP_400_001': isA<ExchangeEuResidencyRequiredFailure>(),
+      'ERR_RCP_400': isA<ExchangeUnexpectedFailure>(),
     };
     for (final MapEntry(key: code, value: failure) in refusals.entries) {
       test('$code is mapped like before', () async {
@@ -224,7 +254,7 @@ void main() {
         FakeBbxHttp(error: DioExceptionType.connectionTimeout),
       ).create(isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsNetworkFailure>());
+      expect(_failureOf(result), isA<ExchangeNetworkFailure>());
     });
 
     test('a result without an element is unexpected', () async {
@@ -232,7 +262,7 @@ void main() {
         FakeBbxHttp(body: {'result': <String, Object?>{}}),
       ).create(isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsUnexpectedFailure>());
+      expect(_failureOf(result), isA<ExchangeUnexpectedFailure>());
     });
   });
 }

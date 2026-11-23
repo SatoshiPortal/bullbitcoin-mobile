@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

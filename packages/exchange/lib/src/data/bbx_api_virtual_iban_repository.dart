@@ -1,29 +1,21 @@
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
-import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
-/// [VirtualIbanRepository] on the `bbx_api` package.
-final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
-  final bbx.Bbx _mainnet;
-  final bbx.Bbx _testnet;
+import '../domain/entities/virtual_iban.dart';
+import '../domain/exchange_failure.dart';
+
+final class BbxApiVirtualIbanRepository {
+  final bbx.Bbx _api;
 
   static const _optionNotAvailableCode = 'ERR_RCP_PO404';
   static const _euResidencyRequiredCode = 'ERR_RCP_400_001';
 
-  const BbxApiVirtualIbanRepository({
-    required this._mainnet,
-    required this._testnet,
-  });
+  const BbxApiVirtualIbanRepository(this._api);
 
-  @override
-  Future<Result<VirtualIban?, RecipientsFailure>> find({
-    required bool isTestnet,
-  }) async {
+  Future<Result<VirtualIban?, ExchangeFailure>> find() async {
     try {
-      final result = await _api(isTestnet).recipients.findVirtualIban();
+      final result = await _api.recipients.findVirtualIban();
       return switch (result) {
         Ok(:final value) => Ok(value == null ? null : _toDomain(value)),
         // The API refuses to list virtual IBANs to a user who has none yet
@@ -40,12 +32,9 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
     }
   }
 
-  @override
-  Future<Result<VirtualIban, RecipientsFailure>> create({
-    required bool isTestnet,
-  }) async {
+  Future<Result<VirtualIban, ExchangeFailure>> create() async {
     try {
-      return (await _api(isTestnet).recipients.createVirtualIban())
+      return (await _api.recipients.createVirtualIban())
           .map(_toDomain)
           .mapErr(
             (failure) => _failureFrom(failure, 'create the virtual IBAN'),
@@ -55,8 +44,6 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
     }
   }
 
-  bbx.Bbx _api(bool isTestnet) => isTestnet ? _testnet : _mainnet;
-
   static VirtualIban _toDomain(bbx.VirtualIban iban) =>
       VirtualIban.fromBankDetails(
         iban: iban.iban,
@@ -65,58 +52,56 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
         ibanCountry: iban.ibanCountry,
       );
 
-  static RecipientsFailure _failureFrom(
+  static ExchangeFailure _failureFrom(
     bbx.BbxFailure failure,
     String operation,
   ) {
     switch (failure) {
       case bbx.BbxMissingCredentialFailure():
-        return const RecipientsNotAuthenticatedFailure();
+        return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
-        return const RecipientsUnexpectedFailure(
-          'Exchange credential unavailable',
-        );
+        return const ExchangeCredentialReadFailure();
       case bbx.BbxRpcFailure(:final apiCode):
         final description = _describe(failure);
         log.warning('API refused to $operation — $description');
         return switch (apiCode) {
           _optionNotAvailableCode =>
-            const RecipientsVirtualIbanNotAvailableFailure(),
+            const ExchangeVirtualIbanNotAvailableFailure(),
           _euResidencyRequiredCode =>
-            const RecipientsEuResidencyRequiredFailure(),
-          _ => RecipientsUnexpectedFailure(description),
+            const ExchangeEuResidencyRequiredFailure(),
+          _ => ExchangeUnexpectedFailure(description),
         };
       case bbx.BbxHttpFailure():
         final description = _describe(failure);
         log.warning('API refused to $operation — $description');
-        return RecipientsUnexpectedFailure(description);
+        return ExchangeUnexpectedFailure(description);
       case bbx.BbxTimeoutFailure(:final kind):
         log.warning(
           'Could not reach the API to $operation: ${_timeoutName(kind)}',
         );
-        return const RecipientsNetworkFailure();
+        return const ExchangeNetworkFailure();
       case bbx.BbxConnectionFailure():
         log.warning('Could not reach the API to $operation: connectionError');
-        return const RecipientsNetworkFailure();
+        return const ExchangeNetworkFailure();
       default:
         log.warning(
           'Failed to $operation',
-          error: failure,
+          error: failure.runtimeType,
           trace: StackTrace.current,
         );
-        return const RecipientsUnexpectedFailure();
+        return const ExchangeUnexpectedFailure();
     }
   }
 
   /// The failure for an exception thrown while mapping a response the API
   /// did send.
-  static RecipientsFailure _unexpected(
+  static ExchangeFailure _unexpected(
     Exception e,
     StackTrace st,
     String operation,
   ) {
-    log.warning('Failed to $operation', error: e, trace: st);
-    return const RecipientsUnexpectedFailure();
+    log.warning('Failed to $operation', error: e.runtimeType, trace: st);
+    return const ExchangeUnexpectedFailure();
   }
 
   static String _timeoutName(bbx.BbxTimeoutKind kind) => switch (kind) {

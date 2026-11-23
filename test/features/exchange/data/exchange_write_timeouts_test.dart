@@ -4,7 +4,6 @@ import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bbx_api/bbx_api.dart' show Bbx, BbxTimeouts;
 import 'package:bbx_api/bbx_api_testing.dart';
@@ -96,7 +95,11 @@ void main() {
             ),
             isTestnet: isTestnet,
           ),
-          locator<VirtualIbanRepository>().create(isTestnet: isTestnet),
+          exchange.virtualIbans.create(
+            isTestnet
+                ? ExchangeEnvironment.testnet
+                : ExchangeEnvironment.mainnet,
+          ),
           locator<SepaVirtualPayeeRepository>().activate(
             recipientId: 'fixture-recipient',
             isTestnet: isTestnet,

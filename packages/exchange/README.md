@@ -12,4 +12,6 @@ Support chat uses the standard timeout for identity lookup and an untimed client
 
 `Exchange.funding` owns institutions, payment instructions and consent. It uses the untimed client and returns a typed refusal for incomplete instructions instead of returning unusable bank details.
 
+`Exchange.virtualIbans` finds or provisions the virtual IBAN for an explicit exchange environment. A successful lookup with no IBAN returns `Ok(null)`; missing credentials and unavailable credentials remain distinct failures.
+
 `package:exchange/migration.dart` supplies the Exchange participant for the storage coordinator. It opens the owner database through `Secrets.databaseOpener` and the shared native-close admission, projects both fixed keychain records and all historical Basic Auth rows, and verifies the destination and its import or fresh receipt. The participant is not mounted until coordinator preflight and legacy writer admission are wired. It never deletes or updates either legacy source.

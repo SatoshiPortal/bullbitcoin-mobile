@@ -10,6 +10,7 @@ import 'data/bbx_api_notification_datasource.dart';
 import 'data/bbx_api_order_stats_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
+import 'data/bbx_api_virtual_iban_repository.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/pending_orders.dart';
 import 'domain/entities/announcement.dart';
@@ -22,6 +23,7 @@ import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
 import 'domain/exchange_limit_orders.dart';
+import 'domain/exchange_virtual_ibans.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -96,6 +98,7 @@ final class Exchange {
   final ExchangeNotificationOperations _notifications;
   final ExchangeLimitOrders limitOrders;
   final ExchangeFunding funding;
+  final ExchangeVirtualIbans virtualIbans;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -109,6 +112,7 @@ final class Exchange {
     this._notifications,
     this.limitOrders,
     this.funding,
+    this.virtualIbans,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -384,6 +388,18 @@ final class Exchange {
         consent: () =>
             fund((repository) => repository.registerResponsibilityConsent()),
       ),
+      ExchangeVirtualIbansImpl(
+        find: (environment) => withClient(
+          (client, _) => BbxApiVirtualIbanRepository(client).find(),
+          environment: environment,
+          untimed: true,
+        ),
+        create: (environment) => withClient(
+          (client, _) => BbxApiVirtualIbanRepository(client).create(),
+          environment: environment,
+          untimed: true,
+        ),
+      ),
     );
   }
 
@@ -489,6 +505,7 @@ Exchange exchangeForTesting({
   ExchangeNotificationOperations? notifications,
   ExchangeLimitOrders? limitOrders,
   ExchangeFunding? funding,
+  ExchangeVirtualIbans? virtualIbans,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -539,6 +556,11 @@ Exchange exchangeForTesting({
         get: (_) => throw StateError('Unexpected funding details request'),
         list: (_) => throw StateError('Unexpected funding institution lookup'),
         consent: () => throw StateError('Unexpected funding consent'),
+      ),
+  virtualIbans ??
+      ExchangeVirtualIbansImpl(
+        find: (_) => throw StateError('Unexpected virtual IBAN lookup'),
+        create: (_) => throw StateError('Unexpected virtual IBAN creation'),
       ),
 );
 

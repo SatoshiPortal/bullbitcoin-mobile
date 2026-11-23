@@ -158,3 +158,11 @@ final class ExchangeFundingFailure extends ExchangeFailure {
 
   const ExchangeFundingFailure(this.problem, [super.logMessage]);
 }
+
+final class ExchangeVirtualIbanNotAvailableFailure extends ExchangeFailure {
+  const ExchangeVirtualIbanNotAvailableFailure();
+}
+
+final class ExchangeEuResidencyRequiredFailure extends ExchangeFailure {
+  const ExchangeEuResidencyRequiredFailure();
+}

@@ -3,9 +3,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,8 +12,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
-class _MockVirtualIbanRepository extends Mock
-    implements VirtualIbanRepository {}
+class _MockVirtualIbanRepository extends Mock implements ExchangeVirtualIbans {}
 
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
@@ -51,14 +48,14 @@ void main() {
 
   Future<Result<ConfidentialSepaAvailability, RecipientsFailure>> run({
     List<String> groups = _eligibleGroups,
-    Result<VirtualIban?, RecipientsFailure> virtualIban = const Ok(null),
+    Result<VirtualIban?, ExchangeFailure> virtualIban = const Ok(null),
   }) {
     when(() => summary.execute()).thenAnswer((_) async => _summaryWith(groups));
-    when(() => virtualIbans.find(isTestnet: any(named: 'isTestnet')))
+    when(() => virtualIbans.find(ExchangeEnvironment.mainnet))
         .thenAnswer((_) async => virtualIban);
     return GetConfidentialSepaAvailabilityUsecase(
       getExchangeUserSummaryUsecase: summary,
-      virtualIbanRepository: virtualIbans,
+      virtualIbans: virtualIbans,
       getRecipientsEnvironmentUsecase: environment,
     ).execute();
   }
@@ -78,9 +75,7 @@ void main() {
           availability(await run(groups: groups)),
           ConfidentialSepaAvailability.unavailable,
         );
-        verifyNever(
-          () => virtualIbans.find(isTestnet: any(named: 'isTestnet')),
-        );
+        verifyNever(() => virtualIbans.find(ExchangeEnvironment.mainnet));
       });
     }
   });
@@ -117,7 +112,7 @@ void main() {
 
     final result = await GetConfidentialSepaAvailabilityUsecase(
       getExchangeUserSummaryUsecase: summary,
-      virtualIbanRepository: virtualIbans,
+      virtualIbans: virtualIbans,
       getRecipientsEnvironmentUsecase: environment,
     ).execute();
 
@@ -125,9 +120,7 @@ void main() {
   });
 
   test('a failed virtual IBAN lookup is a failure', () async {
-    final result = await run(
-      virtualIban: const Err(RecipientsNetworkFailure()),
-    );
+    final result = await run(virtualIban: const Err(ExchangeNetworkFailure()));
 
     expect(
       (result as Err<ConfidentialSepaAvailability, RecipientsFailure>).failure,
