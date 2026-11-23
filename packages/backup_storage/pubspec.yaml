@@ -21,3 +21,11 @@ dev_dependencies:
   http: ^1.2.2
   flutter_test:
     sdk: flutter
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.bullbitcoin.backup_storage
+        pluginClass: BackupStoragePlugin
+      ios:
+        pluginClass: BackupStoragePlugin
