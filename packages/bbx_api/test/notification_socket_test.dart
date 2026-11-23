@@ -210,7 +210,8 @@ void main() {
     });
   });
 
-  test('key read failures retry every 5 s, warning once, until disposed', () {
+  test('key read failures retry after 5 s, then 10 s, warning once, until '
+      'disposed', () {
     fakeAsync((time) {
       var available = false;
       final s = socket(
@@ -228,7 +229,9 @@ void main() {
       time.elapse(const Duration(seconds: 1));
       expect(reads, 2);
       available = true;
-      time.elapse(const Duration(seconds: 5));
+      time.elapse(const Duration(seconds: 9));
+      expect(reads, 2);
+      time.elapse(const Duration(seconds: 1));
       expect(reads, 3);
       time.elapse(const Duration(seconds: 30));
       expect(reads, 3);
@@ -266,7 +269,7 @@ void main() {
       time.elapse(const Duration(seconds: 5));
       expect(connector.handshakes, hasLength(2));
       connector.onConnect = (channel) => channel.accept();
-      time.elapse(const Duration(seconds: 5));
+      time.elapse(const Duration(seconds: 10));
       expect(connector.handshakes, hasLength(3));
       expect(s.isConnected, isTrue);
       expect(reads, 3);
@@ -304,6 +307,85 @@ void main() {
       time.elapse(const Duration(minutes: 1));
       expect(connector.handshakes, hasLength(1));
       expect(s.isConnected, isFalse);
+      s.dispose();
+    });
+  });
+
+  test('a refused upgrade reports its HTTP status (a rejected key)', () {
+    fakeAsync((time) {
+      connector.onConnect = (channel) => channel.refuse(
+        const SocketLikeException(
+          "Connection to 'https://api.test' was not upgraded to websocket, "
+          'HTTP status code: 401',
+        ),
+      );
+      final s = socket();
+      final events = <Result<BbxNotification, BbxFailure>>[];
+      final results = <Result<void, BbxFailure>>[];
+      s.events.listen(events.add);
+      unawaited(s.connect().then(results.add));
+      time.flushMicrotasks();
+      expect(
+        failureOfVoid(results.single),
+        isA<BbxHttpFailure>().having((f) => f.status, 'status', 401),
+      );
+      expect(events.map(summary), ['err: BbxHttpFailure(status: 401)']);
+      time.elapse(const Duration(minutes: 10));
+      expect(connector.handshakes, hasLength(1));
+      s.dispose();
+    });
+  });
+
+  test('a handshake that never completes times out after 30 s and '
+      'retries', () {
+    fakeAsync((time) {
+      connector.onConnect = (_) {};
+      final s = socket();
+      final results = <Result<void, BbxFailure>>[];
+      unawaited(s.connect().then(results.add));
+      time.elapse(const Duration(seconds: 29));
+      expect(results, isEmpty);
+      time.elapse(const Duration(seconds: 1));
+      expect(failureOfVoid(results.single), isA<BbxTimeoutFailure>());
+      expect(connector.handshakes.single.channel.fakeSink.closes, 1);
+      time.elapse(const Duration(seconds: 5));
+      expect(connector.handshakes, hasLength(2));
+      s.dispose();
+      time.flushMicrotasks();
+      expect(time.nonPeriodicTimerCount, 0);
+    });
+  });
+
+  test('failures in a row back off up to 5 minutes; a connection resets '
+      'it', () {
+    fakeAsync((time) {
+      connector.onConnect = (channel) =>
+          channel.refuse(const SocketLikeException('refused'));
+      final s = socket();
+      unawaited(s.connect());
+      time.flushMicrotasks();
+      final waits = <int>[];
+      var last = 0;
+      var elapsed = 0;
+      while (connector.handshakes.length < 9) {
+        time.elapse(const Duration(seconds: 1));
+        elapsed++;
+        if (connector.handshakes.length > waits.length + 1) {
+          waits.add(elapsed - last);
+          last = elapsed;
+        }
+      }
+      expect(waits, [5, 10, 20, 40, 80, 160, 300, 300]);
+
+      connector.onConnect = (channel) => channel.accept();
+      time.elapse(const Duration(minutes: 5));
+      expect(s.isConnected, isTrue);
+      final handshakes = connector.handshakes.length;
+      connector.onConnect = (channel) =>
+          channel.refuse(const SocketLikeException('refused'));
+      unawaited(connector.handshakes.last.channel.server.close());
+      time.elapse(const Duration(seconds: 5));
+      expect(connector.handshakes, hasLength(handshakes + 1));
       s.dispose();
     });
   });

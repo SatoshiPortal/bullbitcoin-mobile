@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show WebSocketException;
 
 import 'package:bbx_api/src/bbx_failure.dart';
 import 'package:bbx_api/src/notifications/bbx_notification.dart';
@@ -53,9 +54,16 @@ BbxNotificationSocket bbxNotificationSocketForTesting({
 ///
 /// The credential is read before every handshake. `Ok(null)` means the user is
 /// signed out: the socket stays closed, emits nothing and never retries until
-/// the next [connect]. A credential or connection failure is emitted on
-/// [events] and returned by [connect], and the socket retries 5 seconds later
-/// until [disconnect] or [dispose]. An [Error] disconnects and propagates.
+/// the next [connect]. A credential or connection failure, or a handshake that
+/// takes longer than [handshakeTimeout], is emitted on [events] and returned
+/// by [connect], and the socket retries after [retryDelay], doubling the delay
+/// for each failure in a row up to [maxRetryDelay], until [disconnect] or
+/// [dispose]. A connection resets the delay. An [Error] disconnects and
+/// propagates.
+///
+/// A handshake the server answers with an HTTP status instead of upgrading
+/// (401 for a rejected key) is not retried: the socket stays closed until the
+/// next [connect] and reports a [BbxHttpFailure] with that status.
 ///
 /// [events] emits a decoded notification for each valid frame and a
 /// [BbxResponseFormatFailure] for each malformed frame. Raw frames remain
@@ -65,6 +73,8 @@ class BbxNotificationSocket {
   // reaches _handleDisconnect and auto-reconnects.
   static const pingInterval = Duration(seconds: 30);
   static const retryDelay = Duration(seconds: 5);
+  static const maxRetryDelay = Duration(minutes: 5);
+  static const handshakeTimeout = Duration(seconds: 30);
 
   final String _baseUrl;
   final Future<Result<String?, BbxFailure>> Function() _readApiKey;
@@ -80,6 +90,7 @@ class BbxNotificationSocket {
   bool _isConnected = false;
   bool _isManuallyDisconnected = false;
   bool _isConnecting = false;
+  int _failuresInARow = 0;
 
   final _eventController =
       StreamController<Result<BbxNotification, BbxFailure>>.broadcast();
@@ -169,13 +180,14 @@ class BbxNotificationSocket {
           if (identical(_attempt, attempt)) _handleDisconnect();
         },
       );
-      await channel.ready;
+      await channel.ready.timeout(handshakeTimeout);
       if (!identical(_attempt, attempt)) {
         return const Ok(null);
       }
       _isConnected = true;
       _isConnecting = false;
       _hasConnectionFailure = false;
+      _failuresInARow = 0;
       _log(BbxNotificationLogLevel.fine, 'WebSocket connected successfully');
       return const Ok(null);
     } catch (error) {
@@ -186,11 +198,43 @@ class BbxNotificationSocket {
       if (!identical(_attempt, attempt)) {
         return const Ok(null);
       }
-      if (error.toString().contains('not upgraded to websocket')) {
+      if (error is TimeoutException) {
+        return _connectionFailure(
+          const BbxTimeoutFailure(BbxTimeoutKind.receive),
+        );
+      }
+      if (_refusedUpgrade(error) case (status: final status)) {
         _isManuallyDisconnected = true;
+        return _connectionFailure(BbxHttpFailure(status));
       }
       return _connectionFailure(const BbxConnectionFailure());
     }
+  }
+
+  static final _statusPattern = RegExp(r'status code:? (\d{3})');
+
+  /// Whether the server answered the handshake with an HTTP status instead of
+  /// upgrading the connection, and that status when the error carries it.
+  static ({int? status})? _refusedUpgrade(Object error) => switch (error) {
+    WebSocketException(:final httpStatusCode?) => (status: httpStatusCode),
+    WebSocketChannelException(:final inner?) => _refusedUpgrade(inner),
+    _ when error.toString().contains('not upgraded to websocket') => (
+      status: switch (_statusPattern.firstMatch(error.toString())) {
+        final match? => int.parse(match.group(1)!),
+        null => null,
+      },
+    ),
+    _ => null,
+  };
+
+  /// [retryDelay] doubled for each failure in a row after the first, at most
+  /// [maxRetryDelay]. A drop after a connection waits [retryDelay].
+  Duration get _nextRetryDelay {
+    var delay = retryDelay;
+    for (var i = 1; i < _failuresInARow && delay < maxRetryDelay; i++) {
+      delay *= 2;
+    }
+    return delay < maxRetryDelay ? delay : maxRetryDelay;
   }
 
   Result<void, BbxFailure> _connectionFailure(BbxFailure failure) {
@@ -263,7 +307,7 @@ class BbxNotificationSocket {
     if (_isManuallyDisconnected || _disposed || _retryTimer?.isActive == true) {
       return;
     }
-    _retryTimer = Timer(retryDelay, () {
+    _retryTimer = Timer(_nextRetryDelay, () {
       _retryTimer = null;
       if (!_isManuallyDisconnected && !_disposed) unawaited(connect());
     });
@@ -289,6 +333,7 @@ class BbxNotificationSocket {
   }
 
   void _recordConnectionFailure(BbxFailure failure) {
+    _failuresInARow++;
     if (_hasConnectionFailure) {
       _log(
         BbxNotificationLogLevel.info,
@@ -315,6 +360,7 @@ class BbxNotificationSocket {
 
   void disconnect() {
     _hasConnectionFailure = false;
+    _failuresInARow = 0;
     _isManuallyDisconnected = true;
     _isConnecting = false;
     _attempt = null;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:meta/meta.dart';
@@ -11,23 +13,40 @@ typedef NotificationKeyReader = Future<Result<String?, Failure>> Function();
 /// reads the API key, translates a credential-read failure into the socket's
 /// own family and logs through the app logger. Only owned
 /// [BbxNotification]s and [BbxFailure]s leave it: no frame reaches the app.
+///
+/// A handshake the server refuses with HTTP 401 means the key it read is no
+/// longer valid: [onSessionRejected] is called, once per refused handshake.
 class BbxApiNotificationDatasource {
   final BbxNotificationSocket _socket;
   final Bbx? _client;
+  final StreamSubscription<Result<BbxNotification, BbxFailure>> _rejections;
 
   factory BbxApiNotificationDatasource({
     required String baseUrl,
     required NotificationKeyReader readApiKey,
+    void Function()? onSessionRejected,
   }) {
     final client = Bbx.open(
       endpoint: baseUrl,
       readActiveApiKey: () => _apiKey(readApiKey),
       notificationLog: _log,
     );
-    return BbxApiNotificationDatasource._(client.notifications, client);
+    return BbxApiNotificationDatasource._(
+      client.notifications,
+      client,
+      onSessionRejected,
+    );
   }
 
-  const BbxApiNotificationDatasource._(this._socket, this._client);
+  BbxApiNotificationDatasource._(
+    this._socket,
+    this._client,
+    void Function()? onSessionRejected,
+  ) : _rejections = _socket.events.listen((event) {
+        if (event case Err(failure: BbxHttpFailure(status: 401))) {
+          onSessionRejected?.call();
+        }
+      });
 
   /// Keeps the adapter's credential and log mapping under test while the BBX
   /// testing library owns the foreign channel. Production uses [Bbx.open].
@@ -41,7 +60,12 @@ class BbxApiNotificationDatasource {
       BbxNotificationLog log,
     )
     openSocket,
-  }) : this._(openSocket(baseUrl, () => _apiKey(readApiKey), _log), null);
+    void Function()? onSessionRejected,
+  }) : this._(
+         openSocket(baseUrl, () => _apiKey(readApiKey), _log),
+         null,
+         onSessionRejected,
+       );
 
   /// Reads the app credential as the socket's own failure family: a missing
   /// key is `Ok(null)` (signed out, no retry) and a storage failure is
@@ -81,6 +105,7 @@ class BbxApiNotificationDatasource {
   Future<Result<void, BbxFailure>> reconnect() => _socket.reconnect();
 
   void dispose() {
+    unawaited(_rejections.cancel());
     if (_client case final client?) {
       client.dispose();
     } else {

@@ -367,15 +367,30 @@ final class Exchange {
         );
       }
 
+      // The epoch is read before each key read, so a refused handshake
+      // expires only the session whose key it carried.
+      BbxApiNotificationDatasource datasource(Uri endpoint, bool isTestnet) {
+        int? keyEpoch;
+        return BbxApiNotificationDatasource(
+          baseUrl: endpoint.toString(),
+          readApiKey: () {
+            keyEpoch = access?.epoch;
+            return readKey(isTestnet);
+          },
+          onSessionRejected: () {
+            final epoch = keyEpoch;
+            if (access == null || epoch == null) return;
+            unawaited(
+              ExpireExchangeSessionUsecase(access)
+                  .execute(epoch: epoch, isTestnet: isTestnet),
+            );
+          },
+        );
+      }
+
       return notificationService ??= ExchangeNotificationService(
-        mainnetDatasource: BbxApiNotificationDatasource(
-          baseUrl: mainnetEndpoint.toString(),
-          readApiKey: () => readKey(false),
-        ),
-        testnetDatasource: BbxApiNotificationDatasource(
-          baseUrl: testnetEndpoint.toString(),
-          readApiKey: () => readKey(true),
-        ),
+        mainnetDatasource: datasource(mainnetEndpoint, false),
+        testnetDatasource: datasource(testnetEndpoint, true),
         readEnvironment:
             notifications?.readEnvironment ??
             () async => (await readSession()).map((s) => s.environment),
