@@ -354,6 +354,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
           securityQuestion: securityQuestion,
           securityAnswer: securityAnswer,
         ),
+        redactError: true,
       );
       return _toOrder(summary) as WithdrawOrder;
     } on BullBitcoinApiMinAmountException {
@@ -361,6 +362,8 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     } on BullBitcoinApiMaxAmountException {
       rethrow;
     } on BullBitcoinApiConfidentialSepaNotActivatedException {
+      rethrow;
+    } on BullBitcoinApiOrderException {
       rethrow;
     } on ApiKeyException {
       rethrow;

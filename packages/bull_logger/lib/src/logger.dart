@@ -526,10 +526,14 @@ class Logger {
     var value = input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
     // Defense in depth for secrets accidentally included in exception text.
     // A labelled request identifier is the one long token support needs to
-    // trace an exchange failure, so it is matched first and kept.
+    // trace an exchange failure, so it is matched first and kept. Only the
+    // shape of an identifier is kept: at most six short segments that end
+    // cleanly. Anything longer after the label is redacted like any token.
     value = value.replaceAllMapped(
       RegExp(
-        r'\b[A-Za-z]*[Rr]equestId=[A-Za-z0-9:._-]{1,96}'
+        r'\b[A-Za-z]*[Rr]equestId='
+        r'(?:[A-Za-z0-9]{1,40}[:._-]){0,5}[A-Za-z0-9]{1,40}'
+        r'(?![A-Za-z0-9]|[:._-][A-Za-z0-9])'
         r'|\b(?:[0-9a-fA-F]{32,}|[A-Za-z0-9+/]{32,}={0,2})\b',
       ),
       (match) {

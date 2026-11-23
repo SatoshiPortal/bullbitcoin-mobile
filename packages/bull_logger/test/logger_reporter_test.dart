@@ -185,6 +185,10 @@ void main() {
     log.warning('order refused requestId=$hex:0 key $hex');
     log.warning('swap refused requestId=mobile-$hex serverRequestId=$hex:1');
     log.warning('unlabelled $hex:0');
+    log.warning('too long requestId=$hex$hex$hex$hex end');
+    log.warning('joined requestId=abc:$hex$hex end');
+    log.warning('sentence requestId=$hex:0. Next');
+    log.warning('wrapped', error: 'failed requestId=$hex$hex');
 
     final messages = (await log.readLogs())
         .map((line) => line.split('\t')[2])
@@ -193,7 +197,13 @@ void main() {
       'order refused requestId=$hex:0 key [REDACTED]',
       'swap refused requestId=mobile-$hex serverRequestId=$hex:1',
       'unlabelled [REDACTED]:0',
+      'too long requestId=[REDACTED] end',
+      'joined requestId=abc:[REDACTED] end',
+      'sentence requestId=$hex:0. Next',
+      'wrapped',
     ]);
+    final lines = await log.readLogs();
+    expect(lines.last.split('\t')[3], 'failed requestId=[REDACTED]');
   });
 
   test('reports errors immediately and awaits shout reporting', () async {

@@ -121,6 +121,17 @@ class CreateWithdrawOrderUsecase {
     } on BullBitcoinApiConfidentialSepaNotActivatedException {
       log.info('Withdrawal refused: the virtual payee is not active yet');
       return const Err(WithdrawConfidentialSepaNotActivatedFailure());
+    } on BullBitcoinApiOrderException catch (e, st) {
+      // A refusal keeps only its codes and the server's request id, never the
+      // server's text, which can quote the request.
+      log.severe(
+        message: 'Failed to place the withdrawal order',
+        error: '$e',
+        trace: st,
+      );
+      return const Err(
+        WithdrawUnexpectedFailure('Failed to place the withdrawal order'),
+      );
     } catch (_, st) {
       // The raw error is deliberately dropped: the request can carry the
       // Interac security answer, which must never reach diagnostics.

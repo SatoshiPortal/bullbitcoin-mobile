@@ -8,6 +8,9 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../exchange/data/exchange_log_capture.dart';
+
 import 'package:mocktail/mocktail.dart';
 
 class _MockExchangeOrderRepository extends Mock
@@ -193,6 +196,38 @@ void main() {
 
     expect(result.order, same(order));
     verifyZeroInteractions(mainnetRepository);
+  });
+
+  test('a refused order logs its codes and request id only', () async {
+    final capture = await captureExchangeLogs();
+    const requestId = '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0';
+    when(
+      () => mainnetRepository.placeWithdrawalOrder(
+        fiatAmount: 125,
+        recipientId: 'recipient-1',
+        paymentProcessor: any(named: 'paymentProcessor'),
+        securityQuestion: any(named: 'securityQuestion'),
+        securityAnswer: any(named: 'securityAnswer'),
+      ),
+    ).thenThrow(
+      const BullBitcoinApiOrderException(
+        apiCode: 'ERR_ORD_500',
+        rpcCode: -32603,
+        requestId: requestId,
+      ),
+    );
+
+    final result = await usecase.execute(
+      fiatAmount: 125,
+      recipientId: 'recipient-1',
+    );
+
+    expect(_err(result), isA<WithdrawUnexpectedFailure>());
+    final line = (await capture.logger.readLogs()).singleWhere(
+      (line) => line.contains('Failed to place the withdrawal order'),
+    );
+    expect(line, contains('apiCode: ERR_ORD_500'));
+    expect(line, contains('requestId=$requestId'));
   });
 
   test('sanitizes unexpected failures', () async {

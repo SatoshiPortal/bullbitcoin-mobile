@@ -28,6 +28,8 @@ sealed class BbxFailure extends Failure {
   }
 }
 
+/// Written `requestId=` on purpose: the log sanitizer keeps a token with
+/// that label and redacts it under any other spelling.
 String _requestIdSuffix(String? requestId) =>
     requestId == null ? '' : ', requestId=$requestId';
 

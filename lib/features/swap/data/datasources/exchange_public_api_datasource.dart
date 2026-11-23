@@ -225,7 +225,10 @@ final class ExchangeRpcException extends ExchangeDatasourceException {
         ? reasonFieldsValue.whereType<Map>().map(Map<String, dynamic>.from)
         : const Iterable<Map<String, dynamic>>.empty();
     final reasonField = reasonFields.firstOrNull;
-    final requestId = apiError['requestId'] ?? dataMap['requestId'];
+    final requestId = [
+      apiError['requestId'],
+      dataMap['requestId'],
+    ].whereType<String>().where(_requestIdPattern.hasMatch).firstOrNull;
     return ExchangeRpcException(
       rpcCode: json['code'] as int?,
       apiCode: apiError['code'] as String?,
@@ -233,9 +236,7 @@ final class ExchangeRpcException extends ExchangeDatasourceException {
       fieldCode: reasonField?['code'] as String?,
       limit: messageData['limit']?.toString(),
       limitOperator: messageData['operator'] as String?,
-      requestId: requestId is String && _requestIdPattern.hasMatch(requestId)
-          ? requestId
-          : null,
+      requestId: requestId,
       logMessage: json['message']?.toString(),
     );
   }

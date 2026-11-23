@@ -998,10 +998,42 @@ void main() {
       );
     });
 
-    test('other failures drop the error', () async {
+    test('a refusal keeps its codes and request id, never its text', () async {
       await expectLater(
         withdraw(
-          FakeBbxHttp(body: _rpcError),
+          FakeBbxHttp(
+            body: {
+              'error': {
+                'code': -32603,
+                'message': 'refused: answer secret',
+                'data': {
+                  'apiError': {
+                    'code': 'ERR_ORD_500',
+                    'requestId': '60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0',
+                  },
+                },
+              },
+            },
+          ),
+          question: 'q',
+          answer: 'secret',
+        ),
+        throwsA(
+          isA<BullBitcoinApiOrderException>().having(
+            (e) => e.toString(),
+            'message',
+            'BullBitcoinApiOrderException(apiCode: ERR_ORD_500, '
+                'rpcCode: -32603, '
+                'requestId=60bc664d1f3a4c0e9b7d2a5e8c1f4b3d:0)',
+          ),
+        ),
+      );
+    });
+
+    test('a transport failure drops the error', () async {
+      await expectLater(
+        withdraw(
+          FakeBbxHttp(error: DioExceptionType.connectionError),
           question: 'q',
           answer: 'secret',
         ),
