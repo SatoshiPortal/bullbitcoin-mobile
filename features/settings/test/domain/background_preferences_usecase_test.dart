@@ -4,7 +4,6 @@ import 'package:settings/testing.dart';
 import 'package:notifications/notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:background_tasks/background_tasks.dart';
-import 'package:settings/settings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

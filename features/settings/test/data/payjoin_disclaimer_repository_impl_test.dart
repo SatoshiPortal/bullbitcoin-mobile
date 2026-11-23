@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart';
 import 'package:settings/testing.dart';
-import 'package:settings/settings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

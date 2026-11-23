@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart';
-import 'package:settings/settings.dart';
 import 'package:settings/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' as payjoin;
 import 'package:flutter_test/flutter_test.dart';

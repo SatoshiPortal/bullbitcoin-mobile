@@ -2,7 +2,6 @@ import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:settings/testing.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:settings/settings.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

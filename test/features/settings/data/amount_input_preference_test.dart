@@ -3,7 +3,6 @@ import 'package:preferences/testing.dart';
 import 'dart:io';
 
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:settings/settings.dart';
 import 'package:settings/testing.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;

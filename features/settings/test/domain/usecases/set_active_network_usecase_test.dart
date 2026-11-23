@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:preferences/preferences.dart';
-import 'package:settings/settings.dart';
 import 'package:settings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

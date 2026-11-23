@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
-import 'package:settings/settings.dart';
 import 'package:settings/testing.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';

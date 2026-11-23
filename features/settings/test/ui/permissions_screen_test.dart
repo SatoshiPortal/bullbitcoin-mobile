@@ -1,8 +1,6 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:settings/testing.dart';
-import 'package:settings/settings.dart';
-import 'package:settings/generated/l10n/settings_localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInfoBar, BullSwitch;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
