@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../limit_order_fixtures.dart';

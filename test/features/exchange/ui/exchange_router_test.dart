@@ -28,8 +28,6 @@ ExchangeRouterConfig _config({
   networkUnavailable: unavailable,
   isSuperuser: (_) => false,
   homePath: '/home',
-  buildHomeCards: () => [],
-  onHomeRefresh: () {},
   onExit: onExit ?? (_) {},
   onOpenSettings: (_) {},
   onAction: (_, _) {},

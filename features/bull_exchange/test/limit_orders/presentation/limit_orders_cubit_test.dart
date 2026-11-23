@@ -2,27 +2,19 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/list_active_limit_orders_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_cubit.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../limit_order_fixtures.dart';
 
-class MockListActiveLimitOrdersUsecase extends Mock
-    implements ListActiveLimitOrdersUsecase {}
-
-class MockCancelAllLimitOrdersUsecase extends Mock
-    implements CancelAllLimitOrdersUsecase {}
+class _Orders extends Mock implements ExchangeLimitOrders {}
 
 void main() {
-  late MockListActiveLimitOrdersUsecase listActive;
-  late MockCancelAllLimitOrdersUsecase cancelAll;
+  late _Orders exchangeOrders;
   late StreamController<Result<NotificationMessage, ExchangeFailure>>
   notificationStream;
   const canCreate = CanCreateLimitOrderUsecase();
@@ -31,8 +23,7 @@ void main() {
       List.generate(count, (i) => limitOrder(id: 'lo-$i'));
 
   setUp(() {
-    listActive = MockListActiveLimitOrdersUsecase();
-    cancelAll = MockCancelAllLimitOrdersUsecase();
+    exchangeOrders = _Orders();
     notificationStream =
         StreamController<
           Result<NotificationMessage, ExchangeFailure>
@@ -41,17 +32,14 @@ void main() {
 
   tearDown(() => notificationStream.close());
 
-  LimitOrdersCubit buildCubit() => LimitOrdersCubit(
-    listActive,
-    cancelAll,
-    canCreate,
-    notificationStream.stream,
-  );
+  LimitOrdersCubit buildCubit() =>
+      LimitOrdersCubit(exchangeOrders, canCreate, notificationStream.stream);
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'loads the active orders',
     setUp: () =>
-        when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(2))),
+        when(() => exchangeOrders.listActive())
+            .thenAnswer((_) async => Ok(orders(2))),
     build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) {
@@ -63,7 +51,7 @@ void main() {
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'refuses another order once the maximum is active',
-    setUp: () => when(() => listActive.execute()).thenAnswer(
+    setUp: () => when(() => exchangeOrders.listActive()).thenAnswer(
       (_) async => Ok(orders(CanCreateLimitOrderUsecase.maximumActiveOrders)),
     ),
     build: buildCubit,
@@ -73,22 +61,32 @@ void main() {
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'stores a load failure without dropping the loading flag',
-    setUp: () =>
-        when(() => listActive.execute())
-            .thenAnswer((_) async => const Err(LimitOrdersLoadFailure('list'))),
+    setUp: () => when(() => exchangeOrders.listActive()).thenAnswer(
+      (_) async =>
+          const Err(ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.load)),
+    ),
     build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) {
       expect(cubit.state.isLoading, isFalse);
-      expect(cubit.state.failure, isA<LimitOrdersLoadFailure>());
+      expect(
+        cubit.state.failure,
+        isA<ExchangeLimitOrderFailure>().having(
+          (value) => value.problem,
+          'problem',
+          ExchangeLimitOrderProblem.load,
+        ),
+      );
     },
   );
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'empties the list after cancelling every order',
     setUp: () {
-      when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(3)));
-      when(() => cancelAll.execute()).thenAnswer((_) async => const Ok([]));
+      when(() => exchangeOrders.listActive())
+          .thenAnswer((_) async => Ok(orders(3)));
+      when(() => exchangeOrders.cancelAll())
+          .thenAnswer((_) async => const Ok([]));
     },
     build: buildCubit,
     act: (cubit) async {
@@ -105,9 +103,12 @@ void main() {
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'keeps the orders when cancelling them all fails',
     setUp: () {
-      when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(3)));
-      when(() => cancelAll.execute()).thenAnswer(
-        (_) async => const Err(LimitOrderCancellationFailure('cancel all')),
+      when(() => exchangeOrders.listActive())
+          .thenAnswer((_) async => Ok(orders(3)));
+      when(() => exchangeOrders.cancelAll()).thenAnswer(
+        (_) async => const Err(
+          ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.cancel),
+        ),
       );
     },
     build: buildCubit,
@@ -117,14 +118,22 @@ void main() {
     },
     verify: (cubit) {
       expect(cubit.state.orders, hasLength(3));
-      expect(cubit.state.failure, isA<LimitOrderCancellationFailure>());
+      expect(
+        cubit.state.failure,
+        isA<ExchangeLimitOrderFailure>().having(
+          (value) => value.problem,
+          'problem',
+          ExchangeLimitOrderProblem.cancel,
+        ),
+      );
     },
   );
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'reloads when a limit-order notification arrives',
     setUp: () =>
-        when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(1))),
+        when(() => exchangeOrders.listActive())
+            .thenAnswer((_) async => Ok(orders(1))),
     build: buildCubit,
     act: (cubit) async {
       notificationStream.add(
@@ -133,7 +142,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
     },
     verify: (cubit) {
-      verify(() => listActive.execute()).called(1);
+      verify(() => exchangeOrders.listActive()).called(1);
       expect(cubit.state.orders, hasLength(1));
     },
   );
@@ -147,7 +156,7 @@ void main() {
       );
       await Future<void>.delayed(Duration.zero);
     },
-    verify: (_) => verifyNever(() => listActive.execute()),
+    verify: (_) => verifyNever(() => exchangeOrders.listActive()),
   );
 
   final refreshRequests = StreamController<void>.broadcast();
@@ -156,10 +165,10 @@ void main() {
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'reloads when the host screen requests a refresh',
     setUp: () =>
-        when(() => listActive.execute()).thenAnswer((_) async => Ok(orders(1))),
+        when(() => exchangeOrders.listActive())
+            .thenAnswer((_) async => Ok(orders(1))),
     build: () => LimitOrdersCubit(
-      listActive,
-      cancelAll,
+      exchangeOrders,
       canCreate,
       notificationStream.stream,
       refreshRequests: refreshRequests.stream,
@@ -169,7 +178,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
     },
     verify: (cubit) {
-      verify(() => listActive.execute()).called(1);
+      verify(() => exchangeOrders.listActive()).called(1);
       expect(cubit.state.orders, hasLength(1));
     },
   );
