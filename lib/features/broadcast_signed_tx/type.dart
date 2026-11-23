@@ -1,3 +1,3 @@
-import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:satoshifier/bbqr.dart';
 
 typedef ParsedTx = ScannedTransaction;

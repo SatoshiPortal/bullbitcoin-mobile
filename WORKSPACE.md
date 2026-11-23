@@ -217,6 +217,8 @@ graph TD
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings
+  satoshifier --> bull_logger
+  satoshifier --> sync
   screen_awake --> bull_logger
   secrets --> primitives
   secrets --> bull_logger

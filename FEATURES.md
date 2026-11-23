@@ -70,6 +70,10 @@ graph TB
     FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
+    SATOSHIFIER[Satoshifier Package]
+    BROADCAST_SIGNED_TX -->|BBQR assembly| SATOSHIFIER
+    SATOSHIFIER --> SYNC
+    SATOSHIFIER --> BULL_LOGGER
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
