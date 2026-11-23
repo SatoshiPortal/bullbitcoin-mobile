@@ -123,6 +123,47 @@ void main() {
     },
   );
 
+  for (final creating in [true, false]) {
+    test(
+      'account change invalidates an in-flight ${creating ? 'create' : 'delete'}',
+      () async {
+        final session = await authorize();
+        final pending = Completer<http.StreamedResponse>();
+        client.pending = pending.future;
+        final Future<Result<Object?, BackupStorageFailure>> operation;
+        if (creating) {
+          operation = session.create(
+            name: 'file.json',
+            mimeType: 'application/json',
+            bytes: Uint8List.fromList([1]),
+          );
+        } else {
+          operation = session
+              .delete(_object)
+              .then((result) => result.map((_) => null));
+        }
+        await Future<void>.delayed(Duration.zero);
+        google.account = _Account('second@example.invalid');
+        google.account = _Account('first@example.invalid');
+        pending.complete(
+          creating
+              ? _json(_metadata('file'))
+              : http.StreamedResponse(const Stream.empty(), 204),
+        );
+        expect(
+          await operation,
+          isA<Err<Object?, BackupStorageFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<BackupStorageAuthorizationRequiredFailure>(),
+          ),
+        );
+        expect(client.requests.single.method, creating ? 'POST' : 'DELETE');
+        expect(google.disconnects, 0);
+      },
+    );
+  }
+
   test('unadvertised oversized media is rejected while streaming', () async {
     final session = await authorize();
     var cancelled = false;
