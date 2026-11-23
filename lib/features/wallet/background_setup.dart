@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
+import 'package:background_tasks/native_sync.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
 import 'package:bull_logger/bull_logger.dart';
