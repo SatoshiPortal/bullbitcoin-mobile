@@ -112,12 +112,12 @@ class AppRouter {
     homePath: WalletRoute.walletHome.path,
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: SettingsNavigation.open,
-    onAction: (context, action) => context.pushNamed(switch (action) {
-      ExchangeHomeAction.buy => BuyRoute.buy.name,
-      ExchangeHomeAction.sell => SellRoute.sell.name,
-      ExchangeHomeAction.pay => PayRoute.pay.name,
-      ExchangeHomeAction.transfer => SwapRoute.swap.name,
-    }),
+    onAction: (context, action) => switch (action) {
+      ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
+      ExchangeHomeAction.sell => context.pushNamed<void>(SellRoute.sell.name),
+      ExchangeHomeAction.pay => context.pushNamed<void>(PayRoute.pay.name),
+      ExchangeHomeAction.transfer => SwapNavigation.open(context),
+    },
   );
 
   static void _openQuickAction(BuildContext context, QuickAction action) {
