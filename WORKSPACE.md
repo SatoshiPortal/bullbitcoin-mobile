@@ -88,6 +88,8 @@ graph TD
   style novlang stroke:#dd8ff2
   onion["onion"]
   style onion stroke:#cb1217
+  overview["overview"]
+  style overview stroke:#1aefb7
   physical_backup_verification["physical_backup_verification"]
   style physical_backup_verification stroke:#501ef0
   preferences["preferences"]
@@ -140,10 +142,14 @@ graph TD
   access --> secrets
   access -.-> legacy_storage
   address_view --> bull_logger
+  address_view --> bull_payjoin
   address_view --> bull_ui
+  address_view --> scanning
+  address_view --> silent
   address_view --> label_editor
   address_view --> labels
   address_view --> mempool
+  address_view --> preferences
   address_view --> primitives
   address_view --> satoshifier
   address_view --> secrets
@@ -211,12 +217,16 @@ graph TD
   bull_exchange --> bull_payjoin
   bull_exchange --> bull_pricer
   bull_exchange --> bull_ui
+  bull_exchange --> coins
   bull_exchange --> exchange
   bull_exchange --> fees
+  bull_exchange --> fees_feature
   bull_exchange --> file_system
+  bull_exchange --> labels
   bull_exchange --> preferences
   bull_exchange --> primitives
   bull_exchange --> secrets
+  bull_exchange --> spend
   bull_exchange --> sync
   bull_logs --> bull_logger
   bull_logs --> bull_ui
@@ -302,6 +312,12 @@ graph TD
   network --> primitives
   notifications --> bull_logger
   notifications --> primitives
+  overview --> bitcoin_price
+  overview --> bull_logger
+  overview --> bull_quick_actions
+  overview --> bull_ui
+  overview --> primitives
+  overview --> sync
   physical_backup_verification --> bull_ui
   physical_backup_verification --> primitives
   physical_backup_verification --> screen_privacy
@@ -381,10 +397,6 @@ graph TD
   spend --> primitives
   spend --> secrets
   spend --> sync
-  swap_feature --> address_view
-  swap_feature --> bull_ark
-  swap_feature --> bull_logger
-  swap_feature --> bull_pricer
   startup --> access
   startup --> bull_logger
   startup --> bull_payjoin
@@ -399,6 +411,10 @@ graph TD
   startup --> screen_privacy
   startup --> secrets
   startup --> swaps
+  swap_feature --> address_view
+  swap_feature --> bull_ark
+  swap_feature --> bull_logger
+  swap_feature --> bull_pricer
   swap_feature --> bull_ui
   swap_feature --> coins
   swap_feature --> fees
@@ -408,6 +424,7 @@ graph TD
   swap_feature --> receive
   swap_feature --> satoshifier
   swap_feature --> secrets
+  swap_feature --> send
   swap_feature --> signers
   swap_feature --> spend
   swap_feature --> sync
@@ -446,12 +463,16 @@ graph TD
   wallet_import --> bull_logger
   wallet_import --> bull_ui
   wallet_import --> electrum
+  wallet_import --> mnemonic_entry
   wallet_import --> preferences
   wallet_import --> primitives
   wallet_import --> satoshifier
+  wallet_import --> scanning
+  wallet_import --> screen_privacy
   wallet_import --> secrets
   wallet_import --> signers
   wallet_import --> sync
+  wallet_import -.-> rust_bindings
   wizard --> background_tasks
   wizard --> bull_exchange
   wizard --> bull_logger
@@ -482,6 +503,7 @@ graph TD
     label_editor
     mnemonic_entry
     network
+    overview
     physical_backup_verification
     receive
     scanning
