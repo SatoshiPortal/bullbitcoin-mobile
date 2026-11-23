@@ -478,6 +478,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final result = await _refreshPayOrderUsecase.execute(
       orderId: paymentState.payOrder.orderId,
       expectedDepositAddress: paymentState.payOrder.toAddress,
+      expectedLightningInvoice: paymentState.payOrder.lightningInvoice,
     );
 
     // Re-read after the await: the payment may have started or been broadcast
@@ -1091,6 +1092,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           !payOrderDepositAddressMatches(
             order: latestOrder,
             expectedDepositAddress: current.payOrder.toAddress,
+            expectedLightningInvoice: current.payOrder.lightningInvoice,
           )) {
         log.severe(
           error:

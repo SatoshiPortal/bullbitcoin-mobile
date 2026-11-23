@@ -215,6 +215,7 @@ void main() {
       () => refreshOrder.execute(
         orderId: any(named: 'orderId'),
         expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
       ),
     ).thenAnswer(
       (_) async => Ok<FiatPaymentOrder, PayFailure>(

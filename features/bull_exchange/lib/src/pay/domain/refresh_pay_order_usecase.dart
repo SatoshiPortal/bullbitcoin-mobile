@@ -19,6 +19,7 @@ class RefreshPayOrderUsecase {
   Future<Result<FiatPaymentOrder, PayFailure>> execute({
     required String orderId,
     required String? expectedDepositAddress,
+    String? expectedLightningInvoice,
   }) async {
     try {
       final SettingsEntity settings;
@@ -46,9 +47,10 @@ class RefreshPayOrderUsecase {
           return Err(mapPayOrderFailure(failure));
       }
 
-      if (!payOrderDepositAddressMatches(
+      if (!_refreshKeepsDeposit(
         order: order,
         expectedDepositAddress: expectedDepositAddress,
+        expectedLightningInvoice: expectedLightningInvoice,
       )) {
         log.severe(
           error: 'Pay order came back with a different deposit address',
@@ -69,18 +71,45 @@ class RefreshPayOrderUsecase {
   }
 }
 
-/// Whether [order] still points at the deposit address it was created with.
+/// A re-quote keeps an on-chain order's deposit address. A Lightning order's
+/// re-quote may carry a new invoice (an invoice fixes its amount), so only its
+/// rail is kept: still an invoice, never an on-chain address.
+bool _refreshKeepsDeposit({
+  required FiatPaymentOrder order,
+  required String? expectedDepositAddress,
+  required String? expectedLightningInvoice,
+}) {
+  final isLightningOrder =
+      (expectedDepositAddress == null || expectedDepositAddress.isEmpty) &&
+      expectedLightningInvoice != null &&
+      expectedLightningInvoice.isNotEmpty;
+  if (!isLightningOrder) {
+    return payOrderDepositAddressMatches(
+      order: order,
+      expectedDepositAddress: expectedDepositAddress,
+    );
+  }
+  final invoice = order.lightningInvoice;
+  return order.toAddress == null && invoice != null && invoice.isNotEmpty;
+}
+
+/// Whether [order] still points at the deposit it was created with: the
+/// on-chain address, or for a Lightning order (the exchange fills only its
+/// `lightningInvoice`, never an address) the invoice.
 ///
-/// A price-lock refresh that moves the address must never happen in correct
-/// backend operation, so callers refuse the order rather than pay it. This is a
-/// predicate rather than a throwing guard so each caller decides how to surface
-/// the refusal.
+/// A deposit that moves must never happen in correct backend operation, so
+/// callers refuse the order rather than pay it. This is a predicate rather than
+/// a throwing guard so each caller decides how to surface the refusal.
 bool payOrderDepositAddressMatches({
   required FiatPaymentOrder order,
   required String? expectedDepositAddress,
+  String? expectedLightningInvoice,
 }) {
-  if (expectedDepositAddress == null || expectedDepositAddress.isEmpty) {
-    return false;
+  if (expectedDepositAddress != null && expectedDepositAddress.isNotEmpty) {
+    return order.toAddress == expectedDepositAddress;
   }
-  return order.toAddress == expectedDepositAddress;
+  if (expectedLightningInvoice != null && expectedLightningInvoice.isNotEmpty) {
+    return order.lightningInvoice == expectedLightningInvoice;
+  }
+  return false;
 }

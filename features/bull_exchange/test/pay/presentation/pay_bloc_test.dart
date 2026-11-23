@@ -1013,6 +1013,7 @@ void main() {
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
         ),
       ).thenAnswer((_) => refresh.future);
 
@@ -1414,6 +1415,7 @@ void main() {
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
         ),
       ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
       bloc.seed(paymentState().copyWith(isPayjoinEnabled: false));
@@ -1429,6 +1431,7 @@ void main() {
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
         ),
       ).called(1);
     });
@@ -1439,6 +1442,7 @@ void main() {
         refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
         );
 
     setUp(() {
@@ -1623,6 +1627,73 @@ void main() {
         time.flushMicrotasks();
         verifyNever(refreshCall);
       });
+    });
+  });
+
+  // The exchange fills only `lightningInvoice` for a Lightning payin; the
+  // order has no on-chain address (PAY-1).
+  group('PayBloc — external Lightning order', () {
+    const invoice = 'lnbc10u1pexampleinvoice';
+
+    _MockPayOrder lightningOrder({required OrderPayinStatus payin}) {
+      final order = _MockPayOrder();
+      when(() => order.orderId).thenReturn('order-1');
+      when(() => order.payinStatus).thenReturn(payin);
+      when(() => order.toAddress).thenReturn(null);
+      when(() => order.bitcoinAddress).thenReturn(null);
+      when(() => order.lightningInvoice).thenReturn(invoice);
+      return order;
+    }
+
+    setUp(() {
+      when(() => payOrder.toAddress).thenReturn(null);
+      when(() => payOrder.bitcoinAddress).thenReturn(null);
+      when(() => payOrder.lightningInvoice).thenReturn(invoice);
+      when(() => payOrder.payinStatus)
+          .thenReturn(OrderPayinStatus.awaitingPayment);
+      bloc.seed(paymentState());
+    });
+
+    test('a paid invoice reaches success', () async {
+      when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer(
+        (_) async => Ok<FiatPaymentOrder, PayFailure>(
+          lightningOrder(payin: OrderPayinStatus.completed),
+        ),
+      );
+
+      final success = bloc.stream.firstWhere((s) => s is PaySuccessState);
+      bloc.add(const PayEvent.pollOrderStatus());
+      await success;
+    });
+
+    test('an unpaid invoice keeps polling without an address error', () async {
+      when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer(
+        (_) async => Ok<FiatPaymentOrder, PayFailure>(
+          lightningOrder(payin: OrderPayinStatus.awaitingPayment),
+        ),
+      );
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final state = bloc.state as PayPaymentState;
+      expect(state.error, isNull);
+      expect(state.isPolling, isTrue);
+    });
+
+    test('a polled order with a different invoice is refused', () async {
+      final changed = lightningOrder(payin: OrderPayinStatus.awaitingPayment);
+      when(() => changed.lightningInvoice).thenReturn('lnbc1other');
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(changed));
+
+      bloc.add(const PayEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(
+        (bloc.state as PayPaymentState).error,
+        isA<PayDepositAddressChangedFailure>(),
+      );
     });
   });
 
@@ -2126,6 +2197,7 @@ void main() {
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
         ),
       ).thenAnswer(
         (_) async => const Err<FiatPaymentOrder, PayFailure>(
@@ -2161,6 +2233,7 @@ void main() {
           () => refreshPayOrder.execute(
             orderId: any(named: 'orderId'),
             expectedDepositAddress: any(named: 'expectedDepositAddress'),
+            expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
           ),
         ).thenAnswer(
           (_) async => Ok<FiatPaymentOrder, PayFailure>(refreshedOrder),
@@ -2220,6 +2293,7 @@ void main() {
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
+          expectedLightningInvoice: any(named: 'expectedLightningInvoice'),
         ),
       ).thenAnswer(
         (_) async => const Err<FiatPaymentOrder, PayFailure>(

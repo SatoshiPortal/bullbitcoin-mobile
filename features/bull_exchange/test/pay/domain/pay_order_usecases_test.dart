@@ -353,6 +353,68 @@ void main() {
         isFalse,
       );
     });
+
+    // The exchange fills only `lightningInvoice` for a Lightning payin, never
+    // an address (PAY-1).
+    test('a Lightning order matches on its unchanged invoice', () {
+      final order = _MockPayOrder();
+      when(() => order.toAddress).thenReturn(null);
+      when(() => order.lightningInvoice).thenReturn('lnbc1original');
+
+      expect(
+        payOrderDepositAddressMatches(
+          order: order,
+          expectedDepositAddress: null,
+          expectedLightningInvoice: 'lnbc1original',
+        ),
+        isTrue,
+      );
+      expect(
+        payOrderDepositAddressMatches(
+          order: order,
+          expectedDepositAddress: null,
+          expectedLightningInvoice: 'lnbc1other',
+        ),
+        isFalse,
+      );
+    });
+  });
+
+  group('RefreshPayOrderUsecase on a Lightning order', () {
+    test('a re-quote with a new invoice is adopted', () async {
+      final order = _MockPayOrder();
+      when(() => order.toAddress).thenReturn(null);
+      when(() => order.lightningInvoice).thenReturn('lnbc1requoted');
+      when(() => mainnet.refreshPayOrder(any()))
+          .thenAnswer((_) async => Ok(order));
+
+      final result = await buildRefresh().execute(
+        orderId: 'order-1',
+        expectedDepositAddress: null,
+        expectedLightningInvoice: 'lnbc1original',
+      );
+
+      expect((result as Ok<FiatPaymentOrder, PayFailure>).value, same(order));
+    });
+
+    test('a re-quote that moves to an on-chain address is refused', () async {
+      final order = _MockPayOrder();
+      when(() => order.toAddress).thenReturn('bc1qattacker');
+      when(() => order.lightningInvoice).thenReturn(null);
+      when(() => mainnet.refreshPayOrder(any()))
+          .thenAnswer((_) async => Ok(order));
+
+      final result = await buildRefresh().execute(
+        orderId: 'order-1',
+        expectedDepositAddress: null,
+        expectedLightningInvoice: 'lnbc1original',
+      );
+
+      expect(
+        (result as Err<FiatPaymentOrder, PayFailure>).failure,
+        isA<PayDepositAddressChangedFailure>(),
+      );
+    });
   });
 }
 
