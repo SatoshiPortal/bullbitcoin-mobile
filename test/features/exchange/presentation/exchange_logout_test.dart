@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:exchange/testing.dart';
 import 'package:bull_exchange/testing.dart';

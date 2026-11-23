@@ -2,7 +2,6 @@ import 'package:exchange/setup.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';

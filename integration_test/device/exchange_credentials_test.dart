@@ -10,9 +10,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
     as core_exchange;
-import 'package:bb_mobile/features/exchange/exchange_locator.dart'
-    as feature_exchange;
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:exchange/testing.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bbx_api/bbx_api.dart'
@@ -289,10 +286,31 @@ void main() {
     testWidgets(
       'the real WebView result crosses the production authentication graph',
       (tester) async {
-        final graph = GetIt.asNewInstance();
-        graph.registerSingleton<ExchangeCredentials>(repository);
-        feature_exchange.ExchangeLocator.registerUsecases(graph);
-        addTearDown(graph.reset);
+        String? preference;
+        final access = ExchangeAccessLifecycle.open(
+          apiKeyRepository: repository,
+          readEnvironment: () async => true,
+          platformAllowed: () async => true,
+          disconnectNotifications: () async {},
+          clearCookies: () async {},
+          readPreference: () async => preference,
+          writePreference: (value) async {
+            preference = value;
+            return true;
+          },
+        );
+        expect(await access.enable(), isA<Ok>());
+        final exchange = Exchange.open(
+          mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
+          testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
+          readSession: () async => fail('unexpected Exchange API request'),
+          access: access,
+          webAuthEndpoints: (
+            mainnet: Uri.parse(ApiServiceConstants.bbAuthUrl),
+            testnet: Uri.parse(ApiServiceConstants.bbAuthTestUrl),
+          ),
+        );
+        addTearDown(exchange.close);
         final loaded = Completer<void>();
         final controller = WebViewController()
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -332,8 +350,10 @@ void main() {
       window.__credentialProbeMockReady = true;
       </script></body></html>''');
         await loaded.future.timeout(const Duration(seconds: 20));
-        final operation = graph<CompleteExchangeAuthenticationUsecase>(
-          param1: (String script) async {
+        final result = await exchange.authenticateWebSession(
+          isTestnet: true,
+          isCurrent: () => true,
+          evaluateJavaScript: (script) async {
             final ready = await controller.runJavaScriptReturningResult(
               'window.__credentialProbeMockReady === true',
             );
@@ -342,9 +362,7 @@ void main() {
             }
             return controller.runJavaScriptReturningResult(script);
           },
-          param2: (isTestnet: true, isOpen: () => true),
         );
-        final result = await operation.execute(isCurrent: () => true);
         expect(
           result is Ok,
           isTrue,

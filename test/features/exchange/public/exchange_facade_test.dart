@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -39,7 +38,7 @@ void main() {
     savePreferences = _MockSaveExchangePreferencesUsecase();
     webSettings = _MockWebSettings();
     facade = ExchangeFacade(
-      getExchangeWebSettingsUsecase: webSettings,
+      loadWebPreferences: webSettings.execute,
       loadAccount: getAccount.execute,
       saveAccountPreferences: savePreferences.execute,
       resolveAccess: _Resolve(),

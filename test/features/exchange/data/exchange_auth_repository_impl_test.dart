@@ -8,10 +8,8 @@ import 'dart:async';
 
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const fields = {
@@ -27,7 +25,7 @@ const fields = {
 ExchangeAuthRepositoryImpl _repository(Future<Object> Function() response) =>
     ExchangeAuthRepositoryImpl(
       datasource: ExchangeWebAuthDatasource(
-        isTestnet: true,
+        signInUrl: _authUrl(true),
         evaluateJavaScript: (_) => response(),
         isOpen: () => true,
       ),
@@ -79,6 +77,10 @@ Future<ExchangeAccessLifecycle> _access(_Keys keys, bool isTestnet) async {
   final _ = await access.enable();
   return access;
 }
+
+Uri _authUrl(bool isTestnet) => Uri.parse(
+  isTestnet ? ApiServiceConstants.bbAuthTestUrl : ApiServiceConstants.bbAuthUrl,
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -315,7 +317,7 @@ void main() {
         var calls = 0;
         final keys = _Keys();
         final datasource = ExchangeWebAuthDatasource(
-          isTestnet: true,
+          signInUrl: _authUrl(true),
           evaluateJavaScript: (_) async {
             calls++;
             open = false;
@@ -431,7 +433,7 @@ void main() {
     for (final environment in [true, false]) {
       String? script;
       final datasource = ExchangeWebAuthDatasource(
-        isTestnet: environment,
+        signInUrl: _authUrl(environment),
         evaluateJavaScript: (js) async {
           script = js;
           return '{}';

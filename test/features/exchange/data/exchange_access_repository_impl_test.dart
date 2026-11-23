@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_tradi
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
