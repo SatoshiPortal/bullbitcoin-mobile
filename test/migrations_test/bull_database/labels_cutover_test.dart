@@ -192,8 +192,22 @@ void main() {
           await runtime.close();
         }
         expect(source.existsSync(), isTrue);
-        await source.rename('${source.path}.retained');
+        final retained = await source.rename('${source.path}.retained');
         expect(await cutover(activate: true).admit(), isA<Err>());
+        await retained.rename(source.path);
+
+        await file.delete();
+        expect(await cutover(activate: true).admit(), isA<Err>());
+        expect(
+          await cutover(activate: true).prepare(),
+          isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<LegacyImportUnavailable>(),
+          ),
+        );
+        expect(file.existsSync(), isFalse);
+        expect(source.existsSync(), isTrue);
       },
     );
   }
