@@ -74,8 +74,15 @@ flowchart TD
   pkg_receive --> pkg_transactions
   pkg_scanning --> pkg_signers
   pkg_send --> pkg_address_view
+  pkg_send --> pkg_bull_ark
+  pkg_send --> pkg_coins
   pkg_send --> pkg_fees_feature
+  pkg_send --> pkg_label_editor
+  pkg_send --> pkg_receive
   pkg_send --> pkg_scanning
+  pkg_send --> pkg_signers
+  pkg_send --> pkg_silent
+  pkg_send --> pkg_transactions
   pkg_settings --> pkg_access
   pkg_settings --> pkg_address_view
   pkg_settings --> pkg_all_seed_view
@@ -280,7 +287,7 @@ flowchart TD
 | [`physical_backup_verification`](features/physical_backup_verification/pubspec.yaml) | `bull_ui`, `primitives`, `screen_privacy`, `secrets` | — |
 | [`receive`](features/receive/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `labels`, `preferences`, `primitives`, `secrets`, `swaps`, `sync` | — |
 | [`scanning`](features/scanning/pubspec.yaml) | `bull_logger`, `bull_ui` | — |
-| [`send`](features/send/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `electrum`, `fees`, `preferences`, `primitives`, `satoshifier`, `spend`, `sync` | `rust_bindings` |
+| [`send`](features/send/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `electrum`, `fees`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `swaps`, `sync` | `ark`, `rust_bindings` |
 | [`settings`](features/settings/pubspec.yaml) | `background_tasks`, `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_tor`, `bull_ui`, `electrum`, `exchange`, `notifications`, `preferences`, `primitives`, `screen_privacy` | `legacy_storage` |
 | [`signers`](features/signers/pubspec.yaml) | `bitbox_transport`, `bull_logger`, `bull_ui`, `legacy_storage`, `primitives`, `rust_bindings`, `satoshifier`, `screen_awake`, `secrets`, `sync` | — |
 | [`silent`](features/silent/pubspec.yaml) | `bull_logger`, `bull_ui`, `mempool`, `preferences`, `primitives`, `rust_bindings`, `secrets` | — |
