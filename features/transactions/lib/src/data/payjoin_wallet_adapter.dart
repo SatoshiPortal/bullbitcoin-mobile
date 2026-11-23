@@ -45,6 +45,10 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     final key = WalletKey(id: walletId, network: network);
     await _requireSpend(key);
     final metadata = await _loadMetadata(walletId, network);
+    final fingerprint = metadata.secretFingerprint;
+    if (metadata.signer != WalletSigner.local || fingerprint == null) {
+      throw Exception('Payjoin requires a local mnemonic wallet');
+    }
     if (await _arkFundingGuard.admit(
           walletId: walletId,
           network: network,
@@ -53,7 +57,10 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
         case Err()) {
       throw const PayjoinSpendBlockedException(busy: false);
     }
-    final secret = await _loadSecret(metadata);
+    final secret = _unwrap(await _secrets.fetch(fingerprint));
+    if (!secret.info.isMnemonic) {
+      throw StateError('Payjoin requires a local mnemonic wallet');
+    }
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: sync adds the
     // paths first, from the public descriptors.
@@ -125,18 +132,6 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
       throw StateError('Wallet network does not match Payjoin network');
     }
     return metadata;
-  }
-
-  Future<Secret> _loadSecret(WalletRegistration metadata) async {
-    final fingerprint = metadata.secretFingerprint;
-    if (metadata.signer != WalletSigner.local || fingerprint == null) {
-      throw Exception('Payjoin requires a local mnemonic wallet');
-    }
-    final secret = _unwrap(await _secrets.fetch(fingerprint));
-    if (!secret.info.isMnemonic) {
-      throw StateError('Payjoin requires a local mnemonic wallet');
-    }
-    return secret;
   }
 
   /// This adapter already reports every problem by throwing — the port has no failure type — so a package failure becomes a `StateError` naming its kind, never its message.

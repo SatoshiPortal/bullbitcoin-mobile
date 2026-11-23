@@ -45,9 +45,16 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   }) => _protectSpend(walletId, transactionId);
 
   @override
-  Stream<void> watchWallet(String walletId) => _finished.where(
-    (key) => key.id == walletId && key.network is BitcoinNetwork,
-  );
+  Stream<void> watchWallet(String walletId) => _finished
+      .where((key) => key.id == walletId && key.network is BitcoinNetwork)
+      .asyncMap(
+        (key) async => switch (await _wallets.readWallet(key.id)) {
+          Ok(:final value) => value.network == key.network,
+          Err() => false,
+        },
+      )
+      .where((admitted) => admitted)
+      .map((_) {});
 
   /// A refreshed lookup asks the Electrum server about this one transaction
   /// instead of syncing the whole wallet, which takes 15 to 120 seconds
