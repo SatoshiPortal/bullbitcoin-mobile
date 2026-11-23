@@ -9,7 +9,7 @@ import 'package:ark/ark.dart';
 import 'package:ark/funding.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade, WalletFailure;
 import 'package:secrets/custody.dart';

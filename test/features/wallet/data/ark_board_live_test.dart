@@ -30,7 +30,9 @@ import 'dart:io';
 import 'package:preferences/preferences.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:bull_recoverbull/migration.dart';
@@ -374,6 +376,8 @@ void main() {
       expect(restored.secret.id.hex, source.masterFingerprint);
       await ArkForegroundHost.setup(
         locator,
+        inventory: locator<SecretsInventory>(),
+        boardFunding: () => arkBoardFundingBinding(locator),
         arkUrl: Uri.parse(arkUrl!),
         primaryEsploraUrl: Uri.parse(esploraUrl!),
         initializeNew: true,

@@ -7,12 +7,8 @@ import 'dart:ui';
 
 import 'package:background_tasks/background_tasks.dart';
 
-import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:preferences/preferences.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:secrets/custody.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
@@ -34,9 +30,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
-class _Wallets extends Mock implements WalletRegistrations {}
-
-class _Wallet extends Mock implements WalletMetadataModel {}
+class _Wallets extends Mock implements WalletInventory {}
 
 class _Board extends Mock implements ArkBoardFundingPort {}
 
@@ -377,21 +371,27 @@ void main() {
       final settings = _Settings();
       settingsValue = _SettingsValue();
       final wallets = _Wallets();
-      final wallet = _Wallet();
       when(settings.readActiveEnvironment)
           .thenAnswer((_) async => Ok(settingsValue.environment));
       when(settings.readLanguage)
           .thenAnswer((_) async => Ok(settingsValue.language));
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
-      when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
-      when(() => wallet.networkCode).thenReturn('bitcoinRegtest');
-      when(() => wallet.signer).thenReturn(Signer.local);
-      when(() => wallet.isDefault).thenReturn(true);
-      when(() => wallet.masterFingerprint).thenReturn('12345678');
-      when(() => wallet.id).thenReturn('owned-regtest-wallet');
+      when(() => wallets.walletsForNetwork(BitcoinNetwork.regtest)).thenAnswer(
+        (_) async => Ok(
+          walletSelectionForTesting([
+            walletRegistrationForTesting(
+              id: 'owned-regtest-wallet',
+              network: BitcoinNetwork.regtest,
+              isDefault: true,
+              signer: WalletSigner.local,
+              secretFingerprint: Fingerprint('12345678'),
+            ),
+          ]),
+        ),
+      );
       locator.registerSingleton<ActiveEnvironmentReader>(settings);
       locator.registerSingleton<RuntimeDisplayPreferencesReader>(settings);
-      locator.registerSingleton<WalletRegistrations>(wallets);
+      locator.registerSingleton<WalletInventory>(wallets);
       locator.registerSingleton<Bip85Derivations>(_Bip85());
       FakeSecureStoragePlatform().install();
       locator.registerSingleton<Secrets>(
@@ -432,6 +432,7 @@ void main() {
     test('runtime creates and reopens the durable reminder ledger', () async {
       final first = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://100.64.0.9:3535'),
         primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
         initializeNew: true,
@@ -446,6 +447,7 @@ void main() {
       await (first as Ok<ArkForegroundRuntime, ArkFailure>).value.close();
       final reopened = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://100.64.0.9:3535'),
         primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
         initializeNew: false,
@@ -535,6 +537,7 @@ void main() {
     test('a closed runtime refuses further native reads', () async {
       final result = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://100.64.0.9:3535'),
         primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
         initializeNew: true,
@@ -555,6 +558,7 @@ void main() {
     test('the root Ark host serves exactly the feature route paths', () async {
       final result = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://127.0.0.1:3535'),
         primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
         initializeNew: true,
@@ -571,6 +575,7 @@ void main() {
 
     ArkForegroundHost host() => ArkForegroundHost(
       locator,
+      inventory: locator<WalletInventory>(),
       arkUrl: Uri.parse('http://127.0.0.1:3535'),
       primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
       initializeNew: true,
@@ -582,6 +587,7 @@ void main() {
       final binding = _Binding();
       final subject = ArkForegroundHost(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://127.0.0.1:3535'),
         primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
         initializeNew: true,
@@ -626,6 +632,7 @@ void main() {
       final binding = _Binding();
       final result = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://127.0.0.1:3535'),
         primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
         initializeNew: true,
@@ -654,6 +661,7 @@ void main() {
         await expectLater(
           openArkForeground(
             locator,
+            inventory: locator<WalletInventory>(),
             arkUrl: Uri.parse('http://127.0.0.1:3535'),
             primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
             initializeNew: true,
@@ -671,6 +679,7 @@ void main() {
       final bindings = <_Binding>[];
       final subject = ArkForegroundHost(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://127.0.0.1:3535'),
         primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
         initializeNew: true,
@@ -709,6 +718,7 @@ void main() {
         final failure = StateError('board close failed');
         final subject = ArkForegroundHost(
           locator,
+          inventory: locator<WalletInventory>(),
           arkUrl: Uri.parse('http://127.0.0.1:3535'),
           primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
           initializeNew: true,
@@ -742,6 +752,7 @@ void main() {
         var opened = 0;
         final subject = ArkForegroundHost(
           locator,
+          inventory: locator<WalletInventory>(),
           arkUrl: Uri.parse('http://127.0.0.1:3535'),
           primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
           initializeNew: true,
@@ -770,6 +781,7 @@ void main() {
     test('a wallet network change makes the runtime stale', () async {
       final result = await openArkForeground(
         locator,
+        inventory: locator<WalletInventory>(),
         arkUrl: Uri.parse('http://100.64.0.9:3535'),
         primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
         initializeNew: true,
@@ -787,6 +799,7 @@ void main() {
       expect(
         await openArkForeground(
           locator,
+          inventory: locator<WalletInventory>(),
           arkUrl: Uri.parse('http://100.64.0.9:3535'),
           primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
           initializeNew: true,
