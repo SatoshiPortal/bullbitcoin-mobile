@@ -275,30 +275,6 @@
   "buyBitcoinPrice": "Precio de Bitcoin",
   "buyPayoutMethod": "Método de pago",
   "buyAwaitingConfirmation": "Esperando confirmación ",
-  "buyConfirmPurchase": "Confirmar compra",
-  "buyYouBought": "Ha comprado {amount} por {fiatAmount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Su pago será enviado en ",
-  "buyViewDetails": "Ver detalles",
-  "buyAccelerateTransaction": "Acelerar transacción",
-  "buyGetConfirmedFaster": "Confirmarla más rápido",
-  "buyConfirmExpressWithdrawal": "Confirmar retiro express",
-  "buyNetworkFeeExplanation": "La tarifa de red de Bitcoin será deducida del monto que recibe y recaudada por los mineros de Bitcoin",
-  "buyNetworkFees": "Tarifas de red",
-  "buyEstimatedFeeValue": "Valor estimado de tarifa",
-  "buyNetworkFeeRate": "Tasa de tarifa de red",
-  "buyConfirmationTime": "Tiempo de confirmación",
-  "buyConfirmationTimeValue": "~10 minutos",
-  "buyWaitForFreeWithdrawal": "Esperar retiro gratuito",
-  "buyConfirmExpress": "Confirmar express",
-  "buyBitcoinSent": "¡Bitcoin enviado!",
-  "buyThatWasFast": "Fue rápido, ¿verdad?",
   "sellTitle": "Vender Bitcoin",
   "sellSelectWallet": "Seleccionar Billetera",
   "sellWhichWalletQuestion": "¿Desde cual billetera desea vender?",
@@ -962,56 +938,8 @@
   "bip85NoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
   "connectingToKeyServer": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
   "anErrorOccurred": "Ocurrió un error",
-  "dcaSuccessTitle": "¡Compra Recurrente Activada!",
-  "dcaSuccessMessageHourly": "Comprará {amount} cada hora",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "Comprará {amount} cada día",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "Comprará {amount} cada semana",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "Comprará {amount} cada mes",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "Volver al inicio",
-  "dcaChooseWalletTitle": "Elegir Billetera de Bitcoin",
-  "dcaWalletSelectionDescription": "Las compras de Bitcoin se realizarán automáticamente según este calendario.",
-  "dcaNetworkValidationError": "Por favor seleccione una red",
-  "dcaEnterLightningAddressLabel": "Ingresar Dirección Lightning",
   "dcaLightningAddressEmptyError": "Por favor ingrese una dirección Lightning",
   "dcaLightningAddressInvalidError": "Por favor ingrese una dirección Lightning válida",
-  "dcaUseDefaultLightningAddress": "Usar mi dirección Lightning predeterminada.",
-  "dcaWalletSelectionContinueButton": "Continuar",
-  "dcaSelectFrequencyLabel": "Seleccionar Frecuencia",
-  "dcaSelectWalletTypeLabel": "Seleccionar Tipo de Billetera de Bitcoin",
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "dcaWalletTypeLightning": "Red Lightning (LN)",
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "dcaWalletBitcoinSubtitle": "Mínimo 0.001 BTC",
-  "dcaWalletLightningSubtitle": "Requiere billetera compatible, máximo 0.25 BTC",
-  "dcaWalletLiquidSubtitle": "Requiere billetera compatible",
   "swapInternalTransferTitle": "Intercambio interno",
   "swapConfirmTransferTitle": "Confirmar intercambio",
   "swapInfoDescription": "Intercambie Bitcoin sin problemas entre sus billeteras. Mantenga fondos en la Billetera de Pagos Instantáneos solo para gastos del día a día.",
@@ -2153,58 +2081,9 @@
   "fundExchangeCopGeneratePaymentLink": "Generar enlace de pago",
   "fundExchangeCopRedirectMessage": "Serás redirigido a una página externa para realizar el pago.",
   "fundExchangeCopOpenPaymentLink": "Abrir enlace de pago",
-  "dcaSetupTitle": "Configurar compra recurrente",
-  "dcaSetupInsufficientBalance": "Saldo insuficiente",
-  "dcaSetupInsufficientBalanceMessage": "No tiene suficiente saldo para crear esta orden.",
-  "dcaSetupFundAccount": "Financiar su cuenta",
-  "dcaSetupScheduleMessage": "Las compras de Bitcoin se realizarán automáticamente según este calendario.",
-  "dcaSetupFrequencyError": "Por favor seleccione una frecuencia",
-  "dcaSetupContinue": "Continuar",
-  "dcaConfirmTitle": "Confirmar compra recurrente",
-  "dcaConfirmAutoMessage": "Las órdenes de compra se realizarán automáticamente según esta configuración. Puede desactivarlas en cualquier momento.",
-  "dcaConfirmFrequency": "Frecuencia",
-  "dcaConfirmFrequencyHourly": "Cada hora",
-  "dcaConfirmFrequencyDaily": "Cada día",
-  "dcaConfirmFrequencyWeekly": "Cada semana",
-  "dcaConfirmFrequencyMonthly": "Cada mes",
-  "dcaConfirmAmount": "Monto",
-  "dcaConfirmPaymentMethod": "Método de pago",
-  "dcaConfirmPaymentBalance": "Saldo {currency}",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "Tipo de orden",
-  "dcaConfirmOrderTypeValue": "Compra recurrente",
-  "dcaConfirmNetwork": "Red",
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "dcaConfirmNetworkLightning": "Lightning",
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "dcaConfirmLightningAddress": "Dirección Lightning",
-  "dcaConfirmContinue": "Continuar",
-  "buyInputTitle": "Comprar Bitcoin",
-  "buyInputMinAmountError": "Debe comprar al menos",
-  "buyInputMaxAmountError": "No puede comprar más de",
   "buyInputKycPending": "Verificación de identidad KYC pendiente",
   "buyInputKycMessage": "Debe completar primero la verificación de identidad",
   "buyInputCompleteKyc": "Completar KYC",
-  "buyInputInsufficientBalance": "Saldo insuficiente",
-  "buyInputInsufficientBalanceMessage": "No tiene suficiente saldo para crear esta orden.",
-  "buyInputFundAccount": "Financiar su cuenta",
-  "buyInputContinue": "Continuar",
-  "buyConfirmTitle": "Comprar Bitcoin",
-  "buyConfirmYouPay": "Usted paga",
-  "buyConfirmYouReceive": "Usted recibe",
-  "buyConfirmBitcoinPrice": "Precio de Bitcoin",
-  "buyConfirmPayoutWallet": "Cartera de pago",
-  "buyPayoutMethodLiquid": "L-BTC en Liquid",
-  "buyPayoutMethodBitcoin": "BTC en la cadena de Bitcoin",
-  "buyConfirmPayoutMethod": "Método de pago",
-  "buyConfirmExternalWallet": "Billetera Bitcoin externo",
-  "buyConfirmAwaitingConfirmation": "Esperando confirmación ",
   "sellSendPaymentTitle": "Confirmar pago",
   "sellSendPaymentPriceRefresh": "El precio se actualizará en ",
   "sellSendPaymentOrderNumber": "Número de orden",
@@ -2430,10 +2309,6 @@
   "withdrawOwnershipOtherAccount": "Es la cuenta de otra persona",
   "navigationTabWallet": "Billetera",
   "navigationTabExchange": "Intercambio",
-  "buyUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
-  "buyBelowMinAmountError": "Está intentando comprar por debajo del monto mínimo.",
-  "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
-  "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "withdrawBelowMinAmountError": "La cantidad mínima es {amount} {currency}",
   "withdrawAboveMaxAmountError": "La cantidad máxima es {amount} {currency}",
@@ -3695,7 +3570,6 @@
   "exchangePaymentSentLeave": "Salir",
   "payQuoteExpiredError": "Este precio ha caducado. Se está cargando uno nuevo; revísalo antes de confirmar.",
   "exchangeQuoteUnavailableError": "No pudimos obtener un precio actualizado. Inténtalo de nuevo o vuelve atrás y empieza una nueva orden.",
-  "buyQuoteExpiredError": "Este precio ha caducado. Se está cargando uno nuevo; revísalo antes de confirmar.",
   "recipientsFieldBankAccountIban": "Número de cuenta bancaria (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Los retiros aparecen como una transferencia a ti mismo con el nombre de tu cuenta",
   "sellPayoutBalance": "Agregar a mi saldo de cuenta",

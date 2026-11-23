@@ -1980,4 +1980,339 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => '금액';
+
+  @override
+  String get buyPaymentMethod => '지불 방법';
+
+  @override
+  String get buyMax => '최대';
+
+  @override
+  String get buySelectWallet => '지갑 선택';
+
+  @override
+  String get buyEnterBitcoinAddress => '비트 코인 주소를 입력';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H...6Y6ALV70M0';
+
+  @override
+  String get buyConfirmPurchase => '자주 묻는 질문';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return '$fiatAmount으로 $amount을 구매했습니다';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => '당신의 지불금은 보내질 것입니다 ';
+
+  @override
+  String get buyViewDetails => '더 보기';
+
+  @override
+  String get buyAccelerateTransaction => '계정 만들기';
+
+  @override
+  String get buyGetConfirmedFaster => '더 빠른 확인';
+
+  @override
+  String get buyConfirmExpressWithdrawal => '자주 묻는 질문';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'Bitcoin 네트워크 수수료는 Bitcoin 광부에 의해 수신 및 수집 한 금액에서 공제됩니다';
+
+  @override
+  String get buyNetworkFees => '네트워크 수수료';
+
+  @override
+  String get buyEstimatedFeeValue => '예상 수수료 값';
+
+  @override
+  String get buyNetworkFeeRate => '네트워크 요금';
+
+  @override
+  String get buyConfirmationTime => '확인 시간';
+
+  @override
+  String get buyConfirmationTimeValue => '~10분';
+
+  @override
+  String get buyWaitForFreeWithdrawal => '무료 인출';
+
+  @override
+  String get buyConfirmExpress => '자주 묻는 질문';
+
+  @override
+  String get buyBitcoinSent => '비트코인 전송!';
+
+  @override
+  String get buyThatWasFast => '그것은 빠르지 않았습니까?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => '안전한 Bitcoin';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => '즉시 결제';
+
+  @override
+  String get dcaSuccessTitle => 'Recurring 구매는 활성입니다!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return '매 시간마다 $amount를 구입할 것입니다';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return '매일 $amount를 구입할 것입니다';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return '매주 $amount를 살 것입니다';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return '매월 $amount를 구입할 것입니다';
+  }
+
+  @override
+  String get dcaBackToHomeButton => '집으로 돌아가기';
+
+  @override
+  String get dcaChooseWalletTitle => '비트코인 지갑 선택';
+
+  @override
+  String get dcaWalletSelectionDescription => 'Bitcoin 구매는이 일정 당 자동으로 배치됩니다.';
+
+  @override
+  String get dcaNetworkValidationError => '네트워크 선택';
+
+  @override
+  String get dcaEnterLightningAddressLabel => '연락처';
+
+  @override
+  String get dcaUseDefaultLightningAddress => '기본 번개 주소를 사용합니다.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => '계속하기';
+
+  @override
+  String get dcaSelectFrequencyLabel => '선택 빈도';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'Bitcoin Wallet 유형 선택';
+
+  @override
+  String get dcaWalletTypeBitcoin => '비트 코인 (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => '번개 네트워크 (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => '액체 (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => '최소 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle => '호환 지갑, 최대 0.25 BTC 필요';
+
+  @override
+  String get dcaWalletLiquidSubtitle => '호환 지갑 필요';
+
+  @override
+  String get dcaSetupTitle => 'Recurring 구매';
+
+  @override
+  String get dcaSetupInsufficientBalance => '충분한 균형';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage => '이 주문을 만들 수있는 충분한 균형이 없습니다.';
+
+  @override
+  String get dcaSetupFundAccount => '계정 생성';
+
+  @override
+  String get dcaSetupScheduleMessage => 'Bitcoin 구매는이 일정 당 자동으로 배치됩니다.';
+
+  @override
+  String get dcaSetupFrequencyError => '주파수 선택';
+
+  @override
+  String get dcaSetupContinue => '계속하기';
+
+  @override
+  String get dcaConfirmTitle => '자주 묻는 질문 구매하기';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      '주문은 이 설정에 따라 자동으로 배치됩니다. 언제든지 비활성화 할 수 있습니다.';
+
+  @override
+  String get dcaConfirmFrequency => '주파수 영역';
+
+  @override
+  String get dcaConfirmFrequencyHourly => '매시간';
+
+  @override
+  String get dcaConfirmFrequencyDaily => '매일';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => '매주';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => '매월';
+
+  @override
+  String get dcaConfirmAmount => '계정 정보';
+
+  @override
+  String get dcaConfirmPaymentMethod => '지불 방법';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency 밸런스';
+  }
+
+  @override
+  String get dcaConfirmOrderType => '주문 유형';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'Recurring 구매';
+
+  @override
+  String get dcaConfirmNetwork => '회사연혁';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => '비트 코인';
+
+  @override
+  String get dcaConfirmNetworkLightning => '연락처';
+
+  @override
+  String get dcaConfirmNetworkLiquid => '제품정보';
+
+  @override
+  String get dcaConfirmLightningAddress => '연락처';
+
+  @override
+  String get dcaConfirmContinue => '계속하기';
+
+  @override
+  String get buyInputTitle => 'Bitcoin 구매';
+
+  @override
+  String get buyInputMinAmountError => '당신은 적어도 사야한다';
+
+  @override
+  String get buyInputMaxAmountError => '더 이상 살 수 없습니다';
+
+  @override
+  String get buyInputKycPending => 'KYC ID 검증 완료';
+
+  @override
+  String get buyInputKycMessage => 'ID Verification을 먼저 완료해야 합니다';
+
+  @override
+  String get buyInputCompleteKyc => '완료 KYC';
+
+  @override
+  String get buyInputInsufficientBalance => '충분한 균형';
+
+  @override
+  String get buyInputInsufficientBalanceMessage => '이 주문을 만들 수있는 충분한 균형이 없습니다.';
+
+  @override
+  String get buyInputFundAccount => '계정 생성';
+
+  @override
+  String get buyInputContinue => '계속하기';
+
+  @override
+  String get buyConfirmTitle => 'Bitcoin 구매';
+
+  @override
+  String get buyConfirmYouPay => '결제하기';
+
+  @override
+  String get buyConfirmYouReceive => '견적 요청';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoin 가격';
+
+  @override
+  String get buyConfirmPayoutWallet => '지급 지갑';
+
+  @override
+  String get buyConfirmPayoutMethod => 'Payout 방법';
+
+  @override
+  String get buyPayoutMethodLiquid => 'Liquid의 L-BTC';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'Bitcoin 체인의 BTC';
+
+  @override
+  String get buyConfirmExternalWallet => '외부 Bitcoin 지갑';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'Awaiting 확인 ';
+
+  @override
+  String get buyUnauthenticatedError => '인증되지 않습니다. 자주 묻는 질문.';
+
+  @override
+  String get buyBelowMinAmountError => '최소 금액 아래 구매하려고 합니다.';
+
+  @override
+  String get buyAboveMaxAmountError => '최대 금액 이상 구매하려고합니다.';
+
+  @override
+  String get buyUnexpectedError =>
+      '현재 주문을 생성할 수 없습니다. 다시 시도하거나 고객 지원에 문의해 주세요.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      '계정을 불러올 수 없습니다. 인터넷 연결과 로그인 상태를 확인한 뒤 다시 시도하세요.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      '구매한 비트코인을 받을 Lightning 주소를 입력하세요.';
+
+  @override
+  String get dcaReceiveAddressError => '지갑에서 수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.';
+
+  @override
+  String get dcaOrderCreationError => '반복 구매를 생성할 수 없습니다. 나중에 다시 시도해 주세요.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

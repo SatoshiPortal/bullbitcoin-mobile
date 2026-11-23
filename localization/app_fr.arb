@@ -273,30 +273,6 @@
   "buyBitcoinPrice": "Prix du Bitcoin",
   "buyPayoutMethod": "Méthode de paiement",
   "buyAwaitingConfirmation": "En attente de confirmation ",
-  "buyConfirmPurchase": "Confirmer l'achat",
-  "buyYouBought": "Vous avez acheté {amount} pour {fiatAmount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Votre paiement sera envoyé dans ",
-  "buyViewDetails": "Voir les détails",
-  "buyAccelerateTransaction": "Accélérer la transaction",
-  "buyGetConfirmedFaster": "Faites-la confirmer plus rapidement",
-  "buyConfirmExpressWithdrawal": "Confirmer le retrait express",
-  "buyNetworkFeeExplanation": "Les frais de réseau Bitcoin seront déduits du montant que vous recevez et collectés par les mineurs de Bitcoin",
-  "buyNetworkFees": "Frais de réseau",
-  "buyEstimatedFeeValue": "Valeur estimée des frais",
-  "buyNetworkFeeRate": "Taux des frais de réseau",
-  "buyConfirmationTime": "Temps de confirmation",
-  "buyConfirmationTimeValue": "~10 minutes",
-  "buyWaitForFreeWithdrawal": "Attendre le retrait gratuit",
-  "buyConfirmExpress": "Confirmer l'express",
-  "buyBitcoinSent": "Bitcoin envoyé !",
-  "buyThatWasFast": "C'était rapide, n'est-ce pas ?",
   "sellTitle": "Vendre du Bitcoin",
   "sellSelectWallet": "Sélectionner le portefeuille",
   "sellWhichWalletQuestion": "De quel portefeuille voulez-vous vendre ?",
@@ -958,56 +934,8 @@
   "bip85NoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "connectingToKeyServer": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
   "anErrorOccurred": "Une erreur s'est produite",
-  "dcaSuccessTitle": "Achat récurrent activé !",
-  "dcaSuccessMessageHourly": "Vous achèterez {amount} chaque heure",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "Vous achèterez {amount} chaque jour",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "Vous achèterez {amount} chaque semaine",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "Vous achèterez {amount} chaque mois",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "Retour à l'accueil",
-  "dcaChooseWalletTitle": "Choisir un portefeuille Bitcoin",
-  "dcaWalletSelectionDescription": "Les achats de Bitcoin seront effectués automatiquement selon ce calendrier.",
-  "dcaNetworkValidationError": "Veuillez sélectionner un réseau",
-  "dcaEnterLightningAddressLabel": "Entrer une adresse Lightning",
   "dcaLightningAddressEmptyError": "Veuillez entrer une adresse Lightning",
   "dcaLightningAddressInvalidError": "Veuillez entrer une adresse Lightning valide",
-  "dcaUseDefaultLightningAddress": "Utiliser mon adresse Lightning par défaut.",
-  "dcaWalletSelectionContinueButton": "Continuer",
-  "dcaSelectFrequencyLabel": "Sélectionner la fréquence",
-  "dcaSelectWalletTypeLabel": "Sélectionner le type de portefeuille Bitcoin",
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "dcaWalletBitcoinSubtitle": "Minimum 0,001 BTC",
-  "dcaWalletLightningSubtitle": "Nécessite un portefeuille compatible, maximum 0,25 BTC",
-  "dcaWalletLiquidSubtitle": "Nécessite un portefeuille compatible",
   "swapInternalTransferTitle": "Échange interne",
   "swapConfirmTransferTitle": "Confirmer l'échange",
   "swapInfoDescription": "Échangez des Bitcoin facilement entre vos portefeuilles. Ne conservez des fonds dans le portefeuille de paiement instantané que pour les dépenses quotidiennes.",
@@ -2169,58 +2097,9 @@
   "fundExchangeSpeiSubtitle": "Transférer des fonds en utilisant votre CLABE",
   "fundExchangeBankTransfer": "Virement bancaire",
   "fundExchangeBankTransferSubtitle": "Envoyer un virement bancaire depuis votre compte bancaire",
-  "dcaSetupTitle": "Configurer l'achat récurrent",
-  "dcaSetupInsufficientBalance": "Solde insuffisant",
-  "dcaSetupInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
-  "dcaSetupFundAccount": "Financer votre compte",
-  "dcaSetupScheduleMessage": "Les achats de Bitcoin seront placés automatiquement selon ce calendrier.",
-  "dcaSetupFrequencyError": "Veuillez sélectionner une fréquence",
-  "dcaSetupContinue": "Continuer",
-  "dcaConfirmTitle": "Confirmer l'achat récurrent",
-  "dcaConfirmAutoMessage": "Les ordres d'achat seront placés automatiquement selon ces paramètres. Vous pouvez les désactiver à tout moment.",
-  "dcaConfirmFrequency": "Fréquence",
-  "dcaConfirmFrequencyHourly": "Toutes les heures",
-  "dcaConfirmFrequencyDaily": "Tous les jours",
-  "dcaConfirmFrequencyWeekly": "Toutes les semaines",
-  "dcaConfirmFrequencyMonthly": "Tous les mois",
-  "dcaConfirmAmount": "Montant",
-  "dcaConfirmPaymentMethod": "Méthode de paiement",
-  "dcaConfirmPaymentBalance": "Solde {currency}",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "Type de commande",
-  "dcaConfirmOrderTypeValue": "Achat récurrent",
-  "dcaConfirmNetwork": "Réseau",
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "dcaConfirmNetworkLightning": "Lightning",
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "dcaConfirmLightningAddress": "Adresse Lightning",
-  "dcaConfirmContinue": "Continuer",
-  "buyInputTitle": "Acheter du Bitcoin",
-  "buyInputMinAmountError": "Vous devez acheter au moins",
-  "buyInputMaxAmountError": "Vous ne pouvez pas acheter plus de",
   "buyInputKycPending": "Vérification d'identité KYC en attente",
   "buyInputKycMessage": "Vous devez d'abord compléter la vérification d'identité",
   "buyInputCompleteKyc": "Compléter le KYC",
-  "buyInputInsufficientBalance": "Solde insuffisant",
-  "buyInputInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
-  "buyInputFundAccount": "Financer votre compte",
-  "buyInputContinue": "Continuer",
-  "buyConfirmTitle": "Acheter du Bitcoin",
-  "buyConfirmYouPay": "Vous payez",
-  "buyConfirmYouReceive": "Vous recevez",
-  "buyConfirmBitcoinPrice": "Prix du Bitcoin",
-  "buyConfirmPayoutWallet": "Portefeuille de paiement",
-  "buyPayoutMethodLiquid": "L-BTC sur Liquid",
-  "buyPayoutMethodBitcoin": "BTC sur la chaîne Bitcoin",
-  "buyConfirmPayoutMethod": "Méthode de paiement",
-  "buyConfirmExternalWallet": "Portefeuille Bitcoin externe",
-  "buyConfirmAwaitingConfirmation": "En attente de confirmation ",
   "sellSendPaymentTitle": "Confirmer le paiement",
   "sellSendPaymentPriceRefresh": "Le prix se rafraîchira dans ",
   "sellSendPaymentOrderNumber": "Numéro de commande",
@@ -2445,10 +2324,6 @@
   "withdrawOwnershipOtherAccount": "C'est le compte de quelqu'un d'autre",
   "navigationTabWallet": "Portefeuille",
   "navigationTabExchange": "Échange",
-  "buyUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
-  "buyBelowMinAmountError": "Vous essayez d'acheter en dessous du montant minimum.",
-  "buyAboveMaxAmountError": "Vous essayez d'acheter au-dessus du montant maximum.",
-  "buyUnexpectedError": "Votre ordre n'a pas pu être créé pour le moment. Veuillez réessayer ou contacter le support.",
   "withdrawUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
   "withdrawBelowMinAmountError": "Le montant minimum est {amount} {currency}",
   "withdrawAboveMaxAmountError": "Le montant maximum est {amount} {currency}",
@@ -3386,10 +3261,6 @@
   "settingsPayjoinServersTitle": "Serveurs",
   "bitcoinSettingsPayjoinTitle": "Payjoin",
   "receivePayjoinFallbackCountdown": "Retour à un paiement normal dans",
-  "dcaAccountUnavailableError": "Impossible de charger votre compte. Vérifiez votre connexion, assurez-vous d'être connecté et réessayez.",
-  "dcaLightningAddressRequiredError": "Saisissez une adresse Lightning pour recevoir vos achats.",
-  "dcaReceiveAddressError": "Impossible de préparer une adresse de réception dans votre portefeuille. Veuillez réessayer.",
-  "dcaOrderCreationError": "L'achat récurrent n'a pas pu être créé. Veuillez réessayer plus tard.",
   "settingsPayjoinDisclaimerTitle": "Avertissement Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Avertissement Payjoin",
   "settingsPayjoinAdvancedTitle": "Réglages avancés du Payjoin",
@@ -3669,7 +3540,6 @@
   "exchangePaymentSentLeave": "Quitter",
   "payQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
   "exchangeQuoteUnavailableError": "Impossible d'obtenir un nouveau prix. Réessayez, ou revenez en arrière pour créer un nouvel ordre.",
-  "buyQuoteExpiredError": "Ce prix a expiré. Un nouveau prix est en cours de chargement ; vérifiez-le avant de confirmer.",
   "recipientsFieldBankAccountIban": "Numéro de compte bancaire (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Les retraits apparaissent comme un virement à vous-même au nom de votre compte",
   "sellPayoutBalance": "Ajouter à mon solde de compte",

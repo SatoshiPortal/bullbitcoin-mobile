@@ -507,30 +507,6 @@
   "buyBitcoinPrice": "Bitcoin মূল্য",
   "buyPayoutMethod": "পেআউট পদ্ধতি",
   "buyAwaitingConfirmation": "নিশ্চিতকৰণৰ বাবে অপেক্ষা কৰা হৈছে ",
-  "buyConfirmPurchase": "কেনাকাটা নিশ্চিত কৰক",
-  "buyYouBought": "আপুনি {fiatAmount}ৰ বিনিময়ত {amount} কিনিলে",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "আপোনাৰ পেআউট পঠোৱা হ'ব ",
-  "buyViewDetails": "বিৱৰণ চাওক",
-  "buyAccelerateTransaction": "লেনদেন ত্বৰান্বিত কৰক",
-  "buyGetConfirmedFaster": "দ্ৰুতভাৱে নিশ্চিত কৰাওক",
-  "buyConfirmExpressWithdrawal": "এক্সপ্ৰেছ উত্তোলন নিশ্চিত কৰক",
-  "buyNetworkFeeExplanation": "Bitcoin নেটৱৰ্ক মাচুল আপুনি পাব পৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব আৰু Bitcoin miners-ৰ দ্বাৰা সংগ্ৰহ কৰা হ'ব",
-  "buyNetworkFees": "নেটৱৰ্ক মাচুল",
-  "buyEstimatedFeeValue": "আনুমানিক মাচুলৰ মূল্য",
-  "buyNetworkFeeRate": "নেটৱৰ্ক মাচুলৰ হাৰ",
-  "buyConfirmationTime": "নিশ্চিতকৰণৰ সময়",
-  "buyConfirmationTimeValue": "~10 মিনিট",
-  "buyWaitForFreeWithdrawal": "বিনামূলীয়া উত্তোলনৰ বাবে অপেক্ষা কৰক",
-  "buyConfirmExpress": "এক্সপ্ৰেছ নিশ্চিত কৰক",
-  "buyBitcoinSent": "Bitcoin পঠোৱা হৈছে!",
-  "buyThatWasFast": "সেয়া দ্ৰুত আছিল, নহয়নে?",
   "sellTitle": "Bitcoin বিক্ৰী কৰক",
   "sellSelectWallet": "Wallet বাছক",
   "sellWhichWalletQuestion": "আপুনি কোন wallet-ৰ পৰা বিক্ৰী কৰিব বিচাৰে?",
@@ -1218,66 +1194,6 @@
   "@anErrorOccurred": {
     "description": "Generic error message"
   },
-  "dcaSuccessTitle": "পুনৰাবৃত্তি ক্ৰয় সক্ৰিয় হৈছে!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
-  },
-  "dcaSuccessMessageHourly": "আপুনি প্ৰতি ঘণ্টাত {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageDaily": "আপুনি প্ৰতিদিনে {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageWeekly": "আপুনি প্ৰতি সপ্তাহত {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaSuccessMessageMonthly": "আপুনি প্ৰতি মাহত {amount} ক্ৰয় কৰিব",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaBackToHomeButton": "ঘৰলৈ ওভতক",
-  "@dcaBackToHomeButton": {
-    "description": "Button label to return to exchange home screen"
-  },
-  "dcaChooseWalletTitle": "Bitcoin ৱালেট বাছনি কৰক",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
-  },
-  "dcaWalletSelectionDescription": "এই সময়সূচী অনুযায়ী Bitcoin ক্ৰয় স্বয়ংক্ৰিয়ভাৱে কৰা হ'ব।",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
-  },
-  "dcaNetworkValidationError": "অনুগ্ৰহ কৰি এটা নেটৱৰ্ক বাছনি কৰক",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
-  },
-  "dcaEnterLightningAddressLabel": "Lightning ঠিকনা দিয়ক",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
-  },
   "dcaLightningAddressEmptyError": "অনুগ্ৰহ কৰি এটা Lightning ঠিকনা দিয়ক",
   "@dcaLightningAddressEmptyError": {
     "description": "Validation error when Lightning address field is empty"
@@ -1285,46 +1201,6 @@
   "dcaLightningAddressInvalidError": "অনুগ্ৰহ কৰি এটা বৈধ Lightning ঠিকনা দিয়ক",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "dcaUseDefaultLightningAddress": "মোৰ ডিফল্ট Lightning ঠিকনা ব্যৱহাৰ কৰক।",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
-  "dcaWalletSelectionContinueButton": "অব্যাহত ৰাখক",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
-  },
-  "dcaSelectFrequencyLabel": "কম্পাঙ্ক বাছনি কৰক",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
-  },
-  "dcaSelectWalletTypeLabel": "Bitcoin ৱালেটৰ ধৰণ বাছনি কৰক",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
-  },
-  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
-  "@dcaWalletTypeBitcoin": {
-    "description": "Radio button option for Bitcoin wallet"
-  },
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
-  "@dcaWalletTypeLightning": {
-    "description": "Radio button option for Lightning wallet"
-  },
-  "dcaWalletTypeLiquid": "Liquid (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
-  },
-  "dcaWalletBitcoinSubtitle": "ন্যূনতম 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
-  "dcaWalletLightningSubtitle": "সামঞ্জস্যপূৰ্ণ ৱালেট প্ৰয়োজন, সৰ্বোচ্চ 0.25 BTC",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
-  },
-  "dcaWalletLiquidSubtitle": "সামঞ্জস্যপূৰ্ণ ৱালেট প্ৰয়োজন",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "swapInternalTransferTitle": "অভ্যন্তৰীণ Swap",
   "@swapInternalTransferTitle": {
@@ -4669,123 +4545,6 @@
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
   },
-  "dcaSetupTitle": "Recurring Buy স্থাপন কৰক",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
-  },
-  "dcaSetupInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
-  },
-  "dcaSetupInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
-  "dcaSetupFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
-  },
-  "dcaSetupScheduleMessage": "এই সময়সূচী অনুযায়ী Bitcoin ক্ৰয় স্বয়ংক্ৰিয়ভাৱে ৰখা হ'ব।",
-  "@dcaSetupScheduleMessage": {
-    "description": "DCA schedule explanation"
-  },
-  "dcaSetupFrequencyError": "অনুগ্ৰহ কৰি এটা পৌনঃপুনিকতা বাছনি কৰক",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
-  "dcaSetupContinue": "অব্যাহত ৰাখক",
-  "@dcaSetupContinue": {
-    "description": "Continue button on DCA setup"
-  },
-  "dcaConfirmTitle": "Recurring Buy নিশ্চিত কৰক",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
-  },
-  "dcaConfirmAutoMessage": "এই ছেটিংছ অনুযায়ী buy অৰ্ডাৰসমূহ স্বয়ংক্ৰিয়ভাৱে ৰখা হ'ব। আপুনি যিকোনো সময়ত ইয়াক নিষ্ক্ৰিয় কৰিব পাৰিব।",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
-  },
-  "dcaConfirmFrequency": "পৌনঃপুনিকতা",
-  "@dcaConfirmFrequency": {
-    "description": "Field label for frequency"
-  },
-  "dcaConfirmFrequencyHourly": "প্ৰতি ঘণ্টাত",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
-  "dcaConfirmFrequencyDaily": "প্ৰতিদিনে",
-  "@dcaConfirmFrequencyDaily": {
-    "description": "Daily frequency label"
-  },
-  "dcaConfirmFrequencyWeekly": "প্ৰতি সপ্তাহত",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
-  "dcaConfirmFrequencyMonthly": "প্ৰতি মাহত",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
-  },
-  "dcaConfirmAmount": "পৰিমাণ",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
-  },
-  "dcaConfirmPaymentMethod": "পৰিশোধ পদ্ধতি",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
-  },
-  "dcaConfirmPaymentBalance": "{currency} ব্যালেন্স",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "dcaConfirmOrderType": "অৰ্ডাৰৰ ধৰণ",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
-  },
-  "dcaConfirmOrderTypeValue": "Recurring buy",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
-  "dcaConfirmNetwork": "নেটৱৰ্ক",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
-  },
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
-  "dcaConfirmNetworkLightning": "Lightning",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
-  "dcaConfirmNetworkLiquid": "Liquid",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
-  "dcaConfirmLightningAddress": "Lightning ঠিকনা",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
-  },
-  "dcaConfirmContinue": "অব্যাহত ৰাখক",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
-  },
-  "buyInputTitle": "Bitcoin ক্ৰয় কৰক",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
-  },
-  "buyInputMinAmountError": "আপুনি কমেও ক্ৰয় কৰিব লাগে",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
-  },
-  "buyInputMaxAmountError": "আপুনি ইতকৈ বেছি ক্ৰয় কৰিব নোৱাৰে",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "buyInputKycPending": "KYC পৰিচয় যাচাইকৰণ বাকী আছে",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4797,53 +4556,6 @@
   "buyInputCompleteKyc": "KYC সম্পন্ন কৰক",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
-  },
-  "buyInputInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
-  "buyInputInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
-  "buyInputFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "@buyInputFundAccount": {
-    "description": "Button to fund account"
-  },
-  "buyInputContinue": "অব্যাহত ৰাখক",
-  "@buyInputContinue": {
-    "description": "Continue button on buy input"
-  },
-  "buyConfirmTitle": "Bitcoin ক্ৰয় কৰক",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
-  "buyConfirmYouPay": "আপুনি পৰিশোধ কৰিব",
-  "@buyConfirmYouPay": {
-    "description": "Field label for payment amount"
-  },
-  "buyConfirmYouReceive": "আপুনি পাব",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
-  "buyConfirmBitcoinPrice": "Bitcoin ৰ মূল্য",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
-  "buyConfirmPayoutWallet": "পৰিশোধ ৱালেট",
-  "buyPayoutMethodLiquid": "Liquid-ত L-BTC",
-  "buyPayoutMethodBitcoin": "Bitcoin শৃংখলত BTC",
-  "buyConfirmPayoutMethod": "Payout পদ্ধতি",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "buyConfirmExternalWallet": "বাহ্যিক Bitcoin wallet",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
-  "buyConfirmAwaitingConfirmation": "নিশ্চিতকৰণৰ অপেক্ষাত ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "sellSendPaymentTitle": "পৰিশোধ নিশ্চিত কৰক",
   "@sellSendPaymentTitle": {
@@ -5528,19 +5240,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "buyUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
-  },
-  "buyBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম কিনিবলৈ চেষ্টা কৰিছে।",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
-  },
-  "buyAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি কিনিবলৈ চেষ্টা কৰিছে।",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
-  "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
   "withdrawUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"

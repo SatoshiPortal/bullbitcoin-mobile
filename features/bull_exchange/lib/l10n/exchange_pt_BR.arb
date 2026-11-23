@@ -576,5 +576,412 @@
   "deleteAccountConfirmationDelete": "Delete Account",
   "deleteAccountSuccessTitle": "Exclusão de Conta Solicitada",
   "deleteAccountSuccessDescription": "Sua solicitação de exclusão de conta foi realizada. Ela será processada em até 5 dias úteis.",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessClose": "Close",
+  "dcaChooseWalletTitle": "Escolha Bitcoin Wallet",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyPayoutWillBeSentIn": "Seu pagamento será enviado ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "buyConfirmExternalWallet": "Carteira Bitcoin externa",
+  "@buyConfirmExternalWallet": {
+    "description": "External wallet payout method"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "buyConfirmExpressWithdrawal": "Confirmação expressa",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "dcaWalletLiquidSubtitle": "Requer carteira compatível",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "buyConfirmYouReceive": "Você recebe",
+  "@buyConfirmYouReceive": {
+    "description": "Field label for receive amount"
+  },
+  "buyConfirmPayoutWallet": "Carteira de pagamento",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na cadeia Bitcoin",
+  "buyConfirmPayoutMethod": "Método de pagamento",
+  "@buyConfirmPayoutMethod": {
+    "description": "Field label for payout method"
+  },
+  "dcaConfirmNetworkLiquid": "Líquido",
+  "@dcaConfirmNetworkLiquid": {
+    "description": "Liquid network label"
+  },
+  "dcaWalletBitcoinSubtitle": "Mínimo 0,001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "Continue",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSetupInsufficientBalance": "Balança insuficiente",
+  "@dcaSetupInsufficientBalance": {
+    "description": "Insufficient balance error title"
+  },
+  "dcaSuccessMessageHourly": "Você vai comprar {amount} a cada hora",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmPaymentMethod": "Método de pagamento",
+  "@dcaConfirmPaymentMethod": {
+    "description": "Field label for payment method"
+  },
+  "buyConfirmBitcoinPrice": "Preço de Bitcoin",
+  "@buyConfirmBitcoinPrice": {
+    "description": "Field label for Bitcoin price"
+  },
+  "buyEstimatedFeeValue": "Valor estimado da taxa",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Insira quantidade",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Por favor, selecione uma rede",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "buyInputContinue": "Continue",
+  "@buyInputContinue": {
+    "description": "Continue button on buy input"
+  },
+  "buyConfirmationTime": "Tempo de confirmação",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyYouBought": "Você comprou {amount} por {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Acelere a transação",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Max",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buyInputTitle": "Comprar Bitcoin",
+  "@buyInputTitle": {
+    "description": "AppBar title for buy input screen"
+  },
+  "buyInputKycPending": "Pendente de Verificação de ID KYC",
+  "@buyInputKycPending": {
+    "description": "KYC pending info card title"
+  },
+  "buySelectWallet": "Selecione a carteira",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyNetworkFees": "Taxas de rede",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "buyInputKycMessage": "Você deve concluir a verificação de identificação primeiro",
+  "@buyInputKycMessage": {
+    "description": "KYC pending info card message"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "dcaConfirmNetworkLightning": "Luz",
+  "@dcaConfirmNetworkLightning": {
+    "description": "Lightning network label"
+  },
+  "dcaSuccessMessageMonthly": "Você vai comprar {amount} todos os meses",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaEnterLightningAddressLabel": "Entrar Lightning Endereço",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "dcaWalletSelectionDescription": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "buyInputCompleteKyc": "KYC completo",
+  "@buyInputCompleteKyc": {
+    "description": "Button to complete KYC"
+  },
+  "dcaSelectFrequencyLabel": "Selecione a frequência",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaConfirmFrequency": "Frequência",
+  "@dcaConfirmFrequency": {
+    "description": "Field label for frequency"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaSuccessMessageDaily": "Você vai comprar {amount} todos os dias",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmPaymentBalance": "{currency} equilíbrio",
+  "@dcaConfirmPaymentBalance": {
+    "description": "Payment method balance format",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Aguarde a retirada livre",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Requer carteira compatível, máximo 0,25 BTC",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyInputFundAccount": "Fina sua conta",
+  "@buyInputFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyConfirmationTimeValue": "10 minutos",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "buyConfirmAwaitingConfirmation": "Aguardando confirmação ",
+  "@buyConfirmAwaitingConfirmation": {
+    "description": "Awaiting confirmation label"
+  },
+  "dcaConfirmOrderType": "Tipo de ordem",
+  "@dcaConfirmOrderType": {
+    "description": "Field label for order type"
+  },
+  "buyConfirmTitle": "Comprar Bitcoin",
+  "@buyConfirmTitle": {
+    "description": "AppBar title for buy confirmation screen"
+  },
+  "buyConfirmPurchase": "Confirme a compra",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "dcaConfirmFrequencyDaily": "Todos os dias",
+  "@dcaConfirmFrequencyDaily": {
+    "description": "Daily frequency label"
+  },
+  "dcaSuccessTitle": "Recurring Buy is Active!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "buyNetworkFeeRate": "Taxa de taxa de rede",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaSetupFrequencyError": "Por favor, selecione uma frequência",
+  "@dcaSetupFrequencyError": {
+    "description": "Frequency validation error"
+  },
+  "dcaConfirmNetwork": "Rede",
+  "@dcaConfirmNetwork": {
+    "description": "Field label for network"
+  },
+  "buyThatWasFast": "Foi rápido, não foi?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "buyInputMaxAmountError": "Você não pode comprar mais do que",
+  "@buyInputMaxAmountError": {
+    "description": "Maximum amount error message"
+  },
+  "buyConfirmYouPay": "Você paga",
+  "@buyConfirmYouPay": {
+    "description": "Field label for payment amount"
+  },
+  "dcaSelectWalletTypeLabel": "Selecione Bitcoin Tipo de carteira",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "dcaBackToHomeButton": "Voltar para casa",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Pagamentos imediatos",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaConfirmTitle": "Confirmação Comprar",
+  "@dcaConfirmTitle": {
+    "description": "AppBar title for DCA confirmation screen"
+  },
+  "dcaConfirmAmount": "Montante",
+  "@dcaConfirmAmount": {
+    "description": "Field label for amount"
+  },
+  "dcaSuccessMessageWeekly": "Você vai comprar {amount} todas as semanas",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSetupContinue": "Continue",
+  "@dcaSetupContinue": {
+    "description": "Continue button on DCA setup"
+  },
+  "dcaSetupFundAccount": "Fina sua conta",
+  "@dcaSetupFundAccount": {
+    "description": "Button to fund account"
+  },
+  "buyInputInsufficientBalance": "Balança insuficiente",
+  "@buyInputInsufficientBalance": {
+    "description": "Insufficient balance info card title"
+  },
+  "buyInputInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
+  "@buyInputInsufficientBalanceMessage": {
+    "description": "Insufficient balance message"
+  },
+  "dcaConfirmLightningAddress": "Endereço de iluminação",
+  "@dcaConfirmLightningAddress": {
+    "description": "Field label for Lightning address"
+  },
+  "buyNetworkFeeExplanation": "A taxa de rede Bitcoin será deduzida a partir do valor que você recebe e coletada pelos mineiros Bitcoin",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "buyPaymentMethod": "Método de pagamento",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "buyBitcoinSent": "Bitcoin enviado!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "dcaConfirmFrequencyWeekly": "Toda semana",
+  "@dcaConfirmFrequencyWeekly": {
+    "description": "Weekly frequency label"
+  },
+  "buyInputMinAmountError": "Você deve comprar pelo menos",
+  "@buyInputMinAmountError": {
+    "description": "Minimum amount error message"
+  },
+  "buyEnterBitcoinAddress": "Digite o endereço bitcoin",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "dcaUseDefaultLightningAddress": "Use o meu endereço de Lightning padrão.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "dcaSetupInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
+  "@dcaSetupInsufficientBalanceMessage": {
+    "description": "Insufficient balance error message"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "dcaWalletTypeLightning": "Rede de relâmpago (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyConfirmExpress": "Confirmação",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaConfirmOrderTypeValue": "Recorrer comprar",
+  "@dcaConfirmOrderTypeValue": {
+    "description": "Order type value"
+  },
+  "dcaConfirmAutoMessage": "Comprar ordens serão colocadas automaticamente por estas configurações. Você pode desabilitá-los a qualquer momento.",
+  "@dcaConfirmAutoMessage": {
+    "description": "DCA auto-placement message"
+  },
+  "dcaWalletTypeLiquid": "Líquido (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Definir Recorrer Comprar",
+  "@dcaSetupTitle": {
+    "description": "AppBar title for DCA setup screen"
+  },
+  "dcaConfirmContinue": "Continue",
+  "@dcaConfirmContinue": {
+    "description": "Continue button on DCA confirmation"
+  },
+  "dcaSetupScheduleMessage": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
+  "@dcaSetupScheduleMessage": {
+    "description": "DCA schedule explanation"
+  },
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "@dcaConfirmNetworkBitcoin": {
+    "description": "Bitcoin network label"
+  },
+  "buyViewDetails": "Ver detalhes",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "dcaConfirmFrequencyHourly": "Cada hora",
+  "@dcaConfirmFrequencyHourly": {
+    "description": "Hourly frequency label"
+  },
+  "dcaConfirmFrequencyMonthly": "Todos os meses",
+  "@dcaConfirmFrequencyMonthly": {
+    "description": "Monthly frequency label"
+  },
+  "buyGetConfirmedFaster": "Confirma-o mais rápido",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "buyBelowMinAmountError": "Você está tentando comprar abaixo da quantidade mínima.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
+  "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique sua conexão, veja se você está conectado e tente novamente.",
+  "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
+  "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
+  "dcaOrderCreationError": "Não foi possível criar a compra recorrente. Tente novamente mais tarde."
 }

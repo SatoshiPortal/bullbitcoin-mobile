@@ -26,10 +26,6 @@
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
   },
-  "buyPayoutWillBeSentIn": "당신의 지불금은 보내질 것입니다 ",
-  "@buyPayoutWillBeSentIn": {
-    "description": "Text before countdown timer for payout"
-  },
   "fundExchangeInstantSepaInfo": "만 € 20,000 미만의 거래에 사용됩니다. 더 큰 거래를 위해서는 일반 SEPA 옵션을 사용하십시오.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
@@ -37,10 +33,6 @@
   "translationWarningContributeButton": "번역을 개선하는 데 도움이",
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
-  },
-  "dcaChooseWalletTitle": "비트코인 지갑 선택",
-  "@dcaChooseWalletTitle": {
-    "description": "AppBar title for wallet selection screen"
   },
   "sellSendPaymentAboveMax": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
   "@sellSendPaymentAboveMax": {
@@ -245,10 +237,6 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "buyConfirmExternalWallet": "외부 Bitcoin 지갑",
-  "@buyConfirmExternalWallet": {
-    "description": "External wallet payout method"
-  },
   "exchangeCurrencyDropdownTitle": "통화 선택",
   "@exchangeCurrencyDropdownTitle": {
     "description": "Title for the currency selection dropdown"
@@ -264,10 +252,6 @@
   "rbfFastest": "빠른 속도",
   "@rbfFastest": {
     "description": "Label for fastest fee option"
-  },
-  "buyConfirmExpressWithdrawal": "자주 묻는 질문",
-  "@buyConfirmExpressWithdrawal": {
-    "description": "Title for express withdrawal confirmation screen"
   },
   "sellSendPaymentTitle": "결제방법",
   "@sellSendPaymentTitle": {
@@ -374,10 +358,6 @@
   "save": "제품 정보",
   "@save": {
     "description": "Generic save button label"
-  },
-  "dcaWalletLiquidSubtitle": "호환 지갑 필요",
-  "@dcaWalletLiquidSubtitle": {
-    "description": "Subtitle/description for Liquid wallet option"
   },
   "fundExchangeCrIbanCrcTitle": "은행 송금 (CRC)",
   "@fundExchangeCrIbanCrcTitle": {
@@ -508,10 +488,6 @@
   "@fundExchangeLabelTransitNumber": {
     "description": "Label for transit number field"
   },
-  "buyConfirmYouReceive": "견적 요청",
-  "@buyConfirmYouReceive": {
-    "description": "Field label for receive amount"
-  },
   "buyDocumentUpload": "문서 업로드",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
@@ -525,10 +501,6 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "실시간 지원을 받으려면 먼저 Bull Bitcoin 계정에 로그인해야 합니다. 완전 무료이며 KYC가 필요하지 않고, 이메일 주소만 있으면 됩니다.",
-  "buyAboveMaxAmountError": "최대 금액 이상 구매하려고합니다.",
-  "@buyAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during buy"
-  },
   "sendShowPsbt": "PSBT 소개",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -651,10 +623,6 @@
   "sellKYCRejected": "KYC 인증 거부",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
-  },
-  "buyBelowMinAmountError": "최소 금액 아래 구매하려고 합니다.",
-  "@buyBelowMinAmountError": {
-    "description": "Error message for amount below minimum during buy"
   },
   "exchangeLandingFeature6": "거래 내역",
   "@exchangeLandingFeature6": {
@@ -841,17 +809,6 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
-  "buyConfirmPayoutWallet": "지급 지갑",
-  "buyPayoutMethodLiquid": "Liquid의 L-BTC",
-  "buyPayoutMethodBitcoin": "Bitcoin 체인의 BTC",
-  "buyConfirmPayoutMethod": "Payout 방법",
-  "@buyConfirmPayoutMethod": {
-    "description": "Field label for payout method"
-  },
-  "dcaConfirmNetworkLiquid": "제품정보",
-  "@dcaConfirmNetworkLiquid": {
-    "description": "Liquid network label"
-  },
   "walletDetailsAddressTypeLabel": "주소 유형",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
@@ -949,10 +906,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "dcaWalletBitcoinSubtitle": "최소 0.001 BTC",
-  "@dcaWalletBitcoinSubtitle": {
-    "description": "Subtitle/description for Bitcoin wallet option"
-  },
   "sendOpenTheCamera": "카메라 열기",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1004,10 +957,6 @@
   "exchangeAccountInfoLoadErrorMessage": "계정 정보를로드 할 수 없음",
   "@exchangeAccountInfoLoadErrorMessage": {
     "description": "Error message when account information fails to load"
-  },
-  "dcaWalletSelectionContinueButton": "계속하기",
-  "@dcaWalletSelectionContinueButton": {
-    "description": "Button label to proceed to confirmation screen"
   },
   "pinButtonChange": "변화 PIN",
   "@pinButtonChange": {
@@ -1080,10 +1029,6 @@
   "sendErrorLiquidWalletRequired": "액체 지갑은 교환을 번개하기 위해 액체를 사용해야합니다",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
-  },
-  "dcaSetupInsufficientBalance": "충분한 균형",
-  "@dcaSetupInsufficientBalance": {
-    "description": "Insufficient balance error title"
   },
   "swapTransferRefundedMessage": "스왑이 성공적으로 환불되었습니다.",
   "@swapTransferRefundedMessage": {
@@ -1192,15 +1137,6 @@
   "withdrawConfirmCard": "(주)",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
-  },
-  "dcaSuccessMessageHourly": "매 시간마다 {amount}를 구입할 것입니다",
-  "@dcaSuccessMessageHourly": {
-    "description": "Success message for hourly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "loginButton": "로그인",
   "@loginButton": {
@@ -1328,7 +1264,6 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
-  "buyUnexpectedError": "현재 주문을 생성할 수 없습니다. 다시 시도하거나 고객 지원에 문의해 주세요.",
   "fundExchangeArsBankTransferTitle": "은행 송금",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -1365,10 +1300,6 @@
   "sellSendPaymentOrderNumber": "주문 번호",
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
-  },
-  "dcaConfirmPaymentMethod": "지불 방법",
-  "@dcaConfirmPaymentMethod": {
-    "description": "Field label for payment method"
   },
   "sellSendPaymentAdvanced": "고급 설정",
   "@sellSendPaymentAdvanced": {
@@ -1480,10 +1411,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "buyConfirmBitcoinPrice": "Bitcoin 가격",
-  "@buyConfirmBitcoinPrice": {
-    "description": "Field label for Bitcoin price"
-  },
   "transactionSwapDescLnSendCompleted": "번개 결제가 성공적으로 전송되었습니다! 지금 스왑이 완료됩니다.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -1569,10 +1496,6 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "buyEstimatedFeeValue": "예상 수수료 값",
-  "@buyEstimatedFeeValue": {
-    "description": "Label for estimated fee value in fiat"
-  },
   "payName": "이름 *",
   "@payName": {
     "description": "Label for name field"
@@ -1621,10 +1544,6 @@
   "payPaymentConfirmed": "지불 확인",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "buyEnterAmount": "금액",
-  "@buyEnterAmount": {
-    "description": "Label for amount input field in buy flow"
   },
   "sellShowQrCode": "QR 코드 보기",
   "@sellShowQrCode": {
@@ -1737,10 +1656,6 @@
   "fundExchangeTitle": "투자정보",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
-  },
-  "dcaNetworkValidationError": "네트워크 선택",
-  "@dcaNetworkValidationError": {
-    "description": "Form validation error when no network is selected"
   },
   "coldcardStep12": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
   "@coldcardStep12": {
@@ -1975,10 +1890,6 @@
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
   },
-  "buyConfirmationTime": "확인 시간",
-  "@buyConfirmationTime": {
-    "description": "Label for estimated confirmation time"
-  },
   "encryptedVaultRecommendation": "암호화된 vault: ",
   "@encryptedVaultRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
@@ -2175,15 +2086,6 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "{fiatAmount}으로 {amount}을 구매했습니다",
-  "@buyYouBought": {
-    "description": "Success message with amount bought",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "사이트 맵",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
@@ -2232,10 +2134,6 @@
   "exchangeAppSettingsEmailNotificationsLabel": "이메일 알림",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
-  },
-  "buyAccelerateTransaction": "계정 만들기",
-  "@buyAccelerateTransaction": {
-    "description": "Title for transaction acceleration option"
   },
   "backupSettingsTested": "시험하는",
   "@backupSettingsTested": {
@@ -2669,10 +2567,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "buyMax": "최대",
-  "@buyMax": {
-    "description": "Button to fill maximum amount"
-  },
   "onboardingCreateNewWallet": "새 지갑 만들기",
   "@onboardingCreateNewWallet": {
     "description": "Button label for creating a new wallet in onboarding"
@@ -2696,10 +2590,6 @@
   "startBackupButton": "백업하기",
   "@startBackupButton": {
     "description": "Button label to start backup process"
-  },
-  "buyInputTitle": "Bitcoin 구매",
-  "@buyInputTitle": {
-    "description": "AppBar title for buy input screen"
   },
   "importMnemonicImport": "제품정보",
   "@importMnemonicImport": {
@@ -2841,10 +2731,6 @@
   "sellLightningNetwork": "Lightning 네트워크",
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "buySelectWallet": "지갑 선택",
-  "@buySelectWallet": {
-    "description": "Label for wallet selection dropdown"
   },
   "testBackupErrorIncorrectOrder": "잘못된 단어 순서. 다시 시도하십시오.",
   "@testBackupErrorIncorrectOrder": {
@@ -3121,10 +3007,6 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
-  "@buyBitcoinAddressHint": {
-    "description": "Placeholder hint for bitcoin address input"
-  },
   "exchangeHomeWithdrawButton": "공지사항",
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
@@ -3207,10 +3089,6 @@
   "withdrawConfirmEmail": "이름 *",
   "@withdrawConfirmEmail": {
     "description": "Field label for email (Interac)"
-  },
-  "buyNetworkFees": "네트워크 수수료",
-  "@buyNetworkFees": {
-    "description": "Label for network fees amount"
   },
   "coldcardStep7": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
   "@coldcardStep7": {
@@ -3511,15 +3389,6 @@
   "@importColdcardInstructionsStep8": {
     "description": "ImportColdcardQ: Eighth instruction step"
   },
-  "dcaSuccessMessageMonthly": "매월 {amount}를 구입할 것입니다",
-  "@dcaSuccessMessageMonthly": {
-    "description": "Success message for monthly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} 동전 선택",
   "@sendSelectedCoins": {
     "description": "Label showing number of UTXOs selected",
@@ -3550,10 +3419,6 @@
   "@payRbfActivated": {
     "description": "Label for RBF toggle"
   },
-  "dcaConfirmNetworkLightning": "연락처",
-  "@dcaConfirmNetworkLightning": {
-    "description": "Lightning network label"
-  },
   "ledgerDefaultWalletLabel": "Ledger 지갑",
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
@@ -3565,10 +3430,6 @@
   "customLocationProvider": "주문 위치",
   "@customLocationProvider": {
     "description": "Name of custom location provider"
-  },
-  "dcaSelectFrequencyLabel": "선택 빈도",
-  "@dcaSelectFrequencyLabel": {
-    "description": "Label above frequency selection radio buttons"
   },
   "transactionSwapDescChainCompleted": "스왑이 성공적으로 완료되었습니다! 이제 자금을 지갑에서 사용할 수 있습니다.",
   "@transactionSwapDescChainCompleted": {
@@ -3601,10 +3462,6 @@
   "recoverVia12WordsDescription": "12 단어를 통해 지갑을 복구.",
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
-  },
-  "dcaEnterLightningAddressLabel": "연락처",
-  "@dcaEnterLightningAddressLabel": {
-    "description": "Label for Lightning address text input field"
   },
   "buyPayoutMethod": "Payout 방법",
   "@buyPayoutMethod": {
@@ -3844,15 +3701,6 @@
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
   },
-  "dcaConfirmPaymentBalance": "{currency} 밸런스",
-  "@dcaConfirmPaymentBalance": {
-    "description": "Payment method balance format",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "sellBankTransfer": "은행 송금",
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
@@ -3876,10 +3724,6 @@
   "sellSendPaymentBelowMin": "이 지갑과 함께 판매 할 수있는 최소 금액 아래 판매하려고합니다.",
   "@sellSendPaymentBelowMin": {
     "description": "Below min amount error"
-  },
-  "dcaWalletSelectionDescription": "Bitcoin 구매는이 일정 당 자동으로 배치됩니다.",
-  "@dcaWalletSelectionDescription": {
-    "description": "Explanation text at the top of wallet selection screen"
   },
   "sendTypeSend": "지원하다",
   "@sendTypeSend": {
@@ -4111,10 +3955,6 @@
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
   },
-  "dcaConfirmOrderType": "주문 유형",
-  "@dcaConfirmOrderType": {
-    "description": "Field label for order type"
-  },
   "payPriceWillRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
@@ -4196,15 +4036,6 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "dcaSuccessMessageDaily": "매일 {amount}를 구입할 것입니다",
-  "@dcaSuccessMessageDaily": {
-    "description": "Success message for daily frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "Boltz 교환 수수료",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4261,10 +4092,6 @@
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
-  "buyWaitForFreeWithdrawal": "무료 인출",
-  "@buyWaitForFreeWithdrawal": {
-    "description": "Button to wait for free (slower) withdrawal"
-  },
   "sellSendPaymentCrcBalance": "사이트맵 (주)",
   "@sellSendPaymentCrcBalance": {
     "description": "CRC balance payout method"
@@ -4288,10 +4115,6 @@
   "settingsAppSettingsTitle": "앱 설정",
   "@settingsAppSettingsTitle": {
     "description": "Title for the app settings section in the settings menu"
-  },
-  "dcaWalletLightningSubtitle": "호환 지갑, 최대 0.25 BTC 필요",
-  "@dcaWalletLightningSubtitle": {
-    "description": "Subtitle/description for Lightning wallet option"
   },
   "swapTransferRefundInProgressMessage": "스왑에 오류가 발생했습니다. 환불이 진행 중입니다.",
   "@swapTransferRefundInProgressMessage": {
@@ -4362,17 +4185,9 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "~10분",
-  "@buyConfirmationTimeValue": {
-    "description": "Value for estimated confirmation time"
-  },
   "exchangeFileUploadUploading": "관련 기사.",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
-  },
-  "buyConfirmAwaitingConfirmation": "Awaiting 확인 ",
-  "@buyConfirmAwaitingConfirmation": {
-    "description": "Awaiting confirmation label"
   },
   "allSeedViewShowSeedsButton": "씨앗보기",
   "@allSeedViewShowSeedsButton": {
@@ -4397,10 +4212,6 @@
   "transactionListLoadingTransactions": "로딩...",
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
-  },
-  "dcaSuccessTitle": "Recurring 구매는 활성입니다!",
-  "@dcaSuccessTitle": {
-    "description": "Success screen title after DCA is activated"
   },
   "fundExchangeOnlineBillPaymentDescription": "아래 정보를 사용하여 은행의 온라인 결제 기능을 통해 전송하는 금액은 3-4 영업일 이내에 Bull Bitcoin 계정 잔액에 적립됩니다.",
   "@fundExchangeOnlineBillPaymentDescription": {
@@ -4482,10 +4293,6 @@
       }
     }
   },
-  "dcaSetupFrequencyError": "주파수 선택",
-  "@dcaSetupFrequencyError": {
-    "description": "Frequency validation error"
-  },
   "testBackupErrorNoMnemonic": "적재되는 mnemonic 없음",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
@@ -4522,10 +4329,6 @@
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
   },
-  "buyConfirmTitle": "Bitcoin 구매",
-  "@buyConfirmTitle": {
-    "description": "AppBar title for buy confirmation screen"
-  },
   "exchangeLandingFeature5": "고객 지원",
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
@@ -4533,10 +4336,6 @@
   "electrumMainnet": "메인넷",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
-  },
-  "buyThatWasFast": "그것은 빠르지 않았습니까?",
-  "@buyThatWasFast": {
-    "description": "Additional success message for accelerated transaction"
   },
   "importWalletPassport": "기초 여권",
   "@importWalletPassport": {
@@ -4701,10 +4500,6 @@
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
   },
-  "buyInputMaxAmountError": "더 이상 살 수 없습니다",
-  "@buyInputMaxAmountError": {
-    "description": "Maximum amount error message"
-  },
   "walletDetailsDeletingMessage": "지갑 삭제 ...",
   "@walletDetailsDeletingMessage": {
     "description": "Message displayed while a wallet is being deleted"
@@ -4750,10 +4545,6 @@
   "sellWhichWalletQuestion": "어떤 지갑에서 판매하고 싶습니까?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "buyNetworkFeeRate": "네트워크 요금",
-  "@buyNetworkFeeRate": {
-    "description": "Label for network fee rate"
   },
   "autoswapAlwaysBlockLabel": "항상 블록 높은 비용",
   "@autoswapAlwaysBlockLabel": {
@@ -4965,10 +4756,6 @@
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
   },
-  "dcaConfirmNetwork": "회사연혁",
-  "@dcaConfirmNetwork": {
-    "description": "Field label for network"
-  },
   "allSeedViewDeleteWarningMessage": "씨앗을 삭제하는 것은 불가능한 행동입니다. 이 씨앗 또는 관련 지갑의 백업을 완전히 배수 한 경우에만 이것을하십시오.",
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
@@ -5077,10 +4864,6 @@
   "exchangeStatisticsNoData": "통계 없음",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
-  },
-  "dcaConfirmTitle": "자주 묻는 질문 구매하기",
-  "@dcaConfirmTitle": {
-    "description": "AppBar title for DCA confirmation screen"
   },
   "fundExchangeCrIbanUsdTransferCodeWarning": "지불을 할 때 \"message\"또는 \"reason\"또는 \"description\"으로 전송 코드를 추가해야합니다. 이 코드를 포함 하는 것을 잊지 면, 당신의 지불 거부 될 수 있습니다.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
@@ -5369,10 +5152,6 @@
   "@paySecurityQuestion": {
     "description": "Label for security question field"
   },
-  "dcaSelectWalletTypeLabel": "Bitcoin Wallet 유형 선택",
-  "@dcaSelectWalletTypeLabel": {
-    "description": "Label above wallet type selection radio buttons"
-  },
   "backupWalletHowToDecideVaultModalTitle": "결정하는 방법",
   "@backupWalletHowToDecideVaultModalTitle": {
     "description": "Modal title for vault location comparison help"
@@ -5549,10 +5328,6 @@
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
   },
-  "buyInputInsufficientBalance": "충분한 균형",
-  "@buyInputInsufficientBalance": {
-    "description": "Insufficient balance info card title"
-  },
   "withdrawConfirmClabe": "사이트맵",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
@@ -5601,15 +5376,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "dcaSuccessMessageWeekly": "매주 {amount}를 살 것입니다",
-  "@dcaSuccessMessageWeekly": {
-    "description": "Success message for weekly frequency",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmRecipientName": "이름 *",
   "@withdrawConfirmRecipientName": {
     "description": "Field label for recipient name"
@@ -5644,17 +5410,9 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "buyInputInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
-  "@buyInputInsufficientBalanceMessage": {
-    "description": "Insufficient balance message"
-  },
   "swapErrorInsufficientFunds": "거래를 만들 수 없습니다. 수수료 및 금액에 대한 충분한 자금 때문에.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
-  },
-  "dcaConfirmAmount": "계정 정보",
-  "@dcaConfirmAmount": {
-    "description": "Field label for amount"
   },
   "sellSendPaymentPriceRefresh": "가격은 상쾌합니다 ",
   "@sellSendPaymentPriceRefresh": {
@@ -6018,10 +5776,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "dcaConfirmFrequencyWeekly": "매주",
-  "@dcaConfirmFrequencyWeekly": {
-    "description": "Weekly frequency label"
-  },
   "payInstitutionNumberHint": "기관 번호",
   "@payInstitutionNumberHint": {
     "description": "Hint for institution number input"
@@ -6037,10 +5791,6 @@
   "settingsThemeTitle": "이름 *",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "dcaSetupFundAccount": "계정 생성",
-  "@dcaSetupFundAccount": {
-    "description": "Button to fund account"
   },
   "payEmail": "이름 *",
   "@payEmail": {
@@ -6168,10 +5918,6 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "buyEnterBitcoinAddress": "비트 코인 주소를 입력",
-  "@buyEnterBitcoinAddress": {
-    "description": "Label for bitcoin address input field"
-  },
   "transactionDetailLabelPayoutAmount": "결제 금액",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -6275,10 +6021,6 @@
   "@backupWalletLastKnownEncryptedVault": {
     "description": "Label prefix for displaying timestamp of last encrypted vault backup"
   },
-  "dcaSetupInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
-  "@dcaSetupInsufficientBalanceMessage": {
-    "description": "Insufficient balance error message"
-  },
   "sendAdvancedOptions": "고급 옵션",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -6307,10 +6049,6 @@
   "onboardingRecoverWalletButton": "지갑 복구",
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
-  },
-  "dcaConfirmAutoMessage": "주문은 이 설정에 따라 자동으로 배치됩니다. 언제든지 비활성화 할 수 있습니다.",
-  "@dcaConfirmAutoMessage": {
-    "description": "DCA auto-placement message"
   },
   "usePasswordInsteadButton": "{pinOrPassword} 대신 >>",
   "@usePasswordInsteadButton": {
@@ -6494,10 +6232,6 @@
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
   },
-  "dcaConfirmContinue": "계속하기",
-  "@dcaConfirmContinue": {
-    "description": "Continue button on DCA confirmation"
-  },
   "decryptVaultButton": "암호 해독",
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
@@ -6680,10 +6414,6 @@
   "@fundExchangeInfoBankCountryUk": {
     "description": "Info message that bank country is United Kingdom"
   },
-  "dcaConfirmNetworkBitcoin": "비트 코인",
-  "@dcaConfirmNetworkBitcoin": {
-    "description": "Bitcoin network label"
-  },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN 코스타리카 (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
     "description": "Payment method title for IBAN CRC in method list"
@@ -6790,10 +6520,6 @@
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
-  "dcaConfirmFrequencyHourly": "매시간",
-  "@dcaConfirmFrequencyHourly": {
-    "description": "Hourly frequency label"
-  },
   "sellSwiftCode": "SWIFT/BIC 부호",
   "@sellSwiftCode": {
     "description": "Label for international bank code"
@@ -6822,10 +6548,6 @@
   "backupWalletInstructionLosePhone": "백업하지 않고 휴대 전화를 잃거나 깰 경우, 또는 Bull Bitcoin 앱을 제거하면 Bitcoins가 영원히 잃을 것입니다.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "dcaConfirmLightningAddress": "연락처",
-  "@dcaConfirmLightningAddress": {
-    "description": "Field label for Lightning address"
   },
   "coreSwapsLnReceiveCompleted": "스왑이 완료되었습니다.",
   "@coreSwapsLnReceiveCompleted": {
@@ -6996,10 +6718,6 @@
   "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
   },
-  "dcaConfirmFrequencyMonthly": "매월",
-  "@dcaConfirmFrequencyMonthly": {
-    "description": "Monthly frequency label"
-  },
   "importWatchOnlyScriptType": "Script 유형",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
@@ -7109,10 +6827,6 @@
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
   },
-  "buyBitcoinSent": "비트코인 전송!",
-  "@buyBitcoinSent": {
-    "description": "Success message for accelerated transaction"
-  },
   "coreScreensPageNotFound": "사이트 맵",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
@@ -7202,10 +6916,6 @@
   "receiveContinue": "계속하기",
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
-  },
-  "buyUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
   },
   "importWatchOnlyDisclaimerTitle": "Derivation 경로 경고",
   "@importWatchOnlyDisclaimerTitle": {
@@ -7332,10 +7042,6 @@
   "hwKeystone": "키스톤",
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
-  },
-  "buyInputMinAmountError": "당신은 적어도 사야한다",
-  "@buyInputMinAmountError": {
-    "description": "Minimum amount error message"
   },
   "payInstitutionCode": "기관 코드",
   "@payInstitutionCode": {
@@ -7499,10 +7205,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "dcaUseDefaultLightningAddress": "기본 번개 주소를 사용합니다.",
-  "@dcaUseDefaultLightningAddress": {
-    "description": "Checkbox label to use default Lightning address"
-  },
   "sellEstimatedArrival": "예상 도착: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -7586,17 +7288,9 @@
   "@sellKYCPending": {
     "description": "Message when verification in progress"
   },
-  "buyGetConfirmedFaster": "더 빠른 확인",
-  "@buyGetConfirmedFaster": {
-    "description": "Subtitle for acceleration option"
-  },
   "payCustomFee": "회사 소개",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "buyConfirmExpress": "자주 묻는 질문",
-  "@buyConfirmExpress": {
-    "description": "Button to confirm express withdrawal"
   },
   "fundExchangeBankTransferWireTimeframe": "당신이 보내는 어떤 자금은 1-2 영업일 이내에 Bull Bitcoin에 추가됩니다.",
   "@fundExchangeBankTransferWireTimeframe": {
@@ -7653,17 +7347,9 @@
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
   },
-  "dcaConfirmOrderTypeValue": "Recurring 구매",
-  "@dcaConfirmOrderTypeValue": {
-    "description": "Order type value"
-  },
   "testBackupEncryptedVaultTitle": "암호화된 vault",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
-  },
-  "dcaWalletTypeLiquid": "액체 (LBTC)",
-  "@dcaWalletTypeLiquid": {
-    "description": "Radio button option for Liquid wallet"
   },
   "fundExchangeLabelInstitutionNumber": "기관 번호",
   "@fundExchangeLabelInstitutionNumber": {
@@ -7713,10 +7399,6 @@
   "autoswapAlwaysBlockInfoDisabled": "비활성화하면 높은 수수료로 차단된 자동 스왑을 허용할지 선택할 수 있습니다",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
-  },
-  "dcaSetupTitle": "Recurring 구매",
-  "@dcaSetupTitle": {
-    "description": "AppBar title for DCA setup screen"
   },
   "sendErrorInsufficientBalanceForPayment": "이 지불을 덮는 충분한 균형",
   "@sendErrorInsufficientBalanceForPayment": {

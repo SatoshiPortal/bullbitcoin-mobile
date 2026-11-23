@@ -46,7 +46,6 @@
   "encryptedVaultRecommendationText": "Ви не впевнені, що вам потрібно більше часу, щоб дізнатися про методи резервної копії.",
   "visitRecoverBullMessage": "Відвідайте rebull.com для отримання додаткової інформації.",
   "howToDecideVaultLocationText1": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
-  "buyInputFundAccount": "Оберіть Ваш рахунок",
   "sellSendPaymentCalculating": "Розрахунок...",
   "sellSendPaymentAdvanced": "Розширені налаштування",
   "coreSwapsStatusPending": "Закінчення",
@@ -226,16 +225,6 @@
   "buyBitcoinAddressHint": "BC1QYL7J673H ...6Y6ALV70M0",
   "buyExternalBitcoinWallet": "Зовнішні біткоїни гаманець",
   "buySecureBitcoinWallet": "Безпечний гаманець Bitcoin",
-  "buyNetworkFeeExplanation": "Плата мережі Біткойн буде відхилена від суми, яку ви отримуєте і зібрані на Майнерах Біткойн",
-  "buyNetworkFees": "Мережеві збори",
-  "buyEstimatedFeeValue": "Орієнтовна вартість",
-  "buyNetworkFeeRate": "Курс валют",
-  "buyConfirmationTime": "Термін підтвердження",
-  "buyConfirmationTimeValue": "~10 хвилин",
-  "buyWaitForFreeWithdrawal": "Очікується безкоштовно",
-  "buyConfirmExpress": "Підтвердити експрес",
-  "buyBitcoinSent": "Bitcoin відправлений!",
-  "buyThatWasFast": "Це було швидко, це не так?",
   "sellTitle": "Bitcoin у USD",
   "sellSelectWallet": "Виберіть гаманець",
   "sellWhichWalletQuestion": "Який гаманець ви хочете продати?",
@@ -539,20 +528,6 @@
   "buyBitcoinPrice": "Ціна Bitcoin",
   "buyPayoutMethod": "Спосіб виплати",
   "buyAwaitingConfirmation": "Підтвердження ",
-  "buyConfirmPurchase": "Підтвердити покупку",
-  "buyYouBought": "Ви придбали {amount} за {fiatAmount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "buyPayoutWillBeSentIn": "Ваша виплата буде відправлена в ",
-  "buyViewDetails": "Докладніше",
-  "buyAccelerateTransaction": "Прискорення транзакцій",
-  "buyGetConfirmedFaster": "Отримайте підтвердження швидше",
-  "buyConfirmExpressWithdrawal": "Підтвердити виведення експресу",
   "sellBelowMinAmountError": "Ви хочете продати нижче мінімальної суми, яку можна продати з цим гаманець.",
   "sellInsufficientBalanceError": "Недостатній баланс у вибраному гаманці для завершення цього замовлення продажу.",
   "sellUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
@@ -814,26 +789,9 @@
   "importMnemonicTitle": "Імпортний мнемічний",
   "howToDecideBackupTitle": "Як вирішити",
   "howToDecideBackupText1": "Один з найбільш поширених способів втратити Біткойн, тому що вони втрачають фізичну резервну копію. Будь-ласка, що знаходить вашу фізичну резервну копію, зможе прийняти всі ваші біткойни. Якщо ви дуже впевнені, що ви можете приховати його добре і ніколи не втратите його, це хороший варіант.",
-  "dcaConfirmContinue": "Продовжити",
-  "buyInputTitle": "Bitcoin у USD",
-  "buyInputMinAmountError": "Ви повинні придбати принаймні",
-  "buyInputMaxAmountError": "Ви не можете придбати більше",
   "buyInputKycPending": "Перевірка ID KYC",
   "buyInputKycMessage": "Ви повинні завершити перевірку ID першим",
   "buyInputCompleteKyc": "Повний KYC",
-  "buyInputInsufficientBalance": "Недостатній баланс",
-  "buyInputInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
-  "buyInputContinue": "Продовжити",
-  "buyConfirmTitle": "Bitcoin у USD",
-  "buyConfirmYouPay": "Ви платите",
-  "buyConfirmYouReceive": "Ви отримуєте",
-  "buyConfirmBitcoinPrice": "Ціна Bitcoin",
-  "buyConfirmPayoutWallet": "Гаманець для виплати",
-  "buyPayoutMethodLiquid": "L-BTC у мережі Liquid",
-  "buyPayoutMethodBitcoin": "BTC у мережі Bitcoin",
-  "buyConfirmPayoutMethod": "Спосіб виплати",
-  "buyConfirmExternalWallet": "Зовнішні біткоїни гаманець",
-  "buyConfirmAwaitingConfirmation": "Підтвердження ",
   "sellSendPaymentTitle": "Підтвердження платежу",
   "sellSendPaymentPriceRefresh": "Ціна освіжає в ",
   "sellSendPaymentOrderNumber": "Номер замовлення",
@@ -857,7 +815,6 @@
   "payTransactionBroadcast": "Трансакція трансмісії",
   "swapMax": "МАКС",
   "importColdcardInstructionsStep10": "Комплектація",
-  "dcaChooseWalletTitle": "Виберіть гаманець Bitcoin",
   "fundExchangeETransferLabelSecretAnswer": "Секрет відповіді",
   "sendScheduledPayment": "Графік роботи",
   "withdrawOwnershipQuestion": "Хто такий обліковий запис належить?",
@@ -925,7 +882,6 @@
   "swapInsufficientFunds": "Недостатньо коштів",
   "broadcastSignedTxFee": "Плей",
   "save": "Зберегти",
-  "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
   "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",
@@ -952,7 +908,6 @@
   "fundExchangeLabelTransitNumber": "Кількість переходів",
   "buyDocumentUpload": "Документи",
   "sendTransferFeeDescription": "Це загальна плата, яка відхилена від суми, відправленого",
-  "buyAboveMaxAmountError": "Ви намагаєтеся придбати над максимальною кількістю.",
   "sendShowPsbt": "Показати PSBT",
   "broadcastSignedTxAmount": "Сума",
   "hwJade": "Блокстрім Jade",
@@ -975,7 +930,6 @@
   "allSeedViewIUnderstandButton": "Я витримую",
   "coreScreensExternalTransfer": "Зовнішній обмін",
   "sellKYCRejected": "Перевірка KYC відхилено",
-  "buyBelowMinAmountError": "Ви намагаєтеся придбати нижче мінімальної суми.",
   "exchangeLandingFeature6": "Історія угод",
   "connectHardwareWalletKrux": "Кошик",
   "receiveSelectNetwork": "Оберіть мережу",
@@ -1037,7 +991,6 @@
   "payNoActiveWallet": "Немає активного гаманця",
   "appStartupErrorMessage": "Не вдалося запустити застосунок. Спробуйте повністю його закрити та перезапустити. Якщо помилка повторюється, зверніться до підтримки та поділіться логами.",
   "payPasteInvoice": "Паста Invoice",
-  "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
   "sendSwapId": "Обмін ID",
   "testBackupDefaultWallets": "Гаманець за замовчуванням",
   "autoswapRecipientWalletInfoText": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
@@ -1045,7 +998,6 @@
   "exchangeAuthLoginFailedMessage": "Помилкові помилки, будь ласка, спробуйте увійти знову.",
   "okButton": "ЗАРЕЄСТРУВАТИСЯ",
   "exchangeAmountInputValidationInvalid": "Сума недійсна",
-  "dcaWalletSelectionContinueButton": "Продовжити",
   "pinButtonChange": "Зміна PIN",
   "sendErrorInsufficientFundsForPayment": "Не вистачає коштів, доступних для цього платежу.",
   "fundExchangeETransferTitle": "Деталі E-Transfer",
@@ -1057,7 +1009,6 @@
   "sellAccountName": "Назва облікового запису",
   "howToDecideVaultLocationText2": "Зручне розташування може бути набагато більш безпечною, в залежності від місця розташування, яку ви обираєте. Ви також повинні переконатися, що не втратити файл резервного копіювання або втратити пристрій, на якому зберігаються файли резервного копіювання.",
   "sendErrorLiquidWalletRequired": "Рідкий гаманець повинен використовуватися для рідини для блискавки",
-  "dcaSetupInsufficientBalance": "Недостатній баланс",
   "swapTransferRefundedMessage": "Кошти за обміном успішно повернено.",
   "sellKYCApproved": "KYC затверджено",
   "buyKYCLevel": "КИЇВ Рівень",
@@ -1075,14 +1026,6 @@
   "exchangeHomeDeposit": "Депозити",
   "sendTransactionBuilt": "Трансакція готова",
   "withdrawConfirmCard": "Карта сайту",
-  "dcaSuccessMessageHourly": "Ви купуєте {amount} кожен час",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "loginButton": "ЛОГІН",
   "sendUnfreezeCoin": "Нефризе Монета",
   "scanNfcButton": "Сканер NFC",
@@ -1112,7 +1055,6 @@
     }
   },
   "mempoolCustomServerUrl": "Статус на сервери",
-  "buyUnexpectedError": "Не вдалося створити ваше замовлення. Спробуйте ще раз або зверніться до підтримки.",
   "sendServerNetworkFees": "Статус на сервери",
   "importWatchOnlyImport": "Імпорт",
   "backupWalletBackupButton": "Зареєструватися",
@@ -1124,7 +1066,6 @@
       }
     }
   },
-  "dcaConfirmPaymentMethod": "Спосіб оплати",
   "backupWalletErrorGoogleDriveConnection": "З'єднання з Google Диском",
   "payEnterInvoice": "Вхід",
   "broadcastSignedTxPasteHint": "Вставити PSBT або транзакцій HEX",
@@ -1217,7 +1158,6 @@
   "sellViewDetailsButton": "Докладніше",
   "receiveGenerateInvoice": "Генерувати інвойси",
   "coreScreensFeeDeductionExplanation": "Це загальна плата, яка відхилена від суми, відправленого",
-  "dcaNetworkValidationError": "Виберіть мережу",
   "coldcardStep12": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
   "autoswapAlwaysBlockDisabledInfo": "Якщо вимкнено, вам буде запропоновано дозволити автообмін, заблокований через високі комісії",
   "bip85Index": "Індекс: {index}",
@@ -1490,14 +1430,6 @@
   "sellTotalFees": "Всього коштів",
   "importWatchOnlyUnknown": "Невідомо",
   "importColdcardInstructionsStep8": "Сканування QR-коду, що відображається на вашому пристрої Coldcard Q",
-  "dcaSuccessMessageMonthly": "Купити {amount} щомісяця",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} монети вибрані",
   "@sendSelectedCoins": {
     "placeholders": {
@@ -1516,15 +1448,12 @@
       }
     }
   },
-  "dcaConfirmNetworkLightning": "Освітлення",
   "ledgerDefaultWalletLabel": "Ledger гаманець",
   "importWalletSpecter": "Спектр",
   "customLocationProvider": "Місцезнаходження",
-  "dcaSelectFrequencyLabel": "Виберіть частоту",
   "autoswapSave": "Зберегти",
   "swapGoHomeButton": "Головна",
   "sendFeeRateTooHigh": "Витрата здається дуже високою",
-  "dcaEnterLightningAddressLabel": "Вхід Lightning Адреса",
   "exchangeAmountInputTitle": "Вхід",
   "sendCoinConfirmations": "{count} підтвердження",
   "@sendCoinConfirmations": {
@@ -1575,20 +1504,11 @@
   "pinButtonCreate": "Створення PIN",
   "exchangeFeatureSelfCustody": "• Купити Біткойн прямо на самоктоди",
   "payAmountTooHigh": "Сума перевищує максимальну кількість",
-  "dcaConfirmPaymentBalance": "{currency} баланс",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "sellBankTransfer": "Банківський переказ",
   "replaceByFeeFastestTitle": "Швидке",
   "exchangeKycRemoveLimits": "Щоб видалити ліміти транзакцій",
   "autoswapMaxBalanceInfoText": "Коли баланс гаманця перевищує подвійну цю суму, автообмін спрацює, щоб зменшити баланс до цього рівня",
   "sellSendPaymentBelowMin": "Ви хочете продати нижче мінімальної суми, яку можна продати з цим гаманець.",
-  "dcaWalletSelectionDescription": "Біткіні покупки будуть розміщені автоматично за цей графік.",
   "sendTypeSend": "Відправити",
   "payFeeBumpSuccessful": "Фей Бампер успішним",
   "receiveGenerationFailed": "Вимкнено для створення {type}",
@@ -1634,7 +1554,6 @@
   "payInvalidInvoice": "Гарантований рахунок",
   "dcaConfirmFrequency": "Кількість",
   "advancedOptionsTitle": "Додаткові параметри",
-  "dcaConfirmOrderType": "Тип замовлення",
   "broadcastSignedTxTo": "До",
   "payPaymentDetails": "Деталі оплати",
   "psbtSignTransaction": "Реєстрація",
@@ -1653,14 +1572,6 @@
   "importColdcardError": "Заборонено імпортувати Coldcard",
   "customLocationRecommendationText": "ви впевнені, що ви не втратите файл за замовчуванням і він все ще буде доступний, якщо ви втратите свій телефон.",
   "confirmLogoutMessage": "Ви впевнені, що ви хочете увійти з вашого облікового запису Bitcoin Bull? Щоб отримати доступ до функцій обміну.",
-  "dcaSuccessMessageDaily": "Купити {amount} кожен день",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "swapInfoBanner": "Обмінюйте Bitcoin між своїми гаманцями без зайвих зусиль. Тримайте кошти на гаманці миттєвих платежів лише для щоденних витрат.",
   "payRBFEnabled": "РБФ включено",
   "takeYourTimeTag": "Зробіть свій час",
@@ -1673,7 +1584,6 @@
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
   "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
   "importWatchOnlyLabel": "Етикетка",
-  "dcaWalletLightningSubtitle": "Вимагає сумісний гаманець, макс. 0.25 BTC",
   "swapTransferRefundInProgressMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
   "fundExchangeMethodCanadaPostSubtitle": "Найкращі для тих, хто віддає перевагу оплаті",
   "importColdcardMultisigPrompt": "Для багатосигових гаманців сканування дескриптора гаманця QR коду",
@@ -1691,7 +1601,6 @@
   },
   "allSeedViewShowSeedsButton": "Показати насіння",
   "testBackupScreenshot": "Скріншоти",
-  "dcaSuccessTitle": "Покупка є активним!",
   "receiveAwaitingPayment": "Відкликання платежу...",
   "receiveQRCode": "QR-код",
   "payDecodeFailed": "Заборонено декодувати рахунок",
@@ -1710,7 +1619,6 @@
       }
     }
   },
-  "dcaSetupFrequencyError": "Виберіть частоту",
   "testBackupErrorNoMnemonic": "Немає мнемічних навантажень",
   "payInvoiceExpired": "Войце розширюється",
   "confirmButtonLabel": "Підтвердження",
@@ -1808,7 +1716,6 @@
   },
   "importColdcardTitle": "Підключення холодної картки Р",
   "pinStatusProcessing": "Переробка",
-  "dcaConfirmNetwork": "Мережа",
   "allSeedViewDeleteWarningMessage": "Видалення насіння незворотної дії. Тільки робіть це, якщо у вас є безпечні резервні копії цього насіння або асоційованих гаманців повністю зливаються.",
   "transactionHistoryTitle": "Історія транзакцій",
   "exportTransactionsDescription": "Експортуйте всі транзакції вашого гаманця (Bitcoin, Liquid, Lightning і свопи) як файл CSV. За бажанням відфільтруйте за діапазоном дат.",
@@ -1866,7 +1773,6 @@
   "receiveAddressCopied": "Адреса копіюється на буфер",
   "backupSettingsKeyServer": "Статус на сервери ",
   "connectHardwareWalletColdcardQ": "Холодна картка Q",
-  "dcaSetupContinue": "Продовжити",
   "importWatchOnlyTitle": "Імпорт годинник",
   "cancel": "Зареєструватися",
   "testBackupCreatedAt": "Створено:",
@@ -1897,7 +1803,6 @@
   "sendPaymentProcessing": "Опрацьовується платіж. До хвилини",
   "importWatchOnlyDerivationPath": "Деприація шлях",
   "sendErrorBroadcastFailed": "Ввімкнути трансляцію. Перевірити підключення мережі і спробувати знову.",
-  "dcaSelectWalletTypeLabel": "Виберіть тип Bitcoin Wallet",
   "backupWalletHowToDecideVaultModalTitle": "Як вирішити",
   "testBackupEncryptedVaultTag": "Легкий і простий (1 хвилину)",
   "fundExchangeSpeiTransfer": "Трансфер SPEI",
@@ -1925,19 +1830,10 @@
   "swapInternalTransferTitle": "Внутрішній обмін",
   "withdrawConfirmPayee": "Оплатити",
   "navigationTabExchange": "Обмін",
-  "dcaSuccessMessageWeekly": "Купити {amount} щотижня",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmRecipientName": "Ім'я одержувача",
   "autoswapRecipientWalletPlaceholder": "Виберіть гаманець Bitcoin",
   "backupSettingsExporting": "Експорт.",
   "swapErrorInsufficientFunds": "Не вдалося побудувати операцію. Як правило, через недостатні кошти для покриття зборів і суми.",
-  "dcaConfirmAmount": "Сума",
   "importWatchOnlySigningDevice": "Пристрої реєстрації",
   "receiveInvoiceExpired": "Войце розширюється",
   "autoswapMinimumThresholdErrorSats": "Мінімальний поріг балансу {amount} сати",
@@ -2029,7 +1925,6 @@
   "dcaConfirmFrequencyWeekly": "Щодня",
   "quickAndEasyTag": "Швидкий і простий",
   "settingsThemeTitle": "Головна",
-  "dcaSetupFundAccount": "Оберіть Ваш рахунок",
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
@@ -2075,7 +1970,6 @@
   "importWatchOnlyPasteHint": "Паста xpub, ypub, zpub або descriptor",
   "sellAccountNumber": "Номер рахунку",
   "backupWalletLastKnownEncryptedVault": "Останній Знаний Зашифрований За замовчуванням: ",
-  "dcaSetupInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
   "sellRateValidFor": "Тарифи на {seconds}",
   "@sellRateValidFor": {
     "placeholders": {
@@ -2085,7 +1979,6 @@
     }
   },
   "exchangeFeatureBankTransfers": "• Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
-  "dcaConfirmAutoMessage": "Купити замовлення будуть розміщені автоматично на ці налаштування. Ви можете відключити їх в будь-який час.",
   "usePasswordInsteadButton": "{pinOrPassword} замість >>",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -2095,7 +1988,6 @@
       }
     }
   },
-  "dcaWalletTypeLightning": "Lightning Network (LN)",
   "backupWalletVaultProviderAppleICloud": "Яблуко iCloud",
   "swapValidationMinimumAmount": "Мінімальна сума {amount} {currency}",
   "@swapValidationMinimumAmount": {
@@ -2134,7 +2026,6 @@
   "payPriority": "Головна",
   "payChannelBalanceLow": "Невисокий баланс каналу",
   "allSeedViewNoSeedsFound": "Не знайдено насіння.",
-  "dcaSetupScheduleMessage": "Біткіні покупки будуть розміщені автоматично за цей графік.",
   "swapProgressRefundMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
   "importColdcardInstructionsStep7": "На мобільному пристрої натисніть \"відкрита камера\"",
   "testBackupStoreItSafe": "Зберігайте його кудись безпечно.",
@@ -2174,7 +2065,6 @@
   "fundExchangeLabelBankName": "Назва банку",
   "backupWalletEncryptedVaultDescription": "Анонімне резервне копіювання з використанням сильного шифрування за допомогою хмари.",
   "sellRateExpired": "Курс обміну. Відновити ...",
-  "dcaConfirmNetworkBitcoin": "Bitcoin у USD",
   "importMnemonicTransactions": "{count} операції",
   "@importMnemonicTransactions": {
     "placeholders": {
@@ -2199,7 +2089,6 @@
   "payNoRouteFound": "Не знайдено маршруту для цього платежу",
   "fundExchangeLabelBeneficiaryName": "Ім'я одержувача",
   "payViewTransaction": "Перегляд транзакцій",
-  "dcaConfirmFrequencyHourly": "Час",
   "sellSwiftCode": "SWIFT/BIC код",
   "receiveInvoiceExpiry": "Invoice закінчується {time}",
   "@receiveInvoiceExpiry": {
@@ -2211,7 +2100,6 @@
   },
   "testBackupGoogleDrivePrivacyPart5": "bitcoin у USD.",
   "backupWalletInstructionLosePhone": "Якщо ви втратите або перейдете свій телефон, або якщо ви встановите додаток Bull Bitcoin, ваші біткоїни будуть втрачені назавжди.",
-  "dcaConfirmLightningAddress": "Адреса блискавки",
   "backupWalletErrorGoogleDriveSave": "Не вдалося зберегти Google диск",
   "sellErrorPrepareTransaction": "Не вдалося підготувати операцію: {error}",
   "@sellErrorPrepareTransaction": {
@@ -2247,7 +2135,6 @@
   "autoswapMaxFeeInfoText": "Якщо загальна комісія обміну перевищує встановлений відсоток, автообмін буде заблоковано",
   "backupWalletSuccessDescription": "Тепер перевірте вашу резервну копію, щоб переконатися, що все було зроблено належним чином.",
   "rbfBroadcast": "Радіоканал",
-  "dcaConfirmFrequencyMonthly": "Місяць",
   "importWatchOnlyScriptType": "Тип сценарію",
   "payBatchPayment": "Пакетний платіж",
   "payRecipientCount": "{count} одержувачів",
@@ -2367,7 +2254,6 @@
   "swapSubtractFeesLabel": "Відрахування платежів від суми",
   "buyVerificationRequired": "Перевірка необхідної для цієї суми",
   "withdrawConfirmBankAccount": "Банківський рахунок",
-  "dcaUseDefaultLightningAddress": "Використовуйте свою адресу за замовчуванням.",
   "sellEstimatedArrival": "Орієнтовне прибуття: {time}",
   "@sellEstimatedArrival": {
     "placeholders": {
@@ -2417,9 +2303,7 @@
   "broadcastSignedTxErrorInvalidPushTx": "Не вдалося зчитати транзакцію з цієї мітки. Будь ласка, спробуйте відсканувати ще раз.",
   "importMnemonicContinue": "Продовжити",
   "chooseVaultLocationTitle": "Виберіть місце розташування",
-  "dcaConfirmOrderTypeValue": "Закупівля",
   "testBackupEncryptedVaultTitle": "Зашифрована сорочка",
-  "dcaWalletTypeLiquid": "Рідина (LBTC)",
   "fundExchangeLabelInstitutionNumber": "Номер установи",
   "swapAmountLabel": "Сума",
   "sellConfirmOrder": "Підтвердити замовлення",
@@ -2435,7 +2319,6 @@
   "importColdcardScanPrompt": "Сканування QR-коду з вашої холодної картки Q",
   "backupSettingsEncryptedVault": "Зашифрований Vault",
   "autoswapAlwaysBlockInfoDisabled": "Якщо вимкнено, вам буде запропоновано дозволити автообмін, заблокований через високі комісії",
-  "dcaSetupTitle": "Встановити Recurring Купити",
   "sendErrorInsufficientBalanceForPayment": "Не достатній баланс для покриття платежу",
   "testBackupPhysicalBackupTitle": "Фізична резервна копія",
   "coldcardStep15": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",

@@ -103,23 +103,25 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy and DCA]
     EXCHANGE --> BULL_EXCHANGE
-    BULL_EXCHANGE -->|withdrawal order details navigation| TX_HISTORY
+    BULL_EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     BULL_EXCHANGE -->|dashboard price display| BTC_PRICE
-    DCA -->|amount input| BULL_EXCHANGE
+    BULL_EXCHANGE -->|authorized payout wallets| SECRETS
+    BULL_EXCHANGE -->|receive address issuance| SYNC
+    BULL_EXCHANGE -->|Buy receive sessions| BULL_PAYJOIN
+    BULL_EXCHANGE -->|Buy prices and fees| BULL_PRICER
+    BULL_EXCHANGE --> FEES_PACKAGE
+    BULL_EXCHANGE --> PREFERENCES
     EXCHANGE --> EXCHANGE_DOMAIN
-    BUY --> EXCHANGE_DOMAIN
     SELL --> EXCHANGE_DOMAIN
     PAY --> EXCHANGE_DOMAIN
-    BUY -->|KYC navigation| BULL_EXCHANGE
     SELL -->|KYC navigation and amount input| BULL_EXCHANGE
     PAY -->|KYC navigation and amount input| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
-    DCA --> EXCHANGE_DOMAIN
     LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
     TX_HISTORY --> EXCHANGE_DOMAIN
@@ -172,13 +174,11 @@ graph TB
     WALLETS --> PREFERENCES
     BTC_PRICE --> PREFERENCES
     COINS --> PREFERENCES
-    BUY --> PREFERENCES
     EXCHANGE --> PREFERENCES
     SWAPS --> PREFERENCES
     SEND --> PREFERENCES
     SELL --> PREFERENCES
     PAY --> PREFERENCES
-    DCA --> PREFERENCES
     PREFERENCES --> PRIMITIVES
     PREFERENCES --> TOR
     PREFERENCES --> BULL_REPORTING
@@ -254,11 +254,9 @@ graph TB
     TX_HISTORY[Transactions<br/>Workspace Feature]
     REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
-    DCA[DCA]
     LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
     PAY[Pay]
-    BUY[Buy]
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     CONSOLIDATION[Consolidation]
@@ -316,7 +314,6 @@ graph TB
     SETTINGS --> SWAPS_PKG
     ALL_SEED_VIEW --> SWAPS_PKG
     APP_STARTUP --> SWAPS_PKG
-    BUY --> BULL_PRICER
     PAY --> BULL_PRICER
     RECEIVE --> BULL_PRICER
     SELL --> BULL_PRICER
@@ -390,13 +387,6 @@ graph TB
     COINS --> BTC_PRICE
     SELL --> BTC_PRICE
     SETTINGS --> BTC_PRICE
-    BUY -->|public routine sync and destination validation| WALLETS
-    BUY --> EXCHANGE
-    BUY --> RECEIVE
-    BUY --> BULL_PAYJOIN
-    BUY --> TX_HISTORY
-    BUY -->|funding navigation| BULL_EXCHANGE
-    BUY --> LABELS
     COINS --> UTXO_MGMT
     COINS --> LABELS
     SEND --> LABELS
@@ -405,8 +395,6 @@ graph TB
     SETTINGS --> LABELS
     AUTOSWAP --> LABELS
     COINS -->|public revision stream| WALLETS
-    DCA -->|public destination validation and input| WALLETS
-    DCA --> RECEIVE
     IMPORT_WALLET[Wallet Import]
     IMPORT_WALLET --> SETTINGS
     SETTINGS --> SWAPS
@@ -415,10 +403,8 @@ graph TB
     SETTINGS --> TX_HISTORY
     LIMIT_ORDERS --> EXCHANGE
     EXCHANGE --> BTC_PRICE
-    EXCHANGE --> DCA
     EXCHANGE --> TX_HISTORY
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
-    DCA --> EXCHANGE
     PAY -->|public spend admission and routine sync| WALLETS
     PAY -->|public protected broadcast| SEND
     PAY --> EXCHANGE
@@ -532,7 +518,6 @@ graph TB
     PAY --> FEES_PACKAGE
     SELL --> FEES_PACKAGE
     REPLACE_BY_FEE --> FEES_PACKAGE
-    BUY --> FEES_PACKAGE
     SWAPS --> FEES_PACKAGE
     AUTOSWAP --> FEES_PACKAGE
     CONSOLIDATION --> FEES_PACKAGE
@@ -554,8 +539,6 @@ graph TB
     UTXO_MGMT --> SYNC
     RECEIVE --> ADDRESS_MGMT
     AUTOSWAP --> ADDRESS_MGMT
-    BUY --> ADDRESS_MGMT
-    DCA --> ADDRESS_MGMT
     LIMIT_ORDERS --> ADDRESS_MGMT
     PAY --> ADDRESS_MGMT
     PAY --> UTXO_MGMT
@@ -571,7 +554,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,DCA,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -703,7 +686,6 @@ The architecture test records source dependencies, including internal imports an
 | `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
-| `dca → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/dca/domain/usecases/set_dca_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
@@ -741,7 +723,7 @@ Mnemonic scanning preserves the wallet owner's typed unsupported-script refusal.
 
 ## Shared payment destination input
 
-Wallet publishes destination validation and input through `public/payment_destination.dart`. Buy, DCA, limit orders, default wallets and Swap consume this public surface. The adapter retains the complete scanned request, applies each consumer’s accepted payment types and displays the existing AddressViewer. The visual component remains pure UI in bull_ui. The legacy core scanner file, unreachable Send request-identifier route and duplicate Swap scanner are removed; consumers import the published Wallet capability directly.
+Wallet publishes destination validation and input through `public/payment_destination.dart`. The app binds this public surface to Buy, DCA and default payouts; Limit Orders and Swap consume it directly. The adapter retains the complete scanned request, applies each consumer’s accepted payment types and displays the existing AddressViewer. The visual component remains pure UI in bull_ui. The legacy core scanner file, unreachable Send request-identifier route and duplicate Swap scanner are removed; consumers import the published Wallet capability directly.
 
 ## Owner-scoped keychain capabilities
 

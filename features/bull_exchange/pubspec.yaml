@@ -11,8 +11,12 @@ dependencies:
   bitcoin_price:
   bloc_concurrency: ^0.3.0
   bull_logger:
+  bull_payjoin:
+  bull_pricer:
   bull_ui:
+  clock: ^1.1.2
   exchange:
+  fees:
   file_system:
   flutter:
     sdk: flutter
@@ -29,8 +33,10 @@ dependencies:
   path_provider: ^2.1.5
   preferences:
   primitives:
+  secrets:
   share_plus: ^13.3.1
   shimmer: ^4.0.0
+  sync:
   url_launcher: ^6.3.2
   webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10

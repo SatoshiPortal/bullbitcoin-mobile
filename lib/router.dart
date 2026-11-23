@@ -1,7 +1,9 @@
 import 'package:all_seed_view/setup.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
-import 'package:bull_exchange/bull_exchange.dart' show ExchangeHomeAction;
+import 'package:bull_exchange/bull_exchange.dart'
+    show BuyRoute, ExchangeHomeAction;
+import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -22,9 +24,7 @@ import 'package:bip85/bip85.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
-import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
 import 'package:settings/settings.dart';
@@ -138,6 +138,7 @@ class AppRouter {
     exchange: () => locator<Exchange>(),
     preferences: () => locator<Preferences>(),
     settings: SettingsRouter.exchangeSettingsHost,
+    purchases: exchangePurchaseHost(locator),
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
@@ -267,7 +268,7 @@ class AppRouter {
       ),
       SwapRouter.route,
       ...locator<SwapFeature>().routes,
-      ...BuyRouter.routes,
+      ..._exchangeFeature.buyRoutes,
       ..._exchangeFeature.fundingRoutes,
       SellRouter.route,
       ?_exchangeFeature.withdrawalRoute,
@@ -278,7 +279,7 @@ class AppRouter {
       ...locator<SignersFeature>().routes,
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
-      DcaRouter.route,
+      ?_exchangeFeature.dcaRoute,
       ?_exchangeFeature.autoBuy,
       LimitOrdersRouter.create,
       ?_exchangeFeature.limitOrderDetails,

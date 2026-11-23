@@ -576,5 +576,148 @@
   "deleteAccountConfirmationDelete": "Delete Account",
   "deleteAccountSuccessTitle": "账户删除请求已提交",
   "deleteAccountSuccessDescription": "您的账户删除请求已提交，将在 5 个工作日内处理完成。",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessClose": "Close",
+  "buyPayoutWillBeSentIn": "您的付款将在 ",
+  "dcaChooseWalletTitle": "选择比特币钱包",
+  "buyConfirmExternalWallet": "外部比特币钱包",
+  "buyConfirmExpressWithdrawal": "2. 确认明示退出",
+  "globalDefaultBitcoinWalletLabel": "安保",
+  "dcaWalletLiquidSubtitle": "要求兼容的钱包",
+  "buyConfirmYouReceive": "您",
+  "buyAboveMaxAmountError": "你试图购买最高数额.",
+  "buyBelowMinAmountError": "你们正在努力购买低于最低数额.",
+  "buyConfirmPayoutWallet": "支付钱包",
+  "buyPayoutMethodLiquid": "Liquid 上的 L-BTC",
+  "buyPayoutMethodBitcoin": "Bitcoin 链上的 BTC",
+  "buyConfirmPayoutMethod": "支付方式",
+  "dcaConfirmNetworkLiquid": "流动资金",
+  "dcaWalletBitcoinSubtitle": "最低0.001 BTC",
+  "dcaWalletSelectionContinueButton": "继续",
+  "dcaSetupInsufficientBalance": "平衡不足",
+  "dcaSuccessMessageHourly": "您将每小时购买{amount}",
+  "@dcaSuccessMessageHourly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyUnexpectedError": "当前无法创建您的订单。请重试或联系客服。",
+  "dcaConfirmPaymentMethod": "支付方法",
+  "buyConfirmBitcoinPrice": "价格",
+  "buyEstimatedFeeValue": "估计收费价值",
+  "buyEnterAmount": "营业额",
+  "dcaNetworkValidationError": "请选择网络",
+  "buyInputContinue": "继续",
+  "dcaWalletTypeBitcoin": "图瓦卢",
+  "buyConfirmationTime": "认可时间",
+  "buyYouBought": "您用 {fiatAmount} 购买了 {amount}",
+  "@buyYouBought": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "加速交易",
+  "buyMax": "Max",
+  "buyInputTitle": "采购",
+  "buySelectWallet": "选择钱包",
+  "buyInputKycPending": "KYC ID 有待核查",
+  "buyBitcoinAddressHint": "BC1QYL7J673H..6Y6ALV70M0",
+  "buyInputKycMessage": "您必须首先完成身份证明核查",
+  "buyNetworkFees": "网络费",
+  "dcaSuccessMessageMonthly": "您将每月购买{amount}",
+  "@dcaSuccessMessageMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaConfirmNetworkLightning": "照明",
+  "dcaSelectFrequencyLabel": "选择性频率",
+  "dcaEnterLightningAddressLabel": "入光地址",
+  "dcaConfirmPaymentBalance": "{currency} 结余",
+  "@dcaConfirmPaymentBalance": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaWalletSelectionDescription": "将根据这一时间表自动进行采购.",
+  "buyInputCompleteKyc": "页: 1",
+  "dcaConfirmFrequency": "频率",
+  "dcaConfirmOrderType": "命令类型",
+  "dcaSuccessMessageDaily": "您将每天购买{amount}",
+  "@dcaSuccessMessageDaily": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "退出",
+  "dcaWalletLightningSubtitle": "要求兼容的钱包，最大限额 0.25 BTC",
+  "buyInputFundAccount": "基金",
+  "buyConfirmationTimeValue": "大约10分钟",
+  "buyConfirmAwaitingConfirmation": "等待确认 ",
+  "dcaSuccessTitle": "重复买!",
+  "dcaSetupFrequencyError": "请选择频率",
+  "buyConfirmTitle": "采购",
+  "buyThatWasFast": "这是迅速的,是没有的?",
+  "dcaConfirmFrequencyDaily": "每天",
+  "buyConfirmPurchase": "共同采购",
+  "buyInputMaxAmountError": "买不起",
+  "buyNetworkFeeRate": "网络费",
+  "dcaBackToHomeButton": "返家",
+  "globalDefaultLiquidWalletLabel": "经常付款",
+  "dcaConfirmNetwork": "网络",
+  "dcaConfirmTitle": "同意 1. 采购",
+  "dcaSetupContinue": "继续",
+  "buyConfirmYouPay": "页: 1",
+  "dcaSelectWalletTypeLabel": "选修",
+  "buyInputInsufficientBalance": "结余不足",
+  "dcaSuccessMessageWeekly": "您将每周购买{amount}",
+  "@dcaSuccessMessageWeekly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyInputInsufficientBalanceMessage": "你们没有足够的平衡来建立这一秩序.",
+  "dcaConfirmAmount": "数额",
+  "dcaConfirmFrequencyWeekly": "每个星期",
+  "dcaSetupFundAccount": "基金",
+  "buyEnterBitcoinAddress": "轨道硬币地址",
+  "dcaSetupInsufficientBalanceMessage": "你们没有足够的平衡来建立这一秩序.",
+  "dcaConfirmAutoMessage": "定购单将自动置于这些环境中。 无论何时,你都可以消除这些障碍.",
+  "dcaWalletTypeLightning": "照明网络",
+  "buyNetworkFeeExplanation": "采矿公司收取和收取的电离层网费将从矿工收取和收取的数额中扣除",
+  "dcaSetupScheduleMessage": "将根据这一时间表自动进行采购.",
+  "dcaConfirmContinue": "继续",
+  "dcaConfirmNetworkBitcoin": "页: 1",
+  "buyViewDetails": "观点细节",
+  "dcaConfirmFrequencyHourly": "每小时",
+  "dcaConfirmLightningAddress": "照明地址",
+  "buyPaymentMethod": "支付方法",
+  "dcaConfirmFrequencyMonthly": "每个月",
+  "buyBitcoinSent": "页: 1!",
+  "buyUnauthenticatedError": "你没有认证。 请继续发言.",
+  "buyInputMinAmountError": "你们至少应当购买",
+  "dcaUseDefaultLightningAddress": "利用我的缺省电灯.",
+  "buyGetConfirmedFaster": "更快",
+  "buyConfirmExpress": "1. 确认",
+  "dcaConfirmOrderTypeValue": "重复购买",
+  "dcaWalletTypeLiquid": "液体(LBTC)",
+  "dcaSetupTitle": "2. 约定的变更",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaAccountUnavailableError": "无法加载您的账户。请检查网络连接，确认您已登录，然后重试。",
+  "dcaLightningAddressRequiredError": "输入 Lightning 地址以接收您购买的比特币。",
+  "dcaReceiveAddressError": "无法在您的钱包中准备接收地址。请重试。",
+  "dcaOrderCreationError": "无法创建定期买入。请稍后重试。"
 }

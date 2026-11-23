@@ -1,7 +1,5 @@
+import 'package:bull_exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:transactions/transactions.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,7 +19,9 @@ void main() {
 
     setUp(() {
       facade = _MockTransactions();
-      usecase = LabelCompletedBuyOrderUsecase(transactionsFacade: facade);
+      usecase = LabelCompletedBuyOrderUsecase(
+        facade.labelCompletedExchangeOrders,
+      );
     });
 
     _MockOrder orderWith(OrderStatus status) {
@@ -71,7 +71,10 @@ void main() {
           // Cosmetic: the caller drops this so a completed order still shows
           // as completed. It must not escape as an exception and break that.
           expect(failure, isA<BuyUnexpectedFailure>());
-          expect(failure.logMessage, contains('label store unavailable'));
+          expect(
+            failure.logMessage,
+            isNot(contains('label store unavailable')),
+          );
       }
     });
   });

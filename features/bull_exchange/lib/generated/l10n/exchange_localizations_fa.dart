@@ -2066,4 +2066,350 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
 
   @override
   String get deleteAccountSuccessClose => 'Close';
+
+  @override
+  String get buyEnterAmount => 'مقدار ورودی';
+
+  @override
+  String get buyPaymentMethod => 'روش پرداخت';
+
+  @override
+  String get buyMax => 'مکس';
+
+  @override
+  String get buySelectWallet => 'انتخاب کیف پول';
+
+  @override
+  String get buyEnterBitcoinAddress => 'آدرس Bitcoin';
+
+  @override
+  String get buyBitcoinAddressHint => 'BC1QYL7J673H';
+
+  @override
+  String get buyConfirmPurchase => 'تایید خرید';
+
+  @override
+  String buyYouBought(String amount, String fiatAmount) {
+    return 'شما $amount را با $fiatAmount خریدید';
+  }
+
+  @override
+  String get buyPayoutWillBeSentIn => 'پرداخت شما در داخل ارسال خواهد شد ';
+
+  @override
+  String get buyViewDetails => 'مشاهده جزئیات';
+
+  @override
+  String get buyAccelerateTransaction => 'سرعت معاملات';
+
+  @override
+  String get buyGetConfirmedFaster => 'سریعتر تایید شد';
+
+  @override
+  String get buyConfirmExpressWithdrawal => 'تایید خروج صریح';
+
+  @override
+  String get buyNetworkFeeExplanation =>
+      'هزینه شبکه بیت کوین از مبلغی که دریافت می کنید و جمع آوری شده توسط معدنچیان بیت کوین کسر می شود';
+
+  @override
+  String get buyNetworkFees => 'هزینه های شبکه';
+
+  @override
+  String get buyEstimatedFeeValue => 'هزینه برآورد شده';
+
+  @override
+  String get buyNetworkFeeRate => 'نرخ هزینه شبکه';
+
+  @override
+  String get buyConfirmationTime => 'تایید زمان';
+
+  @override
+  String get buyConfirmationTimeValue => '10 دقیقه';
+
+  @override
+  String get buyWaitForFreeWithdrawal => 'منتظر خروج آزاد';
+
+  @override
+  String get buyConfirmExpress => 'تایید بیان';
+
+  @override
+  String get buyBitcoinSent => 'Bitcoin فرستاده!';
+
+  @override
+  String get buyThatWasFast => 'سریع بود، نه؟?';
+
+  @override
+  String get globalDefaultBitcoinWalletLabel => 'Bitcoin امن';
+
+  @override
+  String get globalDefaultLiquidWalletLabel => 'پرداخت های فوری';
+
+  @override
+  String get dcaSuccessTitle => 'خرید مجدد فعال است!';
+
+  @override
+  String dcaSuccessMessageHourly(String amount) {
+    return 'شما هر ساعت $amount خریداری خواهید کرد';
+  }
+
+  @override
+  String dcaSuccessMessageDaily(String amount) {
+    return 'شما هر روز $amount خریداری خواهید کرد';
+  }
+
+  @override
+  String dcaSuccessMessageWeekly(String amount) {
+    return 'شما هر هفته $amount خریداری خواهید کرد';
+  }
+
+  @override
+  String dcaSuccessMessageMonthly(String amount) {
+    return 'شما هر ماه $amount خریداری خواهید کرد';
+  }
+
+  @override
+  String get dcaBackToHomeButton => 'بازگشت به خانه';
+
+  @override
+  String get dcaChooseWalletTitle => 'Bitcoin Wallet را انتخاب کنید';
+
+  @override
+  String get dcaWalletSelectionDescription =>
+      'خرید بیت کوین به طور خودکار در این برنامه قرار می گیرد.';
+
+  @override
+  String get dcaNetworkValidationError => 'یک شبکه را انتخاب کنید';
+
+  @override
+  String get dcaEnterLightningAddressLabel => 'ورود به آدرس Lightning';
+
+  @override
+  String get dcaUseDefaultLightningAddress =>
+      'از آدرس پیش فرض رعد و برق استفاده کنید.';
+
+  @override
+  String get dcaWalletSelectionContinueButton => 'ادامه';
+
+  @override
+  String get dcaSelectFrequencyLabel => 'انتخاب فرکانس';
+
+  @override
+  String get dcaSelectWalletTypeLabel => 'گزینه Bitcoin Wallet Type';
+
+  @override
+  String get dcaWalletTypeBitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get dcaWalletTypeLightning => 'شبکه لایتنینگ (LN)';
+
+  @override
+  String get dcaWalletTypeLiquid => 'مایع (LBTC)';
+
+  @override
+  String get dcaWalletBitcoinSubtitle => 'حداقل 0.001 BTC';
+
+  @override
+  String get dcaWalletLightningSubtitle =>
+      'نیاز به کیف پول سازگار، حداکثر 0.25 BTC';
+
+  @override
+  String get dcaWalletLiquidSubtitle => 'نیاز به کیف پول سازگار';
+
+  @override
+  String get dcaSetupTitle => 'خرید Recurring Buy';
+
+  @override
+  String get dcaSetupInsufficientBalance => 'عدم تعادل';
+
+  @override
+  String get dcaSetupInsufficientBalanceMessage =>
+      'شما تعادل کافی برای ایجاد این دستور ندارید.';
+
+  @override
+  String get dcaSetupFundAccount => 'بودجه حساب شما';
+
+  @override
+  String get dcaSetupScheduleMessage =>
+      'خرید بیت کوین به طور خودکار در این برنامه قرار می گیرد.';
+
+  @override
+  String get dcaSetupFrequencyError => 'لطفا یک فرکانس انتخاب کنید';
+
+  @override
+  String get dcaSetupContinue => 'ادامه';
+
+  @override
+  String get dcaConfirmTitle => 'تایید مجدد خرید';
+
+  @override
+  String get dcaConfirmAutoMessage =>
+      'سفارش خرید به طور خودکار در هر این تنظیمات قرار می گیرد. شما می توانید آنها را در هر زمان غیرفعال کنید.';
+
+  @override
+  String get dcaConfirmFrequency => 'فرکانس';
+
+  @override
+  String get dcaConfirmFrequencyHourly => 'هر ساعت';
+
+  @override
+  String get dcaConfirmFrequencyDaily => 'هر روز';
+
+  @override
+  String get dcaConfirmFrequencyWeekly => 'هر هفته';
+
+  @override
+  String get dcaConfirmFrequencyMonthly => 'هر ماه';
+
+  @override
+  String get dcaConfirmAmount => 'مبلغ';
+
+  @override
+  String get dcaConfirmPaymentMethod => 'روش پرداخت';
+
+  @override
+  String dcaConfirmPaymentBalance(String currency) {
+    return '$currency تعادل';
+  }
+
+  @override
+  String get dcaConfirmOrderType => 'نوع سفارش';
+
+  @override
+  String get dcaConfirmOrderTypeValue => 'خرید مجدد';
+
+  @override
+  String get dcaConfirmNetwork => 'شبکه Network';
+
+  @override
+  String get dcaConfirmNetworkBitcoin => 'Bitcoin';
+
+  @override
+  String get dcaConfirmNetworkLightning => 'رعد و برق';
+
+  @override
+  String get dcaConfirmNetworkLiquid => 'مایع';
+
+  @override
+  String get dcaConfirmLightningAddress => 'آدرس Lightning';
+
+  @override
+  String get dcaConfirmContinue => 'ادامه';
+
+  @override
+  String get buyInputTitle => 'خرید Bitcoin';
+
+  @override
+  String get buyInputMinAmountError => 'حداقل باید خرید کنید';
+
+  @override
+  String get buyInputMaxAmountError => 'نمی توانید بیشتر از چیزی خرید کنید';
+
+  @override
+  String get buyInputKycPending => 'KYC ID Verification';
+
+  @override
+  String get buyInputKycMessage => 'ابتدا باید تایید هویت را تکمیل کنید';
+
+  @override
+  String get buyInputCompleteKyc => 'کامل KYC';
+
+  @override
+  String get buyInputInsufficientBalance => 'عدم تعادل';
+
+  @override
+  String get buyInputInsufficientBalanceMessage =>
+      'شما تعادل کافی برای ایجاد این دستور ندارید.';
+
+  @override
+  String get buyInputFundAccount => 'بودجه حساب شما';
+
+  @override
+  String get buyInputContinue => 'ادامه';
+
+  @override
+  String get buyConfirmTitle => 'خرید Bitcoin';
+
+  @override
+  String get buyConfirmYouPay => 'پرداخت می کنید';
+
+  @override
+  String get buyConfirmYouReceive => 'دریافت می کنید';
+
+  @override
+  String get buyConfirmBitcoinPrice => 'Bitcoin Price';
+
+  @override
+  String get buyConfirmPayoutWallet => 'کیف پول پرداخت';
+
+  @override
+  String get buyConfirmPayoutMethod => 'روش پرداخت';
+
+  @override
+  String get buyPayoutMethodLiquid => 'L-BTC در Liquid';
+
+  @override
+  String get buyPayoutMethodBitcoin => 'BTC در زنجیره بیت‌کوین';
+
+  @override
+  String get buyConfirmExternalWallet => 'کیف پول خارجی Bitcoin';
+
+  @override
+  String get buyConfirmAwaitingConfirmation => 'انتظار تایید ';
+
+  @override
+  String get buyUnauthenticatedError =>
+      'شما معتبر نیستید. لطفا برای ادامه وارد شوید.';
+
+  @override
+  String get buyBelowMinAmountError =>
+      'شما در حال تلاش برای خرید زیر حداقل مقدار هستید.';
+
+  @override
+  String get buyAboveMaxAmountError =>
+      'شما سعی می کنید بیش از حداکثر مقدار خرید کنید.';
+
+  @override
+  String get buyUnexpectedError =>
+      'سفارش شما در حال حاضر ایجاد نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.';
+
+  @override
+  String get dcaAccountUnavailableError =>
+      'بارگیری حساب شما امکان‌پذیر نبود. اتصال خود را بررسی کنید، مطمئن شوید وارد شده‌اید و دوباره تلاش کنید.';
+
+  @override
+  String get dcaLightningAddressRequiredError =>
+      'برای دریافت خریدهای خود یک آدرس Lightning وارد کنید.';
+
+  @override
+  String get dcaReceiveAddressError =>
+      'آماده‌سازی آدرس دریافت در کیف پول شما امکان‌پذیر نبود. لطفاً دوباره تلاش کنید.';
+
+  @override
+  String get dcaOrderCreationError =>
+      'ایجاد خرید تکرارشونده امکان‌پذیر نبود. لطفاً بعداً دوباره تلاش کنید.';
+
+  @override
+  String get payjoinInProgress => 'Payjoin in progress';
+
+  @override
+  String get payjoinSucceeded => 'Payjoin succeeded';
+
+  @override
+  String get payjoinBuyRegularSend =>
+      'Bitcoin sent to your wallet via regular send';
+
+  @override
+  String get payjoinUseToggle => 'Use payjoin';
+
+  @override
+  String get limitOrdersLightningAddressHint => 'you@domain.com';
+
+  @override
+  String get exchangeQuoteUnavailableError =>
+      'We couldn\'t get a fresh price. Try again, or go back and start a new order.';
+
+  @override
+  String get buyQuoteExpiredError =>
+      'This price has expired. A new one is being loaded; check it before confirming.';
 }

@@ -5,6 +5,7 @@ import '../domain/wallet_registration.dart';
 WalletRegistration walletRegistrationForTesting({
   required String id,
   required Network network,
+  bool isDefault = false,
   WalletSigner signer = WalletSigner.none,
 }) => WalletRegistration(
   id: id,
@@ -15,7 +16,7 @@ WalletRegistration walletRegistrationForTesting({
   derivationPath: null,
   label: null,
   birthday: null,
-  isDefault: false,
+  isDefault: isDefault,
 );
 
 WalletSelection walletSelectionForTesting(List<WalletRegistration> wallets) =>

@@ -353,9 +353,11 @@ The workspace Settings screen owns the logout and deletion confirmations. `Excha
 
 The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange` and uses the workspace virtual IBAN screen. The Exchange domain owns fiat recipients, the CAD directory, SINPE and SEPA activation. Their operations use the untimed BBX client bound to the current session; the feature owns polling, selection and form state.
 
+Buy and DCA mount at their existing root routes in `bull_exchange`. They use the admitted Secrets wallet inventory on the active network and Sync for durable receive addresses. Buy reuses the current receive address; on-chain DCA advances the index for the sole configured default on the selected chain. Lightning DCA does not query the wallet inventory. The host binds the existing destination field, wallet polling, and order history navigation.
+
 Withdrawal is mounted in the same feature and reuses its recipient selection and activation. A completed withdrawal is not invalidated by failing to update Interac defaults. The host opens the existing transaction detail route and preserves its return to Exchange.
 
-The Exchange amount and currency controls are intentionally reusable widgets. DCA, Limit Orders, Sell, Pay and Withdrawal import them from `bull_exchange`, not from the legacy Exchange UI.
+The Exchange amount and currency controls are intentionally reusable widgets. DCA and Withdrawal use them within `bull_exchange`; Limit Orders, Sell and Pay import them from its public library.
 
 Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
 

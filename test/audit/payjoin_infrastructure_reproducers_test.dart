@@ -50,7 +50,7 @@ void main() {
 
   test('touched domain usecases do not import concrete data repositories', () {
     final paths = [
-      'lib/features/buy/domain/create_buy_order_usecase.dart',
+      'features/bull_exchange/lib/src/buy/domain/create_buy_order_usecase.dart',
       'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
       'features/transactions/lib/src/domain/usecases/get_transactions_by_tx_id_usecase.dart',
       'lib/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart',

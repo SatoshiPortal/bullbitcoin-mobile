@@ -1,14 +1,13 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:bull_exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
-import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -16,27 +15,29 @@ import '../../../exchange/data/bbx_api_test_http.dart';
 
 class MockExchangeOrders extends Mock implements ExchangeOrders {}
 
-class MockWalletRepository extends Mock implements WalletRepository {}
+class MockWalletRepository extends Mock implements WalletInventory {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockWalletAddressRepository extends Mock
-    implements WalletAddressRepository {}
-
-class FakeWallet extends Fake implements Wallet {
-  @override
-  String get id => 'default-wallet';
-}
+    implements WalletNativeLifecycle {}
 
 /// Routed through the failing address-generation path so the test output can
 /// be searched for it: it must never appear in a log line.
 const _sentinelWalletId = 'wallet-id-must-not-be-logged';
+WalletRegistration _defaultWallet() => walletRegistrationForTesting(
+  id: _sentinelWalletId,
+  network: BitcoinNetwork.mainnet,
+  isDefault: true,
+);
 
 /// Stands in for whatever a foreign exception message may embed — a
 /// credential, a response body. It must never reach a [DcaFailure].
 const _sentinelSecret = 'super-secret';
 
 void main() {
+  setUpAll(BullSdk.init);
+  tearDownAll(BullSdk.dispose);
   setUpAll(() {
     registerFallbackValue(FiatCurrency.cad);
     registerFallbackValue(DcaBuyFrequency.daily);
@@ -74,9 +75,8 @@ void main() {
     walletAddress = MockWalletAddressRepository();
 
     usecase = SetDcaUsecase(
-      wallet: wallet,
+      payouts: ExchangePayoutWallets(wallet, walletAddress),
       settingsRepository: settings,
-      walletAddressRepository: walletAddress,
       exchange: exchangeForTesting(
         orders: (environment) => environment == ExchangeEnvironment.testnet
             ? testnetOrders
@@ -92,6 +92,95 @@ void main() {
   }
 
   group('SetDcaUsecase', () {
+    test(
+      'creates Bitcoin DCA with the native address of the unique default',
+      () async {
+        final registration = _defaultWallet();
+        final key = WalletKey(
+          id: registration.id,
+          network: registration.network,
+        );
+        const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
+        when(() => wallet.walletsForNetwork(BitcoinNetwork.mainnet)).thenAnswer(
+          (_) async => Ok(walletSelectionForTesting([registration])),
+        );
+        when(() => wallet.readWallet(registration.id))
+            .thenAnswer((_) async => Ok(registration));
+        when(() => walletAddress.receive(key, advance: true))
+            .thenAnswer((_) async => const Ok((address: address, index: 3)));
+        Future<Result<Dca, ExchangeFailure>> placeOrder() =>
+            mainnetOrders.createDca(
+              amount: 10,
+              currency: FiatCurrency.cad,
+              frequency: DcaBuyFrequency.daily,
+              network: DcaNetwork.bitcoin,
+              address: address,
+              enablePreference: true,
+            );
+        when(placeOrder).thenAnswer((_) async => Ok(dca));
+
+        final result = await usecase.execute(
+          amount: 10,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: DcaNetwork.bitcoin,
+        );
+
+        expect(result, isA<Ok<Dca, DcaFailure>>());
+        verifyInOrder([
+          () => walletAddress.receive(key, advance: true),
+          placeOrder,
+        ]);
+        verifyZeroInteractions(testnetOrders);
+      },
+    );
+
+    test('refuses conflicting defaults before issuing or writing', () async {
+      when(() => wallet.walletsForNetwork(BitcoinNetwork.mainnet)).thenAnswer(
+        (_) async => Ok(
+          walletSelectionForTesting([
+            _defaultWallet(),
+            walletRegistrationForTesting(
+              id: 'other-default',
+              network: BitcoinNetwork.mainnet,
+              isDefault: true,
+            ),
+          ]),
+        ),
+      );
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: DcaNetwork.bitcoin,
+      );
+      expect(failureOf(result), isA<DcaReceiveAddressFailure>());
+      verifyZeroInteractions(walletAddress);
+      verifyZeroInteractions(mainnetOrders);
+    });
+
+    test('derives on the selected network and does not write if reauthorization fails', () async {
+      final registration = _defaultWallet();
+      final key = WalletKey(
+        id: registration.id,
+        network: BitcoinNetwork.mainnet,
+      );
+      when(
+        () => wallet.walletsForNetwork(BitcoinNetwork.mainnet),
+      ).thenAnswer((_) async => Ok(walletSelectionForTesting([registration])));
+      when(() => wallet.readWallet(registration.id))
+          .thenAnswer((_) async => const Err(KeystoreLockedFailure()));
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: DcaNetwork.bitcoin,
+      );
+      expect(failureOf(result), isA<DcaReceiveAddressFailure>());
+      verifyNever(() => walletAddress.receive(key, advance: true));
+      verifyZeroInteractions(mainnetOrders);
+    });
+
     test('regtest refuses before wallet or account access', () async {
       when(() => settings.fetch()).thenAnswer(
         (_) async =>
@@ -130,14 +219,8 @@ void main() {
     test(
       'maps an empty default-wallet list to ReceiveAddressFailure',
       () async {
-        when(
-          () => wallet.getWallets(
-            environment: Environment.mainnet,
-            onlyDefaults: true,
-            onlyBitcoin: true,
-            onlyLiquid: false,
-          ),
-        ).thenAnswer((_) async => Ok([]));
+        when(() => wallet.walletsForNetwork(BitcoinNetwork.mainnet))
+            .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
 
         final result = await usecase.execute(
           amount: 10,
@@ -159,20 +242,8 @@ void main() {
         // An onboarded install always has both default wallets, so an empty
         // list means "not set up" while a failure means "could not read".
         // Reporting the same thing for both would misdiagnose the common case.
-        when(
-          () => wallet.getWallets(
-            environment: Environment.mainnet,
-            onlyDefaults: true,
-            onlyBitcoin: true,
-            onlyLiquid: false,
-          ),
-        ).thenAnswer(
-          (_) async => const Err<List<Wallet>, WalletFailure>(
-            WalletStorageFailure(
-              'SqliteException(11): disk image is malformed',
-            ),
-          ),
-        );
+        when(() => wallet.walletsForNetwork(BitcoinNetwork.mainnet))
+            .thenAnswer((_) async => const Err(KeystoreLockedFailure()));
 
         final result = await usecase.execute(
           amount: 10,
@@ -192,19 +263,18 @@ void main() {
 
     test('maps a failing address generation to ReceiveAddressFailure without '
         'logging the wallet identifier', () async {
-      when(
-        () => wallet.getWallets(
-          environment: Environment.mainnet,
-          onlyDefaults: true,
-          onlyBitcoin: true,
-          onlyLiquid: false,
-        ),
-      ).thenAnswer((_) async => Ok([FakeWallet()]));
-      when(
-        () => walletAddress.generateNewReceiveAddress(
-          walletId: any(named: 'walletId'),
-        ),
-      ).thenThrow(const WalletNotFoundException(_sentinelWalletId));
+      when(() => wallet.walletsForNetwork(BitcoinNetwork.mainnet)).thenAnswer(
+        (_) async => Ok(walletSelectionForTesting([_defaultWallet()])),
+      );
+      final registration = _defaultWallet();
+      when(() => wallet.readWallet(registration.id))
+          .thenAnswer((_) async => Ok(registration));
+      final key = WalletKey(
+        id: registration.id,
+        network: BitcoinNetwork.mainnet,
+      );
+      when(() => walletAddress.receive(key, advance: true))
+          .thenAnswer((_) async => const Err(SyncStorageFailure()));
 
       final result = await usecase.execute(
         amount: 10,
@@ -215,11 +285,9 @@ void main() {
 
       final failure = failureOf(result);
       expect(failure, isA<DcaReceiveAddressFailure>());
-      // The failure travels into bloc state, so its logMessage is a fixed
-      // breadcrumb: the identifier must not survive into it. The raw error
-      // still reaches `log.severe`, which is the only sink allowed to see it.
-      expect(failure.logMessage, isNot(contains(_sentinelWalletId)));
-      expect(failure.logMessage, 'receive address generation failed');
+      expect(failure.logMessage, isNull);
+      verify(() => walletAddress.receive(key, advance: true)).called(1);
+      verifyZeroInteractions(mainnetOrders);
     });
 
     test('maps an exchange rejection to OrderCreationFailure without carrying '

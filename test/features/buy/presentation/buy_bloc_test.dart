@@ -1,20 +1,8 @@
+import 'package:bull_exchange/testing.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/features/buy/domain/validate_buy_destination_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,7 +35,7 @@ class _MockValidateBuyDestination extends Mock
 
 class _SeedableBuyBloc extends BuyBloc {
   _SeedableBuyBloc({
-    super.validateDestination,
+    required super.validateDestination,
     required super.syncBuyReceiptUsecase,
     required super.loadBuyContextUsecase,
     required super.confirmBuyOrderUsecase,
@@ -133,14 +121,7 @@ void main() {
       when(() => labels.execute(order: any(named: 'order')))
           .thenAnswer((_) async => const Ok(null));
       syncedWallets.clear();
-      receipt = SyncBuyReceiptUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          pollWallet: (id, {required isActive}) async {
-            syncedWallets.add(id);
-          },
-        ),
-      );
+      receipt = SyncBuyReceiptUsecase((id) async => syncedWallets.add(id));
       bloc = build();
       bloc.seed(BuyState(buyOrder: order));
     });
@@ -482,9 +463,10 @@ void main() {
       when(() => cancel.execute(any()))
           .thenAnswer((_) async => const Ok<void, BuyFailure>(null));
       bloc = _SeedableBuyBloc(
-        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
-          const WalletFacade(Stream.empty()),
+        validateDestination: ValidateBuyDestinationUsecase(
+          (input) async => input,
         ),
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase((_) async {}),
         loadBuyContextUsecase: load,
         confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
         createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
@@ -552,9 +534,10 @@ void main() {
       when(() => load.satsToCurrency(currencyCode: 'CAD'))
           .thenAnswer((_) async => const Ok<double, BuyFailure>(100000));
       bloc = _SeedableBuyBloc(
-        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
-          const WalletFacade(Stream.empty()),
+        validateDestination: ValidateBuyDestinationUsecase(
+          (input) async => input,
         ),
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase((_) async {}),
         loadBuyContextUsecase: load,
         confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
         createBuyOrderUsecase: create,
@@ -701,9 +684,10 @@ void main() {
       when(() => cancelAbandonedPayjoin.execute(order))
           .thenAnswer((_) async => const Ok<void, BuyFailure>(null));
       final bloc = _SeedableBuyBloc(
-        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
-          const WalletFacade(Stream.empty()),
+        validateDestination: ValidateBuyDestinationUsecase(
+          (input) async => input,
         ),
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase((_) async {}),
         loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
         confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
         createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),

@@ -576,5 +576,269 @@
   "logoutConfirmationTitle": "Потвърди изхода",
   "logoutConfirmationDescription": "Сигурни ли сте, че искате да излезете от акаунта си в Bull Bitcoin? Ще трябва да влезете отново, за да получите достъп до функциите на борсата.",
   "logoutConfirmationCancel": "Отказ",
-  "logoutConfirmationLogout": "Изход"
+  "logoutConfirmationLogout": "Изход",
+  "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
+  "buyConfirmPayoutWallet": "Портфейл за изплащане",
+  "buyPayoutMethodLiquid": "L-BTC в Liquid",
+  "buyPayoutMethodBitcoin": "BTC в блокчейна на Bitcoin",
+  "buyPayoutWillBeSentIn": "Вашето изплащане ще бъде изпратено в ",
+  "@buyPayoutWillBeSentIn": {
+    "description": "Text before countdown timer for payout"
+  },
+  "dcaChooseWalletTitle": "Изберете портфейл за Биткойн",
+  "@dcaChooseWalletTitle": {
+    "description": "AppBar title for wallet selection screen"
+  },
+  "buyConfirmExpressWithdrawal": "Потвърдете експресното теглене",
+  "@buyConfirmExpressWithdrawal": {
+    "description": "Title for express withdrawal confirmation screen"
+  },
+  "globalDefaultBitcoinWalletLabel": "Безопасен Биткойн",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "dcaWalletLiquidSubtitle": "Изисква се съвместим портфейл.",
+  "@dcaWalletLiquidSubtitle": {
+    "description": "Subtitle/description for Liquid wallet option"
+  },
+  "dcaWalletBitcoinSubtitle": "Минимум 0.001 BTC",
+  "@dcaWalletBitcoinSubtitle": {
+    "description": "Subtitle/description for Bitcoin wallet option"
+  },
+  "dcaWalletSelectionContinueButton": "Продължи",
+  "@dcaWalletSelectionContinueButton": {
+    "description": "Button label to proceed to confirmation screen"
+  },
+  "dcaSuccessMessageHourly": "Ще купите {amount} на всеки час",
+  "@dcaSuccessMessageHourly": {
+    "description": "Success message for hourly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyEstimatedFeeValue": "Очаквана такса",
+  "@buyEstimatedFeeValue": {
+    "description": "Label for estimated fee value in fiat"
+  },
+  "buyEnterAmount": "Въведете сума",
+  "@buyEnterAmount": {
+    "description": "Label for amount input field in buy flow"
+  },
+  "dcaNetworkValidationError": "Моля, изберете мрежа",
+  "@dcaNetworkValidationError": {
+    "description": "Form validation error when no network is selected"
+  },
+  "dcaWalletTypeBitcoin": "Биткойн (BTC)",
+  "@dcaWalletTypeBitcoin": {
+    "description": "Radio button option for Bitcoin wallet"
+  },
+  "buyConfirmationTime": "Време за потвърждаване",
+  "@buyConfirmationTime": {
+    "description": "Label for estimated confirmation time"
+  },
+  "buyYouBought": "Купихте {amount} за {fiatAmount}",
+  "@buyYouBought": {
+    "description": "Success message with amount bought",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyAccelerateTransaction": "Ускорете транзакцията",
+  "@buyAccelerateTransaction": {
+    "description": "Title for transaction acceleration option"
+  },
+  "buyMax": "Макс.",
+  "@buyMax": {
+    "description": "Button to fill maximum amount"
+  },
+  "buySelectWallet": "Изберете портфейл",
+  "@buySelectWallet": {
+    "description": "Label for wallet selection dropdown"
+  },
+  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
+  "@buyBitcoinAddressHint": {
+    "description": "Placeholder hint for bitcoin address input"
+  },
+  "buyNetworkFees": "Такси за мрежата",
+  "@buyNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "dcaSuccessMessageMonthly": "Ще купите {amount} всеки месец",
+  "@dcaSuccessMessageMonthly": {
+    "description": "Success message for monthly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dcaSelectFrequencyLabel": "Изберете честота",
+  "@dcaSelectFrequencyLabel": {
+    "description": "Label above frequency selection radio buttons"
+  },
+  "dcaEnterLightningAddressLabel": "Въведете Lightning адрес",
+  "@dcaEnterLightningAddressLabel": {
+    "description": "Label for Lightning address text input field"
+  },
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "dcaWalletSelectionDescription": "Покупките на Биткойн ще се извършват автоматично според този график.",
+  "@dcaWalletSelectionDescription": {
+    "description": "Explanation text at the top of wallet selection screen"
+  },
+  "dcaSuccessMessageDaily": "Ще купите {amount} всеки ден",
+  "@dcaSuccessMessageDaily": {
+    "description": "Success message for daily frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyWaitForFreeWithdrawal": "Изчакайте безплатното теглене",
+  "@buyWaitForFreeWithdrawal": {
+    "description": "Button to wait for free (slower) withdrawal"
+  },
+  "dcaWalletLightningSubtitle": "Изисква съвместим портфейл, максимум 0.25 BTC.",
+  "@dcaWalletLightningSubtitle": {
+    "description": "Subtitle/description for Lightning wallet option"
+  },
+  "buyConfirmationTimeValue": "~10 минути",
+  "@buyConfirmationTimeValue": {
+    "description": "Value for estimated confirmation time"
+  },
+  "dcaSuccessTitle": "Повтаряща се покупка е активна!",
+  "@dcaSuccessTitle": {
+    "description": "Success screen title after DCA is activated"
+  },
+  "buyThatWasFast": "Беше бързо, нали?",
+  "@buyThatWasFast": {
+    "description": "Additional success message for accelerated transaction"
+  },
+  "buyConfirmPurchase": "Потвърдете покупката",
+  "@buyConfirmPurchase": {
+    "description": "Button to confirm purchase"
+  },
+  "buyNetworkFeeRate": "Ставка на таксата за мрежата",
+  "@buyNetworkFeeRate": {
+    "description": "Label for network fee rate"
+  },
+  "dcaBackToHomeButton": "Назад към началната страница",
+  "@dcaBackToHomeButton": {
+    "description": "Button label to return to exchange home screen"
+  },
+  "globalDefaultLiquidWalletLabel": "Моментални плащания",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "dcaSelectWalletTypeLabel": "Изберете тип портфейл за Bitcoin.",
+  "@dcaSelectWalletTypeLabel": {
+    "description": "Label above wallet type selection radio buttons"
+  },
+  "dcaSuccessMessageWeekly": "Ще купите {amount} всяка седмица",
+  "@dcaSuccessMessageWeekly": {
+    "description": "Success message for weekly frequency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buyEnterBitcoinAddress": "Въведете адрес на биткойн",
+  "@buyEnterBitcoinAddress": {
+    "description": "Label for bitcoin address input field"
+  },
+  "dcaWalletTypeLightning": "Лайтнинг мрежа (LN)",
+  "@dcaWalletTypeLightning": {
+    "description": "Radio button option for Lightning wallet"
+  },
+  "buyNetworkFeeExplanation": "Таксата за мрежата на биткойн ще се приспадне от сумата, която получавате, и ще бъде събрана от биткойн миньорите.",
+  "@buyNetworkFeeExplanation": {
+    "description": "Explanation of network fees for express withdrawal"
+  },
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "buyViewDetails": "Виж подробности",
+  "@buyViewDetails": {
+    "description": "Button to view order details"
+  },
+  "buyPaymentMethod": "Начин на плащане",
+  "@buyPaymentMethod": {
+    "description": "Label for payment method dropdown"
+  },
+  "buyBitcoinSent": "биткойн изпратен!",
+  "@buyBitcoinSent": {
+    "description": "Success message for accelerated transaction"
+  },
+  "dcaUseDefaultLightningAddress": "Използвайте моя по подразбиране Lightning адрес.",
+  "@dcaUseDefaultLightningAddress": {
+    "description": "Checkbox label to use default Lightning address"
+  },
+  "buyGetConfirmedFaster": "Постигнете по-бързо потвърждение",
+  "@buyGetConfirmedFaster": {
+    "description": "Subtitle for acceleration option"
+  },
+  "buyConfirmExpress": "Потвърдете експресното теглене",
+  "@buyConfirmExpress": {
+    "description": "Button to confirm express withdrawal"
+  },
+  "dcaWalletTypeLiquid": "Liquid (LBTC)",
+  "@dcaWalletTypeLiquid": {
+    "description": "Radio button option for Liquid wallet"
+  },
+  "dcaSetupTitle": "Настрой периодична покупка",
+  "dcaSetupInsufficientBalance": "Недостатъчен баланс",
+  "dcaSetupInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "dcaSetupFundAccount": "Захрани сметката си",
+  "dcaSetupScheduleMessage": "Покупките на Bitcoin ще се извършват автоматично според този график.",
+  "dcaSetupFrequencyError": "Моля, изберете честота",
+  "dcaSetupContinue": "Продължи",
+  "dcaConfirmTitle": "Потвърди периодичната покупка",
+  "dcaConfirmAutoMessage": "Поръчките за покупка ще се извършват автоматично според тези настройки. Можете да ги деактивирате по всяко време.",
+  "dcaConfirmFrequency": "Честота",
+  "dcaConfirmFrequencyHourly": "Всеки час",
+  "dcaConfirmFrequencyDaily": "Всеки ден",
+  "dcaConfirmFrequencyWeekly": "Всяка седмица",
+  "dcaConfirmFrequencyMonthly": "Всеки месец",
+  "dcaConfirmAmount": "Сума",
+  "dcaConfirmPaymentMethod": "Метод на плащане",
+  "dcaConfirmPaymentBalance": "Баланс в {currency}",
+  "dcaConfirmOrderType": "Тип поръчка",
+  "dcaConfirmOrderTypeValue": "Периодична покупка",
+  "dcaConfirmNetwork": "Мрежа",
+  "dcaConfirmNetworkBitcoin": "Bitcoin",
+  "dcaConfirmNetworkLightning": "Lightning",
+  "dcaConfirmNetworkLiquid": "Liquid",
+  "dcaConfirmLightningAddress": "Lightning адрес",
+  "dcaConfirmContinue": "Продължи",
+  "buyInputTitle": "Купи Bitcoin",
+  "buyInputMinAmountError": "Трябва да купите поне",
+  "buyInputMaxAmountError": "Не можете да купите повече от",
+  "buyInputKycPending": "Изчаква се проверка на самоличността (KYC)",
+  "buyInputKycMessage": "Първо трябва да завършите проверка на самоличността",
+  "buyInputCompleteKyc": "Завърши KYC",
+  "buyInputInsufficientBalance": "Недостатъчен баланс",
+  "buyInputInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
+  "buyInputFundAccount": "Захрани сметката си",
+  "buyInputContinue": "Продължи",
+  "buyConfirmTitle": "Купи Bitcoin",
+  "buyConfirmYouPay": "Вие плащате",
+  "buyConfirmYouReceive": "Вие получавате",
+  "buyConfirmBitcoinPrice": "Цена на Bitcoin",
+  "buyConfirmPayoutMethod": "Метод на изплащане",
+  "buyConfirmExternalWallet": "Външен биткойн портфейл",
+  "buyConfirmAwaitingConfirmation": "Изчаква потвърждение ",
+  "buyUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
+  "buyBelowMinAmountError": "Опитвате се да купите под минималната сума.",
+  "buyAboveMaxAmountError": "Опитвате се да купите над максималната сума.",
+  "dcaAccountUnavailableError": "Профилът ви не можа да бъде зареден. Проверете връзката си, уверете се, че сте влезли, и опитайте отново.",
+  "dcaLightningAddressRequiredError": "Въведете Lightning адрес, за да получавате покупките си.",
+  "dcaReceiveAddressError": "Не можа да се подготви адрес за получаване в портфейла ви. Опитайте отново.",
+  "dcaOrderCreationError": "Повтарящата се покупка не можа да бъде създадена. Опитайте отново по-късно."
 }

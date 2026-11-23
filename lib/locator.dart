@@ -1,3 +1,4 @@
+import 'package:bull_exchange/bull_exchange.dart' show AccelerateTransactionListTile, BuyRoute;
 import 'dart:async';
 
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
@@ -61,10 +62,8 @@ import 'package:signers/routes.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
-import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
-import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
@@ -443,7 +442,6 @@ class AppLocator {
 
     ExchangeLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
-    BuyLocator.setup(locator);
     SellLocator.setup(locator);
     PayLocator.setup(locator);
     locator.registerSingleton(
@@ -467,7 +465,6 @@ class AppLocator {
       ),
     );
     ImportMnemonicLocator.setup(locator);
-    DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
 
     locator.registerSingleton(

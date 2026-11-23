@@ -9,6 +9,7 @@ import 'auth/exchange_auth_route.dart';
 import 'auth/exchange_auth_screen.dart';
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'exchange_purchase_routes.dart';
 import 'funding/fund_exchange_router.dart';
 import 'kyc/exchange_kyc_host.dart';
 import 'kyc/exchange_kyc_screen.dart';
@@ -42,6 +43,8 @@ final class BullExchangeFeature {
   final GoRoute? dashboardRoute;
   final GoRoute? withdrawalRoute;
   final GoRoute? limitOrderDetails;
+  final List<RouteBase> buyRoutes;
+  final GoRoute? dcaRoute;
 
   const BullExchangeFeature._(
     this.routes,
@@ -54,6 +57,8 @@ final class BullExchangeFeature {
     this.dashboardRoute,
     this.withdrawalRoute,
     this.limitOrderDetails,
+    this.buyRoutes,
+    this.dcaRoute,
   );
 
   static BullExchangeFeature mount({
@@ -73,6 +78,7 @@ final class BullExchangeFeature {
     ExchangeDashboardHost? dashboard,
     ExchangeWithdrawalHost? withdrawal,
     Exchange Function()? limitOrders,
+    ExchangePurchaseHost? purchases,
   }) {
     final kycRoute = kyc == null
         ? null
@@ -151,6 +157,8 @@ final class BullExchangeFeature {
             ),
       withdrawal == null ? null : withdrawRoute(withdrawal, brandAssetPath),
       limitOrders == null ? null : limitOrderDetailsRoute(limitOrders),
+      purchases == null ? const [] : List.unmodifiable(mountBuy(purchases)),
+      purchases == null ? null : mountDca(purchases),
     );
   }
 }

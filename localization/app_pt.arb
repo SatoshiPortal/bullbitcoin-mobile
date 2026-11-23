@@ -15,9 +15,7 @@
   "payPleasePayInvoice": "Por favor, pague esta fatura",
   "swapMax": "MAX",
   "importColdcardInstructionsStep10": "Configuração completa",
-  "buyPayoutWillBeSentIn": "Seu pagamento será enviado ",
   "fundExchangeInstantSepaInfo": "Use apenas para transações abaixo de € 20.000. Para transações maiores, use a opção SEPA regular.",
-  "dcaChooseWalletTitle": "Escolha Bitcoin Wallet",
   "sellSendPaymentAboveMax": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
   "fundExchangeETransferLabelSecretAnswer": "Resposta secreta",
   "payPayinAmount": "Quantidade de pagamento",
@@ -79,12 +77,10 @@
   "receiveInvoiceCopied": "Fatura copiada para clipboard",
   "autoswapUpdateSettingsError": "Falhado para atualizar as configurações de troca automática",
   "transactionStatusTransferFailed": "Falha no swap",
-  "buyConfirmExternalWallet": "Carteira Bitcoin externa",
   "exchangeCurrencyDropdownTitle": "Selecione a moeda",
   "receiveServerNetworkFees": "Taxas de rede do servidor",
   "importQrDeviceImporting": "Importação de carteira...",
   "rbfFastest": "Mais rápido",
-  "buyConfirmExpressWithdrawal": "Confirmação expressa",
   "sellSendPaymentTitle": "Confirmar pagamento",
   "importWatchOnlyCopiedToClipboard": "Copiado para clipboard",
   "dcaLightningAddressInvalidError": "Por favor, insira um endereço Lightning válido",
@@ -126,7 +122,6 @@
   "globalDefaultBitcoinWalletLabel": "Bitcoin seguro",
   "fundExchangeLabelRecipientAddress": "Endereço de destinatário",
   "save": "Salvar",
-  "dcaWalletLiquidSubtitle": "Requer carteira compatível",
   "fundExchangeCrIbanCrcTitle": "Transferência Bancária (CRC)",
   "payServiceFee": "Taxa de serviço",
   "transactionStatusSwapExpired": "Swap Expirou",
@@ -165,10 +160,8 @@
   "payCard": "Cartão",
   "sendFreezeCoin": "Moeda de congelamento",
   "fundExchangeLabelTransitNumber": "Número de trânsito",
-  "buyConfirmYouReceive": "Você recebe",
   "buyDocumentUpload": "Carregar documentos",
   "sendTransferFeeDescription": "Esta é a taxa total deduzida do montante enviado",
-  "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
   "sendShowPsbt": "Mostrar PSBT",
   "receiveAddress": "Receber endereço",
   "broadcastSignedTxAmount": "Montante",
@@ -202,7 +195,6 @@
   "coreSwapsChainFailedRefunding": "O swap será reembolsado em breve.",
   "sendSelectAmount": "Selecione o valor",
   "sellKYCRejected": "Verificação de KYC rejeitada",
-  "buyBelowMinAmountError": "Você está tentando comprar abaixo da quantidade mínima.",
   "exchangeLandingFeature6": "Histórico de transações unificadas",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Selecione Rede",
@@ -255,11 +247,6 @@
   "backupWalletGoogleDrivePrivacyMessage3": "deixar seu telefone e é ",
   "backupCompletedDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "sendErrorInsufficientFundsForFees": "Não há fundos suficientes para cobrir o montante e as taxas",
-  "buyConfirmPayoutWallet": "Carteira de pagamento",
-  "buyPayoutMethodLiquid": "L-BTC na Liquid",
-  "buyPayoutMethodBitcoin": "BTC na cadeia Bitcoin",
-  "buyConfirmPayoutMethod": "Método de pagamento",
-  "dcaConfirmNetworkLiquid": "Líquido",
   "walletDetailsAddressTypeLabel": "Tipo de endereço",
   "testBackupTapWordsInOrder": "Toque nas palavras de recuperação no\nordem certa",
   "transactionSwapDescLnSendExpired": "Esta troca expirou. Os seus fundos serão automaticamente devolvidos à sua carteira.",
@@ -290,7 +277,6 @@
   "payNoActiveWallet": "Sem carteira ativa",
   "appStartupErrorMessage": "Falha ao iniciar a aplicação. Tente fechá-la completamente e reiniciá-la. Se o erro persistir, contacte o suporte e partilhe os seus registos.",
   "payPasteInvoice": "Fatura de pasta",
-  "dcaWalletBitcoinSubtitle": "Mínimo 0,001 BTC",
   "sendOpenTheCamera": "Abra a câmera",
   "sendSwapId": "ID do balanço",
   "fundExchangeAccountTitle": "Fina sua conta",
@@ -304,7 +290,6 @@
   "okButton": "ESTÁ BEM",
   "exchangeAmountInputValidationInvalid": "Montante inválido",
   "exchangeAccountInfoLoadErrorMessage": "Incapaz de carregar informações da conta",
-  "dcaWalletSelectionContinueButton": "Continue",
   "pinButtonChange": "Mudar PIN",
   "sendErrorInsufficientFundsForPayment": "Não há fundos suficientes disponíveis para fazer este pagamento.",
   "fundExchangeETransferTitle": "Detalhes de E-Transfer",
@@ -323,7 +308,6 @@
   "logSettingsLogsTitle": "Logs",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Este número de conta única é criado apenas para você",
   "sendErrorLiquidWalletRequired": "Carteira líquida deve ser usada para um líquido para troca de raios",
-  "dcaSetupInsufficientBalance": "Balança insuficiente",
   "swapTransferRefundedMessage": "O swap foi reembolsado com sucesso.",
   "payInvalidState": "Estado inválido",
   "receiveWaitForPayjoin": "Aguarde o remetente para terminar a transação payjoin",
@@ -351,14 +335,6 @@
   "sendFrom": "A partir de",
   "sendTransactionBuilt": "Transação pronta",
   "withdrawConfirmCard": "Cartão",
-  "dcaSuccessMessageHourly": "Você vai comprar {amount} a cada hora",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "loginButton": "LOGIA",
   "revealingVaultKeyButton": "Revelando...",
   "payLastName": "Último nome",
@@ -403,7 +379,6 @@
     }
   },
   "mempoolCustomServerUrl": "URL do servidor",
-  "buyUnexpectedError": "Não foi possível criar a sua ordem neste momento. Tente novamente ou contacte o suporte.",
   "fundExchangeArsBankTransferTitle": "Transferência bancária",
   "sendServerNetworkFees": "Taxas de rede do servidor",
   "importWatchOnlyImport": "Importação",
@@ -419,7 +394,6 @@
   },
   "sellSelectNetwork": "Selecione Rede",
   "sellSendPaymentOrderNumber": "Número de ordem",
-  "dcaConfirmPaymentMethod": "Método de pagamento",
   "sellSendPaymentAdvanced": "Configurações avançadas",
   "walletSettingsImportWalletTitle": "Carteira de importação",
   "backupWalletErrorGoogleDriveConnection": "Falhado para se conectar ao Google Drive",
@@ -455,7 +429,6 @@
   "swapProgressRefundInProgress": "Reembolso do swap em andamento",
   "payBillerName": "Nome do Biller",
   "sendErrorBitcoinWalletRequired": "Bitcoin carteira deve ser usado para um bitcoin para troca de raios",
-  "buyConfirmBitcoinPrice": "Preço de Bitcoin",
   "transactionSwapDescLnSendCompleted": "O pagamento Lightning foi enviado com sucesso! A tua troca já está completa.",
   "exchangeDcaCancelDialogCancelButton": "Cancelar",
   "sellOrderAlreadyConfirmedError": "Esta ordem de venda já foi confirmada.",
@@ -489,7 +462,6 @@
   "sendErrorUnsupportedQrCodeFormat": "Formato de código QR não suportado",
   "broadcastSignedTxScanQR": "Digitalizar o código QR da sua carteira de hardware",
   "transactionStatusTransferInProgress": "Swap em andamento",
-  "buyEstimatedFeeValue": "Valor estimado da taxa",
   "payName": "Nome",
   "sendSignWithBitBox": "Sinal com BitBox",
   "sendSwapRefundInProgress": "Reembolso de swap em progresso",
@@ -506,7 +478,6 @@
   "coldcardStep5": "Se você tiver problemas de digitalização:",
   "buyExpressWithdrawal": "Retirada expressa",
   "payPaymentConfirmed": "Pagamento confirmado",
-  "buyEnterAmount": "Insira quantidade",
   "sellShowQrCode": "Mostrar código QR",
   "receiveConfirmed": "Confirmado",
   "sellSecureBitcoinWallet": "Carteira Bitcoin segura",
@@ -552,7 +523,6 @@
   "receiveGenerateInvoice": "Gerar fatura",
   "coreScreensFeeDeductionExplanation": "Esta é a taxa total deduzida do montante enviado",
   "fundExchangeTitle": "Financiamento",
-  "dcaNetworkValidationError": "Por favor, selecione uma rede",
   "coldcardStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "autoswapAlwaysBlockDisabledInfo": "Quando desativado, você poderá permitir um swap automático bloqueado por taxas altas",
   "bip85Index": "Índice: {index}",
@@ -614,7 +584,6 @@
   "onboardingEncryptedVault": "Vault criptografado",
   "exchangeAccountInfoTitle": "InformaÃ§Ã£o da conta",
   "exchangeDcaActivateTitle": "Ativar a recuperação",
-  "buyConfirmationTime": "Tempo de confirmação",
   "encryptedVaultRecommendation": "Vault criptografado: ",
   "payLightningInvoice": "Fatura de relâmpago",
   "exportingVaultButton": "Exportação...",
@@ -661,14 +630,6 @@
   "importWatchOnlyScanQR": "Digitalização QR",
   "walletBalanceUnconfirmedIncoming": "Em progresso",
   "selectAmountTitle": "Selecione o valor",
-  "buyYouBought": "Você comprou {amount} por {fiatAmount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "Página não encontrada",
   "connectHardwareWalletPassport": "Passaporte da Fundação",
   "autoswapTriggerBalanceError": "O equilíbrio do gatilho deve ser pelo menos 2x o equilíbrio base",
@@ -809,14 +770,12 @@
   "selectCoinsManuallyLabel": "Selecione moedas manualmente",
   "buyShouldBuyAtLeast": "Você deve comprar pelo menos",
   "payCorporate": "Empresas",
-  "buyMax": "Max",
   "onboardingCreateNewWallet": "Criar nova carteira",
   "buyExpressWithdrawalDesc": "Receba Bitcoin instantaneamente após o pagamento",
   "backupIdLabel": "ID de backup:",
   "sellBalanceWillBeCredited": "O saldo da sua conta será creditado após a sua transação receber 1 confirmação de compra.",
   "payExchangeRate": "Taxa de câmbio",
   "startBackupButton": "Iniciar backup",
-  "buyInputTitle": "Comprar Bitcoin",
   "importMnemonicImport": "Importação",
   "payNetwork": "Rede",
   "sendBuildFailed": "Falhado em construir a transação",
@@ -849,7 +808,6 @@
   "testBackupPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
   "sendInitiatingSwap": "Iniciando troca...",
   "sellLightningNetwork": "Rede de relâmpago",
-  "buySelectWallet": "Selecione a carteira",
   "testBackupErrorIncorrectOrder": "Ordem de palavra incorreta. Por favor, tente novamente.",
   "importColdcardInstructionsStep6": "Escolha \"Bull Bitcoin\" como a opção de exportação",
   "swapValidationSelectToWallet": "Selecione uma carteira de destino para o swap",
@@ -925,7 +883,6 @@
   "replaceByFeeScreenTitle": "Substituir por taxa",
   "exchangeDcaNetworkLightning": "Rede de relâmpago",
   "sendType": "Tipo: ",
-  "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
   "exchangeHomeWithdrawButton": "Retirar",
   "transactionListOngoingTransfersTitle": "Swaps em andamento",
   "addressViewAddress": "Endereço",
@@ -947,7 +904,6 @@
   "sendSats": "sats",
   "exchangeKycLevelLimited": "Limitação",
   "withdrawConfirmEmail": "Email",
-  "buyNetworkFees": "Taxas de rede",
   "coldcardStep7": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
   "transactionSwapDescChainRefundable": "O swap será reembolsado. Seus fundos serão devolvidos automaticamente à sua carteira.",
   "sendPaymentWillTakeTime": "Pagamento vai demorar tempo",
@@ -1033,14 +989,6 @@
   "importWatchOnlyUnknown": "Desconhecido",
   "payContinue": "Continue",
   "importColdcardInstructionsStep8": "Digitalizar o código QR exibido em seu Coldcard Q",
-  "dcaSuccessMessageMonthly": "Você vai comprar {amount} todos os meses",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} moedas selecionadas",
   "@sendSelectedCoins": {
     "placeholders": {
@@ -1060,11 +1008,9 @@
     }
   },
   "payRbfActivated": "Substitui-a-taxa activada",
-  "dcaConfirmNetworkLightning": "Luz",
   "ledgerDefaultWalletLabel": "Carteira de Ledger",
   "importWalletSpecter": "Espectro",
   "customLocationProvider": "Localização personalizada",
-  "dcaSelectFrequencyLabel": "Selecione a frequência",
   "transactionSwapDescChainCompleted": "Seu swap foi concluído com sucesso! Os fundos já devem estar disponíveis na sua carteira.",
   "coreSwapsLnSendRefundable": "Swap está pronto para ser reembolsado.",
   "backupInstruction2": "Sem um backup, se você perder ou quebrar seu telefone, ou se você desinstalar o aplicativo Bull Bitcoin, seus bitcoins serão perdidos para sempre.",
@@ -1073,7 +1019,6 @@
   "sendFeeRateTooHigh": "Taxa de taxa parece muito alta",
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "O teu código de transferência.",
   "recoverVia12WordsDescription": "Recupere sua carteira através de 12 palavras.",
-  "dcaEnterLightningAddressLabel": "Entrar Lightning Endereço",
   "buyPayoutMethod": "Método de pagamento",
   "exchangeAmountInputTitle": "Digite o valor",
   "payIbanHint": "Entrar IBAN",
@@ -1152,21 +1097,12 @@
   "sellFeePriority": "Prioridade de Taxas",
   "exchangeFeatureSelfCustody": "• Comprar Bitcoin direto para self-custody",
   "payAmountTooHigh": "Quantidade superior ao máximo",
-  "dcaConfirmPaymentBalance": "{currency} equilíbrio",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "sellBankTransfer": "Transferência bancária",
   "replaceByFeeFastestTitle": "Mais rápido",
   "sellPayinAmount": "Quantidade de pagamento",
   "exchangeKycRemoveLimits": "Para remover limites de transação",
   "autoswapMaxBalanceInfoText": "Quando o saldo da carteira exceder o dobro deste valor, o swap automático será acionado para reduzir o saldo a este nível",
   "sellSendPaymentBelowMin": "Você está tentando vender abaixo da quantidade mínima que pode ser vendida com esta carteira.",
-  "dcaWalletSelectionDescription": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
   "sendTypeSend": "Enviar",
   "payFeeBumpSuccessful": "Taxa de sucesso",
   "transactionSwapProgressFundsClaimed": "Fundos\nCláusula",
@@ -1239,7 +1175,6 @@
   "receiveTotalFee": "Taxa total",
   "dcaConfirmFrequency": "Frequência",
   "advancedOptionsTitle": "Opções avançadas",
-  "dcaConfirmOrderType": "Tipo de ordem",
   "payPriceWillRefreshIn": "Preço irá refrescar-se ",
   "broadcastSignedTxTo": "Para",
   "payPaymentDetails": "Detalhes do pagamento",
@@ -1266,14 +1201,6 @@
   "payBitcoinPrice": "Preço de Bitcoin",
   "confirmLogoutMessage": "Tem a certeza de que deseja fazer login na sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar recursos de troca.",
   "receivePaymentInProgress": "Pagamento em curso",
-  "dcaSuccessMessageDaily": "Você vai comprar {amount} todos os dias",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "swapInfoBanner": "Faça swap de Bitcoin entre suas carteiras com facilidade. Mantenha na Carteira de Pagamento Instantâneo apenas os fundos para gastos do dia a dia.",
   "payRBFEnabled": "RBF habilitado",
@@ -1288,14 +1215,12 @@
   "fundExchangeWarningTactic4": "Eles pedem para enviar Bitcoin para seu endereço",
   "fundExchangeSinpeDescription": "Transferir Colones usando SINPE",
   "receiveVerifyAddressOnLedger": "Verificar endereço no Ledger",
-  "buyWaitForFreeWithdrawal": "Aguarde a retirada livre",
   "sellSendPaymentCrcBalance": "CRC Balanço",
   "backupSettingsKeyWarningBold": "Atenção: Tenha cuidado onde você salvar a chave de backup.",
   "exchangeLandingConnectAccount": "Conecte sua conta de câmbio Bull Bitcoin",
   "recoverYourWalletTitle": "Recupere sua carteira",
   "importWatchOnlyLabel": "Etiqueta",
   "settingsAppSettingsTitle": "Configurações do aplicativo",
-  "dcaWalletLightningSubtitle": "Requer carteira compatível, máximo 0,25 BTC",
   "swapTransferRefundInProgressMessage": "Ocorreu um erro com o swap. Seu reembolso está em andamento.",
   "fundExchangeMethodCanadaPostSubtitle": "Melhor para aqueles que preferem pagar em pessoa",
   "importColdcardMultisigPrompt": "Para carteiras multisig, digitalize o código QR do descritor da carteira",
@@ -1318,15 +1243,12 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "10 minutos",
-  "buyConfirmAwaitingConfirmation": "Aguardando confirmação ",
   "allSeedViewShowSeedsButton": "Mostrar sementes",
   "fundExchangeMethodBankTransferWireSubtitle": "Melhor e mais confiável opção para maiores quantidades (mesmo ou dia seguinte)",
   "fundExchangeCanadaPostStep4": "4. O caixa vai pedir para ver um pedaço de ID emitido pelo governo e verificar se o nome no seu ID corresponde à sua conta Bull Bitcoin",
   "fundExchangeCrIbanCrcLabelIban": "Número da conta IBAN (apenas em cores)",
   "testBackupScreenshot": "Tiro de tela",
   "transactionListLoadingTransactions": "Carregando transações...",
-  "dcaSuccessTitle": "Recurring Buy is Active!",
   "fundExchangeOnlineBillPaymentDescription": "Qualquer valor que você enviar através do recurso de pagamento de contas on-line do seu banco usando as informações abaixo será creditado ao seu saldo da conta Bull Bitcoin dentro de 3-4 dias úteis.",
   "receiveAwaitingPayment": "À espera do pagamento...",
   "onboardingRecover": "Recuperar",
@@ -1357,7 +1279,6 @@
       }
     }
   },
-  "dcaSetupFrequencyError": "Por favor, selecione uma frequência",
   "testBackupErrorNoMnemonic": "Nenhum mnemônico carregado",
   "payInvoiceExpired": "Fatura expirada",
   "payWhoAreYouPaying": "Quem pagas?",
@@ -1367,10 +1288,8 @@
   "sendEconomyFee": "Economia",
   "coreSwapsChainFailed": "Falha no swap.",
   "addressCardUsedLabel": "Usado",
-  "buyConfirmTitle": "Comprar Bitcoin",
   "exchangeLandingFeature5": "Chat com suporte ao cliente",
   "electrumMainnet": "Principal",
-  "buyThatWasFast": "Foi rápido, não foi?",
   "importWalletPassport": "Passaporte da Fundação",
   "buyExpressWithdrawalFee": "Taxa expressa: {amount}",
   "@buyExpressWithdrawalFee": {
@@ -1421,7 +1340,6 @@
   "buyConfirmPurchase": "Confirme a compra",
   "tapWordsInOrderTitle": "Toque nas palavras de recuperação no\nordem certa",
   "payEnterAmountTitle": "Digite o valor",
-  "buyInputMaxAmountError": "Você não pode comprar mais do que",
   "walletDetailsDeletingMessage": "Excluindo a carteira...",
   "receiveUnableToVerifyAddress": "Incapaz de verificar o endereço: Falta de informações de carteira ou endereço",
   "payInvalidAddress": "Endereço inválido",
@@ -1439,7 +1357,6 @@
   },
   "importColdcardButtonInstructions": "Instruções",
   "sellWhichWalletQuestion": "De que carteira queres vender?",
-  "buyNetworkFeeRate": "Taxa de taxa de rede",
   "autoswapAlwaysBlockLabel": "Sempre bloquear altas taxas",
   "receiveFixedAmount": "Montante",
   "transactionSwapDescChainDefault": "Seu swap está em andamento. Este processo é automático e pode levar algum tempo para ser concluído.",
@@ -1502,7 +1419,6 @@
   "importColdcardTitle": "Conecte o Coldcard Q",
   "pinStatusProcessing": "Processamento",
   "sellSendPaymentFastest": "Mais rápido",
-  "dcaConfirmNetwork": "Rede",
   "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
   "transactionHistoryTitle": "Histórico de transações",
   "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e swaps) como ficheiro CSV. Filtre opcionalmente por intervalo de datas.",
@@ -1632,7 +1548,6 @@
   "importWatchOnlyDerivationPath": "Caminho de Derivação",
   "sendErrorBroadcastFailed": "Falhado em transmitir transação. Verifique sua conexão de rede e tente novamente.",
   "paySecurityQuestion": "Pergunta de segurança",
-  "dcaSelectWalletTypeLabel": "Selecione Bitcoin Tipo de carteira",
   "backupWalletHowToDecideVaultModalTitle": "Como decidir",
   "payNotLoggedInDescription": "Você não está conectado. Faça login para continuar usando o recurso de pagamento.",
   "testBackupEncryptedVaultTag": "Fácil e simples (1 minuto)",
@@ -1686,7 +1601,6 @@
   "coreScreensConfirmSend": "Enviar",
   "transactionDetailLabelSwapStatus": "Status do balanço",
   "typeLabel": "Tipo: ",
-  "buyInputInsufficientBalance": "Balança insuficiente",
   "withdrawConfirmClabe": "CLABE",
   "amountLabel": "Montante",
   "sellUsdBalance": "USD / USD Balanço",
@@ -1698,14 +1612,6 @@
   "withdrawConfirmPayee": "Pagamento",
   "payPhoneNumberHint": "Digite o número de telefone",
   "exchangeTransactionsComingSoon": "Transações - Em breve",
-  "dcaSuccessMessageWeekly": "Você vai comprar {amount} todas as semanas",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmRecipientName": "Nome do destinatário",
   "autoswapRecipientWalletPlaceholder": "Selecione uma carteira Bitcoin",
   "enterYourBackupPinTitle": "Insira seu backup {pinOrPassword}",
@@ -1721,9 +1627,7 @@
   "receiveDetails": "Detalhes",
   "sendCustomFee": "Taxas personalizadas",
   "sendAmount": "Montante",
-  "buyInputInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "swapErrorInsufficientFunds": "Não consegui construir a transação. Provavelmente devido a fundos insuficientes para cobrir taxas e montante.",
-  "dcaConfirmAmount": "Montante",
   "sellSendPaymentPriceRefresh": "Preço irá refrescar-se ",
   "receiveNoteLabel": "Nota",
   "payFirstName": "Primeiro nome",
@@ -1854,12 +1758,10 @@
   "swapMaxButton": "MAX",
   "transactionSwapStatusTransferStatus": "Status do swap",
   "backupKeyTitle": "Chave de backup",
-  "dcaConfirmFrequencyWeekly": "Toda semana",
   "payInstitutionNumberHint": "Número da instituição",
   "sendSlowPaymentWarning": "Aviso de pagamento lento",
   "quickAndEasyTag": "Rápido e fácil",
   "settingsThemeTitle": "Tema",
-  "dcaSetupFundAccount": "Fina sua conta",
   "payEmail": "Email",
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
   "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de swap",
@@ -1896,7 +1798,6 @@
   "howToDecideBackupTitle": "Como decidir",
   "savingToDevice": "Salvar ao seu dispositivo.",
   "fundExchangeLabelSwiftCode": "Código SWIFT",
-  "buyEnterBitcoinAddress": "Digite o endereço bitcoin",
   "transactionDetailLabelPayoutAmount": "Quantidade de pagamento",
   "payPayeeAccountNumberHint": "Digite o número de conta",
   "oopsSomethingWentWrong": "Oops! Algo correu mal",
@@ -1930,7 +1831,6 @@
   "importWatchOnlyPasteHint": "Pasta xpub, ypub, zpub ou descritor",
   "sellAccountNumber": "Número de conta",
   "backupWalletLastKnownEncryptedVault": "Última criptografia conhecida Vault: ",
-  "dcaSetupInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "sendAdvancedOptions": "Opções avançadas",
   "sellRateValidFor": "Taxa válida para {seconds}s",
   "@sellRateValidFor": {
@@ -1944,7 +1844,6 @@
   "exchangeFeatureBankTransfers": "• Enviar transferências bancárias e pagar contas",
   "sellSendPaymentInstantPayments": "Pagamentos imediatos",
   "onboardingRecoverWalletButton": "Recuperar Carteira",
-  "dcaConfirmAutoMessage": "Comprar ordens serão colocadas automaticamente por estas configurações. Você pode desabilitá-los a qualquer momento.",
   "usePasswordInsteadButton": "Use {pinOrPassword} em vez >>",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -2016,7 +1915,6 @@
   "fundExchangeCanadaPostStep3": "3. Diga ao caixa o valor que deseja carregar",
   "payFee": "Taxas",
   "swapProgressRefundMessage": "Ocorreu um erro com o swap. Seu reembolso está em andamento.",
-  "dcaConfirmContinue": "Continue",
   "decryptVaultButton": "Descriptografar cofre",
   "paySecureBitcoinWallet": "Carteira Bitcoin segura",
   "exchangeAppSettingsDefaultCurrencyLabel": "Moeda padrão",
@@ -2076,7 +1974,6 @@
   "sellRateExpired": "A taxa de câmbio expirou. Refrescando...",
   "payExternalWallet": "Carteira externa",
   "fundExchangeInfoBankCountryUk": "O nosso país bancário é o Reino Unido.",
-  "dcaConfirmNetworkBitcoin": "Bitcoin",
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
   "payOrderDetails": "Detalhes do pedido",
   "importMnemonicTransactions": "{count} transações",
@@ -2115,7 +2012,6 @@
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "defaultWalletsLabel": "Carteiras padrão",
   "receiveAddLabel": "Adicionar etiqueta",
-  "dcaConfirmFrequencyHourly": "Cada hora",
   "sellSwiftCode": "Código SWIFT/BIC",
   "fundExchangeCanadaPostTitle": "Em dinheiro ou débito em pessoa no Canada Post",
   "receiveInvoiceExpiry": "A fatura expira em {time}",
@@ -2129,7 +2025,6 @@
   "testBackupGoogleDrivePrivacyPart5": "compartilhado com Bull Bitcoin.",
   "transactionStatusTransferExpired": "Swap expirado",
   "backupWalletInstructionLosePhone": "Sem um backup, se você perder ou quebrar seu telefone, ou se você desinstalar o aplicativo Bull Bitcoin, seus bitcoins serão perdidos para sempre.",
-  "dcaConfirmLightningAddress": "Endereço de iluminação",
   "coreSwapsLnReceiveCompleted": "O balanço está concluído.",
   "backupWalletErrorGoogleDriveSave": "Falhado para salvar a unidade do google",
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin transação levará um tempo para confirmar.",
@@ -2185,7 +2080,6 @@
   "backupWalletSuccessDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "rbfBroadcast": "Transmissão",
   "sendEstimatedDeliveryFewHours": "poucas horas",
-  "dcaConfirmFrequencyMonthly": "Todos os meses",
   "importWatchOnlyScriptType": "Tipo de script",
   "transactionStatusSwapFailed": "Swap Failed",
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
@@ -2217,7 +2111,6 @@
   "mempoolCustomServerDelete": "Excluir",
   "importColdcardImporting": "Importando a carteira Coldcard...",
   "exchangeDcaHideSettings": "Ocultar configurações",
-  "buyBitcoinSent": "Bitcoin enviado!",
   "coreScreensPageNotFound": "Página não encontrada",
   "exchangeFeatureDcaOrders": "• DCA, Limite de ordens e Auto-compra",
   "payIban": "IBAN",
@@ -2294,7 +2187,6 @@
     }
   },
   "hwKeystone": "Chaveiro",
-  "buyInputMinAmountError": "Você deve comprar pelo menos",
   "payInstitutionCode": "Código de Instituição",
   "coreSwapsActionClaim": "Reivindicação",
   "payShareInvoice": "Compartilhar Fatura",
@@ -2345,7 +2237,6 @@
   "sendUserRejected": "Usuário rejeitado no dispositivo",
   "swapSubtractFeesLabel": "Subtrair taxas de montante",
   "buyVerificationRequired": "Verificação necessária para este montante",
-  "dcaUseDefaultLightningAddress": "Use o meu endereço de Lightning padrão.",
   "sellEstimatedArrival": "Chegada estimada: {time}",
   "@sellEstimatedArrival": {
     "placeholders": {
@@ -2384,9 +2275,7 @@
   "addressViewTitle": "Detalhes do endereço",
   "payCompleted": "Pagamento concluído!",
   "sellKYCPending": "Verificação de KYC pendente",
-  "buyGetConfirmedFaster": "Confirma-o mais rápido",
   "payCustomFee": "Taxas personalizadas",
-  "buyConfirmExpress": "Confirmação",
   "fundExchangeBankTransferWireTimeframe": "Qualquer dinheiro que você enviar será adicionado ao seu Bitcoin Bull dentro de 1-2 dias úteis.",
   "sendDeviceDisconnected": "Dispositivo desligado",
   "payFeeBumpFailed": "Esboço de taxas falhou",
@@ -2406,9 +2295,7 @@
   "receivePayjoinActivated": "Payjoin ativado",
   "importMnemonicContinue": "Continue",
   "chooseVaultLocationTitle": "Escolha a localização do vault",
-  "dcaConfirmOrderTypeValue": "Recorrer comprar",
   "testBackupEncryptedVaultTitle": "Vault criptografado",
-  "dcaWalletTypeLiquid": "Líquido (LBTC)",
   "fundExchangeLabelInstitutionNumber": "Número de instituição",
   "encryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
   "swapAmountLabel": "Montante",
@@ -2427,7 +2314,6 @@
   "importColdcardScanPrompt": "Digitalize o código QR do seu Coldcard Q",
   "backupSettingsEncryptedVault": "Vault criptografado",
   "autoswapAlwaysBlockInfoDisabled": "Quando desativado, você poderá permitir um swap automático bloqueado por taxas altas",
-  "dcaSetupTitle": "Definir Recorrer Comprar",
   "sendErrorInsufficientBalanceForPayment": "Não saldo suficiente para cobrir este pagamento",
   "testBackupPhysicalBackupTitle": "Backup físico",
   "fundExchangeSpeiDescription": "Transferir fundos usando seu CLABE",
@@ -2526,10 +2412,6 @@
   "autoswapInfoDismissButton": "Entendi, não mostrar novamente.",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "buyUnauthenticatedError": "Você não está autenticado. Por favor, faça login para continuar.",
-  "@buyUnauthenticatedError": {
-    "description": "Error message for unauthenticated user during buy"
   },
   "exchangeFileUploadInstructionsWithParams": "Carregar até {maxFiles} arquivos. Formatos permitidos: PDF, JPG, PNG, GIF, HEIC. Tamanho máximo do arquivo: 10MB por arquivo.",
   "@exchangeFileUploadInstructionsWithParams": {
