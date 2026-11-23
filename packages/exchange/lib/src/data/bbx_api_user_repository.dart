@@ -5,58 +5,20 @@ import 'package:primitives/primitives.dart';
 import '../domain/entities/announcement.dart';
 import '../domain/entities/user_summary.dart';
 import '../domain/exchange_failure.dart';
-import 'bbx_api_user_summary_mapper.dart';
+import 'read_user_summary.dart';
 
 final class BbxApiUserRepository {
   final bbx.Bbx _api;
 
   const BbxApiUserRepository({required this._api});
 
-  Future<Result<UserSummary, ExchangeFailure>> getUserSummary() async {
-    try {
-      final result = await _api.users.getUserSummary();
-      return switch (result) {
-        Ok(value: final summary?) => Ok(userSummaryFromBbxApi(summary)),
-        Ok() => _emptySummary(),
-        Err(failure: final bbx.BbxRpcFailure failure) => _refusedSummary(
-          failure,
-        ),
-        Err(:final failure) => Err(
-          _failureFrom(
-            failure,
-            StackTrace.current,
-            'getUserSummary',
-            ExchangeAccountUnavailableFailure.new,
-          ),
-        ),
-      };
-    } catch (e, st) {
-      return Err(
-        _unexpected(
-          e,
-          st,
-          'getUserSummary',
-          ExchangeAccountUnavailableFailure.new,
-        ),
+  /// The signed-in user's summary, through the one `getUserSummary`
+  /// classification shared with the account repository.
+  Future<Result<UserSummary, ExchangeFailure>> getUserSummary() async =>
+      userSummaryResult(
+        await readUserSummary(_api),
+        credentialUnavailable: ExchangeCredentialReadFailure.new,
       );
-    }
-  }
-
-  Result<UserSummary, ExchangeFailure> _emptySummary() {
-    // A key that resolves to no account is an auth problem, not transport.
-    log.warning('Exchange user summary came back empty');
-    return const Err(ExchangeNotAuthenticatedFailure());
-  }
-
-  Result<UserSummary, ExchangeFailure> _refusedSummary(
-    bbx.BbxRpcFailure failure,
-  ) {
-    // The old client read an error reply as no account.
-    log.warning(
-      'Exchange user summary refused: ${failure.code}${failure.requestIdLabel}',
-    );
-    return const Err(ExchangeNotAuthenticatedFailure());
-  }
 
   Future<Result<void, ExchangeFailure>> registerScamWarningConsent() async {
     try {

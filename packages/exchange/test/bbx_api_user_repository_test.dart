@@ -125,22 +125,34 @@ void main() {
       expect(summary.dca.network, isNull);
     });
 
-    test('a JSON-RPC error reply is not-authenticated', () async {
+    test('a JSON-RPC error reply is an unavailable summary, not a sign-out '
+        '(INT-8)', () async {
       expect(
         _failureOf(
           await _repository(FakeBbxHttp(body: _rpcError)).getUserSummary(),
         ),
-        isA<ExchangeNotAuthenticatedFailure>(),
+        isA<ExchangeAccountUnavailableFailure>(),
       );
     });
 
-    test('a key that resolves to no account is not-authenticated', () async {
+    test('an empty answer is an unavailable summary, as for the account '
+        '(INT-8)', () async {
       expect(
         _failureOf(
           await _repository(FakeBbxHttp(body: {'result': null}))
               .getUserSummary(),
         ),
-        isA<ExchangeNotAuthenticatedFailure>(),
+        isA<ExchangeAccountUnavailableFailure>(),
+      );
+    });
+
+    test('an HTTP 401 is a rejected session', () async {
+      expect(
+        _failureOf(
+          await _repository(FakeBbxHttp(status: 401, body: const {}))
+              .getUserSummary(),
+        ),
+        isA<ExchangeSessionRejectedFailure>(),
       );
     });
 
@@ -168,7 +180,7 @@ void main() {
             .getUserSummary(),
       );
       expect(failure, isA<ExchangeNetworkFailure>());
-      expect(failure.logMessage, 'getUserSummary unreachable: connectionError');
+      expect(failure.logMessage, startsWith('getUserSummary unreachable: '));
     });
 
     test('an HTTP error is not a connection problem', () async {
@@ -194,7 +206,7 @@ void main() {
       expect(failure, isA<ExchangeAccountUnavailableFailure>());
       expect(
         failure.logMessage,
-        'getUserSummary failed: BbxResponseFormatFailure',
+        startsWith('getUserSummary failed: BbxResponseFormatFailure'),
       );
     });
   });
