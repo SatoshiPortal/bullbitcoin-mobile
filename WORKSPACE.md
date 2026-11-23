@@ -193,6 +193,7 @@ graph TD
   bull_exchange --> file_system
   bull_exchange --> preferences
   bull_exchange --> primitives
+  bull_exchange --> satoshifier
   bull_exchange --> secrets
   bull_exchange --> sync
   bull_logs --> bull_logger

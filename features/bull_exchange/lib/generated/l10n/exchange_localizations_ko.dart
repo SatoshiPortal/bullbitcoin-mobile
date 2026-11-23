@@ -2315,4 +2315,180 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
   @override
   String get buyQuoteExpiredError =>
       'This price has expired. A new one is being loaded; check it before confirming.';
+
+  @override
+  String get limitOrdersIntroTitle => 'Open a limit order';
+
+  @override
+  String get limitOrdersIntroDescription =>
+      'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.';
+
+  @override
+  String get limitOrdersIntroBulletPrice =>
+      'Your order remains active until the target index price is reached.';
+
+  @override
+  String get limitOrdersIntroBulletBalance =>
+      'The purchase uses the selected fiat balance when the order executes.';
+
+  @override
+  String get limitOrdersIntroBulletExecution =>
+      'Bitcoin is sent to the default wallet you select.';
+
+  @override
+  String get limitOrdersTargetTitle => 'Choose your target price';
+
+  @override
+  String get limitOrdersPaymentMethod => 'Payment method';
+
+  @override
+  String get limitOrdersCurrentPrice => 'Current index price';
+
+  @override
+  String get limitOrdersDiscount => 'Discount from current price';
+
+  @override
+  String get limitOrdersAmountTitle => 'Set the amount';
+
+  @override
+  String limitOrdersAvailableBalance(String amount) {
+    return 'Available: $amount';
+  }
+
+  @override
+  String limitOrdersEstimatedBitcoin(String amount) {
+    return 'Estimated bitcoin: $amount';
+  }
+
+  @override
+  String get limitOrdersWalletTitle => 'Choose a payout wallet';
+
+  @override
+  String get limitOrdersWalletDescription =>
+      'Bitcoin will be sent to this default wallet when the order executes.';
+
+  @override
+  String get limitOrdersManageDefaultWallets => 'Manage default wallets';
+
+  @override
+  String get limitOrdersWalletBitcoin => 'Bitcoin address';
+
+  @override
+  String get limitOrdersWalletLightning => 'Lightning address';
+
+  @override
+  String get limitOrdersWalletLiquid => 'Liquid address';
+
+  @override
+  String get limitOrdersConfirmationTitle => 'Confirm limit order';
+
+  @override
+  String limitOrdersBalancePayment(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get limitOrdersTermsNotice =>
+      'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.';
+
+  @override
+  String get limitOrdersConfirm => 'Confirm limit order';
+
+  @override
+  String get limitOrdersCreatedTitle => 'Limit order active';
+
+  @override
+  String limitOrdersCreatedMessage(String amount, String price) {
+    return 'Your order will buy $amount when the index price reaches $price.';
+  }
+
+  @override
+  String get limitOrdersBackToExchange => 'Back to Exchange';
+
+  @override
+  String get limitOrderInvalidTargetError =>
+      'Choose a target price below the current index price.';
+
+  @override
+  String get limitOrderInvalidAmountError =>
+      'Enter an amount greater than zero and no more than your available balance.';
+
+  @override
+  String get limitOrdersYourWalletsTitle => 'Your wallets';
+
+  @override
+  String get limitOrdersLightningAddressLabel => 'Lightning address';
+
+  @override
+  String get limitOrdersLightningAddressError =>
+      'Enter a valid lightning address, not an invoice';
+
+  @override
+  String limitOrdersAmountBelowOnchainMin(String amount) {
+    return 'Amount is below the on-chain minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountBelowLiquidMin(String amount) {
+    return 'Amount is below the Liquid minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountAboveLightningMax(String amount) {
+    return 'Amount is above the Lightning maximum of $amount';
+  }
+
+  @override
+  String get limitOrdersViewOrder => 'View order details';
+
+  @override
+  String get limitOrdersInsufficientBalance => '충분한 균형';
+
+  @override
+  String get limitOrdersInsufficientBalanceMessage =>
+      '이 주문을 만들 수있는 충분한 균형이 없습니다.';
+
+  @override
+  String get limitOrdersFundAccount => '계정 생성';
+
+  @override
+  String get exchangeBrandName => '비트 코인';
+
+  @override
+  String get exchangeLandingConnectAccount => 'Bull Bitcoin 교환 계정 연결';
+
+  @override
+  String get exchangeLandingRecommendedExchange => 'Bitcoin 교환';
+
+  @override
+  String get exchangeFeatureSelfCustody => '• Bitcoin을 Self-custody로 구매하십시오';
+
+  @override
+  String get exchangeFeatureDcaOrders => '• DCA, 제한 주문 및 자동 구매';
+
+  @override
+  String get exchangeFeatureSellBitcoin => '• Bitcoin을 판매, Bitcoin으로 지불';
+
+  @override
+  String get exchangeFeatureBankTransfers => '· 은행 송금 및 지불 청구서 발송';
+
+  @override
+  String get exchangeFeatureCustomerSupport => '· 고객 지원';
+
+  @override
+  String get exchangeFeatureUnifiedHistory => '• 통합된 거래 내역';
+
+  @override
+  String get exchangeLandingDisclaimerLegal =>
+      '교환 서비스에 대한 액세스는 Bull Bitcoin이 합법적으로 작동 할 수있는 국가에 제한되며 KYC가 필요할 수 있습니다.';
+
+  @override
+  String get exchangeLandingDisclaimerNotAvailable =>
+      'Cryptocurrency 교환 서비스는 Bull Bitcoin 모바일 애플리케이션에서 사용할 수 없습니다.';
+
+  @override
+  String get exchangeLoginButton => '로그인 또는 회원가입';
+
+  @override
+  String get exchangeGoToWebsiteButton => 'Bull Bitcoin 교환 웹 사이트로 이동';
 }
