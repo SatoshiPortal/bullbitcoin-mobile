@@ -1,0 +1,444 @@
+import 'dart:async';
+
+import 'package:settings/testing.dart';
+import 'package:notifications/notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:background_tasks/background_tasks.dart';
+import 'package:settings/settings.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+
+class Preferences implements BackgroundPreferencesRepository {
+  int requests = 0;
+  Completer<void>? pendingWrite;
+  StateError? writeError;
+  final started = Completer<void>();
+  var selected = BackgroundSyncInterval.hour1;
+  var failWrite = false;
+  var failRead = false;
+  var grantRequest = false;
+  var failOpen = false;
+  @override
+  Future<Result<BackgroundSyncInterval, SettingsFailure>> interval() async =>
+      failRead ? const Err(SettingsStorageFailure()) : Ok(selected);
+  @override
+  Future<Result<bool, SettingsFailure>> notificationsAllowed() async =>
+      const Ok(false);
+  @override
+  Future<Result<bool, SettingsFailure>> requestNotifications() async {
+    requests++;
+    return Ok(grantRequest);
+  }
+
+  @override
+  Future<Result<void, SettingsFailure>> openNotificationSettings() async =>
+      failOpen ? const Err(SettingsStorageFailure()) : const Ok(null);
+  @override
+  Future<Result<void, SettingsFailure>> setInterval(
+    BackgroundSyncInterval value,
+  ) async {
+    if (!started.isCompleted) started.complete();
+    await pendingWrite?.future;
+    final error = writeError;
+    writeError = null;
+    if (error != null) throw error;
+    if (failWrite) return const Err(SettingsStorageFailure());
+    selected = value;
+    return const Ok(null);
+  }
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  for (final latest in [
+    BackgroundSyncInterval.off,
+    BackgroundSyncInterval.minutes15,
+  ]) {
+    for (final action in ['request', 'settings', 'refresh']) {
+      test('notification $action must not hide committed ${latest.name}', () async {
+        final initial = latest == BackgroundSyncInterval.off
+            ? BackgroundSyncInterval.hour1
+            : BackgroundSyncInterval.off;
+        SharedPreferences.setMockInitialValues({
+          'background_sync_interval': initial.name,
+        });
+        final store = DelayedPersistentStore();
+        final scheduler = Scheduler()
+          ..registered = initial != BackgroundSyncInterval.off;
+        final cubit = BackgroundPreferencesCubit(
+          BackgroundPreferencesUsecase(
+            BackgroundPreferencesRepositoryImpl(
+              BackgroundSchedule.open(
+                dispatcher: () {},
+                intervals: store,
+                scheduler: scheduler,
+                enabled: true,
+              ),
+              NotificationPermissionsFacade(gateway: Permissions()),
+            ),
+          ),
+        );
+        addTearDown(cubit.close);
+        await cubit.load();
+        expect(cubit.state.interval, initial);
+        final choice = cubit.load(interval: latest);
+        await store.entered.future;
+        final permission = cubit.load(
+          requestPermission: action == 'request',
+          openSettings: action == 'settings',
+        );
+        // Drain runnable reads/permission work while persistence is suspended.
+        await Future<void>.delayed(Duration.zero);
+        store.release.complete();
+        await Future.wait([choice, permission]);
+        expect(
+          await const SharedPreferencesBackgroundSyncIntervalRepository()
+              .read(),
+          latest,
+        );
+        expect(scheduler.registered, latest != BackgroundSyncInterval.off);
+        if (latest != BackgroundSyncInterval.off) {
+          expect(scheduler.frequency, latest.frequency);
+        }
+        expect(
+          cubit.state.interval,
+          latest,
+          reason:
+              'After all actions finish, the UI must match the durable choice',
+        );
+      });
+    }
+  }
+
+  test('closed settings cannot replay On after newer Off', () async {
+    final permissions = DelayedPermissions();
+    final scheduler = Scheduler();
+    final repository = BackgroundPreferencesRepositoryImpl(
+      BackgroundSchedule.open(
+        dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+        scheduler: scheduler,
+        enabled: true,
+      ),
+      NotificationPermissionsFacade(gateway: permissions),
+    );
+    final first = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    final initial = first.load();
+    await permissions.entered.future;
+    final queued = first.load(interval: BackgroundSyncInterval.minutes15);
+    await first.close();
+    final reopened = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    addTearDown(reopened.close);
+    await reopened.load(interval: BackgroundSyncInterval.off);
+    expect(reopened.state.interval, BackgroundSyncInterval.off);
+    permissions.release.complete();
+    await Future.wait([initial, queued]);
+    expect(
+      await const SharedPreferencesBackgroundSyncIntervalRepository().read(),
+      BackgroundSyncInterval.off,
+    );
+    expect(scheduler.registered, isFalse);
+  });
+
+  test('Off completes while an older schedule initializes', () async {
+    final scheduler = Scheduler()..holdInitialization = true;
+    final repository = BackgroundPreferencesRepositoryImpl(
+      BackgroundSchedule.open(
+        dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+        scheduler: scheduler,
+        enabled: true,
+      ),
+      NotificationPermissionsFacade(
+        gateway: DelayedPermissions()..holdRead = false,
+      ),
+    );
+    final first = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    final pending = first.load(interval: BackgroundSyncInterval.minutes15);
+    await scheduler.entered.future;
+    await first.close();
+    final reopened = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    addTearDown(reopened.close);
+    await reopened.load(interval: BackgroundSyncInterval.off);
+    expect(scheduler.registered, isFalse);
+    scheduler.release.complete();
+    await pending;
+    expect(
+      await const SharedPreferencesBackgroundSyncIntervalRepository().read(),
+      BackgroundSyncInterval.off,
+    );
+    expect(scheduler.registered, isFalse);
+  });
+
+  test('shared repository skips obsolete queued writes and keeps closed-screen Off', () async {
+    final store = DelayedStore();
+    final repository = BackgroundPreferencesRepositoryImpl(
+      BackgroundSchedule.open(
+        dispatcher: () {},
+        intervals: store,
+        enabled: false,
+      ),
+      NotificationPermissionsFacade(gateway: Permissions()),
+    );
+    final first = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    final on = first.load(interval: BackgroundSyncInterval.minutes15);
+    await store.entered.future;
+    final obsolete = first.load(interval: BackgroundSyncInterval.minutes30);
+    final second = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    final off = second.load(interval: BackgroundSyncInterval.off);
+    await first.close();
+    await second.close();
+    store.release.complete();
+    await Future.wait([on, obsolete, off]);
+    expect(store.writes, [
+      BackgroundSyncInterval.minutes15,
+      BackgroundSyncInterval.off,
+    ]);
+    expect(await store.read(), BackgroundSyncInterval.off);
+  });
+
+  test('Off waits for a pending interval change and wins', () async {
+    final repository = Preferences()..pendingWrite = Completer<void>();
+    final cubit = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    addTearDown(cubit.close);
+    final first = cubit.load(interval: BackgroundSyncInterval.minutes15);
+    await repository.started.future;
+    final off = cubit.load(interval: BackgroundSyncInterval.off);
+    repository.pendingWrite?.complete();
+    await Future.wait([first, off]);
+    expect(repository.selected, BackgroundSyncInterval.off);
+    expect(cubit.state.interval, BackgroundSyncInterval.off);
+  });
+
+  test(
+    'Off still executes after a preceding programming error propagates',
+    () async {
+      final repository = Preferences()
+        ..pendingWrite = Completer<void>()
+        ..writeError = StateError('injected');
+      final cubit = BackgroundPreferencesCubit(
+        BackgroundPreferencesUsecase(repository),
+      );
+      addTearDown(cubit.close);
+      final first = cubit.load(interval: BackgroundSyncInterval.minutes15);
+      final errorReported = expectLater(first, throwsStateError);
+      await repository.started.future;
+      final offCompleted = expectLater(
+        cubit.load(interval: BackgroundSyncInterval.off),
+        completes,
+      );
+      repository.pendingWrite?.complete();
+      await Future.wait([errorReported, offCompleted]);
+      expect(repository.selected, BackgroundSyncInterval.off);
+      expect(cubit.state.interval, BackgroundSyncInterval.off);
+    },
+  );
+
+  test('read failures remain typed without requesting permission', () async {
+    final repository = Preferences()..failRead = true;
+    final state = await BackgroundPreferencesUsecase(repository).execute();
+    expect(state.failure, isA<SettingsStorageFailure>());
+    expect(repository.requests, 0);
+  });
+
+  test(
+    'loading and interval changes never prompt; only explicit request does',
+    () async {
+      final repository = Preferences();
+      final usecase = BackgroundPreferencesUsecase(repository);
+      expect((await usecase.execute()).allowed, isFalse);
+      await usecase.execute(interval: BackgroundSyncInterval.minutes30);
+      expect(repository.requests, 0);
+      expect(repository.selected, BackgroundSyncInterval.minutes30);
+      expect((await usecase.execute(requestPermission: true)).allowed, isFalse);
+      expect(repository.requests, 1);
+    },
+  );
+  test(
+    'failed preference write stays visible and preserves prior interval',
+    () async {
+      final repository = Preferences()..failWrite = true;
+      final result = await BackgroundPreferencesUsecase(repository)
+          .execute(interval: BackgroundSyncInterval.off);
+      expect(result.failure, isA<SettingsStorageFailure>());
+      expect(repository.selected, BackgroundSyncInterval.hour1);
+    },
+  );
+
+  for (final (stored, enabled, expected) in [
+    (BackgroundSyncInterval.hours6, false, BackgroundSyncInterval.off),
+    (BackgroundSyncInterval.off, true, BackgroundSyncInterval.fallback),
+    (BackgroundSyncInterval.hours6, true, BackgroundSyncInterval.hours6),
+  ]) {
+    test(
+      'turning tasks $enabled over ${stored.name} keeps ${expected.name}',
+      () async {
+        final repository = Preferences()..selected = stored;
+        final state = await BackgroundPreferencesUsecase(repository)
+            .execute(enabled: enabled);
+        expect(repository.selected, expected);
+        expect(state.enabled, enabled);
+        expect(repository.requests, 0);
+      },
+    );
+  }
+
+  test('a refused request is reported, a mere read is not', () async {
+    final usecase = BackgroundPreferencesUsecase(Preferences());
+    expect((await usecase.execute()).refused, isFalse);
+    expect((await usecase.execute(requestPermission: true)).refused, isTrue);
+  });
+
+  test(
+    'a granted request still not shown leads to the system settings',
+    () async {
+      // The app is allowed but its payment channel alone is blocked.
+      final usecase = BackgroundPreferencesUsecase(
+        Preferences()..grantRequest = true,
+      );
+      expect((await usecase.execute(requestPermission: true)).refused, isTrue);
+    },
+  );
+
+  test('a notification failure keeps background tasks shown as on', () async {
+    final repository = Preferences();
+    final cubit = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    repository.failOpen = true;
+    await cubit.load(openSettings: true);
+    expect(cubit.state.failure, isA<SettingsStorageFailure>());
+    expect(cubit.state.enabled, isTrue);
+  });
+}
+
+class Scheduler implements BackgroundTaskSchedulerPort {
+  Duration? frequency;
+  bool registered = true;
+  bool failCancellation = false;
+  bool holdInitialization = false;
+  bool holdRegistration = false;
+  final entered = Completer<void>();
+  final release = Completer<void>();
+  @override
+  Future<void> initialize(BackgroundTaskDispatcher dispatcher) async {
+    if (holdInitialization) {
+      holdInitialization = false;
+      entered.complete();
+      await release.future;
+    }
+  }
+
+  @override
+  Future<void> cancelByUniqueName(String name) async {
+    if (name == BackgroundTask.walletsSync.id) {
+      if (failCancellation) throw Exception('injected cancellation failure');
+      registered = false;
+    }
+  }
+
+  @override
+  Future<void> registerPeriodic({
+    required String uniqueName,
+    required String taskName,
+    required Duration frequency,
+    required bool requiresNetwork,
+    Duration? initialDelay,
+  }) async {
+    if (uniqueName == BackgroundTask.walletsSync.id) {
+      if (holdRegistration) {
+        holdRegistration = false;
+        entered.complete();
+        await release.future;
+      }
+      registered = true;
+      this.frequency = frequency;
+    }
+  }
+}
+
+class Permissions implements NotificationPermissionPort {
+  @override
+  Future<Result<bool, NotificationsFailure>> isEnabled() async =>
+      const Ok(false);
+  @override
+  Future<Result<bool, NotificationsFailure>> requestPermission() async =>
+      const Ok(false);
+  @override
+  Future<Result<void, NotificationsFailure>> openSystemSettings() async =>
+      const Ok(null);
+}
+
+class DelayedPermissions extends Permissions {
+  final entered = Completer<void>();
+  final release = Completer<void>();
+  bool holdRead = true;
+  @override
+  Future<Result<bool, NotificationsFailure>> isEnabled() async {
+    if (holdRead) {
+      holdRead = false;
+      entered.complete();
+      await release.future;
+    }
+    return const Ok(false);
+  }
+}
+
+class DelayedStore implements BackgroundSyncIntervalRepository {
+  final entered = Completer<void>();
+  final release = Completer<void>();
+  final writes = <BackgroundSyncInterval>[];
+  BackgroundSyncInterval selected = BackgroundSyncInterval.hour1;
+  @override
+  Future<BackgroundSyncInterval> read() async => selected;
+  @override
+  Future<Result<void, BackgroundTasksFailure>> write(
+    BackgroundSyncInterval value,
+  ) async {
+    writes.add(value);
+    if (!entered.isCompleted) {
+      entered.complete();
+      await release.future;
+    }
+    selected = value;
+    return const Ok(null);
+  }
+}
+
+class DelayedPersistentStore implements BackgroundSyncIntervalRepository {
+  final entered = Completer<void>();
+  final release = Completer<void>();
+  final _store = const SharedPreferencesBackgroundSyncIntervalRepository();
+
+  @override
+  Future<BackgroundSyncInterval> read() => _store.read();
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> write(
+    BackgroundSyncInterval value,
+  ) async {
+    if (!entered.isCompleted) {
+      entered.complete();
+      await release.future;
+    }
+    return _store.write(value);
+  }
+}

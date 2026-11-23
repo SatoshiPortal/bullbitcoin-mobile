@@ -3,9 +3,8 @@ import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
+import 'package:settings/testing.dart';
+import 'package:settings/settings.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -29,7 +28,6 @@ import 'package:network/network.dart' show NoDefaultWalletFailure;
 import 'package:network/testing.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
 import 'package:novlang/novlang.dart' show NovlangPolicy;
-import 'package:settings/settings.dart';
 
 class _Wallet extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
@@ -268,10 +266,7 @@ class ArkShellVisualFixtures {
               QuickActionsFallbackDelegate(),
             ),
           ],
-          child: SettingsFacade.amountScope(
-            navigatorKey: navigatorKey,
-            child: child,
-          ),
+          child: Settings.amountScope(navigatorKey: navigatorKey, child: child),
         ),
       ),
     );

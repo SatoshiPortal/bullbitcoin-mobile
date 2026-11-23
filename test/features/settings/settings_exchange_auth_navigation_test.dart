@@ -10,7 +10,7 @@ import 'dart:async';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';

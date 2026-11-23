@@ -1,9 +1,7 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show Ok;
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
+import 'package:settings/settings.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_test/flutter_test.dart';
 

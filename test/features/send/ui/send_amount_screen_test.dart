@@ -24,7 +24,7 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

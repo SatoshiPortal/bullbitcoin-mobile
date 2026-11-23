@@ -45,8 +45,7 @@ const _allowedTargets = <String, String>{
   'scanning': 'signers',
   'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull send silent swap transactions wallet',
-  'support': 'bull_exchange',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees_feature import_wallet label_editor logs network pay quick_actions recoverbull send silent swap transactions wallet wallet_import',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
   'wallet': 'address_view ark backups bitcoin_price coins import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
@@ -143,7 +142,7 @@ void main() {
       final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
       for (final path in [
         'lib/features/send/presentation/bloc/send_cubit.dart',
-        'lib/features/settings/presentation/bloc/settings_cubit.dart',
+        'features/settings/lib/src/presentation/bloc/settings_cubit.dart',
         'features/swap/lib/src/presentation/transfer_bloc.dart',
       ]) {
         expect(

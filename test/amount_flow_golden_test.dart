@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:settings/testing.dart';
 import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
