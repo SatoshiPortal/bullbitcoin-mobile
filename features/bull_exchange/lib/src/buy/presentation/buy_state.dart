@@ -41,7 +41,10 @@ sealed class BuyState with _$BuyState {
   bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
     final summary = userSummary;
     if (summary == null) return true;
-    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
+    final effectiveCurrency =
+        currency ??
+        this.currency ??
+        ExchangeCatalog.legacyNoMarketFallback.currency;
     return ExchangeCatalog.market(effectiveCurrency).kyc
         .needsUpgrade(summary.kycGroups, amount);
   }

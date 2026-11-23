@@ -59,6 +59,11 @@ abstract final class ExchangeCatalog {
     kyc: _fullOnly,
   );
 
+  /// Stand-in where a flow needs a market but has none (no currency on the
+  /// account, nothing loaded yet) and its state cannot say so yet. The flow
+  /// rebuilds remove every caller; do not add new ones.
+  static const Market legacyNoMarketFallback = cad;
+
   /// Every market, in the order the currency pickers show them.
   static const List<Market> markets = [usd, cad, crc, eur, mxn, ars, cop];
 

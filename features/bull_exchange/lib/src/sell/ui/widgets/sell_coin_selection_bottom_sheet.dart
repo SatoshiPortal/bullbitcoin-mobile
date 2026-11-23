@@ -42,7 +42,7 @@ class SellCoinSelectionBottomSheet extends StatelessWidget {
     final fiatCurrency = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
           ? (bloc.state as SellPaymentState).fiatCurrency.code
-          : 'CAD',
+          : null,
     );
 
     final payinAmountSat = context.select(
@@ -52,6 +52,8 @@ class SellCoinSelectionBottomSheet extends StatelessWidget {
             )
           : 0,
     );
+
+    if (fiatCurrency == null) return const SizedBox.shrink();
 
     return payinCoinSelection(
       context: context,

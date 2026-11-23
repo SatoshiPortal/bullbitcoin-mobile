@@ -109,15 +109,7 @@ class _SellAmountInputBottomButtonsState
               SellEvent.amountInputContinuePressed(
                 amountInput: widget.amountController.text,
                 isFiatCurrencyInput: widget.isFiatCurrencyInput,
-                fiatCurrency:
-                    widget.fiatCurrency ??
-                    ((state is SellAmountInputState)
-                        ? FiatCurrency.fromCode(
-                            state.userSummary.currency ?? 'CAD',
-                          )
-                        : state is SellWalletSelectionState
-                        ? state.fiatCurrency
-                        : FiatCurrency.cad),
+                fiatCurrency: widget.fiatCurrency ?? state.fiatCurrency,
               ),
             );
           }

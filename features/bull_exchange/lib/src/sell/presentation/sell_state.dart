@@ -124,10 +124,11 @@ sealed class SellState with _$SellState {
   };
 
   FiatCurrency get fiatCurrency => switch (this) {
-    SellInitialState() => FiatCurrency.cad,
-    SellAmountInputState(:final userSummary) => FiatCurrency.fromCode(
-      userSummary.currency ?? 'CAD',
-    ),
+    SellInitialState() => ExchangeCatalog.legacyNoMarketFallback.currency,
+    SellAmountInputState(:final userSummary) =>
+      userSummary.currency != null
+          ? FiatCurrency.fromCode(userSummary.currency!)
+          : ExchangeCatalog.legacyNoMarketFallback.currency,
     SellPreparingPaymentState(:final input) => input.fiatCurrency,
     SellWalletSelectionState(:final fiatCurrency) => fiatCurrency,
     SellPaymentState(:final fiatCurrency) => fiatCurrency,

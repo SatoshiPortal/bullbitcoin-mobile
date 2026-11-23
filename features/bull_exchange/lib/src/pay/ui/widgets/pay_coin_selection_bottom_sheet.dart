@@ -36,7 +36,7 @@ class PayCoinSelectionBottomSheet extends StatelessWidget {
     final fiatCurrency = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
           ? (bloc.state as PayPaymentState).currency.code
-          : 'CAD',
+          : null,
     );
 
     final payinAmountSat = context.select(
@@ -46,6 +46,8 @@ class PayCoinSelectionBottomSheet extends StatelessWidget {
             )
           : 0,
     );
+
+    if (fiatCurrency == null) return const SizedBox.shrink();
 
     return payinCoinSelection(
       context: context,

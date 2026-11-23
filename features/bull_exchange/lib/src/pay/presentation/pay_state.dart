@@ -105,9 +105,10 @@ sealed class PayState with _$PayState {
   }
 
   FiatCurrency get currency => switch (this) {
-    PayRecipientSelectionState(:final userSummary) => FiatCurrency.fromCode(
-      userSummary?.currency ?? FiatCurrency.cad.code,
-    ),
+    PayRecipientSelectionState(:final userSummary) =>
+      userSummary?.currency != null
+          ? FiatCurrency.fromCode(userSummary!.currency!)
+          : ExchangeCatalog.legacyNoMarketFallback.currency,
     PayAmountInputState(:final selectedRecipient) => FiatCurrency.fromCode(
       selectedRecipient.currencyCode,
     ),
