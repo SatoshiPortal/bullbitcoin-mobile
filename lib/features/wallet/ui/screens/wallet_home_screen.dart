@@ -1,9 +1,5 @@
-import 'dart:async';
-
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
-import 'package:bull_ui/app_theme.dart';
-import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
@@ -19,7 +15,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class WalletHomeScreen extends StatefulWidget {
+class WalletHomeScreen extends StatelessWidget {
   final ArkForegroundHost? arkHost;
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
@@ -48,178 +44,51 @@ class WalletHomeScreen extends StatefulWidget {
   });
 
   @override
-  State<WalletHomeScreen> createState() => _WalletHomeScreenState();
-}
-
-class _WalletHomeScreenState extends State<WalletHomeScreen> {
-  /// Height the pinned Receive/Send bar occupies
-  static const double _bottomBarHeight = 52.0 + 16.0 * 2;
-
-  GoRouter? _router;
-  bool _homeVisible = false;
-  int _arkRefresh = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      // #2222: a fresh mount triggers a sync — covers cold boot and switching
-      // back to the wallet tab (the shell rebuilds its child on switch, so this
-      // screen remounts). The pop-back-to-home path, where this screen stays
-      // mounted, is handled by the router listener below. The coordinator
-      // throttles, so a redundant trigger is cheap.
-      _onRouteChanged();
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // #2222: sync whenever navigation lands back on the wallet home — e.g.
-    // popping a pushed full-screen route (send/receive/settings) where this
-    // screen stayed mounted beneath it. A RouteObserver can't see those pops:
-    // home lives inside the tab shell while those routes are pushed on the root
-    // navigator, so the pop reveals the *shell*, not home. The router's own
-    // current location is the reliable signal across that boundary.
-    final router = GoRouter.of(context);
-    if (!identical(router, _router)) {
-      _router?.routerDelegate.removeListener(_onRouteChanged);
-      _router = router;
-      router.routerDelegate.addListener(_onRouteChanged);
-    }
-  }
-
-  void _onRouteChanged() {
-    if (!mounted) return;
-    final configuration = _router?.routerDelegate.currentConfiguration;
-    final top = configuration?.lastOrNull;
-    // A push keeps the base URI (/wallet). Its imperative match owns the
-    // visible location, including Receive on the root navigator.
-    final location = top is ImperativeRouteMatch
-        ? top.matches.uri.path
-        : configuration?.uri.path;
-    final visible = location == WalletRoute.walletHome.path;
-    final becameVisible = visible && !_homeVisible;
-    _homeVisible = visible;
-    if (becameVisible) _refreshOnVisible();
-  }
-
-  @override
-  void dispose() {
-    _router?.routerDelegate.removeListener(_onRouteChanged);
-    super.dispose();
-  }
-
-  void _refreshOnVisible() {
-    if (!mounted) return;
-    setState(() => ++_arkRefresh);
-    context.read<WalletBloc>().add(const RefreshSpWallet());
-    context.read<WalletBloc>().add(const WalletRefreshed());
-    // Only a price that never loaded (e.g. an offline start) is retried here:
-    // re-fetching a working one would hit the price API on every navigation.
-    unawaited(BitcoinPriceFeature.refresh(context, onlyIfUnavailable: true));
-  }
-
-  @override
   Widget build(BuildContext context) {
     final noWallets = context.select(
       (WalletBloc bloc) => bloc.state.noWalletsFound,
     );
-    if (noWallets) {
-      return EmptyNetworkWallets(
-        createSetupCubit: widget.createSetupCubit,
-        onMainnet: widget.onEmptyMainnet,
-        onImport: widget.onImportNetworkWallet,
-        onRecoverEncryptedVault: widget.onRecoverEncryptedVault,
-      );
-    }
-    final isRefreshing = context.select(
-      (WalletBloc bloc) => bloc.state.isRefreshing,
-    );
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {},
-      child: Stack(
-        children: [
-          // Backdrop visible only during iOS top overscroll. It stops where
-          // the header image does, so it never shows below it.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ColoredBox(
-              color: context.appColors.homeHeaderBackground,
-              child: SizedBox(
-                height: WalletHomeTopSection.minBackgroundHeight(context),
-              ),
-            ),
-          ),
-          WalletRefreshBody(
-            isRefreshing: isRefreshing,
-            waitForRefresh: context.read<WalletBloc>().waitForRefresh,
-            onRefresh: () {
-              setState(() => ++_arkRefresh);
-              unawaited(BitcoinPriceFeature.refresh(context));
-              return context.read<WalletBloc>().refresh();
-            },
-            // Clearance for the bar pinned at the bottom of this Stack, so
-            // the last wallet card can be scrolled out from under it.
-            bottomInset:
-                _bottomBarHeight + MediaQuery.paddingOf(context).bottom,
-            slivers: [
-              // Pinned rather than scrolled away: the balance and the
-              // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
-              // scroll underneath.
-              PinnedHeaderSliver(
-                child: WalletHomeTopSection(
-                  actions: WalletQuickActions(
-                    quickActions: widget.quickActions,
-                    onAction: widget.onQuickAction,
-                    onCustomize: widget.onCustomizeQuickActions,
-                    exchangePrompt: widget.exchangePrompt,
-                    onActivateExchange: widget.onActivateExchange,
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(child: widget.announcements),
-              const SliverToBoxAdapter(child: HomeWarnings()),
-              const SliverToBoxAdapter(child: HomeConsolidationBanner()),
-              SliverToBoxAdapter(
-                child: WalletCards(
-                  onTap: (w) {
-                    context.pushNamed(
-                      WalletRoute.walletDetail.name,
-                      pathParameters: {'walletId': w.id},
-                    );
-                  },
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: ArkDashboardEntry(
-                  host: widget.arkHost,
-                  refresh: _arkRefresh,
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 13.0,
-                  vertical: 16.0,
-                ),
-                child: WalletBottomButtons(),
-              ),
-            ),
-          ),
-        ],
+    final isRefreshing =
+        !noWallets &&
+        context.select((WalletBloc bloc) => bloc.state.isRefreshing);
+    return OverviewHome(
+      homePath: WalletRoute.walletHome.path,
+      empty: noWallets
+          ? EmptyNetworkWallets(
+              createSetupCubit: createSetupCubit,
+              onMainnet: onEmptyMainnet,
+              onImport: onImportNetworkWallet,
+              onRecoverEncryptedVault: onRecoverEncryptedVault,
+            )
+          : null,
+      isRefreshing: isRefreshing,
+      refreshVisibleWallets: () {
+        context.read<WalletBloc>().add(const RefreshSpWallet());
+        context.read<WalletBloc>().add(const WalletRefreshed());
+      },
+      waitForRefresh: () => context.read<WalletBloc>().waitForRefresh(),
+      refreshWallets: () => context.read<WalletBloc>().refresh(),
+      headerBackgroundHeight: WalletHomeTopSection.minBackgroundHeight(context),
+      header: WalletHomeTopSection(
+        actions: WalletQuickActions(
+          quickActions: quickActions,
+          onAction: onQuickAction,
+          onCustomize: onCustomizeQuickActions,
+          exchangePrompt: exchangePrompt,
+          onActivateExchange: onActivateExchange,
+        ),
       ),
+      announcements: announcements,
+      warnings: const HomeWarnings(),
+      consolidation: const HomeConsolidationBanner(),
+      wallets: WalletCards(
+        onTap: (wallet) => context.pushNamed(
+          WalletRoute.walletDetail.name,
+          pathParameters: {'walletId': wallet.id},
+        ),
+      ),
+      ark: (refresh) => ArkDashboardEntry(host: arkHost, refresh: refresh),
+      bottomActions: WalletBottomButtons(),
     );
   }
 }
