@@ -86,6 +86,9 @@ class Settings {
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
   final SettingsCubit Function() _createCubit;
   final BackgroundPreferencesUsecase _backgroundPreferences;
+  final SetEnvironmentUsecase _setEnvironment;
+  final SetIsDevModeUsecase _setDevMode;
+  final SetIsSuperuserUsecase _setSuperuser;
   SettingsCubit? _state;
 
   Settings._(
@@ -93,6 +96,9 @@ class Settings {
     this._watchPayjoinPolicyUsecase,
     this._createCubit,
     this._backgroundPreferences,
+    this._setEnvironment,
+    this._setDevMode,
+    this._setSuperuser,
   );
 
   static Settings open({
@@ -115,15 +121,18 @@ class Settings {
       ),
     );
     final watchPayjoinPolicy = WatchPayjoinPolicyUsecase(payjoin);
+    final setEnvironment = SetEnvironmentUsecase(
+      settingsRepository: preferences,
+      electrumSettings: electrum,
+    );
+    final setDevMode = SetIsDevModeUsecase(settingsRepository: preferences);
+    final setSuperuser = SetIsSuperuserUsecase(settingsRepository: preferences);
     return Settings._(
       setPayjoinEnabled,
       watchPayjoinPolicy,
       () => SettingsCubit(
         loadPreferencesUsecase: LoadSettingsUsecase(preferences),
-        setEnvironmentUsecase: SetEnvironmentUsecase(
-          settingsRepository: preferences,
-          electrumSettings: electrum,
-        ),
+        setEnvironmentUsecase: setEnvironment,
         setAmountInputModeUsecase: SetAmountInputModeUsecase(preferences),
         setBitcoinUnitUsecase: SetBitcoinUnitUsecase(
           settingsRepository: preferences,
@@ -137,12 +146,8 @@ class Settings {
         setHideAmountsUsecase: SetHideAmountsUsecase(
           settingsRepository: preferences,
         ),
-        setIsSuperuserUsecase: SetIsSuperuserUsecase(
-          settingsRepository: preferences,
-        ),
-        setIsDevModeUsecase: SetIsDevModeUsecase(
-          settingsRepository: preferences,
-        ),
+        setIsSuperuserUsecase: setSuperuser,
+        setIsDevModeUsecase: setDevMode,
         setThemeModeUsecase: SetThemeModeUsecase(
           settingsRepository: preferences,
         ),
@@ -172,10 +177,24 @@ class Settings {
         backgroundSchedule,
         notificationChannelId: notificationChannelId,
       ),
+      setEnvironment,
+      setDevMode,
+      setSuperuser,
     );
   }
 
   SettingsCubit get _cubit => _state ??= _createCubit();
+
+  /// Sets the persisted environment before the UI is mounted.
+  Future<Result<void, SettingsFailure>> setStartupEnvironment(
+    Environment environment,
+  ) => _setEnvironment.execute(environment);
+
+  Future<Result<void, SettingsFailure>> setStartupDevMode(bool enabled) =>
+      _setDevMode.execute(enabled);
+
+  Future<Result<void, SettingsFailure>> setStartupSuperuser(bool enabled) =>
+      _setSuperuser.execute(enabled);
 
   Future<void> close() async {
     final state = _state;

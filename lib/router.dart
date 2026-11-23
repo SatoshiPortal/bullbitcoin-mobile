@@ -275,6 +275,8 @@ class AppRouter {
       _sendRoutes.consolidation,
       SettingsFeature.mount(
         menuScope: SettingsRouter.menuScope,
+        settings: locator<Settings>,
+        appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: SettingsRouter.childRoutes(
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
@@ -282,7 +284,6 @@ class AppRouter {
           accessRoutes: locator<AccessFeature>().routes.settings,
           seedViewRoute: locator<AllSeedViewFeature>().route,
           exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
-          appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
           backupRoutes: [
             BackupsFeature.mount(
               secrets: () => locator<Secrets>(),

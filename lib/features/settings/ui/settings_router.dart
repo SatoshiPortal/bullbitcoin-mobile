@@ -99,7 +99,6 @@ class SettingsRouter {
     RouteBase? autoswapSettingsRoute,
     required List<RouteBase> priceRoutes,
     required List<RouteBase> backupRoutes,
-    required List<RouteBase> appSettingsRoutes,
     required List<RouteBase> accessRoutes,
     RouteBase? seedViewRoute,
     required List<RouteBase> exchangeSettingsRoutes,
@@ -115,7 +114,6 @@ class SettingsRouter {
         ),
       ),
       ...exchangeSettingsRoutes,
-      ...Settings.walletRoutes(),
       GoRoute(
         name: SettingsRoute.swapRestore.name,
         path: SettingsRoute.swapRestore.path,
@@ -143,7 +141,6 @@ class SettingsRouter {
         },
       ),
       ?autoswapSettingsRoute,
-      Settings.appSettingsRoute(appSettingsRoutes, settings: locator<Settings>),
 
       ...accessRoutes,
       ...backupRoutes,

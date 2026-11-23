@@ -99,7 +99,7 @@ graph TB
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
     CORE --> BULL_REPORTING
-    SETTINGS --> BULL_REPORTING
+    PREFERENCES -->|refresh reporting consent| BULL_REPORTING
     LABELS --> BULL_PAYJOIN
     TX_HISTORY --> LABELS
     TX_HISTORY --> SECRETS
@@ -117,7 +117,6 @@ graph TB
     EXCHANGE --> BULL_EXCHANGE
     BULL_EXCHANGE -->|order details navigation and receipt labels| TX_HISTORY
     SETTINGS -->|open account settings and support chat| BULL_EXCHANGE
-    SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     BULL_EXCHANGE -->|dashboard price display| BTC_PRICE
     BULL_EXCHANGE -->|authorized payout and payin wallets| SECRETS
@@ -168,12 +167,10 @@ graph TB
     MNEMONIC_ENTRY[Mnemonic Entry]
     PHYSICAL_BACKUP_VERIFICATION[Physical Backup Verification]
     ONBOARDING[Onboarding]
-    SETTINGS[Legacy Settings<br/>Preferences and child screens]
-    SETTINGS_HUB[Settings home and search<br/>Workspace Feature]
-    SETTINGS -->|menu projection and child routes| SETTINGS_HUB
-    SETTINGS_HUB --> NETWORK
-    SETTINGS_HUB --> BULL_UI
-    SETTINGS_HUB --> PRIMITIVES
+    SETTINGS[Settings<br/>Workspace Feature: preferences, search and support]
+    SETTINGS_LEGACY[App Settings residue<br/>Selected-wallet routes and legacy access bindings]
+    SETTINGS_LEGACY -->|legacy route contribution and settings state| SETTINGS
+    SETTINGS --> PRIMITIVES
     PREFERENCES[Preferences Package]
     PREFERENCES --> LEGACY_STORAGE
     PREFERENCES --> SECRETS
@@ -228,7 +225,6 @@ graph TB
     FEES_UI[Fees Feature]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
-    SUPPORT[Support]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
     BACKUPS[Backups workspace feature<br/>Backup status and verification]
@@ -421,7 +417,6 @@ graph TB
     SETTINGS --> TX_HISTORY
     LIMIT_ORDERS --> EXCHANGE
     EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
-    SUPPORT -->|support chat navigation| BULL_EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
     LIMIT_ORDERS -->|opens order details| BULL_EXCHANGE
@@ -444,8 +439,8 @@ graph TB
     SEND --> UTXO_MGMT
     SEND -->|public coin management route| COINS
     SEND -->|public spend admission and revisions| WALLETS
-    SETTINGS -->|public wallet discovery| WALLETS
-    SETTINGS --> CORE
+    SETTINGS_LEGACY -->|public wallet discovery and legacy rescue lookup| WALLETS
+    SETTINGS_LEGACY --> EXCHANGE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
     SETTINGS -->|service health and navigation| NETWORK
@@ -517,9 +512,9 @@ graph TB
     SWAPS --> FEES_PACKAGE
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
-    WIZARD -->|translation warning| SETTINGS_HUB
-    APP_STARTUP -->|translation warning| SETTINGS_HUB
-    ONBOARDING -->|translation warning| SETTINGS_HUB
+    WIZARD -->|translation warning| SETTINGS
+    APP_STARTUP -->|translation warning| SETTINGS
+    ONBOARDING -->|language and translation warning| SETTINGS
 
 
     %% Wallet readers and spend preparation assigned to their app owners
@@ -539,7 +534,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
+    class WALLET_IMPORT,SCANNING,ONBOARDING,SETTINGS,SETTINGS_LEGACY,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SEND,SEND_TOOLS,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK,WIZARD featureStyle
 ```
 
 ## About Package Dependency Diagrams
