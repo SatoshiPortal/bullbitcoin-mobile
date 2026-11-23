@@ -1263,6 +1263,10 @@
   "@exchangeBitcoinWalletsSaveFailed": {
     "description": "Error shown when a default wallet address cannot be saved"
   },
+  "exchangeBitcoinWalletsSaveOutcomeUnknown": "We could not tell whether this address was saved. Check it below before you save again.",
+  "@exchangeBitcoinWalletsSaveOutcomeUnknown": {
+    "description": "Shown on the exchange default wallets screen when saving an address failed after the request may have reached the server. The saved addresses were read again, so a new save updates the one that may have been created."
+  },
   "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
   "@exchangeBitcoinWalletsDeleteFailed": {
     "description": "Error shown when a default wallet address cannot be deleted"

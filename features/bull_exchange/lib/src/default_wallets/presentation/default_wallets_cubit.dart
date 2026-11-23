@@ -153,6 +153,21 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       switch (result) {
         case Ok(:final value):
           savedWallet = value;
+        case Err(
+          failure: final DefaultWalletsSaveOutcomeUnknownFailure failure,
+        ):
+          // The save may have created the recipient: read what the exchange
+          // has, so a second save updates it instead of creating another.
+          await loadDefaultWallets();
+          if (isClosed) return;
+          emit(
+            state.copyWith(
+              isSaving: false,
+              saveError: failure,
+              saveSuccess: false,
+            ),
+          );
+          return;
         case Err(:final failure):
           emit(
             state.copyWith(

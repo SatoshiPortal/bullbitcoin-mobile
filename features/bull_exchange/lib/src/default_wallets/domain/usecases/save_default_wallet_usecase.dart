@@ -14,9 +14,17 @@ final class SaveDefaultWalletUsecase {
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
-  }) async => (await _exchange.saveDefaultWallet(
+  }) async => switch (await _exchange.saveDefaultWallet(
     walletType: walletType,
     address: address,
     existingRecipientId: existingRecipientId,
-  )).mapErr((_) => const DefaultWalletsSaveFailure());
+  )) {
+    WriteDone(:final value) => Ok(value),
+    WriteOutcomeUnknown() => const Err(
+      DefaultWalletsSaveOutcomeUnknownFailure(),
+    ),
+    WriteRefused() ||
+    WriteNotSent() ||
+    WriteSessionRejected() => const Err(DefaultWalletsSaveFailure()),
+  };
 }

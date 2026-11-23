@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/src/data/bbx_api_exchange_recipient_repository.dart';
+import 'package:dio/dio.dart' show DioExceptionType;
 import 'package:test/test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -57,6 +58,11 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
 T _value<T>(Result<T, ExchangeFailure> result) => switch (result) {
   Ok(:final value) => value,
   Err(:final failure) => fail('Expected success, got ${failure.runtimeType}'),
+};
+
+T _written<T>(ExchangeWrite<T> write) => switch (write) {
+  WriteDone(:final value) => value,
+  _ => fail('Expected a done write, got ${write.runtimeType}'),
 };
 
 Matcher _failure<T>(Matcher matcher) => isA<Err<T, ExchangeFailure>>().having(
@@ -225,7 +231,7 @@ void main() {
           ),
         ).saveDefaultWallet(walletType: BtcNetwork.liquid, address: 'a');
 
-        expect(_fields(_value(wallet)), ('x', BtcNetwork.liquid, '', false));
+        expect(_fields(_written(wallet)), ('x', BtcNetwork.liquid, '', false));
       },
     );
   });
@@ -269,7 +275,7 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
-        _failure<DefaultWallet>(isA<ExchangeUnexpectedFailure>()),
+        isA<WriteRefused<DefaultWallet>>(),
       );
       expect(
         await repository.deleteDefaultWallet(
@@ -306,9 +312,31 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
-        _failure<DefaultWallet>(isA<ExchangeApiKeyStorageFailure>()),
+        isA<WriteNotSent<DefaultWallet>>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.credentialUnavailable,
+        ),
       );
     });
+
+    for (final (name, http) in [
+      (
+        'a timeout after sending',
+        FakeBbxHttp(error: DioExceptionType.receiveTimeout),
+      ),
+      ('a gateway timeout', FakeBbxHttp(status: 504, body: const {})),
+      ('an unreadable reply', FakeBbxHttp(body: {'result': 'x'})),
+    ]) {
+      test('$name on a save is an unknown outcome (DW-2)', () async {
+        expect(
+          await _repository(
+            http,
+          ).saveDefaultWallet(walletType: BtcNetwork.bitcoin, address: 'bc1q'),
+          isA<WriteOutcomeUnknown<DefaultWallet>>(),
+        );
+      });
+    }
   });
 }
 

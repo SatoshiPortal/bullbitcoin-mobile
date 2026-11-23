@@ -3,8 +3,10 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/btc_network.dart';
 import '../domain/entities/default_wallet.dart';
+import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import 'btc_network_wire.dart';
+import 'exchange_call_classifier.dart';
 
 /// Default Bitcoin, Lightning and Liquid payouts for one session.
 final class BbxApiExchangeRecipientRepository {
@@ -53,29 +55,30 @@ final class BbxApiExchangeRecipientRepository {
     }
   }
 
-  Future<Result<DefaultWallet, ExchangeFailure>> saveDefaultWallet({
+  /// A save that may have reached the server without a readable answer is
+  /// [WriteOutcomeUnknown]: a new recipient may exist, so the caller re-reads
+  /// before saving again (DW-2).
+  Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
-  }) async {
-    final result = existingRecipientId != null && existingRecipientId.isNotEmpty
-        ? await _api.recipients.updateMyRecipient(
+  }) => exchangeWrite<bbx.MyRecipient, DefaultWallet>(
+    'saveDefaultWallet',
+    () => existingRecipientId != null && existingRecipientId.isNotEmpty
+        ? _api.recipients.updateMyRecipient(
             recipientId: existingRecipientId,
             recipientType: BtcNetworkWire.recipientType(walletType),
             address: address,
             isDefault: true,
           )
-        : await _api.recipients.createMyRecipient(
+        : _api.recipients.createMyRecipient(
             recipientType: BtcNetworkWire.recipientType(walletType),
             address: address,
             isOwner: true,
             isDefault: true,
-          );
-    return switch (result) {
-      Ok(:final value) => Ok(_toDefaultWallet(value, walletType)),
-      Err(:final failure) => Err(_mapFailure(failure)),
-    };
-  }
+          ),
+    (recipient) => _toDefaultWallet(recipient, walletType),
+  );
 
   Future<Result<void, ExchangeFailure>> deleteDefaultWallet({
     required String recipientId,

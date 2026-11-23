@@ -15,6 +15,7 @@ import 'data/bbx_api_order_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
 import 'data/bbx_api_virtual_iban_repository.dart';
+import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/pending_orders.dart';
@@ -31,6 +32,7 @@ import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_access.dart';
 import 'domain/exchange_availability.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
+import 'domain/exchange_call_result.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
@@ -62,7 +64,7 @@ typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
 });
 typedef _DefaultWalletOperations = ({
   Future<Result<DefaultWallets, ExchangeFailure>> Function() get,
-  Future<Result<DefaultWallet, ExchangeFailure>> Function({
+  Future<ExchangeWrite<DefaultWallet>> Function({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
@@ -415,17 +417,25 @@ final class Exchange {
                   .getDefaultWallets(),
           completionCheck: _CompletionCheck.read,
         ),
-        save: ({required walletType, required address, existingRecipientId}) =>
-            withClient(
-              (client, _) =>
-                  BbxApiExchangeRecipientRepository(api: client)
-                      .saveDefaultWallet(
-                        walletType: walletType,
-                        address: address,
-                        existingRecipientId: existingRecipientId,
-                      ),
+        save:
+            ({
+              required walletType,
+              required address,
+              existingRecipientId,
+            }) async => switch (await withClient<ExchangeWrite<DefaultWallet>>(
+              (client, _) async => Ok(
+                await BbxApiExchangeRecipientRepository(api: client)
+                    .saveDefaultWallet(
+                      walletType: walletType,
+                      address: address,
+                      existingRecipientId: existingRecipientId,
+                    ),
+              ),
               completionCheck: _CompletionCheck.write,
-            ),
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => writeNotRun(failure),
+            },
         delete:
             ({required recipientId, required walletType, required address}) =>
                 withClient(
@@ -876,8 +886,10 @@ final class Exchange {
   Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
       _defaultWallets.get();
 
+  /// [WriteOutcomeUnknown] means the default wallet may be saved: re-read the
+  /// default wallets before saving again.
   @useResult
-  Future<Result<DefaultWallet, ExchangeFailure>> saveDefaultWallet({
+  Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
@@ -970,7 +982,7 @@ Exchange exchangeForTesting({
   })?
   saveUserPreference,
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
-  Future<Result<DefaultWallet, ExchangeFailure>> Function({
+  Future<ExchangeWrite<DefaultWallet>> Function({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,

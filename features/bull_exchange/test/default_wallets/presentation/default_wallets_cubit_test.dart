@@ -31,7 +31,7 @@ void main() {
       saveDefaultWallet:
           ({required walletType, required address, existingRecipientId}) async {
             saveCalls++;
-            return const Err(ExchangeUnexpectedFailure());
+            return const WriteRefused(ExchangeRefusal(rpcCode: -32603));
           },
     );
   });
@@ -175,6 +175,47 @@ void main() {
     expect(cubit.state.editingWalletType, isNull);
     expect(cubit.state.isSaving, isFalse);
     expect(saveCalls, 0);
+    await cubit.close();
+  });
+
+  test('an unknown save outcome re-reads the default wallets, so the next '
+      'save updates the recipient it may have created', () async {
+    const created = DefaultWallets(
+      bitcoin: DefaultWallet(
+        recipientId: 'r-1',
+        walletType: BtcNetwork.bitcoin,
+        address: 'bc1qnew',
+      ),
+    );
+    var reads = 0;
+    final saves = <String?>[];
+    exchange = exchangeForTesting(
+      getDefaultWallets: () async =>
+          Ok(reads++ == 0 ? const DefaultWallets() : created),
+      saveDefaultWallet:
+          ({required walletType, required address, existingRecipientId}) async {
+            saves.add(existingRecipientId);
+            return const WriteOutcomeUnknown('receive timeout');
+          },
+    );
+    when(() => validateDestination.execute(BtcNetwork.bitcoin, 'bc1qnew'))
+        .thenAnswer((_) async => 'bc1qnew');
+    final cubit = buildCubit();
+    await cubit.init();
+    cubit.startEditing(BtcNetwork.bitcoin);
+    cubit.updateBitcoinAddress('bc1qnew');
+
+    await cubit.saveWallet(BtcNetwork.bitcoin);
+
+    expect(
+      cubit.state.saveError,
+      isA<DefaultWalletsSaveOutcomeUnknownFailure>(),
+    );
+    expect(cubit.state.isSaving, isFalse);
+    expect(cubit.state.defaultWallets, created);
+
+    await cubit.saveWallet(BtcNetwork.bitcoin);
+    expect(saves, [null, 'r-1']);
     await cubit.close();
   });
 }

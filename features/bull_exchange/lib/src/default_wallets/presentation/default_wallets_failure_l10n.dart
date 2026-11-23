@@ -15,6 +15,8 @@ extension DefaultWalletsFailureL10n on DefaultWalletsFailure {
         BtcNetwork.lightning => context.loc.exchangeDcaAddressLabelLightning,
       }),
     DefaultWalletsSaveFailure() => context.loc.exchangeBitcoinWalletsSaveFailed,
+    DefaultWalletsSaveOutcomeUnknownFailure() =>
+      context.loc.exchangeBitcoinWalletsSaveOutcomeUnknown,
     DefaultWalletsDeleteFailure() =>
       context.loc.exchangeBitcoinWalletsDeleteFailed,
   };

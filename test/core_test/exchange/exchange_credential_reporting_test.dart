@@ -221,7 +221,7 @@ void main() {
               required walletType,
               required address,
               existingRecipientId,
-            }) async => Err(failure),
+            }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
             deleteDefaultWallet: ({
               required recipientId,
               required walletType,
