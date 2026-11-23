@@ -1,10 +1,12 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/write.dart' show nativeWalletStoragePath;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/sync.dart' show SyncReason;
-import 'package:primitives/primitives.dart' show Fingerprint, Ok;
+import 'package:sync/sync.dart' show SyncReason, WalletKey;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Fingerprint, Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -47,8 +49,10 @@ void main() {
           _row(network),
       ];
       when(metadata.fetchAll).thenAnswer((_) async => rows);
-      registerFallbackValue(WalletModel.fromMetadata(rows.first));
-      when(() => values.getBalance(wallet: any(named: 'wallet')))
+      registerFallbackValue(
+        WalletKey(id: 'test', network: BitcoinNetwork.mainnet),
+      );
+      when(() => values.getBalance(key: any(named: 'key')))
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,
@@ -118,23 +122,29 @@ void main() {
     );
   }
 
-  test(
-    'native models retain regtest rather than projecting it onto testnet',
-    () {
-      final model = WalletModel.fromMetadata(_row(Network.bitcoinRegtest));
-      expect(model.network, Network.bitcoinRegtest);
-      expect(
-        model.hexId,
-        isNot(WalletModel.fromMetadata(_row(Network.bitcoinTestnet)).hexId),
-      );
-      expect(
-        Network.bitcoinRegtest.requireHistoricalTestnet,
-        throwsA(isA<UnsupportedNetworkException>()),
-      );
-      expect(
-        Network.liquidRegtest.requireHistoricalTestnet,
-        throwsA(isA<UnsupportedNetworkException>()),
-      );
-    },
-  );
+  test('native storage keeps regtest and testnet identities distinct', () {
+    final regtest = _row(Network.bitcoinRegtest);
+    final testnet = _row(Network.bitcoinTestnet);
+    final regtestKey = WalletKey(
+      id: regtest.id,
+      network: regtest.network.shared,
+    );
+    final testnetKey = WalletKey(
+      id: testnet.id,
+      network: testnet.network.shared,
+    );
+    expect(regtestKey.network, BitcoinNetwork.regtest);
+    expect(
+      nativeWalletStoragePath('/wallets', regtestKey),
+      isNot(nativeWalletStoragePath('/wallets', testnetKey)),
+    );
+    expect(
+      Network.bitcoinRegtest.requireHistoricalTestnet,
+      throwsA(isA<UnsupportedNetworkException>()),
+    );
+    expect(
+      Network.liquidRegtest.requireHistoricalTestnet,
+      throwsA(isA<UnsupportedNetworkException>()),
+    );
+  });
 }

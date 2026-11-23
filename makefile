@@ -55,7 +55,7 @@ format-check:
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
 # The only typed-in font sizes outside BullTypography.standard: the Bebas Neue brand wordmarks, sized by their splash layout and marked "Brand wordmark" at the call site.
-FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|lib/features/wizard/ui/widgets/welcome_step|lib/features/exchange/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
+FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|lib/features/wizard/ui/widgets/welcome_step|features/bull_exchange/lib/src/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
 BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
 
 bull-ui-check: typography-check
@@ -134,8 +134,8 @@ onion-codegen:
 
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
-DRIFT_OWNER_PACKAGES := packages/electrum packages/mempool packages/labels packages/preferences
-BUILD_RUNNER_MEMBERS := features/access features/fees packages/fees features/announcements features/bitcoin_price features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor
+DRIFT_OWNER_PACKAGES := packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
+BUILD_RUNNER_MEMBERS := features/access features/fees packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange
 BUILD_RUNNER_WATCH_MEMBERS := features/fees packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps
 
 .PHONY: drift-owners-build
@@ -166,6 +166,7 @@ translations:
 	@(cd features/announcements && fvm flutter gen-l10n)
 	@(cd features/bitcoin_price && fvm flutter gen-l10n)
 	@(cd features/btc_map && fvm flutter gen-l10n)
+	@(cd features/bull_exchange && fvm flutter gen-l10n)
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@(cd features/signers && fvm flutter gen-l10n)
@@ -213,8 +214,30 @@ hooks:
 drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	fvm dart run drift_dev make-migrations
+	fvm dart run drift_dev schema dump lib/features/swap/data/order_swaps_database.dart lib/features/swap/data/schemas/order_swaps_database/
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
+	@(cd features/announcements && fvm dart run drift_dev make-migrations)
+	@(cd packages/swaps && fvm dart run drift_dev make-migrations)
+
+.PHONY: secrets-drift-migrations
+secrets-drift-migrations:
+	@(cd packages/secrets && fvm dart run drift_dev make-migrations)
+
+.PHONY: wallet-satellite-drift-migrations
+wallet-satellite-drift-migrations:
+	@(cd features/signers && fvm dart run drift_dev make-migrations)
+	@(cd packages/sync && fvm dart run drift_dev make-migrations)
+
+.PHONY: electrum-drift-migrations mempool-drift-migrations labels-drift-migrations
+electrum-drift-migrations:
+	@(cd packages/electrum && fvm dart run drift_dev make-migrations)
+
+mempool-drift-migrations:
+	@(cd packages/mempool && fvm dart run drift_dev make-migrations)
+
+labels-drift-migrations:
+	@(cd packages/labels && fvm dart run drift_dev make-migrations)
 
 .PHONY: recoverbull-drift-migrations
 recoverbull-drift-migrations:

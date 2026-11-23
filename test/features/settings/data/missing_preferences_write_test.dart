@@ -1,3 +1,5 @@
+import 'package:preferences/testing.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -6,6 +8,8 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../../support/preferences_database.dart';
 
 void main() {
   final writes =
@@ -31,8 +35,12 @@ void main() {
     test(
       '${write.key} rejects a missing row without announcing a change',
       () async {
-        final database = SqliteDatabase(NativeDatabase.memory());
-        final preferences = Preferences.open(database: database);
+        final legacy = SqliteDatabase(NativeDatabase.memory());
+        final database = await createPreferencesDatabase();
+        final preferences = PreferencesTesting.fromDatabases(
+          owner: database,
+          legacy: legacy,
+        );
         final notifications = <Object>[];
         final subscriptions = <StreamSubscription<Object>>[
           preferences.currencyChangeStream.listen(notifications.add),
@@ -44,9 +52,10 @@ void main() {
           }
           await preferences.close();
           await database.close();
+          await legacy.close();
         });
-        await database.customSelect('SELECT 1').get();
-        expect(await database.delete(database.settings).go(), 1);
+        expect(await database.delete(database.ownerSettings).go(), 1);
+        expect(await legacy.delete(legacy.settings).go(), 1);
         final result = await write.value(preferences);
         expect(
           result,
@@ -58,7 +67,8 @@ void main() {
         );
         await Future<void>.delayed(Duration.zero);
         expect(notifications, isEmpty);
-        expect(await database.select(database.settings).get(), isEmpty);
+        expect(await database.select(database.ownerSettings).get(), isEmpty);
+        expect(await legacy.select(legacy.settings).get(), isEmpty);
       },
     );
   }

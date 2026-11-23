@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/replace_by_fee/domain/replacement_target.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
@@ -20,7 +20,7 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
-  final WalletTransaction tx;
+  final ReplacementTarget tx;
 
   const ReplaceByFeeHomePage({super.key, required this.tx});
 

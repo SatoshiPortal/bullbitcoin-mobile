@@ -14,7 +14,10 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -50,11 +53,50 @@ import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
+  static final exchangeSettingsHost = ExchangeSettingsHost(
+    exchange: () => locator<Exchange>(),
+    savePreferences: ({language, currency, emailNotificationsEnabled}) =>
+        locator<ExchangeFacade>().savePreferences(
+          language: language,
+          currency: currency,
+          emailNotificationsEnabled: emailNotificationsEnabled,
+        ),
+    refreshSession: ExchangeScope.refreshSession,
+    isLoggedIn: ExchangeScope.isLoggedIn,
+    sessionChanges: ExchangeScope.signedInChanges,
+    isSuperuser: (context) =>
+        context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
+        false,
+    securityUrl: (context) => switch (context.select(
+      (SettingsCubit cubit) => cubit.state.environment,
+    )) {
+      null || Environment.regtest => null,
+      Environment.mainnet => Uri.parse(
+        ApiServiceConstants.bbAuthUrl,
+      ).resolve('/settings'),
+      Environment.testnet => Uri.parse(
+        ApiServiceConstants.bbAuthTestUrl,
+      ).resolve('/settings'),
+    },
+    title: (context) => context.loc.settingsExchangeSettingsTitle,
+    signedOutMessage: (context) => context.loc.notLoggedInMessage,
+    buildAccountActions: (showDeleteAccount) =>
+        ExchangeAccountActions(showDeleteAccount: showDeleteAccount),
+    onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
+    onOpenTransactions: (context) =>
+        context.pushNamed(TransactionsRoute.exchangeTransactions.name),
+    onOpenDefaultWallets: (context) =>
+        context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
+    onOpenExchange: (context) =>
+        context.goNamed(ExchangeRoute.exchangeHome.name),
+  );
+
   static GoRoute route({
     required List<RouteBase> priceRoutes,
     required void Function(BuildContext) onBackupTestSucceeded,
     required List<RouteBase> appSettingsRoutes,
     required List<RouteBase> accessRoutes,
+    required List<RouteBase> exchangeSettingsRoutes,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
@@ -81,8 +123,7 @@ class SettingsRouter {
               ExchangeRoute.exchangeAuth.name,
               queryParameters: {'from': 'settings'},
             ),
-            onOpenAccount: () =>
-                context.pushNamed(ExchangeSettingsRoute.home.name),
+            onOpenAccount: () => ExchangeSettingsRoute.home.open(context),
             onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
@@ -94,26 +135,7 @@ class SettingsRouter {
             QuickActionsSettingsScreen(cubit: locator<QuickActionsCubit>()),
       ),
       DefaultWalletsRouter.route,
-      ...ExchangeSettingsRouter.routes(
-        ExchangeSettingsRouterConfig(
-          isSuperuser: (context) =>
-              context.select(
-                (SettingsCubit cubit) => cubit.state.isSuperuser,
-              ) ??
-              false,
-          isTestnet: (context) => switch (context.select(
-            (SettingsCubit cubit) => cubit.state.environment,
-          )) {
-            null || Environment.regtest => null,
-            final environment => environment.requireHistoricalTestnet(),
-          },
-          onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
-          onOpenTransactions: (context) =>
-              context.pushNamed(TransactionsRoute.exchangeTransactions.name),
-          onOpenDefaultWallets: (context) =>
-              context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
-        ),
-      ),
+      ...exchangeSettingsRoutes,
       GoRoute(
         name: SettingsRoute.walletSettings.name,
         path: SettingsRoute.walletSettings.path,

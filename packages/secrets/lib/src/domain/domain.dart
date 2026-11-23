@@ -7,6 +7,7 @@
 library;
 
 export 'database_key.dart' show DatabaseKey;
+export 'database_open_failure.dart';
 export 'encrypted_vault.dart' show EncryptedVault, VaultKey;
 export 'failures.dart';
 export 'revealed_mnemonic.dart' show RevealedMnemonic, RevealReason;

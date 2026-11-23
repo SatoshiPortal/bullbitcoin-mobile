@@ -65,6 +65,12 @@ final class Bbx {
       log: notificationLog,
     ),
   );
+
+  /// Releases the HTTP transport and notification socket owned by this client.
+  void dispose() {
+    notifications.dispose();
+    _transport.http.close(force: true);
+  }
 }
 
 void _ignoreNotificationLog(

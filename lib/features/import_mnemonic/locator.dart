@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -34,7 +33,6 @@ class ImportMnemonicLocator {
       () => CheckWalletStatusUsecase(
         locator<Preferences>(),
         locator<ElectrumServersPort>(),
-        locator<BitcoinWalletRepository>(),
         locator<Secrets>(),
       ),
     );

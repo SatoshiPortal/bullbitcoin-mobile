@@ -1,3 +1,4 @@
+import 'package:electrum/testing.dart';
 import 'package:drift/native.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/src/domain/electrum_default_endpoints.dart';
@@ -15,7 +16,7 @@ void main() {
   setUp(() {
     database = ElectrumTestDatabase(NativeDatabase.memory());
     addTearDown(database.close);
-    servers = Electrum.open(
+    servers = createElectrumForTesting(
       database: database,
       readPreferences: () => throw StateError('Unexpected preferences read'),
       tor: () => throw StateError('Unexpected Tor access'),

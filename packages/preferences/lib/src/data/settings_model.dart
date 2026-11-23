@@ -1,6 +1,8 @@
 import 'package:preferences/src/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:preferences/settings_table.drift.dart';
+
+import 'owner_settings_table.drift.dart';
+
 import 'package:bull_tor/tor.dart';
 
 class SettingsModel {
@@ -20,8 +22,6 @@ class SettingsModel {
   final AppThemeMode themeMode;
   final bool isErrorReportingEnabled;
   final bool screenCaptureProtectionEnabled;
-  final String? exchangeTestnetBasicAuthUsername;
-  final String? exchangeTestnetBasicAuthPassword;
 
   const SettingsModel({
     required this.id,
@@ -40,34 +40,9 @@ class SettingsModel {
     required this.themeMode,
     required this.isErrorReportingEnabled,
     required this.screenCaptureProtectionEnabled,
-    this.exchangeTestnetBasicAuthUsername,
-    this.exchangeTestnetBasicAuthPassword,
   });
 
-  SettingsRow toSqlite() {
-    return SettingsRow(
-      id: id,
-      environment: environment.name,
-      bitcoinUnit: bitcoinUnit.name,
-      startAmountsInFiat: startAmountsInFiat,
-      language: language.name,
-      currency: currency,
-      hideAmounts: hideAmounts,
-      isSuperuser: isSuperuser,
-      isDevModeEnabled: isDevModeEnabled,
-      useTorProxy: useTorProxy,
-      torProxyPort: torProxyPort,
-      torTransportMode: torTransportMode.name,
-      lastSuccessfulTorTransport: lastSuccessfulTorTransport?.name,
-      themeMode: themeMode.name,
-      isErrorReportingEnabled: isErrorReportingEnabled,
-      screenCaptureProtectionEnabled: screenCaptureProtectionEnabled,
-      exchangeTestnetBasicAuthUsername: exchangeTestnetBasicAuthUsername,
-      exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
-    );
-  }
-
-  factory SettingsModel.fromSqlite(SettingsRow row) {
+  factory SettingsModel.fromSqlite(OwnerSettingsRow row) {
     return SettingsModel(
       id: row.id,
       environment: Environment.fromName(row.environment),
@@ -92,8 +67,6 @@ class SettingsModel {
       themeMode: AppThemeMode.fromName(row.themeMode),
       isErrorReportingEnabled: row.isErrorReportingEnabled,
       screenCaptureProtectionEnabled: row.screenCaptureProtectionEnabled,
-      exchangeTestnetBasicAuthUsername: row.exchangeTestnetBasicAuthUsername,
-      exchangeTestnetBasicAuthPassword: row.exchangeTestnetBasicAuthPassword,
     );
   }
 }

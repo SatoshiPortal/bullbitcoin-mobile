@@ -1,5 +1,4 @@
 import 'package:preferences/preferences.dart' show Preferences;
-import 'package:preferences/preferences_dao.dart';
 import 'package:preferences/testing.dart';
 import 'package:preferences/src/domain/settings_entity.dart';
 import 'package:preferences/src/domain/preferences_failure.dart';

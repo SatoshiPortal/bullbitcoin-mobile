@@ -34,6 +34,7 @@ extension MempoolFailureL10n on MempoolFailure {
       context.loc.mempoolErrorInvalidResponse,
     MempoolValidationNetworkMismatchFailure() =>
       context.loc.mempoolErrorNetworkMismatch,
+    MempoolStorageUnavailableFailure() => context.loc.oopsSomethingWentWrong,
     MempoolUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

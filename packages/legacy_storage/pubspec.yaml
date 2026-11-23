@@ -1,0 +1,20 @@
+name: legacy_storage
+description: Transactional imports from the retired application SQLite database.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: "3.14.0"
+
+resolution: workspace
+
+dependencies:
+  ffi: ^2.2.0
+  drift: ^2.35.4
+  meta: ^1.17.0
+  primitives:
+  sqlite3: ^3.9.1
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.3

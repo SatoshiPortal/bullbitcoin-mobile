@@ -6,13 +6,11 @@ import 'package:sync/sync.dart';
 
 import 'frozen_utxos_freeze_store.drift.dart';
 
-/// User freezes, kept in the published `frozen_utxos` table (schema v15).
-/// Sync reads and changes them through this store from the foreground; no
-/// other code writes the table, so sync's own queue orders every change.
+/// User freezes in the encrypted Labels store. Sync reads and changes them
+/// through this port from the foreground; its queue orders every live change.
 ///
 /// A database that cannot be opened, read or written is an [Err], never an
-/// empty list. Opening it runs its migrations first, so a fresh install reads
-/// the table created empty.
+/// empty list. A fresh install opens the table initialized by owner cutover.
 @DriftAccessor(tables: [FrozenUtxos])
 class FrozenUtxosFreezeStore extends DatabaseAccessor<GeneratedDatabase>
     with $FrozenUtxosFreezeStoreMixin

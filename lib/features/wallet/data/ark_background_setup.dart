@@ -1,4 +1,6 @@
-import 'package:preferences/preferences.dart' show Preferences;
+import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart'
+    show Preferences, PreferencesFailure;
 import 'package:bb_mobile/features/settings/public/language_locale.dart'
     show LanguageExtension;
 
@@ -27,16 +29,44 @@ import 'sqlite_ark_funding_reservations.dart';
 Future<BackgroundTaskHandler> setupArkBackgroundTask(
   BackgroundTaskResources resources,
   Directory documents, {
+  required File preferencesFile,
+  @visibleForTesting
+  Future<Result<Preferences, PreferencesFailure>> Function(
+    File,
+    RuntimeAdmission,
+    SqliteDatabase,
+  )?
+  openPreferences,
   @visibleForTesting
   ArkClient Function(native.ArkExecutionPolicyPort, native.ArkStageBudget)?
   existingClient,
 }) async {
+  final admission = resources.storageAdmission;
+  if (admission == null) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = SqliteDatabase();
-  resources.onClose(sqlite.close);
-  final settings = Preferences.open(database: sqlite);
+  final sqlite = await LegacySourceStore(
+    source: LegacySource(
+      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
+      SqliteDatabase.currentSchemaVersion,
+    ),
+    create: SqliteDatabase.new,
+  ).open(admission);
+  final openedPreferences = openPreferences == null
+      ? await Preferences.open(
+          file: preferencesFile,
+          admission: admission,
+          legacyDatabase: sqlite,
+        )
+      : await openPreferences(preferencesFile, admission, sqlite);
+  if (openedPreferences case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final settings =
+      (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
   resources.onClose(settings.close);
   final language = (await settings.readLanguage()).fold(
     (value) => value,

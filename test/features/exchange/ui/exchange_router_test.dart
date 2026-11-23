@@ -4,7 +4,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -39,7 +40,7 @@ void main() {
     (tester) async {
       var checks = 0;
       final router = GoRouter(
-        initialLocation: ExchangeRoute.exchangeLanding.path,
+        initialLocation: BullExchangeNavigation.landingPath,
         routes: [
           GoRoute(path: '/home', builder: (_, _) => const Text('home')),
           ...ExchangeRouter.routes(

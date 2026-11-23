@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart';
 
-import '../exchange_failure.dart';
+import 'package:exchange/exchange.dart';
+
 import '../repositories/exchange_access_repository.dart';
 import '../repositories/exchange_auth_repository.dart';
 

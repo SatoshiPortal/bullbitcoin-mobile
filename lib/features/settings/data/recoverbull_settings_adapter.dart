@@ -8,12 +8,12 @@ import 'package:bull_tor/tor.dart';
 
 import '../domain/regtest_recoverbull_profile.dart';
 
-/// Settings owns environment selection, proxy preference and the legacy row.
+/// Settings owns environment selection, proxy preference and live consent.
 final class RecoverBullSettingsAdapter
     implements
         RecoverBullRoutePort,
         RecoverBullEnvironmentPort,
-        RecoverBullLegacySettingsPort {
+        RecoverBullPermissionPort {
   final Preferences _settings;
   final RecoverBullPreferences _preferences;
   final EmbeddedTor _embedded;
@@ -39,14 +39,50 @@ final class RecoverBullSettingsAdapter
                 settings.isDevModeEnabled == true));
   }
 
+  Uri get configuredServer =>
+      regtestProfile?.server ?? Uri.parse(recoverBullDefaultServerUrl);
+
+  @override
+  Future<Result<({bool granted, int revision}), RecoverBullFailure>>
+  readPermission() async {
+    if (!await _runtimeIsCurrent()) {
+      return const Err(VaultContextChangedFailure());
+    }
+    final permission = await _preferences.readState(
+      regtest: regtestProfile != null,
+    );
+    if (!await _runtimeIsCurrent()) {
+      return const Err(VaultContextChangedFailure());
+    }
+    return switch (permission) {
+      Ok(value: final value?) => Ok(value),
+      _ => const Err(VaultStorageFailure()),
+    };
+  }
+
+  @override
+  Future<Result<void, RecoverBullFailure>> savePermission(bool granted) async {
+    if (!await _runtimeIsCurrent()) {
+      return const Err(VaultContextChangedFailure());
+    }
+    final saved = await _preferences.setPermission(
+      granted,
+      regtest: regtestProfile != null,
+    );
+    return saved.mapErr(
+      (failure) => failure is PreferencesContextChangedFailure
+          ? const VaultContextChangedFailure()
+          : const VaultStorageFailure(),
+    );
+  }
+
   Future<bool> _runtimeIsCurrent() async {
     if (_closed) return false;
     try {
-      final settings = (await _settings.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      return !_closed && _matchesRuntime(settings);
+      return switch (await _settings.fetch()) {
+        Ok(:final value) => !_closed && _matchesRuntime(value),
+        Err() => false,
+      };
     } on Exception {
       return false;
     }
@@ -65,52 +101,6 @@ final class RecoverBullSettingsAdapter
       return Ok(BitcoinNetwork.fromName(settings.environment.name));
     } on Exception {
       log.warning('recoverbull.environment.read.failed');
-      return const Err(VaultStorageFailure());
-    }
-  }
-
-  @override
-  Future<Result<LegacyBackupSettings, RecoverBullFailure>> read() async {
-    try {
-      final settings = (await _settings.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      if (!_matchesRuntime(settings)) {
-        return const Err(VaultContextChangedFailure());
-      }
-      final profile = regtestProfile;
-      if (profile != null) {
-        return Ok(
-          LegacyBackupSettings(
-            server: profile.server,
-            permissionGranted: false,
-          ),
-        );
-      }
-      final stored = await _preferences.read();
-      final RecoverBullServerPreference? preference;
-      switch (stored) {
-        case Ok(:final value):
-          preference = value;
-        case Err(failure: PreferencesInvalidFailure()):
-          return const Err(VaultInvalidFailure());
-        case Err():
-          return const Err(VaultStorageFailure());
-      }
-      if (preference == null) return const Err(VaultStorageFailure());
-      return Ok(
-        LegacyBackupSettings(
-          server: preference.server,
-          permissionGranted: preference.permissionGranted,
-        ),
-      );
-    } on FormatException {
-      return const Err(VaultInvalidFailure());
-    } on ArgumentError {
-      return const Err(VaultInvalidFailure());
-    } on Exception {
-      log.warning('recoverbull.legacy.read.failed');
       return const Err(VaultStorageFailure());
     }
   }

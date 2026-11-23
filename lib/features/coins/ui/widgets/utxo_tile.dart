@@ -1,9 +1,9 @@
+import 'package:sync/sync.dart' show Keychain;
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -186,7 +186,7 @@ class UtxoTile extends StatelessWidget {
 
   Widget _keychainBadge(BuildContext context) {
     final colors = context.bull;
-    final isReceive = utxo.addressKeyChain == WalletAddressKeyChain.external;
+    final isReceive = utxo.addressKeyChain == Keychain.external;
     // Receive = bitcoin-orange text on orange@14%; Change = muted on muted@16%.
     final accent = isReceive ? colors.bitcoinOrange : colors.textMuted;
     return BullBadge(

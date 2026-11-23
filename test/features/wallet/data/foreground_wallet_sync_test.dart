@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -17,20 +18,18 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -53,6 +52,8 @@ class _Catalog extends Mock implements WalletCatalogPort {}
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _History extends Mock implements WalletHistoryDatasource {}
 
 final class _Policy implements WalletConnectionPort {
   SyncFailure? failure;
@@ -90,7 +91,6 @@ void main() {
     signer: Signer.none,
     isDefault: false,
   );
-  registerFallbackValue(WalletModel.fromMetadata(row));
   registerFallbackValue(row);
   registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
   late Directory directory;
@@ -108,8 +108,8 @@ void main() {
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
     when(() => metadata.store(any())).thenAnswer((_) async {});
     when(() => metadata.insert(any())).thenAnswer((_) async {});
-    when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
-      (_) async => BalanceModel(
+    when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
+      (_) async => Balances(
         confirmedSat: BigInt.zero,
         immatureSat: BigInt.zero,
         trustedPendingSat: BigInt.zero,
@@ -265,7 +265,7 @@ void main() {
       final result = await repository.getCustodyFingerprints();
       expect(result, isA<Ok>());
       expect((result as Ok).value, {Fingerprint('aabbccdd')});
-      verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
+      verifyNever(() => values.getBalance(key: any(named: 'key')));
     },
   );
 
@@ -297,11 +297,11 @@ void main() {
     () async {
       final other = row.copyWith(id: 'wpkh([11223344/84h/1h/0h])');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row, other]);
-      when(() => values.getBalance(wallet: any(named: 'wallet')))
+      when(() => values.getBalance(key: any(named: 'key')))
           .thenAnswer((invocation) async {
-            final model = invocation.namedArguments[#wallet] as WalletModel;
-            if (model.id == id) throw const FileSystemException('unavailable');
-            return BalanceModel(
+            final key = invocation.namedArguments[#key] as WalletKey;
+            if (key.id == id) throw const FileSystemException('unavailable');
+            return Balances(
               confirmedSat: BigInt.one,
               immatureSat: BigInt.zero,
               trustedPendingSat: BigInt.zero,
@@ -350,7 +350,7 @@ void main() {
         .execute(wallet);
     try {
       await started;
-      verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
+      verifyNever(() => values.getBalance(key: any(named: 'key')));
     } finally {
       gate.complete();
       await syncing;
@@ -553,14 +553,13 @@ void main() {
   });
 
   test('transaction reads delegate sync to the same operation', () async {
-    when(
-      () =>
-          values.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
-    ).thenAnswer((_) async => []);
+    final history = _History();
+    when(() => history.getTransactions(key: any(named: 'key'), toAddress: null))
+        .thenAnswer((_) async => []);
     final transactions = WalletTransactionRepositoryImpl(
       walletMetadataDatasource: metadata,
       labelsFacade: _Labels(),
-      walletValuesDatasource: values,
+      history: history,
       synchronize: bridge.synchronize,
     );
     expect(
@@ -569,8 +568,7 @@ void main() {
     );
     expect(policy.calls, 1);
     verify(
-      () =>
-          values.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
+      () => history.getTransactions(key: any(named: 'key'), toAddress: null),
     ).called(1);
   });
 
@@ -609,7 +607,7 @@ void main() {
       (await log.readLogs()).join('\n'),
       isNot(contains('Wallet read failed')),
     );
-    verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
+    verifyNever(() => values.getBalance(key: any(named: 'key')));
   });
   test(
     'descriptor import persists catalog then creates offline before sync',
@@ -637,15 +635,15 @@ void main() {
       });
       when(() => native.create(any())).thenAnswer((_) async {
         verify(() => metadata.insert(any())).called(1);
-        verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
+        verifyNever(() => values.getBalance(key: any(named: 'key')));
         provisioned = true;
         return const Ok(null);
       });
       var synchronized = false;
       final originalBalance = await values.getBalance(
-        wallet: WalletModel.fromMetadata(row),
+        key: WalletCatalogPortImpl.keyFromMetadata(row),
       );
-      when(() => values.getBalance(wallet: any(named: 'wallet')))
+      when(() => values.getBalance(key: any(named: 'key')))
           .thenAnswer((_) async {
             expect(provisioned, isTrue);
             return originalBalance;
@@ -681,7 +679,7 @@ void main() {
       );
       expect(synchronized, isTrue);
       expect(wallet.id, id);
-      verify(() => values.getBalance(wallet: any(named: 'wallet'))).called(1);
+      verify(() => values.getBalance(key: any(named: 'key'))).called(1);
     },
   );
 }

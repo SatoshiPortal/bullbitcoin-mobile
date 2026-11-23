@@ -26,3 +26,10 @@ export 'src/domain/repositories/electrum_transaction_repository.dart';
 export 'src/domain/entities/electrum_settings.dart';
 export 'src/domain/ports/server_status_port.dart';
 export 'src/domain/usecases/load_electrum_server_data_usecase.dart';
+
+export 'src/electrum.dart'
+    show
+        createElectrumForTesting,
+        clearElectrumCacheForTesting,
+        hasCachedElectrumTransactionForTesting;
+export 'src/data/electrum_import.dart' show createElectrumImportForTesting;

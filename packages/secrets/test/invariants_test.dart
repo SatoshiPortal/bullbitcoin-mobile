@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The package's custody invariants, as assertions rather than prose.
@@ -27,6 +28,30 @@ List<ImportDirective> _forbiddenDomainBip39Imports(String source) {
     if (!languageOnly) forbidden.add(directive);
   }
   return forbidden;
+}
+
+final class _FailureConstructions extends RecursiveAstVisitor<void> {
+  final Set<String> failures;
+  final names = <String>{};
+
+  _FailureConstructions(this.failures);
+
+  void _record(String name) {
+    if (failures.contains(name)) names.add(name);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    _record(node.constructorName.type.name.lexeme);
+    super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    // Before resolution, an implicit constructor call is a method invocation.
+    if (node.target == null) _record(node.methodName.name);
+    super.visitMethodInvocation(node);
+  }
 }
 
 void main() {
@@ -57,7 +82,7 @@ void main() {
     final failures = RegExp(r'final class (\w+Failure) extends SecretFailure')
         .allMatches(read('lib/src/domain/failures.dart'))
         .map((m) => m.group(1)!)
-        .toList();
+        .toSet();
     expect(failures, isNotEmpty, reason: 'no failures found to check');
 
     const allowed = {
@@ -70,13 +95,10 @@ void main() {
     final offenders = <String>[];
     for (final file in sources) {
       if (allowed.contains(file.path)) continue;
-      final body = code(file.readAsStringSync());
-      for (final failure in failures) {
-        // `Name(` is a construction. `Name.new` (a reference handed to
-        // the boundary) and `Name` in a type position are not.
-        if (RegExp('\\b$failure\\(').hasMatch(body)) {
-          offenders.add('${file.path}: $failure(');
-        }
+      final constructions = _FailureConstructions(failures);
+      parseString(content: file.readAsStringSync()).unit.accept(constructions);
+      for (final failure in constructions.names) {
+        offenders.add('${file.path}: $failure(');
       }
     }
     expect(offenders, isEmpty);
@@ -320,6 +342,14 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseKey',
       'SecretInfo',
       'SecretKind',
+      // database open results
+      'DatabaseOpenFailure',
+      'DatabaseKeyProblem',
+      'DatabaseKeyUnavailable',
+      'DatabaseFileProblem',
+      'DatabaseFileUnavailable',
+      'DatabaseCipherUnavailable',
+      'DatabaseNotReady',
       // the failure family
       'SecretFailure',
       'SecretAlreadyExistsFailure',

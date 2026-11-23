@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
+    show WalletSpendBlockedException;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:sync/sync.dart'
@@ -7,7 +9,7 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure;
 import 'package:sync/sync.dart' show BitcoinTx;
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';

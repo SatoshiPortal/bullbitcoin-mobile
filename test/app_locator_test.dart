@@ -1,3 +1,7 @@
+import 'package:labels/testing.dart';
+import 'package:electrum/testing.dart';
+import 'package:preferences/testing.dart';
+import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
@@ -11,6 +15,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
 import 'features/wallet/data/ark_funding_test_fixture.dart';
+import 'support/owner_databases.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
@@ -32,8 +37,19 @@ import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:preferences/preferences.dart';
 import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'support/preferences_database.dart';
+
+Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
+  SqliteDatabase legacy,
+) async {
+  final owner = await createPreferencesDatabase(copySettingsFrom: legacy);
+  addTearDown(owner.close);
+  return Ok(PreferencesTesting.fromDatabases(owner: owner, legacy: legacy));
+}
 
 class _SecureStorage extends FakeSecureStoragePlatform {
   final Fingerprint parent;
@@ -95,6 +111,7 @@ void main() {
           InMemorySharedPreferencesAsync.empty();
       database = SqliteDatabase(NativeDatabase.memory());
       locator = GetIt.asNewInstance();
+      registerTestOwnerDatabases(locator);
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     });
     tearDown(() async {
@@ -114,7 +131,28 @@ void main() {
         await AppLocator.setup(
           locator,
           database,
-          payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
+          openLabels: (sync, openWallet) async => Ok(
+            createLabelsForTesting(
+              database: database,
+              sync: sync,
+              openWallet: openWallet,
+            ),
+          ),
+          openElectrum: (readPreferences, tor) async => Ok(
+            createElectrumForTesting(
+              database: database,
+              readPreferences: readPreferences,
+              tor: tor,
+            ),
+          ),
+          openPreferences: _openTestPreferences,
+          openMempool: (tor, http) async => Ok(
+            createMempoolForTesting(
+              database: database,
+              tor: tor,
+              torHttp: http,
+            ),
+          ),
           arkFundingDatabasePath: '${directory.path}/ark-funding.sqlite',
           initializeArkFunding: initialize,
           startPayjoinRecovery: false,
@@ -327,6 +365,7 @@ void main() {
           InMemorySharedPreferencesAsync.empty();
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
+      registerTestOwnerDatabases(locator);
       final nativeTor = _NativeTor();
       locator.registerSingleton<TorNativeInitializer>(nativeTor);
       var composed = false;
@@ -346,7 +385,24 @@ void main() {
       final result = await AppLocator.setup(
         locator,
         database,
-        payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
+        openLabels: (sync, openWallet) async => Ok(
+          createLabelsForTesting(
+            database: database,
+            sync: sync,
+            openWallet: openWallet,
+          ),
+        ),
+        openElectrum: (readPreferences, tor) async => Ok(
+          createElectrumForTesting(
+            database: database,
+            readPreferences: readPreferences,
+            tor: tor,
+          ),
+        ),
+        openPreferences: _openTestPreferences,
+        openMempool: (tor, http) async => Ok(
+          createMempoolForTesting(database: database, tor: tor, torHttp: http),
+        ),
         startPayjoinRecovery: false,
         startOrderSwapWatcher: false,
         startAutoswapWatcher: false,
@@ -384,6 +440,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final database = SqliteDatabase(NativeDatabase.memory());
     final locator = GetIt.asNewInstance();
+    registerTestOwnerDatabases(locator);
     locator.registerSingleton<TorNativeInitializer>(_NativeTor());
     addTearDown(() async {
       await locator.reset();
@@ -409,7 +466,24 @@ void main() {
     final result = await AppLocator.setup(
       locator,
       database,
-      payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
+      openLabels: (sync, openWallet) async => Ok(
+        createLabelsForTesting(
+          database: database,
+          sync: sync,
+          openWallet: openWallet,
+        ),
+      ),
+      openElectrum: (readPreferences, tor) async => Ok(
+        createElectrumForTesting(
+          database: database,
+          readPreferences: readPreferences,
+          tor: tor,
+        ),
+      ),
+      openPreferences: _openTestPreferences,
+      openMempool: (tor, http) async => Ok(
+        createMempoolForTesting(database: database, tor: tor, torHttp: http),
+      ),
       startPayjoinRecovery: false,
       startOrderSwapWatcher: false,
       startAutoswapWatcher: false,

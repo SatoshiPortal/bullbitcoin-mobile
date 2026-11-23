@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
@@ -10,11 +10,9 @@ import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_use
 import 'package:bb_mobile/features/recipients/domain/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/data/bbx_api_virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/interac_security_details_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
@@ -45,16 +43,6 @@ class RecipientsLocator {
         ),
         bullBitcoinTestnetApiClient: BbxApiRecipientsRepository(
           api: locator<Bbx>(instanceName: 'testnetBbxApiClientWithoutTimeout'),
-        ),
-      ),
-    );
-    locator.registerLazySingleton<VirtualIbanRepository>(
-      () => BbxApiVirtualIbanRepository(
-        mainnet: locator<Bbx>(
-          instanceName: 'mainnetBbxApiClientWithoutTimeout',
-        ),
-        testnet: locator<Bbx>(
-          instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
       ),
     );
@@ -111,7 +99,7 @@ class RecipientsLocator {
     locator.registerFactory<GetConfidentialSepaAvailabilityUsecase>(
       () => GetConfidentialSepaAvailabilityUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        virtualIbanRepository: locator<VirtualIbanRepository>(),
+        virtualIbans: locator<Exchange>().virtualIbans,
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),
@@ -125,11 +113,10 @@ class RecipientsLocator {
     );
     locator.registerFactory<WatchVirtualIbanUsecase>(
       () => WatchVirtualIbanUsecase(
-        virtualIbanRepository: locator<VirtualIbanRepository>(),
+        virtualIbans: locator<Exchange>().virtualIbans,
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
-        exchangeNotificationRepository:
-            locator<ExchangeNotificationRepository>(),
+        notifications: locator<Exchange>().notifications,
       ),
     );
     locator.registerFactory<WatchSepaVirtualPayeeActivationUsecase>(

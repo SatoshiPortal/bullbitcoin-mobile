@@ -2,12 +2,12 @@ import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/data/wallet_address_repository_impl.dart';
+import 'package:sync/sync.dart' show AddressBook, Keychain, DerivedAddress;
+import 'package:sync/testing.dart' show testWallet;
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,8 +15,6 @@ import 'package:mocktail/mocktail.dart';
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
-
-class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 class _Labels extends Mock implements Labels {}
 
@@ -38,10 +36,9 @@ void main() {
         signer: Signer.none,
         isDefault: false,
       );
-      registerFallbackValue(WalletModel.fromMetadata(row));
+      final key = WalletCatalogPortImpl.keyFromMetadata(row);
       final metadata = _Metadata();
       final native = _Native();
-      final liquid = _Values();
       final labels = _Labels();
       when(() => metadata.fetch(id)).thenAnswer((_) async => row);
       when(
@@ -49,28 +46,28 @@ void main() {
           WalletCatalogPortImpl.keyFromMetadata(row),
         ),
       ).thenAnswer((_) async => const Ok(7));
-      when(() => liquid.getLastAddressIndex(wallet: any(named: 'wallet')))
-          .thenAnswer((_) async => 0);
-      when(
-        () => liquid.getAddressByIndex(
-          any(),
-          wallet: any(named: 'wallet'),
-          isChange: any(named: 'isChange'),
+      final wallet = await testWallet(
+        key: key,
+        addresses: AddressBook(
+          receiveIndex: 0,
+          changeIndex: null,
+          receive: [
+            for (var index = 0; index <= 7; index++)
+              DerivedAddress(
+                keychain: Keychain.external,
+                index: index,
+                address: 'confidential$index',
+              ),
+          ],
+          change: [],
         ),
-      ).thenAnswer((call) async {
-        final index = call.positionalArguments.first as int;
-        return 'confidential$index';
-      });
-      when(() => liquid.getTransactions(wallet: any(named: 'wallet')))
-          .thenAnswer((_) async => []);
-      when(() => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')))
-          .thenAnswer((_) async => {});
+      );
       when(() => labels.fetch(reference: any(named: 'reference')))
           .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
-      final repository = WalletAddressRepository(
+      final repository = WalletAddressRepositoryImpl(
         native: native,
         walletMetadataDatasource: metadata,
-        walletValuesDatasource: liquid,
+        loadWallet: (_) async => Ok(wallet),
         labelsFacade: labels,
       );
       final addresses = await repository.getGeneratedReceiveAddresses(

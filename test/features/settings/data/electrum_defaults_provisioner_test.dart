@@ -495,7 +495,7 @@ void main() {
               ),
             );
       }
-      final electrum = Electrum.open(
+      final electrum = createElectrumForTesting(
         database: database,
         readPreferences: readPreferences,
         tor: () => throw StateError('Catalog reads must not open Tor'),

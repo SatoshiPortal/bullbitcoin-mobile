@@ -3,7 +3,8 @@ import 'package:announcements/src/domain/announcements_failure.dart';
 import 'package:announcements/src/domain/entities/announcement.dart';
 import 'package:announcements/src/domain/entities/announcement_catalog.dart';
 import 'package:meta/meta.dart';
-import 'package:preferences/preferences.dart' show AnnouncementDismissals;
+
+import '../announcement_dismissals.dart';
 
 /// Orchestrates which announcements are currently visible on the home carousel.
 ///
@@ -22,35 +23,31 @@ class GetVisibleAnnouncementsUsecase {
   Future<Result<List<Announcement>, AnnouncementsFailure>> execute() async {
     final result = await _dismissals.read();
     try {
-      return result
-          .mapErr<AnnouncementsFailure>(
-            (failure) => AnnouncementStorageFailure(failure.logMessage),
-          )
-          .map((dismissals) {
-            final signals = AnnouncementSignals(
-              isAppUpdateRequired: _isAppUpdateRequired(),
-            );
-            final dismissedAtById = {
-              for (final d in dismissals) d.id: d.dismissedAt,
-            };
-            final now = DateTime.now().toUtc();
+      return result.map((dismissals) {
+        final signals = AnnouncementSignals(
+          isAppUpdateRequired: _isAppUpdateRequired(),
+        );
+        final dismissedAtById = {
+          for (final d in dismissals) d.id: d.dismissedAt,
+        };
+        final now = DateTime.now().toUtc();
 
-            final visible = <Announcement>[];
-            for (final entry in announcementCatalog) {
-              if (!entry.triggersFor(signals)) continue;
+        final visible = <Announcement>[];
+        for (final entry in announcementCatalog) {
+          if (!entry.triggersFor(signals)) continue;
 
-              final dismissedAt = dismissedAtById[entry.announcement.id.name];
-              final suppressed =
-                  dismissedAt != null &&
-                  entry.announcement.isSuppressedBy(dismissedAt, now: now);
-              if (suppressed) continue;
+          final dismissedAt = dismissedAtById[entry.announcement.id.name];
+          final suppressed =
+              dismissedAt != null &&
+              entry.announcement.isSuppressedBy(dismissedAt, now: now);
+          if (suppressed) continue;
 
-              visible.add(entry.announcement);
-            }
+          visible.add(entry.announcement);
+        }
 
-            visible.sort((a, b) => a.priority.compareTo(b.priority));
-            return visible;
-          });
+        visible.sort((a, b) => a.priority.compareTo(b.priority));
+        return visible;
+      });
     } on Exception catch (error) {
       return Err(AnnouncementUnexpectedFailure(error.runtimeType.toString()));
     }

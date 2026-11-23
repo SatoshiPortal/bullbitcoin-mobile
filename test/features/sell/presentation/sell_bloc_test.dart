@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
@@ -18,7 +17,7 @@ import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';

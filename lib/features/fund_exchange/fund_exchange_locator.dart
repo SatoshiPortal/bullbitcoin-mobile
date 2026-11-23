@@ -1,21 +1,15 @@
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:preferences/preferences.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/exchange_environment_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/data/settings_exchange_environment_adapter.dart';
 import 'package:bb_mobile/features/fund_exchange/data/url_launcher_external_link_adapter.dart';
-import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/data/funding_repository_impl.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
-import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:get_it/get_it.dart';
 
 class FundExchangeLocator {
@@ -26,45 +20,24 @@ class FundExchangeLocator {
   }
 
   static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<ExchangeEnvironmentPort>(
-      () => SettingsExchangeEnvironmentAdapter(
-        getSettingsUsecase: locator<Preferences>(),
-      ),
-    );
-
     locator.registerLazySingleton<ExternalLinkPort>(
       () => const UrlLauncherExternalLinkAdapter(),
-    );
-
-    locator.registerLazySingleton<FundingRepository>(
-      () => FundingRepositoryImpl(
-        bullbitcoinFundingRepository: BbxApiFundingRepository(
-          api: locator<Bbx>(instanceName: 'mainnetBbxApiClientWithoutTimeout'),
-        ),
-        bullBitcoinTestnetFundingRepository: BbxApiFundingRepository(
-          api: locator<Bbx>(instanceName: 'testnetBbxApiClientWithoutTimeout'),
-        ),
-        exchangeEnvironment: locator<ExchangeEnvironmentPort>(),
-      ),
     );
   }
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<ListFundingInstitutionsUsecase>(
-      () => ListFundingInstitutionsUsecase(
-        fundingRepository: locator<FundingRepository>(),
-      ),
+      () =>
+          ListFundingInstitutionsUsecase(funding: locator<Exchange>().funding),
     );
 
     locator.registerFactory<GetFundingDetailsUsecase>(
-      () => GetFundingDetailsUsecase(
-        fundingRepository: locator<FundingRepository>(),
-      ),
+      () => GetFundingDetailsUsecase(funding: locator<Exchange>().funding),
     );
 
     locator.registerFactory<RegisterResponsibilityConsentUsecase>(
       () => RegisterResponsibilityConsentUsecase(
-        fundingRepository: locator<FundingRepository>(),
+        funding: locator<Exchange>().funding,
       ),
     );
 

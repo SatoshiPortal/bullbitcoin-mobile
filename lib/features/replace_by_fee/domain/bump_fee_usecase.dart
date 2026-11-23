@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart'
+    show WalletSpendBlockedException;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletSpendBlockedException, BitcoinSpendStatus;
+    show BitcoinSpendStatus;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';
@@ -9,8 +11,8 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' hide Network;
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BitcoinWalletRepository;
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:sync/sync.dart'
     show
@@ -79,11 +81,11 @@ class BumpFeeUsecase {
       final status = await _bitcoinWalletRepository
           .getTransactionSignatureStatus(walletId: walletId, txid: txid);
       return switch (status) {
-        TransactionSignatureStatus.valid => const Ok(null),
-        TransactionSignatureStatus.invalid => const Err(
+        SignatureCheck.valid => const Ok(null),
+        SignatureCheck.invalid => const Err(
           ReplaceByFeeManipulatedTransactionFailure(),
         ),
-        TransactionSignatureStatus.unverifiable => const Err(
+        SignatureCheck.unverifiable => const Err(
           ReplaceByFeeUnverifiableTransactionFailure(),
         ),
       };

@@ -1,3 +1,5 @@
+import 'package:legacy_storage/coordination.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -65,6 +67,14 @@ final class BackgroundTaskResources {
   final Stopwatch _clock =
       Zone.current[_invocationClockKey] as Stopwatch? ?? (Stopwatch()..start());
   bool _closed = false;
+  final LifecycleAdmission? _admission;
+
+  BackgroundTaskResources({this._admission});
+
+  RuntimeAdmission? get storageAdmission => switch (_admission) {
+    RuntimeAdmission admission => admission,
+    _ => null,
+  };
 
   Duration get remainingBudget {
     final remaining = backgroundRunBudget - _clock.elapsed;
@@ -75,7 +85,15 @@ final class BackgroundTaskResources {
 
   void onClose(FutureOr<void> Function() dispose) {
     if (_closed) throw StateError('Background resources already closed');
-    _cleanup.add(dispose);
+    final admission = _admission;
+    if (admission == null) {
+      _cleanup.add(dispose);
+    } else {
+      final handle = admission.track(() async {
+        await dispose();
+      });
+      _cleanup.add(handle.close);
+    }
   }
 
   /// Closes in reverse order of acquisition, attempting every close.
@@ -94,6 +112,12 @@ final class BackgroundTaskResources {
       }
     }
     _cleanup.clear();
+    try {
+      await _admission?.close();
+    } catch (error, stack) {
+      firstFailure ??= error;
+      firstStack ??= stack;
+    }
     if (firstFailure != null && firstStack != null) {
       Error.throwWithStackTrace(firstFailure, firstStack);
     }
@@ -120,8 +144,9 @@ final class BackgroundTaskRunner {
     required BackgroundTaskLoggerPort logger,
     required BackgroundSyncIntervalRepository intervals,
     required Map<BackgroundTask, BackgroundTaskSetup> tasks,
+    RuntimeAdmission? admission,
   }) async {
-    final resources = BackgroundTaskResources();
+    final resources = BackgroundTaskResources(admission: admission);
     try {
       final setup = tasks[task];
       final handlers = <BackgroundTask, BackgroundTaskHandler>{};
@@ -173,8 +198,8 @@ final class BackgroundTaskRunner {
       'elapsed_ms=${stopwatch.elapsedMilliseconds}',
     );
 
-    // A failed flush or dispose does not undo what the task did: the next run
-    // opens everything again, so the task's own result stands.
+    // Logging failure does not change completed work. Resource cleanup failure
+    // requires retry: a quarantined admission may still own live handles.
     try {
       await logger.flush();
     } catch (error) {
@@ -184,6 +209,7 @@ final class BackgroundTaskRunner {
       await onFinished?.call();
     } catch (error) {
       _warning('Background task cleanup failed type=${error.runtimeType}');
+      return const BackgroundTaskExecutionResult.retry();
     }
     return result;
   }

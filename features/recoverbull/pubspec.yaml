@@ -23,6 +23,7 @@ dependencies:
   file_system:
   google_drive:
   secrets:
+  legacy_storage:
   bull_logger:
   bull_tor:
   bull_ui:

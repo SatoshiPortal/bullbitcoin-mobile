@@ -6,23 +6,23 @@ import 'package:primitives/primitives.dart' as primitives show Network;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:labels/storage.dart';
+import 'package:labels/labels.dart';
+import 'package:labels/migration.dart';
+import 'package:labels/setup.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
-import 'package:drift/drift.dart' show driftRuntimeOptions;
-import 'package:drift/native.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,7 +33,7 @@ import 'funded_testnet_wallet.dart';
 //
 // Covers the §7.1 acceptance criteria:
 //   1. Freeze persists across restart — freeze an outpoint, re-init the
-//      locator/SqliteDatabase, the outpoint is still frozen. Funds-free: this
+//      encrypted Labels owner, the outpoint is still frozen. Funds-free: this
 //      is the load-bearing persistence guarantee and runs anywhere.
 //   2. A frozen coin is never spent — freeze a real wallet outpoint, have
 //      PrepareBitcoinSendUsecase build a PSBT, assert the frozen outpoint is
@@ -68,44 +68,73 @@ Future<void> main({bool isInitialized = false}) async {
     tearDown(clear);
 
     test('freeze is durable across a restart', () async {
-      // A dedicated documents directory and database file, isolated from the
-      // app's own Sync and SqliteDatabase: freeze through one pair, close
-      // both, then reopen a second pair on the same files, which only sees
-      // what was committed to disk. Drift's "multiple databases" warning
-      // targets instances sharing a QueryExecutor; these use separate
-      // executors and never overlap, so it is silenced for this test only.
-      final previousWarnFlag =
-          driftRuntimeOptions.dontWarnAboutMultipleDatabases;
-      driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-      addTearDown(
-        () => driftRuntimeOptions.dontWarnAboutMultipleDatabases =
-            previousWarnFlag,
-      );
       final dir = await Directory.systemTemp.createTemp('coins_restart');
       addTearDown(() => dir.delete(recursive: true));
-      final dbFile = File('${dir.path}/restart.sqlite');
-      sync.Sync open(SqliteDatabase db) => sync.Sync.foreground(
-        documentsDirectory: dir.path,
-        catalog: const _NoCatalog(),
-        reservedAddresses: const _NoReserved(),
-        freezes: FrozenUtxosFreezeStore(database: db),
-        inputReservations: _NoInputReservations(),
-        connections: const _NoConnections(),
+      final dbFile = File('${dir.path}/labels.sqlite');
+      final gate = NativeFileGate(File('${dir.path}/labels.lock'));
+      final exclusive = await gate.acquire(
+        exclusive: true,
+        timeout: Duration.zero,
+      ) as ExclusiveAdmission;
+      try {
+        final prepared = await LabelsImport(file: dbFile)
+            .prepare(exclusive, OwnerOrigin.fresh);
+        final owner = switch (prepared) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('prepare Labels: ${failure.runtimeType}'),
+        };
+        expect(await owner.initializeFresh(), isA<Ok>());
+      } finally {
+        await exclusive.close();
+      }
+
+      Future<T> withReopenedLabels<T>(
+        Future<T> Function(SyncFreezesDatasource) action,
+      ) async {
+        final admission = await gate.acquire(
+          exclusive: false,
+          timeout: Duration.zero,
+        ) as RuntimeAdmission;
+        try {
+          late final sync.Sync runtime;
+          final opened = await Labels.open(
+            file: dbFile,
+            admission: admission,
+            sync: () async => runtime,
+            openWallet: (_) async => fail('no wallet needed for freezes'),
+          );
+          final labels = switch (opened) {
+            Ok(:final value) => value,
+            Err(:final failure) => fail('open Labels: ${failure.runtimeType}'),
+          };
+          runtime = sync.Sync.foreground(
+            documentsDirectory: dir.path,
+            catalog: const _NoCatalog(),
+            reservedAddresses: const _NoReserved(),
+            freezes: labels.freezes,
+            inputReservations: _NoInputReservations(),
+            connections: const _NoConnections(),
+          );
+          try {
+            return await action(
+              SyncFreezesDatasource(sync: () async => runtime),
+            );
+          } finally {
+            await runtime.close();
+          }
+        } finally {
+          await admission.close();
+        }
+      }
+
+      await withReopenedLabels(
+        (freezes) => freezes.freezeAttributed([
+          sync.FrozenOutpoint(outpoint, origin: walletId),
+        ]),
       );
-
-      final beforeDb = SqliteDatabase(NativeDatabase(dbFile));
-      final before = open(beforeDb);
-      await SyncFreezesDatasource(sync: () async => before)
-          .freezeAttributed([sync.FrozenOutpoint(outpoint, origin: walletId)]);
-      await before.close();
-      await beforeDb.close();
-
-      final afterDb = SqliteDatabase(NativeDatabase(dbFile));
-      addTearDown(afterDb.close);
-      final after = open(afterDb);
-      addTearDown(after.close);
-      final afterRestart = await SyncFreezesDatasource(sync: () async => after)
-          .getFrozenOutpoints();
+      final afterRestart = await withReopenedLabels(
+        (freezes) => freezes.getFrozenOutpoints(),
+      );
 
       expect(
         afterRestart,

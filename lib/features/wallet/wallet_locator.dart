@@ -1,22 +1,21 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:primitives/primitives.dart';
 
 import 'data/ark_installation_state.dart';
+
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
-import 'domain/usecases/get_receive_address_usecase.dart';
-import 'domain/usecases/get_transfer_receive_address_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show SqliteArkFundingReservations;
 
-import 'domain/usecases/next_unused_receive_address_usecase.dart';
-
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-
 import 'data/sqlite_parent_custody_admission.dart';
-import 'data/broadcast_observation_follow_up.dart';
+
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BroadcastObservationFollowUp;
+
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
@@ -30,18 +29,16 @@ import 'data/payment_notifications.dart';
 import 'data/wallet_payment_observer.dart';
 
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
-import 'package:labels/storage.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
@@ -66,7 +63,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_u
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -80,7 +77,16 @@ import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 
 class WalletLocator {
-  static void setup(GetIt locator) {
+  static void setup(
+    GetIt locator, {
+    Future<Result<String, WalletDiscoveryFailure>> Function(String)?
+    receiveAddress,
+    Future<Result<String, WalletFailure>> Function(
+      String, {
+      Set<String> excludedAddresses,
+    })?
+    nextReceiveAddress,
+  }) {
     Future<WalletKey> keyFor(String id) =>
         WalletCatalogPortImpl.keyForId(locator<WalletMetadataDatasource>(), id);
     Future<BitcoinSpendStatus> spendStatus(
@@ -99,10 +105,6 @@ class WalletLocator {
       }
     }
 
-    locator.registerFactory<GetTransferReceiveAddressUsecase>(
-      () =>
-          GetTransferReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
-    );
     locator.registerFactory<WalletSecretReferencesRepository>(
       () => CatalogWalletSecretReferencesRepository(
         locator<WalletMetadataDatasource>(),
@@ -155,12 +157,9 @@ class WalletLocator {
         readDefaultWalletNetwork: () =>
             locator<GetDefaultWalletNetworkUsecase>().execute(),
         readTorRequirement: () => locator<IsTorRequiredUsecase>().execute(),
-        nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
-            NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>())
-                .execute(id, excludedAddresses: excludedAddresses),
+        nextReceiveAddress: nextReceiveAddress,
         spendStatus: spendStatus,
-        receiveAddress: (id) =>
-            locator<GetTransferReceiveAddressUsecase>().execute(id),
+        receiveAddress: receiveAddress,
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap((
           id,
           transaction, {
@@ -229,7 +228,7 @@ class WalletLocator {
         sync: locator<ElectrumSync>(),
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
-        freezes: FrozenUtxosFreezeStore(database: locator<SqliteDatabase>()),
+        freezes: locator<FreezeStorePort>(),
         connections: locator<WalletConnectionPort>(),
         fundingReservations:
             locator.isRegistered<SqliteArkFundingReservations>()
@@ -243,14 +242,6 @@ class WalletLocator {
         load: (key) async => WalletCatalogPortImpl.value(
           await locator<WalletNativeRuntime>().loadWallet(key),
         ),
-      ),
-    );
-    locator.registerLazySingleton<WalletAddressRepository>(
-      () => WalletAddressRepository(
-        native: locator<WalletNativeRuntime>(),
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        labelsFacade: locator<Labels>(),
       ),
     );
 
@@ -313,7 +304,11 @@ class WalletLocator {
       () => WalletTransactionRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         labelsFacade: locator<Labels>(),
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
+        history: WalletHistoryDatasource(
+          load: (key) async => WalletCatalogPortImpl.value(
+            await locator<WalletNativeRuntime>().loadWallet(key),
+          ),
+        ),
         synchronize: locator<ForegroundWalletSync>().synchronize,
       ),
     );

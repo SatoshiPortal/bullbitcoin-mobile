@@ -1,0 +1,98 @@
+import 'package:bull_ui/bull_ui.dart';
+
+import '../../../exchange_l10n.dart';
+
+import 'package:material_ui/material_ui.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class ExchangeReferralsScreen extends StatelessWidget {
+  const ExchangeReferralsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.appColors.background,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: BullTopBar(
+          title: context.loc.exchangeReferralsTitle,
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: context.appColors.surface,
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
+                  boxShadow: [
+                    BoxShadow(
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
+                  children: [
+                    Text(
+                      context.loc.exchangeReferralsJoinMissionTitle,
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(color: context.appColors.onSurface),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.loc.exchangeReferralsContactSupportMessage,
+                      style: context.bullType.body.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.loc.exchangeReferralsApplyToJoinMessage,
+                      style: context.bullType.body.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () async {
+                        final url = Uri.parse(
+                          'https://bullbitcoin.com/mission',
+                        );
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
+                      },
+                      child: Text(
+                        context.loc.exchangeReferralsMissionLink,
+                        style: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(
+                              color: context.appColors.primary,
+                              decoration: TextDecoration.underline,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

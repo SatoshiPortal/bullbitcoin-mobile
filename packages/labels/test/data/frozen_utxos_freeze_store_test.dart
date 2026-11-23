@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:labels/frozen_utxos_table.drift.dart';
-import 'package:labels/storage.dart';
+import 'package:labels/src/data/frozen_utxos_freeze_store.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/check_wallet_is_liquid_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';

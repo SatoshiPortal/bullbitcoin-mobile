@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/src/data/wallet_projections.dart';
 import 'package:sync/src/public/sync.dart' show walletOver;
 import 'package:sync/sync.dart';
-import 'package:sync/testing.dart' show MemoryFreezeStore;
+import 'package:sync/testing.dart' show MemoryFreezeStore, testWallet;
 import 'package:sync/src/data/freeze_authority.dart';
 
 void main() {
@@ -68,6 +68,67 @@ void main() {
     }
     expect(seen.last.$1?.revision, 1);
     expect(handle.coins.now.data, hasLength(1));
+  });
+
+  test('address usage counts each paying transaction once', () async {
+    const address = 'first-address';
+    const spentAddress = 'spent-address';
+    final handle = await testWallet(
+      key: key,
+      stale: true,
+      transactions: [
+        BitcoinTransaction(
+          txid: 'received',
+          feeSat: 12,
+          vsize: 140,
+          confirmationTime: null,
+          inputs: [],
+          outputs: [
+            for (final (index, destination) in [
+              (0, address),
+              (1, address),
+              (2, spentAddress),
+            ])
+              BitcoinOutput(
+                vout: index,
+                valueSat: BigInt.from(20),
+                scriptPubkey: Uint8List(0),
+                address: destination,
+                isOwn: true,
+                isChange: false,
+              ),
+          ],
+          sentSat: 0,
+          receivedSat: 60,
+          isExplicitlyRbf: false,
+        ),
+      ],
+      coins: [
+        BitcoinCoin(
+          outpoint: (txId: 'received', vout: 0),
+          amountSat: BigInt.from(20),
+          scriptPubkey: Uint8List(0),
+          address: address,
+          keychain: Keychain.external,
+          confirmations: 1,
+        ),
+      ],
+    );
+
+    expect(handle.addresses.usage().fold((usage) => usage, (_) => null), {
+      address: (balanceSat: BigInt.from(20), transactionCount: 1),
+      spentAddress: (balanceSat: BigInt.zero, transactionCount: 1),
+    });
+  });
+
+  test('unavailable address usage reports the frame failure', () async {
+    final handle = wallet();
+    source.failure = const SyncBusyFailure();
+    expect(await handle.load(), isA<Err<WalletRevision, SyncFailure>>());
+    expect(
+      handle.addresses.usage().fold((_) => null, (failure) => failure),
+      isA<SyncBusyFailure>(),
+    );
   });
 
   test('a revision is mapped once for every consumer', () async {

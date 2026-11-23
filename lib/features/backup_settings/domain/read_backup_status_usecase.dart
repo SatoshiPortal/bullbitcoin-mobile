@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:primitives/primitives.dart';
 

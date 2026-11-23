@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/ui/screens/exchange_settings_screen.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_acce
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -163,6 +163,16 @@ void main() {
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoute = SettingsRouter.route(
       accessRoutes: const [],
+      exchangeSettingsRoutes: BullExchangeFeature.mount(
+        settings: SettingsRouter.exchangeSettingsHost,
+        networkUnavailable: () async => false,
+        showWebsiteOnly: (_) => false,
+        unavailableRedirectPath: '/home',
+        brandAssetPath: 'unused',
+        copy: (_) => fail('unexpected landing route'),
+        onSignIn: (_) {},
+        onExit: (_) {},
+      ).settingsRoutes,
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
       priceRoutes: const [],
@@ -208,7 +218,7 @@ void main() {
           routerConfig: router,
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -255,6 +265,7 @@ void main() {
     final route =
         SettingsRouter.route(
           accessRoutes: const [],
+          exchangeSettingsRoutes: const [],
           appSettingsRoutes: const [],
           onBackupTestSucceeded: (_) {},
           priceRoutes: const [],

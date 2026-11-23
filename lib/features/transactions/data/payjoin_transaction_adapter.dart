@@ -10,7 +10,7 @@ import 'dart:async';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
 final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {

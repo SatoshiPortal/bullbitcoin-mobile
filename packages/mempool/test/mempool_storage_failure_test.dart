@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
 import 'package:mempool/mempool.dart';
+import 'package:mempool/testing.dart';
 import 'package:mempool/src/domain/value_objects/mempool_server_network.dart';
 import 'package:mempool/src/data/tables/mempool_servers_table.dart';
 import 'package:mempool/src/data/tables/mempool_servers_table.drift.dart';
@@ -67,7 +68,7 @@ void main() {
   setUp(() {
     reads = _ServerReads();
     database = TestDatabase(NativeDatabase.memory().interceptWith(reads));
-    mempool = Mempool.open(
+    mempool = createMempoolForTesting(
       database: database,
       tor: () => throw StateError('Link lookup must not use Tor'),
       torHttp: const TorHttpClientFactory(),

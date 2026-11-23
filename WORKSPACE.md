@@ -26,6 +26,8 @@ graph TD
   style btc_map stroke:#4d7dca
   bull_ark["bull_ark"]
   style bull_ark stroke:#090577
+  bull_exchange["bull_exchange"]
+  style bull_exchange stroke:#42d01b
   bull_logger["bull_logger"]
   style bull_logger stroke:#fef49a
   bull_logs["bull_logs"]
@@ -48,6 +50,8 @@ graph TD
   style bull_ui_catalogue stroke:#7d8de8
   electrum["electrum"]
   style electrum stroke:#87e1d5
+  exchange["exchange"]
+  style exchange stroke:#c2d56b
   fees["fees"]
   style fees stroke:#726a61
   fees_feature["fees_feature"]
@@ -60,6 +64,8 @@ graph TD
   style label_editor stroke:#c2f687
   labels["labels"]
   style labels stroke:#a4c2d7
+  legacy_storage["legacy_storage"]
+  style legacy_storage stroke:#894488
   mempool["mempool"]
   style mempool stroke:#26e46e
   network["network"]
@@ -95,9 +101,11 @@ graph TD
   access --> primitives
   access --> secrets
   announcements --> bull_ui
-  announcements --> preferences
+  announcements --> legacy_storage
   announcements --> primitives
+  announcements --> secrets
   ark --> primitives
+  background_tasks --> legacy_storage
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
@@ -119,9 +127,16 @@ graph TD
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
   bull_ark --> notifications
+  bull_exchange --> bull_logger
+  bull_exchange --> bull_ui
+  bull_exchange --> exchange
+  bull_exchange --> file_system
+  bull_exchange --> primitives
+  bull_exchange -.-> preferences
   bull_logs --> bull_logger
   bull_logs --> bull_ui
   bull_logs --> primitives
+  bull_payjoin --> legacy_storage
   bull_payjoin --> primitives
   bull_pricer --> primitives
   bull_quick_actions --> bull_ui
@@ -130,6 +145,7 @@ graph TD
   bull_recoverbull --> file_system
   bull_recoverbull --> google_drive
   bull_recoverbull --> secrets
+  bull_recoverbull --> legacy_storage
   bull_recoverbull --> bull_logger
   bull_recoverbull --> bull_tor
   bull_recoverbull --> bull_ui
@@ -143,7 +159,15 @@ graph TD
   electrum --> bull_logger
   electrum --> bull_tor
   electrum --> primitives
+  electrum --> legacy_storage
+  electrum --> secrets
   electrum --> sync
+  exchange --> bbx_api
+  exchange --> bull_logger
+  exchange --> legacy_storage
+  exchange --> preferences
+  exchange --> primitives
+  exchange --> secrets
   fees --> bull_payjoin
   fees --> mempool
   fees --> primitives
@@ -162,10 +186,15 @@ graph TD
   labels --> bull_logger
   labels --> bull_payjoin
   labels --> primitives
+  labels --> legacy_storage
+  labels --> secrets
   labels --> sync
+  legacy_storage --> primitives
   mempool --> bull_logger
   mempool --> bull_tor
   mempool --> primitives
+  mempool --> legacy_storage
+  mempool --> secrets
   network --> bull_logger
   network --> bull_payjoin
   network --> bull_pricer
@@ -183,6 +212,8 @@ graph TD
   preferences --> bull_reporting
   preferences --> bull_tor
   preferences --> primitives
+  preferences --> legacy_storage
+  preferences --> secrets
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings
@@ -190,6 +221,9 @@ graph TD
   secrets --> primitives
   secrets --> bull_logger
   secrets --> rust_bindings
+  secrets --> legacy_storage
+  signers --> secrets
+  signers --> legacy_storage
   signers --> bitbox_transport
   signers --> bull_logger
   signers --> bull_ui
@@ -200,17 +234,21 @@ graph TD
   signers --> sync
   swaps --> rust_bindings
   swaps --> boltz_stream
+  swaps --> legacy_storage
   swaps --> primitives
   swaps --> secrets
+  sync --> legacy_storage
   sync --> rust_bindings
   sync --> bull_logger
   sync --> primitives
+  sync --> secrets
   subgraph features0 ["features"]
     access
     announcements
     bitcoin_price
     btc_map
     bull_ark
+    bull_exchange
     bull_logs
     bull_quick_actions
     bull_recoverbull
@@ -233,10 +271,12 @@ graph TD
     bull_ui
     bull_ui_catalogue
     electrum
+    exchange
     fees
     file_system
     google_drive
     labels
+    legacy_storage
     mempool
     notifications
     novlang

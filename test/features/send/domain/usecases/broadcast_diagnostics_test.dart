@@ -1,6 +1,7 @@
 import '../../../../frozen_outpoints_fixture.dart';
 
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
 import 'dart:io';

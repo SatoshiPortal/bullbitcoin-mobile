@@ -30,6 +30,13 @@ graph TB
     ELECTRUM[Electrum package<br/>Server selection, settings and transaction lookup]
     SYNC[Sync Package<br/>Native lifecycle, Electrum sync, BitcoinTx, review values, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
+    LEGACY_STORAGE[Legacy Storage Package<br/>Cutover marker, lifecycle admission and imports]
+    BG_TASKS --> LEGACY_STORAGE
+    MEMPOOL --> LEGACY_STORAGE
+    MEMPOOL --> SECRETS
+    ANNOUNCEMENTS --> LEGACY_STORAGE
+    ANNOUNCEMENTS --> SECRETS
+    LEGACY_STORAGE --> PRIMITIVES
     BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
@@ -79,7 +86,32 @@ graph TB
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
-    EXCHANGE_SETTINGS -->|order statistics| BBX_API
+    EXCHANGE_DOMAIN[Exchange Package<br/>Account, order inventory, KYC uploads and stats]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account settings and support chat]
+    EXCHANGE --> BULL_EXCHANGE
+    SETTINGS -->|mount account settings routes| BULL_EXCHANGE
+    BULL_EXCHANGE --> BULL_UI
+    EXCHANGE --> EXCHANGE_DOMAIN
+    BUY --> EXCHANGE_DOMAIN
+    SELL --> EXCHANGE_DOMAIN
+    PAY --> EXCHANGE_DOMAIN
+    BUY -->|KYC navigation| BULL_EXCHANGE
+    SELL -->|KYC navigation| BULL_EXCHANGE
+    PAY -->|KYC navigation| BULL_EXCHANGE
+    WITHDRAW --> EXCHANGE_DOMAIN
+    DCA --> EXCHANGE_DOMAIN
+    AUTOBUY --> EXCHANGE_DOMAIN
+    FUNDING --> EXCHANGE_DOMAIN
+    LIMIT_ORDERS --> EXCHANGE_DOMAIN
+    SETTINGS --> EXCHANGE_DOMAIN
+    TX_HISTORY --> EXCHANGE_DOMAIN
+    CORE --> EXCHANGE_DOMAIN
+    EXCHANGE_DOMAIN --> PRIMITIVES
+    EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
+    EXCHANGE_DOMAIN -->|database key and legacy credential reads| SECRETS
+    EXCHANGE_DOMAIN -->|account, KYC, statistics, chat, notifications, funding, virtual IBANs and orders| BBX_API
+    BULL_EXCHANGE -->|support chat, account and statistics| EXCHANGE_DOMAIN
+    EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
 
     SIGNERS[Signers<br/>Workspace Feature]
     SIGNERS --> PRIMITIVES
@@ -108,14 +140,15 @@ graph TB
     ONBOARDING[Onboarding]
     SETTINGS[Settings]
     PREFERENCES[Preferences Package]
-    CORE -->|Drift composition| PREFERENCES
+    PREFERENCES --> LEGACY_STORAGE
+    PREFERENCES --> SECRETS
+    CORE -->|admitted owner and borrowed legacy| PREFERENCES
     NETWORK --> PREFERENCES
     SETTINGS --> PREFERENCES
     WALLETS --> PREFERENCES
     BTC_PRICE --> PREFERENCES
     COINS --> PREFERENCES
     BUY --> PREFERENCES
-    ANNOUNCEMENTS --> PREFERENCES
     EXCHANGE --> PREFERENCES
     SWAPS --> PREFERENCES
     SEND --> PREFERENCES
@@ -134,7 +167,7 @@ graph TB
     RECOVERBULL --> GOOGLE_DRIVE
     FILE_SYSTEM[File System Package]
     RECOVERBULL --> FILE_SYSTEM
-    EXCHANGE_SETTINGS --> FILE_SYSTEM
+    BULL_EXCHANGE --> FILE_SYSTEM
     TX_HISTORY --> FILE_SYSTEM
     LABEL_EDITOR --> FILE_SYSTEM
     LABEL_EDITOR --> LABELS
@@ -159,8 +192,6 @@ graph TB
     FEES_UI[Fees Feature]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
-    EXCHANGE_SETTINGS[Exchange Settings]
-    EXCHANGE_SUPPORT_CHAT[Exchange Support Chat]
     SUPPORT[Support]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
@@ -265,7 +296,6 @@ graph TB
     APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Legacy Core-to-feature dependencies, pending extraction
-    CORE --> DCA
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -320,19 +350,16 @@ graph TB
     SETTINGS --> SWAPS
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
-    SETTINGS --> EXCHANGE_SETTINGS
     SETTINGS --> PAY
     SETTINGS --> TX_HISTORY
-    EXCHANGE_SETTINGS --> EXCHANGE
     EXCHANGE --> AUTOBUY
     LIMIT_ORDERS --> EXCHANGE
-    EXCHANGE --> EXCHANGE_SUPPORT_CHAT
     EXCHANGE --> BTC_PRICE
     EXCHANGE --> DCA
     EXCHANGE --> FUNDING
     EXCHANGE --> TX_HISTORY
     EXCHANGE --> WITHDRAWAL
-    SUPPORT --> EXCHANGE_SUPPORT_CHAT
+    SUPPORT -->|support chat navigation| BULL_EXCHANGE
     DCA --> EXCHANGE
     PAY -->|public spend admission and routine sync| WALLETS
     PAY -->|public protected broadcast| SEND
@@ -401,6 +428,7 @@ graph TB
     WALLETS --> NETWORK
     RECOVERBULL --> TOR
     RECOVERBULL --> SECRETS
+    RECOVERBULL --> LEGACY_STORAGE
     RECOVERBULL --> PRIMITIVES
     RECOVERBULL --> BULL_LOGGER
     RECOVERBULL --> BULL_UI
@@ -446,7 +474,6 @@ graph TB
     CONSOLIDATION --> SEND
     DEFAULT_WALLETS --> EXCHANGE
     DEFAULT_WALLETS -->|public destination validation and input| WALLETS
-    EXCHANGE_SUPPORT_CHAT --> EXCHANGE
     WALLETS --> FEES_PACKAGE
     TX_HISTORY --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
@@ -473,6 +500,22 @@ graph TB
 
     IMPORT_MNEMONIC --> ELECTRUM
 
+    %% Wallet readers and spend preparation assigned to their app owners
+    ADDRESS_MGMT --> SYNC
+    UTXO_MGMT --> SYNC
+    RECEIVE --> ADDRESS_MGMT
+    AUTOSWAP --> ADDRESS_MGMT
+    BUY --> ADDRESS_MGMT
+    DCA --> ADDRESS_MGMT
+    LIMIT_ORDERS --> ADDRESS_MGMT
+    PAY --> ADDRESS_MGMT
+    PAY --> UTXO_MGMT
+    SELL --> ADDRESS_MGMT
+    SELL --> UTXO_MGMT
+    SEND --> ADDRESS_MGMT
+    SWAPS --> ADDRESS_MGMT
+    IMPORT_MNEMONIC --> SYNC
+
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa
@@ -480,7 +523,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -684,6 +727,24 @@ The wallet module supplies inventory and protocol ports to the runtime in `sync`
 
 Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
 
+### Wallet reader ownership
+
+Sync publishes the wallet-relative native values and address usage. Address View derives and enriches addresses and retains the native issued-index watermark. Address View also supplies the common receive-address read, and Receive owns its flow-specific address decisions. Coins consumes the published coin and freeze state and enriches the coins with labels. Transactions owns application history, including environment selection, optional direct sync, wallet-relative presentation values and labels. Import previews use Sync's descriptor scan directly. Send assembles spend requests, delegates native operations to Sync and requests software signatures from Secrets after protocol admission. Hardware signing stays with Signers.
+
+The app owners still use the legacy catalog to resolve identity and access native handles. Shared application consumers now point to the address, coins, receive and transaction owners for the relocated rules and types. Existing composition and route dependencies remain until the catalog and feature extractions replace them.
+
 ## Access ownership
 
 `features/access` replaces PIN Code and App Unlock. App Startup reads PIN status through `Access`, Settings uses the mounted PIN route, and Backup and All Seed View consume the typed reauthentication gate. `AccessFeature.mount` contributes root and settings routes once before startup; the host supplies lazy backup eligibility and navigation callbacks. Secrets retains PIN and failed-attempt storage. Access publishes one failure family while preserving the distinct unlock and PIN-settings locked messages.
+
+## Encrypted database import foundation
+
+The `legacy_storage` workspace member depends on `primitives` for typed import results. Module migration code can use it to copy a frozen legacy source into the owning database with a committed receipt. `secrets` can open a keyed Drift executor for an owner. Foreground startup now composes the split-v1 coordinator and Mempool participant before publishing Mempool's encrypted store. Background Tasks holds the same lifecycle admission until resource closure, and requests retry on incomplete setup or failed cleanup. Legacy Storage remains independent of Mempool; each owner implements the participant contract. Other owners retain their historical connections while the manifest is incomplete; this development coexistence never authorizes legacy retirement.
+
+Secrets uses Legacy Storage for lifecycle admission and participates in split-v1 through its migration library. The encrypted Secrets store owns wallet definitions, derivation records and view access state. Sync's inventory composition library translates the descriptor projection to the native catalog contract.
+
+Electrum also implements its import participant through `legacy_storage` and opens its encrypted store through `secrets`. Foreground and background connection/cache consumers use that store; historical tables remain only for the legacy migration chain.
+
+Labels implements its participant through `legacy_storage`, opens its encrypted store through `secrets`, and supplies Sync with its owner-built freeze and reserved-address ports. Label, Payjoin and BIP-329 consumers share that authority.
+
+Preferences owns an encrypted schema-1 settings and RecoverBull permission store, with row/sequence/import-receipt atomicity. It preserves consent only for the default RecoverBull URL and never stores the source URL. Only the testnet credential projection borrows the tracked legacy connection; Announcements owns its encrypted dismissal store. Foreground prepares under exclusive cutover admission; foreground and consuming background tasks open existing Preferences under shared admission and receipt checks. The legacy and standalone RecoverBull files are retained.

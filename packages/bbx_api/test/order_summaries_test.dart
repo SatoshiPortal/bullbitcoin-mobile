@@ -36,6 +36,55 @@ Map<String, Object?> _rpcError() => {
 };
 
 void main() {
+  group('complete order summary page', () {
+    test('requires an explicit list, even for the last page', () async {
+      for (final result in <Map<String, Object?>>[
+        {},
+        {'elements': null},
+        {'elements': {}},
+      ]) {
+        final orders = bbx(FakeHttp(body: {'result': result})).orders;
+        expect(
+          await failedCall(
+            orders.listOrderSummaries(requireCompletePage: true),
+          ),
+          isA<BbxResponseFormatFailure>(),
+        );
+      }
+
+      final orders = bbx(
+        FakeHttp(
+          body: const {
+            'result': {'elements': <Object>[]},
+          },
+        ),
+      ).orders;
+      final page = valueOf(
+        await orders.listOrderSummaries(requireCompletePage: true),
+      );
+      expect(page.orders, isEmpty);
+    });
+
+    test('rejects the whole page if any row cannot be decoded', () async {
+      final orders = bbx(
+        FakeHttp(
+          body: {
+            'result': {
+              'elements': [
+                _order(),
+                {'orderId': 'missing-fields'},
+              ],
+            },
+          },
+        ),
+      ).orders;
+      expect(
+        await failedCall(orders.listOrderSummaries(requireCompletePage: true)),
+        isA<BbxResponseFormatFailure>(),
+      );
+    });
+  });
+
   group('getOrderSummary', () {
     test('sends the order id and reads the wrapped element', () async {
       final http = FakeHttp(

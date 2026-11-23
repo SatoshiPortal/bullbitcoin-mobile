@@ -21,6 +21,8 @@ wallet.history.watch().listen(render);
 
 Values are mapped from the native wallet once per revision, built into one immutable frame, then published by a single pointer assignment before any notification: several `now` reads without an `await` between them see the same revision. Who republishes after a commit made elsewhere: the revision reader emits a change whenever a read finds a new state, and the foreground reads after every worker outcome (`WalletNativeRuntime.refresh`); a change for a wallet that has values or subscribers schedules a reload.
 
+Address lists can read wallet.addresses.usage() after loading. The result combines the published history and coin balances, counts each transaction once per paying address, and uses confidential addresses on Liquid. The app adds labels. WalletValue.latest returns the published data or its typed failure. Inspect status and revision when freshness matters.
+
 ⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. Liquid has no ownership index: LWK does not expose it.
 
 ## Native runtime
@@ -116,6 +118,7 @@ Wallet
 |-- addresses
 |   |-- book -> Observed<WalletValue<AddressBook>>
 |   |-- at(index, [keychain: Keychain.external]) -> Observed<WalletValue<DerivedAddress>>
+|   |-- usage() -> Result<Map<String, ({BigInt balanceSat, int transactionCount})>, SyncFailure>
 |   `-- owns
 |       |-- script(script) -> Observed<WalletValue<Ownership>>
 |       `-- outpoint(outpoint) -> Observed<WalletValue<Ownership>>
@@ -198,3 +201,7 @@ The defaults are the local development Electrum port 50000 and faucet port 3000.
 The Liquid codecs' refusals of hostile input through the real LWK parser are in `native_test/liquid_codec_test.dart`, run the same way; the unit suite covers their mapping with a fake binding.
 
 Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
+
+## Persisted wallet sync times
+
+The storage library imports the historical sync time for each wallet id into Sync's encrypted metadata store. It preserves the original nullable value through the migration. The native revision and writer lease stores continue to coordinate wallet operations.

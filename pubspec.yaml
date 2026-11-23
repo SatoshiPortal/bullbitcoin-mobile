@@ -10,7 +10,10 @@ environment:
 workspace:
   - features/announcements
   - features/bitcoin_price
+  - features/bull_exchange
   - packages/labels
+  - packages/legacy_storage
+  - packages/exchange
   - features/label_editor
   - features/network
   - features/signers
@@ -74,6 +77,8 @@ dependencies:
   bull_payjoin:
   bull_pricer:
   bbx_api:
+  bull_exchange:
+  exchange:
   novlang:
   btc_map:
   bull_ui:
@@ -86,6 +91,7 @@ dependencies:
   electrum:
   bull_tor:
   mempool:
+  legacy_storage:
   preferences:
   screen_privacy:
   bull_reporting:
@@ -210,6 +216,8 @@ hooks:
   user_defines:
     payjoin:
       build: source
+    sqlite3:
+      source: sqlite3mc
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the

@@ -1,28 +1,25 @@
 import 'package:primitives/primitives.dart';
 import 'package:announcements/src/domain/entities/announcement.dart';
 import 'package:announcements/src/domain/entities/announcement_catalog.dart';
-import 'package:preferences/preferences_dao.dart' show PreferencesDao;
-import 'package:preferences/testing.dart' show PreferencesTesting;
+import 'package:announcements/setup.dart';
 import 'package:announcements/src/domain/announcements_failure.dart';
 import 'package:announcements/src/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockPreferencesDao extends Mock implements PreferencesDao {}
+class _MockDismissals extends Mock implements AnnouncementDismissals {}
 
 void main() {
-  late _MockPreferencesDao dao;
+  late _MockDismissals dismissals;
   late GetVisibleAnnouncementsUsecase usecase;
   late bool isAppUpdateRequired;
 
   setUp(() {
-    dao = _MockPreferencesDao();
-    final preferences = PreferencesTesting.fromDao(dao);
-    addTearDown(preferences.close);
+    dismissals = _MockDismissals();
     isAppUpdateRequired = false;
-    when(() => dao.readDismissals()).thenAnswer((_) async => const []);
+    when(dismissals.read).thenAnswer((_) async => const Ok([]));
     usecase = GetVisibleAnnouncementsUsecase(
-      preferences.announcementDismissals,
+      dismissals,
       () => isAppUpdateRequired,
     );
   });
@@ -51,8 +48,10 @@ void main() {
     expect(list.single.tone, AnnouncementTone.warning);
   });
 
-  test('returns a failure when the dismissals source throws', () async {
-    when(() => dao.readDismissals()).thenThrow(Exception('boom'));
+  test('propagates the storage failure', () async {
+    when(dismissals.read).thenAnswer(
+      (_) async => const Err(AnnouncementStorageFailure('Disk unavailable')),
+    );
 
     final result = await usecase.execute();
 

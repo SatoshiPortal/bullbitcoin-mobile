@@ -1,4 +1,6 @@
-import 'package:preferences/preferences.dart' show Preferences;
+import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart'
+    show Preferences, PreferencesFailure;
 
 export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
 
@@ -54,15 +56,34 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   BackgroundTaskResources resources,
   Directory documents,
   Stopwatch clock, {
+  required File preferencesFile,
   required BackgroundSyncIntervalRepository intervals,
 }) async {
+  final admission = resources.storageAdmission;
+  if (admission == null) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     log.fine('Background wallet task deferred: schema not current');
-    return () async => const BackgroundTaskExecutionResult.success();
+    return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = SqliteDatabase();
-  resources.onClose(sqlite.close);
-  final settings = Preferences.open(database: sqlite);
+  final sqlite = await LegacySourceStore(
+    source: LegacySource(
+      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
+      SqliteDatabase.currentSchemaVersion,
+    ),
+    create: SqliteDatabase.new,
+  ).open(admission);
+  final openedPreferences = await Preferences.open(
+    file: preferencesFile,
+    admission: admission,
+    legacyDatabase: sqlite,
+  );
+  if (openedPreferences case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final settings =
+      (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
   resources.onClose(settings.close);
   final preferences = (await settings.fetch()).fold(
     (value) => value,
@@ -79,11 +100,18 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   TorLocator.registerUsecases(torLocator);
   final tor = torLocator<Tor>();
   resources.onClose(tor.dispose);
-  final connections = Electrum.open(
-    database: sqlite,
+  final support = await getApplicationSupportDirectory();
+  final opened = await Electrum.open(
+    file: File(p.join(support.path, 'databases', 'electrum.sqlite')),
+    admission: admission,
     readPreferences: settings.readConnectionPreferences,
     tor: () => tor,
-  ).walletConnections;
+  );
+  if (opened case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final connections =
+      (opened as Ok<Electrum, ElectrumFailure>).value.walletConnections;
   final catalog = WalletCatalogPortImpl(
     WalletMetadataDatasource(sqlite: sqlite),
   );

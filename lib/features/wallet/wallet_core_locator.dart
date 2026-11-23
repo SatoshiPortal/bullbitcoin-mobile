@@ -14,27 +14,20 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BitcoinWalletRepository, LiquidWalletRepository;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:labels/labels.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sync/sync.dart' show Sync, Wallet;
 
@@ -92,15 +85,6 @@ class WalletLocator {
         freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
-
-    locator.registerLazySingleton<WalletUtxoRepository>(
-      () => WalletUtxoRepositoryImpl(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        freezesDatasource: locator<SyncFreezesDatasource>(),
-        labelsFacade: locator<Labels>(),
-      ),
-    );
   }
 
   static void registerUsecases(GetIt locator) {
@@ -140,24 +124,9 @@ class WalletLocator {
       ),
     );
 
-    locator.registerFactory<GetAddressAtIndexUsecase>(
-      () => GetAddressAtIndexUsecase(
-        walletAddressRepository: locator<WalletAddressRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<GetWalletUtxosUsecase>(
-      () => GetWalletUtxosUsecase(
-        utxoRepository: locator<WalletUtxoRepository>(),
-      ),
-    );
     locator.registerLazySingleton<CheckLiquidConsolidationUsecase>(
       () => CheckLiquidConsolidationUsecase(
         liquidWalletRepository: locator<LiquidWalletRepository>(),
-      ),
-    );
-    locator.registerFactory<GetReceiveAddressUsecase>(
-      () => GetReceiveAddressUsecase(
-        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
     locator.registerFactory<GetWalletTransactionsUsecase>(

@@ -1,7 +1,9 @@
 import 'package:primitives/primitives.dart';
 
 import '../exchange_access.dart';
-import '../exchange_failure.dart';
+
+import 'package:exchange/exchange.dart';
+
 import '../repositories/exchange_access_repository.dart';
 import 'request_exchange_account_deletion_usecase.dart';
 import 'sign_out_exchange_usecase.dart';

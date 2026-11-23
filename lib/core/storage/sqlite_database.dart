@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:legacy_storage/coordination.dart'
+    show splitV1SourceSchemaVersion;
+
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -10,12 +13,11 @@ import 'package:preferences/dismissed_announcements_table.dart';
 import 'package:electrum/storage.dart';
 import 'package:labels/frozen_utxos_table.dart';
 import 'package:labels/labels_table.dart';
-import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:preferences/recoverbull_table.dart';
 import 'package:preferences/settings_table.dart';
-import 'package:preferences/preferences_dao.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:mempool/storage.dart';
@@ -32,7 +34,6 @@ import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 import 'sqlite_database.drift.dart';
 
 @DriftDatabase(
-  daos: [PreferencesDao],
   tables: [
     Transactions,
     WalletMetadatas,
@@ -127,7 +128,7 @@ class SqliteDatabase extends $SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 16;
+  static const int currentSchemaVersion = splitV1SourceSchemaVersion;
 
   @override
   int get schemaVersion => currentSchemaVersion;

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:sync/sync.dart' show Keychain;
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 
 /// How the visible UTXO list is ordered (frozen always sink to the bottom
 /// regardless of the chosen sort — see [sortAndFilterUtxos]).
@@ -127,9 +127,9 @@ List<WalletUtxo> sortAndFilterUtxos(
 bool _matchesFilter(WalletUtxo utxo, CoinsFilter filter) {
   switch (filter.keychain) {
     case KeychainFilter.receive:
-      if (utxo.addressKeyChain != WalletAddressKeyChain.external) return false;
+      if (utxo.addressKeyChain != Keychain.external) return false;
     case KeychainFilter.change:
-      if (utxo.addressKeyChain != WalletAddressKeyChain.internal) return false;
+      if (utxo.addressKeyChain != Keychain.internal) return false;
     case KeychainFilter.all:
       break;
   }

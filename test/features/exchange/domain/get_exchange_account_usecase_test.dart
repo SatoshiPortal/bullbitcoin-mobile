@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_account_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/expire_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +13,11 @@ import 'package:primitives/primitives.dart';
 
 class _Access extends Mock implements ExchangeAccessRepository {}
 
-class _Account extends Mock implements ExchangeAccountRepository {}
+abstract interface class _AccountReader {
+  Future<Result<UserSummary, ExchangeFailure>> getAccount();
+}
+
+class _Account extends Mock implements _AccountReader {}
 
 class _Settings extends Mock implements Preferences {}
 
@@ -55,8 +58,11 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     usecase = GetExchangeAccountUsecase(
-      mainnetAccountRepository: mainnet,
-      testnetAccountRepository: testnet,
+      exchange: exchangeForTesting(
+        getAccount: (environment) =>
+            (environment == ExchangeEnvironment.mainnet ? mainnet : testnet)
+                .getAccount(),
+      ),
       settingsRepository: settings,
       access: access,
       expire: expire,

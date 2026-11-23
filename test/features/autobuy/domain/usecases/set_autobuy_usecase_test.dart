@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../core/exchange/fake_exchange_users.dart';
 
 class MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -18,7 +18,7 @@ class MockGetDefaultWalletsUsecase extends Mock
     implements GetDefaultWalletsUsecase {}
 
 class MockExchangeUserRepository extends Mock
-    implements ExchangeUserRepository {}
+    implements ExchangeUserOperations {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
 
@@ -95,8 +95,7 @@ void main() {
       getUserSummary,
       getDefaultWallets,
       settings,
-      savePreferences,
-      testnetUsers,
+      fakeExchangeUsers(savePreferences, testnetUsers),
     );
   });
 
@@ -270,7 +269,7 @@ void main() {
         autoBuyEnabled: any(named: 'autoBuyEnabled'),
         emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
       ),
-    ).thenAnswer((_) async => const Err(ExchangeUserPreferencesSaveFailure()));
+    ).thenAnswer((_) async => const Err(ExchangePreferencesSaveFailure()));
 
     final result = await usecase.execute(enabled: false);
 

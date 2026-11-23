@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -130,7 +130,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         label: context.loc.buyInputCompleteKyc,
                         onPressed: () {
                           context.pushReplacementNamed(
-                            ExchangeRoute.exchangeKyc.name,
+                            BullExchangeNavigation.kycName,
                           );
                         },
                       ),

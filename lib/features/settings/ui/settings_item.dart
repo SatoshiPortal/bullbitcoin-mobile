@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
-import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:label_editor/label_editor.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -362,7 +362,7 @@ List<SettingsItem> buildSettingsItems({
           localization.settingsAccountSettingsTitle,
         ),
         icon: Icons.account_circle_outlined,
-        open: (context) => context.pushNamed(ExchangeSettingsRoute.home.name),
+        open: ExchangeSettingsRoute.home.open,
         keywords: [
           localization.settingsAccountSettingsTitle,
           english.settingsAccountSettingsTitle,

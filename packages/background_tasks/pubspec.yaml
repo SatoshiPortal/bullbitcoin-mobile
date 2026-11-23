@@ -9,6 +9,7 @@ environment:
   flutter: "3.50.0"
 
 dependencies:
+  legacy_storage:
   flutter:
     sdk: flutter
   workmanager: ^0.10.10

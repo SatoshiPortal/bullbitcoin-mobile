@@ -16,6 +16,13 @@
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
+import 'package:labels/testing.dart';
+
+import 'package:electrum/testing.dart';
+import 'package:preferences/testing.dart';
+
+import 'package:mempool/testing.dart';
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -25,7 +32,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
@@ -38,6 +45,9 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../support/owner_databases.dart';
+import '../../../support/preferences_database.dart';
 
 /// Writes [content] to a new private file, never replacing an existing one.
 void _writePrivate(File file, String content) {
@@ -135,13 +145,39 @@ void main() {
 
       await initFlutterRustBridgeDependencies();
       locator.registerSingleton<TorNativeInitializer>(_NativeTor());
+      registerTestOwnerDatabases(locator);
       final database = SqliteDatabase(
         NativeDatabase(File('${appDirectory.path}/bull.sqlite')),
       );
       await AppLocator.setup(
         locator,
         database,
-        payjoinDatabasePath: '${appDirectory.path}/payjoin.sqlite',
+        openLabels: (sync, openWallet) async => Ok(
+          createLabelsForTesting(
+            database: database,
+            sync: sync,
+            openWallet: openWallet,
+          ),
+        ),
+        openElectrum: (readPreferences, tor) async => Ok(
+          createElectrumForTesting(
+            database: database,
+            readPreferences: readPreferences,
+            tor: tor,
+          ),
+        ),
+        openPreferences: (legacy) async {
+          final owner = await createPreferencesDatabase(
+            copySettingsFrom: legacy,
+          );
+          addTearDown(owner.close);
+          return Ok(
+            PreferencesTesting.fromDatabases(owner: owner, legacy: legacy),
+          );
+        },
+        openMempool: (tor, http) async => Ok(
+          createMempoolForTesting(database: database, tor: tor, torHttp: http),
+        ),
         startPayjoinRecovery: false,
         startOrderSwapWatcher: false,
         startAutoswapWatcher: false,
@@ -272,13 +308,12 @@ void main() {
         final before = await locator<WalletRepository>().getWalletBalances(
           walletId: source.id,
         );
-        final sourceAfter =
-            before.confirmedSat - prepared.sourceDebit.value.toInt();
+        final sourceAfter = before.confirmedSat - prepared.sourceDebit.value;
         _report(
           'source confirmed=${before.confirmedSat} '
           'debit=${prepared.sourceDebit} sourceAfterBoard=$sourceAfter',
         );
-        if (sourceAfter < 10000) {
+        if (sourceAfter < BigInt.from(10000)) {
           throw StateError('source reserve after Board below 10000 sat');
         }
         final review = _ok(
@@ -314,13 +349,12 @@ void main() {
         final before = await locator<WalletRepository>().getWalletBalances(
           walletId: source.id,
         );
-        final sourceAfter =
-            before.confirmedSat - prepared.sourceDebit.value.toInt();
+        final sourceAfter = before.confirmedSat - prepared.sourceDebit.value;
         _report(
           'source confirmed=${before.confirmedSat} '
           'debit=${prepared.sourceDebit} sourceAfterBoard=$sourceAfter',
         );
-        if (sourceAfter < 10000) {
+        if (sourceAfter < BigInt.from(10000)) {
           throw StateError('source reserve after Board below 10000 sat');
         }
         _writePrivate(confirmFile, jsonEncode({'operationId': operationId}));

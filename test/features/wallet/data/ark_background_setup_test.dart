@@ -1,3 +1,9 @@
+import 'package:preferences/migration.dart';
+import 'package:preferences/testing.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:legacy_storage/legacy_storage.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' as native;
 import 'package:mocktail/mocktail.dart';
@@ -9,6 +15,8 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:preferences/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/ark_background_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,16 +37,27 @@ class _Paths extends PathProviderPlatform {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
+  late Directory locks;
   late PathProviderPlatform previousPaths;
   late BackgroundTaskResources resources;
+  late DatabaseKeys keys;
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('ark-background-host-');
+    locks = await Directory.systemTemp.createTemp('ark-background-lock-');
     previousPaths = PathProviderPlatform.instance;
     PathProviderPlatform.instance = _Paths(directory.path);
-    resources = BackgroundTaskResources();
+    FakeSecureStoragePlatform().install();
+    keys = Secrets(scratchDirectory: () async => directory.path)
+        .databaseKeys(module: 'preferences');
+    resources = BackgroundTaskResources(
+      admission: await NativeFileGate(
+        File('${locks.path}/lifecycle.lock'),
+      ).acquire(exclusive: false, timeout: Duration.zero) as RuntimeAdmission,
+    );
   });
   tearDown(() async {
     await resources.close();
+    await locks.delete(recursive: true);
     PathProviderPlatform.instance = previousPaths;
     await directory.delete(recursive: true);
   });
@@ -62,6 +81,34 @@ void main() {
       await db.close();
     }
     expect(await SqliteDatabase.isAtCurrentSchema(), isTrue);
+    await resources.close();
+    final gate = NativeFileGate(File('${locks.path}/lifecycle.lock'));
+    final exclusive = await gate.acquire(
+      exclusive: true,
+      timeout: Duration.zero,
+    ) as ExclusiveAdmission;
+    final prepared = await PreferencesImport(
+      file: File('${directory.path}/preferences.sqlite'),
+      defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+      testingKeys: keys,
+    ).prepare(exclusive, OwnerOrigin.legacy);
+    final owner = (prepared as Ok<PreparedOwner, LegacyImportFailure>).value;
+    expect(
+      await owner.importLegacy(
+        LegacySource(
+          File('${directory.path}/${SqliteDatabase.name}.sqlite'),
+          16,
+        ),
+      ),
+      isA<Ok>(),
+    );
+    await exclusive.close();
+    resources = BackgroundTaskResources(
+      admission: await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission,
+    );
   }
 
   for (final environment in ['mainnet', 'testnet']) {
@@ -79,7 +126,18 @@ void main() {
         (registry as Ok<SqliteArkAccountRegistry, ArkFailure>).value.close();
         File('${ark.path}/accounts.sqlite').writeAsStringSync('unreadable');
         await expectLater(
-          setupArkBackgroundTask(resources, directory),
+          setupArkBackgroundTask(
+            resources,
+            directory,
+            preferencesFile: File('${directory.path}/preferences.sqlite'),
+            openPreferences: (file, admission, legacy) =>
+                PreferencesTesting.open(
+                  file: file,
+                  admission: admission,
+                  legacyDatabase: legacy,
+                  keys: keys,
+                ),
+          ),
           throwsStateError,
         );
       },
@@ -153,6 +211,13 @@ void main() {
         final handler = await setupArkBackgroundTask(
           resources,
           directory,
+          preferencesFile: File('${directory.path}/preferences.sqlite'),
+          openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+            file: file,
+            admission: admission,
+            legacyDatabase: legacy,
+            keys: keys,
+          ),
           existingClient: (policy, budget) {
             expect(
               policy.mayRun(
@@ -225,6 +290,13 @@ void main() {
     final handler = await setupArkBackgroundTask(
       resources,
       directory,
+      preferencesFile: File('${directory.path}/preferences.sqlite'),
+      openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+        file: file,
+        admission: admission,
+        legacyDatabase: legacy,
+        keys: keys,
+      ),
       existingClient: (policy, budget) => client,
     );
     await handler();
@@ -236,6 +308,13 @@ void main() {
     final handler = await setupArkBackgroundTask(
       resources,
       directory,
+      preferencesFile: File('${directory.path}/preferences.sqlite'),
+      openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+        file: file,
+        admission: admission,
+        legacyDatabase: legacy,
+        keys: keys,
+      ),
       existingClient: (_, _) {
         clients++;
         return _Client();
@@ -253,6 +332,13 @@ void main() {
       setupArkBackgroundTask(
         resources,
         directory,
+        preferencesFile: File('${directory.path}/preferences.sqlite'),
+        openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+          file: file,
+          admission: admission,
+          legacyDatabase: legacy,
+          keys: keys,
+        ),
         existingClient: (_, _) {
           clients++;
           return _Client();
@@ -263,5 +349,25 @@ void main() {
     expect(clients, 0);
     expect(Directory('${directory.path}/ark').existsSync(), isFalse);
     expect(File('${directory.path}/ark-funding.sqlite').existsSync(), isFalse);
+  });
+
+  test('headless Ark defers without a ready Preferences owner', () async {
+    await root('mainnet');
+    final missing = File('${directory.path}/missing-preferences.sqlite');
+    final handler = await setupArkBackgroundTask(
+      resources,
+      directory,
+      preferencesFile: missing,
+      openPreferences: (file, admission, legacy) => PreferencesTesting.open(
+        file: file,
+        admission: admission,
+        legacyDatabase: legacy,
+        keys: keys,
+      ),
+      existingClient: (_, _) => fail('Ark must not open without Preferences'),
+    );
+    expect((await handler()).shouldRetry, isTrue);
+    expect(missing.existsSync(), isFalse);
+    expect(Directory('${directory.path}/ark').existsSync(), isFalse);
   });
 }

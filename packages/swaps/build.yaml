@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            boltz_swaps_database: lib/src/data/db/boltz_swaps_database.dart
+          schema_dir: lib/src/data/db/schemas/
+          test_dir: test/migrations_test/

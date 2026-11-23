@@ -1,3 +1,5 @@
+import 'package:labels/labels.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,13 +9,16 @@ import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:electrum/electrum.dart' show ElectrumFailure;
-import 'package:electrum/setup.dart' show RegtestElectrumProfile;
+import 'package:primitives/primitives.dart' show Failure;
+import 'package:electrum/setup.dart'
+    show RegtestElectrumProfile, ReadElectrumPreferences;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/migration.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
@@ -42,14 +47,13 @@ import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
+import 'package:bb_mobile/features/receive/public/receive_setup.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
@@ -70,7 +74,7 @@ import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
-    show SyncFailure, SyncStorageFailure, WalletConnectionPort;
+    show Sync, Wallet, SyncFailure, SyncStorageFailure, WalletConnectionPort;
 
 final GetIt locator = GetIt.instance;
 
@@ -80,19 +84,22 @@ class AppLocator {
     GetIt locator, {
     required String databasePath,
   }) async {
-    final selectedDatabasePath = await SettingsRecoverBullBindings.setup(
+    final settings = await SettingsRecoverBullBindings.setup(
       locator,
       databasePath: databasePath,
     );
     WalletRecoverBullBindings.setup(locator);
+    final family = settings.path == databasePath ? null : 'regtest';
     final feature = await RecoverBullFeature.mount(
-      databasePath: selectedDatabasePath,
+      server: settings.server,
       secrets: locator<Secrets>(),
       wallets: locator<RecoverBullWalletPort>(),
       environment: locator<RecoverBullEnvironmentPort>(),
-      legacy: locator<RecoverBullLegacySettingsPort>(),
+      permission: locator<RecoverBullPermissionPort>(),
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
+      admission: locator<RuntimeAdmission>(),
+      cutover: locator<RecoverBullCutover>(instanceName: family),
     );
     locator.registerSingleton<RecoverBullFeature>(
       feature,
@@ -102,10 +109,28 @@ class AppLocator {
   }
 
   /// Call this in the `main` function **before** `runApp()`
-  static Future<Result<void, ElectrumFailure>> setup(
+  static Future<Result<void, Failure>> setup(
     GetIt locator,
     SqliteDatabase database, {
-    required String payjoinDatabasePath,
+    required Future<Result<Labels, LabelFailure>> Function(
+      Future<Sync> Function() sync,
+      Future<Wallet> Function(String) openWallet,
+    )
+    openLabels,
+    required Future<Result<Electrum, ElectrumFailure>> Function(
+      ReadElectrumPreferences readPreferences,
+      Tor Function() tor,
+    )
+    openElectrum,
+    required Future<Result<Preferences, PreferencesFailure>> Function(
+      SqliteDatabase legacy,
+    )
+    openPreferences,
+    required Future<Result<Mempool, MempoolFailure>> Function(
+      Tor Function() tor,
+      TorHttpClientFactory http,
+    )
+    openMempool,
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
@@ -172,18 +197,46 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
+    final electrum = await openElectrum(
+      () => locator<ConnectionPreferencesReader>().readConnectionPreferences(),
+      () => locator<Tor>(),
+    );
+    if (electrum case Err(:final failure)) return Err(failure);
+    CoreLocator.setupElectrum(
+      locator,
+      (electrum as Ok<Electrum, ElectrumFailure>).value,
+    );
     // Lazy registrations only; storage is prepared before network repositories.
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
     // The proper solution is to refactor the code to remove this dependency
-    CoreLocator.registerPorts(locator);
+    final labels = await CoreLocator.registerPorts(
+      locator,
+      openLabels: openLabels,
+    );
+    if (labels case Err(:final failure)) return Err(failure);
+    final openedPreferences = await openPreferences(database);
+    if (openedPreferences case Err(:final failure)) return Err(failure);
+    final preferences =
+        (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
     final repositories = await CoreLocator.registerRepositories(
       locator,
+      preferences: preferences,
       regtestProfile: regtestProfile,
     );
     if (repositories case Err()) return repositories;
-    CoreLocator.registerServices(locator);
+    final mempool = await openMempool(
+      () => locator<Tor>(),
+      locator<TorHttpClientFactory>(),
+    );
+    if (mempool case Err(:final failure)) return Err(failure);
+    locator.registerSingleton<Mempool>(
+      (mempool as Ok<Mempool, MempoolFailure>).value,
+      dispose: (value) async {
+        final _ = await value.close();
+      },
+    );
     locator.registerLazySingleton(() {
       final preferences = SharedPreferencesAsync();
       return Fees.open(
@@ -195,12 +248,7 @@ class AppLocator {
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
     CoreLocator.registerUsecases(locator);
-    PayjoinSetup.setup(
-      locator,
-      database,
-      payjoinDatabasePath,
-      startRecovery: startPayjoinRecovery,
-    );
+    PayjoinSetup.setup(locator, startRecovery: startPayjoinRecovery);
 
     SyncLocator.setupForeground(locator);
 
@@ -225,7 +273,17 @@ class AppLocator {
     );
     // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
-    WalletLocator.setup(locator);
+    WalletLocator.setup(
+      locator,
+      receiveAddress: (id) =>
+          locator<GetTransferReceiveAddressUsecase>().execute(id),
+      nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
+          locator<NextUnusedReceiveAddressUsecase>().execute(
+            id,
+            excludedAddresses: excludedAddresses,
+          ),
+    );
+    AddressViewLocator.setup(locator);
     // Inventory survives disabled routing and missing endpoint build defines.
     final _ = await prepareArkCustodyReferences(
       locator,
@@ -274,8 +332,6 @@ class AppLocator {
     DefaultWalletsLocator.setup(locator);
     AutoBuyLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
-    ExchangeSettingsLocator.setup(locator);
-    ExchangeSupportChatLocator.setup(locator);
     BuyLocator.setup(locator);
     SellLocator.setup(locator);
     WithdrawLocator.setup(locator);
@@ -293,7 +349,6 @@ class AppLocator {
     );
 
     FundExchangeLocator.setup(locator);
-    AddressViewLocator.setup(locator);
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);

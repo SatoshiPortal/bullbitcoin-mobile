@@ -95,3 +95,9 @@ final class MempoolValidationNetworkMismatchFailure extends MempoolFailure {
 final class MempoolUnexpectedFailure extends MempoolFailure {
   const MempoolUnexpectedFailure([super.logMessage]);
 }
+
+/// The encrypted store could not be admitted. Deferred failures can be retried.
+final class MempoolStorageUnavailableFailure extends MempoolFailure {
+  final bool deferred;
+  const MempoolStorageUnavailableFailure({required this.deferred});
+}

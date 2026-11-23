@@ -2,17 +2,13 @@ import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidentia
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -31,38 +27,36 @@ class _MockGetUserSummary extends Mock
 
 /// Returns [failure] for every funding-details request, so the bloc lands in
 /// the error state the card renders.
-class _FailingRepository implements FundingRepository {
-  final FundExchangeFailure failure;
+class _FailingRepository implements ExchangeFunding {
+  final ExchangeFailure failure;
 
   const _FailingRepository(this.failure);
 
   @override
-  Future<Result<FundingDetails, FundExchangeFailure>> getFundingDetails({
+  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
   }) async => Err(failure);
 
   @override
-  Future<Result<List<FundingInstitution>, FundExchangeFailure>>
-  listInstitutions({required FundingJurisdiction jurisdiction}) async =>
-      Err(failure);
+  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
+    required FundingJurisdiction jurisdiction,
+  }) async => Err(failure);
 
   @override
-  Future<Result<void, FundExchangeFailure>>
-  registerResponsibilityConsent() async => Err(failure);
+  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent() async =>
+      Err(failure);
 }
 
-FundExchangeBloc _blocFor(FundExchangeFailure failure) {
+FundExchangeBloc _blocFor(ExchangeFailure failure) {
   final repository = _FailingRepository(failure);
   return FundExchangeBloc(
     getFundExchangeUserSummaryUsecase: _MockGetUserSummary(),
-    getFundingDetailsUsecase: GetFundingDetailsUsecase(
-      fundingRepository: repository,
-    ),
+    getFundingDetailsUsecase: GetFundingDetailsUsecase(funding: repository),
     listFundingInstitutionsUsecase: ListFundingInstitutionsUsecase(
-      fundingRepository: repository,
+      funding: repository,
     ),
     registerResponsibilityConsentUsecase: RegisterResponsibilityConsentUsecase(
-      fundingRepository: repository,
+      funding: repository,
     ),
     openFundingPaymentLinkUsecase: const OpenFundingPaymentLinkUsecase(
       externalLink: _UnusedExternalLink(),
@@ -83,7 +77,7 @@ class _UnusedExternalLink implements ExternalLinkPort {
 
 Future<BullInfoCard> _pumpCard(
   WidgetTester tester,
-  FundExchangeFailure failure, {
+  ExchangeFailure failure, {
   bool triggerFailure = true,
 }) async {
   late final FundExchangeBloc bloc;
@@ -129,7 +123,10 @@ void main() {
   testWidgets('shows the failure headline and message', (tester) async {
     final card = await _pumpCard(
       tester,
-      const FundExchangeKycIncompleteFailure(_rawReason),
+      const ExchangeFundingFailure(
+        ExchangeFundingProblem.kycIncomplete,
+        _rawReason,
+      ),
     );
 
     expect(card.title, 'KYC Requirements Missing');
@@ -144,7 +141,7 @@ void main() {
   ) async {
     final card = await _pumpCard(
       tester,
-      const FundExchangeUnexpectedFailure(),
+      const ExchangeUnexpectedFailure(),
       triggerFailure: false,
     );
 
@@ -157,7 +154,7 @@ void main() {
   ) async {
     final card = await _pumpCard(
       tester,
-      const FundExchangeUnexpectedFailure(_rawReason),
+      const ExchangeUnexpectedFailure(_rawReason),
     );
 
     expect(card.title, isNull);
@@ -170,7 +167,7 @@ void main() {
   testWidgets('never renders the raw reason', (tester) async {
     final card = await _pumpCard(
       tester,
-      const FundExchangeUnexpectedFailure(_rawReason),
+      const ExchangeUnexpectedFailure(_rawReason),
     );
 
     final painted = '${card.title} ${card.description}';

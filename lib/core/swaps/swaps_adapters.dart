@@ -10,29 +10,8 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart';
-
-/// Opens the engine's own database file. Same platform choices as the app
-/// database (documents dir, WAL, busy timeout, cross-isolate sharing) — the
-/// engine receives the configured executor from composition.
-QueryExecutor openBoltzSwapsDbConnection() {
-  return driftDatabase(
-    name: swaps.BoltzSwapsDatabase.name,
-    native: DriftNativeOptions(
-      databaseDirectory: getApplicationDocumentsDirectory,
-      shareAcrossIsolates: true,
-      setup: (database) {
-        database.execute('PRAGMA busy_timeout = 2000;');
-        database.execute('PRAGMA journal_mode = WAL;');
-        database.execute('PRAGMA synchronous = FULL;');
-      },
-    ),
-  );
-}
 
 /// App logger behind the package's silent-by-default log seam.
 class AppSwapsLog implements swaps.SwapsLog {

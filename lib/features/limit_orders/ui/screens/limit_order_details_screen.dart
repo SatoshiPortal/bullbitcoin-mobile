@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_state.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';

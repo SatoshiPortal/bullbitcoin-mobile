@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';

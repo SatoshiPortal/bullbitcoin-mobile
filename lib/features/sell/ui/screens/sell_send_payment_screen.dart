@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';

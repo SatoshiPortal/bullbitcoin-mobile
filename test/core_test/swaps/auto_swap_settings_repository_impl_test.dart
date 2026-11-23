@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:swaps/swaps.dart' show BoltzSwapsDatabase;
 import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:drift/native.dart';
@@ -21,12 +21,12 @@ SettingsEntity _settings(Environment environment) => SettingsEntity(
 );
 
 void main() {
-  late SqliteDatabase database;
+  late BoltzSwapsDatabase database;
   late _MockSettingsRepository settingsRepository;
   late AutoSwapSettingsRepositoryImpl repository;
 
   setUp(() {
-    database = SqliteDatabase(NativeDatabase.memory());
+    database = BoltzSwapsDatabase(NativeDatabase.memory());
     settingsRepository = _MockSettingsRepository();
     repository = AutoSwapSettingsRepositoryImpl(database, settingsRepository);
   });

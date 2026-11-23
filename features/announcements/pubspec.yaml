@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   bull_ui:
+  drift: ^2.35.4
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -17,11 +18,13 @@ dependencies:
   freezed_annotation: ^3.1.0
   intl: any
   meta: ^1.17.0
-  preferences:
+  legacy_storage:
   primitives:
+  secrets:
 
 dev_dependencies:
   build_runner: ^2.10.4
+  drift_dev: ^2.35.3
   flutter_test:
     sdk: flutter
   freezed: ^4.0.1

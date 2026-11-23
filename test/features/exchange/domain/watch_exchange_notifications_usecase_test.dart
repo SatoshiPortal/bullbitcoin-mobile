@@ -7,11 +7,9 @@ import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -22,8 +20,24 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
-class _MockNotificationRepository extends Mock
-    implements ExchangeNotificationRepository {}
+abstract interface class _Notifications {
+  Stream<NotificationMessage> get messages;
+  Future<Result<void, ExchangeFailure>> connect();
+  Future<Result<void, ExchangeFailure>> reconnect();
+  void disconnect();
+}
+
+class _MockNotificationRepository extends Mock implements _Notifications {}
+
+Exchange _exchange(_Notifications notifications) => exchangeForTesting(
+  notifications: (
+    messages: () => notifications.messages,
+    connect: notifications.connect,
+    reconnect: notifications.reconnect,
+    disconnect: notifications.disconnect,
+    close: () async {},
+  ),
+);
 
 class _Access extends Mock implements ExchangeAccessRepository {}
 
@@ -46,7 +60,7 @@ void main() {
 
   WatchExchangeNotificationsUsecase build() =>
       WatchExchangeNotificationsUsecase(
-        exchangeNotificationRepository: repository,
+        exchange: _exchange(repository),
         access: access,
         settingsRepository: settings,
       );
@@ -101,29 +115,23 @@ void main() {
     ], reason: 'anything else would trigger a needless account refetch');
   });
 
-  // The repository is the boundary; the use-case only lifts the family so no
-  // core type reaches the cubit.
-  test('a connect failure is lifted into the feature family', () async {
+  test('a connect failure is forwarded as an Exchange failure', () async {
     when(repository.connect).thenAnswer(
-      (_) async =>
-          const Err(ExchangeNotificationConnectFailure('connect failed: Type')),
+      (_) async => const Err(
+        ExchangeNotificationsUnavailableFailure('connect failed: Type'),
+      ),
     );
 
     final failure = _failureOf(await build().connect());
 
     expect(failure, isA<ExchangeNotificationsUnavailableFailure>());
-    expect(
-      failure,
-      isNot(isA<ExchangeNotificationFailure>()),
-      reason: 'the core family must not escape the use-case',
-    );
     expect(failure.logMessage, 'connect failed: Type');
   });
 
-  test('a reconnect failure is lifted into the feature family', () async {
-    when(
-      repository.reconnect,
-    ).thenAnswer((_) async => const Err(ExchangeNotificationConnectFailure()));
+  test('a reconnect failure is forwarded as an Exchange failure', () async {
+    when(repository.reconnect).thenAnswer(
+      (_) async => const Err(ExchangeNotificationsUnavailableFailure()),
+    );
 
     expect(
       _failureOf(await build().reconnect()),
@@ -157,7 +165,7 @@ void main() {
           .thenAnswer((_) async => const Ok('active'));
       when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
           .thenAnswer((_) async => const Ok(null));
-      final pending = Completer<Result<void, ExchangeNotificationFailure>>();
+      final pending = Completer<Result<void, ExchangeFailure>>();
       when(repository.connect).thenAnswer((_) => pending.future);
       var disconnects = 0;
       final realAccess = ExchangeAccessRepositoryImpl(
@@ -171,7 +179,7 @@ void main() {
       );
       await realAccess.resolve();
       final usecase = WatchExchangeNotificationsUsecase(
-        exchangeNotificationRepository: repository,
+        exchange: _exchange(repository),
         access: realAccess,
         settingsRepository: settings,
       );
@@ -234,7 +242,7 @@ void main() {
     () async {
       var epoch = 1;
       when(() => access.epoch).thenAnswer((_) => epoch);
-      final pending = Completer<Result<void, ExchangeNotificationFailure>>();
+      final pending = Completer<Result<void, ExchangeFailure>>();
       when(repository.connect).thenAnswer((_) => pending.future);
       when(repository.disconnect).thenReturn(null);
       final connection = build().connect();
@@ -264,7 +272,7 @@ void main() {
         .thenAnswer((_) async => const Ok('active'));
     when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async => const Ok(null));
-    final pending = Completer<Result<void, ExchangeNotificationFailure>>();
+    final pending = Completer<Result<void, ExchangeFailure>>();
     var calls = 0;
     var connected = false;
     when(repository.connect).thenAnswer((_) async {
@@ -289,7 +297,7 @@ void main() {
     );
     await realAccess.resolve();
     final usecase = WatchExchangeNotificationsUsecase(
-      exchangeNotificationRepository: repository,
+      exchange: _exchange(repository),
       access: realAccess,
       settingsRepository: settings,
     );

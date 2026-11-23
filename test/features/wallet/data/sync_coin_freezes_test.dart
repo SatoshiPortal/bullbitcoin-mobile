@@ -4,9 +4,8 @@ import 'dart:typed_data';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
+import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart'
@@ -64,9 +63,7 @@ void main() {
       WalletUtxoRepositoryImpl(
         walletMetadataDatasource: metadata,
         labelsFacade: labels,
-        walletValuesDatasource: SyncWalletValuesDatasource(
-          load: (_) async => wallet,
-        ),
+        loadWallet: (_) async => Ok(wallet),
         freezesDatasource: SyncFreezesDatasource(sync: () async => owner),
       );
 

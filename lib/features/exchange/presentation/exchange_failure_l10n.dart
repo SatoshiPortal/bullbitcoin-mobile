@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 
 /// User-facing, localized message for each [ExchangeFailure]. The `sealed`
@@ -33,6 +33,18 @@ extension ExchangeFailureL10n on ExchangeFailure {
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
     ExchangeUnexpectedFailure() ||
+    ExchangeCredentialReadFailure() ||
+    ExchangeStatisticsUnavailableFailure() ||
+    ExchangeDocumentUploadFailure() ||
+    ExchangeConsentRegistrationFailure() ||
+    ExchangeChatLoadMessagesFailure() ||
+    ExchangeChatSendMessageFailure() ||
+    ExchangeChatLoadAttachmentFailure() ||
+    ExchangeLimitOrderFailure() ||
+    ExchangeFundingFailure() ||
+    ExchangeVirtualIbanNotAvailableFailure() ||
+    ExchangeEuResidencyRequiredFailure() ||
+    ExchangeOrderInventoryUnavailableFailure() ||
     ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

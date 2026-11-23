@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/fund_exchange/data/funding_datasource_exception.dart';
+import 'legacy_funding_datasource_exception.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

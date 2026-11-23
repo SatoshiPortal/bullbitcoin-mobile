@@ -3,7 +3,7 @@ import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';

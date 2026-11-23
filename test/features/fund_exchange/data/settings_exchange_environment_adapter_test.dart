@@ -1,15 +1,12 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/fund_exchange/data/funding_repository_impl.dart';
-import 'package:bb_mobile/features/fund_exchange/data/settings_exchange_environment_adapter.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 class _Settings extends Mock implements Preferences {}
-
-class _Repository extends Mock implements FundingRepository {}
 
 void main() {
   test('regtest refuses funding before either repository', () async {
@@ -23,27 +20,22 @@ void main() {
         ),
       ),
     );
-    final mainnet = _Repository();
-    final testnet = _Repository();
-    when(() => mainnet.registerResponsibilityConsent())
-        .thenAnswer((_) async => const Ok(null));
-    final repository = FundingRepositoryImpl(
-      bullbitcoinFundingRepository: mainnet,
-      bullBitcoinTestnetFundingRepository: testnet,
-      exchangeEnvironment: SettingsExchangeEnvironmentAdapter(
-        getSettingsUsecase: settings,
+    final exchange = exchangeWithTransportForTesting(
+      readSession: () => readLegacyExchangeSession(
+        preferences: settings,
+        readEpoch: () => 0,
+        readKey: ({required isTestnet}) async => fail('unexpected key read'),
       ),
+      openClient: (_, _) => fail('unexpected HTTP request'),
     );
 
     expect(
-      await repository.registerResponsibilityConsent(),
-      isA<Err<void, FundExchangeFailure>>().having(
+      await exchange.funding.registerResponsibilityConsent(),
+      isA<Err<void, ExchangeFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<FundExchangeUnsupportedNetworkFailure>(),
+        isA<ExchangeUnsupportedNetworkFailure>(),
       ),
     );
-    verifyZeroInteractions(mainnet);
-    verifyZeroInteractions(testnet);
   });
 }

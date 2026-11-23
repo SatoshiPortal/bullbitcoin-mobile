@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
 
 final class ExchangeAuthRepositoryImpl implements ExchangeAuthRepository {

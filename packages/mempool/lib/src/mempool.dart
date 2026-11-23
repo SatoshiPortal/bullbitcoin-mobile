@@ -1,3 +1,11 @@
+import 'dart:io';
+
+import 'package:legacy_storage/coordination.dart';
+import 'package:secrets/secrets.dart';
+
+import 'data/mempool_store.dart';
+import 'data/mempool_import.dart';
+
 import 'package:bull_tor/tor.dart';
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
@@ -22,12 +30,60 @@ part 'mempool_servers.dart';
 
 /// Configured servers and explorer links for Bitcoin and Liquid.
 class Mempool {
+  final MempoolStore? _store;
   final MempoolLinks links;
   final MempoolServerSettings servers;
 
-  const Mempool._({required this.links, required this.servers});
+  const Mempool._({required this.links, required this.servers, this._store});
 
-  static Mempool open({
+  @useResult
+  static Future<Result<Mempool, MempoolFailure>> open({
+    required File file,
+    required RuntimeAdmission admission,
+    required Tor Function() tor,
+    required TorHttpClientFactory torHttp,
+  }) async {
+    final opened = await MempoolStore.open(file, admission, existing: true);
+    switch (opened) {
+      case Err(:final failure):
+        return Err(
+          MempoolStorageUnavailableFailure(
+            deferred:
+                failure is DatabaseNotReady ||
+                failure is DatabaseKeyUnavailable &&
+                    failure.reason == DatabaseKeyProblem.locked,
+          ),
+        );
+      case Ok(:final value):
+        final readiness = await readMempoolReadiness(value.database);
+        if (readiness case Ok(value: final ready)
+            when ready != OwnerReadiness.pending) {
+          return Ok(
+            _usingDatabase(
+              database: value.database,
+              tor: tor,
+              torHttp: torHttp,
+              store: value,
+            ),
+          );
+        }
+        await value.handle.close();
+        return const Err(MempoolStorageUnavailableFailure(deferred: true));
+    }
+  }
+
+  @useResult
+  Future<Result<void, MempoolFailure>> close() async {
+    try {
+      await _store?.handle.close();
+      return const Ok(null);
+    } on Exception {
+      return const Err(MempoolStorageUnavailableFailure(deferred: true));
+    }
+  }
+
+  static Mempool _usingDatabase({
+    MempoolStore? store,
     required GeneratedDatabase database,
     required Tor Function() tor,
     required TorHttpClientFactory torHttp,
@@ -39,6 +95,7 @@ class Mempool {
       serverRepository: repository,
     );
     return Mempool._(
+      store: store,
       links: MempoolLinks._(activeServer),
       servers: MempoolServerSettings._(
         repository: repository,
@@ -51,3 +108,11 @@ class Mempool {
     );
   }
 }
+
+/// Constructs a capability around an injected database for tests only.
+@visibleForTesting
+Mempool createMempoolForTesting({
+  required GeneratedDatabase database,
+  required Tor Function() tor,
+  required TorHttpClientFactory torHttp,
+}) => Mempool._usingDatabase(database: database, tor: tor, torHttp: torHttp);

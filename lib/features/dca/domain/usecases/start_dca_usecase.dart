@@ -1,7 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
@@ -15,14 +13,9 @@ typedef DcaStartData = ({
 
 class StartDcaUsecase {
   final Preferences _settingsRepository;
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Exchange _exchange;
 
-  StartDcaUsecase({
-    required this._settingsRepository,
-    required this._mainnetExchangeUserRepository,
-    required this._testnetExchangeUserRepository,
-  });
+  StartDcaUsecase({required this._settingsRepository, required this._exchange});
 
   @useResult
   Future<Result<DcaStartData, DcaFailure>> execute() async {
@@ -50,9 +43,9 @@ class StartDcaUsecase {
     // "no API key stored" case.
     // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
     UserSummary userSummary;
-    switch (await (isMainnet
-        ? _mainnetExchangeUserRepository.getUserSummary()
-        : _testnetExchangeUserRepository.getUserSummary())) {
+    switch (await _exchange.getUserSummary(
+      isMainnet ? ExchangeEnvironment.mainnet : ExchangeEnvironment.testnet,
+    )) {
       case Ok(:final value):
         userSummary = value;
       case Err(:final failure):

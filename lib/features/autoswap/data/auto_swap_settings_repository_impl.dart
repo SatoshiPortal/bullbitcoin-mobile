@@ -5,15 +5,15 @@ import 'package:primitives/primitives.dart'
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
-import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
+import 'package:bb_mobile/features/autoswap/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:drift/drift.dart';
+import 'package:swaps/storage.dart' show AutoSwapCompanion;
+import 'package:swaps/swaps.dart' show BoltzSwapsDatabase;
 
 class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
-  final SqliteDatabase _database;
+  final BoltzSwapsDatabase _database;
   final Preferences _settingsRepository;
   final StreamController<AutoSwap> _controller =
       StreamController<AutoSwap>.broadcast();

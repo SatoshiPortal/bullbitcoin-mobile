@@ -10,11 +10,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_acco
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_account_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
@@ -28,7 +24,7 @@ import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.da
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show Bbx;
+import 'package:exchange/exchange.dart';
 import 'package:get_it/get_it.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -51,7 +47,7 @@ class ExchangeLocator {
             )).environment.requireHistoricalTestnet(),
         platformAllowed: platformAllowed,
         disconnectNotifications: () async =>
-            locator<ExchangeNotificationRepository>().disconnect(),
+            locator<Exchange>().disconnectNotifications(),
         clearCookies: () async {
           await WebViewCookieManager().clearCookies();
         },
@@ -108,23 +104,13 @@ class ExchangeLocator {
         settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
         expire: locator<ExpireExchangeSessionUsecase>(),
-        mainnetAccountRepository: BbxApiAccountRepository(
-          locator<Bbx>(instanceName: 'mainnetBbxApiClient'),
-        ),
-        testnetAccountRepository: BbxApiAccountRepository(
-          locator<Bbx>(instanceName: 'testnetBbxApiClient'),
-        ),
+        exchange: locator<Exchange>(),
       ),
     );
 
     locator.registerFactory<SaveExchangePreferencesUsecase>(
       () => SaveExchangePreferencesUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
       ),
@@ -132,12 +118,7 @@ class ExchangeLocator {
 
     locator.registerFactory<GetExchangeAnnouncementsUsecase>(
       () => GetExchangeAnnouncementsUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
+        exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
       ),
@@ -165,7 +146,7 @@ class ExchangeLocator {
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
         settingsRepository: locator<settings_contract.Preferences>(),
-        sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
+        exchange: locator<Exchange>(),
       ),
     );
 
@@ -180,8 +161,7 @@ class ExchangeLocator {
       () => WatchExchangeNotificationsUsecase(
         access: locator<ExchangeAccessRepository>(),
         settingsRepository: locator<settings_contract.Preferences>(),
-        exchangeNotificationRepository:
-            locator<ExchangeNotificationRepository>(),
+        exchange: locator<Exchange>(),
       ),
     );
   }

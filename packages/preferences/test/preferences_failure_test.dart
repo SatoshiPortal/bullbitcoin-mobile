@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
-import 'package:preferences/preferences_dao.dart';
-import 'package:preferences/settings_table.drift.dart';
 import 'package:preferences/testing.dart';
 import 'package:primitives/primitives.dart';
 
 class _Dao extends Mock implements PreferencesDao {}
 
-const _row = SettingsRow(
+class _LegacyDao extends Mock implements LegacyPreferencesDao {}
+
+const _row = OwnerSettingsRow(
   id: 1,
   environment: 'mainnet',
   bitcoinUnit: 'sats',
@@ -30,10 +30,12 @@ const _row = SettingsRow(
 
 void main() {
   late _Dao dao;
+  late _LegacyDao legacy;
   late Preferences preferences;
   setUp(() {
     dao = _Dao();
-    preferences = PreferencesTesting.fromDao(dao);
+    legacy = _LegacyDao();
+    preferences = PreferencesTesting.fromDao(dao, legacy: legacy);
     addTearDown(preferences.close);
   });
 
@@ -97,7 +99,7 @@ void main() {
   });
 
   test('display observation reports a read failure and continues', () async {
-    final source = StreamController<SettingsRow?>();
+    final source = StreamController<OwnerSettingsRow?>();
     when(dao.watchSettings).thenAnswer((_) => source.stream);
     final observed = expectLater(
       preferences.watchDisplayPreferences(),
@@ -136,28 +138,15 @@ void main() {
     );
   });
 
-  test('legacy capabilities return their owner failure family', () async {
-    final time = DateTime.utc(2026);
-    when(dao.readDismissals).thenThrow(Exception('read failed'));
-    when(() => dao.dismissAnnouncement('id', time))
-        .thenThrow(Exception('write failed'));
-    when(dao.readRecoverBull).thenAnswer(
-      (_) async => (url: 'http://[invalid', permissionGranted: true),
-    );
-    expect(
-      await preferences.announcementDismissals.read(),
-      isA<Err<List<DismissedAnnouncement>, PreferencesFailure>>(),
-    );
-    expect(
-      await preferences.announcementDismissals.dismiss('id', time),
-      isA<Err<void, PreferencesFailure>>(),
-    );
+  test('RecoverBull permission reads return a Preferences failure', () async {
+    when(() => dao.readRecoverBullPermission(regtest: false))
+        .thenThrow(Exception('permission read failed'));
     expect(
       await preferences.recoverBull.read(),
-      isA<Err<RecoverBullServerPreference?, PreferencesFailure>>().having(
+      isA<Err<bool?, PreferencesFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<PreferencesInvalidFailure>(),
+        isA<PreferencesReadFailure>(),
       ),
     );
   });

@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -14,10 +14,6 @@ import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_us
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_account_info_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -73,21 +69,23 @@ final class _Thrown extends _Refusal {
   bool get isProgrammerError => error is Error;
 }
 
-BbxApiUserRepository _users(_Refusal refusal) => BbxApiUserRepository(
-  api: bbxForTesting(
-    endpoint: testBbxEndpoint,
+Exchange _users(_Refusal refusal) => exchangeWithTransportForTesting(
+  readSession: () async => switch (refusal) {
+    _UnreadableKey() => const Err(ExchangeCredentialReadFailure()),
+    _ => Ok((
+      environment: ExchangeEnvironment.testnet,
+      epoch: 0,
+      apiKey: refusal is _MissingKey ? null : anonymousTestApiKey,
+    )),
+  },
+  openClient: (endpoint, readKey) => bbxForTesting(
+    endpoint: endpoint.toString(),
     adapter: _Throwing(switch (refusal) {
       _Thrown(:final error) => error,
       // Never reached: a credential refusal stops the request first.
       _ => StateError('no request expected'),
     }),
-    readActiveApiKey: switch (refusal) {
-      _MissingKey() => bbxCredentialRead(() async => const Ok(null)),
-      _UnreadableKey() => bbxCredentialRead(
-        () async => const Err(ExchangeApiKeyReadFailure()),
-      ),
-      _Thrown() => bbxCredentialRead(null),
-    },
+    readActiveApiKey: readKey,
   ),
 );
 
@@ -108,7 +106,7 @@ class _GetWallets extends Mock implements GetWalletsUsecase {}
 
 class _Defaults extends Mock implements DefaultWalletsFacade {}
 
-class _Rates extends Mock implements LimitOrderRepository {}
+class _Rates extends Mock implements ExchangeLimitOrders {}
 
 class _ReadDefaults extends Mock implements GetDefaultWalletsUsecase {}
 
@@ -145,19 +143,11 @@ void main() {
     ('a foreign exception', _Thrown(Exception('unexpected server reply'))),
     ('a programmer error', _Thrown(StateError('programmer bug'))),
   ]) {
-    for (final name in [
-      'limit orders',
-      'autobuy status',
-      'autobuy update',
-      'account',
-      'preferences',
-      'upload status',
-    ]) {
+    for (final name in ['limit orders', 'autobuy status', 'autobuy update']) {
       test('$name classifies $label', () async {
         final repo = _users(refusal);
         final summary = GetExchangeUserSummaryUsecase(
-          mainnetExchangeUserRepository: repo,
-          testnetExchangeUserRepository: repo,
+          exchange: repo,
           settingsRepository: _Settings(),
         );
         final defaults = _Defaults();
@@ -178,17 +168,8 @@ void main() {
             _ReadDefaults(),
             _Settings(),
             repo,
-            repo,
           ).execute(enabled: false),
-          'account' => GetAccountInfoUsecase(
-            getExchangeUserSummaryUsecase: summary,
-          ).execute(),
-          'preferences' => GetExchangePreferencesUsecase(
-            getExchangeUserSummaryUsecase: summary,
-          ).execute(),
-          _ => GetSecureFileUploadStatusUsecase(
-            getExchangeUserSummaryUsecase: summary,
-          ).execute(),
+          _ => fail('Unexpected use case name'),
         };
         if (refusal is _Thrown && refusal.isProgrammerError) {
           await expectLater(pending, throwsStateError);
@@ -332,7 +313,6 @@ void main() {
                 summary,
                 read,
                 _Settings(),
-                repo,
                 repo,
               ).execute(enabled: true);
         if (refusal is Error) {

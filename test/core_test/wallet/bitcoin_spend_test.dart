@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 
 // Regression test for a bug where `wallet.tx.build` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
@@ -48,9 +48,10 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure;
 import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+
+import 'support/wallet_model.dart';
+
+import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -249,16 +250,17 @@ void main() {
 
   test('last revealed index read does not reveal an address', () async {
     final native = await BdkTestStore.createWallet(walletModel);
-    final datasource = SyncWalletValuesDatasource(
-      load: (key) => testWalletFromNative(native, key: key),
+    final wallet = await testWalletFromNative(
+      native,
+      key: sync.WalletKey(
+        id: walletModel.id,
+        network: walletModel.network.shared,
+      ),
     );
     final before = native.nextDerivationIndex(
       keychain: bdk.KeychainKind.external_,
     );
-    expect(
-      await datasource.getLastAddressIndex(wallet: walletModel),
-      before - 1,
-    );
+    expect(wallet.addresses.book.now.data?.receiveIndex, before - 1);
     expect(
       native.nextDerivationIndex(keychain: bdk.KeychainKind.external_),
       before,
@@ -286,18 +288,23 @@ void main() {
       ),
     );
 
+    final key = sync.WalletKey(
+      id: walletModel.id,
+      network: walletModel.network.shared,
+    );
+
     expect(
       await datasource.areAddressesMine([
         firstRecipientAddress,
         secondRecipientAddress,
-      ], wallet: walletModel),
+      ], key: key),
       isTrue,
     );
     expect(
       await datasource.areAddressesMine([
         firstRecipientAddress,
         _externalTestnetAddress,
-      ], wallet: walletModel),
+      ], key: key),
       isFalse,
     );
   });
@@ -317,16 +324,7 @@ void main() {
           recipients: _fixedRecipients(150000),
           networkFee: const NetworkFee.relativeSatPerKwu(1000),
           unspendable: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
-          selected: [
-            WalletUtxoModel.bitcoin(
-              txId: utxoLargeTxId,
-              vout: utxoLargeVout,
-              amountSat: BigInt.from(utxoLargeAmountSat),
-              scriptPubkey: Uint8List(0),
-              address: '',
-              isExternalKeyChain: true,
-            ),
-          ],
+          selected: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
           replaceByFee: true,
         ),
         throwsA(isA<StateError>()),
@@ -343,16 +341,7 @@ void main() {
         wallet: walletModel,
         recipients: _fixedRecipients(25000),
         networkFee: const NetworkFee.relativeSatPerKwu(1000),
-        selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoLargeVout,
-            amountSat: BigInt.from(utxoLargeAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-        ],
+        selected: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
         replaceByFee: false,
       );
 
@@ -376,16 +365,7 @@ void main() {
         wallet: walletModel,
         recipients: _fixedRecipients(25000),
         networkFee: const NetworkFee.relativeSatPerKwu(1000),
-        selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoLargeVout,
-            amountSat: BigInt.from(utxoLargeAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-        ],
+        selected: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
         replaceByFee: true,
       );
 
@@ -410,16 +390,7 @@ void main() {
       recipients: _fixedRecipients(sendAmountSat),
       networkFee: const NetworkFee.absolute(feeSat),
       selectedOnly: true,
-      selected: [
-        WalletUtxoModel.bitcoin(
-          txId: utxoLargeTxId,
-          vout: utxoLargeVout,
-          amountSat: BigInt.from(utxoLargeAmountSat),
-          scriptPubkey: Uint8List(0),
-          address: '',
-          isExternalKeyChain: true,
-        ),
-      ],
+      selected: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
     );
 
     final parsed = bdk.Psbt(psbtBase64: psbt);
@@ -509,16 +480,7 @@ void main() {
           wallet: walletModel,
           recipients: _fixedRecipients(utxoSmallAmountSat),
           networkFee: const NetworkFee.relativeSatPerKwu(1000),
-          selected: [
-            WalletUtxoModel.bitcoin(
-              txId: utxoLargeTxId,
-              vout: utxoSmallVout,
-              amountSat: BigInt.from(utxoSmallAmountSat),
-              scriptPubkey: Uint8List(0),
-              address: '',
-              isExternalKeyChain: true,
-            ),
-          ],
+          selected: [(txId: utxoLargeTxId, vout: utxoSmallVout)],
           unspendable: [
             (txId: utxoLargeTxId, vout: utxoLargeVout),
             (txId: utxoLargeTxId, vout: 2),
@@ -541,22 +503,8 @@ void main() {
         networkFee: const NetworkFee.absolute(feeSat),
         selectedOnly: true,
         selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoLargeVout,
-            amountSat: BigInt.from(utxoLargeAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: 1,
-            amountSat: BigInt.from(utxoSmallAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
+          (txId: utxoLargeTxId, vout: utxoLargeVout),
+          (txId: utxoLargeTxId, vout: 1),
         ],
       );
 
@@ -677,22 +625,8 @@ void main() {
         networkFee: const NetworkFee.absolute(feeSat),
         selectedOnly: true,
         selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoLargeVout,
-            amountSat: BigInt.from(utxoLargeAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoSmallVout,
-            amountSat: BigInt.from(utxoSmallAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
+          (txId: utxoLargeTxId, vout: utxoLargeVout),
+          (txId: utxoLargeTxId, vout: utxoSmallVout),
         ],
       );
 
@@ -725,16 +659,7 @@ void main() {
   test('buildPsbt recalculates the remainder when the fee changes', () async {
     const fixedAmountSat = 50000;
     final datasource = _Datasource(fixture);
-    final selected = [
-      WalletUtxoModel.bitcoin(
-        txId: utxoLargeTxId,
-        vout: utxoLargeVout,
-        amountSat: BigInt.from(utxoLargeAmountSat),
-        scriptPubkey: Uint8List(0),
-        address: '',
-        isExternalKeyChain: true,
-      ),
-    ];
+    final selected = [(txId: utxoLargeTxId, vout: utxoLargeVout)];
     final recipients = [
       (address: _externalTestnetAddress, amountSat: fixedAmountSat),
       (address: secondRecipientAddress, amountSat: null),
@@ -782,16 +707,7 @@ void main() {
       recipients: recipients,
       networkFee: const NetworkFee.absolute(feeSat),
       selectedOnly: true,
-      selected: [
-        WalletUtxoModel.bitcoin(
-          txId: utxoLargeTxId,
-          vout: utxoLargeVout,
-          amountSat: BigInt.from(utxoLargeAmountSat),
-          scriptPubkey: Uint8List(0),
-          address: '',
-          isExternalKeyChain: true,
-        ),
-      ],
+      selected: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
     );
 
     expect(
@@ -825,16 +741,7 @@ void main() {
         recipients: recipients,
         networkFee: const NetworkFee.absolute(feeSat),
         selectedOnly: true,
-        selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoLargeVout,
-            amountSat: BigInt.from(utxoLargeAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-        ],
+        selected: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
       );
 
       expect(
@@ -877,16 +784,7 @@ void main() {
         ],
         networkFee: const NetworkFee.absolute(1000),
         selectedOnly: true,
-        selected: [
-          WalletUtxoModel.bitcoin(
-            txId: utxoLargeTxId,
-            vout: utxoSmallVout,
-            amountSat: BigInt.from(utxoSmallAmountSat),
-            scriptPubkey: Uint8List(0),
-            address: '',
-            isExternalKeyChain: true,
-          ),
-        ],
+        selected: [(txId: utxoLargeTxId, vout: utxoSmallVout)],
       ),
       throwsA(isA<InsufficientFundsException>()),
     );
@@ -921,7 +819,7 @@ final class _Datasource {
     required List<({String address, int? amountSat})> recipients,
     required NetworkFee networkFee,
     List<({String txId, int vout})>? unspendable,
-    List<WalletUtxoModel>? selected,
+    List<({String txId, int vout})>? selected,
     bool selectedOnly = false,
     bool replaceByFee = true,
     required WalletModel wallet,
@@ -939,9 +837,7 @@ final class _Datasource {
         RelativeFee(:final satPerKwu) => sync.SpendFeeRate(satPerKwu),
       },
       exclude: {...?unspendable},
-      selected: selected == null
-          ? null
-          : [for (final coin in selected) (txId: coin.txId, vout: coin.vout)],
+      selected: selected,
       selectedOnly: selectedOnly,
       replaceable: replaceByFee,
     ),

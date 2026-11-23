@@ -130,7 +130,7 @@ void main() {
     },
   );
 
-  test('cleanup failure is logged and keeps the result', () async {
+  test('cleanup failure is logged and requests retry', () async {
     final logger = _Logger();
     final result = await BackgroundTaskRunner(
       logger: logger,
@@ -141,7 +141,7 @@ void main() {
       },
     ).run(BackgroundTask.liquidSync);
 
-    expect(result.status, BackgroundTaskExecutionStatus.permanentFailure);
+    expect(result.status, BackgroundTaskExecutionStatus.retry);
     expect(logger.flushes, 1);
     expect(
       logger.messages,
@@ -199,7 +199,7 @@ void main() {
             },
           ),
         ),
-        isTrue,
+        isFalse,
       );
     },
   );

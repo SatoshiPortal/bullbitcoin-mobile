@@ -48,6 +48,12 @@ final class WalletValue<D extends Object> {
     SyncFailure? failure,
   ]) : this._(ValueStatus.stale, revision, failure, data);
 
+  /// The published data, which may be stale, or the read failure.
+  Result<D, SyncFailure> get latest => switch (data) {
+    final value? => Ok(value),
+    null => Err(failure ?? const SyncBusyFailure()),
+  };
+
   /// Same projection: status, generation, failure category and data. A newer
   /// revision with identical data is not a change.
   bool samePublication(WalletValue<D> other) =>
@@ -418,6 +424,9 @@ final class LiquidTxOut {
   @override
   int get hashCode => Object.hash(outpoint, valueSat, isPolicyAsset);
 }
+
+/// Current unspent balance and number of transactions paying an address.
+typedef AddressUsage = ({BigInt balanceSat, int transactionCount});
 
 /// An address derived from the descriptor, without revealing anything.
 /// Bitcoin fills [address]; Liquid fills both forms, [address] confidential.

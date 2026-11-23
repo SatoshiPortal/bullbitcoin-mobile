@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/exchange_settings/ui/widgets/not_logged_in_bottom_sheet.dart';
+import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -64,7 +64,13 @@ void main() {
                         context,
                         onConfirm: confirm,
                       ),
-                      _Sheet.signIn => NotLoggedInBottomSheet.show(context),
+                      _Sheet.signIn => NotLoggedInBottomSheet.show(
+                        context,
+                        message: AppLocalizations.of(context)
+                            .notLoggedInMessage,
+                        onSignIn: () =>
+                            context.goNamed(ExchangeRoute.exchangeHome.name),
+                      ),
                     },
                   ),
                 ),

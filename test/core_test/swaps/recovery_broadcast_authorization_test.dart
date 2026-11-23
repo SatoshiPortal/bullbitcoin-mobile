@@ -5,9 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:preferences/storage.dart';
 import 'package:preferences/testing.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
@@ -17,6 +15,7 @@ import 'package:swaps/swaps.dart';
 import 'package:sync/sync.dart' as sync;
 
 import 'support/real_swap_backends.dart';
+import '../../support/preferences_database.dart';
 
 // Selects a real local Electrum endpoint and executes the actual sync call.
 // Neither the adapter nor decoding/broadcast/repository logic is replaced.
@@ -133,7 +132,7 @@ void main() {
                 socket.write('${jsonEncode(response)}\n');
               });
         });
-        final appDb = SqliteDatabase(NativeDatabase.memory());
+        final appDb = await createPreferencesDatabase();
         await appDb.customStatement(
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 WHERE id=1',
         );

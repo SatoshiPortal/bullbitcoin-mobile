@@ -23,6 +23,10 @@ void main() {
 
   // Background tasks run only when this is true, so that only the foreground
   // app ever migrates the database (#3045).
+  test('the split-v1 source stays at the last published schema', () {
+    expect(SqliteDatabase.currentSchemaVersion, 16);
+  });
+
   group('isFileAtCurrentSchema', () {
     test('is false, and creates nothing, when the database does not exist', () {
       expect(SqliteDatabase.isFileAtCurrentSchema(file), isFalse);

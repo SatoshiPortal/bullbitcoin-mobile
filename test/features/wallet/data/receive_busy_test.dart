@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 
@@ -15,7 +14,8 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/data/wallet_address_repository_impl.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -24,8 +24,6 @@ import 'package:sync/sync.dart';
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
-
-class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 class _Labels extends Mock implements Labels {}
 
@@ -86,10 +84,10 @@ void main() {
         when(() => metadata.fetch(origin)).thenAnswer((_) async => row);
         when(() => labels.fetch(reference: any(named: 'reference')))
             .thenAnswer((_) async => Ok([]));
-        repository = WalletAddressRepository(
+        repository = WalletAddressRepositoryImpl(
           native: native,
           walletMetadataDatasource: metadata,
-          walletValuesDatasource: _Values(),
+          loadWallet: (_) async => throw StateError('Unexpected address read'),
           labelsFacade: labels,
         );
       });

@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -12,7 +13,6 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
 import 'package:announcements/setup.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show SwapFacade;
-import 'package:preferences/preferences.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
@@ -20,7 +20,7 @@ import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/coins/public/coins_facade.dart';
+import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
@@ -68,6 +68,7 @@ class AppRouter {
 
   static final _exchangeConfig = ExchangeRouterConfig(
     networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
+    loadKyc: () => locator<ExchangeFacade>().loadKyc(),
     isSuperuser: (context) =>
         context.read<SettingsCubit>().state.isSuperuser ?? false,
     homePath: WalletRoute.walletHome.path,
@@ -107,6 +108,12 @@ class AppRouter {
         context.pushNamed(ExchangeRoute.exchangeHome.name);
     }
   }
+
+  static final _exchangeFeature = ExchangeRouter.mount(
+    _exchangeConfig,
+    exchange: () => locator<Exchange>(),
+    settings: SettingsRouter.exchangeSettingsHost,
+  );
 
   static void _onBackupTestSucceeded(BuildContext context) {
     WalletRecoverBullBindings.tested(context);
@@ -200,20 +207,25 @@ class AppRouter {
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),
-          ...ExchangeRouter.routes(_exchangeConfig),
+          ...ExchangeRouter.routes(
+            _exchangeConfig,
+            exchangeFeature: _exchangeFeature,
+          ),
         ],
       ),
       ExchangeRouter.authRoute(_exchangeConfig),
-      ExchangeRouter.supportChatRoute(_exchangeConfig),
+      ?_exchangeFeature.supportChatRoute,
       OnboardingRouter.route,
       ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(
+        loadCoinSummary: (id) => locator<Coins>().summary(id),
         onOpenCoins: (context, wallet) =>
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
         accessRoutes: locator<AccessFeature>().routes.settings,
+        exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,
         priceRoutes: locator<BitcoinPriceFeature>().routes,

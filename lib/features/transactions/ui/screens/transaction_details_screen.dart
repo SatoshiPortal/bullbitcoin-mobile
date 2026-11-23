@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart';
@@ -202,9 +202,10 @@ class TransactionDetailsScreen extends StatelessWidget {
           ),
         const Gap(16),
         if (isOutgoing == true &&
-            walletTransaction?.isConfirmed == false &&
-            walletTransaction?.isRbf == true &&
-            walletTransaction?.isBitcoin == true &&
+            walletTransaction != null &&
+            !walletTransaction.isConfirmed &&
+            walletTransaction.isRbf &&
+            walletTransaction.isBitcoin &&
             wallet?.signsLocally == true &&
             tx?.txId != null &&
             tx?.isSwap != true)
@@ -213,7 +214,13 @@ class TransactionDetailsScreen extends StatelessWidget {
             onPressed: () {
               context.pushNamed(
                 ReplaceByFeeRoute.replaceByFeeFlow.name,
-                extra: walletTransaction,
+                extra: (
+                  walletId: walletTransaction.walletId,
+                  txId: walletTransaction.txId,
+                  network: walletTransaction.network,
+                  feeSat: walletTransaction.feeSat,
+                  vsize: walletTransaction.vsize,
+                ),
               );
             },
           ),

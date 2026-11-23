@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/data/broadcast_observation_follow_up.dart';
+import 'package:bb_mobile/features/send/data/broadcast_observation_follow_up.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus, SignedPset, SignedPsbt, SpendReceipt, SyncFailure;
 import 'package:sync/sync.dart' show SyncSpendBlockedFailure;

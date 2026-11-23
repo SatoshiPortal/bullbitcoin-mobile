@@ -1,3 +1,4 @@
+import 'package:sync/sync.dart' show Keychain;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart'
 import 'package:bb_mobile/features/receive/ui/widgets/receive_advanced_settings.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' show EdgeInsetsDirectional;
@@ -466,9 +466,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
         );
         return;
       }
-      final chain = address.keyChain == WalletAddressKeyChain.external
-          ? '0'
-          : '1';
+      final chain = address.keyChain == Keychain.external ? '0' : '1';
       SignersNavigation.verifyLedger(
         context,
         network: wallet.network.environment,
@@ -498,9 +496,7 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
         );
         return;
       }
-      final chain = address.keyChain == WalletAddressKeyChain.external
-          ? '0'
-          : '1';
+      final chain = address.keyChain == Keychain.external ? '0' : '1';
       SignersNavigation.verifyBitBox(
         context,
         network: wallet.network.environment,

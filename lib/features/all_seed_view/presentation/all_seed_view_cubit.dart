@@ -11,7 +11,7 @@ import 'package:access/access.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 part 'all_seed_view_cubit.freezed.dart';
 part 'all_seed_view_state.dart';
 

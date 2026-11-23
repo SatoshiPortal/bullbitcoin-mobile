@@ -2,14 +2,21 @@ import 'package:preferences/testing.dart';
 
 import 'dart:io';
 
-import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/migration.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show Secrets;
+import 'package:secrets/testing.dart';
 
 import '../../../migrations_test/bull_database/generated/schema_v15.dart'
     as v15;
@@ -34,9 +41,44 @@ void main() {
           );
           await old.close();
         }
-        var database = SqliteDatabase(NativeDatabase(file));
-        var datasource = PreferencesDao(database);
-        var reader = PreferencesTesting.fromDao(datasource);
+        FakeSecureStoragePlatform().install();
+        final keys = Secrets(scratchDirectory: () async => dir.path)
+            .databaseKeys(module: 'preferences');
+        final source = LegacySourceStore(
+          source: LegacySource(file, SqliteDatabase.currentSchemaVersion),
+          create: SqliteDatabase.new,
+        );
+        final ownerFile = File('${dir.path}/owner.sqlite');
+        final cutover = StorageCutover(
+          directory: Directory('${dir.path}/coordination'),
+          legacy: source,
+          expectedOwners: splitV1Owners,
+          participants: [
+            PreferencesImport(
+              file: ownerFile,
+              defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+              testingKeys: keys,
+            ),
+          ],
+        );
+        Future<Preferences> open(RuntimeAdmission admission) async {
+          addTearDown(admission.close);
+          final result = await PreferencesTesting.open(
+            file: ownerFile,
+            admission: admission,
+            legacyDatabase: await source.open(admission),
+            keys: keys,
+          );
+          final reader = (result as Ok<Preferences, PreferencesFailure>).value;
+          addTearDown(reader.close);
+          return reader;
+        }
+
+        final initial =
+            (await cutover.prepare()
+                    as Ok<RuntimeAdmission, LegacyImportFailure>)
+                .value;
+        var reader = await open(initial);
         expect(
           ((await reader.fetch()).fold(
             (value) => value,
@@ -54,12 +96,11 @@ void main() {
           isA<Ok<void, SettingsFailure>>(),
         );
         await reader.close();
-        await database.close();
-        database = SqliteDatabase(NativeDatabase(file));
-        addTearDown(database.close);
-        datasource = PreferencesDao(database);
-        reader = PreferencesTesting.fromDao(datasource);
-        addTearDown(reader.close);
+        await initial.close();
+        reader = await open(
+          (await cutover.admit() as Ok<RuntimeAdmission, LegacyImportFailure>)
+              .value,
+        );
         final saved = (await reader.fetch()).fold(
           (value) => value,
           (failure) => throw Exception('Preferences read failed'),

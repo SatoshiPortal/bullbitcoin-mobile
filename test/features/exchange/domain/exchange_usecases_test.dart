@@ -3,20 +3,17 @@ import 'dart:async';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../core/exchange/fake_exchange_users.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
@@ -24,14 +21,28 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
-class _MockUserRepository extends Mock implements ExchangeUserRepository {}
+class _MockUserRepository extends Mock implements ExchangeUserOperations {}
 
 class _MockAccess extends Mock implements ExchangeAccessRepository {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockSendSupportChat extends Mock
-    implements SendSupportChatMessageUsecase {}
+abstract interface class _SendSupportChat {
+  Future<Result<void, ExchangeFailure>> execute({
+    required String text,
+    List<SupportChatMessageAttachment>? attachments,
+  });
+}
+
+class _MockSendSupportChat extends Mock implements _SendSupportChat {}
+
+Exchange _withSupport(_SendSupportChat send) => exchangeForTesting(
+  chat: (
+    getMessages: ({page, pageSize}) async => fail('unexpected chat read'),
+    sendMessage: send.execute,
+    getAttachment: (_) async => fail('unexpected attachment read'),
+  ),
+);
 
 SettingsEntity _settings(Environment environment) => SettingsEntity(
   environment: environment,
@@ -71,8 +82,7 @@ void main() {
     test('SaveExchangePreferencesUsecase', () async {
       final failure = _failureOf(
         await SaveExchangePreferencesUsecase(
-          mainnetExchangeUserRepository: mainnetUsers,
-          testnetExchangeUserRepository: testnetUsers,
+          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
           settingsRepository: settings,
           access: access,
         ).execute(language: 'en'),
@@ -85,8 +95,7 @@ void main() {
     test('GetExchangeAnnouncementsUsecase', () async {
       final failure = _failureOf(
         await GetExchangeAnnouncementsUsecase(
-          mainnetExchangeUserRepository: mainnetUsers,
-          testnetExchangeUserRepository: testnetUsers,
+          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
           settingsRepository: settings,
           access: access,
         ).execute(),
@@ -112,20 +121,18 @@ void main() {
       final support = _MockSendSupportChat();
       final results = [
         await GetExchangeAnnouncementsUsecase(
-          mainnetExchangeUserRepository: mainnetUsers,
-          testnetExchangeUserRepository: testnetUsers,
+          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
           settingsRepository: settings,
           access: access,
         ).execute(),
         await SaveExchangePreferencesUsecase(
-          mainnetExchangeUserRepository: mainnetUsers,
-          testnetExchangeUserRepository: testnetUsers,
+          exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
           settingsRepository: settings,
           access: access,
         ).execute(language: 'fr'),
         await GetExchangeWebSettingsUsecase(preferences: settings).execute(),
         await RequestExchangeAccountDeletionUsecase(
-          sendSupportChatMessageUsecase: support,
+          exchange: _withSupport(support),
           settingsRepository: settings,
         ).execute(),
       ];
@@ -154,8 +161,7 @@ void main() {
     );
 
     SaveExchangePreferencesUsecase build() => SaveExchangePreferencesUsecase(
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
       settingsRepository: settings,
       access: access,
     );
@@ -172,7 +178,7 @@ void main() {
           emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
         ),
       ).thenAnswer(
-        (_) async => const Err(ExchangeUserPreferencesSaveFailure('nope')),
+        (_) async => const Err(ExchangePreferencesSaveFailure('nope')),
       );
 
       final result = await build().execute(language: 'en');
@@ -211,9 +217,9 @@ void main() {
     });
 
     test('a failed summary read aborts the write', () async {
-      when(mainnetUsers.getUserSummary).thenAnswer(
-        (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
-      );
+      when(
+        mainnetUsers.getUserSummary,
+      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
 
       final result = await build().execute(currency: 'EUR');
 
@@ -232,15 +238,14 @@ void main() {
 
   group('GetExchangeAnnouncementsUsecase', () {
     GetExchangeAnnouncementsUsecase build() => GetExchangeAnnouncementsUsecase(
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
       settingsRepository: settings,
       access: access,
     );
 
     test('a repository failure is lifted into the feature family', () async {
       when(mainnetUsers.listAnnouncements).thenAnswer(
-        (_) async => const Err(ExchangeUserAnnouncementsUnavailableFailure()),
+        (_) async => const Err(ExchangeAnnouncementsUnavailableFailure()),
       );
 
       expect(
@@ -263,35 +268,32 @@ void main() {
   test('a late announcement failure is stale after an access change', () async {
     var epoch = 1;
     when(() => access.epoch).thenAnswer((_) => epoch);
-    final pending =
-        Completer<Result<List<Announcement>, ExchangeUserFailure>>();
+    final pending = Completer<Result<List<Announcement>, ExchangeFailure>>();
     when(mainnetUsers.listAnnouncements).thenAnswer((_) => pending.future);
     final operation = GetExchangeAnnouncementsUsecase(
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
       settingsRepository: settings,
       access: access,
     ).execute();
     await Future<void>.delayed(Duration.zero);
     epoch++;
-    pending.complete(const Err(ExchangeUserAnnouncementsUnavailableFailure()));
+    pending.complete(const Err(ExchangeAnnouncementsUnavailableFailure()));
     expect(_failureOf(await operation), isA<ExchangeOperationStaleFailure>());
   });
 
   test('a late summary failure cannot affect a newer session', () async {
     var epoch = 1;
     when(() => access.epoch).thenAnswer((_) => epoch);
-    final pending = Completer<Result<UserSummary, ExchangeUserFailure>>();
+    final pending = Completer<Result<UserSummary, ExchangeFailure>>();
     when(mainnetUsers.getUserSummary).thenAnswer((_) => pending.future);
     final operation = SaveExchangePreferencesUsecase(
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
       settingsRepository: settings,
       access: access,
     ).execute(currency: 'EUR');
     await Future<void>.delayed(Duration.zero);
     epoch++;
-    pending.complete(const Err(ExchangeUserNetworkFailure()));
+    pending.complete(const Err(ExchangeNetworkFailure()));
     expect(_failureOf(await operation), isA<ExchangeOperationStaleFailure>());
     verifyNever(
       () => mainnetUsers.saveUserPreference(
@@ -315,10 +317,12 @@ void main() {
           text: any(named: 'text'),
           attachments: any(named: 'attachments'),
         ),
-      ).thenAnswer((_) async => const Err(SendMessageFailure('nope')));
+      ).thenAnswer(
+        (_) async => const Err(ExchangeChatSendMessageFailure('nope')),
+      );
 
       final result = await RequestExchangeAccountDeletionUsecase(
-        sendSupportChatMessageUsecase: sendSupportChat,
+        exchange: _withSupport(sendSupportChat),
         settingsRepository: settings,
       ).execute();
       final failure = _failureOf(result);
@@ -326,8 +330,8 @@ void main() {
       expect(failure, isA<ExchangeAccountDeletionRequestFailure>());
       expect(
         failure,
-        isNot(isA<ExchangeSupportChatFailure>()),
-        reason: 'the support-chat family must not escape the use-case',
+        isNot(isA<ExchangeChatSendMessageFailure>()),
+        reason: 'the chat failure must be mapped to the deletion operation',
       );
     });
 
@@ -341,7 +345,7 @@ void main() {
 
       expect(
         await RequestExchangeAccountDeletionUsecase(
-          sendSupportChatMessageUsecase: sendSupportChat,
+          exchange: _withSupport(sendSupportChat),
           settingsRepository: settings,
         ).execute(),
         isA<Ok<void, ExchangeFailure>>(),

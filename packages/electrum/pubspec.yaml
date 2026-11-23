@@ -1,5 +1,5 @@
 name: electrum
-description: Electrum endpoint policy, legacy Drift storage and transaction lookup.
+description: Electrum endpoint policy, encrypted storage and transaction lookup.
 publish_to: "none"
 version: 0.1.0
 
@@ -18,6 +18,9 @@ dependencies:
   drift: ^2.35.4
   meta: ^1.17.0
   primitives:
+  legacy_storage:
+  secrets:
+  sqlite3: ^3.9.1
   socks5_proxy: ^2.1.2
   sync:
 

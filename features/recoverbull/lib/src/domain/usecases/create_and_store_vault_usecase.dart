@@ -91,7 +91,7 @@ final class CreateAndStoreVaultUsecase {
             case Ok(value: final current):
               if (!current.permissionGranted ||
                   current.server != settings.server ||
-                  current.generation != settings.generation) {
+                  !current.sameGeneration(settings)) {
                 return const Err(VaultContextChangedFailure());
               }
           }

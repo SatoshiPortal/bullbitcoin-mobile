@@ -17,6 +17,4 @@ SettingsEntity settingsEntityFromModel(SettingsModel s) => SettingsEntity(
   themeMode: s.themeMode,
   isErrorReportingEnabled: s.isErrorReportingEnabled,
   screenCaptureProtectionEnabled: s.screenCaptureProtectionEnabled,
-  exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
-  exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
 );

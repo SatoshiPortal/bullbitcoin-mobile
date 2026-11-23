@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,7 +22,7 @@ class SupportFacade {
   /// render before any route), opens the web support page instead.
   static void contactSupport(BuildContext context, {String? message}) {
     if (GoRouter.maybeOf(context) != null) {
-      ExchangeSupportChatFacade.open(context, initialMessage: message);
+      ExchangeSupportChatNavigation.open(context, initialMessage: message);
       return;
     }
     unawaited(

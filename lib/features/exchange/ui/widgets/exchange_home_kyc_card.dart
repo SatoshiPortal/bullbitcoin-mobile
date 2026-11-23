@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
@@ -64,7 +64,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
       ),
       titleAlignment: ListTileTitleAlignment.center,
       onTap: () async {
-        await context.pushNamed(ExchangeRoute.exchangeKyc.name);
+        await context.pushNamed(BullExchangeNavigation.kycName);
       },
       trailing: Icon(
         Icons.arrow_forward,

@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
+import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FundExchangeJurisdictionDropdown extends StatelessWidget {

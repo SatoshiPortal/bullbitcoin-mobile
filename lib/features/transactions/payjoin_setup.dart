@@ -9,32 +9,27 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_input_reservation_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_payjoin/migration.dart';
 import 'package:get_it/get_it.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
     show InputReservationPort, WalletConnectionPort, BitcoinSpendStatus;
 
 abstract final class PayjoinSetup {
-  static void setup(
-    GetIt locator,
-    SqliteDatabase database,
-    String databasePath, {
-    bool startRecovery = true,
-  }) {
+  static void setup(GetIt locator, {bool startRecovery = true}) {
     bool? capturedRegtest;
     Future<bool> isCurrent() async {
       try {
@@ -69,7 +64,9 @@ abstract final class PayjoinSetup {
       return openPayjoin(
         regtestHostProfile: profile,
         isCurrent: isCurrent,
-        databasePath: databasePath,
+        admission: locator<RuntimeAdmission>(),
+        productionCutover: locator<PayjoinCutover>(),
+        regtestCutover: locator<PayjoinCutover>(instanceName: 'regtest'),
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
           locator<WalletNativeRuntime>().wallet,
@@ -103,20 +100,20 @@ abstract final class PayjoinSetup {
           spendWallet: locator<WalletFacade>(),
         ),
         labels: locator<PayjoinLabelsPort>(),
-        legacyData: PayjoinLegacyDataAdapter(database),
         log: const AppPayjoinLogAdapter(),
         codec: const AppPayjoinCodecAdapter(),
       );
     }, isCurrent: isCurrent);
     _registerRoles(locator, runtime.payjoin);
-    locator.registerSingleton<PayjoinLifecycle>(runtime);
+    locator.registerSingleton<PayjoinLifecycle>(
+      runtime,
+      dispose: (value) => value.dispose(),
+    );
 
     // Opening the package database and resuming sessions must not delay
     // runApp. Background isolates (workmanager handler) register the roles
     // but must NOT start recovery: the engine's own invariant is that only
-    // the foreground composition root resumes sessions — a BG isolate would
-    // open payjoin.sqlite concurrently with the foreground engine and run
-    // the legacy migration + recovery sweep inside a ~30s iOS budget.
+    // the foreground composition root resumes sessions.
     if (startRecovery) {
       unawaited(
         Future<void>(() async {

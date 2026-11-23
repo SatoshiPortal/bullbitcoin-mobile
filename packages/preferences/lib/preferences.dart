@@ -1,10 +1,4 @@
-export 'src/preferences.dart'
-    show
-        Preferences,
-        AnnouncementDismissals,
-        DismissedAnnouncement,
-        RecoverBullPreferences,
-        RecoverBullServerPreference;
+export 'src/preferences.dart' show Preferences, RecoverBullPreferences;
 export 'src/domain/amount_display_preferences.dart';
 export 'src/domain/settings_entity.dart';
 export 'src/domain/preferences_failure.dart';

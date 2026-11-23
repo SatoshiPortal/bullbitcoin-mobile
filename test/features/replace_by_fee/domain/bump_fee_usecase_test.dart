@@ -17,8 +17,7 @@ import 'package:sync/sync.dart'
         WalletKey,
         WalletRevision;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -178,7 +177,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => TransactionSignatureStatus.valid);
+      ).thenAnswer((_) async => SignatureCheck.valid);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',
@@ -194,7 +193,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => TransactionSignatureStatus.invalid);
+      ).thenAnswer((_) async => SignatureCheck.invalid);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',
@@ -214,7 +213,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => TransactionSignatureStatus.unverifiable);
+      ).thenAnswer((_) async => SignatureCheck.unverifiable);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',

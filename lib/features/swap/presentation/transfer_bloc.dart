@@ -1,4 +1,10 @@
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart'
+    show
+        SendConsolidationRequiredFailure,
+        SendInsufficientBalanceFailure,
+        SendInsufficientFundsForFeesFailure;
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import '../domain/swap_amount_conversion.dart';
@@ -6,11 +12,6 @@ import '../domain/usecases/get_swap_amount_quotes_usecase.dart';
 
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/features/swap/domain/boltz_lockup_estimate_address.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart'
-    show
-        SendConsolidationRequiredFailure,
-        SendInsufficientBalanceFailure,
-        SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
     show
         BitcoinTransactionRecipient,
@@ -27,31 +28,32 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:fees_feature/fee_ui.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show
+        CalculateBitcoinAbsoluteFeesUsecase,
+        PrepareBitcoinSendUsecase,
+        PreparedBitcoinSend,
+        ValidateBitcoinSelectionException,
+        ValidateBitcoinSelectionUsecase;
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -72,8 +74,6 @@ import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletSpendBlockedException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

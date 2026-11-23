@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
@@ -22,13 +20,9 @@ class MockListActiveLimitOrdersUsecase extends Mock
 class MockCancelAllLimitOrdersUsecase extends Mock
     implements CancelAllLimitOrdersUsecase {}
 
-class MockExchangeNotificationService extends Mock
-    implements ExchangeNotificationService {}
-
 void main() {
   late MockListActiveLimitOrdersUsecase listActive;
   late MockCancelAllLimitOrdersUsecase cancelAll;
-  late MockExchangeNotificationService notifications;
   late StreamController<NotificationMessage> notificationStream;
   const canCreate = CanCreateLimitOrderUsecase();
 
@@ -38,16 +32,17 @@ void main() {
   setUp(() {
     listActive = MockListActiveLimitOrdersUsecase();
     cancelAll = MockCancelAllLimitOrdersUsecase();
-    notifications = MockExchangeNotificationService();
     notificationStream = StreamController<NotificationMessage>.broadcast();
-    when(() => notifications.messageStream)
-        .thenAnswer((_) => notificationStream.stream);
   });
 
   tearDown(() => notificationStream.close());
 
-  LimitOrdersCubit buildCubit() =>
-      LimitOrdersCubit(listActive, cancelAll, canCreate, notifications);
+  LimitOrdersCubit buildCubit() => LimitOrdersCubit(
+    listActive,
+    cancelAll,
+    canCreate,
+    notificationStream.stream,
+  );
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'loads the active orders',
@@ -162,7 +157,7 @@ void main() {
       listActive,
       cancelAll,
       canCreate,
-      notifications,
+      notificationStream.stream,
       refreshRequests: refreshRequests.stream,
     ),
     act: (cubit) async {

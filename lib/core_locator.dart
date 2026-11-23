@@ -1,9 +1,9 @@
+import 'package:labels/labels.dart';
+import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
-import 'package:bull_tor/tor.dart';
-import 'package:mempool/mempool.dart';
 import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -14,7 +14,6 @@ import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
-import 'package:sync/sync.dart' show WalletConnectionPort;
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
@@ -30,20 +29,20 @@ class CoreLocator {
         warningCallback: log.warning,
       ),
     );
-    setupElectrum(locator);
     ExchangeLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
   }
 
-  static void setupElectrum(GetIt locator) {
-    locator.registerLazySingleton<Electrum>(
-      () => Electrum.open(
-        database: locator<SqliteDatabase>(),
-        readPreferences: locator<settings.ConnectionPreferencesReader>()
-            .readConnectionPreferences,
-        tor: () => locator<Tor>(),
-      ),
+  static void setupElectrum(GetIt locator, Electrum electrum) {
+    locator.registerSingleton<Electrum>(
+      electrum,
+      dispose: (value) async {
+        final closed = await value.close();
+        if (closed case Err(:final failure)) {
+          log.warning('Electrum close unconfirmed', error: failure.runtimeType);
+        }
+      },
     );
     locator.registerLazySingleton<WalletConnectionPort>(
       () => locator<Electrum>().walletConnections,
@@ -56,21 +55,30 @@ class CoreLocator {
     );
   }
 
-  static void registerPorts(GetIt locator) {
+  static Future<Result<void, LabelFailure>> registerPorts(
+    GetIt locator, {
+    required Future<Result<Labels, LabelFailure>> Function(
+      Future<Sync> Function() sync,
+      Future<Wallet> Function(String) openWallet,
+    )
+    openLabels,
+  }) async {
     final walletSync = WalletLocator.syncAccess(locator);
-    setupLabels(
-      locator,
-      database: locator<SqliteDatabase>(),
-      sync: walletSync.foreground,
-      openWallet: walletSync.openWallet,
+    final labels = await openLabels(
+      walletSync.foreground,
+      walletSync.openWallet,
     );
+    if (labels case Err(:final failure)) return Err(failure);
+    setupLabels(locator, (labels as Ok<Labels, LabelFailure>).value);
+    return const Ok(null);
   }
 
   static Future<Result<void, ElectrumFailure>> registerRepositories(
     GetIt locator, {
+    required settings.Preferences preferences,
     RegtestElectrumProfile? regtestProfile,
   }) async {
-    await SettingsLocator.registerRepositories(locator);
+    await SettingsLocator.registerRepositories(locator, preferences);
     final settingsRepository = locator<settings.Preferences>();
     final appSettings = (await settingsRepository.fetch()).fold(
       (value) => value,
@@ -105,17 +113,6 @@ class CoreLocator {
     await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     return const Ok(null);
-  }
-
-  static void registerServices(GetIt locator) {
-    ExchangeLocator.registerServices(locator);
-    locator.registerLazySingleton<Mempool>(
-      () => Mempool.open(
-        database: locator<SqliteDatabase>(),
-        tor: () => locator<Tor>(),
-        torHttp: locator<TorHttpClientFactory>(),
-      ),
-    );
   }
 
   static void registerUsecases(GetIt locator) {

@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -14,21 +13,19 @@ class SetAutoBuyUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final GetDefaultWalletsUsecase _getDefaultWalletsUsecase;
   final Preferences _settingsRepository;
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Exchange _exchange;
 
   const SetAutoBuyUsecase(
     this._getExchangeUserSummaryUsecase,
     this._getDefaultWalletsUsecase,
     this._settingsRepository,
-    this._mainnetExchangeUserRepository,
-    this._testnetExchangeUserRepository,
+    this._exchange,
   );
 
   @useResult
   Future<Result<void, AutoBuyFailure>> execute({required bool enabled}) async {
     // The shared settings repository still throws, so this is its boundary.
-    final ExchangeUserRepository userRepository;
+    final ExchangeEnvironment environment;
     try {
       final settings = (await _settingsRepository.fetch()).fold(
         (value) => value,
@@ -40,9 +37,9 @@ class SetAutoBuyUsecase {
       )) {
         return const Err(AutoBuyUnsupportedNetworkFailure());
       }
-      userRepository = settings.environment.requireHistoricalTestnet()
-          ? _testnetExchangeUserRepository
-          : _mainnetExchangeUserRepository;
+      environment = settings.environment.requireHistoricalTestnet()
+          ? ExchangeEnvironment.testnet
+          : ExchangeEnvironment.mainnet;
     } on Error {
       rethrow;
     } catch (e, st) {
@@ -111,7 +108,8 @@ class SetAutoBuyUsecase {
       return const Err(AutoBuyFundingRestrictedFailure());
     }
 
-    final saved = await userRepository.saveUserPreference(
+    final saved = await _exchange.saveUserPreference(
+      environment,
       language: summary.language,
       currency: summary.currency,
       dcaEnabled: summary.dca.isActive,

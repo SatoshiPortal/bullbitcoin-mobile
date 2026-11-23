@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:material_ui/material_ui.dart';

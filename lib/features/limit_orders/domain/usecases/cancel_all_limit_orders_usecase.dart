@@ -1,15 +1,16 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:meta/meta.dart';
 
-class CancelAllLimitOrdersUsecase {
-  final LimitOrderRepository _repository;
+import '../map_limit_order_failure.dart';
 
-  const CancelAllLimitOrdersUsecase(this._repository);
+class CancelAllLimitOrdersUsecase {
+  final ExchangeLimitOrders _orders;
+
+  const CancelAllLimitOrdersUsecase(this._orders);
 
   @useResult
-  Future<Result<List<LimitOrder>, LimitOrdersFailure>> execute() =>
-      _repository.cancelAll();
+  Future<Result<List<LimitOrder>, LimitOrdersFailure>> execute() async =>
+      (await _orders.cancelAll()).mapErr(mapLimitOrderFailure);
 }

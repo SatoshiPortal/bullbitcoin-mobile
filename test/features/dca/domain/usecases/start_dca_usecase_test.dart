@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
@@ -7,8 +6,10 @@ import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../core/exchange/fake_exchange_users.dart';
+
 class MockExchangeUserRepository extends Mock
-    implements ExchangeUserRepository {}
+    implements ExchangeUserOperations {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
 
@@ -34,8 +35,7 @@ void main() {
     testnetUsers = MockExchangeUserRepository();
     usecase = StartDcaUsecase(
       settingsRepository: settings,
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
     );
     when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
@@ -58,9 +58,9 @@ void main() {
 
     test('maps a not-logged-in repository failure to '
         'AccountUnavailableFailure', () async {
-      when(() => mainnetUsers.getUserSummary()).thenAnswer(
-        (_) async => const Err(ExchangeUserNotAuthenticatedFailure()),
-      );
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
       final failure = failureOf(await usecase.execute());
       expect(failure, isA<DcaAccountUnavailableFailure>());
@@ -70,7 +70,7 @@ void main() {
         'without carrying the raw reason', () async {
       when(() => mainnetUsers.getUserSummary()).thenAnswer(
         (_) async => const Err(
-          ExchangeUserSummaryUnavailableFailure(
+          ExchangeAccountUnavailableFailure(
             'getUserSummary failed: DioException',
           ),
         ),

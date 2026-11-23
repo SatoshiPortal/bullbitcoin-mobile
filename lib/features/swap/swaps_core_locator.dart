@@ -1,12 +1,8 @@
 import 'package:bb_mobile/features/swap/domain/regtest_boltz_profile.dart';
-import 'package:drift_flutter/drift_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:electrum/setup.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
 import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/data/swap_server_setting_repository_impl.dart';
 import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
@@ -21,11 +17,11 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_us
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network, NetworkX;
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
@@ -39,40 +35,20 @@ class SwapsLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     swapsLog = const AppSwapsLog();
 
-    locator.registerLazySingleton<BoltzSwapsDatabase>(
-      () => BoltzSwapsDatabase(openBoltzSwapsDbConnection()),
-    );
-    final rowStore = DriftSwapRowStore(locator<BoltzSwapsDatabase>());
     locator.registerLazySingleton<SwapStorage>(
-      () =>
-          SwapStorage(rows: rowStore, secrets: locator<Secrets>().swapKeychain),
+      () => SwapStorage(
+        rows: DriftSwapRowStore(locator<BoltzSwapsDatabase>()),
+        secrets: locator<Secrets>().swapKeychain,
+      ),
     );
     locator.registerLazySingleton<SwapStorage>(
       () => locator<SwapStorage>().regtestView(
         rows: DriftSwapRowStore(
-          BoltzSwapsDatabase(
-            driftDatabase(
-              name: 'boltz_swaps_regtest',
-              native: DriftNativeOptions(
-                databaseDirectory: getApplicationDocumentsDirectory,
-                shareAcrossIsolates: true,
-                setup: (database) {
-                  database.execute('PRAGMA busy_timeout = 2000;');
-                  database.execute('PRAGMA journal_mode = WAL;');
-                  database.execute('PRAGMA synchronous = FULL;');
-                },
-              ),
-            ),
-          ),
+          locator<BoltzSwapsDatabase>(instanceName: 'regtest'),
         ),
       ),
       instanceName: 'regtest',
     );
-    await BoltzSwapsDbMigration(
-      appDb: locator<SqliteDatabase>(),
-      swapsDb: locator<BoltzSwapsDatabase>(),
-      rows: rowStore,
-    ).run();
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
@@ -137,7 +113,7 @@ class SwapsLocator {
     );
     locator.registerLazySingleton<AutoSwapSettingsRepository>(
       () => AutoSwapSettingsRepositoryImpl(
-        locator<SqliteDatabase>(),
+        locator<BoltzSwapsDatabase>(),
         locator<Preferences>(),
       ),
     );
