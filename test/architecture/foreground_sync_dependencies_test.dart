@@ -8,49 +8,44 @@ import 'package:path/path.dart' as p;
 
 // Source-edge baseline generated once from 4c3385e6c (2026-11-07).
 // These edges include legacy violations, not architectural permission.
-// Networks owner moves and captured-network consumers: see the per-edge review
-// in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
+// This baseline includes the reviewed network-owner moves and captured-network
+// consumers (2026-11-07); do not regenerate it blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
 // Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
-// These four edges are documented in FEATURES.md.
+// See the dependency notes in the consuming members' READMEs.
 // QR and NFC consumers use the scanning feature's public capabilities; its
-// implementation has no dependencies on those consumers (see FEATURES.md).
+// implementation has no dependencies on those consumers.
 // Label Editor publishes the existing note, label and import/export UI. Its
 // consumers use that surface while data-only consumers depend on the package.
-// Wallet reader ownership (2026-11-22): see FEATURES.md for the address,
-// coin, receive and history edges that replace the legacy wallet placements.
-// Exchange workspace UI consumers use the published routes (see FEATURES.md).
+// Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
+// Exchange workspace UI consumers use the published routes.
+// Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
+// Settings consumes Receive's disclaimer and typed Wallet Import navigation.
+// Wallet Import owns mnemonic input and scanning; Wallet uses its data types.
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
   'all_seed_view': 'access',
   'app_startup':
       'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'backups': 'access label_editor physical_backup_verification recoverbull',
-  'bull_exchange': 'bitcoin_price',
+  'bull_exchange': 'bitcoin_price coins fees',
   'coins': 'address_view bitcoin_price wallet',
   'exchange': 'address_view bull_exchange transactions wallet',
-  'import_coldcard': 'scanning signers wallet_import',
-  'import_mnemonic': 'mnemonic_entry wallet wallet_import',
-  'import_wallet': 'import_coldcard import_mnemonic import_watch_only_wallet settings signers wallet_import',
-  'import_watch_only_wallet': 'scanning signers wallet wallet_import',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
   'onboarding':
       'mnemonic_entry network recoverbull settings wallet wallet_import',
-  'pay': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
-  'receive':
-      'address_view label_editor settings signers swap transactions wallet',
+  'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
-  'sell': 'address_view bitcoin_price bull_exchange coins exchange fees transactions wallet',
   'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull send silent swap transactions wallet',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
   'support': 'bull_exchange',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
-  'wallet_import': 'signers',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
+  'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
 

@@ -23,3 +23,7 @@ try {
 ```
 
 `watch()` replays the current snapshot and any current failure. `check()` probes the default wallet's network and publishes loading, partial rows and the final result. The session keeps the latest available rows across refreshes and failures. A newer check supersedes an older one within the same session. A superseded or closed check returns `StatusCheckInterruptedFailure` to its caller. Tor settings keep the Tor capability's existing connection state.
+
+## Dependencies
+
+- `fees` supplies the Bitcoin fee estimate used to probe Mempool.

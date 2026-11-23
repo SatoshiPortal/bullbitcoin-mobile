@@ -67,7 +67,7 @@ Development is tracked in [GitHub issues](https://github.com/SatoshiPortal/bullb
 
 ## Technical resources
 
-- [Architecture](ARCHITECTURE.md) and [feature dependencies](FEATURES.md).
+- [Architecture](ARCHITECTURE.md), [workspace dependency graphs](WORKSPACE.md), and [direct external dependencies](DEPENDENCIES.md).
 - [Toolchain, setup and development conventions](AGENTS.md). Start with an issue before implementation work; see [CONTRIBUTING.md](CONTRIBUTING.md).
 - Translations are AI-generated and community-reviewed. See the [translation tooling guide](tools/README.md) for changes to [`localization/`](localization/).
 - [Dependencies](pubspec.yaml) and default [Electrum](packages/electrum/lib/setup.dart), [Mempool](packages/mempool/lib/migration.dart) and [swap](packages/swaps/lib/setup.dart) endpoints.
