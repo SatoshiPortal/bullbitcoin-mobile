@@ -342,6 +342,7 @@ graph TD
   silent --> rust_bindings
   silent --> secrets
   spend --> ark
+  spend --> bull_payjoin
   spend --> fees
   spend --> primitives
   spend --> secrets
