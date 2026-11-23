@@ -59,7 +59,7 @@ const _allowedTargets = <String, String>{
   'settings': 'address_view all_seed_view access ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings fees import_wallet label_editor logs network pay quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
   'sp': 'wallet',
   'support': 'exchange_support_chat',
-  'swap': 'address_view ark autoswap coins consolidation fees send transactions wallet',
+  'swap': 'address_view ark coins consolidation fees send transactions wallet',
   'test_wallet_backup': 'access onboarding recoverbull wallet',
   'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
   'wallet': 'ark backup_settings bip85_entropy bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
