@@ -3,8 +3,9 @@ import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show BuyRoute, ExchangeHomeAction;
+    show BuyRoute, ExchangeHomeAction, PayRoute, SellRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -38,14 +39,12 @@ import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
-import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
@@ -141,6 +140,7 @@ class AppRouter {
     preferences: () => locator<Preferences>(),
     settings: SettingsRouter.exchangeSettingsHost,
     purchases: exchangePurchaseHost(locator),
+    payins: exchangePayinHost(locator),
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
@@ -273,9 +273,9 @@ class AppRouter {
       ...locator<SwapFeature>().routes,
       ..._exchangeFeature.buyRoutes,
       ..._exchangeFeature.fundingRoutes,
-      SellRouter.route,
+      ?_exchangeFeature.sellRoute,
       ?_exchangeFeature.withdrawalRoute,
-      PayRouter.route,
+      ?_exchangeFeature.payRoute,
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,
       BroadcastSignedTxRouter.route,

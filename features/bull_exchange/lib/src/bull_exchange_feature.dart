@@ -14,6 +14,9 @@ import 'funding/fund_exchange_router.dart';
 import 'kyc/exchange_kyc_host.dart';
 import 'kyc/exchange_kyc_screen.dart';
 import 'limit_orders/limit_orders_management.dart';
+import 'pay/mount_pay.dart';
+import 'payin/exchange_payin_host.dart';
+import 'sell/mount_sell.dart';
 import 'settings/ui/exchange_settings_router.dart';
 import 'support_chat/exchange_support_chat_navigation.dart';
 import 'support_chat/ui/exchange_support_chat_router.dart';
@@ -45,6 +48,8 @@ final class BullExchangeFeature {
   final GoRoute? limitOrderDetails;
   final List<RouteBase> buyRoutes;
   final GoRoute? dcaRoute;
+  final ShellRoute? sellRoute;
+  final ShellRoute? payRoute;
 
   const BullExchangeFeature._(
     this.routes,
@@ -59,6 +64,8 @@ final class BullExchangeFeature {
     this.limitOrderDetails,
     this.buyRoutes,
     this.dcaRoute,
+    this.sellRoute,
+    this.payRoute,
   );
 
   static BullExchangeFeature mount({
@@ -79,6 +86,7 @@ final class BullExchangeFeature {
     ExchangeWithdrawalHost? withdrawal,
     Exchange Function()? limitOrders,
     ExchangePurchaseHost? purchases,
+    ExchangePayinHost? payins,
   }) {
     final kycRoute = kyc == null
         ? null
@@ -159,6 +167,8 @@ final class BullExchangeFeature {
       limitOrders == null ? null : limitOrderDetailsRoute(limitOrders),
       purchases == null ? const [] : List.unmodifiable(mountBuy(purchases)),
       purchases == null ? null : mountDca(purchases),
+      payins == null ? null : mountSell(payins),
+      payins == null ? null : mountPay(payins),
     );
   }
 }

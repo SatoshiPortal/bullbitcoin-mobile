@@ -141,12 +141,16 @@ graph TD
   bull_exchange --> bull_payjoin
   bull_exchange --> bull_pricer
   bull_exchange --> bull_ui
+  bull_exchange --> coins
   bull_exchange --> exchange
   bull_exchange --> fees
+  bull_exchange --> fees_feature
   bull_exchange --> file_system
+  bull_exchange --> labels
   bull_exchange --> preferences
   bull_exchange --> primitives
   bull_exchange --> secrets
+  bull_exchange --> spend
   bull_exchange --> sync
   bull_logs --> bull_logger
   bull_logs --> bull_ui
@@ -254,6 +258,12 @@ graph TD
   signers --> satoshifier
   signers --> screen_awake
   signers --> sync
+  spend --> ark
+  spend --> bull_payjoin
+  spend --> fees
+  spend --> primitives
+  spend --> secrets
+  spend --> sync
   swap_feature --> bull_ui
   swap_feature --> primitives
   swap_feature --> swaps

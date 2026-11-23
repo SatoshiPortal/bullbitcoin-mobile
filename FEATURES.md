@@ -82,11 +82,9 @@ graph TB
     SPEND --> FEES_PACKAGE
     SPEND --> PRIMITIVES
     SEND --> SPEND
-    PAY --> SPEND
-    SELL --> SPEND
+    BULL_EXCHANGE -->|Sell and Pay review, sign and broadcast| SPEND
     TRANSFER --> SPEND
     FEES_PACKAGE -->|wallet connection policy| SYNC
-    SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
     SATOSHIFIER[Satoshifier Package]
     BROADCAST_SIGNED_TX -->|BBQR assembly| SATOSHIFIER
@@ -96,10 +94,7 @@ graph TB
     SWAP -->|payment requests| SATOSHIFIER
     WALLETS -->|payment requests, public extended keys| SATOSHIFIER
     BROADCAST_SIGNED_TX --> SPEND
-    SEND -->|reviewed Payjoin original| TX_HISTORY
-    PAY -->|reviewed Payjoin original| TX_HISTORY
-    SELL -->|reviewed Payjoin original| TX_HISTORY
-    TX_HISTORY -->|write-ahead Payjoin admission| SPEND
+    SPEND -->|write-ahead Payjoin admission| BULL_PAYJOIN
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
@@ -118,24 +113,23 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy and DCA]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy, DCA, Sell and Pay]
     EXCHANGE --> BULL_EXCHANGE
-    BULL_EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
+    BULL_EXCHANGE -->|order details navigation and receipt labels| TX_HISTORY
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     SUPPORT -->|support chat| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
     BULL_EXCHANGE -->|dashboard price display| BTC_PRICE
-    BULL_EXCHANGE -->|authorized payout wallets| SECRETS
-    BULL_EXCHANGE -->|receive address issuance| SYNC
-    BULL_EXCHANGE -->|Buy receive sessions| BULL_PAYJOIN
-    BULL_EXCHANGE -->|Buy prices and fees| BULL_PRICER
+    BULL_EXCHANGE -->|authorized payout and payin wallets| SECRETS
+    BULL_EXCHANGE -->|receive issuance, fee-estimation addresses, and unspent coins| SYNC
+    BULL_EXCHANGE -->|Buy receive and Sell and Pay send sessions| BULL_PAYJOIN
+    BULL_EXCHANGE -->|quotes| BULL_PRICER
+    BULL_EXCHANGE -->|spending wallet cards and address viewer| WALLETS
+    BULL_EXCHANGE --> LABELS
+    BULL_EXCHANGE --> FEES_UI
     BULL_EXCHANGE --> FEES_PACKAGE
     BULL_EXCHANGE --> PREFERENCES
     EXCHANGE --> EXCHANGE_DOMAIN
-    SELL --> EXCHANGE_DOMAIN
-    PAY --> EXCHANGE_DOMAIN
-    SELL -->|KYC navigation and amount input| BULL_EXCHANGE
-    PAY -->|KYC navigation and amount input| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
     LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
@@ -192,14 +186,11 @@ graph TB
     COIN_SELECTION[Coins Workspace Feature<br/>Selection sheet]
     COIN_SELECTION --> BULL_UI
     COIN_SELECTION --> PRIMITIVES
-    SELL --> COIN_SELECTION
-    PAY --> COIN_SELECTION
+    BULL_EXCHANGE --> COIN_SELECTION
     TRANSFER --> COIN_SELECTION
     EXCHANGE --> PREFERENCES
     SWAPS --> PREFERENCES
     SEND --> PREFERENCES
-    SELL --> PREFERENCES
-    PAY --> PREFERENCES
     PREFERENCES --> PRIMITIVES
     PREFERENCES --> TOR
     PREFERENCES --> BULL_REPORTING
@@ -285,9 +276,7 @@ graph TB
     ADDRESS_LABELS -->|typed wallet inventory| SECRETS
     ADDRESS_LABELS --> SYNC
     ADDRESS_LABELS --> SATOSHIFIER[Satoshifier Package]
-    PAY -->|indexed address| ADDRESS_LABELS
     RECEIVE -->|indexed address| ADDRESS_LABELS
-    SELL -->|indexed address| ADDRESS_LABELS
     RECEIVE --> RECEIVE_REQUEST
     WALLETS -->|transfer address selection| RECEIVE_REQUEST
     RECEIVE_REQUEST --> ADDRESS_LABELS
@@ -299,8 +288,6 @@ graph TB
     REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
     LIMIT_ORDERS[Limit Orders]
-    SELL[Sell]
-    PAY[Pay]
     COINS[Coins / UTXOs]
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     CONSOLIDATION[Consolidation]
@@ -358,9 +345,7 @@ graph TB
     SETTINGS --> SWAPS_PKG
     ALL_SEED_VIEW --> SWAPS_PKG
     APP_STARTUP --> SWAPS_PKG
-    PAY --> BULL_PRICER
     RECEIVE --> BULL_PRICER
-    SELL --> BULL_PRICER
     SEND --> BULL_PRICER
     SWAPS --> BULL_PRICER
     HW_WALLETS --> SCREEN_AWAKE
@@ -427,13 +412,11 @@ graph TB
     BACKUPS --> WALLETS
     WALLETS --> BTC_PRICE
     COINS --> BTC_PRICE
-    SELL --> BTC_PRICE
     SETTINGS --> BTC_PRICE
     COINS --> UTXO_MGMT
     COINS --> LABELS
     SEND --> LABELS
     RECEIVE --> LABELS
-    SELL --> LABELS
     SETTINGS --> LABELS
     AUTOSWAP --> LABELS
     COINS -->|public revision stream| WALLETS
@@ -441,35 +424,21 @@ graph TB
     IMPORT_WALLET --> SETTINGS
     SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
-    SETTINGS --> PAY
     SETTINGS --> TX_HISTORY
     LIMIT_ORDERS --> EXCHANGE
     EXCHANGE --> BTC_PRICE
     EXCHANGE --> TX_HISTORY
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
-    PAY -->|public spend admission and routine sync| WALLETS
-    PAY -->|public protected broadcast| SEND
-    PAY --> EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
     LIMIT_ORDERS -->|opens order details| BULL_EXCHANGE
     HW_WALLETS --> CORE
     CORE --> LABELS
-    PAY -->|recipient selection| BULL_EXCHANGE
-    PAY --> BULL_PAYJOIN
-    PAY --> BTC_PRICE
-    PAY --> TX_HISTORY
     RECEIVE --> BULL_PAYJOIN
     RECEIVE -->|public targeted routine sync| WALLETS
     RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
-    SELL -->|public spend admission and routine sync| WALLETS
-    SELL -->|public protected broadcast| SEND
-    SELL --> EXCHANGE
-    SELL -->|recipient selection and activation| BULL_EXCHANGE
-    SELL --> BULL_PAYJOIN
-    SELL --> TX_HISTORY
     SEND --> CONSOLIDATION
     SEND --> FEES_UI
     SEND --> NETWORK
@@ -555,8 +524,6 @@ graph TB
     EXCHANGE -->|supplies shared destination validation and input| WALLETS
     WALLETS --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
-    PAY --> FEES_PACKAGE
-    SELL --> FEES_PACKAGE
     REPLACE_BY_FEE --> FEES_PACKAGE
     SWAPS --> FEES_PACKAGE
     AUTOSWAP --> FEES_PACKAGE
@@ -564,11 +531,9 @@ graph TB
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
-    PAY --> FEES_UI
     SEND --> SIGNERS
     REPLACE_BY_FEE --> FEES_UI
     REPLACE_BY_FEE --> SPEND
-    SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
     WIZARD --> SETTINGS
@@ -577,8 +542,6 @@ graph TB
     %% Wallet readers and spend preparation assigned to their app owners
     UTXO_MGMT --> SYNC
     AUTOSWAP --> ADDRESS_LABELS
-    PAY --> UTXO_MGMT
-    SELL --> UTXO_MGMT
     SEND --> ADDRESS_LABELS
     SWAPS --> ADDRESS_LABELS
     WALLETS -->|address viewer| ADDRESS_LABELS
@@ -593,7 +556,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams

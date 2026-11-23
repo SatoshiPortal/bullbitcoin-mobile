@@ -11,6 +11,12 @@ export 'src/buy/ui/widgets/accelerate_transaction_list_tile.dart'
 export 'src/dca/ui/dca_router.dart' show DcaRoute;
 export 'src/exchange_payout_field.dart' show ExchangePayoutField;
 export 'src/exchange_purchase_routes.dart' show ExchangePurchaseHost;
+export 'src/pay/ui/pay_router.dart' show PayRoute;
+export 'src/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart'
+    show showSinpeReceiptBottomSheet;
+export 'src/payin/exchange_payin_wallet.dart' show ExchangePayinWallet;
+export 'src/payin/exchange_payin_host.dart' show ExchangePayinHost;
+export 'src/sell/ui/sell_router.dart' show SellRoute;
 export 'src/dashboard/exchange_dashboard_route.dart' show ExchangeDashboardHost;
 export 'src/dashboard/exchange_home_actions.dart' show ExchangeHomeAction;
 export 'src/dashboard/exchange_home_screen.dart' show ExchangeDashboardState;

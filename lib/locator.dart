@@ -1,5 +1,6 @@
 import 'package:ark/funding.dart';
-import 'package:bull_exchange/bull_exchange.dart' show AccelerateTransactionListTile, BuyRoute;
+import 'package:bull_exchange/bull_exchange.dart'
+    show AccelerateTransactionListTile, BuyRoute, showSinpeReceiptBottomSheet;
 import 'dart:async';
 
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
@@ -70,11 +71,9 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
-import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
-import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:silent/silent.dart';
@@ -447,8 +446,6 @@ class AppLocator {
 
     ExchangeLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
-    SellLocator.setup(locator);
-    PayLocator.setup(locator);
     locator.registerSingleton(
       NetworkFeature.mount(
         services: locator,
