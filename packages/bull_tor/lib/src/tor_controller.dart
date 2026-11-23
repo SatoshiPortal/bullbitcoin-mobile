@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'domain/tor_failure.dart';
 import 'domain/entities/tor_connection_state.dart';
 import 'domain/entities/tor_proxy_endpoint.dart';
 import 'domain/entities/tor_session.dart';
@@ -22,6 +25,36 @@ class Tor {
   const Tor(this.embedded, this.external, this._close);
 
   Future<void> dispose() => _close.execute();
+}
+
+extension TorWarmUp on Tor {
+  /// Warm the configured route. External failure never starts embedded Tor.
+  Future<TorConnectionState> warmUp({int? externalProxyPort}) async {
+    if (externalProxyPort == null) return embedded.ensureReady();
+    final TorProxyEndpoint endpoint;
+    try {
+      endpoint = TorProxyEndpoint(
+        host: InternetAddress.loopbackIPv4.address,
+        port: externalProxyPort,
+      );
+    } on ArgumentError {
+      return const TorUnavailable(
+        source: TorSource.external,
+        failure: TorExternalProxyUnavailableFailure(),
+      );
+    }
+    return switch (await external.verify(endpoint)) {
+      TorReady(:final route) => TorReady(route),
+      TorUnavailable(:final failure) => TorUnavailable(
+        source: TorSource.external,
+        failure: failure,
+      ),
+      _ => const TorUnavailable(
+        source: TorSource.external,
+        failure: TorExternalProxyUnavailableFailure(),
+      ),
+    };
+  }
 }
 
 class EmbeddedTor {

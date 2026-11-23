@@ -46,6 +46,11 @@ graph TB
     ANNOUNCEMENTS --> SECRETS
     LEGACY_STORAGE --> PRIMITIVES
     BG_TASKS --> SYNC
+    BG_TASKS --> SECRETS
+    BG_TASKS --> PREFERENCES
+    BG_TASKS --> TOR
+    BG_TASKS --> ELECTRUM
+    BG_TASKS --> NOTIFICATIONS
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
     NOTIFICATIONS --> PRIMITIVES
@@ -166,7 +171,6 @@ graph TB
     TRANSFER -->|public receive address| WALLETS
     SEND --> ARK
     SETTINGS --> ARK
-    APP_STARTUP --> ARK
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature<br/>Catalogue and layout storage]
     WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]
@@ -237,7 +241,7 @@ graph TB
     WALLETS[Wallets]
     EXCHANGE[Exchange]
     SUPPORT[Support]
-    APP_STARTUP[App Startup]
+    APP_STARTUP[Startup workspace feature]
     UTXO_MGMT[UTXO Management]
     BACKUPS[Backups]
     BACKUP_OPTIONS[Backups workspace feature<br/>Backup options and navigation]
@@ -326,6 +330,8 @@ graph TB
     MERCHANT_MAP --> BULL_UI
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
+    BULL_PAYJOIN --> SYNC
+    BULL_PAYJOIN --> BULL_LOGGER
     CORE --> BULL_PRICER
     BULL_PRICER --> PRIMITIVES
     CORE -->|price and chart composition| BTC_PRICE
@@ -369,7 +375,6 @@ graph TB
     %% Optional exchange access and wallet quick actions
     WIZARD --> EXCHANGE
     WIZARD -->|Exchange option| BULL_EXCHANGE
-    APP_STARTUP -->|wizard platform availability| EXCHANGE_DOMAIN
     SETTINGS --> QUICK_ACTIONS
     WALLETS --> QUICK_ACTIONS
     QUICK_ACTIONS --> BULL_UI
@@ -399,7 +404,6 @@ graph TB
     CORE -->|wallet home composition| ANNOUNCEMENTS
     ANNOUNCEMENTS --> BULL_UI
     ANNOUNCEMENTS --> PRIMITIVES
-    APP_STARTUP --> WALLETS
     APP_STARTUP --> SECRETS
     APP_STARTUP --> ACCESS
     SETTINGS --> ACCESS
@@ -543,7 +547,13 @@ graph TB
     TX_HISTORY --> MEMPOOL
     WALLETS --> MEMPOOL
     WIZARD[Wizard]
-    APP_STARTUP --> SETTINGS
+    APP_STARTUP --> PREFERENCES
+    APP_STARTUP --> PROVISIONING
+    PROVISIONING[Default Wallet Provisioning]
+    PROVISIONING --> SECRETS
+    PROVISIONING --> PRIMITIVES
+    PROVISIONING --> BULL_LOGGER
+    APP_STARTUP --> BULL_PAYJOIN
     AUTOSWAP --> SPEND
     AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
@@ -719,7 +729,6 @@ The architecture test records source dependencies, including internal imports an
 
 | Source → owner | Provenance and reason retained | Observed import/export path |
 |---|---|---|
-| `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
 | `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `autoswap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |

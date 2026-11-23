@@ -37,11 +37,6 @@ export 'package:sync/sync.dart'
         WalletLifecycle;
 
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
-export '../background_setup.dart'
-    show
-        setupBackgroundWalletTask,
-        prepareBackgroundWalletStores,
-        paymentNotificationChannelId;
 
 /// Wallet-owned invalidations. A revision is not a successful network sync.
 final class WalletFacade {

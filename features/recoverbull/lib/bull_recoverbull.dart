@@ -51,3 +51,4 @@ export 'src/ui/widgets/historical_backup_warning.dart'
 
 export 'src/domain/entities/vault_completion.dart' show VaultCompletion;
 export 'src/domain/wallet_backup_usage.dart' show SecretBackupProjection;
+export 'src/public/mainnet_backup_lookup.dart' show MainnetBackupLookup;

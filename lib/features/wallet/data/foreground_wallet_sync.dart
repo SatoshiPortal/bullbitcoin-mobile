@@ -9,9 +9,10 @@ import 'package:sync/write.dart';
 /// Temporary bridge for legacy repository consumers until capability extraction. Mapping belongs to the wallet owner, never the native writer or core.
 final class ForegroundWalletSync {
   final ElectrumSync _sync;
-  final WalletNativeRuntime? _native;
+  final ForegroundWalletSynchronization _synchronization;
 
-  ForegroundWalletSync(this._sync, {this._native});
+  ForegroundWalletSync(this._sync, {WalletNativeRuntime? native})
+    : _synchronization = ForegroundWalletSynchronization(_sync, native: native);
 
   Stream<String> get started => _sync.started.map((key) => key.id);
   Stream<String> get finished => _sync.finished.map((event) => event.key.id);
@@ -47,36 +48,10 @@ final class ForegroundWalletSync {
     bool discover = false,
     bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
-  }) async {
-    final native = _native;
-    if (native != null) {
-      if (await native.initialize() case Err(:final failure)) {
-        return Err(failure);
-      }
-    }
-    var result = await _sync.execute(
-      descriptor,
-      discover: discover,
-      allowInitialScan: allowInitialScan,
-      reason: reason,
-    );
-    if (result case Err(failure: SyncNeedsRepairFailure())
-        when native != null) {
-      if (await native.repair(descriptor.key) case Err(:final failure)) {
-        return Err(failure);
-      }
-      result = await _sync.execute(
-        descriptor,
-        discover: discover,
-        allowInitialScan: allowInitialScan,
-        reason: reason,
-      );
-    }
-    if (native != null) {
-      if (await native.refresh(descriptor.key) case Err(:final failure)) {
-        return Err(failure);
-      }
-    }
-    return result.map((_) {});
-  }
+  }) => _synchronization.execute(
+    descriptor,
+    discover: discover,
+    allowInitialScan: allowInitialScan,
+    reason: reason,
+  );
 }

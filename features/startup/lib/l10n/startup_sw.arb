@@ -1,0 +1,47 @@
+{
+  "appInitErrorTitle": "Programu haikuweza kuanza",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Shiriki kumbukumbu",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Tumia nakala rudufu yako",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Kutokana na hifadhi rudufu yako, fedha zako ziko salama.\nKwanza jaribu kuanzisha upya programu; ikiwa bado inashindwa, isakinishe upya na urudishe kwa kutumia hifadhi rudufu yako.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Hakuna nakala rudufu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Usifute programu.\nWasiliana na timu yetu ya usaidizi kwa jaribio la kuokoa.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Wasiliana na usaidizi",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Onyesha maelezo ya hitilafu",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupErrorMessage": "Programu imeshindwa kuanza. Jaribu kuifunga kabisa na kuanzisha upya. Ikiwa tatizo linaendelea, wasiliana na usaidizi na shiriki logi zako.",
+  "appStartupContactSupportMessage": "Wasiliana na usaidizi kupitia app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Hamisha",
+  "logsExportedMessage": "Kumbukumbu zimehamiishwa kwa mafanikio",
+  "logsExportFailedMessage": "Imeshindwa kuhamisha kumbukumbu",
+  "retry": "Jaribu Tena",
+  "onboardingRecover": "Rejesha",
+  "deleteLogsTitle": "Futa kumbukumbu",
+  "logsDeletedMessage": "Kumbukumbu zimefutwa",
+  "errorSharingLogsMessage": "Hitilafu ya kushiriki kumbukumbu: {error}",
+  "appStartupErrorTitle": "Hitilafu ya Kuanza",
+  "appStartupContactSupportButton": "Wasiliana na Usaidizi",
+  "coreScreensPageNotFound": "Ukurasa haukupatikana"
+}

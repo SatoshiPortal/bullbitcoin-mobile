@@ -12,8 +12,7 @@ import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubi
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
-    show RouteErrorScreen;
+import 'package:startup/startup.dart' show RouteErrorScreen;
 import 'package:announcements/setup.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show SwapFacade;
@@ -55,7 +54,7 @@ import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
-import 'package:bb_mobile/features/wallet/public/silent_bindings.dart'
+import 'package:bb_mobile/features/wallet/ui/widgets/silent_wallet_balance.dart'
     show SilentWalletPresentation;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';

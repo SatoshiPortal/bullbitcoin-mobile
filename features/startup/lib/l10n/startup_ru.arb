@@ -1,0 +1,63 @@
+{
+  "appStartupErrorMessage": "Не удалось запустить приложение. Попробуйте полностью закрыть его и перезапустить. Если ошибка сохраняется, обратитесь в поддержку и отправьте логи.",
+  "errorSharingLogsMessage": "{error}",
+  "@errorSharingLogsMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingRecover": "Восстановление",
+  "appStartupErrorTitle": "Ошибка запуска",
+  "appStartupContactSupportButton": "Контактная поддержка",
+  "coreScreensPageNotFound": "Страница не найдена",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "deleteLogsTitle": "Удалить журналы",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Журналы удалены",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "appInitErrorTitle": "Не удалось запустить приложение",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Поделиться журналами",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "appInitErrorHasBackupTitle": "Используйте резервную копию",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Благодаря резервной копии ваши средства в безопасности.\nСначала попробуйте перезапустить приложение; если оно всё равно не запускается, переустановите его и восстановите кошелёк из резервной копии.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Нет резервной копии?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не удаляйте приложение.\nСвяжитесь с нашей командой поддержки для попытки восстановления.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Связаться с поддержкой",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Показать подробности ошибки",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "appStartupContactSupportMessage": "Обратитесь в поддержку по адресу app.bullbitcoin.com/support",
+  "logsShareOptionExport": "Экспорт",
+  "logsExportedMessage": "Журналы успешно экспортированы",
+  "logsExportFailedMessage": "Не удалось экспортировать журналы"
+}
