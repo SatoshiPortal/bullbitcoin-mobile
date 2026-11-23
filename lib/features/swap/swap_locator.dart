@@ -16,7 +16,7 @@ import 'package:preferences/preferences.dart' as settings_domain;
 import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:swaps/setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show
@@ -119,7 +119,7 @@ class SwapLocator {
       () => ExchangePublicApiDatasource(
         Dio(
           BaseOptions(
-            baseUrl: ApiServiceConstants.swapApiStagingUrl,
+            baseUrl: SwapServiceDefaults.swapApiStagingUrl,
             connectTimeout: const Duration(seconds: 15),
             sendTimeout: const Duration(seconds: 15),
             receiveTimeout: const Duration(seconds: 30),
@@ -132,7 +132,7 @@ class SwapLocator {
       () => ExchangePublicApiDatasource(
         Dio(
           BaseOptions(
-            baseUrl: ApiServiceConstants.swapApiMainnetUrl,
+            baseUrl: SwapServiceDefaults.swapApiMainnetUrl,
             connectTimeout: const Duration(seconds: 15),
             sendTimeout: const Duration(seconds: 15),
             receiveTimeout: const Duration(seconds: 30),

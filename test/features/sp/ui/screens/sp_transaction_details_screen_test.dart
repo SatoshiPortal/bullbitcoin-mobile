@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:mempool/mempool.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
@@ -11,7 +12,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/localizations.dart';
 
 import '../../sp_cubit_harness.dart';
 

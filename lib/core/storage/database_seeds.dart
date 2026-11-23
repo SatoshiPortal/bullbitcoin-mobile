@@ -3,20 +3,22 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:electrum/storage.dart';
 import 'package:preferences/recoverbull_table.drift.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_recoverbull/migration.dart' show RecoverBullLegacyDefaults;
+import 'package:electrum/setup.dart' show ElectrumDefaultEndpoints;
+import 'package:mempool/migration.dart' show MempoolLegacyDefaults;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mempool/storage.dart';
 
 class DatabaseSeeds {
   static Future<void> seedDefaultElectrumServers(SqliteDatabase db) async {
     final serversData = [
-      (ApiServiceConstants.fulcrumElectrumUrl, false, false, 0),
-      (ApiServiceConstants.bbElectrumUrl, false, false, 1),
-      (ApiServiceConstants.bbLiquidElectrumUrlPath, false, true, 0),
-      (ApiServiceConstants.publicElectrumUrl, false, false, 2),
-      (ApiServiceConstants.publicLiquidElectrumUrlPath, false, true, 1),
-      (ApiServiceConstants.publicElectrumTestUrl, true, false, 0),
-      (ApiServiceConstants.publicliquidElectrumTestUrlPath, true, true, 0),
+      (ElectrumDefaultEndpoints.fulcrumElectrumUrl, false, false, 0),
+      (ElectrumDefaultEndpoints.bbElectrumUrl, false, false, 1),
+      (ElectrumDefaultEndpoints.bbLiquidElectrumUrlPath, false, true, 0),
+      (ElectrumDefaultEndpoints.publicElectrumUrl, false, false, 2),
+      (ElectrumDefaultEndpoints.publicLiquidElectrumUrlPath, false, true, 1),
+      (ElectrumDefaultEndpoints.publicElectrumTestUrl, true, false, 0),
+      (ElectrumDefaultEndpoints.publicliquidElectrumTestUrlPath, true, true, 0),
     ];
 
     for (final (url, isTestnet, isLiquid, priority) in serversData) {
@@ -105,7 +107,7 @@ class DatabaseSeeds {
         .insert(
           const RecoverbullRow(
             id: 1,
-            url: SettingsConstants.recoverbullUrl,
+            url: RecoverBullLegacyDefaults.recoverbullUrl,
             isPermissionGranted: false,
           ),
         );
@@ -114,10 +116,10 @@ class DatabaseSeeds {
   static Future<void> seedDefaultMempoolServers(SqliteDatabase db) =>
       MempoolSeeds.seedDefaultServers(
         db,
-        bitcoinMainnet: ApiServiceConstants.bbMempoolUrlPath,
-        bitcoinTestnet: ApiServiceConstants.testnetMempoolUrlPath,
-        liquidMainnet: ApiServiceConstants.bbLiquidMempoolUrlPath,
-        liquidTestnet: ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+        bitcoinMainnet: MempoolLegacyDefaults.bbMempoolUrlPath,
+        bitcoinTestnet: MempoolLegacyDefaults.testnetMempoolUrlPath,
+        liquidMainnet: MempoolLegacyDefaults.bbLiquidMempoolUrlPath,
+        liquidTestnet: MempoolLegacyDefaults.bbLiquidMempoolTestnetUrlPath,
       );
 
   static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) =>

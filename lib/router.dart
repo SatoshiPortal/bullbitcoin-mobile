@@ -7,7 +7,7 @@ import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
     show RouteErrorScreen;
 import 'package:announcements/setup.dart';

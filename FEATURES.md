@@ -74,6 +74,9 @@ graph TB
     BROADCAST_SIGNED_TX -->|BBQR assembly| SATOSHIFIER
     SATOSHIFIER --> SYNC
     SATOSHIFIER --> BULL_LOGGER
+    SEND -->|payment requests| SATOSHIFIER
+    SWAP -->|payment requests| SATOSHIFIER
+    WALLETS -->|payment requests, public extended keys| SATOSHIFIER
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER

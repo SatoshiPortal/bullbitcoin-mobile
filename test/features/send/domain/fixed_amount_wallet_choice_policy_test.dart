@@ -1,6 +1,7 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:primitives/primitives.dart' show SignerEntity;
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/fixed_amount_wallet_choice_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const policy = FixedAmountWalletChoicePolicy();
   const request = PaymentRequest.bip21(
-    network: Network.bitcoinMainnet,
+    network: BitcoinNetwork.mainnet,
     uri: 'bitcoin:recipient?amount=0.000025',
     address: 'recipient',
     amountSat: 2500,

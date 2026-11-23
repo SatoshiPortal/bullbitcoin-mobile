@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';

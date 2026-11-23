@@ -1,5 +1,5 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';

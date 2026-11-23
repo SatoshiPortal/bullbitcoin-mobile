@@ -1,7 +1,6 @@
 import 'dart:ui' show Tristate;
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';

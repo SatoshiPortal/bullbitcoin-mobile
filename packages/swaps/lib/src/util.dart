@@ -28,10 +28,6 @@ bool preimageMatchesInvoice({
   }
 }
 
-class ConversionConstants {
-  static final satsAmountOfOneBitcoin = BigInt.from(100000000);
-}
-
 /// Mirrors the app's wallet network enum so engine call sites read the same.
 enum Network {
   bitcoinMainnet,

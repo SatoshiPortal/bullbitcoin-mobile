@@ -1,7 +1,11 @@
 import 'package:primitives/primitives.dart' show SignerEntity;
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart'
+    as primitives
+    show BitcoinNetwork, LiquidNetwork, Network;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -42,13 +46,17 @@ class SelectBestWalletUsecase {
       case BitcoinPaymentRequest():
         return _selectBestWallet(
           amountSat ?? 0,
-          request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+          request.isTestnet
+              ? primitives.BitcoinNetwork.testnet
+              : primitives.BitcoinNetwork.mainnet,
           wallets,
         );
       case LiquidPaymentRequest():
         return _selectBestWallet(
           amountSat ?? 0,
-          request.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+          request.isTestnet
+              ? primitives.LiquidNetwork.testnet
+              : primitives.LiquidNetwork.mainnet,
           wallets,
         );
       case Bip21PaymentRequest():
@@ -87,20 +95,24 @@ class SelectBestWalletUsecase {
   }) {
     final liquid = _selectBestWallet(
       amountSat,
-      isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+      isTestnet
+          ? primitives.LiquidNetwork.testnet
+          : primitives.LiquidNetwork.mainnet,
       wallets,
     );
     if (liquid case Ok()) return liquid;
     return _selectBestWallet(
       amountSat,
-      isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+      isTestnet
+          ? primitives.BitcoinNetwork.testnet
+          : primitives.BitcoinNetwork.mainnet,
       wallets,
     );
   }
 
   Result<Wallet, SendFailure> _selectBestWallet(
     int satoshis,
-    Network network,
+    primitives.Network network,
     List<Wallet> wallets,
   ) {
     // Default first
@@ -108,7 +120,7 @@ class SelectBestWalletUsecase {
       final balance = w.balanceSat;
       if (balance == null) continue;
       if (w.isDefault &&
-          w.network == network &&
+          w.network.shared == network &&
           w.signer == SignerEntity.local &&
           balance.toInt() > satoshis &&
           balance.toInt() != 0) {
@@ -120,7 +132,7 @@ class SelectBestWalletUsecase {
     for (final w in wallets) {
       final balance = w.balanceSat;
       if (balance == null) continue;
-      if (w.network == network &&
+      if (w.network.shared == network &&
           balance.toInt() > satoshis &&
           w.signer == SignerEntity.local) {
         return Ok(w);

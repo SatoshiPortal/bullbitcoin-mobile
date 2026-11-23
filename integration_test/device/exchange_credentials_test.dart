@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
@@ -384,8 +384,8 @@ void main() {
               reason: 'requires an existing preprod session',
             );
             final exchange = Exchange.open(
-              mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
-              testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
+              mainnetEndpoint: Uri.parse(ExchangeDefaults.bbApiUrl),
+              testnetEndpoint: Uri.parse(ExchangeDefaults.bbApiTestUrl),
               readSession: () async {
                 final credential = await credentials.readActiveApiKey(
                   isTestnet: true,

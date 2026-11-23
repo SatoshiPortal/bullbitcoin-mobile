@@ -13,7 +13,6 @@ import 'dart:async';
 
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';

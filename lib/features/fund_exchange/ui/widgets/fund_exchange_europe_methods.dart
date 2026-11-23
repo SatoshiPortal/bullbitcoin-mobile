@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';

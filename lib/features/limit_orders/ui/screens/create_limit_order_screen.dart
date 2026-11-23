@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -528,7 +528,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           link: true,
           child: GestureDetector(
             onTap: () => launchUrl(
-              Uri.parse(SettingsConstants.exchangeTermsAndConditionsLink),
+              Uri.parse(ExchangeDefaults.exchangeTermsAndConditionsLink),
               mode: LaunchMode.inAppBrowserView,
             ),
             child: Text(

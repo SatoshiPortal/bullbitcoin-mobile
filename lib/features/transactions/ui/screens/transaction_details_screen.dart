@@ -1,6 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';

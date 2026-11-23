@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:satoshifier/payment_request.dart';
 
 typedef BitcoinRecipientCandidate = ({
   bool isValid,
@@ -13,14 +14,14 @@ final class BitcoinRecipientListPolicy {
       switch (request) {
         BitcoinPaymentRequest() => true,
         Bip21PaymentRequest(:final network, :final amountSat) =>
-          network.isBitcoin &&
+          network is BitcoinNetwork &&
               (amountSat == null || (allowAmount && amountSat > 0)),
         _ => false,
       };
 
   bool? networkIsTestnet(PaymentRequest? request) => switch (request) {
     BitcoinPaymentRequest(:final isTestnet) => isTestnet,
-    Bip21PaymentRequest(:final network) when network.isBitcoin =>
+    Bip21PaymentRequest(:final network) when network is BitcoinNetwork =>
       !network.isMainnet,
     _ => null,
   };

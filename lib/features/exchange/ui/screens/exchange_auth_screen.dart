@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
@@ -80,8 +80,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       param2: (isTestnet: isTestnet, isOpen: () => mounted && !_isClosing),
     );
     _bbAuthUrl = isTestnet
-        ? ApiServiceConstants.bbAuthTestUrl
-        : ApiServiceConstants.bbAuthUrl;
+        ? ExchangeDefaults.bbAuthTestUrl
+        : ExchangeDefaults.bbAuthUrl;
     if (isTestnet) {
       _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
       _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
@@ -89,8 +89,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
     // Hosts of the Bull web app the site links back to.
     final appHosts = {
-      Uri.parse(ApiServiceConstants.bbAppUrl).host,
-      if (isTestnet) Uri.parse(ApiServiceConstants.bbKycTestUrl).host,
+      Uri.parse(ExchangeDefaults.bbAppUrl).host,
+      if (isTestnet) Uri.parse(ExchangeDefaults.bbKycTestUrl).host,
     }.toList();
 
     _controller

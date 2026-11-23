@@ -10,6 +10,7 @@ export 'src/amount_formatting.dart';
 export 'src/bitcoin_unit.dart';
 export 'src/failure.dart';
 export 'src/money.dart';
+export 'src/monetary_constants.dart';
 export 'src/bitcoin_transaction_recipient.dart';
 export 'src/fingerprint.dart';
 export 'src/msats.dart';

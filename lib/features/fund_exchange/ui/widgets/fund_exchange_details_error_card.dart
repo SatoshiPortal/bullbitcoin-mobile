@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';

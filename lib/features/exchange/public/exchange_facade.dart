@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:preferences/preferences.dart' show Environment;
@@ -85,8 +85,8 @@ class ExchangeFacade {
         return (
           url: Uri.parse(
             isTestnet
-                ? ApiServiceConstants.bbKycTestUrl
-                : ApiServiceConstants.bbKycUrl,
+                ? ExchangeDefaults.bbKycTestUrl
+                : ExchangeDefaults.bbKycUrl,
           ),
           basicAuth: isTestnet && username != null && password != null
               ? (username: username, password: password)

@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bull_pricer/bull_pricer.dart';
 
 import '../../domain/send_amount_conversion.dart';
@@ -14,8 +15,8 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:fees/fees.dart';
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/liquid_address.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/liquid_address.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show calculatePercentage;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -52,7 +53,7 @@ enum SendType {
       case LnAddressPaymentRequest():
         return SendType.lightning;
       case Bip21PaymentRequest():
-        if (paymentRequest.network.isBitcoin) {
+        if (paymentRequest.network is BitcoinNetwork) {
           return SendType.bitcoin;
         } else {
           return SendType.liquid;

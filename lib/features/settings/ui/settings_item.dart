@@ -5,8 +5,8 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/features/settings/settings_links.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
@@ -378,7 +378,7 @@ List<SettingsItem> buildSettingsItems({
       ),
       icon: Icons.description,
       open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.termsAndConditionsLink),
+        Uri.parse(SettingsLinks.termsAndConditionsLink),
         mode: LaunchMode.inAppBrowserView,
       ),
       keywords: _keywords(
@@ -428,7 +428,7 @@ List<SettingsItem> buildSettingsItems({
       icon: Icons.code,
       iconAsset: Assets.icons.github,
       open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.githubSupportLink),
+        Uri.parse(SettingsLinks.githubSupportLink),
         mode: LaunchMode.externalApplication,
       ),
       keywords: [

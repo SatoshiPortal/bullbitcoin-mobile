@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:flutter/widgets.dart';
 
 /// The only place a [MnemonicEntryFailure] becomes a user-facing string, so the

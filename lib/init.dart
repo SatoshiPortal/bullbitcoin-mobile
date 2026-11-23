@@ -35,7 +35,6 @@ import 'package:preferences/migration.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
@@ -63,7 +62,7 @@ class Bull {
     // than a stale mirror, and so migration errors that happen on this
     // very boot are captured if the user just opted in.
     await Report.init(
-      dsn: ApiServiceConstants.sentryDsn,
+      dsn: 'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1',
       wizardConsent: await readStartupReportingConsent(),
     );
 
@@ -188,10 +187,10 @@ class Bull {
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
-            ApiServiceConstants.bbMempoolUrlPath,
-            ApiServiceConstants.testnetMempoolUrlPath,
-            ApiServiceConstants.bbLiquidMempoolUrlPath,
-            ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+            MempoolLegacyDefaults.bbMempoolUrlPath,
+            MempoolLegacyDefaults.testnetMempoolUrlPath,
+            MempoolLegacyDefaults.bbLiquidMempoolUrlPath,
+            MempoolLegacyDefaults.bbLiquidMempoolTestnetUrlPath,
           ],
         ),
         ElectrumImport(file: electrumFile),

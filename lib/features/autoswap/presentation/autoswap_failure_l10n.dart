@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit, ConvertAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:flutter/widgets.dart';
 

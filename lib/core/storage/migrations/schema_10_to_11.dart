@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:electrum/setup.dart' show ElectrumDefaultEndpoints;
+import 'package:mempool/migration.dart' show MempoolLegacyDefaults;
 import 'package:drift/drift.dart';
 
 class Schema10To11 {
@@ -58,7 +59,7 @@ class Schema10To11 {
 
     if (addFulcrumServer) {
       final electrumServers = schema11.electrumServers;
-      final fulcrumUrl = ApiServiceConstants.fulcrumElectrumUrl;
+      final fulcrumUrl = ElectrumDefaultEndpoints.fulcrumElectrumUrl;
       final fulcrumUrlWithoutProtocol = fulcrumUrl.replaceAll('ssl://', '');
 
       // Delete any existing custom entries for the fulcrum server
@@ -120,25 +121,25 @@ class Schema10To11 {
     final mempoolServers = schema11.mempoolServers;
     final mempoolServersData = [
       {
-        'url': ApiServiceConstants.bbMempoolUrlPath,
+        'url': MempoolLegacyDefaults.bbMempoolUrlPath,
         'isTestnet': false,
         'isLiquid': false,
         'isCustom': false,
       },
       {
-        'url': ApiServiceConstants.testnetMempoolUrlPath,
+        'url': MempoolLegacyDefaults.testnetMempoolUrlPath,
         'isTestnet': true,
         'isLiquid': false,
         'isCustom': false,
       },
       {
-        'url': ApiServiceConstants.bbLiquidMempoolUrlPath,
+        'url': MempoolLegacyDefaults.bbLiquidMempoolUrlPath,
         'isTestnet': false,
         'isLiquid': true,
         'isCustom': false,
       },
       {
-        'url': ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+        'url': MempoolLegacyDefaults.bbLiquidMempoolTestnetUrlPath,
         'isTestnet': true,
         'isLiquid': true,
         'isCustom': false,

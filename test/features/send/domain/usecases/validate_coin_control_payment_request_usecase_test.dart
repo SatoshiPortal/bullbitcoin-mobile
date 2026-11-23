@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:primitives/primitives.dart' show SignerEntity;
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -38,7 +40,7 @@ void main() {
   test('allows an embedded Liquid amount for Send but not Sweep', () {
     final wallet = _wallet.copyWith(network: Network.liquidMainnet);
     const request = PaymentRequest.bip21(
-      network: Network.liquidMainnet,
+      network: LiquidNetwork.mainnet,
       uri: 'liquidnetwork:lq1recipient?amount=0.0005',
       address: 'lq1recipient',
       amountSat: 50000,
@@ -69,7 +71,7 @@ void main() {
     final result = usecase.execute(
       wallet: _wallet,
       paymentRequest: const PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qrecipient?amount=0.0005',
         address: 'bc1qrecipient',
         amountSat: 50000,
@@ -99,7 +101,7 @@ void main() {
     final result = usecase.execute(
       wallet: _wallet,
       paymentRequest: const PaymentRequest.bip21(
-        network: Network.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         uri: 'bitcoin:bc1qrecipient?amount=0',
         address: 'bc1qrecipient',
         amountSat: 0,
@@ -130,7 +132,7 @@ void main() {
     test('coin control accepts an amountless BIP21 on ${network.name}', () {
       final wallet = _wallet.copyWith(network: network);
       final request = PaymentRequest.bip21(
-        network: network,
+        network: network.shared,
         uri: 'bitcoin:recipient',
         address: 'recipient',
       );
@@ -150,7 +152,7 @@ void main() {
   test('coin control refuses a BIP21 for another concrete network', () {
     final wallet = _wallet.copyWith(network: Network.bitcoinTestnet);
     const request = PaymentRequest.bip21(
-      network: Network.bitcoinRegtest,
+      network: BitcoinNetwork.regtest,
       uri: 'bitcoin:recipient',
       address: 'recipient',
     );

@@ -1,5 +1,5 @@
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/localization/payment_network_l10n.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:flutter/widgets.dart';
 

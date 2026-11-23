@@ -1,5 +1,5 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';

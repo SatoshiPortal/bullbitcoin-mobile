@@ -3,7 +3,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';

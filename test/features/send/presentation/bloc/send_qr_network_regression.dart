@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';

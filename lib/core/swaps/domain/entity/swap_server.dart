@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:swaps/setup.dart';
 
 /// The Boltz backend the swap engine talks to, in the engine's form: a bare
 /// host path that it prefixes with https:// and wss://. An explicitly typed
@@ -10,10 +10,10 @@ class SwapServer {
   const SwapServer._(this.host);
 
   static const mainnetDefault = SwapServer._(
-    ApiServiceConstants.boltzMainnetUrlPath,
+    SwapServiceDefaults.boltzMainnetUrlPath,
   );
   static const testnetDefault = SwapServer._(
-    ApiServiceConstants.boltzTestnetUrlPath,
+    SwapServiceDefaults.boltzTestnetUrlPath,
   );
 
   static SwapServer defaultFor({required bool isTestnet}) =>

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/nfc_payload_parser.dart';
+import 'package:bb_mobile/features/scanning/data/nfc_payload_parser.dart';
 import 'package:bb_mobile/features/scanning/ui/widgets/nfc_scanner_widget.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';

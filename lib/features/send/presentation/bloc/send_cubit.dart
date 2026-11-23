@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
     show WalletSpendBlockedException;
@@ -39,8 +40,8 @@ import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart
 import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:primitives/primitives.dart' show ConversionConstants;
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
@@ -815,7 +816,7 @@ class SendCubit extends Cubit<SendState>
   String? _bitcoinAddressOf(PaymentRequest? request) => switch (request) {
     BitcoinPaymentRequest(:final address) => address,
     Bip21PaymentRequest(:final network, :final address)
-        when network.isBitcoin =>
+        when network is BitcoinNetwork =>
       address,
     _ => null,
   };
@@ -1862,7 +1863,7 @@ class SendCubit extends Cubit<SendState>
     if (paymentRequest == null ||
         destinationAddress.isEmpty ||
         (paymentRequest is Bip21PaymentRequest
-            ? paymentRequest.network.environment != wallet.network.environment
+            ? paymentRequest.network.env != wallet.network.environment
             : paymentRequest.isTestnet == wallet.network.isMainnet)) {
       emit(
         state.copyWith(

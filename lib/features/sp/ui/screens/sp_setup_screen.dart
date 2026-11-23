@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';

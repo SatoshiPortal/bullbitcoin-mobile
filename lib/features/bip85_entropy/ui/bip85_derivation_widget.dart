@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/bip85_clipboard.dart';
 

@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:exchange/exchange.dart';
@@ -441,8 +441,8 @@ void main() {
       );
       await datasource.generateApiKeyResponse();
       final base = environment
-          ? ApiServiceConstants.bbAuthTestUrl
-          : ApiServiceConstants.bbAuthUrl;
+          ? ExchangeDefaults.bbAuthTestUrl
+          : ExchangeDefaults.bbAuthUrl;
       expect(script, contains(jsonEncode('$base/api/generate-api-key')));
       expect(script, contains('xhr.withCredentials = true'));
     }

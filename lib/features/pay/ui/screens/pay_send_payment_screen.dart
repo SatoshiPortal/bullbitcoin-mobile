@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
 import 'package:fees/fees.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';

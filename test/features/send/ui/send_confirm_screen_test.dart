@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';

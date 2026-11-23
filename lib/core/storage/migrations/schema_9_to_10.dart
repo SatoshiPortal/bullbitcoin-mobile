@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_recoverbull/migration.dart' show RecoverBullLegacyDefaults;
 import 'package:drift/drift.dart';
 
 class Schema9To10 {
@@ -32,7 +32,7 @@ class Schema9To10 {
         .insert(
           RawValuesInsertable({
             'id': const Constant(1),
-            'url': const Constant(SettingsConstants.recoverbullUrl),
+            'url': const Constant(RecoverBullLegacyDefaults.recoverbullUrl),
             'is_permission_granted': const Constant(false),
           }),
           mode: InsertMode.insertOrIgnore,

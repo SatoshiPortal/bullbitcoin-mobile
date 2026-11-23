@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usec
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
@@ -35,9 +35,9 @@ class ExchangeLocator {
   static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<Exchange>(
       () => Exchange.open(
-        mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
-        testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
-        paymentReturnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
+        mainnetEndpoint: Uri.parse(ExchangeDefaults.bbApiUrl),
+        testnetEndpoint: Uri.parse(ExchangeDefaults.bbApiTestUrl),
+        paymentReturnUrl: Uri.parse(ExchangeDefaults.bbAppUrl),
         readSession: () => readLegacyExchangeSession(
           preferences: locator<Preferences>(),
           readEpoch: () => locator<ExchangeAccessRepository>().epoch,
@@ -57,8 +57,8 @@ class ExchangeLocator {
       locator.registerLazySingleton<bbx.Bbx>(
         () => bbx.Bbx.open(
           endpoint: isTestnet
-              ? ApiServiceConstants.bbApiTestUrl
-              : ApiServiceConstants.bbApiUrl,
+              ? ExchangeDefaults.bbApiTestUrl
+              : ExchangeDefaults.bbApiUrl,
           readActiveApiKey: () =>
               _readActiveApiKey(locator, isTestnet: isTestnet),
           timeouts: bbx.BbxTimeouts.standard,
@@ -68,8 +68,8 @@ class ExchangeLocator {
       locator.registerLazySingleton<bbx.Bbx>(
         () => bbx.Bbx.open(
           endpoint: isTestnet
-              ? ApiServiceConstants.bbApiTestUrl
-              : ApiServiceConstants.bbApiUrl,
+              ? ExchangeDefaults.bbApiTestUrl
+              : ExchangeDefaults.bbApiUrl,
           readActiveApiKey: () =>
               _readActiveApiKey(locator, isTestnet: isTestnet),
         ),

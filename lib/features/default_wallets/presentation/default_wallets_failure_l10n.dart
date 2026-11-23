@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
 import 'package:flutter/widgets.dart';
 

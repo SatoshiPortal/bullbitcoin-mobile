@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:satoshifier/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';

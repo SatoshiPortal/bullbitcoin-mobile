@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart'
+    as chains
+    show BitcoinNetwork, LiquidNetwork;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
@@ -32,9 +35,8 @@ import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
 import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart'
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:satoshifier/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
@@ -224,7 +226,7 @@ class SendAddressScreen extends StatelessWidget {
     final state = context.watch<SendCubit>().state;
     final cubit = context.read<SendCubit>();
     final isLiquidRequest = switch (state.paymentRequest) {
-      Bip21PaymentRequest(:final network) => network.isLiquid,
+      Bip21PaymentRequest(:final network) => network is chains.LiquidNetwork,
       _ => state.paymentRequest?.isLiquidAddress == true,
     };
     final canToggle =
@@ -364,7 +366,7 @@ Future<void> _showWalletSheet(BuildContext context, SendCubit cubit) async {
   final wallets = state.wallets
       .where(
         (wallet) =>
-            wallet.network.environment == network.environment &&
+            wallet.network.environment == network.env &&
             (wallet.isLiquid ||
                 const InternalRecipientPolicy().permits(
                   wallet,
@@ -493,7 +495,7 @@ class AddressField extends StatelessWidget {
     final cubit = context.read<SendCubit>();
     final request = state.paymentRequest;
     final isBitcoinRequest = switch (request) {
-      Bip21PaymentRequest(:final network) => network.isBitcoin,
+      Bip21PaymentRequest(:final network) => network is chains.BitcoinNetwork,
       _ => request?.isBitcoinAddress == true,
     };
     final kind = cubit.isSpMode

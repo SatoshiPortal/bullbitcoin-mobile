@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';

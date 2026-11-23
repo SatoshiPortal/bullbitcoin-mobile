@@ -14,8 +14,8 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
@@ -72,10 +72,10 @@ class SettingsRouter {
     )) {
       null || Environment.regtest => null,
       Environment.mainnet => Uri.parse(
-        ApiServiceConstants.bbAuthUrl,
+        ExchangeDefaults.bbAuthUrl,
       ).resolve('/settings'),
       Environment.testnet => Uri.parse(
-        ApiServiceConstants.bbAuthTestUrl,
+        ExchangeDefaults.bbAuthTestUrl,
       ).resolve('/settings'),
     },
     title: (context) => context.loc.settingsExchangeSettingsTitle,

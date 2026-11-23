@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:primitives/legacy_exceptions.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:satoshifier/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

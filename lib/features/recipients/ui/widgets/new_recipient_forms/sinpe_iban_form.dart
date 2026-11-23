@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_continue_button.dart';

@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX;
 import 'package:material_ui/material_ui.dart';

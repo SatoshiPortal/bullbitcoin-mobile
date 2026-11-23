@@ -1,6 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinRegtestProfile;
 import 'package:primitives/primitives.dart' as primitives;
@@ -46,7 +45,7 @@ class DetectBitcoinStringUsecase {
         throw const FormatException('Invalid regtest destination');
       }
       return PaymentRequest.bip21(
-        network: Network.liquidRegtest,
+        network: primitives.LiquidNetwork.regtest,
         uri: input,
         address: input,
       );
@@ -105,7 +104,7 @@ class DetectBitcoinStringUsecase {
         }
       }
       return PaymentRequest.bip21(
-        network: Network.bitcoinRegtest,
+        network: primitives.BitcoinNetwork.regtest,
         uri: input,
         address: address,
         amountSat: amountSat,
@@ -116,23 +115,28 @@ class DetectBitcoinStringUsecase {
       );
     }
     final request = await PaymentRequest.parse(input);
-    final (destination, network) = switch (request) {
+    final (String?, primitives.Network?) parsed = switch (request) {
       BitcoinPaymentRequest(:final address, :final isTestnet) => (
         address,
-        isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+        isTestnet
+            ? primitives.BitcoinNetwork.testnet
+            : primitives.BitcoinNetwork.mainnet,
       ),
       LiquidPaymentRequest(:final address, :final isTestnet) => (
         address,
-        isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+        isTestnet
+            ? primitives.LiquidNetwork.testnet
+            : primitives.LiquidNetwork.mainnet,
       ),
       Bip21PaymentRequest(:final address, :final network) => (address, network),
       _ => (null, null),
     };
+    final (destination, network) = parsed;
     if (destination != null && network != null) {
-      if (active != null && network.environment != active) {
+      if (active != null && network.env != active) {
         throw const FormatException('Payment network mismatch');
       }
-      if (await native.validateAddress(destination, network.shared)
+      if (await native.validateAddress(destination, network)
           is primitives.Err) {
         throw const FormatException('Invalid payment destination');
       }

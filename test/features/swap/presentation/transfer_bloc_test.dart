@@ -7,7 +7,7 @@ import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
 import '../../../frozen_outpoints_fixture.dart';
 
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -465,7 +465,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => const PaymentRequest.bip21(
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
         uri: 'bitcoin:fixture?amount=0.00000001',
         address: 'tb1qfixture',
         amountSat: 1,
@@ -491,7 +491,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => const PaymentRequest.bip21(
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
         uri: 'bitcoin:fixture?amount=0.000025',
         address: 'tb1qfixture',
         amountSat: 2500,
@@ -3396,7 +3396,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => const PaymentRequest.bip21(
-          network: Network.bitcoinRegtest,
+          network: BitcoinNetwork.regtest,
           uri: 'bitcoin:bcrt1fixture',
           address: 'bcrt1fixture',
         ),
@@ -3451,7 +3451,7 @@ void main() {
           ),
         ).thenAnswer(
           (_) async => PaymentRequest.bip21(
-            network: destination,
+            network: destination.shared,
             uri: 'public-fixture',
             address: 'public-fixture',
           ),

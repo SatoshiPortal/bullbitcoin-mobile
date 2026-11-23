@@ -7,7 +7,7 @@ import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/transactions/presentation/swap_l10n_x.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount;
-import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:mempool/mempool.dart';

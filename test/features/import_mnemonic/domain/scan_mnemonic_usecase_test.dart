@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
+
 import 'dart:async';
 import 'dart:io';
 
@@ -11,8 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    show UnsupportedNetworkException;
 
 class _MockCheckWalletStatusUsecase extends Mock
     implements CheckWalletStatusUsecase {}
