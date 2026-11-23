@@ -189,6 +189,7 @@ class LoadLimitOrderCreationUsecase {
             return const [];
         }
       }
+      destinations.sort((left, right) => left.id.compareTo(right.id));
       return destinations;
     } on Error {
       rethrow;
