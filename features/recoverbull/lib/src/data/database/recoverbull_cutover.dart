@@ -126,15 +126,15 @@ final class RecoverBullCutover {
 }
 
 const _tables = [
-  // The old configuration URL is not selected. The historical permission
-  // column remains intact until Preferences takes over its live access.
+  // Preferences owns server-scoped consent. Keep the historical fields in
+  // the source and copy only RecoverBull monitoring and backup metadata.
   OwnerTableCopy(
     'recoverbull_state',
-    'id,permission_granted,monitoring_enabled,legacy_import_complete,'
+    'id,monitoring_enabled,legacy_import_complete,'
         'monitoring_revision,generation',
     orderBy: 'id',
     sourceQuery:
-        'SELECT id,permission_granted,monitoring_enabled,legacy_import_complete,'
+        'SELECT id,monitoring_enabled,legacy_import_complete,'
         'monitoring_revision,generation FROM recoverbull_state ORDER BY id',
   ),
   OwnerTableCopy(
