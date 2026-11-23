@@ -57,8 +57,6 @@ enum Network {
   };
 }
 
-}
-
 @freezed
 abstract class Wallet with _$Wallet {
   const factory Wallet({
