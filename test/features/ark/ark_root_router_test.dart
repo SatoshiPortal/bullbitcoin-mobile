@@ -100,9 +100,6 @@ class _SwapRoutes extends Fake implements SwapFeature {
   ];
 
   @override
-  List<GoRoute> get rescueRoutes => const [];
-
-  @override
   GoRoute get autoswapSettingsRoute => GoRoute(
     name: 'autoswapSettings',
     path: 'autoswap-settings',
