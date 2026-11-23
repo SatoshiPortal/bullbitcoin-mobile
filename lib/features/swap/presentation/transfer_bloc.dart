@@ -2586,11 +2586,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           case Ok(:final value):
             txId = value.txid;
           case Err(:final failure):
-            if (failure is! SpendBroadcastOutcomeUnknownFailure &&
-                failure is! SpendAlreadyInChainFailure) {
+            final swapFailure = switch (failure) {
+              SpendBroadcastRejectedFailure() ||
+              SpendDeveloperAuthorizationFailure() ||
+              SpendUnavailableFailure() ||
+              SpendInvalidRequestFailure() => _spendFailure(failure),
+              _ => const SwapLockupPendingFailure(),
+            };
+            // A Liquid I/O error can occur after LWK submitted the lockup.
+            // Only a definite refusal can make this swap safe to fund again.
+            if (swapFailure is! SwapLockupPendingFailure) {
               final _ = await _dropPendingSwapLockupUsecase.execute(swap.id);
             }
-            emit(state.copyWith(swapFailure: _spendFailure(failure)));
+            emit(state.copyWith(swapFailure: swapFailure));
             return;
         }
         final recorded = await _recordSwapLockupUsecase.execute(
