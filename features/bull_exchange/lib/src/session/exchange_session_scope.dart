@@ -99,6 +99,9 @@ class ExchangeSessionScope extends StatelessWidget {
         connectNotifications: ({required reconnect}) =>
             capability.openCurrentNotifications(reconnect: reconnect),
         disconnectNotifications: capability.disconnectNotifications,
+        reconcileUnknownWrites: () async {
+          final _ = await capability.reconcileUnknownWrites();
+        },
       );
     },
     child: RecipientsScope(

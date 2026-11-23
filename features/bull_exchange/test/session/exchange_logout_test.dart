@@ -58,20 +58,19 @@ void main() {
     changes.add(access);
   }
 
-  ExchangeCubit build() => ExchangeCubit(
-    getAccount: getAccount.execute,
-    getAnnouncements: announcements.execute,
-    stopDca: () => preferences.execute(dcaEnabled: false),
-    currentAccess: () => watchAccess.current,
-    accessChanges: watchAccess.execute(),
-    accountChanges: notifications.accountChanges(),
-    supportMessages: notifications.supportMessages(),
-    getUnreadSupportMessageCount: unreadCount.execute,
-    markSupportMessagesRead: markRead.execute,
-    connectNotifications: ({required reconnect}) =>
-        reconnect ? notifications.reconnect() : notifications.connect(),
-    disconnectNotifications: notifications.disconnect,
-  );
+  ExchangeCubit build({Future<void> Function()? reconcileUnknownWrites}) =>
+      ExchangeCubit(
+        reconcileUnknownWrites: reconcileUnknownWrites,
+        getAccount: getAccount.execute,
+        getAnnouncements: announcements.execute,
+        stopDca: () => preferences.execute(dcaEnabled: false),
+        currentAccess: () => watchAccess.current,
+        accessChanges: watchAccess.execute(),
+        accountChanges: notifications.accountChanges(),
+        connectNotifications: ({required reconnect}) =>
+            reconnect ? notifications.reconnect() : notifications.connect(),
+        disconnectNotifications: notifications.disconnect,
+      );
 
   setUp(() {
     getAccount = _Account();
@@ -114,6 +113,25 @@ void main() {
     expect(cubit.state.userSummary, account);
     verify(notifications.connect).called(1);
   });
+
+  test(
+    'signing in reconciles journaled writes; other access does not',
+    () async {
+      var reconciliations = 0;
+      final cubit = build(
+        reconcileUnknownWrites: () async => reconciliations++,
+      );
+      addTearDown(cubit.close);
+
+      publish(const ExchangeAccessDisabled());
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+      expect(reconciliations, 0);
+
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await Future<void>.delayed(Duration.zero);
+      expect(reconciliations, 1);
+    },
+  );
 
   test(
     'signed in access loads the account; disabled access clears it',

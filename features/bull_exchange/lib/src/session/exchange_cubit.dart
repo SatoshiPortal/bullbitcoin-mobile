@@ -21,7 +21,9 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required this._markSupportMessagesRead,
     required this._connectNotifications,
     required this._disconnectNotifications,
-  }) : super(const ExchangeState()) {
+    Future<void> Function()? reconcileUnknownWrites,
+  }) : _reconcileUnknownWrites = reconcileUnknownWrites ?? _nothing,
+       super(const ExchangeState()) {
     _notifications = accountChanges.listen((_) => fetchUserSummary());
     _supportMessages = supportMessages.listen(
       (_) => refreshUnreadSupportMessages(),
@@ -35,7 +37,9 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         // unchanged account emits no summary transition to reopen the socket.
         unawaited(fetchUserSummary());
         unawaited(connectWebSocket());
-        unawaited(refreshUnreadSupportMessages());
+        // Settle writes whose outcome was unknown by re-reading them; never
+        // sends them again.
+        unawaited(_reconcileUnknownWrites());
       } else {
         _accountAttempt++;
         _unreadAttempt++;
@@ -53,10 +57,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   })
   _connectNotifications;
   final void Function() _disconnectNotifications;
-  final Future<Result<int, ExchangeFailure>> Function()
-  _getUnreadSupportMessageCount;
-  final Future<Result<void, ExchangeFailure>> Function()
-  _markSupportMessagesRead;
+  final Future<void> Function() _reconcileUnknownWrites;
   StreamSubscription<Object?>? _notifications;
   StreamSubscription<Object?>? _supportMessages;
   int _unreadAttempt = 0;
@@ -171,6 +172,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   void disconnectWebSocket() => _disconnectNotifications();
+
+  static Future<void> _nothing() async {}
   @override
   Future<void> close() async {
     await _notifications?.cancel();
