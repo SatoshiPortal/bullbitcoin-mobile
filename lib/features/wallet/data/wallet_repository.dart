@@ -34,7 +34,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:wallet_import/wallet_import.dart';
 import 'package:meta/meta.dart';
 
-class WalletRepository implements SeedReferencePort, WalletReaderRepository {
+class WalletRepository implements WalletReaderRepository {
   final WalletNativeLifecycle? _native;
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
@@ -426,30 +426,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     } catch (e, st) {
       _reportReadFailure(e, st, 'getWallets');
       return Err(_classify(e, 'getWallets'));
-    }
-  }
-
-  /// Exhaustive custody references, independent of origin and native reads.
-  /// A partial result must never authorize destruction of a secret.
-  @override
-  @useResult
-  Future<Result<Set<Fingerprint>, WalletFailure>>
-  getCustodyFingerprints() async {
-    try {
-      final rows = await _walletRegistrations.fetchAll();
-      final fingerprints = <Fingerprint>{};
-      for (final row in rows) {
-        if (row.signer != Signer.local) continue;
-        final fingerprint = Fingerprint.tryParse(row.masterFingerprint);
-        if (fingerprint == null) {
-          return const Err(WalletStorageFailure('invalid custody reference'));
-        }
-        fingerprints.add(fingerprint);
-      }
-      return Ok(fingerprints);
-    } catch (_) {
-      log.warning('Wallet custody references unavailable category=storage');
-      return const Err(WalletStorageFailure('custody references unavailable'));
     }
   }
 

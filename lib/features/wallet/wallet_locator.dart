@@ -279,7 +279,7 @@ class WalletLocator {
     );
     locator.registerLazySingleton<SeedReferences>(() {
       final references = SeedReferences(
-        locator<WalletRepository>(),
+        locator<SecretsInventory>(),
         admission: locator<ParentCustodyAdmissionPort>(),
       );
       // Ark funding holds keep their source seed referenced.
