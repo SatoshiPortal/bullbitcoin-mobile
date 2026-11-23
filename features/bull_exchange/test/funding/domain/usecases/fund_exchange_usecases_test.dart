@@ -77,9 +77,7 @@ void main() {
       );
 
       final result = await usecase.execute(
-        const ListFundingInstitutionsQuery(
-          jurisdiction: FundingJurisdiction.colombia,
-        ),
+        const ListFundingInstitutionsQuery(jurisdiction: Jurisdiction.colombia),
       );
 
       expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
@@ -95,9 +93,7 @@ void main() {
       );
 
       final result = await usecase.execute(
-        const ListFundingInstitutionsQuery(
-          jurisdiction: FundingJurisdiction.colombia,
-        ),
+        const ListFundingInstitutionsQuery(jurisdiction: Jurisdiction.colombia),
       );
 
       expect(valueOf(result).institutions, [institution]);
@@ -152,7 +148,7 @@ class _FakeFundingRepository implements ExchangeFunding {
 
   @override
   Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
-    required FundingJurisdiction jurisdiction,
+    required Jurisdiction jurisdiction,
   }) async => institutionsResult!;
 
   @override

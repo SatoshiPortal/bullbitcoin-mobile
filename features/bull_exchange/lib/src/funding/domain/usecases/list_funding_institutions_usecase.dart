@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 import '../map_funding_failure.dart';
 
 class ListFundingInstitutionsQuery {
-  final FundingJurisdiction jurisdiction;
+  final Jurisdiction jurisdiction;
 
   const ListFundingInstitutionsQuery({required this.jurisdiction});
 }

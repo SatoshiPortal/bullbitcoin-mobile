@@ -4,8 +4,8 @@ import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FundExchangeJurisdictionDropdown extends StatelessWidget {
-  final FundingJurisdiction value;
-  final void Function(FundingJurisdiction)? onChanged;
+  final Jurisdiction value;
+  final void Function(Jurisdiction)? onChanged;
   const FundExchangeJurisdictionDropdown({
     super.key,
     required this.value,
@@ -14,31 +14,31 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BullDropdown<FundingJurisdiction>(
+    return BullDropdown<Jurisdiction>(
       value: value,
       items: [
         BullPickerItem(
-          value: FundingJurisdiction.canada,
+          value: Jurisdiction.canada,
           label: context.loc.fundExchangeJurisdictionCanada,
         ),
         BullPickerItem(
-          value: FundingJurisdiction.europe,
+          value: Jurisdiction.europe,
           label: context.loc.fundExchangeJurisdictionEurope,
         ),
         BullPickerItem(
-          value: FundingJurisdiction.mexico,
+          value: Jurisdiction.mexico,
           label: context.loc.fundExchangeJurisdictionMexico,
         ),
         BullPickerItem(
-          value: FundingJurisdiction.costaRica,
+          value: Jurisdiction.costaRica,
           label: context.loc.fundExchangeJurisdictionCostaRica,
         ),
         BullPickerItem(
-          value: FundingJurisdiction.argentina,
+          value: Jurisdiction.argentina,
           label: context.loc.fundExchangeJurisdictionArgentina,
         ),
         BullPickerItem(
-          value: FundingJurisdiction.colombia,
+          value: Jurisdiction.colombia,
           label: context.loc.fundExchangeJurisdictionColombia,
         ),
       ],

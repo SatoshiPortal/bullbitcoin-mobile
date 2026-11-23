@@ -1,89 +1,89 @@
-import 'funding_jurisdiction.dart';
-
 import 'package:meta/meta.dart';
+
+import '../catalog/jurisdiction.dart';
 
 @immutable
 sealed class FundingMethod {
   const FundingMethod();
 
-  FundingJurisdiction get jurisdiction;
+  Jurisdiction get jurisdiction;
 }
 
 class EmailETransfer extends FundingMethod {
   const EmailETransfer();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.canada;
+  Jurisdiction get jurisdiction => Jurisdiction.canada;
 }
 
 class BankTransferWire extends FundingMethod {
   const BankTransferWire();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.canada;
+  Jurisdiction get jurisdiction => Jurisdiction.canada;
 }
 
 class OnlineBillPayment extends FundingMethod {
   const OnlineBillPayment();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.canada;
+  Jurisdiction get jurisdiction => Jurisdiction.canada;
 }
 
 class CanadaPost extends FundingMethod {
   const CanadaPost();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.canada;
+  Jurisdiction get jurisdiction => Jurisdiction.canada;
 }
 
 class InstantSepa extends FundingMethod {
   const InstantSepa();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.europe;
+  Jurisdiction get jurisdiction => Jurisdiction.europe;
 }
 
 class RegularSepa extends FundingMethod {
   const RegularSepa();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.europe;
+  Jurisdiction get jurisdiction => Jurisdiction.europe;
 }
 
 class SpeiTransfer extends FundingMethod {
   const SpeiTransfer();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.mexico;
+  Jurisdiction get jurisdiction => Jurisdiction.mexico;
 }
 
 class Sinpe extends FundingMethod {
   const Sinpe();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.costaRica;
+  Jurisdiction get jurisdiction => Jurisdiction.costaRica;
 }
 
 class CrIbanCrc extends FundingMethod {
   const CrIbanCrc();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.costaRica;
+  Jurisdiction get jurisdiction => Jurisdiction.costaRica;
 }
 
 class CrIbanUsd extends FundingMethod {
   const CrIbanUsd();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.costaRica;
+  Jurisdiction get jurisdiction => Jurisdiction.costaRica;
 }
 
 class ArsBankTransfer extends FundingMethod {
   const ArsBankTransfer();
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.argentina;
+  Jurisdiction get jurisdiction => Jurisdiction.argentina;
 }
 
 class CopBankTransfer extends FundingMethod {
@@ -93,5 +93,5 @@ class CopBankTransfer extends FundingMethod {
   const CopBankTransfer({required this.bankCode, required this.amountCop});
 
   @override
-  FundingJurisdiction get jurisdiction => FundingJurisdiction.colombia;
+  Jurisdiction get jurisdiction => Jurisdiction.colombia;
 }

@@ -13,7 +13,6 @@ export 'src/domain/entities/dca.dart';
 export 'src/domain/entities/default_wallet.dart';
 export 'src/domain/entities/funding_details.dart';
 export 'src/domain/entities/funding_institution.dart';
-export 'src/domain/entities/funding_jurisdiction.dart';
 export 'src/domain/entities/funding_method.dart';
 export 'src/domain/entities/limit_order.dart';
 export 'src/domain/entities/limit_order_draft.dart';

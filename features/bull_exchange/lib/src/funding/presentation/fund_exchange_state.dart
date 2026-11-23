@@ -26,28 +26,11 @@ sealed class FundExchangeState with _$FundExchangeState {
 
   bool get isFundingRestricted => userSummary?.isFundingRestricted ?? false;
 
-  FundingJurisdiction get initialFundingJurisdiction {
-    // Map preffered currency to jurisdiction
-    final currency = userSummary?.currency;
-    switch (currency) {
-      case 'CAD':
-        return FundingJurisdiction.canada;
-      case 'EUR':
-        return FundingJurisdiction.europe;
-      case 'MXN':
-        return FundingJurisdiction.mexico;
-      case 'CRC':
-        return FundingJurisdiction.costaRica;
-      case 'ARS':
-        return FundingJurisdiction.argentina;
-      case 'COP':
-        return FundingJurisdiction.colombia;
-      //case 'USD':
-      //  return FundingJurisdiction.unitedStates;
-      default:
-        return FundingJurisdiction.canada;
-    }
-  }
+  /// The jurisdiction of the account's currency. USD is Costa Rica, where its
+  /// funding rails are.
+  Jurisdiction get initialFundingJurisdiction => ExchangeCatalog.jurisdictionOf(
+    ExchangeCatalog.legacyCurrencyOrFallback(userSummary?.currency),
+  );
 
   bool get shouldShowScamWarningConsent =>
       userSummary != null &&

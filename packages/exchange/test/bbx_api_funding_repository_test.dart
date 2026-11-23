@@ -193,7 +193,7 @@ final _operations = <String, _Operation>{
     fundingMethod: const CopBankTransfer(bankCode: 'BC01', amountCop: 1),
   ),
   'listInstitutions': (r) =>
-      r.listInstitutions(jurisdiction: FundingJurisdiction.colombia),
+      r.listInstitutions(jurisdiction: Jurisdiction.colombia),
   'registerResponsibilityConsent': (r) => r.registerResponsibilityConsent(),
 };
 
@@ -296,7 +296,7 @@ void main() {
   });
 
   group('listInstitutions matches the old repository, as recorded', () {
-    for (final jurisdiction in FundingJurisdiction.values) {
+    for (final jurisdiction in Jurisdiction.values) {
       test('sends the lowercase country code of $jurisdiction', () async {
         final ((oldSent, _), (sent, _)) = await _both(
           'institutions $jurisdiction',
@@ -324,7 +324,7 @@ void main() {
       };
       final ((_, oldResult), (_, result)) = await _both(
         'institutions kept and skipped',
-        (r) => r.listInstitutions(jurisdiction: FundingJurisdiction.colombia),
+        (r) => r.listInstitutions(jurisdiction: Jurisdiction.colombia),
         body: {
           'result': {
             'elements': [
@@ -386,7 +386,7 @@ void main() {
       test('$body is NoInstitutionsFailure', () async {
         final ((_, oldResult), (_, result)) = await _both(
           'no institutions $body',
-          (r) => r.listInstitutions(jurisdiction: FundingJurisdiction.canada),
+          (r) => r.listInstitutions(jurisdiction: Jurisdiction.canada),
           body: body,
         );
 

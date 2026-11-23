@@ -232,7 +232,7 @@ final oldRepository = <String, Object?>{
       {'type': 'cop', 'paymentLink': 'https://pay.example/cop'},
     ],
   ),
-  'institutions FundingJurisdiction.canada': (
+  'institutions Jurisdiction.canada': (
     [
       (
         '/ak/api-recipients',
@@ -244,7 +244,7 @@ final oldRepository = <String, Object?>{
       'listInstitutionCodes returned no usable institution',
     ],
   ),
-  'institutions FundingJurisdiction.europe': (
+  'institutions Jurisdiction.europe': (
     [
       (
         '/ak/api-recipients',
@@ -256,7 +256,7 @@ final oldRepository = <String, Object?>{
       'listInstitutionCodes returned no usable institution',
     ],
   ),
-  'institutions FundingJurisdiction.mexico': (
+  'institutions Jurisdiction.mexico': (
     [
       (
         '/ak/api-recipients',
@@ -268,7 +268,7 @@ final oldRepository = <String, Object?>{
       'listInstitutionCodes returned no usable institution',
     ],
   ),
-  'institutions FundingJurisdiction.costaRica': (
+  'institutions Jurisdiction.costaRica': (
     [
       (
         '/ak/api-recipients',
@@ -280,7 +280,7 @@ final oldRepository = <String, Object?>{
       'listInstitutionCodes returned no usable institution',
     ],
   ),
-  'institutions FundingJurisdiction.argentina': (
+  'institutions Jurisdiction.argentina': (
     [
       (
         '/ak/api-recipients',
@@ -292,7 +292,7 @@ final oldRepository = <String, Object?>{
       'listInstitutionCodes returned no usable institution',
     ],
   ),
-  'institutions FundingJurisdiction.colombia': (
+  'institutions Jurisdiction.colombia': (
     [
       (
         '/ak/api-recipients',

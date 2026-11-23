@@ -189,9 +189,7 @@ void main() {
       final recipients = BbxApiRecipientsRepository(api: api);
       final limits = user.limitOrders;
       expect(
-        await funding.listInstitutions(
-          jurisdiction: FundingJurisdiction.canada,
-        ),
+        await funding.listInstitutions(jurisdiction: Jurisdiction.canada),
         isA<Err>().having(
           (r) => r.failure,
           'funding',
@@ -216,9 +214,7 @@ void main() {
       );
       credential = const Err(ExchangeCredentialReadFailure());
       expect(
-        await funding.listInstitutions(
-          jurisdiction: FundingJurisdiction.canada,
-        ),
+        await funding.listInstitutions(jurisdiction: Jurisdiction.canada),
         isA<Err>().having(
           (r) => r.failure,
           'funding unavailable',

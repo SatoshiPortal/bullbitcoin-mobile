@@ -39,7 +39,7 @@ class _FailingRepository implements ExchangeFunding {
 
   @override
   Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
-    required FundingJurisdiction jurisdiction,
+    required Jurisdiction jurisdiction,
   }) async => Err(failure);
 
   @override

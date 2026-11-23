@@ -246,7 +246,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       case PendingCopInputAction():
         add(
           const FundExchangeEvent.fundingInstitutionsRequested(
-            jurisdiction: FundingJurisdiction.colombia,
+            jurisdiction: Jurisdiction.colombia,
           ),
         );
       case null:

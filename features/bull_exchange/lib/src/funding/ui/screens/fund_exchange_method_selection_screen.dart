@@ -33,7 +33,7 @@ class FundExchangeMethodSelectionScreen extends StatefulWidget {
 
 class _FundExchangeMethodSelectionScreenState
     extends State<FundExchangeMethodSelectionScreen> {
-  FundingJurisdiction? jurisdiction;
+  Jurisdiction? jurisdiction;
   bool isLoadingFundingDetails = false;
   bool isLoadingFundingInstitutions = false;
   FundExchangeFailure? _fundingDetailsFailure;
@@ -169,11 +169,9 @@ class _FundExchangeMethodSelectionScreenState
                     const BullShimmerBox(height: 200)
                   else
                     switch (jurisdiction!) {
-                      FundingJurisdiction.canada =>
-                        const FundExchangeCanadaMethods(),
-                      FundingJurisdiction.europe =>
-                        const FundExchangeEuropeMethods(),
-                      FundingJurisdiction.mexico => FundExchangeMethodListTile(
+                      Jurisdiction.canada => const FundExchangeCanadaMethods(),
+                      Jurisdiction.europe => const FundExchangeEuropeMethods(),
+                      Jurisdiction.mexico => FundExchangeMethodListTile(
                         title: context.loc.fundExchangeSpeiTransfer,
                         subtitle: context.loc.fundExchangeSpeiSubtitle,
                         onTap: () {
@@ -184,28 +182,26 @@ class _FundExchangeMethodSelectionScreenState
                           );
                         },
                       ),
-                      FundingJurisdiction.costaRica =>
+                      Jurisdiction.costaRica =>
                         const FundExchangeCostaRicaMethods(),
-                      FundingJurisdiction.argentina =>
-                        FundExchangeMethodListTile(
-                          title: context.loc.fundExchangeBankTransfer,
-                          subtitle:
-                              context.loc.fundExchangeBankTransferSubtitle,
-                          onTap: () {
-                            context.read<FundExchangeBloc>().add(
-                              const FundExchangeEvent.fundingDetailsRequested(
-                                fundingMethod: ArsBankTransfer(),
-                              ),
-                            );
-                          },
-                        ),
-                      FundingJurisdiction.colombia => FundExchangeMethodListTile(
+                      Jurisdiction.argentina => FundExchangeMethodListTile(
+                        title: context.loc.fundExchangeBankTransfer,
+                        subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                        onTap: () {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.fundingDetailsRequested(
+                              fundingMethod: ArsBankTransfer(),
+                            ),
+                          );
+                        },
+                      ),
+                      Jurisdiction.colombia => FundExchangeMethodListTile(
                         title: context.loc.fundExchangeBankTransfer,
                         subtitle: context.loc.fundExchangeBankTransferSubtitle,
                         onTap: () {
                           context.read<FundExchangeBloc>().add(
                             const FundExchangeEvent.fundingInstitutionsRequested(
-                              jurisdiction: FundingJurisdiction.colombia,
+                              jurisdiction: Jurisdiction.colombia,
                             ),
                           );
                         },

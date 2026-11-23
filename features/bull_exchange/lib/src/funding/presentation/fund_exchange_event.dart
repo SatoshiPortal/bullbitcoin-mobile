@@ -6,7 +6,7 @@ sealed class FundExchangeEvent with _$FundExchangeEvent {
   const factory FundExchangeEvent.confidentialSepaAvailabilityRetried() =
       FundExchangeConfidentialSepaAvailabilityRetried;
   const factory FundExchangeEvent.fundingInstitutionsRequested({
-    required FundingJurisdiction jurisdiction,
+    required Jurisdiction jurisdiction,
   }) = FundExchangeFundingInstitutionsRequested;
   const factory FundExchangeEvent.fundingDetailsRequested({
     required FundingMethod fundingMethod,

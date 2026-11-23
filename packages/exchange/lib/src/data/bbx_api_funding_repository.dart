@@ -3,9 +3,9 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/catalog/jurisdiction.dart';
 import '../domain/entities/funding_details.dart';
 import '../domain/entities/funding_institution.dart';
-import '../domain/entities/funding_jurisdiction.dart';
 import '../domain/entities/funding_method.dart';
 import '../domain/exchange_failure.dart';
 import 'funding_details_mapper.dart';
@@ -79,7 +79,7 @@ final class BbxApiFundingRepository {
 
   @useResult
   Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
-    required FundingJurisdiction jurisdiction,
+    required Jurisdiction jurisdiction,
   }) async {
     const method = 'listInstitutionCodes';
 
