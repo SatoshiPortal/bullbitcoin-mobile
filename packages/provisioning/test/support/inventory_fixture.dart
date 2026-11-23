@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:legacy_storage/coordination.dart';
-import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
@@ -64,10 +63,8 @@ final class InventoryFixture {
       timeout: Duration.zero,
     ) as ExclusiveAdmission;
     try {
-      final prepared = await SecretsImport(file: file).prepare(
-        exclusive,
-        OwnerOrigin.fresh,
-      );
+      final prepared = await SecretsImport(file: file)
+          .prepare(exclusive, OwnerOrigin.fresh);
       final owner = switch (prepared) {
         Ok(:final value) => value,
         Err(:final failure) => throw StateError('Fixture prepare: $failure'),

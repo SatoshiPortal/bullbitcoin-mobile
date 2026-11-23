@@ -1,11 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
+import 'package:preferences/preferences.dart'
+    show ActiveEnvironmentReader, Environment, PreferencesFailure;
+
 import 'package/primitives/primitives.dart';
+
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart';
-import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
-import 'package:sync/sync.dart' show SyncFailure;
 
 /// Answers the active environment; provisioning must read it exactly once.
 final class _Environment implements ActiveEnvironmentReader {
@@ -15,7 +16,8 @@ final class _Environment implements ActiveEnvironmentReader {
   int reads = 0;
 
   @override
-  Future<Result<Environment, PreferencesFailure>> readActiveEnvironment() async {
+  Future<Result<Environment, PreferencesFailure>>
+  readActiveEnvironment() async {
     reads++;
     return Ok(Environment.values.byName(environment.name));
   }
@@ -26,7 +28,6 @@ final class _Environment implements ActiveEnvironmentReader {
 final class _Accounts implements WalletProvisioning {
   final List<Network> created = [];
   int resumes = 0;
-  int reads = 0;
   Network? failNetwork;
   void Function(Secret secret, Network network)? onCreate;
 
@@ -82,13 +83,16 @@ final class _Inventory implements WalletInventory {
   int reads = 0;
 
   @override
-  Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() async {
+  Future<Result<List<Fingerprint>, SecretFailure>>
+  referencedFingerprints() async {
     reads++;
     return Ok(const <Fingerprint>[]);
   }
 
   @override
-  Future<Result<WalletRegistration, SecretFailure>> readWallet(String id) async {
+  Future<Result<WalletRegistration, SecretFailure>> readWallet(
+    String id,
+  ) async {
     reads++;
     return Ok(registrations.singleWhere((wallet) => wallet.id == id));
   }
@@ -136,19 +140,7 @@ void main() {
     accounts = _Accounts();
     environment = _Environment(NetworkEnv.mainnet);
     registrations = inventory.registrations;
-    accounts.onCreate = (secret, network) {
-      addWallet(secret, network);
-      inventory.registrations.add(
-        walletRegistrationForTesting(
-          id: network.toString(),
-          network: network,
-          signer: WalletSigner.local,
-          isDefault: true,
-          masterFingerprint: secret.id,
-          secretFingerprint: secret.id,
-        ),
-      );
-    };
+    accounts.onCreate = (secret, network) => addWallet(secret, network);
     provisioning = DefaultWalletProvisioning(
       secrets: secrets,
       inventory: inventory,
@@ -214,7 +206,9 @@ void main() {
       expect(storage.entries, before);
       if (failedNetwork == LiquidNetwork.mainnet) {
         expect(
-          accounts.created.where((network) => network == BitcoinNetwork.mainnet),
+          accounts.created.where(
+            (network) => network == BitcoinNetwork.mainnet,
+          ),
           hasLength(1),
         );
       }
@@ -287,41 +281,35 @@ void main() {
     },
   );
 
-  test(
-    'complete defaults are reused without custody access and cannot be restored over',
-    () async {
-      final fingerprint = Fingerprint('deadbeef');
-      for (final network in <Network>[
-        BitcoinNetwork.mainnet,
-        LiquidNetwork.mainnet,
-      ]) {
-        inventory.registrations.add(
-          walletRegistrationForTesting(
-            id: network.toString(),
-            network: network,
-            isDefault: true,
-            signer: WalletSigner.local,
-            masterFingerprint: fingerprint,
-            secretFingerprint: fingerprint,
-          ),
-        );
-      }
-      final reads = storage.reads;
-      expect(
-        (await provisioning.execute() as Ok).value,
-        inventory.registrations,
+  test('complete defaults are reused without custody access and cannot be restored over', () async {
+    final fingerprint = Fingerprint('deadbeef');
+    for (final network in <Network>[
+      BitcoinNetwork.mainnet,
+      LiquidNetwork.mainnet,
+    ]) {
+      inventory.registrations.add(
+        walletRegistrationForTesting(
+          id: network.toString(),
+          network: network,
+          isDefault: true,
+          signer: WalletSigner.local,
+          masterFingerprint: fingerprint,
+          secretFingerprint: fingerprint,
+        ),
       );
-      expect(
-        (await provisioning.execute(
-          mnemonicWords: [...List.filled(11, 'abandon'), 'about'],
-          language: Language.english,
-        ) as Err).failure,
-        isA<DefaultWalletAlreadyExistsFailure>(),
-      );
-      expect(storage.reads, reads);
-      expect(accounts.created, isEmpty);
-    },
-  );
+    }
+    final reads = storage.reads;
+    expect((await provisioning.execute() as Ok).value, inventory.registrations);
+    expect(
+      (await provisioning.execute(
+        mnemonicWords: [...List.filled(11, 'abandon'), 'about'],
+        language: Language.english,
+      ) as Err).failure,
+      isA<DefaultWalletAlreadyExistsFailure>(),
+    );
+    expect(storage.reads, reads);
+    expect(accounts.created, isEmpty);
+  });
 
   test(
     'invalid recovery arguments fail before reading the inventory',
@@ -372,9 +360,11 @@ void main() {
     );
     final wallets =
         (result as Ok<List<WalletRegistration>, DefaultWalletFailure>).value;
-    final loaded = await secrets.fetch(
-      wallets.first.secretFingerprint as Fingerprint,
-    );
+    final fingerprint = switch (wallets.first.secretFingerprint) {
+      final Fingerprint value => value,
+      null => fail('the default wallets must reference their secret'),
+    };
+    final loaded = await secrets.fetch(fingerprint);
     expect(
       (loaded as Ok<Secret, SecretFailure>).value.info.language,
       Language.japanese,
@@ -383,8 +373,7 @@ void main() {
   });
 
   test('a seed-only secret is refused before inventory access', () async {
-    storage.entries['seed_3442193e'] =
-        '{"bytes":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"runtimeType":"bytes"}';
+    storage.entries['seed_3442193e'] = '{"bytes":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"runtimeType":"bytes"}';
     final secret = (await secrets.fetch(
       Fingerprint('3442193e'),
     ) as Ok<Secret, SecretFailure>).value;
@@ -439,10 +428,7 @@ void main() {
         await regtest.execute(expectedNetwork: NetworkEnv.regtest),
         isA<Ok>(),
       );
-      expect(accounts.created, [
-        BitcoinNetwork.regtest,
-        LiquidNetwork.regtest,
-      ]);
+      expect(accounts.created, [BitcoinNetwork.regtest, LiquidNetwork.regtest]);
     },
   );
 

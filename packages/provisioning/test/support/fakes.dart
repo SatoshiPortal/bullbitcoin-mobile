@@ -16,6 +16,7 @@ final class FakeNativeLifecycle implements WalletNativeLifecycle {
   final List<WalletKey> deleted = [];
   final List<WalletKey> catalogDeletes = [];
   int receiveCalls = 0;
+  int issuedReceiveCalls = 0;
 
   @override
   Future<Result<void, SyncFailure>> prepareCreate(WalletKey key) {
@@ -42,8 +43,10 @@ final class FakeNativeLifecycle implements WalletNativeLifecycle {
   }
 
   @override
-  Future<Result<int?, SyncFailure>> issuedReceiveIndex(WalletKey key) async =>
-      const Ok(null);
+  Future<Result<int?, SyncFailure>> issuedReceiveIndex(WalletKey key) async {
+    issuedReceiveCalls++;
+    return const Ok(null);
+  }
 
   @override
   Future<Result<({String address, int index}), SyncFailure>> receive(
@@ -61,7 +64,9 @@ final class FakePropertyStore implements WalletPropertyStore {
   Result<void, Failure> outcome = const Ok(null);
 
   @override
-  Future<Result<void, Failure>> prepareWallet(WalletPropertyDraft wallet) async {
+  Future<Result<void, Failure>> prepareWallet(
+    WalletPropertyDraft wallet,
+  ) async {
     drafts.add(wallet);
     return outcome;
   }

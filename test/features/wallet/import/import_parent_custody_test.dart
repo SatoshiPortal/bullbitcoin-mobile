@@ -1,40 +1,43 @@
-import 'package:wallet_import/wallet_import.dart';
-import 'package:all_seed_view/testing.dart';
-
-import '../../../support/inventory_fixture.dart';
-import '../../../support/wallet_registrations.dart';
-
 import 'dart:async';
 import 'dart:io';
 
-import 'package:preferences/preferences.dart' hide Language;
-import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:wallet_import/testing.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:sync/write.dart' show WalletNativeLifecycle;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:secrets/custody.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
+import 'package:all_seed_view/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:primitives/primitives.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
-import 'package:sync/sync.dart'
-    show Balances, SyncReason, SyncFailure, WalletKey;
+import 'package:sync/sync.dart' show SyncFailure, WalletKey;
+import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:wallet_import/testing.dart';
+import 'package:wallet_import/wallet_import.dart';
 
-class _Settings extends Mock implements Preferences {}
+import '../../../support/inventory_fixture.dart';
 
-class _Swaps extends Mock implements SwapStore {}
+/// Answers the active environment with mainnet; the workspace is mainnet.
+final class _Settings extends Fake implements Preferences {
+  @override
+  Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
+    const SettingsEntity(
+      environment: Environment.mainnet,
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'CAD',
+    ),
+  );
+}
 
-class _Native extends Fake implements WalletNativeLifecycle {
+final class _Native extends Fake implements WalletNativeLifecycle {
   Future<void> Function()? beforeCreate;
   int creates = 0;
+
   @override
   Future<Result<void, SyncFailure>> prepareCreate(WalletKey key) async =>
       const Ok(null);
+
   @override
   Future<Result<void, SyncFailure>> create(WalletKey key) async {
     creates++;
@@ -45,31 +48,17 @@ class _Native extends Fake implements WalletNativeLifecycle {
   @override
   Future<Result<void, SyncFailure>> delete(WalletKey key) async =>
       const Ok(null);
+
   @override
   Future<Result<void, SyncFailure>> catalogDeleted(WalletKey key) async =>
       const Ok(null);
-}
-
-class _Values extends Fake implements SyncWalletValuesDatasource {
-  Future<void> Function()? beforeRead;
-  @override
-  Future<Balances> getBalance({required WalletKey key}) async {
-    await beforeRead?.call();
-    return Balances(
-      confirmedSat: BigInt.zero,
-      immatureSat: BigInt.zero,
-      trustedPendingSat: BigInt.zero,
-      untrustedPendingSat: BigInt.zero,
-      spendableSat: BigInt.zero,
-      totalSat: BigInt.zero,
-    );
-  }
 }
 
 final class _BeforeAdmission implements ParentCustodyAdmissionPort {
   final ParentCustodyAdmissionPort delegate;
   final Future<void> Function() before;
   _BeforeAdmission(this.delegate, this.before);
+
   @override
   Future<Result<T, ParentCustodyFailure>> runExclusive<T>(
     Fingerprint parent,
@@ -84,6 +73,7 @@ final class _InventoryGate implements SeedReferencePort {
   final Completer<void> entered;
   final Completer<void> finish;
   _InventoryGate(this.entered, this.finish);
+
   @override
   Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async {
     entered.complete();
@@ -97,24 +87,67 @@ void main() {
   final words = [...List.filled(11, 'abandon'), 'about'];
   final parent = Fingerprint('73c5da0a');
   late Directory directory;
-  late WalletRegistrations metadata;
   late InventoryFixture fixture;
   late SqliteParentCustodyAdmission admission;
   late Secrets secrets;
-  late WalletRepository repository;
+  late WalletProvisioning accounts;
   late ImportWalletUsecase importer;
-  late DeleteWalletUsecase delete;
   late _Native native;
-  late _Values values;
   late _Settings settings;
   late SeedReferences references;
+
+  Future<List<RegisteredWallet>> rows() async =>
+      switch (await fixture.inventory.listWallets()) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('listWallets: $failure'),
+      };
+
+  /// The custody stages of deleting one non-default wallet. The settings
+  /// deletion usecase owns the user-facing checks and logging on top of them
+  /// and is covered where it lives; this app test needs the real admission
+  /// and the real seed-reference query, not those checks.
+  Future<Result<void, Failure>> deleteWallet(String walletId) async {
+    final registration = switch (await fixture.inventory.readWallet(walletId)) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('readWallet: $failure'),
+    };
+    expect(
+      registration.isDefault,
+      isFalse,
+      reason: 'these cases delete a non-default wallet',
+    );
+    final key = WalletKey(id: registration.id, network: registration.network);
+    expect(await native.delete(key), isA<Ok<void, SyncFailure>>());
+    expect(
+      await fixture.inventory.removeWallet(walletId),
+      isA<Ok<void, SecretFailure>>(),
+    );
+    expect(await native.catalogDeleted(key), isA<Ok<void, SyncFailure>>());
+    final fingerprint = registration.secretFingerprint;
+    if (registration.signer != WalletSigner.local || fingerprint == null) {
+      return const Ok(null);
+    }
+    return references.deleteUnreferenced(secrets, fingerprint);
+  }
+
+  ImportWalletUsecase importingWith(ParentCustodyAdmissionPort port) =>
+      ImportWalletUsecase(
+        checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
+          secrets: secrets,
+          inventory: fixture.inventory,
+          settings: settings,
+        ),
+        secrets: secrets,
+        settingsRepository: settings,
+        provision: accounts.importMnemonic,
+        admission: port,
+      );
 
   setUp(() async {
     directory = Directory.systemTemp.createTempSync('import-custody-');
     log = Logger.replace(directory: directory);
     FakeSecureStoragePlatform().install();
     secrets = Secrets(scratchDirectory: () async => directory.path);
-    metadata = MemoryWalletRegistrations();
     fixture = await InventoryFixture.open(directory);
     admission = SqliteParentCustodyAdmission(
       directory: () async => directory.path,
@@ -122,52 +155,17 @@ void main() {
       waitLimit: const Duration(milliseconds: 100),
     );
     native = _Native();
-    values = _Values();
-    repository = WalletRepository(
+    accounts = WalletProvisioning.open(
+      inventory: fixture.inventory,
       native: native,
-      walletRegistrations: metadata,
-      walletValuesDatasource: values,
-      synchronize: (
-        _, {
-        discover = false,
-        allowInitialScan = true,
-        reason = SyncReason.auto,
-      }) async {},
-      syncStarted: const Stream.empty(),
-      syncFinished: const Stream.empty(),
+      resume: () async => const Ok(null),
+      properties: const [],
     );
     settings = _Settings();
-    when(settings.fetch).thenAnswer(
-      (_) async => Ok(
-        const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-        ),
-      ),
-    );
-    importer = ImportWalletUsecase(
-      checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
-        secrets: secrets,
-        inventory: fixture.inventory,
-        settings: settings,
-      ),
-      secrets: secrets,
-      settingsRepository: settings,
-      provision: repository.importWallet,
-      admission: admission,
-    );
     references = SeedReferences(fixture.inventory, admission: admission);
-    final swaps = _Swaps();
-    when(() => swaps.ongoing(walletId: any(named: 'walletId')))
-        .thenAnswer((_) async => const Ok([]));
-    delete = DeleteWalletUsecase(
-      walletRepository: repository,
-      swapStore: swaps,
-      secrets: secrets,
-      seedReferences: references,
-    );
+    importer = importingWith(admission);
   });
+
   tearDown(() async {
     await fixture.close();
     await log.flush();
@@ -175,28 +173,32 @@ void main() {
   });
 
   test(
-    'delete reimport delete removes the seed through production usecases',
+    'delete reimport delete removes the seed through the custody stages',
     () async {
-      final first = await importer.execute(
-        mnemonicWords: words,
-        language: Language.english,
-      );
-      expect(first, isA<Ok<void, ImportMnemonicFailure>>());
       expect(
-        await delete.execute(walletId: (await metadata.fetchAll()).single.id),
-        isA<Ok>(),
+        await importer.execute(
+          mnemonicWords: words,
+          language: Language.english,
+        ),
+        isA<Ok<void, ImportMnemonicFailure>>(),
+      );
+      expect(
+        await deleteWallet((await rows()).single.id),
+        isA<Ok<void, Failure>>(),
       );
       expect((await secrets.exists(parent) as Ok).value, isFalse);
-      final second = await importer.execute(
-        mnemonicWords: words,
-        language: Language.english,
-      );
-      expect(second, isA<Ok<void, ImportMnemonicFailure>>());
       expect(
-        await delete.execute(walletId: (await metadata.fetchAll()).single.id),
-        isA<Ok>(),
+        await importer.execute(
+          mnemonicWords: words,
+          language: Language.english,
+        ),
+        isA<Ok<void, ImportMnemonicFailure>>(),
       );
-      expect(await metadata.fetchAll(), isEmpty);
+      expect(
+        await deleteWallet((await rows()).single.id),
+        isA<Ok<void, Failure>>(),
+      );
+      expect(await rows(), isEmpty);
       expect((await secrets.exists(parent) as Ok).value, isFalse);
     },
   );
@@ -213,9 +215,9 @@ void main() {
           mnemonicWords: words,
           language: Language.english,
         ),
-        isA<Ok>(),
+        isA<Ok<void, ImportMnemonicFailure>>(),
       );
-      expect(await metadata.fetchAll(), hasLength(1));
+      expect(await rows(), hasLength(1));
       final result = await admission.runExclusive<ParentCustodyState>(
         parent,
         (lease) async => lease.readState(),
@@ -223,19 +225,6 @@ void main() {
       expect((result as Ok).value, ParentCustodyState.ready);
     },
   );
-
-  ImportWalletUsecase importingWith(ParentCustodyAdmissionPort port) =>
-      ImportWalletUsecase(
-        checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
-          secrets: secrets,
-          inventory: fixture.inventory,
-          settings: settings,
-        ),
-        secrets: secrets,
-        settingsRepository: settings,
-        provision: repository.importWallet,
-        admission: port,
-      );
 
   test(
     'admitted import excludes deletion until publication and reconciliation',
@@ -258,8 +247,8 @@ void main() {
       } finally {
         finish.complete();
       }
-      expect(await importing, isA<Ok>());
-      final state = await admission.runExclusive(
+      expect(await importing, isA<Ok<void, ImportMnemonicFailure>>());
+      final state = await admission.runExclusive<ParentCustodyState>(
         parent,
         (lease) async => lease.readState(),
       );
@@ -287,12 +276,12 @@ void main() {
       ).execute(mnemonicWords: words, language: Language.english);
       await attempted.future;
       expect(native.creates, 0);
-      expect(await metadata.fetchAll(), isEmpty);
+      expect(await rows(), isEmpty);
       finish.complete();
-      expect(await deletion, isA<Ok>());
-      expect(await importing, isA<Err>());
+      expect(await deletion, isA<Ok<void, ParentCustodyFailure>>());
+      expect(await importing, isA<Err<void, ImportMnemonicFailure>>());
       expect(native.creates, 0);
-      expect(await metadata.fetchAll(), isEmpty);
+      expect(await rows(), isEmpty);
     },
   );
 
@@ -304,32 +293,10 @@ void main() {
           expect(await secrets.trash(parent), isA<Ok<void, SecretFailure>>());
         }),
       ).execute(mnemonicWords: words, language: Language.english);
-      expect(result, isA<Err>());
+      expect(result, isA<Err<void, ImportMnemonicFailure>>());
       expect(native.creates, 0);
-      expect(await metadata.fetchAll(), isEmpty);
+      expect(await rows(), isEmpty);
       expect((await secrets.exists(parent) as Ok).value, isFalse);
-    },
-  );
-
-  test(
-    'balance observation runs after parent admission was released',
-    () async {
-      Result<ParentCustodyState, ParentCustodyFailure>? atBalance;
-      values.beforeRead = () async {
-        atBalance = await admission.runExclusive(
-          parent,
-          (lease) async => lease.readState(),
-        );
-      };
-      expect(
-        await importer.execute(
-          mnemonicWords: words,
-          language: Language.english,
-        ),
-        isA<Ok>(),
-      );
-      expect(atBalance, isA<Ok<ParentCustodyState, ParentCustodyFailure>>());
-      expect((atBalance as Ok).value, ParentCustodyState.ready);
     },
   );
 
@@ -340,7 +307,7 @@ void main() {
       passphrase: 'TREZOR',
     );
     expect(result, isA<Ok<void, ImportMnemonicFailure>>());
-    expect((await metadata.fetchAll()).single.isDefault, isFalse);
+    expect((await rows()).single.isDefault, isFalse);
   });
 
   for (final corrupt in [false, true]) {
@@ -372,7 +339,7 @@ void main() {
           (deleted as Err).failure,
           isA<AllSeedViewCustodyMetadataFailure>(),
         );
-        expect(await metadata.fetchAll(), isEmpty);
+        expect(await rows(), isEmpty);
         expect((await secrets.exists(parent) as Ok).value, isTrue);
         expect(state.existsSync(), corrupt);
         if (corrupt) expect(state.readAsBytesSync(), [1, 2, 3]);
@@ -381,30 +348,24 @@ void main() {
   }
 
   test('orphan cleanup reports a tombstone refusal distinctly', () async {
-    final imported = await importer.execute(
-      mnemonicWords: words,
-      language: Language.english,
+    expect(
+      await importer.execute(mnemonicWords: words, language: Language.english),
+      isA<Ok<void, ImportMnemonicFailure>>(),
     );
-    expect(imported, isA<Ok>());
     expect(
       await admission.runExclusive<void>(
         parent,
         (lease) async => lease.markDeleting(),
       ),
-      isA<Ok>(),
+      isA<Ok<void, ParentCustodyFailure>>(),
     );
+    final cleanup = await deleteWallet((await rows()).single.id);
     expect(
-      await delete.execute(walletId: (await metadata.fetchAll()).single.id),
-      isA<Ok>(),
+      (cleanup as Err).failure,
+      isA<ParentCustodyStateFailure>(),
+      reason: 'the tombstone is distinct from an unreadable reference set',
     );
-    await fixture.close();
-    await log.flush();
-    final diagnostics = log.logsFile.readAsStringSync();
-    expect(diagnostics, contains('Seed cleanup refused reason=custody_state'));
-    expect(
-      diagnostics,
-      isNot(contains('Seed cleanup failed reason=references_unavailable')),
-    );
+    expect(await rows(), isEmpty);
     expect((await secrets.exists(parent) as Ok).value, isTrue);
   });
 }

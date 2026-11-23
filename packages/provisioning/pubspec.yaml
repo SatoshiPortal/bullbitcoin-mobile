@@ -4,6 +4,7 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: "3.14.0"
+  flutter: "3.50.0"
 dependencies:
   bull_logger:
   meta:
@@ -12,3 +13,7 @@ dependencies:
   satoshifier:
   secrets:
   sync:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  legacy_storage:

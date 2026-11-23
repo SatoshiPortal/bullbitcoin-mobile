@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:wallet_import/wallet_import.dart' show QrImportDevice;
@@ -14,6 +16,44 @@ class _Servers extends Fake implements ElectrumServersPort {}
 class _Inventory extends Fake implements WalletInventory {}
 
 class _Admission extends Fake implements ParentCustodyAdmissionPort {}
+
+/// Mounting wires the provisioning capability into the import screens; it
+/// never calls it.
+final class _Accounts implements WalletProvisioning {
+  @override
+  Future<Result<void, WalletProvisioningFailure>> resume() async =>
+      throw StateError('Unexpected provisioning while mounting');
+
+  @override
+  Future<Result<String, WalletProvisioningFailure>> createDefault(
+    Secret secret,
+    Network network, {
+    DateTime? birthday,
+  }) async => throw StateError('Unexpected provisioning while mounting');
+
+  @override
+  Future<Result<void, ParentCustodyFailure>> importMnemonic({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    String? label,
+  }) async => throw StateError('Unexpected provisioning while mounting');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importDescriptor(
+    WatchOnlyAccount account,
+  ) async => throw StateError('Unexpected provisioning while mounting');
+
+  @override
+  Future<Result<void, WalletProvisioningFailure>> importXpub({
+    required String xpub,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required String label,
+  }) async => throw StateError('Unexpected provisioning while mounting');
+}
 
 Iterable<GoRoute> _namedRoutes(Iterable<RouteBase> routes) sync* {
   for (final route in routes) {
@@ -30,25 +70,7 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => fail('unused')),
       inventory: _Inventory(),
       admission: _Admission(),
-      provisionMnemonic: ({
-        required parent,
-        required secrets,
-        required admission,
-        required network,
-        required scriptType,
-        label,
-      }) async => fail('unused'),
-      provisionDescriptor: ({
-        required descriptor,
-        required signer,
-        required label,
-      }) async => fail('unused'),
-      provisionXpub: ({
-        required xpub,
-        required network,
-        required scriptType,
-        required label,
-      }) async => fail('unused'),
+      accounts: _Accounts(),
       networkOf: (_) => null,
       onImported: (_) => fail('unused'),
       onExit: (_) => fail('unused'),

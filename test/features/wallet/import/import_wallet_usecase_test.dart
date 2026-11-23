@@ -1,33 +1,90 @@
-import 'package:wallet_import/wallet_import.dart';
-
 import 'dart:io';
 
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
+    show BitcoinNetwork, BitcoinUnit, Err, Fingerprint, Ok, Result;
+import 'package:provisioning/provisioning.dart';
+import 'package:sync/sync.dart' show SyncFailure, SyncStorageFailure, WalletKey;
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import '../../../support/inventory_fixture.dart';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:wallet_import/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
+import 'package:wallet_import/wallet_import.dart';
 
 class _MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+final class _Native extends Fake implements WalletNativeLifecycle {
+  Future<Result<void, SyncFailure>> Function()? beforeCreate;
+  int creates = 0;
 
-class _MockWallet extends Mock implements Wallet {}
+  @override
+  Future<Result<void, SyncFailure>> prepareCreate(WalletKey key) async =>
+      const Ok(null);
 
-class _Admission extends Fake implements ParentCustodyAdmissionPort {}
+  @override
+  Future<Result<void, SyncFailure>> create(WalletKey key) async {
+    creates++;
+    return beforeCreate?.call() ?? const Ok(null);
+  }
+
+  @override
+  Future<Result<void, SyncFailure>> delete(WalletKey key) async =>
+      const Ok(null);
+
+  @override
+  Future<Result<void, SyncFailure>> catalogDeleted(WalletKey key) async =>
+      const Ok(null);
+
+  @override
+  Future<Result<int?, SyncFailure>> issuedReceiveIndex(WalletKey key) async =>
+      const Ok(null);
+
+  @override
+  Future<Result<({String address, int index}), SyncFailure>> receive(
+    WalletKey key, {
+    bool advance = false,
+  }) async => const Ok((address: 'unused', index: 0));
+}
+
+/// Admits every parent immediately; the admission lock itself is covered by
+/// the custody tests.
+final class _Admission implements ParentCustodyAdmissionPort {
+  int runs = 0;
+
+  @override
+  Future<Result<T, ParentCustodyFailure>> runExclusive<T>(
+    Fingerprint parent,
+    Future<Result<T, ParentCustodyFailure>> Function(ParentCustodyLease) action,
+  ) {
+    runs++;
+    return action(_Lease());
+  }
+}
+
+final class _Lease implements ParentCustodyLease {
+  @override
+  Result<ParentCustodyState, ParentCustodyFailure> readState() =>
+      const Ok(ParentCustodyState.ready);
+
+  @override
+  Result<void, ParentCustodyFailure> markDeleting() => const Ok(null);
+
+  @override
+  Result<void, ParentCustodyFailure> markDeleted() => const Ok(null);
+
+  @override
+  Result<void, ParentCustodyFailure> reconcilePresent() => const Ok(null);
+}
 
 void main() {
   const words = [
@@ -54,34 +111,44 @@ void main() {
   late Secrets secrets;
   late _MockCheckDuplicateMnemonicUsecase checkDuplicate;
   late _MockSettingsRepository settingsRepository;
-  late _MockWalletRepository walletRepository;
+  late _Native native;
+  late InventoryFixture fixture;
+  late WalletProvisioning accounts;
   late ImportWalletUsecase usecase;
 
-  setUpAll(() async {
-    // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
-    FakeSecureStoragePlatform().install();
-    final fallback = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words, language: bip39.Language.english);
-    registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+  setUpAll(() {
+    // mocktail requires a fallback for every non-nullable value a stub matches
+    // with `any()`: the duplicate preflight is queried by parent and network.
     registerFallbackValue(Fingerprint('73c5da0a'));
-    registerFallbackValue(_Admission());
     registerFallbackValue(BitcoinNetwork.mainnet);
-    registerFallbackValue(ScriptType.bip84);
   });
 
-  setUp(() {
+  ImportWalletUsecase _usecaseWith(CheckDuplicateMnemonicUsecase duplicate) =>
+      ImportWalletUsecase(
+        checkDuplicateMnemonicUsecase: duplicate,
+        secrets: secrets,
+        settingsRepository: settingsRepository,
+        provision: accounts.importMnemonic,
+        admission: _Admission(),
+      );
+
+  setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final directory = await Directory.systemTemp.createTemp('import-wallet-');
+    addTearDown(() => directory.delete(recursive: true));
+    secrets = Secrets(scratchDirectory: () async => directory.path);
+    fixture = await InventoryFixture.open(directory);
+    addTearDown(fixture.close);
+    native = _Native();
+    accounts = WalletProvisioning.open(
+      inventory: fixture.inventory,
+      native: native,
+      resume: () async => const Ok(null),
+      properties: const [],
+    );
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
     settingsRepository = _MockSettingsRepository();
-    walletRepository = _MockWalletRepository();
-    usecase = ImportWalletUsecase(
-      checkDuplicateMnemonicUsecase: checkDuplicate,
-      secrets: secrets,
-      settingsRepository: settingsRepository,
-      provision: walletRepository.importWallet,
-      admission: _Admission(),
-    );
+    usecase = _usecaseWith(checkDuplicate);
     when(
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
@@ -91,50 +158,21 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
     when(() => checkDuplicate.isReferenced(any(), any()))
         .thenAnswer((_) async => const Ok(false));
-    // No wallet references any seed unless a test says so.
-    when(() => walletRepository.getWallets())
-        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
     when(() => settingsRepository.fetch())
         .thenAnswer((_) async => Ok(settings));
   });
-
-  void stubCreateWallet(Future<Wallet> Function() answer) {
-    when(
-      () => walletRepository.importWallet(
-        parent: any(named: 'parent'),
-        secrets: secrets,
-        admission: any(named: 'admission'),
-        network: any(named: 'network'),
-        scriptType: any(named: 'scriptType'),
-        label: any(named: 'label'),
-      ),
-    ).thenAnswer((_) async => Ok(await answer()));
-  }
 
   for (final language in bip39.Language.values) {
     test(
       'imports ${language.name} only as a non-default Bitcoin wallet',
       () async {
-        final wallet = _MockWallet();
-        stubCreateWallet(() async => wallet);
-        final words = bip39.Mnemonic(List.filled(16, 0), language).words;
-        final directory = await Directory.systemTemp.createTemp(
-          'import-wallet-',
-        );
-        addTearDown(() => directory.delete(recursive: true));
-        final fixture = await InventoryFixture.open(directory);
-        addTearDown(fixture.close);
-        final usecase = ImportWalletUsecase(
-          checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
-            inventory: fixture.inventory,
-            settings: settingsRepository,
-            secrets: secrets,
-          ),
+        final duplicate = CheckDuplicateMnemonicUsecase(
+          inventory: fixture.inventory,
+          settings: settingsRepository,
           secrets: secrets,
-          settingsRepository: settingsRepository,
-          provision: walletRepository.importWallet,
-          admission: _Admission(),
         );
+        final usecase = _usecaseWith(duplicate);
+        final words = bip39.Mnemonic(List.filled(16, 0), language).words;
         final result = await usecase.execute(
           mnemonicWords: words,
           language: language,
@@ -147,26 +185,22 @@ void main() {
                 .value;
         final secret = entries.single as Secret;
         expect(secret.info.language, language);
-        verify(
-          () => walletRepository.importWallet(
-            parent: secret.id,
-            secrets: secrets,
-            admission: any(named: 'admission'),
-            network: BitcoinNetwork.mainnet,
-            scriptType: ScriptType.bip84,
-            label: 'Vector',
-          ),
-        ).called(1);
+        final wallets =
+            (await fixture.inventory.listWallets()
+                    as Ok<List<RegisteredWallet>, SecretFailure>)
+                .value;
+        final wallet = wallets.single;
+        expect(wallet.network, 'bitcoinMainnet');
+        expect(wallet.label, 'Vector');
+        expect(wallet.isDefault, isFalse);
+        expect(wallet.secretFingerprint, secret.id.hex);
+        expect(native.creates, 1);
         // The first successful provisioning now references this secret on mainnet.
-        await fixture.registerMnemonic(secret);
-        final duplicate = await usecase.execute(
+        final retried = await usecase.execute(
           mnemonicWords: words,
           language: language,
         );
-        expect(
-          (duplicate as Err).failure,
-          isA<ImportMnemonicDuplicateFailure>(),
-        );
+        expect((retried as Err).failure, isA<ImportMnemonicDuplicateFailure>());
         expect(
           (await secrets.exists(secret.id) as Ok<bool, SecretFailure>).value,
           isTrue,
@@ -177,9 +211,6 @@ void main() {
 
   group('ImportWalletUsecase', () {
     test('returns success and stores the secret', () async {
-      final wallet = _MockWallet();
-      stubCreateWallet(() async => wallet);
-
       final result = await usecase.execute(
         mnemonicWords: words,
         label: 'My Wallet',
@@ -191,11 +222,18 @@ void main() {
         storage.entries.keys.where((k) => k.startsWith('seed_')),
         hasLength(1),
       );
+      final wallets =
+          (await fixture.inventory.listWallets()
+                  as Ok<List<RegisteredWallet>, SecretFailure>)
+              .value;
+      expect(wallets.single.label, 'My Wallet');
+      expect(wallets.single.isDefault, isFalse);
     });
 
     test('#2634 retries an orphan secret without replacing custody', () async {
-      final wallet = _MockWallet();
-      stubCreateWallet(() async => throw Exception('catalog write failed'));
+      var attempts = 0;
+      native.beforeCreate = () async =>
+          ++attempts == 1 ? const Err(SyncStorageFailure()) : const Ok(null);
       expect(
         await usecase.execute(
           mnemonicWords: words,
@@ -207,7 +245,13 @@ void main() {
           .where((k) => k.startsWith('seed_'))
           .toList();
       expect(keys, hasLength(1));
-      stubCreateWallet(() async => wallet);
+      expect(
+        (await fixture.inventory.listWallets()
+                as Ok<List<RegisteredWallet>, SecretFailure>)
+            .value,
+        isEmpty,
+        reason: 'the failed native create compensates its catalog row',
+      );
       expect(
         await usecase.execute(
           mnemonicWords: words,
@@ -216,6 +260,7 @@ void main() {
         isA<Ok<void, ImportMnemonicFailure>>(),
       );
       expect(storage.entries.keys.where((k) => k.startsWith('seed_')), keys);
+      expect(native.creates, 2);
     });
 
     test('a duplicate stops before anything else is touched', () async {
@@ -240,7 +285,7 @@ void main() {
     test(
       'a failed wallet import preserves its secret for explicit recovery',
       () async {
-        stubCreateWallet(() async => throw Exception('wallet creation failed'));
+        native.beforeCreate = () async => const Err(SyncStorageFailure());
 
         final result = await usecase.execute(
           mnemonicWords: words,
@@ -274,17 +319,13 @@ void main() {
         );
 
         expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
-        verifyNever(
-          () => walletRepository.importWallet(
-            parent: any(named: 'parent'),
-            secrets: secrets,
-            admission: any(named: 'admission'),
-            network: any(named: 'network'),
-            scriptType: any(named: 'scriptType'),
-            label: any(named: 'label'),
-          ),
+        expect(
+          (await fixture.inventory.listWallets()
+                  as Ok<List<RegisteredWallet>, SecretFailure>)
+              .value,
+          isEmpty,
         );
-        verifyNever(() => walletRepository.getWallets());
+        expect(native.creates, 0);
         expect(
           storage.entries.keys.where((k) => k.startsWith('seed_')),
           hasLength(1),
@@ -300,11 +341,6 @@ void main() {
         await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
-      var published = false;
-      stubCreateWallet(() async {
-        published = true;
-        return _MockWallet();
-      });
 
       final result = await usecase.execute(
         mnemonicWords: words,
@@ -312,20 +348,25 @@ void main() {
       );
 
       expect((result as Err).failure, same(failure));
-      expect(published, isFalse);
+      expect(native.creates, 0);
+      expect(
+        (await fixture.inventory.listWallets()
+                as Ok<List<RegisteredWallet>, SecretFailure>)
+            .value,
+        isEmpty,
+      );
     });
 
     test(
       'concurrent imports create one wallet and preserve its secret',
       () async {
-        final wallet = _MockWallet();
-        var creations = 0;
-        stubCreateWallet(() async {
-          creations++;
-          when(() => checkDuplicate.isReferenced(any(), any()))
-              .thenAnswer((_) async => const Ok(true));
-          return wallet;
-        });
+        final usecase = _usecaseWith(
+          CheckDuplicateMnemonicUsecase(
+            inventory: fixture.inventory,
+            settings: settingsRepository,
+            secrets: secrets,
+          ),
+        );
 
         final results = await Future.wait([
           usecase.execute(
@@ -342,7 +383,7 @@ void main() {
           (results.last as Err).failure,
           isA<ImportMnemonicDuplicateFailure>(),
         );
-        expect(creations, 1);
+        expect(native.creates, 1);
         expect(
           storage.entries.keys.where((k) => k.startsWith('seed_')),
           hasLength(1),
@@ -351,21 +392,17 @@ void main() {
     );
 
     test(
-      'cleanup retains a newly stored secret referenced by a wallet',
+      'an import refused after publication keeps the referenced secret',
       () async {
-        final wallet = _MockWallet();
-        stubCreateWallet(() async {
-          when(() => wallet.signsLocally).thenReturn(true);
-          when(() => wallet.masterFingerprint).thenReturn(
-            storage.entries.keys
-                .singleWhere((key) => key.startsWith('seed_'))
-                .substring(5),
-          );
-          when(
-            () => walletRepository.getWallets(),
-          ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
-          throw Exception('wallet creation failed after storing its reference');
-        });
+        expect(
+          await usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+        when(() => checkDuplicate.isReferenced(any(), any()))
+            .thenThrow(Exception('inventory lookup failed after publication'));
 
         final result = await usecase.execute(
           mnemonicWords: words,
@@ -377,15 +414,25 @@ void main() {
           storage.entries.keys.where((k) => k.startsWith('seed_')),
           hasLength(1),
         );
+        expect(
+          (await fixture.inventory.listWallets()
+                  as Ok<List<RegisteredWallet>, SecretFailure>)
+              .value,
+          hasLength(1),
+        );
+        expect(native.creates, 1);
       },
     );
 
     test(
       'cleanup retains the new secret when wallet references cannot be read',
       () async {
-        stubCreateWallet(() async => throw Exception('wallet creation failed'));
-        when(() => walletRepository.getWallets())
+        when(() => checkDuplicate.isReferenced(any(), any()))
             .thenThrow(Exception('wallet lookup failed'));
+        expect(
+          await secrets.import(words: words, language: bip39.Language.english),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
 
         final result = await usecase.execute(
           mnemonicWords: words,

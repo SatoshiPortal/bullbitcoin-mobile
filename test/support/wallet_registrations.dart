@@ -1,35 +1,18 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
+/// A read-only catalog projection over rows a test publishes itself.
 final class MemoryWalletRegistrations implements WalletRegistrations {
   final Map<String, WalletMetadataModel> rows = {};
-
-  @override
-  Future<void> insert(WalletMetadataModel metadata) async {
-    if (rows.containsKey(metadata.id)) {
-      throw WalletAlreadyExistsException(metadata.id);
-    }
-    rows[metadata.id] = metadata;
-  }
 
   @override
   Future<WalletMetadataModel?> fetch(String id) async => rows[id];
 
   @override
   Future<List<WalletMetadataModel>> fetchAll() async => rows.values.toList();
-
-  @override
-  Future<void> delete(String id) async => rows.remove(id);
-
-  @override
-  Future<void> recordSyncTime(String id, DateTime time) async {
-    final metadata = rows[id];
-    if (metadata != null) rows[id] = metadata.copyWith(syncedAt: time);
-  }
 }
 
 final class TestWalletCatalog implements WalletCatalogPort {
