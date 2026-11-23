@@ -203,6 +203,8 @@ void main() {
         );
     pdk = _MockPdkPayjoinDatasource();
     when(() => pdk.isPolling(any())).thenReturn(false);
+    registerFallbackValue(receiver());
+    when(() => pdk.receiverProposalNeedsFallback(any())).thenReturn(false);
     blockchain = _MockBlockchainPort();
     transactions = _MockTransactionPort();
     when(
@@ -1416,97 +1418,131 @@ void main() {
     verifyNever(() => pdk.startListeningForRequest(model));
   });
 
-  test(
-    'publishing a proposal gates manual fallback across fresh reads',
-    () async {
-      final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
-        originalTransactionId: 'original-tx',
-      );
-      final proposal = model.copyWith(
-        proposalPsbt: oneInputPsbt,
-        txId: 'payjoin-tx',
-      );
-      await local.storeReceiver(model);
-      registerFallbackValue(model);
-      registerFallbackValue(<PayjoinInputPairModel>[]);
-      registerFallbackValue((Outpoint _) => true);
-      registerFallbackValue((Uint8List _) => true);
-      registerFallbackValue((String psbt) => psbt);
-      when(
-        () => wallet.spendableUtxos(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async => [
-          PayjoinUtxo(
-            outpoint: (txId: '11' * 32, vout: 0),
-            value: Sats.fromInt(100000),
-            scriptPubkey: Uint8List.fromList([0, 20]),
-            confirmed: true,
-          ),
-        ],
-      );
-      when(
-        () => wallet.captureOwnership(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async => PayjoinWalletOwnership(
-          ownsScript: (_) => true,
-          ownsOutpoint: (_) => true,
-        ),
-      );
-      when(
-        () => pdk.proposePayjoin(
-          receiverModel: any(named: 'receiverModel'),
-          ownsOutpoint: any(named: 'ownsOutpoint'),
-          hasReceiverOutput: any(named: 'hasReceiverOutput'),
-          inputPairs: any(named: 'inputPairs'),
-          signPsbt: any(named: 'signPsbt'),
-          persistBeforePost: any(named: 'persistBeforePost'),
-        ),
-      ).thenAnswer((invocation) async {
-        final persist =
-            invocation.namedArguments[#persistBeforePost]
-                as Future<void> Function(PayjoinReceiverModel);
-        await persist(proposal);
-        expect(
-          (await local.fetchReceiver(model.id))?.proposalPsbt,
-          oneInputPsbt,
+  for (final postFails in [false, true]) {
+    test(
+      postFails
+          ? 'a failed receiver proposal POST falls back to the original'
+          : 'publishing a proposal gates manual fallback across fresh reads',
+      () async {
+        final model = receiver(
+          originalTransaction: Uint8List.fromList([1, 2, 3]),
+          originalTransactionId: 'original-tx',
         );
-        return proposal;
-      });
-      final proposed = engine.payjoinStream.firstWhere(
-        (session) => session.status == internal.PayjoinStatus.proposed,
-      );
-      requests.add(model);
-      await proposed.timeout(const Duration(seconds: 5));
-      final until = engine.receiverFallbackAvailableAt(model.id);
-      if (until == null) fail('no sender wait recorded for the session');
-      expect(
-        until.difference(DateTime.now()).inSeconds,
-        inInclusiveRange(58, 60),
-      );
-      expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
-      final fresh = await engine.getPayjoinById(model.id);
-      if (fresh == null) fail('the proposed session is not persisted');
-      final result = await engine.tryBroadcastOriginalTransaction(fresh);
-      expect(
-        (result as Err<internal.Payjoin, PayjoinFailure>).failure,
-        isA<PayjoinFallbackUnavailableFailure>(),
-      );
-      expect(engine.receiverFallbackAvailableAt(model.id), until);
-      verifyNever(
-        () => blockchain.broadcastTransaction(
-          network: any(named: 'network'),
-          transaction: any(named: 'transaction'),
-        ),
-      );
-    },
-  );
+        final proposal = model.copyWith(
+          proposalPsbt: oneInputPsbt,
+          txId: 'payjoin-tx',
+        );
+        await local.storeReceiver(model);
+        registerFallbackValue(model);
+        registerFallbackValue(<PayjoinInputPairModel>[]);
+        registerFallbackValue((Outpoint _) => true);
+        registerFallbackValue((Uint8List _) => true);
+        registerFallbackValue((String psbt) => psbt);
+        when(
+          () => wallet.spendableUtxos(
+            walletId: model.walletId,
+            network: BitcoinNetwork.testnet,
+          ),
+        ).thenAnswer(
+          (_) async => [
+            PayjoinUtxo(
+              outpoint: (txId: '11' * 32, vout: 0),
+              value: Sats.fromInt(100000),
+              scriptPubkey: Uint8List.fromList([0, 20]),
+              confirmed: true,
+            ),
+          ],
+        );
+        when(
+          () => wallet.captureOwnership(
+            walletId: model.walletId,
+            network: BitcoinNetwork.testnet,
+          ),
+        ).thenAnswer(
+          (_) async => PayjoinWalletOwnership(
+            ownsScript: (_) => true,
+            ownsOutpoint: (_) => true,
+          ),
+        );
+        when(
+          () => pdk.proposePayjoin(
+            receiverModel: any(named: 'receiverModel'),
+            ownsOutpoint: any(named: 'ownsOutpoint'),
+            hasReceiverOutput: any(named: 'hasReceiverOutput'),
+            inputPairs: any(named: 'inputPairs'),
+            signPsbt: any(named: 'signPsbt'),
+            persistBeforePost: any(named: 'persistBeforePost'),
+          ),
+        ).thenAnswer((invocation) async {
+          final persist =
+              invocation.namedArguments[#persistBeforePost]
+                  as Future<void> Function(PayjoinReceiverModel);
+          await persist(proposal);
+          expect(
+            (await local.fetchReceiver(model.id))?.proposalPsbt,
+            oneInputPsbt,
+          );
+          if (postFails) {
+            throw PayjoinNotFoundException('Proposal relay rejected the POST');
+          }
+          return proposal;
+        });
+        if (postFails) {
+          when(
+            () => blockchain.broadcastTransaction(
+              network: BitcoinNetwork.testnet,
+              transaction: any(named: 'transaction'),
+            ),
+          ).thenAnswer((_) async {});
+        }
+        final updates = <internal.Payjoin>[];
+        final subscription = engine.payjoinStream.listen(updates.add);
+        addTearDown(subscription.cancel);
+        final next = !postFails
+            ? engine.payjoinStream.firstWhere(
+                (session) => session.status == internal.PayjoinStatus.proposed,
+              )
+            : null;
+        requests.add(model);
+        await settle();
+        if (postFails) {
+          final sent = verify(
+            () => blockchain.broadcastTransaction(
+              network: BitcoinNetwork.testnet,
+              transaction: captureAny(named: 'transaction'),
+            ),
+          );
+          sent.called(1);
+          expect(sent.captured.single, model.originalTxBytes);
+          expect(updates.last.status, internal.PayjoinStatus.aborted);
+          expect(await engine.getInputReservations(), isEmpty);
+          return;
+        }
+        await next?.timeout(const Duration(seconds: 5));
+        final until = engine.receiverFallbackAvailableAt(model.id);
+        if (until == null) fail('no sender wait recorded for the session');
+        expect(
+          until.difference(DateTime.now()).inSeconds,
+          inInclusiveRange(58, 60),
+        );
+        expect(await engine.canManuallyBroadcastOriginal(model.id), isFalse);
+        final fresh = await engine.getPayjoinById(model.id);
+        if (fresh == null) fail('the proposed session is not persisted');
+        final result = await engine.tryBroadcastOriginalTransaction(fresh);
+        expect(
+          (result as Err<internal.Payjoin, PayjoinFailure>).failure,
+          isA<PayjoinFallbackUnavailableFailure>(),
+        );
+        expect(engine.receiverFallbackAvailableAt(model.id), until);
+        verifyNever(
+          () => blockchain.broadcastTransaction(
+            network: any(named: 'network'),
+            transaction: any(named: 'transaction'),
+          ),
+        );
+      },
+    );
+  }
 
   test('manual fallback can replace a proposal that is not visible', () async {
     final model = receiver(
@@ -3519,14 +3555,53 @@ void main() {
       expect(await engine.getInputReservations(), isEmpty);
     });
 
-    test('an expired receiver proposal still reserves its input', () async {
-      final model = receiver(proposalPsbt: oneInputPsbt)
-          .copyWith(isExpired: true);
+    test('expiry releases a receiver proposal reservation', () async {
+      // Extract the unsigned transaction from the fixture's PSBT global
+      // map, then make the sender's original spend a different input.
+      final original = base64Decode(oneInputPsbt).sublist(8, 90)
+        ..fillRange(5, 37, 0x22);
+      final model = receiver(
+        originalTransaction: original,
+        originalTransactionId: 'original-tx',
+        proposalPsbt: oneInputPsbt,
+        transactionId: 'payjoin-tx',
+      ).copyWith(createdAt: 0);
       await local.storeReceiver(model);
 
-      final reservations = await engine.getInputReservations();
-      expect(reservations.single.outpoint, (txId: '11' * 32, vout: 0));
-      expect(reservations.single.sessionId, model.id);
+      expect(await engine.getInputReservations(), isEmpty);
+      await engine.resumePayjoinsOnStartup();
+
+      expect((await local.fetchReceiver(model.id))?.isExpired, isTrue);
+      expect(await engine.getInputReservations(), isEmpty);
+    });
+
+    test('restart falls back for an expired unacknowledged proposal', () async {
+      final original = Uint8List.fromList([1, 2, 3]);
+      final model = receiver(
+        originalTransaction: original,
+        originalTransactionId: 'original-tx',
+        proposalPsbt: oneInputPsbt,
+        transactionId: 'payjoin-tx',
+      ).copyWith(createdAt: 0);
+      await local.storeReceiver(model);
+      when(() => pdk.receiverProposalNeedsFallback(model)).thenReturn(true);
+      when(
+        () => blockchain.broadcastTransaction(
+          network: BitcoinNetwork.testnet,
+          transaction: original,
+        ),
+      ).thenAnswer((_) async {});
+
+      await engine.resumePayjoinsOnStartup();
+
+      verify(
+        () => blockchain.broadcastTransaction(
+          network: BitcoinNetwork.testnet,
+          transaction: original,
+        ),
+      ).called(1);
+      expect((await local.fetchReceiver(model.id))?.isAborted, isTrue);
+      expect(await engine.getInputReservations(), isEmpty);
     });
 
     test('an undecodable session is a failure, never no reservation', () async {

@@ -580,6 +580,37 @@ void main() {
       return dio;
     }
 
+    test(
+      'receiver recovery distinguishes finalized and acknowledged proposals',
+      () async {
+        final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
+          log: PayjoinLogger.silent,
+          dio: relayDio(),
+        );
+        addTearDown(datasource.dispose);
+        final model = initializedReceiver(expireAfterSec: 0)
+            .copyWith(proposalPsbt: 'proposal');
+        final journal = InMemoryJsonReceiverSessionPersister.fromJson(
+          model.receiver,
+        )..save('{"FinalizedProposal":"signed-psbt"}');
+
+        expect(
+          datasource.receiverProposalNeedsFallback(
+            model.copyWith(receiver: journal.toJson()),
+          ),
+          isTrue,
+        );
+        journal.save('{"PostedPayjoinProposal":[]}');
+        expect(
+          datasource.receiverProposalNeedsFallback(
+            model.copyWith(receiver: journal.toJson()),
+          ),
+          isFalse,
+        );
+      },
+    );
+
     Future<Response<List<int>>> Function(Invocation) throwingRelay() =>
         (invocation) async => throw DioException(
           requestOptions: RequestOptions(path: 'https://relay.example'),
