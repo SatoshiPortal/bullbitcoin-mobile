@@ -50,6 +50,7 @@ import 'package:background_tasks/background_tasks.dart'
     show configureBackgroundTasks;
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
+import 'package:bb_mobile/native_runtime_setup.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
@@ -369,6 +370,10 @@ class AppLocator {
       ),
     );
     // Wallet's SP use cases resolve the facade lazily, after registration.
+    registerNativeRuntime(
+      locator,
+      overview: () => locator<OverviewSynchronization>(),
+    );
     WalletLocator.setup(locator);
     mountAddressView(locator);
     // Inventory survives disabled routing and missing endpoint build defines.
