@@ -1,6 +1,3 @@
-import 'package:silent/localizations.dart' show SilentLocalizations;
-import 'package:address_view/routes.dart' show AddressViewLocalizations;
-
 import 'dart:async';
 
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
@@ -8,7 +5,7 @@ import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:bull_ui/app_theme.dart';
 import 'package:swap_feature/testing.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, bullUiLocalizationsDelegate;
@@ -28,9 +25,7 @@ Future<void> _pumpInput(WidgetTester tester, TransferBloc bloc) =>
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
           localizationsDelegates: [
-            ...AppLocalizations.localizationsDelegates,
-            AddressViewLocalizations.delegate,
-            SilentLocalizations.delegate,
+            ...appLocalizationsDelegates,
             bullUiLocalizationsDelegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,

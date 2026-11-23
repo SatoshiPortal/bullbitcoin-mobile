@@ -18,7 +18,7 @@ import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/storage.dart';
+import 'package:secrets/storage.dart' show BackgroundWalletDescriptors;
 import 'package:sync/inventory.dart';
 import 'package:sync/write.dart';
 import 'package:electrum/electrum.dart';

@@ -1,8 +1,6 @@
 import 'package:address_view/routes.dart' show AddressViewFeature;
 import 'package:labels/labels.dart' show Labels;
-import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:access/access.dart' show Access;
-import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
 import 'package:secrets/custody.dart';
@@ -33,7 +31,6 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:labels/labels.dart';
 import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
@@ -78,10 +75,6 @@ class Memory implements QuickActionsStorage {
 class _UnusedPreferences extends Mock implements Preferences {}
 
 class _MockFees extends Mock implements Fees {}
-
-class _UnusedLabels extends Mock implements Labels {}
-
-class _UnusedNative extends Mock implements WalletNativeLifecycle {}
 
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
@@ -171,15 +164,6 @@ void main() {
       );
       locator.registerSingleton<SwapFeature>(_SwapRoutes());
       locator.registerSingleton(
-        AddressViewFeature.mount(
-          labels: _UnusedLabels(),
-          inventory: inventoryFixture.inventory,
-          native: _UnusedNative(),
-          loadWallet: (_) => throw StateError('Unexpected address wallet read'),
-          revisions: const Stream.empty(),
-        ),
-      );
-      locator.registerSingleton(
         SilentFeature.mount(
           preferences: SilentPreferences(),
           secrets: Secrets(scratchDirectory: () async => directory.path),
@@ -202,6 +186,15 @@ void main() {
       );
       final secrets = Secrets(scratchDirectory: () async => directory.path);
       final inventory = inventoryFixture.inventory;
+      locator.registerSingleton(
+        AddressViewFeature.mount(
+          labels: _UnusedLabels(),
+          inventory: inventory,
+          native: _UnusedNative(),
+          loadWallet: (_) => throw StateError('Unexpected address wallet read'),
+          revisions: const Stream.empty(),
+        ),
+      );
       locator.registerSingleton(
         Bip85Feature.mount(
           derivations: inventory.bip85(secrets),
@@ -252,21 +245,13 @@ void main() {
           scope: (child) => child,
         ),
       );
-      locator.registerSingleton(
-        AddressViewFeature.mount(
-          labels: _UnusedLabels(),
-          inventory: inventory,
-          native: _UnusedNative(),
-          loadWallet: (_) => throw StateError('Unexpected address wallet read'),
-          revisions: const Stream.empty(),
-        ),
-      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
         await quickActions.close();
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
+        await locator.unregister<AddressViewFeature>();
         await locator.unregister<Bip85Feature>();
         await locator.unregister<AllSeedViewFeature>();
         await accessServices.reset();
@@ -279,12 +264,10 @@ void main() {
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
         await locator.unregister<SwapFeature>();
-        await locator.unregister<AddressViewFeature>();
         await locator.unregister<ImportFeature>();
         await locator.unregister<BitcoinPriceFeature>();
         await locator.unregister<SilentFeature>();
         await locator.unregister<TransactionsFeature>();
-        await locator.unregister<AddressViewFeature>();
         await transactionServices.reset();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
