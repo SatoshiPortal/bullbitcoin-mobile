@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/withdraw/domain/map_withdraw_order_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -10,12 +9,10 @@ import 'package:meta/meta.dart';
 class ConfirmWithdrawOrderUsecase {
   final Exchange _exchange;
   final Preferences _settingsRepository;
-  final RecipientsFacade _recipientsFacade;
 
   ConfirmWithdrawOrderUsecase({
     required this._exchange,
     required this._settingsRepository,
-    required this._recipientsFacade,
   });
 
   @useResult
@@ -25,6 +22,7 @@ class ConfirmWithdrawOrderUsecase {
     bool saveSecurityDetailsAsDefault = false,
   }) async {
     final WithdrawOrder order;
+    final bool isTestnet;
     try {
       final SettingsEntity settings;
       switch (await _settingsRepository.fetch()) {
@@ -49,7 +47,7 @@ class ConfirmWithdrawOrderUsecase {
         log.warning('Capability refused feature=withdraw reason=unsupported');
         return const Err(WithdrawUnsupportedNetworkFailure());
       }
-      final isTestnet = environment == NetworkEnv.testnet;
+      isTestnet = environment == NetworkEnv.testnet;
       final repo = _exchange.orders(
         isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
@@ -77,6 +75,7 @@ class ConfirmWithdrawOrderUsecase {
     await _updateInteracSecurityDetails(
       interacSecurityDetails,
       saveAsDefault: saveSecurityDetailsAsDefault,
+      isTestnet: isTestnet,
     );
     return Ok(order);
   }
@@ -84,21 +83,23 @@ class ConfirmWithdrawOrderUsecase {
   Future<void> _updateInteracSecurityDetails(
     InteracSecurityDetails? details, {
     required bool saveAsDefault,
+    required bool isTestnet,
   }) async {
     if (details == null) return;
     try {
-      final result = await _recipientsFacade.updateInteracSecurityDetails(
+      final result = await _exchange.recipients.updateInteracSecurityDetails(
         recipientId: details.recipientId,
         email: details.email,
         securityQuestion: saveAsDefault ? details.securityQuestion : null,
         securityAnswer: saveAsDefault ? details.securityAnswer : null,
+        isTestnet: isTestnet,
       );
       if (result case Err()) {
         log.warning(
           'Withdrawal completed without updating Interac security details',
         );
       }
-    } catch (_) {
+    } on Exception {
       log.warning(
         'Withdrawal completed without updating Interac security details',
       );

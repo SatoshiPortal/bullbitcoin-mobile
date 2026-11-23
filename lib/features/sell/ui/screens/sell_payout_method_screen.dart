@@ -1,6 +1,6 @@
-import 'package:exchange/exchange.dart' show ConfidentialSepaAvailability;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';

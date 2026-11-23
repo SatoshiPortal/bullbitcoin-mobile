@@ -17,8 +17,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart'
-    show VirtualIbanFundingScreen;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
@@ -140,12 +138,6 @@ class ExchangeRouter {
             exchange: exchange,
             isLoggedIn: (context) =>
                 !context.read<ExchangeCubit>().state.notLoggedIn,
-            buildVirtualIbanFunding:
-                ({required onUseRegularSepa, required onDone}) =>
-                    VirtualIbanFundingScreen(
-                      onUseRegularSepa: onUseRegularSepa,
-                      onDone: onDone,
-                    ),
           ),
     kyc: switch (config.loadKyc) {
       final load? => ExchangeKycHost(

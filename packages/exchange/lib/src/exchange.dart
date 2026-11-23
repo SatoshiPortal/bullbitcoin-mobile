@@ -34,6 +34,7 @@ import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
 import 'setup/exchange_access_lifecycle.dart';
+import 'recipients/exchange_recipients.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -130,6 +131,7 @@ final class Exchange {
   final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
   _getConfidentialSepaAvailability;
   final ExchangeAccessLifecycle? _access;
+  final ExchangeRecipients recipients;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -149,6 +151,7 @@ final class Exchange {
     this._kyc,
     this._getConfidentialSepaAvailability,
     this._access,
+    this.recipients,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -509,6 +512,14 @@ final class Exchange {
         );
       }, checkCompletion: true),
       access,
+      ExchangeRecipientsImpl(
+        <T>(environment, operation) => withClient<T>(
+          (client, _) => operation(client),
+          environment: environment,
+          untimed: true,
+          checkCompletion: true,
+        ),
+      ),
     );
   }
 
@@ -696,6 +707,7 @@ Exchange exchangeForTesting({
   ExchangeVirtualIbans? virtualIbans,
   Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
   getConfidentialSepaAvailability,
+  ExchangeRecipients? recipients,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -770,6 +782,10 @@ Exchange exchangeForTesting({
   getConfidentialSepaAvailability ??
       () => throw StateError('Unexpected Confidential SEPA availability check'),
   null,
+  recipients ??
+      ExchangeRecipientsImpl(
+        <T>(_, _) => throw StateError('Unexpected fiat recipient operation'),
+      ),
 );
 
 Exchange exchangeWithTransportForTesting({

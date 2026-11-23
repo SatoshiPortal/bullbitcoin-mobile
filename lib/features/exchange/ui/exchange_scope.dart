@@ -98,7 +98,11 @@ class ExchangeScope extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (_) => locator<ExchangeCubit>(),
-    child: ExchangeListener(child: child),
+    child: RecipientsScope(
+      exchange: exchange,
+      preferences: preferences,
+      child: ExchangeListener(child: child),
+    ),
   );
 }
 

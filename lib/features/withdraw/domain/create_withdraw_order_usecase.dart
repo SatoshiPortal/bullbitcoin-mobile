@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/withdraw/domain/map_withdraw_order_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';

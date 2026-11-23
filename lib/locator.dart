@@ -51,7 +51,6 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/receive/public/receive_setup.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -346,7 +345,6 @@ class AppLocator {
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
-    RecipientsLocator.setup(locator);
 
     // Follows network switches from launch on, whether or not the swap
     // watcher has started yet: the engine must match the network the first

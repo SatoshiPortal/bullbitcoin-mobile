@@ -347,7 +347,7 @@ The startup wizard receives the platform visibility decision from bootstrap befo
 
 `BullExchangeFeature.mount` also contributes the manage-access route under app settings and owns its route-scoped state. `packages/exchange` owns the foreground access queue, epoch, and sign-out journal. The host only binds the existing platform preference, cookie cleanup and app navigation; the Wizard applies its pending choice to the same authority through `Exchange.applyInitialChoice`.
 
-The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange`. Until the Recipients extraction, the app supplies the existing virtual IBAN funding view, not a forwarding repository.
+The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange` and uses the workspace virtual IBAN screen. The Exchange domain owns fiat recipients, the CAD directory, SINPE and SEPA activation. Their operations use the untimed BBX client bound to the current session; the feature owns polling, selection and form state.
 
 The Exchange amount and currency controls are intentionally reusable widgets. DCA, Limit Orders, Sell, Pay and Withdrawal import them from `bull_exchange`, not from the legacy Exchange UI.
 

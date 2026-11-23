@@ -4,28 +4,11 @@ import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usec
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
-import 'package:primitives/primitives.dart';
 import 'package:get_it/get_it.dart';
 
 class ExchangeLocator {
-  /// Supplies point-of-use credentials to legacy recipient clients. The
-  /// Exchange package owns the credential record; Secrets owns the keychain.
-  static Future<Result<String?, bbx.BbxFailure>> _readActiveApiKey(
-    GetIt locator, {
-    required bool isTestnet,
-  }) async {
-    final result = await locator<ExchangeCredentials>().readActiveApiKey(
-      isTestnet: isTestnet,
-    );
-    return switch (result) {
-      Ok(:final value) => Ok(value),
-      Err() => const Err(bbx.BbxCredentialUnavailableFailure()),
-    };
-  }
-
   static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<Exchange>(
       () => Exchange.open(
@@ -52,30 +35,6 @@ class ExchangeLocator {
       ),
       dispose: (exchange) => exchange.close(),
     );
-    for (final isTestnet in [false, true]) {
-      final environment = isTestnet ? 'testnet' : 'mainnet';
-      locator.registerLazySingleton<bbx.Bbx>(
-        () => bbx.Bbx.open(
-          endpoint: isTestnet
-              ? ApiServiceConstants.bbApiTestUrl
-              : ApiServiceConstants.bbApiUrl,
-          readActiveApiKey: () =>
-              _readActiveApiKey(locator, isTestnet: isTestnet),
-          timeouts: bbx.BbxTimeouts.standard,
-        ),
-        instanceName: '${environment}BbxApiClient',
-      );
-      locator.registerLazySingleton<bbx.Bbx>(
-        () => bbx.Bbx.open(
-          endpoint: isTestnet
-              ? ApiServiceConstants.bbApiTestUrl
-              : ApiServiceConstants.bbApiUrl,
-          readActiveApiKey: () =>
-              _readActiveApiKey(locator, isTestnet: isTestnet),
-        ),
-        instanceName: '${environment}BbxApiClientWithoutTimeout',
-      );
-    }
   }
 
   static void registerRepositories(GetIt locator) {

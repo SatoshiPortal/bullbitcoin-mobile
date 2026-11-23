@@ -31,3 +31,13 @@ export 'src/domain/exchange_funding.dart' show ExchangeFunding;
 export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
 export 'src/domain/exchange_orders.dart' show ExchangeOrders;
 export 'src/domain/order_deadline_scheduler.dart';
+
+export 'src/recipients/domain/entities/recipient.dart';
+export 'src/recipients/domain/entities/recipient_type.dart';
+export 'src/recipients/domain/entities/recipient_details.dart';
+export 'src/recipients/domain/entities/recipient_details_input.dart';
+export 'src/recipients/domain/entities/cad_biller.dart';
+export 'src/recipients/domain/entities/sepa_virtual_payee_status.dart';
+export 'src/recipients/domain/entities/interac_security_details.dart';
+export 'src/recipients/exchange_recipients.dart'
+    show ExchangeRecipients, RecipientPage;

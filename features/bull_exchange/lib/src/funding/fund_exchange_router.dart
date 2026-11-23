@@ -15,6 +15,7 @@ import 'package:bull_exchange/src/funding/ui/screens/fund_exchange_regular_sepa_
 import 'package:bull_exchange/src/funding/ui/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bull_exchange/src/funding/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bull_exchange/src/funding/ui/widgets/fund_exchange_warning_bottom_sheet.dart';
+import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_funding_screen.dart';
 import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,11 +32,6 @@ import 'domain/usecases/register_responsibility_consent_usecase.dart';
 typedef ExchangeFundingHost = ({
   Exchange Function() exchange,
   bool Function(BuildContext) isLoggedIn,
-  Widget Function({
-    required VoidCallback onUseRegularSepa,
-    required VoidCallback onDone,
-  })
-  buildVirtualIbanFunding,
 });
 
 enum FundExchangeRoute {
@@ -220,7 +216,7 @@ class FundExchangeRouter {
       builder: (context, state) {
         final bloc = state.extra;
         if (bloc is! FundExchangeBloc) return const SizedBox.shrink();
-        return host.buildVirtualIbanFunding(
+        return VirtualIbanFundingScreen(
           onUseRegularSepa: () {
             context.pop();
             bloc.add(
