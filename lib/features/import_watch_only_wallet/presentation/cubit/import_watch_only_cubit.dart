@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/import_watch_only_wallet/capture_watch_only_network_usecase.dart';
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';

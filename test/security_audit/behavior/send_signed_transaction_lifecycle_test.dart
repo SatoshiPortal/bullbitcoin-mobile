@@ -29,7 +29,7 @@ import 'package:swaps/swaps.dart'
         WatchSwapUsecase;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:preferences/preferences.dart';

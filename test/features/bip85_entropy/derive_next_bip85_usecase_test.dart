@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_fr
 import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, ScriptType;

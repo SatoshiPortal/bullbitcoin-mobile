@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show StringFormatting;
+import 'string_formatting.dart';
 
 enum SignerEntity {
   local,

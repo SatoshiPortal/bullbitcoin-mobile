@@ -1,5 +1,5 @@
 import 'package:signers/signers.dart' as signers;
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:drift/drift.dart';
 
 enum Signer {
