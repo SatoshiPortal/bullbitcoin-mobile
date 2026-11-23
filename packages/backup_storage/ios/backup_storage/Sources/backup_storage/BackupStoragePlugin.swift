@@ -21,6 +21,7 @@ public final class BackupStoragePlugin: NSObject, FlutterPlugin, UIDocumentPicke
             binaryMessenger: registrar.messenger()
         )
         registrar.addMethodCallDelegate(BackupStoragePlugin(registrar: registrar), channel: channel)
+        ICloudBackupStorageChannel.register(with: registrar)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
