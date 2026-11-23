@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
+import 'package:bull_exchange/bull_exchange.dart' show WizardExchangeOption;
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,13 @@ void main() {
 
       final screen = tester.widget<WizardScreen>(find.byType(WizardScreen));
       expect(screen.exchangeAllowed, allowed);
+
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+      expect(
+        find.byType(WizardExchangeOption),
+        allowed ? findsOneWidget : findsNothing,
+      );
     });
   }
 }
