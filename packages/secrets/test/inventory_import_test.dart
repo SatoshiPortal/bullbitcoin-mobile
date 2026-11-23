@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -354,9 +355,56 @@ void main() {
     );
   });
 
+  test(
+    'a malformed seed key does not prevent import after a failed read',
+    () async {
+      _createSource(source);
+      final storage = _InventoryReadFailure()..install();
+      final admission = await exclusive();
+      try {
+        final owner = await prepare(admission, OwnerOrigin.legacy);
+        final legacy = LegacySource(source, 16);
+        expect(
+          await owner.importLegacy(legacy),
+          isA<Err<void, LegacyImportFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<LegacyImportUnavailable>(),
+          ),
+        );
+        expect(
+          (await owner.receipt()).fold((value) => value, (_) => null),
+          OwnerReadiness.pending,
+        );
+        storage.failed = false;
+        _expectOk(await owner.importLegacy(legacy));
+        expect(
+          (await owner.receipt()).fold((value) => value, (_) => null),
+          OwnerReadiness.imported,
+        );
+        _expectOk(await owner.close());
+      } finally {
+        await admission.close();
+      }
+    },
+  );
 }
 
 void _expectOk(Result<void, Failure> result) => expect(result, isA<Ok>());
+
+final class _InventoryReadFailure extends FakeSecureStoragePlatform {
+  bool failed = true;
+
+  _InventoryReadFailure() : super(entries: {'seed_invalid': 'unreadable'});
+
+  @override
+  Future<Map<String, String>> readAll({
+    required Map<String, String> options,
+  }) async {
+    if (failed) throw PlatformException(code: 'inventory-unavailable');
+    return super.readAll(options: options);
+  }
+}
 
 void _createSource(File file, {bool includeDerivations = true}) {
   final legacy = sqlite3.open(file.path);
