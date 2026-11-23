@@ -50,7 +50,6 @@ import 'package:background_tasks/background_tasks.dart'
 import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
-import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -124,11 +123,7 @@ class AppLocator {
       locator<SecretsInventory>(),
       locator<DeveloperEnvironmentReader>(),
       locator<Secrets>(),
-      (secret, network) => WalletRecoverBullBindings.restoreDefaults(
-        locator<DefaultWalletProvisioning>(),
-        secret,
-        network,
-      ),
+      locator<DefaultWalletProvisioning>(),
     );
     locator.registerSingleton<RecoverBullWalletPort>(wallets);
     final family = settings.path == databasePath ? null : 'regtest';

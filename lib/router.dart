@@ -62,7 +62,7 @@ import 'package:wallet_import/setup.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -188,7 +188,7 @@ class AppRouter {
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
-    WalletRecoverBullBindings.tested(context);
+    context.read<WalletBloc>().add(const VerifyBackupStatus());
     router.goNamed(WalletRoute.walletHome.name);
   }
 
@@ -384,7 +384,7 @@ class AppRouter {
       locator<RecoverBullFeature>().route(
         copiedMessage: (context) => context.loc.copiedToClipboard,
         onRecovered: (context) {
-          WalletRecoverBullBindings.recovered(context);
+          context.read<WalletBloc>().add(const WalletStarted());
           router.goNamed(WalletRoute.walletHome.name);
         },
         onTested: _onBackupTestSucceeded,
