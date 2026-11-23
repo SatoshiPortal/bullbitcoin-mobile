@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
+import 'package:swap_feature/src/rescue/domain/get_swap_rescue_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
