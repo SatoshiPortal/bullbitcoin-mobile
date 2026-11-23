@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
+import 'autobuy/autobuy_mount.dart';
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
 import 'funding/fund_exchange_router.dart';
@@ -31,6 +32,7 @@ final class BullExchangeFeature {
   final GoRoute? kycRoute;
   final List<RouteBase> settingsRoutes;
   final List<RouteBase> fundingRoutes;
+  final GoRoute? autoBuy;
 
   const BullExchangeFeature._(
     this.routes,
@@ -38,6 +40,7 @@ final class BullExchangeFeature {
     this.kycRoute,
     this.settingsRoutes,
     this.fundingRoutes,
+    this.autoBuy,
   );
 
   static BullExchangeFeature mount({
@@ -52,6 +55,7 @@ final class BullExchangeFeature {
     ExchangeKycHost? kyc,
     ExchangeSettingsHost? settings,
     ExchangeFundingHost? funding,
+    AutoBuyHost? autoBuy,
   }) => BullExchangeFeature._(
     List.unmodifiable([
       GoRoute(
@@ -104,5 +108,6 @@ final class BullExchangeFeature {
     funding == null
         ? const []
         : List.unmodifiable(FundExchangeRouter.routes(funding)),
+    autoBuy == null ? null : autoBuyRoute(autoBuy),
   );
 }

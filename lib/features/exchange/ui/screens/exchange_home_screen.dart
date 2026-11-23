@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
@@ -12,6 +11,8 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.da
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bull_exchange/bull_exchange.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
@@ -129,17 +130,11 @@ class ExchangeHomeScreen extends StatelessWidget {
                     ],
                     DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
                     const Gap(12),
-                    locator<AutoBuyFacade>().buildHomeCard(
+                    ExchangeAutoBuyCard(
+                      exchange: () => locator<Exchange>(),
+                      preferences: () => locator<Preferences>(),
                       isActive: autoBuy?.isActive ?? false,
                       isRestricted: isFundingRestricted,
-                      onActivate: () async {
-                        await context.pushNamed(AutoBuyRoute.autoBuy.name);
-                        if (context.mounted) {
-                          await context
-                              .read<ExchangeCubit>()
-                              .fetchUserSummary();
-                        }
-                      },
                       onStatusChanged: () =>
                           context.read<ExchangeCubit>().fetchUserSummary(),
                     ),

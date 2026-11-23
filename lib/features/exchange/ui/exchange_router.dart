@@ -1,6 +1,11 @@
 import 'package:bull_ui/bull_ui.dart'
     show BullScaffold, BullTopBar, BullButton, BullText, Gap, BullTypographyX;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
 import 'dart:async';
@@ -111,6 +116,7 @@ class ExchangeRouter {
   static BullExchangeFeature mount(
     ExchangeRouterConfig config, {
     Exchange Function()? exchange,
+    Preferences Function()? preferences,
     ExchangeSettingsHost? settings,
   }) => BullExchangeFeature.mount(
     networkUnavailable: config.networkUnavailable,
@@ -139,6 +145,19 @@ class ExchangeRouter {
     onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
     settings: settings,
+    autoBuy: exchange == null || preferences == null
+        ? null
+        : (
+            exchange: exchange,
+            preferences: preferences,
+            payoutFields: exchangePayoutFields,
+            terms: Uri.parse(SettingsConstants.exchangeTermsAndConditionsLink),
+            addressViewer: (context, address) => AddressViewer(
+              address,
+              style: context.bullType.body,
+              color: context.appColors.onSurface,
+            ),
+          ),
     funding: exchange == null
         ? null
         : (

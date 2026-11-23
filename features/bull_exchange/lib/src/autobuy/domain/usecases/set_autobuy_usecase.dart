@@ -1,21 +1,18 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+
+import 'get_autobuy_status_usecase.dart';
+
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class SetAutoBuyUsecase {
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final Preferences _settingsRepository;
   final Exchange _exchange;
 
-  const SetAutoBuyUsecase(
-    this._getExchangeUserSummaryUsecase,
-    this._settingsRepository,
-    this._exchange,
-  );
+  const SetAutoBuyUsecase(this._settingsRepository, this._exchange);
 
   @useResult
   Future<Result<void, AutoBuyFailure>> execute({required bool enabled}) async {
@@ -39,9 +36,7 @@ class SetAutoBuyUsecase {
       environment = settings.environment.requireHistoricalTestnet()
           ? ExchangeEnvironment.testnet
           : ExchangeEnvironment.mainnet;
-    } on Error {
-      rethrow;
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       // Type only, like every other boundary in this migration.
       log.severe(
         message: 'Failed to read settings before updating AutoBuy',
@@ -74,27 +69,11 @@ class SetAutoBuyUsecase {
     }
 
     final UserSummary summary;
-    try {
-      summary = await _getExchangeUserSummaryUsecase.execute();
-    } on Error {
-      rethrow;
-    } on GetExchangeUserSummaryCredentialException catch (e) {
-      log.info('Exchange account credential refused: ${e.runtimeType}');
-      return Err(AutoBuyAccountUnavailableFailure('$e'));
-    } on GetExchangeUserSummaryException catch (e, st) {
-      log.severe(
-        message: 'Failed to load account before updating AutoBuy',
-        error: e,
-        trace: st,
-      );
-      return Err(AutoBuyAccountUnavailableFailure('$e'));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load account before updating AutoBuy',
-        error: e,
-        trace: st,
-      );
-      return Err(AutoBuyUnexpectedFailure('$e'));
+    switch (await _exchange.getUserSummary(environment)) {
+      case Ok(:final value):
+        summary = value;
+      case Err(:final failure):
+        return Err(autoBuySummaryFailure(failure));
     }
 
     if (enabled && summary.isFundingRestricted) {

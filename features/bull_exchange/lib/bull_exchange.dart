@@ -1,6 +1,8 @@
 /// Exchange navigation contributed to the application.
 library;
 
+export 'src/autobuy/autobuy_mount.dart'
+    show AutoBuyHost, AutoBuyNavigation, ExchangeAutoBuyCard;
 export 'src/bull_exchange_feature.dart' show BullExchangeFeature;
 export 'src/default_wallets/default_wallets_payout_fields.dart'
     show DefaultWalletsPayoutFields;

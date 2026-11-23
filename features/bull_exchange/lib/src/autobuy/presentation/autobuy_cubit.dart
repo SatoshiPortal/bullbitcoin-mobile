@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
-import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_failure.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
+import 'package:bull_exchange/src/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

@@ -33,7 +33,6 @@ import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
-import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:signers/routes.dart';
@@ -327,7 +326,6 @@ class AppLocator {
     }
 
     ExchangeLocator.setup(locator);
-    AutoBuyLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
     BuyLocator.setup(locator);
     SellLocator.setup(locator);

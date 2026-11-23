@@ -1,11 +1,10 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
-import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
-import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/autobuy/presentation/autobuy_cubit.dart';
+import 'package:bull_exchange/src/autobuy/presentation/autobuy_failure_l10n.dart';
+
+import '../../../default_wallets/default_wallets_payout_fields.dart';
+import '../../../default_wallets/ui/widgets/default_wallets_editor.dart';
+
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -25,8 +24,17 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AutoBuyScreen extends StatelessWidget {
   final Exchange exchange;
+  final DefaultWalletsPayoutFields payoutFields;
+  final Widget Function(BuildContext, String) addressViewer;
+  final Uri terms;
 
-  const AutoBuyScreen({required this.exchange, super.key});
+  const AutoBuyScreen({
+    required this.exchange,
+    required this.payoutFields,
+    required this.addressViewer,
+    required this.terms,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,19 +47,19 @@ class AutoBuyScreen extends StatelessWidget {
       listener: (context, state) {
         if (state.statusChangeSucceeded && state.isActive) {
           context.pop();
-        } else if (state.step != AutoBuyStep.intro && state.failure != null) {
-          BullSnackBar.show(
-            context,
-            message: state.failure!.toTranslated(context),
-          );
+        } else if (state.failure case final failure?
+            when state.step != AutoBuyStep.intro) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
         }
       },
       child: BlocBuilder<AutoBuyCubit, AutoBuyState>(
         builder: (context, state) {
+          final failure = state.failure;
           return Scaffold(
             appBar: AppBar(
               title: Text(_titleFor(context, state.step)),
               leading: IconButton(
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => _goBack(context, state.step),
               ),
@@ -65,15 +73,17 @@ class AutoBuyScreen extends StatelessWidget {
                   BullShimmerLine(height: 20),
                 ],
               ),
-              AutoBuyStep.intro when state.failure != null =>
-                _StatusLoadFailure(
-                  message: state.failure!.toTranslated(context),
-                  onRetry: context.read<AutoBuyCubit>().loadStatus,
-                ),
-              AutoBuyStep.intro => _IntroStep(isRestricted: state.isRestricted),
+              AutoBuyStep.intro when failure != null => _StatusLoadFailure(
+                message: failure.toTranslated(context),
+                onRetry: context.read<AutoBuyCubit>().loadStatus,
+              ),
+              AutoBuyStep.intro => _IntroStep(
+                isRestricted: state.isRestricted,
+                terms: terms,
+              ),
               AutoBuyStep.wallets => DefaultWalletsEditor(
                 exchange: exchange,
-                payoutFields: exchangePayoutFields,
+                payoutFields: payoutFields,
                 footerBuilder: (context, wallets, status) => BullButton.primary(
                   label: context.loc.continueButton,
                   onPressed:
@@ -86,7 +96,7 @@ class AutoBuyScreen extends StatelessWidget {
                         ),
                 ),
               ),
-              AutoBuyStep.confirm => const _ConfirmStep(),
+              AutoBuyStep.confirm => _ConfirmStep(addressViewer: addressViewer),
             },
           );
         },
@@ -143,8 +153,9 @@ class _StatusLoadFailure extends StatelessWidget {
 
 class _IntroStep extends StatelessWidget {
   final bool isRestricted;
+  final Uri terms;
 
-  const _IntroStep({required this.isRestricted});
+  const _IntroStep({required this.isRestricted, required this.terms});
 
   @override
   Widget build(BuildContext context) {
@@ -194,10 +205,8 @@ class _IntroStep extends StatelessWidget {
               child: Semantics(
                 link: true,
                 child: TextButton(
-                  onPressed: () => launchUrl(
-                    Uri.parse(SettingsConstants.exchangeTermsAndConditionsLink),
-                    mode: LaunchMode.inAppBrowserView,
-                  ),
+                  onPressed: () =>
+                      launchUrl(terms, mode: LaunchMode.inAppBrowserView),
                   child: Text(
                     context.loc.settingsTermsOfServiceTitle,
                     style: context.bullType.label
@@ -250,7 +259,9 @@ class _Bullet extends StatelessWidget {
 }
 
 class _ConfirmStep extends StatelessWidget {
-  const _ConfirmStep();
+  final Widget Function(BuildContext, String) addressViewer;
+
+  const _ConfirmStep({required this.addressViewer});
 
   @override
   Widget build(BuildContext context) {
@@ -271,16 +282,19 @@ class _ConfirmStep extends StatelessWidget {
               _WalletRow(
                 label: context.loc.exchangeBitcoinWalletsBitcoinAddressLabel,
                 address: wallets.bitcoinAddress,
+                viewer: addressViewer,
               ),
             if (wallets.lightningAddress.isNotEmpty)
               _WalletRow(
                 label: context.loc.exchangeBitcoinWalletsLightningAddressLabel,
                 address: wallets.lightningAddress,
+                viewer: addressViewer,
               ),
             if (wallets.liquidAddress.isNotEmpty)
               _WalletRow(
                 label: context.loc.exchangeBitcoinWalletsLiquidAddressLabel,
                 address: wallets.liquidAddress,
+                viewer: addressViewer,
               ),
             const Gap(BullSpacing.lg),
             if (state.isSaving)
@@ -300,8 +314,13 @@ class _ConfirmStep extends StatelessWidget {
 class _WalletRow extends StatelessWidget {
   final String label;
   final String address;
+  final Widget Function(BuildContext, String) viewer;
 
-  const _WalletRow({required this.label, required this.address});
+  const _WalletRow({
+    required this.label,
+    required this.address,
+    required this.viewer,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -312,11 +331,7 @@ class _WalletRow extends StatelessWidget {
         const Gap(BullSpacing.xs),
         Text(label, style: context.bullType.caption),
         const Gap(BullSpacing.xs),
-        AddressViewer(
-          address,
-          style: context.bullType.body,
-          color: context.appColors.onSurface,
-        ),
+        viewer(context, address),
         const Gap(BullSpacing.xs),
       ],
     );

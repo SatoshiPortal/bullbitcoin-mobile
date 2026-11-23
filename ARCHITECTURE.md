@@ -353,6 +353,8 @@ The Exchange amount and currency controls are intentionally reusable widgets. DC
 
 Default payout editing is mounted under Settings and reused by AutoBuy. The editor owns its state and calls `Exchange` for account mutations; until wallet destination input is extracted, the host supplies its shared validation, scanner and viewer.
 
+The Exchange mount contributes `/auto-buy`; the dashboard uses its reusable AutoBuy card. Both use route- or widget-scoped state and call `Exchange` directly for typed account reads, default payout checks and preference writes. The host supplies the existing address viewer and terms URL.
+
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 
 `packages/google_drive` owns Google sign-in and listing, reading, writing and deleting files in the app data folder. `GoogleDrive.open()` creates the transport. Its operations return typed results, `revokeAccess()` revokes the user grant, and synchronous `dispose()` releases local resources. RecoverBull owns the vault format, metadata mapping and account-scoped vault selection.

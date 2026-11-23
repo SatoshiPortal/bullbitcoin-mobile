@@ -13,7 +13,6 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
 import 'package:announcements/setup.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show SwapFacade;
-import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
@@ -55,6 +54,7 @@ import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:preferences/preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -111,6 +111,7 @@ class AppRouter {
   static final _exchangeFeature = ExchangeRouter.mount(
     _exchangeConfig,
     exchange: () => locator<Exchange>(),
+    preferences: () => locator<Preferences>(),
     settings: SettingsRouter.exchangeSettingsHost,
   );
 
@@ -268,7 +269,7 @@ class AppRouter {
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
       DcaRouter.route,
-      AutoBuyRouter.route,
+      ?_exchangeFeature.autoBuy,
       ...LimitOrdersRouter.routes,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
