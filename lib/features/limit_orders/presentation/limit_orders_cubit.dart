@@ -12,9 +12,10 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
   final ListActiveLimitOrdersUsecase _listActive;
   final CancelAllLimitOrdersUsecase _cancelAll;
   final CanCreateLimitOrderUsecase _canCreate;
-  final Stream<NotificationMessage> _notifications;
+  final Stream<Result<NotificationMessage, ExchangeFailure>> _notifications;
 
-  StreamSubscription<NotificationMessage>? _subscription;
+  StreamSubscription<Result<NotificationMessage, ExchangeFailure>>?
+  _subscription;
   StreamSubscription<void>? _refreshSubscription;
 
   LimitOrdersCubit(
@@ -25,7 +26,11 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
     Stream<void>? refreshRequests,
   }) : super(const LimitOrdersState()) {
     _subscription = _notifications
-        .where((message) => message.kind == NotificationMessageKind.limitOrder)
+        .where(
+          (event) =>
+              event is Ok<NotificationMessage, ExchangeFailure> &&
+              event.value.kind == NotificationMessageKind.limitOrder,
+        )
         .listen((_) => load());
     _refreshSubscription = refreshRequests?.listen((_) => load());
   }

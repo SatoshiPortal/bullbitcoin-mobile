@@ -20,7 +20,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 };
 
 abstract interface class _Notifications {
-  Stream<NotificationMessage> get messages;
+  Stream<Result<NotificationMessage, ExchangeFailure>> get messages;
   Future<Result<void, ExchangeFailure>> connect();
   Future<Result<void, ExchangeFailure>> reconnect();
   void disconnect();
@@ -55,7 +55,7 @@ void main() {
   late _MockNotificationRepository repository;
   late _Access access;
   late _MockSettings settings;
-  late StreamController<NotificationMessage> messages;
+  late StreamController<Result<NotificationMessage, ExchangeFailure>> messages;
 
   WatchExchangeNotificationsUsecase build() =>
       WatchExchangeNotificationsUsecase(
@@ -90,7 +90,10 @@ void main() {
         ),
       ),
     );
-    messages = StreamController<NotificationMessage>.broadcast();
+    messages =
+        StreamController<
+          Result<NotificationMessage, ExchangeFailure>
+        >.broadcast();
     when(() => repository.messages).thenAnswer((_) => messages.stream);
   });
 
@@ -101,8 +104,9 @@ void main() {
     final sub = build().accountChanges().listen((m) => seen.add(m.kind));
     addTearDown(sub.cancel);
 
+    messages.add(const Err(ExchangeNotificationsUnavailableFailure()));
     for (final kind in NotificationMessageKind.values) {
-      messages.add(_message(kind));
+      messages.add(Ok(_message(kind)));
     }
     await Future<void>.delayed(Duration.zero);
 

@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/limit_orders/ui/screens/limit_order_details_s
 import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_orders_dashboard_card.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart';
 
 export '../limit_orders_locator.dart' show LimitOrdersLocator;
 export '../ui/limit_orders_router.dart'
@@ -35,7 +36,7 @@ class LimitOrdersFacade {
   final CancelLimitOrderUsecase _cancelOrder;
   final ResolveWalletAddressUsecase _resolveAddress;
   final ValidateLightningAddressUsecase _validateLnAddress;
-  final Stream<NotificationMessage> _notifications;
+  final Stream<Result<NotificationMessage, ExchangeFailure>> _notifications;
 
   final _dashboardRefreshRequests = StreamController<void>.broadcast();
 

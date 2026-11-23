@@ -17,7 +17,7 @@ import '../map_virtual_iban_failure.dart';
 class WatchVirtualIbanUsecase {
   final ExchangeVirtualIbans _virtualIbans;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
-  final Stream<NotificationMessage> _notifications;
+  final Stream<Result<NotificationMessage, ExchangeFailure>> _notifications;
   final Duration _pollInterval;
 
   const WatchVirtualIbanUsecase({
@@ -67,9 +67,10 @@ class WatchVirtualIbanUsecase {
     Completer<void>? pendingWake;
     final activation = _notifications
         .where(
-          (message) =>
-              message.kind == NotificationMessageKind.recipient &&
-              message.event == _activatedEvent,
+          (event) =>
+              event is Ok<NotificationMessage, ExchangeFailure> &&
+              event.value.kind == NotificationMessageKind.recipient &&
+              event.value.event == _activatedEvent,
         )
         .listen((_) {
           final wake = pendingWake;

@@ -23,7 +23,8 @@ class MockCancelAllLimitOrdersUsecase extends Mock
 void main() {
   late MockListActiveLimitOrdersUsecase listActive;
   late MockCancelAllLimitOrdersUsecase cancelAll;
-  late StreamController<NotificationMessage> notificationStream;
+  late StreamController<Result<NotificationMessage, ExchangeFailure>>
+  notificationStream;
   const canCreate = CanCreateLimitOrderUsecase();
 
   List<LimitOrder> orders(int count) =>
@@ -32,7 +33,10 @@ void main() {
   setUp(() {
     listActive = MockListActiveLimitOrdersUsecase();
     cancelAll = MockCancelAllLimitOrdersUsecase();
-    notificationStream = StreamController<NotificationMessage>.broadcast();
+    notificationStream =
+        StreamController<
+          Result<NotificationMessage, ExchangeFailure>
+        >.broadcast();
   });
 
   tearDown(() => notificationStream.close());
@@ -124,7 +128,7 @@ void main() {
     build: buildCubit,
     act: (cubit) async {
       notificationStream.add(
-        const NotificationMessage(kind: NotificationMessageKind.limitOrder),
+        const Ok(NotificationMessage(kind: NotificationMessageKind.limitOrder)),
       );
       await Future<void>.delayed(Duration.zero);
     },
@@ -139,7 +143,7 @@ void main() {
     build: buildCubit,
     act: (cubit) async {
       notificationStream.add(
-        const NotificationMessage(kind: NotificationMessageKind.balance),
+        const Ok(NotificationMessage(kind: NotificationMessageKind.balance)),
       );
       await Future<void>.delayed(Duration.zero);
     },

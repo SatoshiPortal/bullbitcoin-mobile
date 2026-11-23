@@ -20,8 +20,10 @@ class ExchangeNotificationService {
   final Future<Result<ExchangeEnvironment, ExchangeFailure>> Function()
   _readEnvironment;
 
-  final StreamController<NotificationMessage> _messageController =
-      StreamController<NotificationMessage>.broadcast();
+  final _messageController =
+      StreamController<
+        Result<NotificationMessage, ExchangeFailure>
+      >.broadcast();
 
   StreamSubscription<Result<BbxNotification, BbxFailure>>? _mainnetSubscription;
   StreamSubscription<Result<BbxNotification, BbxFailure>>? _testnetSubscription;
@@ -48,7 +50,7 @@ class ExchangeNotificationService {
     });
   }
 
-  /// Forwards one owned event, or records a dropped one.
+  /// Forwards an owned message or a recoverable failure.
   ///
   /// The socket already bounds its connection-failure diagnostics, so only a
   /// malformed event is persisted here; connection retries stay console-only.
@@ -57,10 +59,12 @@ class ExchangeNotificationService {
     switch (event) {
       case Ok(:final value):
         _messageController.add(
-          NotificationMessage(
-            kind: _kind(value.kind),
-            orderId: value.orderId,
-            event: value.event,
+          Ok(
+            NotificationMessage(
+              kind: _kind(value.kind),
+              orderId: value.orderId,
+              event: value.event,
+            ),
           ),
         );
       case Err(:final failure):
@@ -70,6 +74,9 @@ class ExchangeNotificationService {
         } else {
           log.info(message, error: failure.runtimeType);
         }
+        _messageController.add(
+          const Err(ExchangeNotificationsUnavailableFailure()),
+        );
     }
   }
 
@@ -123,7 +130,8 @@ class ExchangeNotificationService {
   }
 
   /// Single stream of notification messages from the active network
-  Stream<NotificationMessage> get messageStream => _messageController.stream;
+  Stream<Result<NotificationMessage, ExchangeFailure>> get messageStream =>
+      _messageController.stream;
 
   bool get isConnected =>
       (_isTestnet ? _testnetDatasource : _mainnetDatasource).isConnected;

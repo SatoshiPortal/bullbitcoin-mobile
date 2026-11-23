@@ -6,7 +6,7 @@ Account reads, preferences, announcements, order statistics and KYC uploads use 
 
 Support chat uses the standard timeout for identity lookup and an untimed client for message and attachment calls. Both clients check the same session before sending requests, and are disposed when the operation ends.
 
-`Exchange.notifications` publishes decoded notification events for the active environment. Session management owns when to connect and disconnect. `Exchange.close()` releases the socket and its subscriptions; obsolete connect and reconnect attempts do not reopen it.
+`Exchange.notifications` publishes decoded notification events and typed recoverable socket failures for the active environment. Failures do not close the stream or include raw frames. Session management owns when to connect and disconnect. `Exchange.close()` releases the socket and its subscriptions; obsolete connect and reconnect attempts do not reopen it.
 
 `Exchange.limitOrders` owns order-trigger operations and rates. It preserves the historical untimed client and maps the transport's rejection codes to typed limit-order problems.
 

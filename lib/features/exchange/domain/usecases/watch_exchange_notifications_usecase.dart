@@ -22,17 +22,21 @@ class WatchExchangeNotificationsUsecase {
   });
 
   /// Emits whenever the server says the account may have changed.
-  Stream<NotificationMessage> accountChanges() => _exchange.notifications.where(
-    // The kinds that mean the cached account is stale. A `switch` rather
-    // than a set, so a new kind has to be placed deliberately.
-    (message) => switch (message.kind) {
-      NotificationMessageKind.balance ||
-      NotificationMessageKind.group ||
-      NotificationMessageKind.kyc ||
-      NotificationMessageKind.userPreferences => true,
-      _ => false,
-    },
-  );
+  Stream<NotificationMessage> accountChanges() =>
+      _exchange.notifications.expand(
+        (event) => switch (event) {
+          Ok(value: final message)
+              when switch (message.kind) {
+                NotificationMessageKind.balance ||
+                NotificationMessageKind.group ||
+                NotificationMessageKind.kyc ||
+                NotificationMessageKind.userPreferences => true,
+                _ => false,
+              } =>
+            [message],
+          _ => const [],
+        },
+      );
 
   /// The handshake stays outside the access queue so it cannot delay sign-out
   /// or trading. Sign-out, reconciliation and expiry disconnect, but an attempt

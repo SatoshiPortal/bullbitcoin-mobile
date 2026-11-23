@@ -50,11 +50,15 @@ const _pending = PendingVirtualIban();
 
 void main() {
   late _MockGetRecipientsEnvironmentUsecase environment;
-  late StreamController<NotificationMessage> notifications;
+  late StreamController<Result<NotificationMessage, ExchangeFailure>>
+  notifications;
 
   setUp(() {
     environment = _MockGetRecipientsEnvironmentUsecase();
-    notifications = StreamController<NotificationMessage>.broadcast();
+    notifications =
+        StreamController<
+          Result<NotificationMessage, ExchangeFailure>
+        >.broadcast();
     when(() => environment.execute())
         .thenAnswer((_) async => const Ok(Environment.testnet));
   });
@@ -159,10 +163,13 @@ void main() {
 
       // Let the first find() (pending) emit, then push the activation event.
       await Future<void>.delayed(const Duration(milliseconds: 20));
+      notifications.add(const Err(ExchangeNotificationsUnavailableFailure()));
       notifications.add(
-        NotificationMessage(
-          kind: NotificationMessageKind.recipient,
-          event: 'VIRTUAL_IBAN_ACTIVATED',
+        Ok(
+          NotificationMessage(
+            kind: NotificationMessageKind.recipient,
+            event: 'VIRTUAL_IBAN_ACTIVATED',
+          ),
         ),
       );
 

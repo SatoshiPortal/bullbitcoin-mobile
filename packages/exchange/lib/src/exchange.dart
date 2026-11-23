@@ -86,7 +86,7 @@ typedef ExchangeNotificationBindings = ({
 });
 
 typedef ExchangeNotificationOperations = ({
-  Stream<NotificationMessage> Function() messages,
+  Stream<Result<NotificationMessage, ExchangeFailure>> Function() messages,
   Future<Result<void, ExchangeFailure>> Function() connect,
   Future<Result<void, ExchangeFailure>> Function() reconnect,
   void Function() disconnect,
@@ -580,7 +580,11 @@ final class Exchange {
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
-  Stream<NotificationMessage> get notifications => _notifications.messages();
+  /// Broadcasts messages and recoverable failures from the active socket.
+  /// An [Err] does not close the stream. Failures before opening a socket
+  /// (such as an unavailable environment) are returned by the command only.
+  Stream<Result<NotificationMessage, ExchangeFailure>> get notifications =>
+      _notifications.messages();
 
   Future<Result<void, ExchangeFailure>> connectNotifications() =>
       _notifications.connect();
