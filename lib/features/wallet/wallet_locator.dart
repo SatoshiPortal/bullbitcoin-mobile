@@ -64,23 +64,6 @@ class WalletLocator {
   static void setup(GetIt locator) {
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
-    Future<WalletKey> keyFor(String id) =>
-        WalletSyncBinding.keyForId(locator<WalletRegistrations>(), id);
-    Future<BitcoinSpendStatus> spendStatus(
-      String id, {
-      String? replacing,
-    }) async {
-      try {
-        return WalletSyncBinding.value<BitcoinSpendStatus>(
-          await locator<WalletNativeRuntime>().spendStatus(
-            await keyFor(id),
-            replacing: replacing,
-          ),
-        );
-      } on Exception {
-        return BitcoinSpendStatus.unavailable;
-      }
-    }
 
     locator.registerFactory<LoadNetworkWalletSetupUsecase>(
       () => LoadNetworkWalletSetupUsecase(
@@ -105,7 +88,7 @@ class WalletLocator {
     );
     locator.registerLazySingleton<BroadcastObservationFollowUp>(
       () => BroadcastObservationFollowUp(
-        spendStatus: spendStatus,
+        spendStatus: (id) => locator<WalletNativeRuntime>().spendStatusOf(id),
         pollWallet: (id, {required isActive}) =>
             overviewSync().coordinator.pollWallet(id, isActive: isActive),
       ),
