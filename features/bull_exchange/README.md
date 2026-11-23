@@ -1,3 +1,3 @@
 # Bull Exchange
 
-`BullExchangeFeature.mount` contributes the exchange landing route. `BullExchangeNavigation` provides typed navigation. The host supplies its store-aware localization, brand asset and existing authentication/exit navigation; the feature owns the two landing presentations. Other exchange routes are still composed by the legacy app during extraction.
+`BullExchangeFeature.mount` contributes the landing and support chat routes. `BullExchangeNavigation` and `ExchangeSupportChatNavigation` provide typed navigation. The host supplies the landing's store-aware localization and branding, and the existing authentication and exit behavior. Chat owns its localized copy, attachment handling and view lifecycle and consumes `Exchange` directly. Other exchange routes are still composed by the legacy app during extraction.

@@ -1,0 +1,19 @@
+{
+  "@@locale": "it",
+  "exchangeSupportChatAttachLogsFailed": "Impossibile allegare i log. Riprova.",
+  "exchangeSupportChatAttachmentImage": "Immagine",
+  "exchangeSupportChatAttachmentUnknownFile": "File sconosciuto",
+  "exchangeSupportChatEmptyState": "Nessun messaggio. Inizia una conversazione!",
+  "exchangeSupportChatFetchFileDataFailed": "Recupero dei dati del file non riuscito.",
+  "exchangeSupportChatInputHint": "Digita un messaggio...",
+  "exchangeSupportChatLoadAttachmentError": "Impossibile aprire l'allegato. Riprova.",
+  "exchangeSupportChatLoadMessagesError": "Impossibile caricare i messaggi. Riprova.",
+  "exchangeSupportChatMessageEmptyError": "Il messaggio non può essere vuoto",
+  "exchangeSupportChatMessageRequired": "È necessario un messaggio",
+  "exchangeSupportChatPickFilesFailed": "Selezione dei file non riuscita. Riprova.",
+  "exchangeSupportChatSendMessageError": "Impossibile inviare il messaggio. Riprova.",
+  "exchangeSupportChatTitle": "Chat di supporto",
+  "exchangeSupportChatYesterday": "Ieri",
+  "exchangeSupportLoginChatRequired": "Per ottenere supporto umano, devi prima accedere al tuo account Bull Bitcoin. È completamente gratuito e non è richiesto alcun KYC, solo un indirizzo email.",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va"
+}

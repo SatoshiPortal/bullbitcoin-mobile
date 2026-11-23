@@ -1,0 +1,19 @@
+{
+  "@@locale": "hi",
+  "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
+  "exchangeSupportChatAttachmentImage": "छवि",
+  "exchangeSupportChatAttachmentUnknownFile": "अज्ञात फ़ाइल",
+  "exchangeSupportChatEmptyState": "अभी तक कोई संदेश नहीं। बातचीत शुरू करें!",
+  "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
+  "exchangeSupportChatInputHint": "एक संदेश टाइप करें..।",
+  "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatLoadMessagesError": "संदेश लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatMessageEmptyError": "संदेश खाली नहीं हो सकता",
+  "exchangeSupportChatMessageRequired": "एक संदेश की आवश्यकता है",
+  "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
+  "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
+  "exchangeSupportChatTitle": "समर्थन चैट",
+  "exchangeSupportChatYesterday": "कल",
+  "exchangeSupportLoginChatRequired": "मानवीय सहायता प्राप्त करने के लिए, आपको पहले अपने Bull Bitcoin खाते में लॉग इन करना होगा। यह पूरी तरह से निःशुल्क है और किसी KYC की आवश्यकता नहीं है, केवल एक ईमेल पता।",
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया"
+}

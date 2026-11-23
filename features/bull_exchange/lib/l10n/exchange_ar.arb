@@ -1,0 +1,19 @@
+{
+  "@@locale": "ar",
+  "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatAttachmentImage": "صورة",
+  "exchangeSupportChatAttachmentUnknownFile": "ملف غير معروف",
+  "exchangeSupportChatEmptyState": "لا رسائل بعد ابدأ المحادثة!",
+  "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
+  "exchangeSupportChatInputHint": "اكتب رسالة.",
+  "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatMessageEmptyError": "الرسالة لا يمكن أن تكون فارغة",
+  "exchangeSupportChatMessageRequired": "الرسالة مطلوبة",
+  "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
+  "exchangeSupportChatTitle": "الدعم",
+  "exchangeSupportChatYesterday": "أمس",
+  "exchangeSupportLoginChatRequired": "للحصول على دعم بشري، يجب عليك أولاً تسجيل الدخول إلى حساب Bull Bitcoin الخاص بك. الخدمة مجانية 100% ولا يتطلب الأمر أي KYC، فقط عنوان بريد إلكتروني.",
+  "oopsSomethingWentWrong": "! شيء ما حدث"
+}

@@ -1,0 +1,19 @@
+{
+  "@@locale": "fi",
+  "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatAttachmentImage": "Kuva",
+  "exchangeSupportChatAttachmentUnknownFile": "Tuntematon tiedosto",
+  "exchangeSupportChatEmptyState": "Ei viestejä vielä. Aloita keskustelu!",
+  "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",
+  "exchangeSupportChatInputHint": "Kirjoita viesti...",
+  "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatLoadMessagesError": "Viestien lataaminen epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatMessageEmptyError": "Viesti ei voi olla tyhjä",
+  "exchangeSupportChatMessageRequired": "Liite vaatii viestiin sisältöä",
+  "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatSendMessageError": "Viestin lähettäminen epäonnistui. Yritä uudelleen.",
+  "exchangeSupportChatTitle": "Tukichatti",
+  "exchangeSupportChatYesterday": "Eilen",
+  "exchangeSupportLoginChatRequired": "Saadaksesi henkilökohtaista tukea sinun on ensin kirjauduttava Bull Bitcoin -tilillesi. Se on 100 % ilmaista eikä KYC:tä vaadita, ainoastaan sähköpostiosoite.",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen"
+}

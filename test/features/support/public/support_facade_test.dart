@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +56,7 @@ void main() {
                 Scaffold(body: _SupportTrigger(message: message)),
           ),
           GoRoute(
-            name: ExchangeSupportChatFacade.routeName,
+            name: ExchangeSupportChatNavigation.routeName,
             path: '/support-chat',
             builder: (_, state) {
               chatExtras.add(state.extra);

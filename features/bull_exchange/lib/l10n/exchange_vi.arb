@@ -1,0 +1,19 @@
+{
+  "@@locale": "vi",
+  "exchangeSupportChatAttachLogsFailed": "Không thể đính kèm nhật ký. Vui lòng thử lại.",
+  "exchangeSupportChatAttachmentImage": "Hình ảnh",
+  "exchangeSupportChatAttachmentUnknownFile": "Tệp không xác định",
+  "exchangeSupportChatEmptyState": "Chưa có tin nhắn nào. Hãy bắt đầu trò chuyện!",
+  "exchangeSupportChatFetchFileDataFailed": "Không thể lấy dữ liệu tệp",
+  "exchangeSupportChatInputHint": "Nhập tin nhắn...",
+  "exchangeSupportChatLoadAttachmentError": "Không thể mở tệp đính kèm. Vui lòng thử lại.",
+  "exchangeSupportChatLoadMessagesError": "Không thể tải tin nhắn. Vui lòng thử lại.",
+  "exchangeSupportChatMessageEmptyError": "Tin nhắn không được để trống",
+  "exchangeSupportChatMessageRequired": "Cần có tin nhắn",
+  "exchangeSupportChatPickFilesFailed": "Không thể chọn tệp. Vui lòng thử lại.",
+  "exchangeSupportChatSendMessageError": "Không thể gửi tin nhắn của bạn. Vui lòng thử lại.",
+  "exchangeSupportChatTitle": "Trò chuyện hỗ trợ",
+  "exchangeSupportChatYesterday": "Hôm qua",
+  "exchangeSupportLoginChatRequired": "Để nhận hỗ trợ từ nhân viên, bạn cần đăng nhập vào tài khoản Bull Bitcoin của mình trước. Hoàn toàn miễn phí và không yêu cầu KYC, chỉ cần một địa chỉ email.",
+  "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi"
+}

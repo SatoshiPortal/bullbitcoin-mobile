@@ -20,7 +20,7 @@ Exchange fakeExchangeUsers(
   ExchangeUserOperations mainnet,
   ExchangeUserOperations testnet,
 ) {
-  ExchangeUserOperations select(ExchangeEnvironment environment) =>
+  ExchangeUserOperations select(ExchangeEnvironment? environment) =>
       environment == ExchangeEnvironment.mainnet ? mainnet : testnet;
   return exchangeForTesting(
     getUserSummary: (environment) => select(environment).getUserSummary(),

@@ -1,0 +1,19 @@
+{
+  "@@locale": "sw",
+  "exchangeSupportChatAttachLogsFailed": "Imeshindwa kuambatanisha kumbukumbu. Tafadhali jaribu tena.",
+  "exchangeSupportChatAttachmentImage": "Picha",
+  "exchangeSupportChatAttachmentUnknownFile": "Faili isiyojulikana",
+  "exchangeSupportChatEmptyState": "Bado hakuna ujumbe. Anza mazungumzo!",
+  "exchangeSupportChatFetchFileDataFailed": "Imeshindwa kupata data ya faili",
+  "exchangeSupportChatInputHint": "Andika ujumbe...",
+  "exchangeSupportChatLoadAttachmentError": "Imeshindwa kufungua kiambatisho. Tafadhali jaribu tena.",
+  "exchangeSupportChatLoadMessagesError": "Imeshindwa kupakia ujumbe. Tafadhali jaribu tena.",
+  "exchangeSupportChatMessageEmptyError": "Ujumbe hauwezi kuwa tupu",
+  "exchangeSupportChatMessageRequired": "Ujumbe unahitajika",
+  "exchangeSupportChatPickFilesFailed": "Imeshindwa kuchagua faili. Tafadhali jaribu tena.",
+  "exchangeSupportChatSendMessageError": "Imeshindwa kutuma ujumbe wako. Tafadhali jaribu tena.",
+  "exchangeSupportChatTitle": "Gumzo la Usaidizi",
+  "exchangeSupportChatYesterday": "Jana",
+  "exchangeSupportLoginChatRequired": "Ili kupata msaada wa binadamu, lazima kwanza uingie kwenye akaunti yako ya Bull Bitcoin. Ni bure kabisa na hakuna KYC inayohitajika, anwani ya barua pepe tu.",
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea"
+}

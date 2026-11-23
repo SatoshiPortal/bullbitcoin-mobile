@@ -127,7 +127,11 @@ graph TD
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
   bull_ark --> notifications
+  bull_exchange --> bull_logger
   bull_exchange --> bull_ui
+  bull_exchange --> exchange
+  bull_exchange --> primitives
+  bull_exchange -.-> preferences
   bull_logs --> bull_logger
   bull_logs --> bull_ui
   bull_logs --> primitives

@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -107,6 +108,11 @@ class AppRouter {
     }
   }
 
+  static final _exchangeFeature = ExchangeRouter.mount(
+    _exchangeConfig,
+    exchange: () => locator<Exchange>(),
+  );
+
   static void _onBackupTestSucceeded(BuildContext context) {
     WalletRecoverBullBindings.tested(context);
     router.goNamed(WalletRoute.walletHome.name);
@@ -199,11 +205,14 @@ class AppRouter {
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
             announcements: () => _announcements.carousel(),
           ),
-          ...ExchangeRouter.routes(_exchangeConfig),
+          ...ExchangeRouter.routes(
+            _exchangeConfig,
+            exchangeFeature: _exchangeFeature,
+          ),
         ],
       ),
       ExchangeRouter.authRoute(_exchangeConfig),
-      ExchangeRouter.supportChatRoute(_exchangeConfig),
+      ?_exchangeFeature.supportChatRoute,
       OnboardingRouter.route,
       ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(

@@ -1,0 +1,19 @@
+{
+  "@@locale": "el",
+  "exchangeSupportChatAttachLogsFailed": "Η επισύναψη αρχείων καταγραφής απέτυχε. Δοκιμάστε ξανά.",
+  "exchangeSupportChatAttachmentImage": "Εικόνα",
+  "exchangeSupportChatAttachmentUnknownFile": "Άγνωστο αρχείο",
+  "exchangeSupportChatEmptyState": "Δεν υπάρχουν μηνύματα ακόμα. Ξεκινήστε μια συνομιλία!",
+  "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε.",
+  "exchangeSupportChatInputHint": "Πληκτρολογήστε ένα μήνυμα...",
+  "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά.",
+  "exchangeSupportChatLoadMessagesError": "Δεν ήταν δυνατή η φόρτωση των μηνυμάτων. Δοκιμάστε ξανά.",
+  "exchangeSupportChatMessageEmptyError": "Το μήνυμα δεν μπορεί να είναι άδειο",
+  "exchangeSupportChatMessageRequired": "Ένα μήνυμα απαιτείται",
+  "exchangeSupportChatPickFilesFailed": "Η επιλογή αρχείων απέτυχε. Δοκιμάστε ξανά.",
+  "exchangeSupportChatSendMessageError": "Δεν ήταν δυνατή η αποστολή του μηνύματός σας. Δοκιμάστε ξανά.",
+  "exchangeSupportChatTitle": "Υποστήριξη Chat",
+  "exchangeSupportChatYesterday": "Χθες",
+  "exchangeSupportLoginChatRequired": "Για να λάβετε ανθρώπινη υποστήριξη, πρέπει πρώτα να συνδεθείτε στον λογαριασμό σας Bull Bitcoin. Είναι 100% δωρεάν και δεν απαιτείται KYC, μόνο μια διεύθυνση email.",
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά"
+}

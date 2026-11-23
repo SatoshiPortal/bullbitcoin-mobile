@@ -15,7 +15,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_exit_on_back.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,20 +53,10 @@ class ExchangeRouterConfig {
 }
 
 class ExchangeRouter {
-  static GoRoute supportChatRoute(ExchangeRouterConfig config) =>
-      ExchangeSupportChatRouter.route(
-        isLoggedIn: (context) => ExchangeScope.isLoggedIn(context),
-        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
-        onExit: (context, fromExchange) {
-          if (fromExchange) {
-            context.goNamed(ExchangeRoute.exchangeHome.name);
-          } else {
-            config.onExit(context);
-          }
-        },
-      );
-
-  static List<RouteBase> routes(ExchangeRouterConfig config) => [
+  static List<RouteBase> routes(
+    ExchangeRouterConfig config, {
+    BullExchangeFeature? exchangeFeature,
+  }) => [
     GoRoute(
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
@@ -117,34 +107,54 @@ class ExchangeRouter {
         ),
       ],
     ),
-    ...BullExchangeFeature.mount(
-      networkUnavailable: config.networkUnavailable,
-      showWebsiteOnly: (context) =>
-          Platform.isIOS && !config.isSuperuser(context),
-      unavailableRedirectPath: config.homePath,
-      brandAssetPath: Assets.logos.bbLogoSmall.path,
-      copy: (context) {
-        final loc = context.loc;
-        return ExchangeLandingCopy(
-          brandName: loc.exchangeBrandName,
-          connectAccount: loc.exchangeLandingConnectAccount,
-          recommendedExchange: loc.exchangeLandingRecommendedExchange,
-          selfCustody: loc.exchangeFeatureSelfCustody,
-          recurringOrders: loc.exchangeFeatureDcaOrders,
-          sellBitcoin: loc.exchangeFeatureSellBitcoin,
-          bankTransfers: loc.exchangeFeatureBankTransfers,
-          customerSupport: loc.exchangeFeatureCustomerSupport,
-          unifiedHistory: loc.exchangeFeatureUnifiedHistory,
-          legalDisclaimer: loc.exchangeLandingDisclaimerLegal,
-          unavailableDisclaimer: loc.exchangeLandingDisclaimerNotAvailable,
-          signIn: loc.exchangeLoginButton,
-          openWebsite: loc.exchangeGoToWebsiteButton,
-        );
-      },
-      onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
-      onExit: config.onExit,
-    ).routes,
+    ...(exchangeFeature ?? mount(config)).routes,
   ];
+
+  static BullExchangeFeature mount(
+    ExchangeRouterConfig config, {
+    Exchange Function()? exchange,
+  }) => BullExchangeFeature.mount(
+    networkUnavailable: config.networkUnavailable,
+    showWebsiteOnly: (context) =>
+        Platform.isIOS && !config.isSuperuser(context),
+    unavailableRedirectPath: config.homePath,
+    brandAssetPath: Assets.logos.bbLogoSmall.path,
+    copy: (context) {
+      final loc = context.loc;
+      return ExchangeLandingCopy(
+        brandName: loc.exchangeBrandName,
+        connectAccount: loc.exchangeLandingConnectAccount,
+        recommendedExchange: loc.exchangeLandingRecommendedExchange,
+        selfCustody: loc.exchangeFeatureSelfCustody,
+        recurringOrders: loc.exchangeFeatureDcaOrders,
+        sellBitcoin: loc.exchangeFeatureSellBitcoin,
+        bankTransfers: loc.exchangeFeatureBankTransfers,
+        customerSupport: loc.exchangeFeatureCustomerSupport,
+        unifiedHistory: loc.exchangeFeatureUnifiedHistory,
+        legalDisclaimer: loc.exchangeLandingDisclaimerLegal,
+        unavailableDisclaimer: loc.exchangeLandingDisclaimerNotAvailable,
+        signIn: loc.exchangeLoginButton,
+        openWebsite: loc.exchangeGoToWebsiteButton,
+      );
+    },
+    onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
+    onExit: config.onExit,
+    supportChat: exchange == null
+        ? null
+        : (
+            exchange: exchange,
+            isLoggedIn: ExchangeScope.isLoggedIn,
+            loginScreenBuilder: (draft) =>
+                ExchangeSupportLoginScreen(draft: draft),
+            onExit: (context, fromExchange) {
+              if (fromExchange) {
+                context.goNamed(ExchangeRoute.exchangeHome.name);
+              } else {
+                config.onExit(context);
+              }
+            },
+          ),
+  );
 
   static GoRoute authRoute(ExchangeRouterConfig config) => GoRoute(
     name: ExchangeRoute.exchangeAuth.name,
@@ -193,7 +203,7 @@ class ExchangeRouter {
                   final isIOSNonSuperuser =
                       Platform.isIOS && !config.isSuperuser(context);
                   context.goNamed(
-                    ExchangeSupportChatFacade.routeName,
+                    ExchangeSupportChatNavigation.routeName,
                     queryParameters: isIOSNonSuperuser
                         ? {}
                         : {'from': 'exchange'},

@@ -77,8 +77,12 @@ final class Exchange {
   _uploadKycDocument;
   final Future<Result<UserSummary, ExchangeFailure>> Function(
     ExchangeEnvironment,
-  ) _getAccount,
-      _getUserSummary;
+  )
+  _getAccount;
+  final Future<Result<UserSummary, ExchangeFailure>> Function(
+    ExchangeEnvironment?,
+  )
+  _getUserSummary;
   final Future<Result<List<Announcement>, ExchangeFailure>> Function(
     ExchangeEnvironment,
   )
@@ -329,9 +333,9 @@ final class Exchange {
   ) => _getAccount(environment);
 
   /// Reads the summary with the historical account-availability semantics.
-  Future<Result<UserSummary, ExchangeFailure>> getUserSummary(
-    ExchangeEnvironment environment,
-  ) => _getUserSummary(environment);
+  Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
+    ExchangeEnvironment? environment,
+  ]) => _getUserSummary(environment);
 
   Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
     ExchangeEnvironment environment,
@@ -393,7 +397,7 @@ Exchange exchangeForTesting({
   uploadKycDocument,
   Future<Result<UserSummary, ExchangeFailure>> Function(ExchangeEnvironment)?
   getAccount,
-  Future<Result<UserSummary, ExchangeFailure>> Function(ExchangeEnvironment)?
+  Future<Result<UserSummary, ExchangeFailure>> Function(ExchangeEnvironment?)?
   getUserSummary,
   Future<Result<List<Announcement>, ExchangeFailure>> Function(
     ExchangeEnvironment,

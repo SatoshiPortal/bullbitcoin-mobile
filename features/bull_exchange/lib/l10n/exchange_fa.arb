@@ -1,0 +1,19 @@
+{
+  "@@locale": "fa",
+  "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
+  "exchangeSupportChatAttachmentImage": "تصویر",
+  "exchangeSupportChatAttachmentUnknownFile": "فایل نامشخص",
+  "exchangeSupportChatEmptyState": "هنوز پیام نیست. یک مکالمه را شروع کنید!",
+  "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",
+  "exchangeSupportChatInputHint": "نوع یک پیام ...",
+  "exchangeSupportChatLoadAttachmentError": "باز کردن پیوست ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatLoadMessagesError": "بارگیری پیام‌ها ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatMessageEmptyError": "پیام نمی تواند خالی باشد",
+  "exchangeSupportChatMessageRequired": "یک پیام لازم است",
+  "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
+  "exchangeSupportChatSendMessageError": "ارسال پیام شما ممکن نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSupportChatTitle": "پشتیبانی از Chat",
+  "exchangeSupportChatYesterday": "دیروز",
+  "exchangeSupportLoginChatRequired": "برای دریافت پشتیبانی انسانی، ابتدا باید وارد حساب Bull Bitcoin خود شوید. کاملاً رایگان است و نیازی به KYC نیست، فقط یک آدرس ایمیل.",
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد"
+}

@@ -1,0 +1,19 @@
+{
+  "@@locale": "th",
+  "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+  "exchangeSupportChatAttachmentImage": "รูปภาพ",
+  "exchangeSupportChatAttachmentUnknownFile": "ไฟล์ที่ไม่ทราบชนิด",
+  "exchangeSupportChatEmptyState": "ไม่มีข้อความ เริ่มต้นการสนทนา!",
+  "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
+  "exchangeSupportChatInputHint": "ประเภทข้อความ ...",
+  "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatLoadMessagesError": "ไม่สามารถโหลดข้อความได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatMessageEmptyError": "ข้อความไม่สามารถเปล่า",
+  "exchangeSupportChatMessageRequired": "ข้อความที่จําเป็น",
+  "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+  "exchangeSupportChatSendMessageError": "ไม่สามารถส่งข้อความของคุณได้ โปรดลองอีกครั้ง",
+  "exchangeSupportChatTitle": "สนับสนุนการสนทนา",
+  "exchangeSupportChatYesterday": "สุดท้าย",
+  "exchangeSupportLoginChatRequired": "หากต้องการความช่วยเหลือจากเจ้าหน้าที่ คุณต้องเข้าสู่ระบบบัญชี Bull Bitcoin ของคุณก่อน ฟรี 100% ไม่ต้องยืนยันตัวตน (KYC) ใช้เพียงที่อยู่อีเมลเท่านั้น",
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด"
+}

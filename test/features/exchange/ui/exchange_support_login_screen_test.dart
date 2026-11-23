@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';

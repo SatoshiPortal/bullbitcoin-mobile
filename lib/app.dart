@@ -1,6 +1,7 @@
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
@@ -200,6 +201,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         ),
                         NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
+                        ExchangeLocalizations.delegate,
                         LogsLocalizations.delegate,
                         NetworkLocalizations.delegate,
                         BtcMapFeature.localizationsDelegate,

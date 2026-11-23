@@ -1,16 +1,27 @@
+import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'support_chat/exchange_support_chat_navigation.dart';
+import 'support_chat/ui/exchange_support_chat_router.dart';
 import 'ui/screens/exchange_landing_screen.dart';
 import 'ui/screens/exchange_landing_screen_v2.dart';
 
-/// Mounts the Exchange landing screens and contributes their route.
+typedef ExchangeSupportChatHost = ({
+  Exchange Function() exchange,
+  bool Function(BuildContext) isLoggedIn,
+  Widget Function(ExchangeSupportChatDraft?) loginScreenBuilder,
+  void Function(BuildContext, bool fromExchange) onExit,
+});
+
+/// Mounts Exchange routes in their host's navigation slots.
 final class BullExchangeFeature {
   final List<RouteBase> routes;
+  final GoRoute? supportChatRoute;
 
-  const BullExchangeFeature._(this.routes);
+  const BullExchangeFeature._(this.routes, this.supportChatRoute);
 
   static BullExchangeFeature mount({
     required Future<bool> Function() networkUnavailable,
@@ -20,6 +31,7 @@ final class BullExchangeFeature {
     required ExchangeLandingCopy Function(BuildContext) copy,
     required void Function(BuildContext) onSignIn,
     required void Function(BuildContext) onExit,
+    ExchangeSupportChatHost? supportChat,
   }) => BullExchangeFeature._(
     List.unmodifiable([
       GoRoute(
@@ -48,5 +60,13 @@ final class BullExchangeFeature {
         },
       ),
     ]),
+    supportChat == null
+        ? null
+        : ExchangeSupportChatRouter.route(
+            exchange: supportChat.exchange,
+            isLoggedIn: supportChat.isLoggedIn,
+            loginScreenBuilder: supportChat.loginScreenBuilder,
+            onExit: supportChat.onExit,
+          ),
   );
 }

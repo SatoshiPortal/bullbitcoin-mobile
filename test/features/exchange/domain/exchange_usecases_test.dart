@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:exchange/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
@@ -28,8 +27,22 @@ class _MockAccess extends Mock implements ExchangeAccessRepository {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockSendSupportChat extends Mock
-    implements SendSupportChatMessageUsecase {}
+abstract interface class _SendSupportChat {
+  Future<Result<void, ExchangeFailure>> execute({
+    required String text,
+    List<SupportChatMessageAttachment>? attachments,
+  });
+}
+
+class _MockSendSupportChat extends Mock implements _SendSupportChat {}
+
+Exchange _withSupport(_SendSupportChat send) => exchangeForTesting(
+  chat: (
+    getMessages: ({page, pageSize}) async => fail('unexpected chat read'),
+    sendMessage: send.execute,
+    getAttachment: (_) async => fail('unexpected attachment read'),
+  ),
+);
 
 SettingsEntity _settings(Environment environment) => SettingsEntity(
   environment: environment,
@@ -119,7 +132,7 @@ void main() {
         ).execute(language: 'fr'),
         await GetExchangeWebSettingsUsecase(preferences: settings).execute(),
         await RequestExchangeAccountDeletionUsecase(
-          sendSupportChatMessageUsecase: support,
+          exchange: _withSupport(support),
           settingsRepository: settings,
         ).execute(),
       ];
@@ -304,10 +317,12 @@ void main() {
           text: any(named: 'text'),
           attachments: any(named: 'attachments'),
         ),
-      ).thenAnswer((_) async => const Err(SendMessageFailure('nope')));
+      ).thenAnswer(
+        (_) async => const Err(ExchangeChatSendMessageFailure('nope')),
+      );
 
       final result = await RequestExchangeAccountDeletionUsecase(
-        sendSupportChatMessageUsecase: sendSupportChat,
+        exchange: _withSupport(sendSupportChat),
         settingsRepository: settings,
       ).execute();
       final failure = _failureOf(result);
@@ -315,8 +330,8 @@ void main() {
       expect(failure, isA<ExchangeAccountDeletionRequestFailure>());
       expect(
         failure,
-        isNot(isA<ExchangeSupportChatFailure>()),
-        reason: 'the support-chat family must not escape the use-case',
+        isNot(isA<ExchangeChatSendMessageFailure>()),
+        reason: 'the chat failure must be mapped to the deletion operation',
       );
     });
 
@@ -330,7 +345,7 @@ void main() {
 
       expect(
         await RequestExchangeAccountDeletionUsecase(
-          sendSupportChatMessageUsecase: sendSupportChat,
+          exchange: _withSupport(sendSupportChat),
           settingsRepository: settings,
         ).execute(),
         isA<Ok<void, ExchangeFailure>>(),

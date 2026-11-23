@@ -1,0 +1,19 @@
+{
+  "@@locale": "bg",
+  "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
+  "exchangeSupportChatAttachmentImage": "Изображение",
+  "exchangeSupportChatAttachmentUnknownFile": "Неизвестен файл",
+  "exchangeSupportChatEmptyState": "Все още няма съобщения. Започнете разговор!",
+  "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
+  "exchangeSupportChatInputHint": "Напишете съобщение...",
+  "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново.",
+  "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
+  "exchangeSupportChatMessageEmptyError": "Съобщението не може да бъде празно",
+  "exchangeSupportChatMessageRequired": "Изисква се съобщение",
+  "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
+  "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
+  "exchangeSupportChatTitle": "Чат за поддръжка",
+  "exchangeSupportChatYesterday": "Вчера",
+  "exchangeSupportLoginChatRequired": "За да получите помощ от жив оператор, първо трябва да влезете в акаунта си в Bull Bitcoin. Напълно безплатно е и не се изисква KYC, само имейл адрес.",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка"
+}

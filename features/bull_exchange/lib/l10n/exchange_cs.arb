@@ -1,0 +1,19 @@
+{
+  "@@locale": "cs",
+  "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
+  "exchangeSupportChatAttachmentImage": "Obrázek",
+  "exchangeSupportChatAttachmentUnknownFile": "Neznámý soubor",
+  "exchangeSupportChatEmptyState": "Žádné zprávy. Začněte rozhovor!",
+  "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
+  "exchangeSupportChatInputHint": "Zadejte zprávu...",
+  "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
+  "exchangeSupportChatLoadMessagesError": "Nepodařilo se načíst zprávy. Zkuste to prosím znovu.",
+  "exchangeSupportChatMessageEmptyError": "Zpráva nemůže být prázdný",
+  "exchangeSupportChatMessageRequired": "Zpráva je nutná",
+  "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
+  "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
+  "exchangeSupportChatTitle": "Podpora Chat",
+  "exchangeSupportChatYesterday": "Včera",
+  "exchangeSupportLoginChatRequired": "Pro získání lidské podpory se musíte nejprve přihlásit ke svému účtu Bull Bitcoin. Je to zcela zdarma a není vyžadováno žádné KYC, pouze e-mailová adresa.",
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně"
+}

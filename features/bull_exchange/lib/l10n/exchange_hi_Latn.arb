@@ -1,0 +1,19 @@
+{
+  "@@locale": "hi_Latn",
+  "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
+  "exchangeSupportChatAttachmentImage": "Image",
+  "exchangeSupportChatAttachmentUnknownFile": "Anjaan file",
+  "exchangeSupportChatEmptyState": "Abhi koi message nahi. Baat shuru karo!",
+  "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
+  "exchangeSupportChatInputHint": "Message type karo...",
+  "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
+  "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
+  "exchangeSupportChatMessageEmptyError": "Message khali nahi reh sakta",
+  "exchangeSupportChatMessageRequired": "Ek message zaruri hai",
+  "exchangeSupportChatPickFilesFailed": "Files select nahi ho saki. Kripya dobara try karein.",
+  "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
+  "exchangeSupportChatTitle": "Support Chat",
+  "exchangeSupportChatYesterday": "Kal",
+  "exchangeSupportLoginChatRequired": "Human support lene ke liye aapko pehle apne Bull Bitcoin account mein log in karna hoga. Ye bilkul free hai aur koi KYC nahi chahiye, sirf email address chahiye.",
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya"
+}

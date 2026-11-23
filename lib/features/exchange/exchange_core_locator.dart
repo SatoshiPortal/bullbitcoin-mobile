@@ -1,13 +1,9 @@
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
@@ -130,23 +126,6 @@ class ExchangeLocator {
         ),
         settingsRepository: locator<Preferences>(),
       ),
-    );
-
-    locator.registerFactory<GetSupportChatMessagesUsecase>(
-      () => GetSupportChatMessagesUsecase(exchange: locator<Exchange>()),
-    );
-
-    locator.registerFactory<SendSupportChatMessageUsecase>(
-      () => SendSupportChatMessageUsecase(exchange: locator<Exchange>()),
-    );
-
-    locator.registerFactory<GetSupportChatMessageAttachmentUsecase>(
-      () =>
-          GetSupportChatMessageAttachmentUsecase(exchange: locator<Exchange>()),
-    );
-
-    locator.registerFactory<CreateLogAttachmentUsecase>(
-      () => CreateLogAttachmentUsecase(),
     );
   }
 }

@@ -1,0 +1,19 @@
+{
+  "@@locale": "as",
+  "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatAttachmentImage": "প্ৰতিচ্ছবি",
+  "exchangeSupportChatAttachmentUnknownFile": "অজ্ঞাত ফাইল",
+  "exchangeSupportChatEmptyState": "এতিয়াও কোনো বাৰ্তা নাই। কথা-বতৰা আৰম্ভ কৰক!",
+  "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
+  "exchangeSupportChatInputHint": "এটা বাৰ্তা লিখক...",
+  "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatMessageEmptyError": "বাৰ্তা খালী হ'ব নোৱাৰে",
+  "exchangeSupportChatMessageRequired": "এটা বাৰ্তা আৱশ্যক",
+  "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSupportChatTitle": "সহায় চেট",
+  "exchangeSupportChatYesterday": "কালি",
+  "exchangeSupportLoginChatRequired": "মানৱ সহায়তা পাবলৈ, আপুনি প্ৰথমে আপোনাৰ Bull Bitcoin একাউণ্টত লগ ইন কৰিব লাগিব। ই সম্পূৰ্ণ বিনামূলীয়া আৰু কোনো KYC প্ৰয়োজন নাই, কেৱল এটা ইমেইল ঠিকনা।",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে"
+}

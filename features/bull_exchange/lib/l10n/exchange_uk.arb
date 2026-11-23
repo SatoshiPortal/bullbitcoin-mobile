@@ -1,0 +1,19 @@
+{
+  "@@locale": "uk",
+  "exchangeSupportChatAttachLogsFailed": "Не вдалося прикріпити журнали. Спробуйте ще раз.",
+  "exchangeSupportChatAttachmentImage": "Зображення",
+  "exchangeSupportChatAttachmentUnknownFile": "Невідомий файл",
+  "exchangeSupportChatEmptyState": "Немає повідомлень. Почати розмову!",
+  "exchangeSupportChatFetchFileDataFailed": "Не вдалося отримати дані файлу.",
+  "exchangeSupportChatInputHint": "Тип повідомлення...",
+  "exchangeSupportChatLoadAttachmentError": "Не вдалося відкрити вкладення. Спробуйте ще раз.",
+  "exchangeSupportChatLoadMessagesError": "Не вдалося завантажити повідомлення. Спробуйте ще раз.",
+  "exchangeSupportChatMessageEmptyError": "Повідомлення не може бути порожнім",
+  "exchangeSupportChatMessageRequired": "Необхідне повідомлення",
+  "exchangeSupportChatPickFilesFailed": "Не вдалося вибрати файли. Спробуйте ще раз.",
+  "exchangeSupportChatSendMessageError": "Не вдалося надіслати повідомлення. Спробуйте ще раз.",
+  "exchangeSupportChatTitle": "Підтримка чату",
+  "exchangeSupportChatYesterday": "Погода",
+  "exchangeSupportLoginChatRequired": "Щоб отримати підтримку від живого оператора, спершу потрібно увійти у свій обліковий запис Bull Bitcoin. Це абсолютно безкоштовно, KYC не потрібен — лише адреса електронної пошти.",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно"
+}

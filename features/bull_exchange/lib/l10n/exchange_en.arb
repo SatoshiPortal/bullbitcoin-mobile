@@ -1,0 +1,83 @@
+{
+  "@@locale": "en",
+  "exchangeSupportChatAttachFileTooltip": "Attach a file",
+  "@exchangeSupportChatAttachFileTooltip": {
+    "description": "Accessible tooltip for the support chat file attachment button."
+  },
+  "exchangeSupportChatAttachLogsFailed": "Failed to attach logs. Please try again.",
+  "@exchangeSupportChatAttachLogsFailed": {
+    "description": "Snackbar shown when attaching log files to a support chat message fails."
+  },
+  "exchangeSupportChatAttachLogsTooltip": "Attach logs",
+  "@exchangeSupportChatAttachLogsTooltip": {
+    "description": "Accessible tooltip for the support chat log attachment button."
+  },
+  "exchangeSupportChatAttachmentImage": "Image",
+  "@exchangeSupportChatAttachmentImage": {
+    "description": "Fallback display name for an image attachment in the support chat when no file name is available."
+  },
+  "exchangeSupportChatAttachmentUnknownFile": "Unknown file",
+  "@exchangeSupportChatAttachmentUnknownFile": {
+    "description": "Fallback display name for a non-image attachment in the support chat when no file name is available."
+  },
+  "exchangeSupportChatEmptyState": "No messages yet. Start a conversation!",
+  "@exchangeSupportChatEmptyState": {
+    "description": "Message shown when there are no chat messages"
+  },
+  "exchangeSupportChatFetchFileDataFailed": "Failed to fetch file data",
+  "@exchangeSupportChatFetchFileDataFailed": {
+    "description": "Snackbar shown when downloading a support chat attachment fails because no file data was returned."
+  },
+  "exchangeSupportChatInputHint": "Type a message…",
+  "@exchangeSupportChatInputHint": {
+    "description": "Placeholder text for the message input field"
+  },
+  "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
+  "@exchangeSupportChatLoadAttachmentError": {
+    "description": "Shown when downloading or opening a support chat attachment fails."
+  },
+  "exchangeSupportChatLoadMessagesError": "Couldn't load messages. Please try again.",
+  "@exchangeSupportChatLoadMessagesError": {
+    "description": "Shown when loading the support chat message history fails."
+  },
+  "exchangeSupportChatMessageEmptyError": "Message cannot be empty",
+  "@exchangeSupportChatMessageEmptyError": {
+    "description": "Error message when trying to send an empty message"
+  },
+  "exchangeSupportChatMessageRequired": "A message is required",
+  "@exchangeSupportChatMessageRequired": {
+    "description": "Placeholder text when attachments are present but no message text"
+  },
+  "exchangeSupportChatPickFilesFailed": "Failed to pick files. Please try again.",
+  "@exchangeSupportChatPickFilesFailed": {
+    "description": "Snackbar shown when picking files for a support chat attachment fails."
+  },
+  "exchangeSupportChatSendMessageError": "Couldn't send your message. Please try again.",
+  "@exchangeSupportChatSendMessageError": {
+    "description": "Shown when sending a support chat message fails."
+  },
+  "exchangeSupportChatSendTooltip": "Send message",
+  "@exchangeSupportChatSendTooltip": {
+    "description": "Accessible tooltip for the support chat send button."
+  },
+  "exchangeSupportChatTitle": "Support Chat",
+  "@exchangeSupportChatTitle": {
+    "description": "Title for the support chat screen"
+  },
+  "exchangeSupportChatYesterday": "Yesterday",
+  "@exchangeSupportChatYesterday": {
+    "description": "Label for yesterday in date formatting"
+  },
+  "exchangeSupportLoginChatRequired": "To get human support, you must first log in to your Bull Bitcoin account. It's 100% free and no KYC is required, only an email address.",
+  "@exchangeSupportLoginChatRequired": {
+    "description": "Message on chat preview overlay prompting login to access support chat"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "exchangeSupportChatLogDraft": "Here are my logs",
+  "@exchangeSupportChatLogDraft": {
+    "description": "Editable support chat draft after attaching diagnostic logs."
+  }
+}

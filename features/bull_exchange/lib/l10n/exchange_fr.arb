@@ -1,0 +1,23 @@
+{
+  "@@locale": "fr",
+  "exchangeSupportChatAttachFileTooltip": "Joindre un fichier",
+  "exchangeSupportChatAttachLogsFailed": "Échec de l'ajout des journaux. Veuillez réessayer.",
+  "exchangeSupportChatAttachLogsTooltip": "Joindre les journaux",
+  "exchangeSupportChatAttachmentImage": "Image",
+  "exchangeSupportChatAttachmentUnknownFile": "Fichier inconnu",
+  "exchangeSupportChatEmptyState": "Aucun message pour le moment. Commencez une conversation !",
+  "exchangeSupportChatFetchFileDataFailed": "Échec de la récupération des données du fichier.",
+  "exchangeSupportChatInputHint": "Tapez un message...",
+  "exchangeSupportChatLoadAttachmentError": "Impossible d'ouvrir la pièce jointe. Veuillez réessayer.",
+  "exchangeSupportChatLoadMessagesError": "Impossible de charger les messages. Veuillez réessayer.",
+  "exchangeSupportChatMessageEmptyError": "Le message ne peut pas être vide",
+  "exchangeSupportChatMessageRequired": "Un message est requis",
+  "exchangeSupportChatPickFilesFailed": "Échec de la sélection des fichiers. Veuillez réessayer.",
+  "exchangeSupportChatSendMessageError": "Impossible d'envoyer votre message. Veuillez réessayer.",
+  "exchangeSupportChatSendTooltip": "Envoyer le message",
+  "exchangeSupportChatTitle": "Chat de Support",
+  "exchangeSupportChatYesterday": "Hier",
+  "exchangeSupportLoginChatRequired": "Pour obtenir de l'aide humaine, vous devez d'abord vous connecter à votre compte Bull Bitcoin. C'est 100 % gratuit et aucun KYC n'est requis, seulement une adresse courriel.",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "exchangeSupportChatLogDraft": "Voici mes journaux"
+}

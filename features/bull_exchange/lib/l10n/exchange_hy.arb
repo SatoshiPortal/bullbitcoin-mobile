@@ -1,0 +1,19 @@
+{
+  "@@locale": "hy",
+  "exchangeSupportChatAttachLogsFailed": "Չհաջողվեց կցել մատյանները։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatAttachmentImage": "Նկար",
+  "exchangeSupportChatAttachmentUnknownFile": "Անհայտ ֆայլ",
+  "exchangeSupportChatEmptyState": "Հաղորդագրություններ դեռ չկան։ Սկսեք զրույցը։",
+  "exchangeSupportChatFetchFileDataFailed": "Չհաջողվեց բերել ֆայլի տվյալները",
+  "exchangeSupportChatInputHint": "Մուտքագրեք հաղորդագրություն...",
+  "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatLoadMessagesError": "Չհաջողվեց բեռնել հաղորդագրությունները։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatMessageEmptyError": "Հաղորդագրությունը չի կարող դատարկ լինել",
+  "exchangeSupportChatMessageRequired": "Հաղորդագրությունը պարտադիր է",
+  "exchangeSupportChatPickFilesFailed": "Չհաջողվեց ընտրել ֆայլերը։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatSendMessageError": "Չհաջողվեց ուղարկել ձեր հաղորդագրությունը։ Խնդրում ենք կրկին փորձել։",
+  "exchangeSupportChatTitle": "Աջակցության զրույց",
+  "exchangeSupportChatYesterday": "Երեկ",
+  "exchangeSupportLoginChatRequired": "Մարդկային աջակցություն ստանալու համար նախ պետք է մուտք գործեք ձեր Bull Bitcoin հաշիվը։ Ամբողջովին անվճար է և KYC չի պահանջվում, միայն էլեկտրոնային փոստի հասցե:",
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց"
+}

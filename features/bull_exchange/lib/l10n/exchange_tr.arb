@@ -1,0 +1,19 @@
+{
+  "@@locale": "tr",
+  "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatAttachmentImage": "Görsel",
+  "exchangeSupportChatAttachmentUnknownFile": "Bilinmeyen dosya",
+  "exchangeSupportChatEmptyState": "Henüz mesajlar yok. Bir sohbete başlayın!",
+  "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",
+  "exchangeSupportChatInputHint": "Bir mesaj yazın...",
+  "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin.",
+  "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatMessageEmptyError": "Mesaj boş olamaz",
+  "exchangeSupportChatMessageRequired": "Bir mesaj gereklidir",
+  "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
+  "exchangeSupportChatTitle": "Destek Chat",
+  "exchangeSupportChatYesterday": "Dün",
+  "exchangeSupportLoginChatRequired": "Canlı destek almak için önce Bull Bitcoin hesabınıza giriş yapmanız gerekir. Tamamen ücretsizdir ve KYC gerekmez, sadece bir e-posta adresi yeterlidir.",
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti"
+}

@@ -341,7 +341,7 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 The Exchange credential participant owns a separate encrypted schema. It uses the scoped Secrets database worker opener with native-close admission and reads the two fixed legacy records on the foreground isolate. It is not yet active in app composition. Activation requires the coordinator's pre-marker provenance check and draining both legacy credential writers.
 
-`BullExchangeFeature.mount` contributes the two presentations of the exchange landing route from `features/bull_exchange`. During extraction the legacy exchange router supplies the host's store-aware localized copy, branding and navigation to existing routes.
+`BullExchangeFeature.mount` contributes the exchange landing and support chat routes from `features/bull_exchange`. The legacy exchange router supplies the landing's store-aware localized copy, branding and navigation, and selects the sign-in screen for unauthenticated chat entry. The feature owns chat presentation, attachment handling and localized copy, and consumes the Exchange capability directly.
 
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 

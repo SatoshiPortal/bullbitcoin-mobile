@@ -1,0 +1,19 @@
+{
+  "@@locale": "ka",
+  "exchangeSupportChatAttachLogsFailed": "ჟურნალების დამატება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "exchangeSupportChatAttachmentImage": "სურათი",
+  "exchangeSupportChatAttachmentUnknownFile": "უცნობი ფაილი",
+  "exchangeSupportChatEmptyState": "შეტყობინებები ჯერ არ არის. დაიწყეთ საუბარი!",
+  "exchangeSupportChatFetchFileDataFailed": "ფაილის მონაცემების მიღება ვერ მოხერხდა",
+  "exchangeSupportChatInputHint": "დაწერეთ შეტყობინება...",
+  "exchangeSupportChatLoadAttachmentError": "დანართის გახსნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatLoadMessagesError": "შეტყობინებების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatMessageEmptyError": "შეტყობინება არ შეიძლება იყოს ცარიელი",
+  "exchangeSupportChatMessageRequired": "შეტყობინება სავალდებულოა",
+  "exchangeSupportChatPickFilesFailed": "ფაილების არჩევა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "exchangeSupportChatSendMessageError": "თქვენი შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSupportChatTitle": "მხარდაჭერის ჩატი",
+  "exchangeSupportChatYesterday": "გუშინ",
+  "exchangeSupportLoginChatRequired": "ადამიანური მხარდაჭერის მისაღებად, ჯერ უნდა შეხვიდეთ თქვენს Bull Bitcoin ანგარიშში. სავსებით უფასოა და KYC არ არის საჭირო, საჭიროა მხოლოდ ელექტრონული ფოსტის მისამართი.",
+  "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა"
+}

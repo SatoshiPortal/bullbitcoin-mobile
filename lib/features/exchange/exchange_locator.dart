@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_acco
 import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
@@ -147,7 +146,7 @@ class ExchangeLocator {
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
         settingsRepository: locator<settings_contract.Preferences>(),
-        sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
+        exchange: locator<Exchange>(),
       ),
     );
 

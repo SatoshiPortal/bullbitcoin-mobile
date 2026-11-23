@@ -1,0 +1,19 @@
+{
+  "@@locale": "zh",
+  "exchangeSupportChatAttachLogsFailed": "添加日志失败，请重试。",
+  "exchangeSupportChatAttachmentImage": "图片",
+  "exchangeSupportChatAttachmentUnknownFile": "未知文件",
+  "exchangeSupportChatEmptyState": "尚未发出任何信息。 开始对话!",
+  "exchangeSupportChatFetchFileDataFailed": "获取文件数据失败",
+  "exchangeSupportChatInputHint": "信息的类型......",
+  "exchangeSupportChatLoadAttachmentError": "无法打开附件。请重试。",
+  "exchangeSupportChatLoadMessagesError": "无法加载消息。请重试。",
+  "exchangeSupportChatMessageEmptyError": "信息不能空洞",
+  "exchangeSupportChatMessageRequired": "需要信息",
+  "exchangeSupportChatPickFilesFailed": "选择文件失败，请重试。",
+  "exchangeSupportChatSendMessageError": "无法发送您的消息。请重试。",
+  "exchangeSupportChatTitle": "支持地图",
+  "exchangeSupportChatYesterday": "昨天",
+  "exchangeSupportLoginChatRequired": "如需人工支持，您必须先登录您的 Bull Bitcoin 账户。完全免费，无需 KYC，只需一个电子邮件地址。",
+  "oopsSomethingWentWrong": "Oops! 某些错误"
+}
