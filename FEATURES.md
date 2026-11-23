@@ -47,6 +47,7 @@ graph TB
     SETTINGS --> NOTIFICATIONS
     WIZARD --> BG_TASKS
     WIZARD --> NOTIFICATIONS
+    SYNC -->|authorized wallet descriptors| SECRETS
     SYNC --> PRIMITIVES
     SYNC --> BULL_LOGGER
     ELECTRUM --> SYNC
@@ -312,6 +313,7 @@ graph TB
     BIP85 --> SECRETS
     BACKUPS --> BIP85
     APP_STARTUP --> RECOVERBULL
+    WALLETS -->|signer device properties| SIGNERS
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> SECRETS

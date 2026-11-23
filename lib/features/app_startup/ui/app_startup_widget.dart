@@ -71,9 +71,7 @@ class AppStartupListener extends StatelessWidget {
           listener: (context, state) {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
               const AppUnlockRouteData().go(AppRouter.router);
-            }
-
-            if (state is AppStartupSuccess && !state.hasDefaultWallets) {
+            } else if (state is AppStartupSuccess && !state.hasDefaultWallets) {
               AppRouter.router.go(OnboardingRoute.onboarding.path);
             }
           },

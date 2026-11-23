@@ -1,64 +1,18 @@
-import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
-/// Reads the existing Drift catalog. Never opens native stores or secrets.
-final class WalletCatalogPortImpl implements WalletCatalogPort {
-  final WalletMetadataDatasource _metadata;
-  int _invalidCount = 0;
-
-  WalletCatalogPortImpl(this._metadata);
-
-  @override
-  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async {
-    try {
-      final descriptors = <PublicWalletDescriptor>[];
-      var invalid = 0;
-      for (final row in await _metadata.fetchAll()) {
-        switch (descriptorFromMetadata(row)) {
-          case Ok(:final value):
-            descriptors.add(value);
-          case Err():
-            invalid++;
-        }
-      }
-      if (invalid != _invalidCount) {
-        _invalidCount = invalid;
-        log.warning('Wallet catalog validation invalid_count=$invalid');
-      }
-      return Ok(List.unmodifiable(descriptors));
-    } on Exception {
-      return const Err(SyncStorageFailure());
-    }
-  }
-
-  @override
-  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
-    WalletKey key,
-  ) async {
-    try {
-      final row = await _metadata.fetch(key.id);
-      if (row == null) return const Err(SyncNotFoundFailure());
-      final result = descriptorFromMetadata(row);
-      if (result case Ok(:final value) when value.key != key) {
-        return const Err(SyncNotFoundFailure());
-      }
-      return result;
-    } on Exception {
-      return const Err(SyncStorageFailure());
-    }
-  }
-
+/// Adapts application wallet values to Sync at the remaining legacy call sites.
+abstract final class WalletSyncBinding {
   /// Resolve application metadata before invoking a native capability.
   static WalletKey keyFromMetadata(WalletMetadataModel row) =>
       value(descriptorFromMetadata(row)).key;
 
   static Future<WalletKey> keyForId(
-    WalletMetadataDatasource metadata,
+    WalletRegistrations metadata,
     String id,
   ) async {
     try {

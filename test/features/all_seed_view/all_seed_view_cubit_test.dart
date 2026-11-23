@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import '../../support/inventory_fixture.dart';
+
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -58,6 +62,8 @@ void main() {
   late AllSeedViewCubit cubit;
   late Secret aSecret;
   late GetIt accessServices;
+  late Directory inventoryDirectory;
+  late InventoryFixture inventoryFixture;
 
   Future<AppUnlockGrant> authenticate(WidgetTester tester) async {
     AppUnlockGrant? grant;
@@ -71,7 +77,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpUntilInventoryReady(tester, () => grant != null);
     return grant ?? (throw StateError('Unlock did not issue a grant'));
   }
 
@@ -79,10 +85,14 @@ void main() {
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
+    inventoryDirectory = await Directory.systemTemp.createTemp('seed-access-');
+    inventoryFixture = await InventoryFixture.open(inventoryDirectory);
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     accessServices = GetIt.asNewInstance()..registerSingleton(secrets);
     AccessFeature.mount(
       services: accessServices,
+      inventory: inventoryFixture.inventory,
+      backupVerification: inventoryFixture.backup,
       hasVerifiedBackup: () async => false,
       onUnlocked: (_) {},
       onBackUp: (_) async {},
@@ -119,6 +129,8 @@ void main() {
   tearDown(() async {
     await cubit.close();
     await accessServices.reset();
+    await inventoryFixture.close();
+    await inventoryDirectory.delete(recursive: true);
   });
 
   group('AllSeedViewCubit — re-authentication gate (audit)', () {

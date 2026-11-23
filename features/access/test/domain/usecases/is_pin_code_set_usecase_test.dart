@@ -1,26 +1,18 @@
-import 'dart:io';
-
-import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart';
-import 'package:primitives/primitives.dart';
-import 'package:access/src/domain/access_failure.dart';
+import 'package:access/src/domain/access_inventory.dart';
 import 'package:access/src/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+
+import '../../support/inventory_fixture.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  test('preserves a keychain-locked failure', () async {
-    FakeSecureStoragePlatform(locked: true).install();
+  test('reads settings from the inventory', () async {
+    final fixture = await InventoryFixture.open(pin: '1234');
+    addTearDown(fixture.close);
     final usecase = IsPinCodeSetUsecase(
-      accessKeychain: Secrets(
-        scratchDirectory: () async => Directory.systemTemp.path,
-      ).accessKeychain,
+      inventory: AccessInventory(fixture.inventory, fixture.backup),
     );
-    final result = await usecase.execute();
-    expect(result, isA<Err<bool, AccessFailure>>());
-    expect(
-      (result as Err).failure,
-      isA<AccessPinSettingsKeychainLockedFailure>(),
-    );
+    expect((await usecase.execute() as Ok).value, isTrue);
   });
 }

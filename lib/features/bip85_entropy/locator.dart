@@ -15,7 +15,6 @@ import 'package:get_it/get_it.dart';
 
 class Bip85EntropyLocator {
   static void setup(GetIt locator, {required Bip85ParentReader readParent}) {
-    Bip85DerivationsLocator.registerDatasources(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerUsecases(locator);
     locator.registerLazySingleton(

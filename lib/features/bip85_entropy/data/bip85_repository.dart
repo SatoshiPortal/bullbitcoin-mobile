@@ -1,146 +1,103 @@
-import 'bip85_column_mapping.dart';
-
-import 'package:bb_mobile/features/bip85_entropy/data/bip85_datasource.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart';
 
 class Bip85Repository {
-  final Bip85Datasource _datasource;
+  final SecretsInventory _inventory;
 
-  Bip85Repository({required this._datasource});
+  Bip85Repository({required this._inventory});
 
   @useResult
-  Future<Result<String, Bip85Failure>> recordHex({
-    required String xprvFingerprint,
+  Future<Result<RecordedDerivation, Bip85Failure>> reserveHex({
+    required Fingerprint parent,
     required int length,
-    required int index,
     String? alias,
-  }) async {
-    try {
-      final result = await _datasource.recordHex(
-        xprvFingerprint: xprvFingerprint,
-        length: length,
-        index: index,
-        alias: alias,
-      );
-      return Ok(result);
-    } catch (e, st) {
-      log.severe(
-        message: 'Bip85Repository.recordHex failed',
-        error: e,
-        trace: st,
-      );
-      return Err(Bip85DerivationFailure(e.toString()));
-    }
-  }
+  }) async => (await _inventory.reserveHexDerivation(
+    parent: parent,
+    length: length,
+    alias: alias,
+  )).mapErr((_) => const Bip85StorageFailure());
 
   @useResult
-  Future<Result<String, Bip85Failure>> recordMnemonic({
-    required String xprvFingerprint,
+  Future<Result<RecordedDerivation, Bip85Failure>> reserveMnemonic({
+    required Fingerprint parent,
     required bip39.MnemonicLength length,
-    required int index,
-    String? alias,
     required bip39.Language language,
-  }) async {
-    try {
-      final result = await _datasource.recordMnemonic(
-        xprvFingerprint: xprvFingerprint,
-        length: length,
-        index: index,
-        alias: alias,
-        language: language,
-      );
-      return Ok(result);
-    } catch (e, st) {
-      log.severe(
-        message: 'Bip85Repository.recordMnemonic failed',
-        error: e,
-        trace: st,
-      );
-      return Err(Bip85DerivationFailure(e.toString()));
-    }
-  }
-
-  @useResult
-  Future<Result<int, Bip85Failure>> fetchNextIndexForApplication(
-    Bip85Application application,
-  ) async {
-    try {
-      final applicationColumn = Bip85ApplicationMapping.fromEntity(application);
-      final index = await _datasource.fetchNextIndexForApplication(
-        applicationColumn,
-      );
-      return Ok(index);
-    } catch (e, st) {
-      log.severe(
-        message: 'Bip85Repository.fetchNextIndexForApplication failed',
-        error: e,
-        trace: st,
-      );
-      return Err(Bip85StorageFailure(e.toString()));
-    }
-  }
+    String? alias,
+  }) async => (await _inventory.reserveMnemonicDerivation(
+    parent: parent,
+    length: length,
+    language: language,
+    alias: alias,
+  )).mapErr((_) => const Bip85StorageFailure());
 
   @useResult
   Future<Result<List<Bip85DerivationEntity>, Bip85Failure>> fetchAll() async {
-    try {
-      final result = await _datasource.fetchAll();
-      return Ok(result.map((e) => e.toEntity()).toList());
-    } catch (e, st) {
-      log.severe(
-        message: 'Bip85Repository.fetchAll failed',
-        error: e,
-        trace: st,
-      );
-      return Err(Bip85StorageFailure(e.toString()));
+    switch (await _inventory.listDerivations()) {
+      case Err():
+        return const Err(Bip85StorageFailure());
+      case Ok(:final value):
+        final result = <Bip85DerivationEntity>[];
+        for (final row in value) {
+          final index = row.index;
+          final application = Bip85Application.values
+              .where((value) => value.name == row.application)
+              .firstOrNull;
+          final status = Bip85Status.values
+              .where((value) => value.name == row.status)
+              .firstOrNull;
+          if (index == null || application == null || status == null) {
+            return const Err(Bip85StorageFailure('Unreadable derivation'));
+          }
+          result.add(
+            Bip85DerivationEntity(
+              path: row.path,
+              xprvFingerprint: row.parentFingerprint,
+              alias: row.alias,
+              status: status,
+              application: application,
+              index: index,
+            ),
+          );
+        }
+        return Ok(result);
     }
   }
 
   @useResult
-  Future<Result<void, Bip85Failure>> revoke(
-    Bip85DerivationEntity derivation,
-  ) async {
-    try {
-      await _datasource.revoke(derivation.path);
-      return const Ok(null);
-    } catch (e, st) {
-      log.severe(message: 'Bip85Repository.revoke failed', error: e, trace: st);
-      return Err(Bip85StorageFailure(e.toString()));
-    }
-  }
+  Future<Result<void, Bip85Failure>> revoke(Bip85DerivationEntity derivation) =>
+      _setActive(derivation, false);
 
   @useResult
   Future<Result<void, Bip85Failure>> activate(
     Bip85DerivationEntity derivation,
-  ) async {
-    try {
-      await _datasource.activate(derivation.path);
-      return const Ok(null);
-    } catch (e, st) {
-      log.severe(
-        message: 'Bip85Repository.activate failed',
-        error: e,
-        trace: st,
-      );
-      return Err(Bip85StorageFailure(e.toString()));
-    }
-  }
+  ) => _setActive(derivation, true);
+
+  Future<Result<void, Bip85Failure>> _setActive(
+    Bip85DerivationEntity derivation,
+    bool active,
+  ) async => (await _inventory.setDerivationActive(
+    _record(derivation),
+    active: active,
+  )).mapErr((_) => const Bip85StorageFailure());
 
   @useResult
   Future<Result<void, Bip85Failure>> alias(
     Bip85DerivationEntity derivation,
     String alias,
-  ) async {
-    try {
-      await _datasource.alias(derivation.path, alias);
-      return const Ok(null);
-    } catch (e, st) {
-      log.severe(message: 'Bip85Repository.alias failed', error: e, trace: st);
-      return Err(Bip85StorageFailure(e.toString()));
-    }
-  }
+  ) async => (await _inventory.renameDerivation(
+    _record(derivation),
+    alias,
+  )).mapErr((_) => const Bip85StorageFailure());
+
+  RecordedDerivation _record(Bip85DerivationEntity value) => RecordedDerivation(
+    path: value.path,
+    parentFingerprint: value.xprvFingerprint,
+    application: value.application.name,
+    status: value.status.name,
+    alias: value.alias,
+  );
 }
