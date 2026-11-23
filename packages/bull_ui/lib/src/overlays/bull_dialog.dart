@@ -7,7 +7,8 @@ import 'package:material_ui/material_ui.dart';
 ///
 /// When [child] is an [AlertDialog] or [SimpleDialog] it is rendered directly,
 /// since those already provide their own chrome. Otherwise it is wrapped in a
-/// themed [Dialog] shell.
+/// themed [Dialog] shell and scrolls vertically when it exceeds the available
+/// height.
 class BullDialog extends StatelessWidget {
   const BullDialog({
     super.key,
@@ -16,7 +17,8 @@ class BullDialog extends StatelessWidget {
     this.fullscreen = false,
   });
 
-  /// The dialog content.
+  /// Custom centered content lays out at its natural height inside the scroll
+  /// view. Give children that need a bounded height their own constraints.
   final Widget child;
 
   /// Full-screen transparent chrome for a caller-owned overlay.
@@ -84,7 +86,11 @@ class BullDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(context.bullShapes.sheet),
         side: BorderSide(color: colors.border),
       ),
-      child: Padding(padding: padding, child: child),
+      child: SingleChildScrollView(
+        primary: false,
+        padding: padding,
+        child: child,
+      ),
     );
   }
 }

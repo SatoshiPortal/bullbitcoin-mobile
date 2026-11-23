@@ -157,7 +157,7 @@ class BullValueViewer extends StatelessWidget {
     required String copiedMessage,
     required List<Widget> Function(BuildContext)? additionalActions,
   }) {
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
       child: Column(
         mainAxisSize: MainAxisSize.min,

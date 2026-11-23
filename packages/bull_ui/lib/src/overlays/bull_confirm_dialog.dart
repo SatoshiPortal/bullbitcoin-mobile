@@ -73,15 +73,7 @@ class BullConfirmDialog extends StatelessWidget {
             child: Text(title, style: type.title.copyWith(color: colors.text)),
           ),
           const Gap(BullSpacing.sm),
-          // A long message scrolls, so the buttons stay on screen.
-          Flexible(
-            child: SingleChildScrollView(
-              child: Text(
-                message,
-                style: type.body.copyWith(color: colors.text),
-              ),
-            ),
-          ),
+          Text(message, style: type.body.copyWith(color: colors.text)),
           const Gap(BullSpacing.lg),
           Row(
             children: [
