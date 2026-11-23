@@ -545,14 +545,14 @@ final class Exchange {
               ? ConfidentialSepaAvailability.ready
               : ConfidentialSepaAvailability.needsVirtualIban,
         );
-      }, checkCompletion: true),
+      }, completionCheck: _CompletionCheck.read),
       access,
       ExchangeRecipientsImpl(
         <T>(environment, operation) => withClient<T>(
           (client, _) => operation(client),
           environment: environment,
           untimed: true,
-          checkCompletion: true,
+          completionCheck: _CompletionCheck.read,
         ),
       ),
       sessionPreferences,

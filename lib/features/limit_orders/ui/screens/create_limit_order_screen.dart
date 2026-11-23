@@ -1,9 +1,8 @@
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
+import 'package:address_view/payment_destination.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
-import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_exchange/bull_exchange.dart';

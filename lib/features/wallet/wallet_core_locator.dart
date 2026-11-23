@@ -1,11 +1,9 @@
-import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
-
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
@@ -14,7 +12,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -83,11 +80,6 @@ class WalletLocator {
           CheckWalletSyncingUsecase(locator<ForegroundWalletSync>().isSyncing),
     );
 
-    locator.registerLazySingleton<CheckLiquidConsolidationUsecase>(
-      () => CheckLiquidConsolidationUsecase(
-        liquidWalletRepository: locator<LiquidWalletRepository>(),
-      ),
-    );
     locator.registerFactory<SyncWalletUsecase>(
       () => SyncWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
