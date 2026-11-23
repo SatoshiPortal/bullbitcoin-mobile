@@ -31,9 +31,13 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:preferences/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
+import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
+import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:drift/native.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -121,8 +125,14 @@ void main() {
     });
     tearDown(() async {
       if (composed) {
-        await locator<SpTipWatcher>().dispose();
-        await locator<SpElectrumReconnectWatcher>().dispose();
+        if (locator.checkLazySingletonInstanceExists<SpTipWatcher>()) {
+          await locator<SpTipWatcher>().dispose();
+          await locator<SpElectrumReconnectWatcher>().dispose();
+        }
+        if (locator.checkLazySingletonInstanceExists<OrderSwapWatcher>()) {
+          locator<OrderSwapWatcher>().dispose();
+          await locator<AutoswapWatcher>().dispose();
+        }
         locator<SyncCoordinator>().dispose();
       }
       await locator.reset();
@@ -132,7 +142,10 @@ void main() {
       SharedPreferencesAsyncPlatform.instance = previousPreferences;
       await directory.delete(recursive: true);
     });
-    Future<void> compose({bool initialize = false}) async {
+    Future<void> compose({
+      bool initialize = false,
+      bool startWatchers = false,
+    }) async {
       expect(
         await AppLocator.setup(
           locator,
@@ -162,8 +175,8 @@ void main() {
           arkFundingDatabasePath: '${directory.path}/ark-funding.sqlite',
           initializeArkFunding: initialize,
           startPayjoinRecovery: false,
-          startOrderSwapWatcher: false,
-          startAutoswapWatcher: false,
+          startOrderSwapWatcher: startWatchers,
+          startAutoswapWatcher: startWatchers,
         ),
         isA<Ok>(),
       );
@@ -196,6 +209,61 @@ void main() {
         registry.close();
       }
     }
+
+    test('PIN protection defers Silent Payments and swap watchers', () async {
+      final pin = DateTime.now().microsecondsSinceEpoch.toString();
+      expect(
+        await inventoryFixture.inventory.setCredential(
+          pin,
+          backupVerification: inventoryFixture.backup,
+        ),
+        isA<Ok>(),
+      );
+      inventoryFixture.inventory.lock();
+      await compose(startWatchers: true);
+
+      expect(locator.checkLazySingletonInstanceExists<SpTipWatcher>(), isFalse);
+      expect(
+        locator.checkLazySingletonInstanceExists<SpElectrumReconnectWatcher>(),
+        isFalse,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
+        isFalse,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
+        isFalse,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<SwapEngineSwitcher>(),
+        isFalse,
+      );
+
+      expect(
+        (await inventoryFixture.inventory.unlock(pin))
+            .fold((value) => value.accepted, (_) => false),
+        isTrue,
+      );
+      await locator<ForegroundWalletStartup>().start();
+      expect(locator.checkLazySingletonInstanceExists<SpTipWatcher>(), isTrue);
+      expect(
+        locator.checkLazySingletonInstanceExists<SpElectrumReconnectWatcher>(),
+        isTrue,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<OrderSwapWatcher>(),
+        isTrue,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<AutoswapWatcher>(),
+        isTrue,
+      );
+      expect(
+        locator.checkLazySingletonInstanceExists<SwapEngineSwitcher>(),
+        isTrue,
+      );
+    });
 
     test('profile initialization cannot recreate a lost registry over surviving custody', () async {
       final funding = sourceOk(
@@ -418,6 +486,7 @@ void main() {
       );
       expect(result, isA<Ok>());
       composed = true;
+      await locator<ForegroundWalletStartup>().start();
       expect(nativeTor.calls, 1);
       expect(locator<WalletRepository>(), isA<WalletRepository>());
       final wallets = locator<WalletFacade>();
