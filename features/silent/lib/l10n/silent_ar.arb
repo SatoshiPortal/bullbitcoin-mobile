@@ -1,0 +1,60 @@
+{
+  "@@locale": "ar",
+  "save": "أنقذ",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "نسخ",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "تحذف",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "صفقات النقل.",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR Code",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "إلغاء",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "معلقة",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "أمس",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "اليوم",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "المبلغ",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "انقر للنسخ",
+  "viewerViewInExplorer": "عرض في المستكشف",
+  "transactionViewerTitle": "معرف المعاملة",
+  "viewerCopyLink": "انسخ الرابط",
+  "coinsTitle": "العملات",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "تم النسخ إلى الحافظة"
+}

@@ -1,0 +1,60 @@
+{
+  "@@locale": "cs",
+  "save": "Čeština",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "copyDialogButton": "Čeština",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "delete": "Čeština",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "retry": "Hledat",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionListLoadingTransactions": "Vkládání transakcí...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "receiveQRCode": "QR kód",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "Hledat",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "transactionStatusPending": "Čeština",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "transactionListYesterday": "Včera",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionListToday": "Dnes",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "amountLabel": "Množství",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "viewerCopyLink": "Kopírovat odkaz",
+  "coinsTitle": "Mince",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "Zkopírováno do schránky"
+}

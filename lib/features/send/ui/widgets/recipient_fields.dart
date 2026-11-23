@@ -1,3 +1,4 @@
+import 'package:silent/localizations.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
@@ -66,8 +67,8 @@ class RecipientAddressFields extends StatelessWidget {
               onChanged: (value) =>
                   onAddressChanged(recipients[index].id, value),
               pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
-              scanLabel: context.loc.spScan,
-              clearLabel: context.loc.spClearButton,
+              scanLabel: context.silentLoc.silentScan,
+              clearLabel: context.silentLoc.silentClearButton,
               removeLabel: context.loc.sendRemoveRecipient,
               onRemove: () => onRemoveRecipient(recipients[index].id),
               onClear: () => onAddressChanged(recipients[index].id, ''),

@@ -19,7 +19,8 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
+import 'package:silent/localizations.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -211,6 +212,7 @@ List<SettingsItem> buildSettingsItems({
   required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
+  final silent = silentCopy(localization.localeName);
   final feeSourceTitle = FeesNavigation.settingsTitle(localization.localeName);
   final arkTitle = arkLocalizationsForLanguage(localization.localeName).title;
   final rootSection = localization.settingsScreenTitle;
@@ -623,18 +625,17 @@ List<SettingsItem> buildSettingsItems({
         id: SettingsItemId.sp,
         section: SettingsItemSection.wallet,
         title: isSpWalletSetup
-            ? localization.spSettingsTitle
-            : localization.spSetupTitle,
+            ? silent.silentSettingsTitle
+            : silent.silentSetupTitle,
         path: path(
           SettingsItemSection.wallet,
           isSpWalletSetup
-              ? localization.spSettingsTitle
-              : localization.spSetupTitle,
+              ? silent.silentSettingsTitle
+              : silent.silentSetupTitle,
         ),
         icon: isSpWalletSetup ? Icons.currency_bitcoin : Icons.science,
-        open: (context) => context.pushNamed(
-          isSpWalletSetup ? SpRoute.spSettings.name : SpSetupRoute.spSetup.name,
-        ),
+        open: (context) =>
+            SilentNavigation.openSettings(context, isSetUp: isSpWalletSetup),
         isSuperuser: true,
       ),
     SettingsItem(

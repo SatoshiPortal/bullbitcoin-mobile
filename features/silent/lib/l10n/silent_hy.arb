@@ -1,0 +1,24 @@
+{
+  "@@locale": "hy",
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "viewerTapToCopy": "Հպեք պատճենելու համար",
+  "viewerViewInExplorer": "Դիտել հետախույզում",
+  "viewerCopyLink": "Պատճենել հղումը",
+  "transactionViewerTitle": "Գործարքի նույնացուցիչ",
+  "coinsTitle": "Մետաղադրամներ",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "retry": "Կրկին փորձել",
+  "transactionStatusPending": "Սպասման մեջ",
+  "transactionListLoadingTransactions": "Գործարքները բեռնվում են...",
+  "transactionListToday": "Այսօր",
+  "transactionListYesterday": "Երեկ",
+  "copyDialogButton": "Պատճենել",
+  "amountLabel": "Գումար",
+  "receiveQRCode": "QR կոդ",
+  "cancel": "Չեղարկել",
+  "delete": "Ջնջել",
+  "save": "Պահպանել",
+  "copiedToClipboard": "Պատճենվեց սեղմատախտակին"
+}

@@ -1,0 +1,105 @@
+import 'package:bull_ui/bull_ui.dart';
+import 'package:primitives/primitives.dart' show FormatAmount, StringFormatting;
+import 'package:silent/src/presentation/silent_l10n.dart';
+import 'package:silent/src/domain/entities/sp_coin.dart';
+import 'package:silent/src/presentation/sp_cubit.dart';
+import 'package:silent/src/presentation/sp_state.dart';
+import 'package:silent/src/presentation/sp_coin_source_l10n.dart';
+import 'package:silent/src/ui/widgets/sp_badge.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class SpCoinsScreen extends StatelessWidget {
+  const SpCoinsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: Text(
+          context.silentLoc.coinsTitle,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: BlocBuilder<SpCubit, SpState>(
+          builder: (context, state) {
+            final coins = state.coins;
+            if (coins.isEmpty) {
+              return Center(
+                child: Text(
+                  context.silentLoc.silentCoinsEmpty,
+                  style: context.bullType.body.copyWith(
+                    color: context.bull.textMuted,
+                  ),
+                ),
+              );
+            }
+            return ListView.builder(
+              itemCount: coins.length,
+              itemBuilder: (context, i) => _SpCoinTile(coin: coins[i]),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _SpCoinTile extends StatelessWidget {
+  const _SpCoinTile({required this.coin});
+  final SpCoin coin;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = coin.source.sourceColor(context);
+    return ListTile(
+      leading: SpBadge(label: coin.source.shortLabel(context), color: color),
+      title: Text(FormatAmount.sats(coin.amountSat.value.toInt())),
+      subtitle: Text(
+        context.silentLoc.silentCoinSubtitle(
+          StringFormatting.truncateMiddle(
+            '${coin.outpoint.txId}:${coin.outpoint.vout}',
+            head: 10,
+            tail: 8,
+            placeholder: '…',
+          ),
+          coin.height != null
+              ? context.silentLoc.silentBlockLabel('${coin.height}')
+              : context.silentLoc.silentUnconfirmed,
+        ),
+        style: context.bullType.label
+            .copyWith(fontWeight: FontWeight.w400)
+            .copyWith(color: context.bull.textMuted),
+      ),
+      trailing: _statusIcon(context, coin.status),
+    );
+  }
+
+  Widget _statusIcon(BuildContext context, SpCoinStatus status) {
+    final (icon, color, tooltip) = switch (status) {
+      SpCoinStatus.unconfirmed => (
+        Icons.schedule,
+        context.bull.textMuted,
+        context.silentLoc.silentUnconfirmed,
+      ),
+      SpCoinStatus.unspent => (
+        Icons.check_circle,
+        context.bull.success,
+        context.silentLoc.silentCoinStatusUnspent,
+      ),
+      SpCoinStatus.spent => (
+        Icons.remove_circle,
+        context.bull.textMuted,
+        context.silentLoc.silentCoinStatusSpent,
+      ),
+    };
+    return Tooltip(
+      message: tooltip,
+      child: Icon(icon, color: color),
+    );
+  }
+}

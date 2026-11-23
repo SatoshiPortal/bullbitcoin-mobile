@@ -81,6 +81,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
@@ -307,7 +308,7 @@ class SendCubit extends Cubit<SendState>
   final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
 
-  SpTxDraft? _spDraft;
+  SilentTxDraft? _spDraft;
   final ResolveSelectedInputsUsecase _resolveSelectedInputsUsecase;
   final ValidateCoinControlPaymentRequestUsecase
   _validateCoinControlPaymentRequestUsecase;
@@ -2374,7 +2375,8 @@ class SendCubit extends Cubit<SendState>
     // SP has no bitcoin wallet to run hasBalance() against, so the amount is
     // checked here instead: before the build, so an obviously bad amount is
     // reported as such rather than as a generic prepare() failure.
-    if (isSpMode && !_confirmSpAmount()) return;
+    if (isSpMode && !await _confirmSpAmount()) return;
+    if (isClosed) return;
     if (state.usesRecipientList) {
       if (!state.hasValidRecipientDrafts) {
         emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
@@ -4433,10 +4435,19 @@ class SendCubit extends Cubit<SendState>
 
   /// True when the amount may go on to the SP build. Rust `prepare()` stays the
   /// authority on fee-inclusive feasibility.
-  bool _confirmSpAmount() {
-    final result = _validateSpAmountForSendUsecase.execute(
-      Sats.fromInt(state.inputAmountSat),
+  Future<bool> _confirmSpAmount() async {
+    final amount = state.inputAmountSat;
+    final previewEpoch = _bitcoinPreviewEpoch;
+    final recipientGeneration = _paymentRequestInputGeneration;
+    final result = await _validateSpAmountForSendUsecase.execute(
+      Sats.fromInt(amount),
     );
+    if (isClosed ||
+        state.inputAmountSat != amount ||
+        _bitcoinPreviewEpoch != previewEpoch ||
+        _paymentRequestInputGeneration != recipientGeneration) {
+      return false;
+    }
     if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure, amountConfirmedClicked: false));
       return false;
@@ -4459,7 +4470,9 @@ class SendCubit extends Cubit<SendState>
     // first and stop on a failure. Guessing mainnet here would show a testnet
     // wallet a mainnet request.
     final Network network;
-    switch (_getSpNetworkForSendUsecase.execute()) {
+    final networkResult = await _getSpNetworkForSendUsecase.execute();
+    if (isStale()) return;
+    switch (networkResult) {
       case Ok(value: final value):
         network = value;
       case Err(failure: final failure):
@@ -4517,7 +4530,7 @@ class SendCubit extends Cubit<SendState>
       isMax: state.sendMax,
     );
     if (isClosed || generation != _transactionGeneration) return;
-    final SpRecipient recipient;
+    final SilentRecipient recipient;
     switch (validated) {
       case Ok(value: final value):
         recipient = value;

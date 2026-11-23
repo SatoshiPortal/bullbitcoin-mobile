@@ -42,6 +42,7 @@ lib/generated
 localization*.dart
 # Hand-maintained standalone design delegates and their regression coverage.
 !lib/localizations.dart
+!/features/silent/lib/localizations.dart
 !test/localizations_test.dart
 untranslated-messages.txt
 
@@ -130,3 +131,4 @@ bull_logs.tsv
 /features/network/lib/generated/l10n/
 /features/fees/lib/generated/l10n/
 /features/fees/untranslated-messages.txt
+/features/silent/lib/generated/l10n/

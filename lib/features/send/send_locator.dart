@@ -75,7 +75,7 @@ import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send
 import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:silent/silent.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
@@ -212,25 +212,25 @@ class SendLocator {
       ),
     );
     locator.registerFactory<ValidateSpRecipientForSendUsecase>(
-      () => ValidateSpRecipientForSendUsecase(locator<SpFacade>()),
+      () => ValidateSpRecipientForSendUsecase(locator<Silent>()),
     );
     locator.registerFactory<ValidateSpAmountForSendUsecase>(
-      () => ValidateSpAmountForSendUsecase(locator<SpFacade>()),
+      () => ValidateSpAmountForSendUsecase(locator<Silent>()),
     );
     locator.registerFactory<GetSpNetworkForSendUsecase>(
-      () => GetSpNetworkForSendUsecase(locator<SpFacade>()),
+      () => GetSpNetworkForSendUsecase(locator<Silent>()),
     );
     locator.registerFactory<PrepareSpPaymentForSendUsecase>(
-      () => PrepareSpPaymentForSendUsecase(locator<SpFacade>()),
+      () => PrepareSpPaymentForSendUsecase(locator<Silent>()),
     );
     locator.registerFactory<RefreshSpWalletForSendUsecase>(
       () => RefreshSpWalletForSendUsecase(
-        locator<SpFacade>(),
+        locator<Silent>(),
         locator<GetSpNetworkForSendUsecase>(),
       ),
     );
     locator.registerFactory<SendSpPaymentForSendUsecase>(
-      () => SendSpPaymentForSendUsecase(locator<SpFacade>()),
+      () => SendSpPaymentForSendUsecase(locator<Silent>()),
     );
     locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
       () => VerifyChainSwapAmountSendUsecase(

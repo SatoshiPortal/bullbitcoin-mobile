@@ -1,0 +1,45 @@
+{
+  "@@locale": "as",
+  "retry": "পুনৰ চেষ্টা কৰক",
+  "transactionStatusPending": "অপেক্ষাৰত",
+  "transactionListLoadingTransactions": "লেনদেন লোড হৈ আছে...",
+  "transactionListToday": "আজি",
+  "transactionListYesterday": "কালি",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "copyDialogButton": "কপি কৰক",
+  "@copyDialogButton": {
+    "description": "Button in modal dialog to copy value to clipboard"
+  },
+  "amountLabel": "পৰিমাণ",
+  "@amountLabel": {
+    "description": "Label for transaction amount display"
+  },
+  "receiveQRCode": "QR কোড",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "cancel": "বাতিল কৰক",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "মচক",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "save": "সংৰক্ষণ কৰক",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "viewerTapToCopy": "কপি কৰিবলৈ টিপক",
+  "viewerViewInExplorer": "এক্সপ্ল 'ৰাৰত দৰ্শন কৰক",
+  "transactionViewerTitle": "লেনদেন আইডি",
+  "viewerCopyLink": "লিংক কপি কৰক",
+  "coinsTitle": "কইন",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে"
+}

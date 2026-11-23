@@ -18,6 +18,7 @@ workspace:
   - features/network
   - features/signers
   - features/access
+  - features/silent
   - features/ark
   - features/fees
   - packages/fees
@@ -65,6 +66,7 @@ dependencies:
   label_editor:
   network:
   signers:
+  silent:
   ark:
   bull_ark:
   fees:
