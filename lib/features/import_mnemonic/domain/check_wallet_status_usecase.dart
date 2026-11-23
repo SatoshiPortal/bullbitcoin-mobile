@@ -11,7 +11,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' as sync;
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 /// Scans the chain for a mnemonic that is not imported yet, for several script types.

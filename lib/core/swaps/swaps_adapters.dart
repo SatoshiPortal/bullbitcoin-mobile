@@ -2,7 +2,7 @@ import 'package:preferences/preferences.dart' as settings;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:preferences/preferences.dart';

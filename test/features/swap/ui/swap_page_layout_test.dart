@@ -5,7 +5,7 @@ import 'package:bull_ui/bull_ui.dart'
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show SignerEntity;
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';

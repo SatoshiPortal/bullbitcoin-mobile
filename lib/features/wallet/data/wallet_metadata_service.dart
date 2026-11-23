@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';

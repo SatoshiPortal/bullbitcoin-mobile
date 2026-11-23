@@ -30,7 +30,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart'
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart'
     show BroadcastTransactionException;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';

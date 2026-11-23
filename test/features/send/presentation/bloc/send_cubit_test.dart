@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart' show debugPrint;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_exceptions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/legacy_exceptions.dart';
 import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart';
