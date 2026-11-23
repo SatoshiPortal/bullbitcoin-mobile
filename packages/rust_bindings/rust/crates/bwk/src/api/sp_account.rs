@@ -1638,6 +1638,44 @@ mod tests {
 
     const TEST_MNEMONIC: &str = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 
+    #[test]
+    fn legacy_mainnet_scan_state_stays_within_the_blindbit_range() {
+        let dir = tempdir().unwrap();
+        let config = SpConfig::new(
+            "legacy".into(),
+            Network::Bitcoin,
+            TEST_MNEMONIC.into(),
+            "http://localhost:3000".into(),
+            dir.path().to_path_buf(),
+        )
+        .with_persistence(Some(bwk::persist::PersistenceKind::Sqlite));
+        let floor = MAINNET_SCAN_MINIMUM;
+        let legacy_birthday = floor - 24;
+        {
+            let backend =
+                bwk::persist::build_backend(config.persistence, config.account_dir()).unwrap();
+            let mut state = ScanState::load_from_backend(legacy_birthday, backend).unwrap();
+            state.advance_frontier(floor - 2, [1; 32]);
+            state.advance_frontier(floor - 1, [2; 32]);
+            state.advance_frontier(floor, [3; 32]);
+            state.advance_spend_frontier(floor - 3);
+            state.try_persist().unwrap();
+        }
+        for _ in 0..2 {
+            prepare_mainnet_scan_floor(&config).unwrap();
+            let backend =
+                bwk::persist::build_backend(config.persistence, config.account_dir()).unwrap();
+            let state = ScanState::load_from_backend(floor, backend).unwrap();
+            assert_eq!(state.birthday_height(), legacy_birthday);
+            assert_eq!(state.last_scanned_height(), Some(floor));
+            assert_eq!(state.next_spend_start(), floor);
+            assert_eq!(
+                state.block_hashes().into_iter().collect::<Vec<_>>(),
+                [(floor, [3; 32])]
+            );
+        }
+    }
+
     fn test_bitcoin_address(network: Network) -> String {
         let secp = Secp256k1::new();
         let secret = SecretKey::from_slice(&[1u8; 32]).expect("valid secret key");
