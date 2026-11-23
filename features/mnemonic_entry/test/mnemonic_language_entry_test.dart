@@ -1,5 +1,3 @@
-import 'package:wallet_import/src/ui/mnemonic_widget.dart' show MnemonicWord;
-
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';

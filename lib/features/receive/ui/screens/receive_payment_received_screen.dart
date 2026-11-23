@@ -2,7 +2,7 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
@@ -107,31 +107,35 @@ class ReceiveDetailsButton extends StatelessWidget {
           final target = receiveDetailsTarget(
             context.read<ReceiveBloc>().state,
           );
-          switch (target?.kind) {
+          if (target == null) return;
+          switch (target.kind) {
             case ReceiveDetailsTargetKind.walletTransaction:
-              context.pushNamed(
-                TransactionsRoute.transactionDetails.name,
-                pathParameters: {'txId': target!.id},
-                queryParameters: {'walletId': target.walletId},
-              );
+              if (target.walletId case final walletId?) {
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.wallet(
+                    target.id,
+                    walletId: walletId,
+                  ),
+                );
+              }
             case ReceiveDetailsTargetKind.orderSwap:
-              context.pushNamed(
-                TransactionsRoute.orderSwapTransactionDetails.name,
-                pathParameters: {'localId': target!.id},
+              TransactionsNavigation.openDetails(
+                context,
+                TransactionDetailsTarget.orderSwap(target.id),
               );
             case ReceiveDetailsTargetKind.swap:
-              context.pushNamed(
-                TransactionsRoute.swapTransactionDetails.name,
-                pathParameters: {'swapId': target!.id},
-                queryParameters: {'walletId': target.walletId},
-              );
+              if (target.walletId case final walletId?) {
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.swap(target.id, walletId: walletId),
+                );
+              }
             case ReceiveDetailsTargetKind.payjoin:
-              context.pushNamed(
-                TransactionsRoute.payjoinTransactionDetails.name,
-                pathParameters: {'payjoinId': target!.id},
+              TransactionsNavigation.openDetails(
+                context,
+                TransactionDetailsTarget.payjoin(target.id),
               );
-            case null:
-              break;
           }
         },
       ),

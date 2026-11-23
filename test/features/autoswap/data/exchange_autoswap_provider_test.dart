@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' show SignerEntity;

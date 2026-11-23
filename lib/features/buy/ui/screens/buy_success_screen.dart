@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/buy/domain/buy_payjoin_window.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -146,9 +146,9 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
         BullButton.secondary(
           label: context.loc.buyViewDetails,
           onPressed: () {
-            context.pushNamed(
-              TransactionsRoute.orderTransactionDetails.name,
-              pathParameters: {'orderId': buyOrder.orderId},
+            TransactionsNavigation.openDetails(
+              context,
+              TransactionDetailsTarget.order(buyOrder.orderId),
             );
           },
         ),

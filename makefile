@@ -135,7 +135,7 @@ onion-codegen:
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
 DRIFT_OWNER_PACKAGES := packages/legacy_storage packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
-BUILD_RUNNER_MEMBERS := features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent
+BUILD_RUNNER_MEMBERS := features/transactions features/access features/bip85 features/all_seed_view features/fees features/swap packages/fees features/announcements features/bitcoin_price features/bull_exchange features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor packages/exchange features/silent
 BUILD_RUNNER_WATCH_MEMBERS := features/fees features/swap packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps
 
 .PHONY: drift-owners-build
@@ -178,6 +178,7 @@ translations:
 	@(cd features/silent && fvm flutter gen-l10n)
 	@(cd features/swap && fvm flutter gen-l10n)
 	@(cd features/wallet_import && fvm flutter gen-l10n)
+	@(cd features/transactions && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
 	@(cd features/network && fvm flutter gen-l10n)

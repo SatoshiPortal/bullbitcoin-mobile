@@ -2,7 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -46,16 +46,16 @@ class PaySuccessScreen extends StatelessWidget {
             onPressed: () {
               final txId = order.payjoin?.txid;
               if (txId != null) {
-                context.pushNamed(
-                  TransactionsRoute.payjoinTransactionDetailsByTxId.name,
-                  pathParameters: {'txId': txId},
-                  queryParameters: {'returnToExchange': 'true'},
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.payjoinByTxId(txId),
+                  returnToExchange: true,
                 );
               } else {
-                context.pushNamed(
-                  TransactionsRoute.orderTransactionDetails.name,
-                  pathParameters: {'orderId': order.orderId},
-                  queryParameters: {'returnToExchange': 'true'},
+                TransactionsNavigation.openDetails(
+                  context,
+                  TransactionDetailsTarget.order(order.orderId),
+                  returnToExchange: true,
                 );
               }
             },

@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
@@ -161,8 +161,7 @@ class ReceiveLocator {
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
-        watchWalletTransactionByAddressUsecase:
-            locator<WatchWalletTransactionByAddressUsecase>(),
+        transactions: locator<Transactions>(),
         watchReceiveOrderSwapUsecase: locator<WatchReceiveOrderSwapUsecase>(),
         loadReceiveAddressLabelUsecase:
             locator<LoadReceiveAddressLabelUsecase>(),

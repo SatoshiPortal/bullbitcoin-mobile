@@ -1,9 +1,6 @@
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:primitives/primitives.dart';
+import 'package:transactions/testing.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,7 +12,7 @@ WalletTransaction _walletTransaction({
 }) {
   return WalletTransaction(
     walletId: 'wallet-1',
-    network: Network.bitcoinMainnet,
+    network: BitcoinNetwork.mainnet,
     direction: WalletTransactionDirection.incoming,
     status: WalletTransactionStatus.confirmed,
     txId: txId,

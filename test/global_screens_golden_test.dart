@@ -9,14 +9,13 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -113,13 +112,6 @@ void main() {
         when(() => transactions.stream).thenAnswer((_) => const Stream.empty());
         when(() => transactions.loadTxs()).thenAnswer((_) async {});
         when(() => transactions.close()).thenAnswer((_) async {});
-        if (scene == 'wallet') {
-          expect(locator.isRegistered<TransactionsCubit>(), isFalse);
-          locator.registerFactoryParam<TransactionsCubit, String, void>(
-            (_, _) => transactions,
-          );
-          addTearDown(() => locator.unregister<TransactionsCubit>());
-        }
         final actions = createQuickActionsCubit(
           storage: _MemoryActions(),
           warning: (_) {},
@@ -157,6 +149,11 @@ void main() {
                   'settings' => const AppSettingsScreen(),
                   'wallet' => WalletDetailScreen(
                     walletId: wallet.id,
+                    scopeWalletHistory: (_, child) =>
+                        BlocProvider<TransactionsCubit>.value(
+                          value: transactions,
+                          child: child,
+                        ),
                     onOpenCoins: (_, _) async {},
                     loadCoinSummary: (_) async => const Err(CoinsLoadFailure()),
                   ),

@@ -197,6 +197,7 @@ graph TB
     SEND --> LABEL_EDITOR
     RECEIVE --> LABEL_EDITOR
     TX_HISTORY --> LABEL_EDITOR
+    TX_HISTORY --> BTC_PRICE
     SETTINGS --> LABEL_EDITOR
     TOR[Tor<br/>Workspace Package]
     ACCESS[Access<br/>Workspace Feature]
@@ -250,7 +251,7 @@ graph TB
     SCANNING --> BULL_UI
     RECEIVE[Receive]
     TRANSFER[Transfer]
-    TX_HISTORY[Transaction History]
+    TX_HISTORY[Transactions<br/>Workspace Feature]
     REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
     DCA[DCA]
@@ -310,6 +311,7 @@ graph TB
     RECEIVE --> SWAPS_PKG
     AUTOSWAP --> SWAPS_PKG
     TX_HISTORY --> SWAPS_PKG
+    SWAPS_PKG --> SYNC
     WALLETS --> SWAPS_PKG
     SETTINGS --> SWAPS_PKG
     ALL_SEED_VIEW --> SWAPS_PKG
@@ -493,8 +495,9 @@ graph TB
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
-    TX_HISTORY --> SWAPS
-    TX_HISTORY -->|public revisions, raw sync finishes and pass activity| WALLETS
+    TX_HISTORY -->|wallet history projections and revisions| SYNC
+    WALLETS -->|wallet detail history widgets| TX_HISTORY
+    SWAPS -->|wallet transaction evidence| TX_HISTORY
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> CONSOLIDATION
@@ -525,7 +528,6 @@ graph TB
     CONSOLIDATION --> SEND
     EXCHANGE -->|supplies shared destination validation and input| WALLETS
     WALLETS --> FEES_PACKAGE
-    TX_HISTORY --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
     PAY --> FEES_PACKAGE
     SELL --> FEES_PACKAGE
@@ -544,7 +546,6 @@ graph TB
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> FEES_UI
-    TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
 
 
@@ -772,7 +773,7 @@ Spend preparation consumers resolve a `WalletKey` and call the Result-returning 
 
 ### Wallet reader ownership
 
-Sync publishes the wallet-relative native values and address usage. Address View derives and enriches addresses and retains the native issued-index watermark. Address View also supplies the common receive-address read, and Receive owns its flow-specific address decisions. Coins consumes the published coin and freeze state and enriches the coins with labels. Transactions owns application history, including environment selection, optional direct sync, wallet-relative presentation values and labels. Import previews use Sync's descriptor scan directly. Send assembles spend requests, delegates native operations to Sync and requests software signatures from Secrets after protocol admission. Hardware signing stays with Signers.
+Sync publishes the wallet-relative native values and address usage. Address View derives and enriches addresses and retains the native issued-index watermark. Address View also supplies the common receive-address read, and Receive owns its flow-specific address decisions. Coins consumes the published coin and freeze state and enriches the coins with labels. The Transactions feature owns application history, including environment selection, wallet-relative presentation values and labels. It reads the live Secrets inventory, Sync projections, Payjoin sessions and Exchange orders. The shell supplies foreground sync activity and navigation for actions owned by other features. Import previews use Sync's descriptor scan directly. Send assembles spend requests, delegates native operations to Sync and requests software signatures from Secrets after protocol admission. Hardware signing stays with Signers.
 
 The app owners still use the legacy catalog to resolve identity and access native handles. Shared application consumers now point to the address, coins, receive and transaction owners for the relocated rules and types. Existing composition and route dependencies remain until the catalog and feature extractions replace them.
 

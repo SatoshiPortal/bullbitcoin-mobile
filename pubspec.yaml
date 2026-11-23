@@ -25,6 +25,7 @@ workspace:
   - features/all_seed_view
   - features/bip85
   - features/silent
+  - features/transactions
   - features/ark
   - features/fees
   - features/swap
@@ -193,6 +194,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.26.0
+  transactions:
 
 dev_dependencies:
   file_picker: ^13.3.3

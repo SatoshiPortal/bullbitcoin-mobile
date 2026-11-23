@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: transactions_en.arb
+output-localization-file: transactions_localizations.dart
+output-class: TransactionsLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false

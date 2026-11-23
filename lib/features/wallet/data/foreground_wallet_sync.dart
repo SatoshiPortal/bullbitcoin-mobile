@@ -31,31 +31,52 @@ final class ForegroundWalletSync {
       case Err():
         throw const WalletStorageFailure('Invalid sync descriptor');
       case Ok(:final value):
-        await _native?.initialize();
-        var result = await _sync.execute(
-          value,
-          discover: discover,
-          allowInitialScan: allowInitialScan,
-          reason: reason,
-        );
-        final native = _native;
-        if (result case Err(failure: SyncNeedsRepairFailure())
-            when native != null) {
-          WalletSyncBinding.value(await native.repair(value.key));
-          result = await _sync.execute(
+        WalletSyncBinding.value(
+          await synchronizeDescriptor(
             value,
             discover: discover,
             allowInitialScan: allowInitialScan,
             reason: reason,
-          );
-        }
-        if (native != null) {
-          WalletSyncBinding.value(await native.refresh(value.key));
-        }
-        if (result case Err(:final failure)) {
-          // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.
-          throw WalletSnapshotException(failure);
-        }
+          ),
+        );
     }
+  }
+
+  Future<Result<void, SyncFailure>> synchronizeDescriptor(
+    PublicWalletDescriptor descriptor, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
+  }) async {
+    final native = _native;
+    if (native != null) {
+      if (await native.initialize() case Err(:final failure)) {
+        return Err(failure);
+      }
+    }
+    var result = await _sync.execute(
+      descriptor,
+      discover: discover,
+      allowInitialScan: allowInitialScan,
+      reason: reason,
+    );
+    if (result case Err(failure: SyncNeedsRepairFailure())
+        when native != null) {
+      if (await native.repair(descriptor.key) case Err(:final failure)) {
+        return Err(failure);
+      }
+      result = await _sync.execute(
+        descriptor,
+        discover: discover,
+        allowInitialScan: allowInitialScan,
+        reason: reason,
+      );
+    }
+    if (native != null) {
+      if (await native.refresh(descriptor.key) case Err(:final failure)) {
+        return Err(failure);
+      }
+    }
+    return result.map((_) {});
   }
 }

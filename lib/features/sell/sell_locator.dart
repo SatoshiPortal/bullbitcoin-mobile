@@ -35,7 +35,7 @@ import 'package:bb_mobile/features/sell/domain/usecases/watch_payjoin_usecase.da
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/transactions/transactions_facade.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
@@ -135,7 +135,7 @@ class SellLocator {
 
     locator.registerFactory<LabelCompletedSellOrderUsecase>(
       () => LabelCompletedSellOrderUsecase(
-        transactionsFacade: locator<TransactionsFacade>(),
+        transactionsFacade: locator<Transactions>(),
       ),
     );
 

@@ -1,24 +1,13 @@
 import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:primitives/primitives.dart' show BitcoinNetwork, BitcoinUnit;
 
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,12 +27,6 @@ class _OrderSwaps extends Fake implements GetTransactionOrderSwapsUsecase {}
 
 class _Labels extends Fake implements RefreshTransactionLabelsUsecase {}
 
-class _Started extends Mock implements WatchStartedWalletSyncsUsecase {}
-
-class _Finished extends Mock implements WatchFinishedWalletSyncsUsecase {}
-
-class _Wallet extends Fake implements Wallet {}
-
 class _History extends Fake implements WalletTransactionRepository {
   int reads = 0;
   final walletIds = <String?>[];
@@ -51,7 +34,8 @@ class _History extends Fake implements WalletTransactionRepository {
   bool fail = false;
 
   @override
-  Future<List<WalletTransaction>> getWalletTransactions({
+  Future<Result<List<WalletTransaction>, TransactionFailure>>
+  getWalletTransactions({
     String? txId,
     String? walletId,
     String? toAddress,
@@ -61,21 +45,19 @@ class _History extends Fake implements WalletTransactionRepository {
     walletIds.add(walletId);
     reads++;
     await pending?.future;
-    if (fail) throw Exception('synthetic read failure');
-    return [];
+    if (fail) return const Err(TransactionAggregationFailure());
+    return const Ok([]);
   }
 }
 
 class _Harness {
   final history = _History();
-  final finishes = StreamController<Wallet>.broadcast();
+  final finishes = StreamController<String>.broadcast();
   final revisions = StreamController<WalletRevisionState>.broadcast();
   late final TransactionsCubit cubit;
 
   _Harness({bool global = false}) {
     final settings = _Settings();
-    final started = _Started();
-    final finished = _Finished();
     when(settings.fetch).thenAnswer(
       (_) async => Ok(
         const SettingsEntity(
@@ -85,10 +67,6 @@ class _Harness {
         ),
       ),
     );
-    when(() => started.execute(walletId: 'wallet-a'))
-        .thenAnswer((_) => const Stream.empty());
-    when(() => finished.execute(walletId: 'wallet-a'))
-        .thenAnswer((_) => finishes.stream);
     cubit = TransactionsCubit(
       walletId: global ? null : 'wallet-a',
       getTransactionsUsecase: GetTransactionsUsecase(
@@ -101,13 +79,13 @@ class _Harness {
         getTransactionOrderSwapsUsecase: _OrderSwaps(),
       ),
       refreshTransactionLabelsUsecase: _Labels(),
-      watchStartedWalletSyncsUsecase: started,
-      watchFinishedWalletSyncsUsecase: finished,
+      watchStartedWalletSyncsUsecase: const Stream.empty(),
+      watchFinishedWalletSyncsUsecase: finishes.stream,
       watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(
-        WalletFacade(revisions.stream),
+        walletHistoryEvents(revisions.stream),
       ),
       watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-        WalletFacade(revisions.stream),
+        walletHistoryEvents(revisions.stream),
       ),
     );
   }
@@ -136,7 +114,7 @@ void main() {
   ) async {
     final h = _Harness();
     addTearDown(h.close);
-    h.finishes.add(_Wallet());
+    h.finishes.add('wallet-a');
     h.revision(1);
     await tester.pump();
     await h.cubit.loadTxs();
@@ -191,13 +169,13 @@ void main() {
     final h = _Harness();
     addTearDown(h.close);
     h.history.fail = true;
-    h.finishes.add(_Wallet());
+    h.finishes.add('wallet-a');
     await tester.pump();
     await tester.pump(const Duration(seconds: 4));
     expect(h.history.reads, 1);
     expect(h.cubit.state.failure, isNotNull);
     h.history.fail = false;
-    h.finishes.add(_Wallet());
+    h.finishes.add('wallet-a');
     await tester.pump();
     await tester.pump(const Duration(seconds: 4));
     expect(h.history.reads, 2);
@@ -213,7 +191,7 @@ void main() {
       final h = _Harness();
       addTearDown(h.close);
       h.cubit.deferReloads();
-      h.finishes.add(_Wallet());
+      h.finishes.add('wallet-a');
       h.revision(1);
       await tester.pump();
       await tester.pump(const Duration(seconds: 8));
@@ -234,7 +212,7 @@ void main() {
     final initial = h.cubit.loadTxs();
     await tester.pump();
     h.cubit.deferReloads();
-    h.finishes.add(_Wallet());
+    h.finishes.add('wallet-a');
     h.revision(1);
     await tester.pump();
     final settled = h.cubit.resumeReloads();

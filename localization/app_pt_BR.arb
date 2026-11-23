@@ -54,10 +54,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "transactionDetailLabelTransactionFee": "Taxa de transação",
-  "@transactionDetailLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
   "fundExchangeMethodRegularSepa": "SEPA regular",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -123,10 +119,6 @@
   "receiveGenerateAddress": "Gerar novo endereço",
   "@receiveGenerateAddress": {
     "description": "Button to create new on-chain address"
-  },
-  "transactionLabelPreimage": "Preimagem",
-  "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
   },
   "sellPaymentMethod": "Método de pagamento",
   "@sellPaymentMethod": {
@@ -196,10 +188,6 @@
   "exchangeStatisticsBuySellRatio": "Relação de compra/venda",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
-  },
-  "transactionDetailLabelConfirmationTime": "Tempo de confirmação",
-  "@transactionDetailLabelConfirmationTime": {
-    "description": "Label for confirmation time"
   },
   "fundExchangeCanadaPostStep5": "5. Pague com dinheiro ou cartão de débito",
   "@fundExchangeCanadaPostStep5": {
@@ -336,10 +324,6 @@
   "backupInstruction4": "Não faça cópias digitais de seu backup. Escreva-o em um pedaço de papel, ou gravado em metal.",
   "@backupInstruction4": {
     "description": "Fourth backup instruction about not making digital copies"
-  },
-  "coreWalletTransactionStatusPending": "Pendente",
-  "@coreWalletTransactionStatusPending": {
-    "description": "Display name for pending wallet transaction status"
   },
   "transactionNetworkLightning": "Luz",
   "@transactionNetworkLightning": {
@@ -569,10 +553,6 @@
   "@fundExchangeSepaDescription": {
     "description": "Description for SEPA transfer (first part, before 'exactly')"
   },
-  "transactionStatusPaymentRefunded": "Pagamento Reembolsado",
-  "@transactionStatusPaymentRefunded": {
-    "description": "Status label for refunded payments"
-  },
   "allSeedViewIUnderstandButton": "Eu compreendo",
   "@allSeedViewIUnderstandButton": {
     "description": "Button label to acknowledge security warning"
@@ -626,10 +606,6 @@
   "receiveSelectNetwork": "Selecione Rede",
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
-  },
-  "buyTitle": "Comprar Bitcoin",
-  "@buyTitle": {
-    "description": "Screen title for buying Bitcoin"
   },
   "payEstimatedFee": "Taxa estimada",
   "@payEstimatedFee": {
@@ -1102,10 +1078,6 @@
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
   },
-  "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
-  "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
-  },
   "physicalBackupTitle": "Backup físico",
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
@@ -1117,10 +1089,6 @@
   "payInvalidState": "Estado inválido",
   "@payInvalidState": {
     "description": "Error message for invalid state"
-  },
-  "transactionFilterAll": "Todos",
-  "@transactionFilterAll": {
-    "description": "Filter option to show all transactions"
   },
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Este número de conta única é criado apenas para você",
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
@@ -1174,10 +1142,6 @@
   "@loginButton": {
     "description": "Button to navigate to login screen"
   },
-  "transactionDetailLabelAmountReceived": "Montante recebido",
-  "@transactionDetailLabelAmountReceived": {
-    "description": "Label for amount received"
-  },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1205,10 +1169,6 @@
   "sendServerNetworkFees": "Taxas de rede do servidor",
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
-  },
-  "transactionLabelReceiveAmount": "Receber valor",
-  "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
   },
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {
@@ -1361,14 +1321,6 @@
   "@broadcastSignedTxDoneButton": {
     "description": "Button to finish after successful broadcast"
   },
-  "transactionDetailAccelerate": "Acelerar",
-  "@transactionDetailAccelerate": {
-    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
-  },
-  "transactionListNoTransactions": "Ainda não há transações.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "sendSignWithBitBox": "Sinal com BitBox",
   "@sendSignWithBitBox": {
     "description": "Button to sign transaction with BitBox hardware wallet"
@@ -1444,10 +1396,6 @@
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
   },
-  "coreSwapsLnSendPaid": "A fatura será paga após o pagamento receber a confirmação.",
-  "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
-  },
   "sellSecureBitcoinWallet": "Carteira Bitcoin segura",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -1455,10 +1403,6 @@
   "receiveConfirmed": "Confirmado",
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
-  },
-  "transactionDetailLabelPayjoinExpired": "Expirou",
-  "@transactionDetailLabelPayjoinExpired": {
-    "description": "Payjoin expired status"
   },
   "hwChooseDevice": "Escolha a carteira de hardware que você gostaria de conectar",
   "@hwChooseDevice": {
@@ -1524,10 +1468,6 @@
   "swapTransferFrom": "Swap de",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
-  },
-  "transactionDetailLabelPayinAmount": "Quantidade de pagamento",
-  "@transactionDetailLabelPayinAmount": {
-    "description": "Label for payin amount"
   },
   "swapAvailableBalance": "Balanço disponível",
   "@swapAvailableBalance": {
@@ -1698,10 +1638,6 @@
   "@payAmount": {
     "description": "Label for amount"
   },
-  "coreSwapsLnReceivePaid": "O remetente pagou a fatura.",
-  "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
-  },
   "autoswapWarningDontShowAgain": "Não mostre este aviso novamente.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -1861,10 +1797,6 @@
   "onboardingSplashDescription": "Soberana auto custódia Bitcoin carteira e serviço de troca apenas Bitcoin.",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
-  },
-  "transactionDetailLabelRefunded": "Reembolsos",
-  "@transactionDetailLabelRefunded": {
-    "description": "Label for refunded status"
   },
   "coldcardStep6": "   - Aumente o brilho da tela em seu dispositivo",
   "@coldcardStep6": {
@@ -2132,10 +2064,6 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
-  "transactionDetailLabelCreatedAt": "Criado em",
-  "@transactionDetailLabelCreatedAt": {
-    "description": "Label for creation time"
-  },
   "receiveNetworkFee": "Taxa de rede",
   "@receiveNetworkFee": {
     "description": "Label for the network fee in a receive transaction"
@@ -2188,10 +2116,6 @@
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
   },
-  "transactionDetailLabelPayjoinStatus": "Estado de Payjoin",
-  "@transactionDetailLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
   "backupWalletInstructionSecurityRisk": "Qualquer pessoa com acesso ao seu backup de 12 palavras pode roubar seus bitcoins. Esconde-o bem.",
   "@backupWalletInstructionSecurityRisk": {
     "description": "Security warning about protecting backup from theft"
@@ -2199,10 +2123,6 @@
   "receiveLiquidConfirmationMessage": "Ele será confirmado em alguns segundos",
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
-  },
-  "transactionDetailLabelPayjoinCompleted": "Completada",
-  "@transactionDetailLabelPayjoinCompleted": {
-    "description": "Payjoin completed status"
   },
   "testCompletedSuccessMessage": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
   "@testCompletedSuccessMessage": {
@@ -2244,10 +2164,6 @@
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
   },
-  "transactionLabelSendAmount": "Enviar valor",
-  "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
-  },
   "fundExchangeLabelBeneficiaryAddress": "Endereço Beneficiário",
   "@fundExchangeLabelBeneficiaryAddress": {
     "description": "Label for beneficiary address field"
@@ -2271,10 +2187,6 @@
   "settingsSecurityPinTitle": "Pin de segurança",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "transactionFilterReceive": "Receber",
-  "@transactionFilterReceive": {
-    "description": "Filter option to show only received transactions"
   },
   "sendErrorAmountAboveSwapLimits": "O montante está acima dos limites de swap",
   "@sendErrorAmountAboveSwapLimits": {
@@ -2303,10 +2215,6 @@
   "payClabeHint": "Digite o número CLABE",
   "@payClabeHint": {
     "description": "Hint for CLABE input"
-  },
-  "transactionLabelReceiveNetworkFee": "Receber Taxas de Rede",
-  "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
   },
   "broadcastSignedTxPushTxButton": "PushTx",
   "@broadcastSignedTxPushTxButton": {
@@ -2737,10 +2645,6 @@
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
   },
-  "transactionDetailLabelPayinStatus": "Estado de Payin",
-  "@transactionDetailLabelPayinStatus": {
-    "description": "Label for payin status"
-  },
   "backupWalletEncryptedVaultTitle": "Vault criptografado",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
@@ -2872,10 +2776,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "transactionDetailLabelToWallet": "Para a carteira",
-  "@transactionDetailLabelToWallet": {
-    "description": "Label for destination wallet"
-  },
   "sendSelectNetworkFee": "Selecione a taxa de rede",
   "@sendSelectNetworkFee": {
     "description": "Label for selecting the network fee in the send flow"
@@ -2919,10 +2819,6 @@
   "sellKYCRequired": "Verificação de KYC necessária",
   "@sellKYCRequired": {
     "description": "Error when identity verification needed"
-  },
-  "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
-  "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
   },
   "pinCreateHeadline": "Criar novo pino",
   "@pinCreateHeadline": {
@@ -3119,10 +3015,6 @@
   "importQrDeviceImport": "Importação",
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
-  },
-  "transactionTitle": "Transações",
-  "@transactionTitle": {
-    "description": "Title for the transactions screen"
   },
   "backupWalletHowToDecideBackupEncryptedVault": "O cofre encriptado impede-te de ladrões que procuram roubar o teu apoio. Ele também impede que você perca acidentalmente seu backup, uma vez que ele será armazenado em sua nuvem. Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Há uma pequena possibilidade de que o servidor web que armazena a chave de criptografia do seu backup possa ser comprometida. Neste caso, a segurança do backup em sua conta na nuvem pode estar em risco.",
   "@backupWalletHowToDecideBackupEncryptedVault": {
@@ -3401,10 +3293,6 @@
   "@testBackupGoogleDrivePrivacyPart1": {
     "description": "First part of privacy message"
   },
-  "coreSwapsStatusInProgress": "Em progresso",
-  "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
-  },
   "exchangeAccountInfoVerificationNotVerified": "Não verificado",
   "@exchangeAccountInfoVerificationNotVerified": {
     "description": "Status label for not verified verification level"
@@ -3424,10 +3312,6 @@
   "payLoadingRecipients": "Carregando destinatários...",
   "@payLoadingRecipients": {
     "description": "Message while loading recipients"
-  },
-  "transactionDetailLabelTransactionId": "ID de transação",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
   },
   "exchangeKycLevelLight": "Luz",
   "@exchangeKycLevelLight": {
@@ -3464,10 +3348,6 @@
   "settingsLanguageTitle": "Língua",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
-  },
-  "transactionDetailLabelFromWallet": "Da carteira",
-  "@transactionDetailLabelFromWallet": {
-    "description": "Label for source wallet"
   },
   "settingsExchangeSettingsTitle": "Configurações de troca",
   "@settingsExchangeSettingsTitle": {
@@ -3668,10 +3548,6 @@
   "@dcaSelectFrequencyLabel": {
     "description": "Label above frequency selection radio buttons"
   },
-  "transactionFilterPayjoin": "Payjoin",
-  "@transactionFilterPayjoin": {
-    "description": "Filter option to show only payjoin transactions"
-  },
   "replaceByFeeOriginalTransactionTitle": "Transação original",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -3840,10 +3716,6 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "transactionStatusPayjoinRequested": "Pedir desculpa",
-  "@transactionStatusPayjoinRequested": {
-    "description": "Status label for payjoin transaction requests"
-  },
   "sendSwapTimeout": "Swap timed out",
   "@sendSwapTimeout": {
     "description": "Error when swap expires"
@@ -3872,10 +3744,6 @@
   "backupWalletPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
   "@backupWalletPhysicalBackupDescription": {
     "description": "Description of physical backup method"
-  },
-  "transactionDetailLabelPayoutStatus": "Status de pagamento",
-  "@transactionDetailLabelPayoutStatus": {
-    "description": "Label for payout status"
   },
   "fundExchangeWarningDescription": "Se alguém está pedindo para você comprar Bitcoin ou \"ajudar você\", tenha cuidado, eles podem estar tentando enganar você!",
   "@fundExchangeWarningDescription": {
@@ -4094,10 +3962,6 @@
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
-  "transactionDetailAddNote": "Adicionar nota",
-  "@transactionDetailAddNote": {
-    "description": "Button label to add a note to a transaction"
-  },
   "sendTransactionSignedLedger": "Transação assinada com sucesso com Ledger",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
@@ -4109,14 +3973,6 @@
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "transactionFeesTotalDeducted": "Esta é a taxa total deduzida do montante enviado",
-  "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
-  },
-  "transactionDetailLabelPayinMethod": "Método de pagamento",
-  "@transactionDetailLabelPayinMethod": {
-    "description": "Label for payin method"
   },
   "exchangeAuthLoginFailedOkButton": "ESTÁ BEM",
   "@exchangeAuthLoginFailedOkButton": {
@@ -4300,17 +4156,9 @@
   "@testBackupScreenshot": {
     "description": "Label with X mark warning against taking screenshots"
   },
-  "transactionDetailLabelLiquidTxId": "ID de transação líquida",
-  "@transactionDetailLabelLiquidTxId": {
-    "description": "Label for Liquid transaction ID"
-  },
   "buySelfie": "Selfie com ID",
   "@buySelfie": {
     "description": "Type of document required"
-  },
-  "transactionLabelServerNetworkFees": "Taxas de rede do servidor",
-  "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
   },
   "fundExchangeLabelClabe": "CLABE",
   "@fundExchangeLabelClabe": {
@@ -4494,10 +4342,6 @@
   "addressViewChangeAddressesComingSoon": "Mudar endereços em breve",
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
-  },
-  "transactionOrderLabelOriginName": "Nome de origem",
-  "@transactionOrderLabelOriginName": {
-    "description": "Label for origin name in fiat payment order"
   },
   "payOpenChannelRequired": "Abrir um canal é necessário para este pagamento",
   "@payOpenChannelRequired": {
@@ -4739,10 +4583,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "transactionDetailLabelStatus": "Estado",
-  "@transactionDetailLabelStatus": {
-    "description": "Label for status"
-  },
   "receiveAddressCopied": "Endereço copiado para clipboard",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -4899,21 +4739,9 @@
   "@addressCardBalanceLabel": {
     "description": "Label for the balance field in address card"
   },
-  "transactionLabelSendNetworkFees": "Enviar taxas de rede",
-  "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
-  },
-  "transactionStatusInProgress": "Em progresso",
-  "@transactionStatusInProgress": {
-    "description": "Status label for transactions in progress"
-  },
   "payHowToPayInvoice": "Como você quer pagar esta fatura?",
   "@payHowToPayInvoice": {
     "description": "Question for payment method selection"
-  },
-  "transactionDetailLabelSendNetworkFee": "Enviar Taxa de rede",
-  "@transactionDetailLabelSendNetworkFee": {
-    "description": "Label for send network fee"
   },
   "paySelectCoinsManually": "Selecione moedas manualmente",
   "@paySelectCoinsManually": {
@@ -5032,10 +4860,6 @@
   "sellFastest": "Mais rápido",
   "@sellFastest": {
     "description": "Display text for fastest fee option"
-  },
-  "transactionSwapDescLnSendPaid": "A sua transação em cadeia foi transmitida. Após 1 confirmação, o pagamento Lightning será enviado.",
-  "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
   },
   "sendDustAmount": "Montante demasiado pequeno (dust)",
   "@sendDustAmount": {
@@ -5197,10 +5021,6 @@
   "withdrawConfirmRecipientName": "Nome do destinatário",
   "@withdrawConfirmRecipientName": {
     "description": "Field label for recipient name"
-  },
-  "transactionDetailLabelAddressNotes": "Notas de endereço",
-  "@transactionDetailLabelAddressNotes": {
-    "description": "Label for address notes"
   },
   "backupWalletHowToDecide": "Como decidir?",
   "@backupWalletHowToDecide": {
@@ -5417,10 +5237,6 @@
   "@backupSettingsNotTested": {
     "description": "Status text shown when backup has not been tested"
   },
-  "transactionFeesDeductedFrom": "Essas taxas serão deduzidas do montante enviado",
-  "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
-  },
   "backupWalletHowToDecideBackupModalTitle": "Como decidir",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
@@ -5452,10 +5268,6 @@
   "receiveFeeExplanation": "Esta taxa será deduzida do montante enviado",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
-  },
-  "coreSwapsStatusFailed": "Falhado",
-  "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
   },
   "coreSwapsActionClose": "Fechar",
   "@coreSwapsActionClose": {
@@ -5621,10 +5433,6 @@
   "@paySyncingWallet": {
     "description": "Status message during wallet sync"
   },
-  "transactionDetailLabelAmountSent": "Montante enviado",
-  "@transactionDetailLabelAmountSent": {
-    "description": "Label for amount sent"
-  },
   "sendAdvancedOptions": "Opções avançadas",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
@@ -5673,10 +5481,6 @@
   "fundExchangeCrIbanUsdLabelPaymentDescription": "Descrição do pagamento",
   "@fundExchangeCrIbanUsdLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN USD transfer"
-  },
-  "transactionDetailLabelAddress": "Endereço",
-  "@transactionDetailLabelAddress": {
-    "description": "Label for address"
   },
   "settingsDevModeWarningMessage": "Este modo é arriscado. Ao habilitar, você reconhece que pode perder dinheiro",
   "@settingsDevModeWarningMessage": {
@@ -6047,10 +5851,6 @@
       }
     }
   },
-  "transactionDetailLabelOrderStatus": "Status da ordem",
-  "@transactionDetailLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "importQrDevicePassportStep12": "Configuração completa.",
   "@importQrDevicePassportStep12": {
     "description": "Passport instruction step 12"
@@ -6268,10 +6068,6 @@
   "@autoswapRecipientWalletLabel": {
     "description": "Label for wallet selection dropdown"
   },
-  "transactionDetailLabelOrderType": "Tipo de ordem",
-  "@transactionDetailLabelOrderType": {
-    "description": "Label for order type"
-  },
   "pickPasswordOrPinButton": "Escolha um {pinOrPassword} em vez >>",
   "@pickPasswordOrPinButton": {
     "description": "Button to switch between PIN and password",
@@ -6313,10 +6109,6 @@
   "exchangeAccountInfoLastNameLabel": "Sobrenome",
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
-  },
-  "transactionDetailLabelCompletedAt": "Completa em",
-  "@transactionDetailLabelCompletedAt": {
-    "description": "Label for completion time"
   },
   "addressViewChangeType": "Variação",
   "@addressViewChangeType": {
@@ -6374,10 +6166,6 @@
   "testBackupGoogleDrivePrivacyPart4": "nunca ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
-  },
-  "transactionDetailLabelPayoutAmount": "Quantidade de pagamento",
-  "@transactionDetailLabelPayoutAmount": {
-    "description": "Label for payout amount"
   },
   "payCoinjoinFailed": "CoinJoin falhou",
   "@payCoinjoinFailed": {
@@ -6670,10 +6458,6 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "transactionDetailLabelPayjoinCreationTime": "Tempo de criação Payjoin",
-  "@transactionDetailLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation time"
-  },
   "payFeeBumpFailed": "Esboço de taxas falhou",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -6761,14 +6545,6 @@
   "buyVerificationComplete": "Verificação completa",
   "@buyVerificationComplete": {
     "description": "Success message after KYC approval"
-  },
-  "transactionNotesLabel": "Notas de transação",
-  "@transactionNotesLabel": {
-    "description": "Label for transaction notes section"
-  },
-  "coreSwapsStatusExpired": "Expirou",
-  "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
   },
   "exchangeAccountInfoVerificationIdentityVerified": "Verificação da identidade",
   "@exchangeAccountInfoVerificationIdentityVerified": {
@@ -6886,10 +6662,6 @@
   "@addressViewReceiveType": {
     "description": "Address type label for external/receive addresses"
   },
-  "transactionSwapInfoFailedExpired": "Se você tiver alguma dúvida ou preocupação, entre em contato com o suporte para assistência.",
-  "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
-  },
   "customLocationRecommendation": "Localização personalizada: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
@@ -6994,10 +6766,6 @@
   "sellOrderFailed": "Falhado para colocar ordem de venda",
   "@sellOrderFailed": {
     "description": "Error message when order fails"
-  },
-  "transactionOrderLabelOriginCedula": "Origem Cedula",
-  "@transactionOrderLabelOriginCedula": {
-    "description": "Label for origin cedula in fiat payment order"
   },
   "autoswapMaxFeeLabel": "Taxa máxima de swap",
   "@autoswapMaxFeeLabel": {
@@ -7233,10 +7001,6 @@
   "@coreScreensToLabel": {
     "description": "Label for destination/receiver field"
   },
-  "transactionFilterSend": "Enviar",
-  "@transactionFilterSend": {
-    "description": "Filter option to show only sent transactions"
-  },
   "swapTransferAmount": "Valor do swap",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
@@ -7244,10 +7008,6 @@
   "backupSettingsTestBackup": "Teste de backup",
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
-  },
-  "transactionDetailTitle": "Detalhes da transação",
-  "@transactionDetailTitle": {
-    "description": "Title for transaction details screen"
   },
   "paySwapInProgress": "Trocar em progresso...",
   "@paySwapInProgress": {
@@ -7378,10 +7138,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "transactionSwapDescChainPaid": "A sua transação foi transmitida. Estamos agora à espera que a transação de bloqueio seja confirmada.",
-  "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
-  },
   "autoswapTitle": "Configurações do Auto Swap",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
@@ -7471,10 +7227,6 @@
   "testBackupPhysicalBackupTitle": "Backup físico",
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
-  },
-  "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
-  "@transactionDetailLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupSettingsStartBackup": "Iniciar backup",
   "@backupSettingsStartBackup": {
@@ -7572,10 +7324,6 @@
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
   },
-  "transactionSwapProgressClaim": "Reivindicação",
-  "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
-  },
   "revealingVaultKeyButton": "Revelando...",
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
@@ -7595,10 +7343,6 @@
   "confirmTransferTitle": "Confirmar transferência",
   "@confirmTransferTitle": {
     "description": "Title for confirmation screen when transferring between wallets"
-  },
-  "transactionSwapProgressCompleted": "Completada",
-  "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
   },
   "importWatchOnlyType": "Tipo",
   "@importWatchOnlyType": {
@@ -7622,10 +7366,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionSwapProgressInitiated": "Iniciado",
-  "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
   },
   "bip85Index": "Índice: {index}",
   "@bip85Index": {
@@ -7717,10 +7457,6 @@
       }
     }
   },
-  "transactionSwapProgressInProgress": "Em progresso",
-  "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
-  },
   "confirmSendTitle": "Enviar",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -7811,10 +7547,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "transactionPayjoinSendWithout": "Enviar sem pagamento",
-  "@transactionPayjoinSendWithout": {
-    "description": "Button label to send transaction without payjoin"
-  },
   "importMnemonicTransactionsLabel": "Transações: {count}",
   "@importMnemonicTransactionsLabel": {
     "description": "ImportMnemonic: Transactions label with count in wallet type card",
@@ -7827,14 +7559,6 @@
   "cancelButton": "Cancelar",
   "@cancelButton": {
     "description": "Button to cancel logout action"
-  },
-  "transactionSwapProgressFundsClaimed": "Fundos\nCláusula",
-  "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
-  },
-  "transactionSwapProgressPaymentMade": "Pagamento\nFeito",
-  "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
   },
   "enterBackupKeyManuallyDescription": "Se você tiver exportado sua chave de backup e salvá-lo em um local seperado por si mesmo, você pode digitá-lo manualmente aqui. Caso contrário, volte para a tela anterior.",
   "@enterBackupKeyManuallyDescription": {
@@ -8003,10 +7727,6 @@
       }
     }
   },
-  "transactionSwapProgressBroadcasted": "Transmitido",
-  "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
-  },
   "importMnemonicTitle": "Importação Mnemonic",
   "@importMnemonicTitle": {
     "description": "AppBar title for mnemonic import screen"
@@ -8105,17 +7825,9 @@
   "@toLabel": {
     "description": "Label for destination address in transaction details"
   },
-  "transactionSwapProgressInvoicePaid": "Fatura\nPago",
-  "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
-  },
   "walletDetailsPubkeyLabel": "Pubkey",
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
-  },
-  "transactionSwapDescLnReceivePaid": "O pagamento foi recebido! Estamos agora a transmitir a transação em cadeia para a sua carteira.",
-  "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
   },
   "walletDetailsNetworkLabel": "Rede",
   "@walletDetailsNetworkLabel": {
@@ -8452,7 +8164,6 @@
   "recipientsValidationSinpePhoneCountryCode": "Remova o código do país (+506). Digite apenas o número de 8 dígitos",
   "recipientsValidationSinpePhoneInvalidChars": "Use apenas dígitos (sem letras ou símbolos)",
   "recipientsValidationSinpePhoneTooShort": "Digite todos os 8 dígitos do número de telefone",
-  "transactionStatusPayjoinCompleted": "Payjoin concluído",
   "homeActionBuy": "Comprar",
   "homeActionSell": "Vender",
   "homeActionPay": "Pagar",
@@ -8735,7 +8446,6 @@
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados com sucesso",
   "logsExportFailedMessage": "Falha ao exportar os registros",
-  "coreSwapsStatusRefunded": "Reembolsado",
   "swapRestoreTitle": "Restaurar swap",
   "swapRestoreActionable": "{count, plural, =0{Nenhum swap para recuperar} =1{Você pode tentar recuperar 1 swap. Ele já pode estar em um status final.} other{Você pode tentar recuperar {count} swaps. Observe que alguns deles já podem estar em um status final.}}",
   "swapRestoreNoSwaps": "Nenhum swap encontrado para restaurar",
@@ -8760,15 +8470,7 @@
   "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
   "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
   "receivePayjoinNoUtxos": "Receba fundos primeiro para ativar isso.\nUTXOs são necessários para usar o payjoin.",
-  "payViewReceipt": "Ver recibo",
   "paySinpeReceipt": "Recibo SINPE",
-  "transactionFilterWithdraw": "Retirada",
-  "transactionFilterPay": "Pagamento",
-  "transactionFilterFunding": "Financiamento",
-  "transactionFilterReward": "Recompensa",
-  "transactionFilterRefund": "Reembolso",
-  "transactionListLoadingFailed": "Não foi possível carregar as transações.",
-  "transactionLabelNetworkFees": "Taxas de rede",
   "receiveLiquidRiskDisclosureLabel": "Os pagamentos serão convertidos para Liquid L-BTC (não BTC). Saiba mais.",
   "walletLiquidRiskDisclosureLabel": "Estes fundos são Liquid L-BTC (não BTC). Saiba mais.",
   "liquidRiskDisclosureSemanticLabel": "Abrir divulgação de risco do Liquid Bitcoin",
@@ -8839,10 +8541,6 @@
   "consolidationScreenTitle": "Consolidar",
   "consolidationSuccessBody": "Suas moedas estão sendo combinadas. Será concluído assim que a rede confirmar.",
   "consolidationSuccessTitle": "Consolidação iniciada",
-  "transactionStatusPayjoinAborted": "Payjoin cancelado",
-  "transactionDetailLabelPayjoinAborted": "Cancelado",
-  "transactionDetailLabelPayjoinFeeContribution": "Contribuição de taxa do Payjoin",
-  "transactionPayjoinFeeContributionExplanation": "Um payjoin adiciona uma das suas moedas como entrada extra ao pagamento para melhorar a privacidade. A taxa de mineração dessa entrada adicional é deduzida do valor que você recebe (BIP78).",
   "dcaAccountUnavailableError": "Não foi possível carregar sua conta. Verifique sua conexão, veja se você está conectado e tente novamente.",
   "dcaLightningAddressRequiredError": "Insira um endereço Lightning para receber suas compras.",
   "dcaReceiveAddressError": "Não foi possível preparar um endereço de recebimento na sua carteira. Tente novamente.",
@@ -8853,16 +8551,6 @@
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
   "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
-  "coreSwapsStatusNotStarted": "Não iniciado",
-  "coreSwapsStatusAwaitingPayment": "Aguardando pagamento",
-  "coreSwapsStatusAwaitingConfirmation": "Aguardando confirmação",
-  "coreSwapsStatusUnderReview": "Em análise",
-  "coreSwapsStatusRejected": "Rejeitado",
-  "coreSwapsStatusCanceled": "Cancelado",
-  "coreSwapsStatusPaymentDeadlineExpired": "Prazo de pagamento expirado",
-  "coreSwapsStatusScheduled": "Agendado",
-  "coreSwapsStatusAwaitingClaim": "Aguardando resgate",
-  "coreSwapsStatusUnknown": "Desconhecido",
   "sendSwapExpiredTitle": "Ordem expirada",
   "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira.",
   "settingsScreenPrivacyTitle": "Privacidade da tela",
@@ -8909,10 +8597,6 @@
   "walletWarningElectrumBothDown": "Servidores Bitcoin e Liquid indisponíveis",
   "walletWarningElectrumAction": "Toque para configurar as configurações do servidor",
   "walletLoadFailedRetryHint": "Puxe para baixo para atualizar e tente novamente",
-  "transactionDetailLoadError": "Não foi possível carregar os detalhes da transação.",
-  "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
-  "transactionPayjoinOriginalUnavailable": "A transação original não está mais disponível para transmissão.",
-  "transactionLabelLimitReached": "Você pode ter no máximo 10 etiquetas.",
   "settingsErrorSavingSetting": "Não foi possível salvar essa configuração. Por favor, tente novamente.",
   "settingsErrorConsentNotGiven": "Esta configuração precisa da sua confirmação antes de ser alterada.",
   "settingsErrorLoadingLogs": "Não foi possível preparar os logs de diagnóstico. Por favor, tente novamente.",

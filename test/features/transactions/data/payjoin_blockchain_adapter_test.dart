@@ -1,6 +1,6 @@
 import '../../../scripted_wallet_connections.dart';
 
-import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
+import 'package:bb_mobile/features/wallet/data/payjoin_blockchain_adapter.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';

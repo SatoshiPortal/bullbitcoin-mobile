@@ -1,12 +1,16 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/testing.dart'
+    show
+        WalletTransactionRepository,
+        WatchWalletTransactionByAddressUsecase,
+        walletHistoryEvents;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
 
 import 'dart:typed_data';
 
@@ -15,7 +19,7 @@ import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
@@ -82,7 +86,7 @@ class _MockBroadcastOriginalTransactionUsecase extends Mock
 class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 
 class _MockWatchWalletTransactionByAddressUsecase extends Mock
-    implements WatchWalletTransactionByAddressUsecase {}
+    implements Transactions {}
 
 class _MockWatchReceiveOrderSwapUsecase extends Mock
     implements WatchReceiveOrderSwapUsecase {}
@@ -284,7 +288,7 @@ void main() {
   ReceiveBloc buildBloc({
     Wallet? wallet,
     bool withPresetWallet = true,
-    WatchWalletTransactionByAddressUsecase? observation,
+    Transactions? observation,
     GetReceiveSettingsUsecase? settings,
   }) => ReceiveBloc(
     getReceiveSwapLimitsUsecase: getSwapLimits,
@@ -299,8 +303,7 @@ void main() {
     receiveWithPayjoinUsecase: receiveWithPayjoin,
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
     watchPayjoinUsecase: watchPayjoin,
-    watchWalletTransactionByAddressUsecase:
-        observation ?? watchWalletTransaction,
+    transactions: observation ?? watchWalletTransaction,
     watchReceiveOrderSwapUsecase: watchOrderSwap,
     loadReceiveAddressLabelUsecase: loadAddressLabel,
     saveReceiveAddressLabelUsecase: saveAddressLabel,
@@ -408,7 +411,7 @@ void main() {
       (_) => const Stream<Result<PayjoinSession, ReceiveFailure>>.empty(),
     );
     when(
-      () => watchWalletTransaction.execute(
+      () => watchWalletTransaction.watchWalletTransactionByAddress(
         walletId: any(named: 'walletId'),
         toAddress: any(named: 'toAddress'),
       ),
@@ -1818,7 +1821,7 @@ void main() {
         BitcoinUnit.sats.code,
       ]);
       verify(
-        () => watchWalletTransaction.execute(
+        () => watchWalletTransaction.watchWalletTransactionByAddress(
           walletId: any(named: 'walletId'),
           toAddress: any(named: 'toAddress'),
         ),
@@ -2140,7 +2143,7 @@ void main() {
         ),
       ).called(1);
       verify(
-        () => watchWalletTransaction.execute(
+        () => watchWalletTransaction.watchWalletTransactionByAddress(
           walletId: any(named: 'walletId'),
           toAddress: 'tlq1-claim',
         ),
@@ -3182,7 +3185,7 @@ void main() {
         when(() => getWallets.execute(onlyBitcoin: true))
             .thenAnswer((_) async => Ok([walletA, walletB]));
         when(
-          () => watchWalletTransaction.execute(
+          () => watchWalletTransaction.watchWalletTransactionByAddress(
             walletId: walletA.id,
             toAddress: any(named: 'toAddress'),
           ),
@@ -3213,7 +3216,7 @@ void main() {
 
         final payment = WalletTransaction(
           walletId: walletA.id,
-          network: walletA.network,
+          network: walletA.network.shared,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.pending,
           txId: 'payment-for-a',
@@ -3257,7 +3260,7 @@ void main() {
         await pumpEventQueue();
         expect(bloc.state.wallet?.id, walletA.id);
         verifyNever(
-          () => watchWalletTransaction.execute(
+          () => watchWalletTransaction.watchWalletTransactionByAddress(
             walletId: walletB.id,
             toAddress: any(named: 'toAddress'),
           ),
@@ -3275,12 +3278,12 @@ void main() {
         final wallet = _testWallet();
         final address = _testAddress(walletId: wallet.id);
         final revisions = StreamController<WalletRevisionState>.broadcast();
-        final facade = WalletFacade(revisions.stream);
+        final facade = walletHistoryEvents(revisions.stream);
         final transactions = _MockTransactions();
         final price = Completer<Result<double, ReceiveFailure>>();
         final payment = WalletTransaction(
           walletId: wallet.id,
-          network: wallet.network,
+          network: wallet.network.shared,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'confirmed-during-receive-preparation',
@@ -3302,7 +3305,7 @@ void main() {
           ),
         ).thenAnswer((_) async {
           reads++;
-          return persistedPayments;
+          return Ok(persistedPayments);
         });
         final observation = WatchWalletTransactionByAddressUsecase(
           walletTransactionRepository: transactions,
@@ -3315,7 +3318,19 @@ void main() {
         );
         when(() => convertSatsToCurrency.execute())
             .thenAnswer((_) => price.future);
-        final bloc = buildBloc(wallet: wallet, observation: observation);
+        final capability = _MockWatchWalletTransactionByAddressUsecase();
+        when(
+          () => capability.watchWalletTransactionByAddress(
+            walletId: wallet.id,
+            toAddress: address.address,
+          ),
+        ).thenAnswer(
+          (_) => observation.execute(
+            walletId: wallet.id,
+            toAddress: address.address,
+          ),
+        );
+        final bloc = buildBloc(wallet: wallet, observation: capability);
         addTearDown(() async {
           if (!price.isCompleted) price.complete(const Ok(1.0));
           await pumpEventQueue();
@@ -3367,10 +3382,11 @@ void main() {
       () async {
         final revisions = StreamController<WalletRevisionState>.broadcast();
         final transactions = _MockTransactions();
-        final first = Completer<List<WalletTransaction>>();
+        final first =
+            Completer<Result<List<WalletTransaction>, TransactionFailure>>();
         final payment = WalletTransaction(
           walletId: 'w1',
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'payment',
@@ -3390,12 +3406,12 @@ void main() {
         ).thenAnswer((_) {
           expect(revisions.hasListener, isTrue);
           reads++;
-          return reads == 1 ? first.future : Future.value([payment]);
+          return reads == 1 ? first.future : Future.value(Ok([payment]));
         });
         final received = <WalletTransaction>[];
         final subscription = WatchWalletTransactionByAddressUsecase(
           walletTransactionRepository: transactions,
-          walletFacade: WalletFacade(revisions.stream),
+          walletFacade: walletHistoryEvents(revisions.stream),
         ).execute(walletId: 'w1', toAddress: 'current').listen(received.add);
         await pumpEventQueue();
         expect(reads, 1);
@@ -3414,7 +3430,7 @@ void main() {
         await pumpEventQueue();
         expect(reads, 1);
         if (cancel) await subscription.cancel();
-        first.complete([]);
+        first.complete(const Ok([]));
         await pumpEventQueue();
         expect(reads, cancel ? 1 : 2);
         expect(received, cancel ? isEmpty : [payment]);

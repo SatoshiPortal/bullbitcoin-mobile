@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/dca/public/dca_facade.dart' show DcaRoute;
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart'
-    show TransactionsRoute;
+import 'package:transactions/routes.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
@@ -99,10 +98,10 @@ class ExchangeRouter {
             exchange: exchange,
             preferences: preferences,
             isLoggedIn: ExchangeSessionScope.hasAccount,
-            openOrder: (context, orderId) => context.pushNamed(
-              TransactionsRoute.orderTransactionDetails.name,
-              pathParameters: {'orderId': orderId},
-              queryParameters: {'returnToExchange': 'true'},
+            openOrder: (context, orderId) => TransactionsNavigation.openDetails(
+              context,
+              TransactionDetailsTarget.order(orderId),
+              returnToExchange: true,
             ),
           ),
     dashboard: (
@@ -116,8 +115,7 @@ class ExchangeRouter {
       onOpenSettings: config.onOpenSettings,
       onOpenDca: (context) => context.pushNamed(DcaRoute.dca.name),
       onWithdraw: (context) => context.pushNamed(WithdrawRoute.withdraw.name),
-      onHistory: (context) =>
-          context.pushNamed(TransactionsRoute.transactions.name),
+      onHistory: TransactionsNavigation.openHistory,
       onAction: config.onAction,
       failureMessage: (context, failure) => failure.toTranslated(context),
       settingsAsset: Assets.icons.settingsLine.path,

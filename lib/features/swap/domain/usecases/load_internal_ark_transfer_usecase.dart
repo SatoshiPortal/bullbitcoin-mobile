@@ -1,7 +1,7 @@
 import 'package:bull_ark/bull_ark.dart';
 import 'package:primitives/primitives.dart';
 
-import '../swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 
 final class LoadInternalArkTransferUsecase {
   final ArkTransferFacade? Function() _facade;

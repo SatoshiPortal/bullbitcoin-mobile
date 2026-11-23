@@ -1,0 +1,730 @@
+{
+  "transactionDetailLabelTransactionFee": "هزینه معاملات",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Label for transaction fee"
+  },
+  "transactionNoteHint": "Note",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "coreSwapsChainCanCoop": "مبادله به‌زودی کامل می‌شود.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "transactionDetailLabelConfirmationTime": "تایید زمان",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Label for confirmation time"
+  },
+  "transactionSwapStatusSwapStatus": "تغییر وضعیت",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionStatusTransferFailed": "مبادله ناموفق بود",
+  "@transactionStatusTransferFailed": {
+    "description": "Status label for failed transfers"
+  },
+  "transactionFilterTransfer": "مبادله",
+  "@transactionFilterTransfer": {
+    "description": "Filter option to show only transfer/swap transactions"
+  },
+  "transactionNetworkLightning": "رعد و برق",
+  "@transactionNetworkLightning": {
+    "description": "Label for Lightning network transactions"
+  },
+  "transactionDetailLabelSwapFees": "هزینه های تعویض",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Label for swap fees"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin امن",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Default label for Bitcoin wallets when used as the default wallet"
+  },
+  "transactionStatusSwapExpired": "تغییر",
+  "@transactionStatusSwapExpired": {
+    "description": "Status label for expired swaps"
+  },
+  "transactionFilterBuy": "خرید",
+  "@transactionFilterBuy": {
+    "description": "Filter option to show only buy orders"
+  },
+  "coreWalletTransactionStatusPending": "امتناع",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "transactionDetailLabelTransferStatus": "وضعیت مبادله",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "coreSwapsLnSendExpired": "تغییر",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsChainFailedRefunding": "مبادله به زودی بازپرداخت خواهد شد.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "transactionStatusPaymentRefunded": "پرداخت مجدد",
+  "@transactionStatusPaymentRefunded": {
+    "description": "Status label for refunded payments"
+  },
+  "transactionStatusPaymentInProgress": "پرداخت در پیشرفت",
+  "@transactionStatusPaymentInProgress": {
+    "description": "Status label for Lightning payments in progress"
+  },
+  "buyTitle": "خرید Bitcoin",
+  "@buyTitle": {
+    "description": "Screen title for buying Bitcoin"
+  },
+  "transactionSwapLiquidToBitcoin": "L-BTC",
+  "@transactionSwapLiquidToBitcoin": {
+    "description": "Label for Liquid to Bitcoin swap"
+  },
+  "transactionSwapProgressClaim": "مطالبات",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionDetailLabelTransferId": "شناسه مبادله",
+  "@transactionDetailLabelTransferId": {
+    "description": "Label for transfer ID"
+  },
+  "transactionFilterAll": "همه چیز",
+  "@transactionFilterAll": {
+    "description": "Filter option to show all transactions"
+  },
+  "transactionDetailLabelAmountReceived": "مبلغ دریافت شده",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Label for amount received"
+  },
+  "coreSwapsLnSendPaid": "پس از پرداخت شما پرداخت خواهد شد.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "transactionDetailAccelerate": "سرعت شتاب",
+  "@transactionDetailAccelerate": {
+    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
+  },
+  "transactionDetailLabelPayjoinExpired": "تایید شده",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Payjoin expired status"
+  },
+  "transactionSwapProgressCompleted": "تکمیل شده",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionStatusTransferInProgress": "مبادله در حال انجام",
+  "@transactionStatusTransferInProgress": {
+    "description": "Status label for transfers in progress"
+  },
+  "transactionDetailTransferProgress": "پیشرفت مبادله",
+  "@transactionDetailTransferProgress": {
+    "description": "Title for ongoing transfer details"
+  },
+  "transactionDetailLabelPayinAmount": "پرداخت",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Label for payin amount"
+  },
+  "coreSwapsLnSendPending": "هنوز در حال تغییر نیست.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "transactionSwapProgressInitiated": "مقدماتی",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "coreSwapsLnReceivePaid": "Sender این فاکتور را پرداخت کرده است.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "transactionDetailLabelRefunded": "بودجه مجدد",
+  "@transactionDetailLabelRefunded": {
+    "description": "Label for refunded status"
+  },
+  "transactionNoteAddTitle": "Add Note",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionDetailLabelPayjoinCompleted": "تکمیل شده",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "transactionDetailLabelCreatedAt": "ساخته شده در",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Label for creation time"
+  },
+  "coreSwapsChainCompletedRefunded": "مبادله بازپرداخت شده است.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "transactionDetailLabelPayjoinStatus": "وضعیت Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Label for payjoin status"
+  },
+  "transactionFilterReceive": "دریافت کننده",
+  "@transactionFilterReceive": {
+    "description": "Filter option to show only received transactions"
+  },
+  "transactionSwapProgressInProgress": "پیشرفت در پیشرفت",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "coreSwapsLnSendCompletedSuccess": "با موفقیت در حال تغییر است.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "transactionDetailLabelExchangeRate": "نرخ تبادل",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "transactionSwapBitcoinToLiquid": "بیت کوین L-BTC",
+  "@transactionSwapBitcoinToLiquid": {
+    "description": "Label for Bitcoin to Liquid swap"
+  },
+  "coreSwapsStatusPending": "امتناع",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "transactionDetailLabelToWallet": "کیف پول",
+  "@transactionDetailLabelToWallet": {
+    "description": "Label for destination wallet"
+  },
+  "coreSwapsChainCompletedSuccess": "مبادله با موفقیت کامل شد.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsLnReceiveFailed": "شکست خورده.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "transactionDetailLabelPayinStatus": "وضعیت پرداخت",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Label for payin status"
+  },
+  "receivePaymentNormally": "دریافت پرداخت به طور معمول",
+  "@receivePaymentNormally": {
+    "description": "Option to receive payment without payjoin if it fails"
+  },
+  "coreSwapsStatusInProgress": "پیشرفت در پیشرفت",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "transactionSwapProgressConfirmed": "تایید",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionTitle": "معاملات",
+  "@transactionTitle": {
+    "description": "Title for the transactions screen"
+  },
+  "transactionSwapDescLnReceivePending": "مبادله شما آغاز شده است. ما منتظر پرداخت در شبکه لایتنینگ هستیم.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionDetailLabelFromWallet": "کیف پول",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Label for source wallet"
+  },
+  "coreSwapsLnSendRefundable": "آماده است تا بازپرداخت شود.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "transactionPayjoinSendWithout": "ارسال بدون Payjoin",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionFilterPayjoin": "Payjoin",
+  "@transactionFilterPayjoin": {
+    "description": "Filter option to show only payjoin transactions"
+  },
+  "coreSwapsLnSendCanCoop": "به طور کامل در حال تغییر است.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "transactionDetailLabelTransactionId": "تراکنش ID",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Label for transaction ID in details"
+  },
+  "coreSwapsLnReceiveClaimable": "آماده تغییر است تا ادعا شود.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "transactionSwapProgressFundsClaimed": "صندوق ها\nمطالبات",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "coreSwapsLnReceiveCanCoop": "به طور کامل در حال تغییر است.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "transactionSwapProgressPaymentMade": "پرداخت پرداخت پرداخت\nساخته شده Made",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "coreSwapsChainPending": "مبادله هنوز آغاز نشده است.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "transactionNetworkBitcoin": "Bitcoin",
+  "@transactionNetworkBitcoin": {
+    "description": "Label for Bitcoin network transactions"
+  },
+  "coreSwapsLnSendFailed": "شکست خورده.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainRefundable": "مبادله آماده بازپرداخت است.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "transactionStatusPayjoinRequested": "Payjoin درخواست",
+  "@transactionStatusPayjoinRequested": {
+    "description": "Status label for payjoin transaction requests"
+  },
+  "transactionDetailLabelPayoutStatus": "وضعیت پرداخت",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Label for payout status"
+  },
+  "coreSwapsLnSendCompletedRefunded": "بازپرداخت شده است.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "transactionDetailLabelBitcoinTxId": "Bitcoin تراکنش ID",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Label for Bitcoin transaction ID"
+  },
+  "coreSwapsChainFailed": "مبادله شکست خورده.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "transactionDetailAddNote": "Add Note",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionDetailLabelPayinMethod": "روش Payin",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Label for payin method"
+  },
+  "transactionStatusTransferCompleted": "مبادله کامل شد",
+  "@transactionStatusTransferCompleted": {
+    "description": "Status label for completed transfers"
+  },
+  "transactionDetailLabelLiquidTxId": "تراکنش نقدینگی ID",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Label for Liquid transaction ID"
+  },
+  "coreSwapsChainPaid": "در انتظار تأیید پرداخت ارائه‌دهنده مبادله. ممکن است تکمیل آن مدتی طول بکشد.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "مبادله آماده است تا ادعا شود.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "transactionDetailLabelSendNetworkFee": "ارسال هزینه شبکه",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Label for send network fee"
+  },
+  "transactionStatusInProgress": "پیشرفت در پیشرفت",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionOrderLabelOriginName": "نام اصلی",
+  "@transactionOrderLabelOriginName": {
+    "description": "Label for origin name in fiat payment order"
+  },
+  "globalDefaultLiquidWalletLabel": "پرداخت های فوری",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
+  },
+  "transactionHistoryTitle": "تاریخچه تراکنش‌ها",
+  "exportTransactionsDescription": "همه تراکنش‌های کیف پول خود (بیت‌کوین، لیکویید، لایتنینگ و سوآپ‌ها) را به‌صورت فایل CSV صادر کنید. به‌صورت اختیاری بر اساس بازه زمانی فیلتر کنید.",
+  "exportTransactionsStartDate": "تاریخ شروع",
+  "exportTransactionsEndDate": "تاریخ پایان",
+  "exportTransactionsAnyDate": "هر تاریخ",
+  "exportTransactionsButton": "خروجی CSV",
+  "exportTransactionsSuccess": "تراکنش‌ها با موفقیت صادر شدند",
+  "exportTransactionsEmpty": "هیچ تراکنشی برای صادر کردن در بازه انتخاب‌شده وجود ندارد",
+  "exportTransactionsError": "صادر کردن تراکنش‌ها ناموفق بود",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "تاریخ شروع باید قبل از تاریخ پایان باشد",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
+  "transactionDetailLabelAddressNotes": "یادداشت های آدرس",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Label for address notes"
+  },
+  "transactionOrderLabelReferenceNumber": "شماره مرجع",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Label for reference number in order details"
+  },
+  "transactionDetailLabelStatus": "وضعیت",
+  "@transactionDetailLabelStatus": {
+    "description": "Label for status"
+  },
+  "transactionStatusPending": "امتناع",
+  "@transactionStatusPending": {
+    "description": "Status label for pending transactions"
+  },
+  "coreSwapsChainExpired": "مبادله منقضی شد",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "transactionDetailLabelPayoutMethod": "روش پرداخت",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Label for payout method"
+  },
+  "coreSwapsStatusFailed": "شکست",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "transactionFilterSell": "فروش",
+  "@transactionFilterSell": {
+    "description": "Filter option to show only sell orders"
+  },
+  "sellTitle": "فروش Bitcoin",
+  "@sellTitle": {
+    "description": "AppBar title for sell screen"
+  },
+  "transactionDetailLabelSwapStatus": "تغییر وضعیت",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelAmountSent": "مبلغ ارسال شده",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Label for amount sent"
+  },
+  "coreSwapsLnReceiveRefundable": "آماده است تا بازپرداخت شود.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFees": "هزینه های مبادله",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Label for transfer fees"
+  },
+  "transactionSwapStatusTransferStatus": "وضعیت مبادله",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionDetailLabelOrderType": "سفارش نوع",
+  "@transactionDetailLabelOrderType": {
+    "description": "Label for order type"
+  },
+  "transactionDetailLabelPayoutAmount": "پرداخت مبلغ",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Label for payout amount"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "coreSwapsLnSendFailedRefunding": "به زودی جبران خواهد شد.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "transactionSwapProgressBroadcasted": "پخش شده",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionDetailLabelAddress": "آدرس",
+  "@transactionDetailLabelAddress": {
+    "description": "Label for address"
+  },
+  "coreSwapsLnReceivePending": "هنوز در حال تغییر نیست.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "ایجاد زمان",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Label for payjoin creation time"
+  },
+  "coreSwapsStatusExpired": "تایید شده",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsLnReceiveExpired": "تخلیه شده.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "transactionDetailLabelOrderNumber": "سفارش شماره شماره",
+  "transactionDetailLabelPaymentDescription": "توضیحات پرداخت",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Label for order number"
+  },
+  "transactionOrderLabelOriginCedula": "منشأ Cedula",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Label for origin cedula in fiat payment order"
+  },
+  "transactionStatusTransferExpired": "مبادله منقضی شد",
+  "@transactionStatusTransferExpired": {
+    "description": "Status label for expired transfers"
+  },
+  "coreSwapsLnReceiveCompleted": "به پایان رسید.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "transactionDetailLabelTransferFee": "هزینه مبادله",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Label for transfer fee (Boltz fee)"
+  },
+  "transactionNetworkLiquid": "مایع",
+  "@transactionNetworkLiquid": {
+    "description": "Label for Liquid network transactions"
+  },
+  "coreSwapsStatusCompleted": "تکمیل شده",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreWalletTransactionStatusConfirmed": "تایید",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "transactionStatusSwapFailed": "عدم تغییر",
+  "@transactionStatusSwapFailed": {
+    "description": "Status label for failed swaps"
+  },
+  "transactionDetailSwapProgress": "تغییر در پیشرفت",
+  "@transactionDetailSwapProgress": {
+    "description": "Title for ongoing swap details"
+  },
+  "transactionDetailLabelOrderStatus": "سفارش وضعیت",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Label for order status"
+  },
+  "transactionFilterSend": "ارسال",
+  "@transactionFilterSend": {
+    "description": "Filter option to show only sent transactions"
+  },
+  "coreSwapsLnSendClaimable": "آماده تغییر است تا ادعا شود.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "transactionDetailTitle": "جزئیات معاملات",
+  "@transactionDetailTitle": {
+    "description": "Title for transaction details screen"
+  },
+  "transactionDetailLabelCompletedAt": "تکمیل شده در",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionSwapProgressInvoicePaid": "در صدا\nپرداخت هزینه پرداخت",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionDetailLabelSwapId": "تغییر شناسه ID",
+  "@transactionDetailLabelSwapId": {
+    "description": "Label for swap ID"
+  },
+  "transactionSwapDescLnReceivePaid": "پرداخت دریافت شده است! ما در حال حاضر در حال پخش معاملات زنجیره ای به کیف پول شما هستیم.",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionNotesLabel": "یادداشت های معاملاتی",
+  "@transactionNotesLabel": {
+    "description": "Label for transaction notes section"
+  },
+  "transactionDetailLabelRecipientAddress": "Recipient Address",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Label for recipient address"
+  },
+  "transactionLabelPreimage": "تصویر",
+  "@transactionLabelPreimage": {
+    "description": "Label for preimage in Lightning swap details"
+  },
+  "transactionSwapDescChainPending": "مبادله شما ایجاد شده اما هنوز آغاز نشده است.",
+  "@transactionSwapDescChainPending": {
+    "description": "Description for pending chain swap"
+  },
+  "transactionSwapDescLnSendPending": "مبادله شما آغاز شده است. ما در حال پخش معامله زنجیره ای برای قفل کردن وجوه شما هستیم.",
+  "@transactionSwapDescLnSendPending": {
+    "description": "Description for pending Lightning send swap"
+  },
+  "transactionSwapDescLnSendDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
+  "@transactionSwapDescLnSendDefault": {
+    "description": "Default description for Lightning send swap"
+  },
+  "transactionSwapDescLnSendFailed": "یک مسئله با مبادله شما وجود دارد. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+  "@transactionSwapDescLnSendFailed": {
+    "description": "Description for failed Lightning send swap"
+  },
+  "transactionSwapDescLnSendExpired": "این مبادله منقضی شده است. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+  "@transactionSwapDescLnSendExpired": {
+    "description": "Description for expired Lightning send swap"
+  },
+  "transactionLabelReceiveAmount": "دریافت مبلغ",
+  "@transactionLabelReceiveAmount": {
+    "description": "Label for receive amount in swap details"
+  },
+  "transactionSwapDescChainFailed": "مشکلی در مبادله شما پیش آمد. اگر وجوه ظرف ۲۴ ساعت بازگردانده نشد، لطفاً با پشتیبانی تماس بگیرید.",
+  "@transactionSwapDescChainFailed": {
+    "description": "Description for failed chain swap"
+  },
+  "transactionListNoTransactions": "هنوز معاملات نیست.",
+  "@transactionListNoTransactions": {
+    "description": "Message displayed when there are no transactions"
+  },
+  "transactionSwapDescLnSendCompleted": "پرداخت رعد و برق با موفقیت ارسال شده است! مبادله شما در حال حاضر کامل است.",
+  "@transactionSwapDescLnSendCompleted": {
+    "description": "Description for completed Lightning send swap"
+  },
+  "transactionLabelSendAmount": "ارسال مبلغ",
+  "@transactionLabelSendAmount": {
+    "description": "Label for send amount in swap details"
+  },
+  "transactionLabelReceiveNetworkFee": "دریافت هزینه شبکه",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Label for receive network fee in swap details"
+  },
+  "transactionSwapInfoClaimableTransfer": "این مبادله به‌طور خودکار ظرف چند ثانیه تکمیل خواهد شد. اگر نشد، می‌توانید با کلیک روی دکمه “Retry Swap Claim” یک برداشت دستی را امتحان کنید.",
+  "@transactionSwapInfoClaimableTransfer": {
+    "description": "Additional info for claimable transfers"
+  },
+  "transactionSwapDescChainExpired": "این مبادله منقضی شده است. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+  "@transactionSwapDescChainExpired": {
+    "description": "Description for expired chain swap"
+  },
+  "transactionSwapDescLnReceiveDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
+  "@transactionSwapDescLnReceiveDefault": {
+    "description": "Default description for Lightning receive swap"
+  },
+  "transactionListOngoingTransfersTitle": "مبادله‌های در حال انجام",
+  "@transactionListOngoingTransfersTitle": {
+    "description": "Title for ongoing transfers section"
+  },
+  "transactionSwapDoNotUninstall": "برنامه را تا زمانی که مبادله کامل شود، نصب نکنید.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Warning message to not uninstall app during swap"
+  },
+  "transactionSwapDescChainClaimable": "تراکنش قفل‌سازی تأیید شده است. اکنون وجوه را برداشت می‌کنید تا مبادله شما تکمیل شود.",
+  "@transactionSwapDescChainClaimable": {
+    "description": "Description for claimable chain swap"
+  },
+  "transactionSwapDescChainRefundable": "این مبادله بازپرداخت خواهد شد. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+  "@transactionSwapDescChainRefundable": {
+    "description": "Description for refundable chain swap"
+  },
+  "transactionSwapDescChainCompleted": "مبادله شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
+  "@transactionSwapDescChainCompleted": {
+    "description": "Description for completed chain swap"
+  },
+  "transactionFeesTotalDeducted": "این کل هزینه ای است که از مبلغ ارسال شده کسر می شود",
+  "@transactionFeesTotalDeducted": {
+    "description": "Fee deduction explanation for sending swaps"
+  },
+  "transactionListLoadingTransactions": "بارگذاری معاملات ...",
+  "@transactionListLoadingTransactions": {
+    "description": "Message displayed while loading transactions"
+  },
+  "transactionLabelServerNetworkFees": "هزینه های شبکه سرور",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Label for server network fees in swap details"
+  },
+  "transactionSwapDescLnReceiveCompleted": "معامله شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "transactionSwapInfoRefundableTransfer": "این مبادله به طور خودکار در عرض چند ثانیه بازپرداخت خواهد شد. اگر نه، می توانید با کلیک بر روی دکمه “Retry Swap Refund” یک بازپرداخت دستی را امتحان کنید.",
+  "@transactionSwapInfoRefundableTransfer": {
+    "description": "Additional info for refundable transfers"
+  },
+  "transactionSwapInfoClaimableSwap": "این مبادله به طور خودکار در عرض چند ثانیه تکمیل خواهد شد. اگر نه، شما می توانید یک ادعا دستی را با کلیک بر روی دکمه “Retry Request” امتحان کنید.",
+  "@transactionSwapInfoClaimableSwap": {
+    "description": "Additional info for claimable swaps"
+  },
+  "transactionSwapDescChainDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
+  "@transactionSwapDescChainDefault": {
+    "description": "Default description for chain swap"
+  },
+  "transactionLabelSendNetworkFees": "ارسال هزینه های شبکه",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Label for send network fees in swap details"
+  },
+  "transactionListYesterday": "دیروز",
+  "@transactionListYesterday": {
+    "description": "Date label for yesterday's transactions"
+  },
+  "transactionFeesDeductedFrom": "این هزینه ها از مبلغ ارسال شده کسر خواهد شد",
+  "@transactionFeesDeductedFrom": {
+    "description": "Fee deduction explanation for receiving swaps"
+  },
+  "transactionSwapDescLnSendPaid": "معامله در زنجیره شما پخش شده است. پس از 1 تایید، پرداخت رعد و برق ارسال خواهد شد.",
+  "@transactionSwapDescLnSendPaid": {
+    "description": "Description for paid Lightning send swap"
+  },
+  "transactionListToday": "امروز",
+  "@transactionListToday": {
+    "description": "Date label for today's transactions"
+  },
+  "transactionSwapInfoChainDelay": "مبادله‌های On-chain ممکن است به دلیل زمان تأیید بلاک‌چین مدتی طول بکشند تا تکمیل شوند.",
+  "@transactionSwapInfoChainDelay": {
+    "description": "Additional info about chain transfer delays"
+  },
+  "transactionSwapDescLnReceiveExpired": "این مبادله منقضی شده است. هرگونه پول ارسال شده به صورت خودکار به فرستنده بازگردانده می شود.",
+  "@transactionSwapDescLnReceiveExpired": {
+    "description": "Description for expired Lightning receive swap"
+  },
+  "transactionSwapInfoRefundableSwap": "این مبادله به طور خودکار در عرض چند ثانیه بازپرداخت خواهد شد. اگر نه، می توانید با کلیک بر روی دکمه “Retry Refund”، بازپرداخت دستی را امتحان کنید.",
+  "@transactionSwapInfoRefundableSwap": {
+    "description": "Additional info for refundable swaps"
+  },
+  "transactionSwapInfoFailedExpired": "اگر سوالی یا نگرانی دارید، لطفا با حمایت از کمک تماس بگیرید.",
+  "@transactionSwapInfoFailedExpired": {
+    "description": "Additional info for failed or expired swaps"
+  },
+  "transactionSwapDescChainPaid": "معامله شما پخش شده است. ما در حال حاضر منتظر معامله قفل هستیم تا تایید شود.",
+  "@transactionSwapDescChainPaid": {
+    "description": "Description for paid chain swap"
+  },
+  "transactionListOngoingTransfersDescription": "این مبادله ها در حال حاضر در حال پیشرفت هستند. وجوه شما امن است و در هنگام تکمیل مبادله در دسترس خواهد بود.",
+  "@transactionListOngoingTransfersDescription": {
+    "description": "Description for ongoing transfers section"
+  },
+  "transactionSwapDescLnReceiveFailed": "یک مسئله با مبادله شما وجود دارد. لطفا پشتیبانی تماس بگیرید اگر وجوه در عرض 24 ساعت بازگردانده نشده باشد.",
+  "@transactionSwapDescLnReceiveFailed": {
+    "description": "Description for failed Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "معامله در زنجیره تایید شده است. ما در حال حاضر ادعا می کنیم که وجوه برای تکمیل مبادله شما.",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin تکمیل شد",
+  "viewerTapToCopy": "برای کپی ضربه بزنید",
+  "viewerViewInExplorer": "مشاهده در اکسپلورر",
+  "transactionViewerTitle": "شناسه تراکنش",
+  "viewerCopyLink": "لینک را کپی کنید",
+  "coreSwapsStatusRefunded": "بازپرداخت شده",
+  "payViewReceipt": "مشاهده رسید",
+  "transactionFilterWithdraw": "برداشت",
+  "transactionFilterPay": "پرداخت",
+  "transactionFilterFunding": "افزایش موجودی",
+  "transactionFilterReward": "پاداش",
+  "transactionFilterRefund": "بازپرداخت",
+  "transactionListLoadingFailed": "بارگذاری تراکنش‌ها ممکن نشد.",
+  "transactionLabelNetworkFees": "هزینه‌های شبکه",
+  "transactionSwapOpenWithin24h": "برای تکمیل مبادله‌ی خود، ظرف ۲۴ ساعت برنامه را باز کنید.",
+  "recipientsTypeInteracEmail": "انتقال پول از طریق ایمیل",
+  "transactionStatusPayjoinAborted": "Payjoin لغو شد",
+  "transactionDetailLabelPayjoinAborted": "لغو شده",
+  "transactionDetailLabelPayjoinFeeContribution": "سهم کارمزد Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin یکی از سکه‌های شما را به عنوان ورودی اضافی به پرداخت اضافه می‌کند تا حریم خصوصی را بهبود بخشد. کارمزد استخراج برای آن ورودی اضافه‌شده از مبلغی که دریافت می‌کنید کسر می‌شود (BIP78).",
+  "coreSwapsStatusNotStarted": "شروع نشده",
+  "coreSwapsStatusAwaitingPayment": "در انتظار پرداخت",
+  "coreSwapsStatusAwaitingConfirmation": "در انتظار تأیید",
+  "coreSwapsStatusUnderReview": "در حال بررسی",
+  "coreSwapsStatusRejected": "رد شد",
+  "coreSwapsStatusCanceled": "لغو شد",
+  "coreSwapsStatusPaymentDeadlineExpired": "مهلت پرداخت به پایان رسید",
+  "coreSwapsStatusScheduled": "زمان‌بندی‌شده",
+  "coreSwapsStatusAwaitingClaim": "در انتظار دریافت",
+  "coreSwapsStatusUnknown": "نامشخص",
+  "transactionDetailLoadError": "جزئیات تراکنش بارگذاری نشد.",
+  "transactionPayjoinBroadcastFailed": "تراکنش اصلی منتشر نشد. لطفاً دوباره تلاش کنید.",
+  "transactionPayjoinOriginalUnavailable": "تراکنش اصلی دیگر برای انتشار در دسترس نیست.",
+  "transactionLabelLimitReached": "حداکثر می‌توانید ۱۰ برچسب داشته باشید.",
+  "copiedToClipboard": "در کلیپ‌بورد کپی شد"
+}

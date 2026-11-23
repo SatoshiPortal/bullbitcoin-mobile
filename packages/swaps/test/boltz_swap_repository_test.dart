@@ -87,6 +87,7 @@ void main() {
   final stores = <SwapModel>[];
   late _MockSwapStorage storage;
   final walletTxs = <String, SwapWalletTx>{};
+  var refreshedHistoryUnavailable = false;
 
   SwapModel chainModel({
     String status = 'refundable',
@@ -129,7 +130,7 @@ void main() {
     newAddressFor: (walletId) async => 'addr-of-$walletId',
     walletTx: (txid, {required walletId}) async => walletTxs[txid],
     walletTxs: (walletId, {bool sync = false}) async =>
-        walletTxs.values.toList(),
+        sync && refreshedHistoryUnavailable ? null : walletTxs.values.toList(),
     fastestFee: ({
       required int txSize,
       required bool isLiquid,
@@ -170,6 +171,7 @@ void main() {
     when(() => storage.isRegtestStore).thenReturn(false);
     when(() => boltz.environment).thenReturn(NetworkEnv.mainnet);
     walletTxs.clear();
+    refreshedHistoryUnavailable = false;
     when(() => boltz.storage).thenReturn(storage);
     when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
     stores.clear();
@@ -1129,6 +1131,31 @@ void main() {
                 as SwapModel;
         expect(stored.status, SwapStatus.claimable.name);
         expect(stored.toEntity().nextAction, SwapAction.claim);
+      },
+    );
+
+    test(
+      'keeps the recorded claim when wallet history cannot refresh',
+      () async {
+        when(
+          () => storage.fetchAll(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            chainModel(status: 'completed', receiveTxid: 'claim-txid'),
+          ],
+        );
+        walletTxs['unrelated'] = const SwapWalletTx(
+          txId: 'unrelated',
+          isIncoming: true,
+        );
+        refreshedHistoryUnavailable = true;
+
+        await repo().verifyCompletions();
+
+        verifyNever(() => storage.store(any()));
       },
     );
 

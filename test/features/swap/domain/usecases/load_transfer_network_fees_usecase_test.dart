@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:bull_logger/bull_logger.dart' show Logger, log;
 import 'package:fees/fees.dart';

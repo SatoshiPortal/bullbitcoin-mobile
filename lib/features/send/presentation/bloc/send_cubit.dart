@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
     show WalletSpendBlockedException;
@@ -43,13 +44,12 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount
 import 'package:primitives/primitives.dart' show ConversionConstants;
 import 'package:satoshifier/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
@@ -170,7 +170,7 @@ class SendCubit extends Cubit<SendState>
     required this._broadcastLiquidTxUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateLiquidPsetSizeUsecase,
-    required this._watchWalletTransactionByTxIdUsecase,
+    required this._transactions,
     required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._verifyChainSwapAmountSendUsecase,
     required this._verifyExchangePayinUsecase,
@@ -285,8 +285,7 @@ class SendCubit extends Cubit<SendState>
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
-  final WatchWalletTransactionByTxIdUsecase
-  _watchWalletTransactionByTxIdUsecase;
+  final Transactions _transactions;
 
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
@@ -5003,8 +5002,8 @@ class SendCubit extends Cubit<SendState>
   }) {
     // Cancel the previous subscription if it exists
     _txSubscription?.cancel();
-    _txSubscription = _watchWalletTransactionByTxIdUsecase
-        .execute(walletId: walletId, txId: txId)
+    _txSubscription = _transactions
+        .watchWalletTransactionByTxId(walletId: walletId, txId: txId)
         .listen((tx) {
           // log.info(
           //   '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',

@@ -26,7 +26,7 @@ import 'package:bb_mobile/features/send/public/send_setup.dart'
         ValidateBitcoinSelectionUsecase;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -186,7 +186,7 @@ class SwapLocator {
       () => ApplyCompletedOrderSwapLabelsUsecase(
         locator<GetOrderSwapsAwaitingLabelsUsecase>(),
         locator<MarkOrderSwapLabelsAppliedUsecase>(),
-        locator<WalletTransactionRepository>(),
+        locator<Transactions>(),
         locator<Labels>(),
       ),
     );

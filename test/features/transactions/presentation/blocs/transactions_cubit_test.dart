@@ -1,16 +1,11 @@
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart';
 
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -30,7 +25,7 @@ Transaction _transaction({List<Label> labels = const []}) {
   return Transaction(
     walletTransaction: WalletTransaction(
       walletId: 'wallet-1',
-      network: Network.bitcoinMainnet,
+      network: BitcoinNetwork.mainnet,
       direction: WalletTransactionDirection.incoming,
       status: WalletTransactionStatus.confirmed,
       txId: 'txid-1',
@@ -73,8 +68,12 @@ void main() {
     cubit = TransactionsCubit(
       getTransactionsUsecase: getTransactionsUsecase,
       refreshTransactionLabelsUsecase: refreshTransactionLabelsUsecase,
-      watchStartedWalletSyncsUsecase: watchStartedWalletSyncsUsecase,
-      watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
+      watchStartedWalletSyncsUsecase: watchStartedWalletSyncsUsecase.execute(
+        walletId: 'wallet-a',
+      ),
+      watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase
+          .execute(walletId: 'wallet-a')
+          .map((wallet) => wallet.id),
     );
     emissions = 0;
     cubit.stream.listen((_) => emissions++);

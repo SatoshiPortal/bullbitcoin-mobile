@@ -128,11 +128,12 @@ integration_test/all_test.dart
 # Generated swap debug log export (written during test runs)
 bull_logs.tsv
 
-# Generated network feature localizations
+# Generated feature localizations
 /features/network/lib/generated/l10n/
 /features/fees/lib/generated/l10n/
 /features/swap/lib/generated/l10n/
 /features/all_seed_view/lib/generated/l10n/
 /features/bip85/lib/generated/l10n/
+/features/transactions/lib/generated/l10n/
 /features/fees/untranslated-messages.txt
 /features/silent/lib/generated/l10n/

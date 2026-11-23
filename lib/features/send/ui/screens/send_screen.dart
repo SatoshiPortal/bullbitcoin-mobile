@@ -2,6 +2,7 @@ import 'package:primitives/primitives.dart'
     as chains
     show BitcoinNetwork, LiquidNetwork;
 import 'package:silent/localizations.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
@@ -52,7 +53,7 @@ import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_r
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_info_row.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -3009,35 +3010,35 @@ class SendSucessScreen extends StatelessWidget {
                 label: context.loc.sendViewDetails,
                 onPressed: () {
                   if (walletTransaction != null) {
-                    context.pushNamed(
-                      TransactionsRoute.transactionDetails.name,
-                      pathParameters: {'txId': walletTransaction.txId},
-                      queryParameters: {
-                        'walletId': walletTransaction.walletId,
-                        'returnHome': 'true',
-                      },
+                    TransactionsNavigation.openDetails(
+                      context,
+                      TransactionDetailsTarget.wallet(
+                        walletTransaction.txId,
+                        walletId: walletTransaction.walletId,
+                      ),
+                      returnHome: true,
                     );
                   } else if (orderSwap != null) {
                     final txId = orderSwap.localPayinTransactionId;
                     final walletId = orderSwap.sourceWalletId;
                     if (txId != null && walletId != null) {
-                      context.pushNamed(
-                        TransactionsRoute.transactionDetails.name,
-                        pathParameters: {'txId': txId},
-                        queryParameters: {
-                          'walletId': walletId,
-                          'returnHome': 'true',
-                        },
+                      TransactionsNavigation.openDetails(
+                        context,
+                        TransactionDetailsTarget.wallet(
+                          txId,
+                          walletId: walletId,
+                        ),
+                        returnHome: true,
                       );
                     }
                   } else if (boltzSwap != null) {
-                    context.pushNamed(
-                      TransactionsRoute.swapTransactionDetails.name,
-                      pathParameters: {'swapId': boltzSwap.id},
-                      queryParameters: {
-                        'walletId': boltzSwap.walletId,
-                        'returnHome': 'true',
-                      },
+                    TransactionsNavigation.openDetails(
+                      context,
+                      TransactionDetailsTarget.swap(
+                        boltzSwap.id,
+                        walletId: boltzSwap.walletId,
+                      ),
+                      returnHome: true,
                     );
                   } else if (payjoin != null) {
                     // Navigate by the on-chain txid, NOT payjoin.id: a
@@ -3047,15 +3048,13 @@ class SendSucessScreen extends StatelessWidget {
                     //  or originalTxId (fallback) is always the broadcast tx —
                     //  and landing on the real transaction is better UX than
                     //  the session placeholder.
-                    context.pushNamed(
-                      TransactionsRoute.transactionDetails.name,
-                      pathParameters: {
-                        'txId': payjoin.txId ?? payjoin.originalTxId,
-                      },
-                      queryParameters: {
-                        'walletId': payjoin.walletId,
-                        'returnHome': 'true',
-                      },
+                    TransactionsNavigation.openDetails(
+                      context,
+                      TransactionDetailsTarget.wallet(
+                        payjoin.txId ?? payjoin.originalTxId,
+                        walletId: payjoin.walletId,
+                      ),
+                      returnHome: true,
                     );
                   }
                 },

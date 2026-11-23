@@ -1,0 +1,22 @@
+import 'package:primitives/primitives.dart';
+import 'package:labels/labels.dart';
+import 'package:transactions/src/domain/transaction_failure.dart';
+import 'package:meta/meta.dart';
+
+/// Deletes a note from a wallet transaction, translating the labels feature's
+/// failure into this feature's family.
+class DeleteTransactionNoteUsecase {
+  final Labels _labelsFacade;
+
+  const DeleteTransactionNoteUsecase(this._labelsFacade);
+
+  @useResult
+  Future<Result<void, TransactionFailure>> execute(int noteId) async {
+    final trashed = await _labelsFacade.trash(noteId);
+    return trashed.mapErr(
+      (failure) => TransactionUnexpectedFailure(
+        'trash note failed: ${failure.runtimeType}',
+      ),
+    );
+  }
+}

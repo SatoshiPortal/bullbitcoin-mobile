@@ -1,27 +1,20 @@
+import 'package:primitives/primitives.dart';
+
 import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:primitives/primitives.dart' show Ok, Result;
-import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/testing.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockLabels extends Mock implements Labels {}
-
-class _MockListAllOrdersUsecase extends Mock implements ListAllOrdersUsecase {}
 
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
 void main() {
   late _MockLabels labelsFacade;
-  late _MockListAllOrdersUsecase listAllOrdersUsecase;
   late _MockWalletTransactionRepository walletTransactionRepository;
   late LabelExchangeOrdersUsecase usecase;
 
@@ -33,11 +26,9 @@ void main() {
 
   setUp(() {
     labelsFacade = _MockLabels();
-    listAllOrdersUsecase = _MockListAllOrdersUsecase();
     walletTransactionRepository = _MockWalletTransactionRepository();
     usecase = LabelExchangeOrdersUsecase(
       labelsFacade: labelsFacade,
-      listAllOrdersUsecase: listAllOrdersUsecase,
       walletTransactionRepository: walletTransactionRepository,
     );
 
@@ -52,10 +43,10 @@ void main() {
         sync: any(named: 'sync'),
       ),
     ).thenAnswer(
-      (_) async => [
+      (_) async => Ok([
         WalletTransaction(
           walletId: 'wallet-1',
-          network: Network.bitcoinMainnet,
+          network: BitcoinNetwork.mainnet,
           direction: WalletTransactionDirection.incoming,
           status: WalletTransactionStatus.confirmed,
           txId: 'buy-txid',
@@ -74,7 +65,7 @@ void main() {
           ],
           isRbf: false,
         ),
-      ],
+      ]),
     );
   });
 
@@ -149,7 +140,6 @@ void main() {
               .having((label) => label.reference, 'reference', 'buy-txid'),
         ),
       );
-      verifyNever(() => listAllOrdersUsecase.execute());
     },
   );
 

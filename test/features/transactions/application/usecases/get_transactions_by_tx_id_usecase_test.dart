@@ -1,16 +1,11 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:transactions/testing.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' as bb;
-import 'package:bb_mobile/features/swap/public/swap_facade.dart'
-    show OrderSwapRecord;
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -76,7 +71,7 @@ void main() {
         txId: any(named: 'txId'),
         environment: any(named: 'environment'),
       ),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer((_) async => Ok([]));
     when(() => swapStore.byTxId(any())).thenAnswer((_) async => const Ok(null));
     when(() => getTransactionOrderSwapsUsecase.execute()).thenAnswer(
       (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
@@ -100,7 +95,7 @@ void main() {
           txId: _txId,
           environment: Environment.regtest,
         ),
-      ).thenAnswer((_) async => []);
+      ).thenAnswer((_) async => Ok([]));
       expect(unwrap(await usecase.execute(_txId)), isEmpty);
       verify(
         () => walletTransactionRepository.getWalletTransactions(

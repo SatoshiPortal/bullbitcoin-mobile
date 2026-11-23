@@ -3,7 +3,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullSuccessScreen, Gap, BullTypographyX;
@@ -44,9 +44,9 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
           BullButton.secondary(
             label: context.loc.buyViewDetails,
             onPressed: () {
-              context.pushNamed(
-                TransactionsRoute.orderTransactionDetails.name,
-                pathParameters: {'orderId': buyOrder.orderId},
+              TransactionsNavigation.openDetails(
+                context,
+                TransactionDetailsTarget.order(buyOrder.orderId),
               );
             },
           ),

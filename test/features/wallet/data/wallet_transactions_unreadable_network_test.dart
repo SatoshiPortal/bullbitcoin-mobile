@@ -1,38 +1,24 @@
-import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
-import 'package:sync/sync.dart' show WalletKey;
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:labels/labels.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:sync/sync.dart';
+import 'package:transactions/testing.dart';
 
-class _Metadata extends Mock implements WalletRegistrations {}
+class _Inventory extends Mock implements WalletInventory {}
 
 class _Labels extends Mock implements Labels {}
 
 class _Values extends Mock implements WalletHistoryDatasource {}
 
-WalletMetadataModel _row(String id, String networkCode) => WalletMetadataModel(
-  networkCode: networkCode,
-  id: id,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
-  isEncryptedVaultTested: false,
-  isPhysicalBackupTested: false,
-  xpub: 'public',
-  externalPublicDescriptor: 'wpkh(public)',
-  internalPublicDescriptor: 'wpkh(change)',
-  signer: Signer.none,
-  isDefault: false,
-);
-
 void main() {
-  final readable = _row('readable', 'bitcoinTestnet');
-  // The schema 16 column default, kept for rows the backfill cannot resolve.
-  final unreadable = _row('unreadable', 'unresolved');
+  final readable = walletRegistrationForTesting(
+    id: 'readable',
+    network: BitcoinNetwork.testnet,
+  );
 
   setUpAll(
     () => registerFallbackValue(
@@ -40,13 +26,13 @@ void main() {
     ),
   );
 
-  late _Metadata metadata;
+  late _Inventory metadata;
   late _Values bdk;
-  late List<WalletMetadataModel> synchronized;
+  late List<WalletKey> synchronized;
   late WalletTransactionRepositoryImpl repository;
 
   setUp(() {
-    metadata = _Metadata();
+    metadata = _Inventory();
     bdk = _Values();
     synchronized = [];
     when(
@@ -54,19 +40,34 @@ void main() {
         key: any(named: 'key'),
         toAddress: any(named: 'toAddress'),
       ),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer((_) async => const Ok([]));
     repository = WalletTransactionRepositoryImpl(
-      walletRegistrations: metadata,
+      inventory: metadata,
       labelsFacade: _Labels(),
       history: bdk,
-      synchronize: (row) async => synchronized.add(row),
+      synchronize: (key) async {
+        synchronized.add(key);
+        return const Ok(null);
+      },
     );
   });
 
   test('an unreadable network row does not hide the other wallets', () async {
-    when(metadata.fetchAll).thenAnswer((_) async => [unreadable, readable]);
+    when(() => metadata.walletsForNetwork(BitcoinNetwork.testnet))
+        .thenAnswer((_) async => Ok(walletSelectionForTesting([readable])));
+    when(() => metadata.walletsForNetwork(LiquidNetwork.testnet))
+        .thenAnswer((_) async => const Err(UnreadableWalletFailure()));
 
-    expect(await repository.getWalletTransactions(sync: true), isEmpty);
+    expect(
+      (await repository.getWalletTransactions(
+        environment: Environment.testnet,
+        sync: true,
+      )).fold(
+        (value) => value,
+        (failure) => fail(failure.runtimeType.toString()),
+      ),
+      isEmpty,
+    );
 
     final read = verify(
       () => bdk.getTransactions(
@@ -79,12 +80,15 @@ void main() {
   });
 
   test('a wallet asked for by id with an unreadable network fails', () async {
-    when(() => metadata.fetch('unreadable'))
-        .thenAnswer((_) async => unreadable);
+    when(() => metadata.readWallet('unreadable'))
+        .thenAnswer((_) async => const Err(UnreadableWalletFailure()));
 
-    await expectLater(
-      repository.getWalletTransactions(walletId: 'unreadable'),
-      throwsA(isA<FormatException>()),
+    final result = await repository.getWalletTransactions(
+      walletId: 'unreadable',
+    );
+    expect(
+      result.fold((_) => null, (failure) => failure),
+      isA<TransactionAggregationFailure>(),
     );
     verifyNever(
       () => bdk.getTransactions(

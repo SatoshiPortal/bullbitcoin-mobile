@@ -50,7 +50,7 @@ import 'package:bb_mobile/features/settings/ui/settings_hub_bindings.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
@@ -117,7 +117,7 @@ class AppRouter {
       case QuickAction.transfer:
         context.pushNamed(SwapRoute.swap.name);
       case QuickAction.history:
-        context.pushNamed(TransactionsRoute.transactions.name);
+        TransactionsNavigation.openHistory(context);
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
@@ -226,6 +226,7 @@ class AppRouter {
       OnboardingRouter.route,
       ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(
+        scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,
         loadCoinSummary: (id) => locator<Coins>().summary(id),
         onOpenCoins: (context, wallet) =>
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
@@ -244,12 +245,7 @@ class AppRouter {
           priceRoutes: locator<BitcoinPriceFeature>().routes,
         ),
       ).route,
-      TransactionsRouter.transactionsRoute(
-        scope: (child) => ActiveNetworkScope(child: child),
-      ),
-      TransactionsRouter.exchangeTransactionsRoute,
-      TransactionsRouter.exportTransactionsRoute,
-      ...TransactionsRouter.transactionDetailsRoutes,
+      ...locator<TransactionsFeature>().routes,
       ReceiveRouter.route,
       SendRouter.route(
         openSignedTransactionReader: (context, psbt, wallet) =>

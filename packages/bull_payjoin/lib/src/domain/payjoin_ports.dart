@@ -116,7 +116,8 @@ abstract interface class PayjoinTransactionPort {
 
   Stream<void> watchWallet(String walletId);
 
-  Future<bool> isTransactionVisible({
+  /// True when observed, false after a clean negative read, null if unavailable.
+  Future<bool?> isTransactionVisible({
     required String walletId,
     required String transactionId,
     bool refresh = false,

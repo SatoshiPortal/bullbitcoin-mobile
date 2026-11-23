@@ -32,7 +32,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -347,8 +347,7 @@ class SendLocator {
             locator<CalculateLiquidAbsoluteFeesUsecase>(),
         calculateLiquidPsetSizeUsecase:
             locator<CalculateLiquidPsetSizeUsecase>(),
-        watchWalletTransactionByTxIdUsecase:
-            locator<WatchWalletTransactionByTxIdUsecase>(),
+        transactions: locator<Transactions>(),
         calculateBitcoinAbsoluteFeesUsecase:
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
         verifyChainSwapAmountSendUsecase:

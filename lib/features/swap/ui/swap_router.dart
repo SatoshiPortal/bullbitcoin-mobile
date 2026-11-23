@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/swap/presentation/internal_ark_transfer_cubit
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/internal_transfer_page.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -58,10 +58,10 @@ class SwapRouter {
               listener: (context, state) {
                 final orderSwap = state.orderSwap;
                 if (orderSwap != null) {
-                  context.goNamed(
-                    TransactionsRoute.orderSwapTransactionDetails.name,
-                    pathParameters: {'localId': orderSwap.localId},
-                    queryParameters: {'returnHome': 'true'},
+                  TransactionsNavigation.goToDetails(
+                    context,
+                    TransactionDetailsTarget.orderSwap(orderSwap.localId),
+                    returnHome: true,
                   );
                 } else {
                   context.goNamed(

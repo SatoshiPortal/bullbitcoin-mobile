@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('source maps aggregation failures without exposing raw details', () {
     final source = File(
-      'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
     ).readAsStringSync();
     expect(source, contains('TransactionAggregationFailure'));
     expect(source, isNot(contains("Failed to fetch transactions: \$e")));

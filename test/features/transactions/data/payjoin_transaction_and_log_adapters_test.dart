@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' hide Network;
+
 import '../../../scripted_wallet_connections.dart';
 
 import 'package:sync/sync.dart'
@@ -7,24 +9,22 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/testing.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
-import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
+import 'package:bb_mobile/features/wallet/data/payjoin_log_adapter.dart';
+import 'package:bb_mobile/features/wallet/data/payjoin_transaction_adapter.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide Network;
 
 class _MockLogger extends Mock implements Logger {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockWalletTransactionRepository extends Mock
-    implements WalletTransactionRepository {}
+class _MockTransactions extends Mock implements Transactions {}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -34,7 +34,7 @@ const _txId =
 
 void main() {
   late _MockWalletRepository wallets;
-  late _MockWalletTransactionRepository transactions;
+  late _MockTransactions transactions;
   late ScriptedWalletConnections servers;
   late _MockWallet wallet;
   late AppPayjoinTransactionAdapter adapter;
@@ -79,7 +79,7 @@ void main() {
 
   setUp(() {
     wallets = _MockWalletRepository();
-    transactions = _MockWalletTransactionRepository();
+    transactions = _MockTransactions();
     servers = ScriptedWalletConnections();
     adapter = AppPayjoinTransactionAdapter(
       wallets,
@@ -93,7 +93,7 @@ void main() {
     when(() => wallets.getWallet(_walletId, sync: any(named: 'sync')))
         .thenAnswer((_) async => Ok(wallet));
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => null);
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test('structured events preserve the exported TSV contract', () async {
@@ -410,7 +410,7 @@ void main() {
 
   test('answers from the wallet when no refresh is asked', () async {
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => _transaction());
+        .thenAnswer((_) async => Ok(_transaction()));
 
     final visible = await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -423,7 +423,7 @@ void main() {
 
   test('a refresh trusts the server over a pending wallet copy', () async {
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => _transaction());
+        .thenAnswer((_) async => Ok(_transaction()));
     servers.reply = () => const Ok(false);
 
     final visible = await adapter.isTransactionVisible(
@@ -454,7 +454,7 @@ void main() {
       return Ok(wallet);
     });
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => synced ? _transaction() : null);
+        .thenAnswer((_) async => Ok(synced ? _transaction() : null));
 
     final visible = await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -485,7 +485,7 @@ void main() {
     });
     // The second sync joined a pass that started before the broadcast.
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
-        .thenAnswer((_) async => syncs >= 3 ? _transaction() : null);
+        .thenAnswer((_) async => Ok(syncs >= 3 ? _transaction() : null));
 
     await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -520,8 +520,8 @@ void main() {
     when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
         .thenAnswer((_) async {
           reads++;
-          if (reads == 1) throw Exception('database locked');
-          return _transaction();
+          if (reads == 1) return const Err(TransactionAggregationFailure());
+          return Ok(_transaction());
         });
 
     await adapter.isTransactionVisible(
@@ -557,7 +557,7 @@ void main() {
           walletId: _walletId,
           sync: true,
         ),
-      ).thenAnswer((_) async => present ? _transaction() : null);
+      ).thenAnswer((_) async => Ok(present ? _transaction() : null));
 
       final visible = await adapter.isTransactionVisible(
         walletId: _walletId,
@@ -597,7 +597,7 @@ void main() {
 
 WalletTransaction _transaction() => const WalletTransaction(
   walletId: _walletId,
-  network: Network.bitcoinTestnet,
+  network: BitcoinNetwork.testnet,
   direction: WalletTransactionDirection.incoming,
   status: WalletTransactionStatus.pending,
   txId: _txId,

@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Payjoin setup uses the production and regtest cutovers from the composition root', () {
     final init = File('lib/init.dart').readAsStringSync();
-    final setup = File('lib/features/transactions/payjoin_setup.dart')
+    final setup = File('lib/features/wallet/public/payjoin_setup.dart')
         .readAsStringSync();
 
     expect(
@@ -51,8 +51,8 @@ void main() {
   test('touched domain usecases do not import concrete data repositories', () {
     final paths = [
       'lib/features/buy/domain/create_buy_order_usecase.dart',
-      'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
-      'lib/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/get_transactions_by_tx_id_usecase.dart',
       'lib/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart',
     ];
     final violations = <String>[];

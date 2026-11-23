@@ -1,14 +1,14 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/transactions/transactions_facade.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Writes the privileged exchange-buy labels when a buy order explicitly
 /// completes (issue #2624: labels must never be written from history reads).
 class LabelCompletedBuyOrderUsecase {
-  final TransactionsFacade _transactionsFacade;
+  final Transactions _transactionsFacade;
 
   LabelCompletedBuyOrderUsecase({required this._transactionsFacade});
 

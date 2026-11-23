@@ -534,7 +534,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     String sessionId,
   ) async {
     try {
-      return Ok(await _engine.visibleCompetingTransaction(sessionId));
+      return await _engine.visibleCompetingTransaction(sessionId);
     } catch (_) {
       return const Err(
         PayjoinUnavailableFailure('Could not check transaction visibility'),

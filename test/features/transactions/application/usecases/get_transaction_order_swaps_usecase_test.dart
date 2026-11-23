@@ -1,7 +1,7 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

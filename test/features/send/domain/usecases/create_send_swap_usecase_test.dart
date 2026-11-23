@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show SignerEntity;
+import 'package:swaps/order_swaps.dart';
 import 'package:signers/signers.dart';
 import 'package:satoshifier/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;

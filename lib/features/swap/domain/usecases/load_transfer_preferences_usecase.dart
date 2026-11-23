@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-import '../swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 
 typedef TransferPreferences = ({
   BitcoinUnit bitcoinUnit,

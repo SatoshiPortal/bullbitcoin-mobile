@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('history reads do not write privileged labels', () {
     final source = File(
-      'lib/features/transactions/application/usecases/label_exchange_orders_usecase.dart',
+      'features/transactions/lib/src/domain/usecases/label_exchange_orders_usecase.dart',
     ).readAsStringSync();
     expect(source, contains('if (!explicitCompletion) return;'));
     expect(source, contains('order.orderStatus != OrderStatus.completed'));
