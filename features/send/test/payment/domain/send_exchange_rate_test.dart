@@ -96,7 +96,7 @@ class _FakeIndexPriceReader {
   final List<({BitcoinNetwork network, SupportedCurrency currency})> requests =
       [];
 
-  _FakeIndexPriceReader({this.fiatAmount = 100000, this.failure});
+  _FakeIndexPriceReader({required this.fiatAmount});
 
   Future<Result<BitcoinPrice, PricerFailure>> call({
     required BitcoinNetwork network,
