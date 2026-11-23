@@ -461,6 +461,12 @@ class _BottomButtons extends StatelessWidget {
         _ => false,
       },
     );
+    final isPayinOutcomeUnknown = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final isPayinOutcomeUnknown) => isPayinOutcomeUnknown,
+        _ => false,
+      },
+    );
     final pastDeadlineTxid = context.select(
       (PayBloc bloc) => switch (bloc.state) {
         PayPaymentState(
@@ -497,7 +503,9 @@ class _BottomButtons extends StatelessWidget {
         ],
         if (pastDeadlineTxid != null)
           BullReferenceNotice(
-            message: context.loc.exchangePaymentSentPastDeadline,
+            message: isPayinOutcomeUnknown
+                ? context.loc.exchangePaymentOutcomeUnknownPastDeadline
+                : context.loc.exchangePaymentSentPastDeadline,
             reference: pastDeadlineTxid,
             copiedMessage: context.loc.copiedToClipboard,
             copyLabel: context.loc.copyDialogButton,
@@ -515,9 +523,11 @@ class _BottomButtons extends StatelessWidget {
           )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
-            label: isPayinBroadcast
-                ? context.loc.exchangePaymentSentRefreshingOrder
-                : context.loc.exchangeSendingPayment,
+            label: !isPayinBroadcast
+                ? context.loc.exchangeSendingPayment
+                : isPayinOutcomeUnknown
+                ? context.loc.exchangePaymentOutcomeUnknownChecking
+                : context.loc.exchangePaymentSentRefreshingOrder,
             color: context.appColors.secondary,
             textStyle: context.bullType.body,
           )

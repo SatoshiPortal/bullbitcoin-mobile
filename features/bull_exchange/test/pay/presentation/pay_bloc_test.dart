@@ -454,7 +454,8 @@ void main() {
 
   group('PayBloc — broadcast latch', () {
     test(
-      'confirmation Error persists and reports only safe metadata',
+      'an Error from the broadcast reports only safe metadata and is treated '
+      'as an unknown outcome, not a re-armed Confirm',
       () async {
         const foreign =
             'tcp://private-electrum.invalid:50001 foreign-rejection';
@@ -474,9 +475,11 @@ void main() {
           (_) =>
               Future.error(StateError(foreign), StackTrace.fromString(foreign)),
         );
+        when(() => payOrder.payinStatus)
+            .thenReturn(OrderPayinStatus.awaitingPayment);
         bloc.add(const PayEvent.sendPaymentConfirmed());
         await bloc.stream.firstWhere(
-          (state) => state is PayPaymentState && state.error != null,
+          (state) => state is PayPaymentState && state.isPayinOutcomeUnknown,
         );
         await pumpEventQueue();
         await log.flush();
@@ -494,9 +497,75 @@ void main() {
         ).captured;
         expect(captured[0].toString(), 'Exception: $code');
         expect(captured[1].toString(), isNot(contains(foreign)));
-        expect((bloc.state as PayPaymentState).isConfirmingPayment, isFalse);
+        final state = bloc.state as PayPaymentState;
+        expect(state.payinBroadcastTxid, expectedTxid);
+        expect(state.error, isNull);
+        expect(state.isConfirmingPayment, isTrue);
       },
     );
+
+    group('a broadcast whose outcome is unknown (SELL-2 in pay)', () {
+      setUp(() {
+        bloc.seed(
+          (bloc.state as PayPaymentState).copyWith(isPayjoinEnabled: false),
+        );
+        when(() => broadcastPayPayin.bitcoin(any())).thenAnswer(
+          (_) async =>
+              const Err<String, PayFailure>(PayPayinOutcomeUnknownFailure()),
+        );
+      });
+
+      test('is latched with its txid and never paid twice', () async {
+        when(() => payOrder.payinStatus)
+            .thenReturn(OrderPayinStatus.awaitingPayment);
+
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is PayPaymentState && state.isPayinBroadcast,
+        );
+        final verifying = bloc.state as PayPaymentState;
+        expect(verifying.payinBroadcastTxid, expectedTxid);
+        expect(verifying.isPayinOutcomeUnknown, isTrue);
+        expect(verifying.error, isNull);
+        expect(verifying.isConfirmingPayment, isTrue);
+        expect(verifying.canLeavePaymentScreen, isFalse);
+
+        await Future<void>.delayed(const Duration(seconds: 6));
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await Future<void>.delayed(const Duration(seconds: 6));
+
+        verify(() => broadcastPayPayin.bitcoin(any())).called(1);
+        expect((bloc.state as PayPaymentState).error, isNull);
+      }, timeout: const Timeout(Duration(seconds: 60)));
+
+      test('reaches success once the order shows the payin', () async {
+        final success = bloc.stream.firstWhere(
+          (state) => state is PaySuccessState,
+        );
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await success;
+      }, timeout: const Timeout(Duration(seconds: 30)));
+    });
+
+    test('a refused broadcast re-arms Confirm with the failure', () async {
+      bloc.seed(
+        (bloc.state as PayPaymentState).copyWith(isPayjoinEnabled: false),
+      );
+      when(() => broadcastPayPayin.bitcoin(any())).thenAnswer(
+        (_) async => const Err<String, PayFailure>(
+          PayUnexpectedFailure('pay_payin_broadcast_failed'),
+        ),
+      );
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      final state = await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.error != null,
+      ) as PayPaymentState;
+      await pumpEventQueue();
+
+      expect(state.isPayinBroadcast, isFalse);
+      expect(state.isPayinOutcomeUnknown, isFalse);
+      expect((bloc.state as PayPaymentState).isConfirmingPayment, isFalse);
+    });
 
     test('an expired Payjoin whose transaction is already visible is latched, '
         'not offered again', () async {

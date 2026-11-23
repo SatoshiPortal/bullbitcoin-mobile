@@ -38,6 +38,7 @@ void main() {
       ),
       ('connection', const SpendBroadcastConnectionFailure()),
       ('outcomeUnknown', const SpendBroadcastOutcomeUnknownFailure()),
+      ('alreadyInChain', const SpendAlreadyInChainFailure()),
     ]) {
       test('$chain $category preserves only safe broadcast metadata', () async {
         final directory = await Directory.systemTemp.createTemp('payin-log-');
@@ -54,7 +55,7 @@ void main() {
             ? await usecase.bitcoin(SpendFixtures.signedBitcoin(signed))
             : await usecase.liquid(SpendFixtures.signedLiquid(signed));
         final paymentFailure = (result as Err<String, PayFailure>).failure;
-        if (category == 'outcomeUnknown') {
+        if (category == 'outcomeUnknown' || category == 'alreadyInChain') {
           expect(paymentFailure, isA<PayPayinOutcomeUnknownFailure>());
         } else {
           expect(paymentFailure, isA<PayUnexpectedFailure>());

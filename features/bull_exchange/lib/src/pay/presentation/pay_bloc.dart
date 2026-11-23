@@ -23,6 +23,7 @@ import 'package:bull_exchange/src/pay/domain/pay_failure.dart';
 import 'package:bull_exchange/src/pay/domain/place_pay_order_usecase.dart';
 import 'package:bull_exchange/src/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bull_exchange/src/pay/domain/prepare_pay_liquid_payin_usecase.dart';
+import 'package:bull_exchange/src/pay/domain/read_pay_payin_txid_usecase.dart';
 import 'package:bull_exchange/src/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bull_exchange/src/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bull_exchange/src/pay/domain/sign_pay_payin_usecase.dart';
@@ -64,7 +65,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._spend,
-  }) : super(PayRecipientSelectionState()) {
+    ReadPayPayinTxidUsecase readPayPayinTxidUsecase =
+        const ReadPayPayinTxidUsecase(),
+  }) : _readPayPayinTxidUsecase = readPayPayinTxidUsecase,
+       super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -110,6 +114,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final PreparePayLiquidPayinUsecase _preparePayLiquidPayinUsecase;
   final SignPayPayinUsecase _signPayPayinUsecase;
   final BroadcastPayPayinUsecase _broadcastPayPayinUsecase;
+  final ReadPayPayinTxidUsecase _readPayPayinTxidUsecase;
   final LoadPayWalletUtxosUsecase _loadPayWalletUtxosUsecase;
   final LoadPayNetworkFeesUsecase _loadPayNetworkFeesUsecase;
   final GetPayPayinAddressUsecase _getPayPayinAddressUsecase;
@@ -574,6 +579,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
     emit(payPaymentState.copyWith(isConfirmingPayment: true));
     var waitingForPayjoin = false;
+    // Set just before a broadcast starts: from then on a failure may have put
+    // the payin on the network. Reads the txid of what was broadcast.
+    Future<Result<String, PayFailure>> Function()? broadcastAttemptTxid;
     try {
       final wallet = payPaymentState.selectedWallet;
       if (wallet == null) {
@@ -645,7 +653,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
           _emitSendPaymentError(emit, const PayQuoteExpiredFailure());
           return;
         }
+        Future<Result<String, PayFailure>> readTxid() =>
+            _readPayPayinTxidUsecase.fromPset(signedPset.signedPset);
+        broadcastAttemptTxid = readTxid;
         switch (await _broadcastPayPayinUsecase.liquid(signedPset)) {
+          case Err(failure: PayPayinOutcomeUnknownFailure()):
+            await _latchUnknownBroadcast(emit, readTxid);
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
@@ -816,7 +829,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
             _emitSendPaymentError(emit, const PayQuoteExpiredFailure());
             return;
           }
+          Future<Result<String, PayFailure>> readTxid() =>
+              _readPayPayinTxidUsecase.fromPsbt(preparedSend.unsignedPsbt);
+          broadcastAttemptTxid = readTxid;
           switch (await _broadcastPayPayinUsecase.bitcoin(signedTx)) {
+            case Err(failure: PayPayinOutcomeUnknownFailure()):
+              await _latchUnknownBroadcast(emit, readTxid);
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);
               return;
@@ -833,6 +851,13 @@ class PayBloc extends Bloc<PayEvent, PayState>
         error: Exception(code),
         trace: StackTrace.current,
       );
+      final attempted = broadcastAttemptTxid;
+      if (attempted != null &&
+          _currentPaymentState?.isPayinBroadcast == false) {
+        // The throw came from the broadcast: the payin may be on the network.
+        await _latchUnknownBroadcast(emit, attempted);
+        return;
+      }
       _emitSendPaymentError(emit, PayUnexpectedFailure(code));
     } finally {
       final current = _currentPaymentState;
@@ -1355,7 +1380,31 @@ class PayBloc extends Bloc<PayEvent, PayState>
     return currentState is PayPaymentState ? currentState : null;
   }
 
-  void _latchBroadcast(Emitter<PayState> emit, String txid) {
+  /// A broadcast whose outcome is unknown may have put the payin on the
+  /// network: latch it like an accepted one, so Confirm is never re-armed, and
+  /// let the order poll verify it.
+  Future<void> _latchUnknownBroadcast(
+    Emitter<PayState> emit,
+    Future<Result<String, PayFailure>> Function() readTxid,
+  ) async {
+    log.warning(
+      'Pay payin broadcast outcome unknown; verifying it against the order '
+      'instead of re-arming Confirm',
+    );
+    // A transaction this device just signed always has a txid; an empty
+    // reference still latches rather than re-arming Confirm.
+    final txid = switch (await readTxid()) {
+      Ok(:final value) => value,
+      Err() => '',
+    };
+    _latchBroadcast(emit, txid, outcomeUnknown: true);
+  }
+
+  void _latchBroadcast(
+    Emitter<PayState> emit,
+    String txid, {
+    bool outcomeUnknown = false,
+  }) {
     // The payin pays this quote; there is nothing left to refresh.
     _quoteScheduler.cancel();
     final current = _currentPaymentState;
@@ -1363,6 +1412,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     emit(
       current.copyWith(
         payinBroadcastTxid: txid,
+        isPayinOutcomeUnknown: outcomeUnknown,
         pausedPayjoinSession: null,
         isRetryingPayjoinProposal: false,
         isConfirmingPayment: true,
