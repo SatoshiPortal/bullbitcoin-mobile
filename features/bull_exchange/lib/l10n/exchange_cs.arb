@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Nedávejte",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Tento unikátní číslo účtu je vytvořen pro vás",
   "fundExchangeSinpeWarningNoBitcoinDescription": " slovo \"Bitcoin\" nebo \"Crypto\" v popisu platby. Vaše platba zablokuje.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Přidejte to jako číslo účtu"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Přidejte to jako číslo účtu",
+  "exchangeCurrencyDropdownTitle": "Vyberte měnu",
+  "exchangeAmountInputValidationInvalid": "Neplatné množství",
+  "exchangeAmountInputValidationInsufficient": "Nedostatečná rovnováha",
+  "exchangeAmountInputValidationEmpty": "Zadejte částku",
+  "exchangeCurrencyDropdownValidation": "Vyberte měnu",
+  "exchangeAmountInputTitle": "Zadejte částku",
+  "exchangeAmountInputValidationZero": "Částka musí být větší než nulová"
 }

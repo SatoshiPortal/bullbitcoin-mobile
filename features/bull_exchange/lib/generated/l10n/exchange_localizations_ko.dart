@@ -957,4 +957,25 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' 지불 설명에서 \"Bitcoin\"또는 \"Crypto\"라는 단어. 결제를 차단합니다.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => '통화 선택';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => '통화 선택';
+
+  @override
+  String get exchangeAmountInputTitle => '자주 묻는 질문';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => '금액';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => '잘못된 금액';
+
+  @override
+  String get exchangeAmountInputValidationZero => '금액은 0 이상이어야합니다';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => '충분한 균형';
 }

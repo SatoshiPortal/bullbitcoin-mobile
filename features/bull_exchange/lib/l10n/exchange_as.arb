@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "একাউন্ট নম্বৰ হিচাপে এইটো যোগ কৰক",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "এই অনন্য একাউন্ট নম্বৰ কেৱল আপোনাৰ বাবেই তৈয়াৰ কৰা হৈছে",
   "fundExchangeSinpeWarningNoBitcoin": "দিব নালাগে",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " পৰিশোধৰ বিৱৰণত \"Bitcoin\" বা \"Crypto\" শব্দ। এইটোৱে আপোনাৰ পৰিশোধ ব্লক কৰিব।"
+  "fundExchangeSinpeWarningNoBitcoinDescription": " পৰিশোধৰ বিৱৰণত \"Bitcoin\" বা \"Crypto\" শব্দ। এইটোৱে আপোনাৰ পৰিশোধ ব্লক কৰিব।",
+  "exchangeCurrencyDropdownTitle": "মুদ্ৰা বাছক",
+  "exchangeCurrencyDropdownValidation": "অনুগ্ৰহ কৰি এটা মুদ্ৰা বাছক",
+  "exchangeAmountInputTitle": "পৰিমাণ দিয়ক",
+  "exchangeAmountInputValidationEmpty": "অনুগ্ৰহ কৰি এটা পৰিমাণ দিয়ক",
+  "exchangeAmountInputValidationInvalid": "অবৈধ পৰিমাণ",
+  "exchangeAmountInputValidationZero": "পৰিমাণ শূন্যতকৈ বেছি হ'ব লাগিব",
+  "exchangeAmountInputValidationInsufficient": "অপৰ্যাপ্ত বেলেঞ্চ"
 }

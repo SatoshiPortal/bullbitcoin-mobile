@@ -1876,6 +1876,48 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **' the word \"Bitcoin\" or \"Crypto\" in the payment description. This will block your payment.'**
   String get fundExchangeSinpeWarningNoBitcoinDescription;
+
+  /// Title for the currency selection dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Select Currency'**
+  String get exchangeCurrencyDropdownTitle;
+
+  /// Validation message when no currency is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a currency'**
+  String get exchangeCurrencyDropdownValidation;
+
+  /// Title for the amount input field
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Amount'**
+  String get exchangeAmountInputTitle;
+
+  /// Validation message when amount field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an amount'**
+  String get exchangeAmountInputValidationEmpty;
+
+  /// Validation message when amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid amount'**
+  String get exchangeAmountInputValidationInvalid;
+
+  /// Validation message when amount is zero or negative
+  ///
+  /// In en, this message translates to:
+  /// **'Amount must be greater than zero'**
+  String get exchangeAmountInputValidationZero;
+
+  /// Validation message when amount exceeds available balance
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get exchangeAmountInputValidationInsufficient;
 }
 
 class _ExchangeLocalizationsDelegate

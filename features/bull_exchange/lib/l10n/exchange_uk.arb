@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Додати це як номер облікового запису",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Цей унікальний номер облікового запису створений для вас",
   "fundExchangeSinpeWarningNoBitcoin": "Не покласти",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " слово \"Bitcoin\" або \"Crypto\" в описі платежу. Заблокувати платіж."
+  "fundExchangeSinpeWarningNoBitcoinDescription": " слово \"Bitcoin\" або \"Crypto\" в описі платежу. Заблокувати платіж.",
+  "exchangeCurrencyDropdownTitle": "Оберіть валюту",
+  "exchangeAmountInputValidationInvalid": "Сума недійсна",
+  "exchangeAmountInputValidationInsufficient": "Недостатній баланс",
+  "exchangeAmountInputValidationEmpty": "Введіть суму",
+  "exchangeCurrencyDropdownValidation": "Оберіть валюту",
+  "exchangeAmountInputTitle": "Вхід",
+  "exchangeAmountInputValidationZero": "Кількість повинна бути більшою, ніж нуль"
 }

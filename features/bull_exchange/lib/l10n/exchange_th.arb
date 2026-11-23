@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "อย่าใส่",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "จํานวนบัญชีที่ไม่ซ้ํากันนี้ถูกสร้างขึ้นสําหรับคุณ",
   "fundExchangeSinpeWarningNoBitcoinDescription": " คําว่า \"Bitcoin\" หรือ \"Crypto\" ในคําอธิบายการชําระเงิน นี่คือบล็อกการชําระเงินของคุณ.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "เพิ่มจํานวนบัญชี"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "เพิ่มจํานวนบัญชี",
+  "exchangeCurrencyDropdownTitle": "เลือกสกุลเงิน",
+  "exchangeAmountInputValidationInvalid": "ปริมาณ",
+  "exchangeAmountInputValidationInsufficient": "สมดุล",
+  "exchangeAmountInputValidationEmpty": "กรุณาใส่จํานวนเงิน",
+  "exchangeCurrencyDropdownValidation": "เลือกสกุลเงิน",
+  "exchangeAmountInputTitle": "กรอก",
+  "exchangeAmountInputValidationZero": "จํานวนเงินที่ต้องการมากกว่าศูนย์"
 }

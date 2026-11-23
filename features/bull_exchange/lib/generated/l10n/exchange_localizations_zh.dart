@@ -922,4 +922,25 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' 付款说明中的“现金”或“现金”一词。 这将阻碍你们的支付.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => '选择性货币';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => '请选择货币';
+
+  @override
+  String get exchangeAmountInputTitle => '实际数额';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => '请列出数额';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => '无效数额';
+
+  @override
+  String get exchangeAmountInputValidationZero => '数额必须大于零';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => '结余不足';
 }

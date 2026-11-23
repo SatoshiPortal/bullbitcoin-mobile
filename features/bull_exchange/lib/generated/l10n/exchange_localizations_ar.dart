@@ -1005,4 +1005,26 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' كلمة \"بيتكوين\" أو \"كريبتو\" في وصف الدفع هذا سيمنع دفعك.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'العملة المختارة';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'يرجى اختيار العملة';
+
+  @override
+  String get exchangeAmountInputTitle => 'المبلغ';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'رجاءً إدخلْ كميةَ';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'المبلغ غير المسدد';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'يجب أن يكون المبلغ أكبر من الصفر';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'الرصيد غير الكافي';
 }

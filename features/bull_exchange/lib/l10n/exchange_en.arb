@@ -1174,5 +1174,33 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " the word \"Bitcoin\" or \"Crypto\" in the payment description. This will block your payment.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
+  },
+  "exchangeCurrencyDropdownTitle": "Select Currency",
+  "@exchangeCurrencyDropdownTitle": {
+    "description": "Title for the currency selection dropdown"
+  },
+  "exchangeCurrencyDropdownValidation": "Please select a currency",
+  "@exchangeCurrencyDropdownValidation": {
+    "description": "Validation message when no currency is selected"
+  },
+  "exchangeAmountInputTitle": "Enter Amount",
+  "@exchangeAmountInputTitle": {
+    "description": "Title for the amount input field"
+  },
+  "exchangeAmountInputValidationEmpty": "Please enter an amount",
+  "@exchangeAmountInputValidationEmpty": {
+    "description": "Validation message when amount field is empty"
+  },
+  "exchangeAmountInputValidationInvalid": "Invalid amount",
+  "@exchangeAmountInputValidationInvalid": {
+    "description": "Validation message when amount is invalid"
+  },
+  "exchangeAmountInputValidationZero": "Amount must be greater than zero",
+  "@exchangeAmountInputValidationZero": {
+    "description": "Validation message when amount is zero or negative"
+  },
+  "exchangeAmountInputValidationInsufficient": "Insufficient balance",
+  "@exchangeAmountInputValidationInsufficient": {
+    "description": "Validation message when amount exceeds available balance"
   }
 }

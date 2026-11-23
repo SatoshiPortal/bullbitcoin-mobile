@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Lisää tämä tilinumeroksi",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Tämä yksilöllinen tilinumero on luotu juuri sinua varten",
   "fundExchangeSinpeWarningNoBitcoin": "Älä laita",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " sanaa \"Bitcoin\" tai \"Crypto\" maksun kuvaukseen. Tämä estää maksusi."
+  "fundExchangeSinpeWarningNoBitcoinDescription": " sanaa \"Bitcoin\" tai \"Crypto\" maksun kuvaukseen. Tämä estää maksusi.",
+  "exchangeCurrencyDropdownTitle": "Valitse valuutta",
+  "exchangeCurrencyDropdownValidation": "Valitse valuutta",
+  "exchangeAmountInputTitle": "Syötä määrä",
+  "exchangeAmountInputValidationEmpty": "Anna määrä",
+  "exchangeAmountInputValidationInvalid": "Virheellinen määrä",
+  "exchangeAmountInputValidationZero": "Määrän on oltava suurempi kuin nolla",
+  "exchangeAmountInputValidationInsufficient": "Saldo ei riitä"
 }

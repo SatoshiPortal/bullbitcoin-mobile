@@ -1027,4 +1027,28 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' পেমেন্ট বিবরণে \"Bitcoin\" বা \"Crypto\" শব্দটি রাখবেন না। এতে আপনার পেমেন্ট ব্লক হতে পারে।';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'মুদ্রা নির্বাচন করুন';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'অনুগ্রহ করে একটি মুদ্রা নির্বাচন করুন';
+
+  @override
+  String get exchangeAmountInputTitle => 'পরিমাণ লিখুন';
+
+  @override
+  String get exchangeAmountInputValidationEmpty =>
+      'অনুগ্রহ করে একটি পরিমাণ লিখুন';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'অবৈধ পরিমাণ';
+
+  @override
+  String get exchangeAmountInputValidationZero => 'পরিমাণ শূন্যের বেশি হতে হবে';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'পর্যাপ্ত ব্যালেন্স নেই';
 }

@@ -1036,4 +1036,26 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' думата \"Bitcoin\" или \"Crypto\" в описанието на плащането. Това ще блокира вашето плащане.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Избери валута';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Моля, изберете валута';
+
+  @override
+  String get exchangeAmountInputTitle => 'Въведи сума';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Моля, въведете сума';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Невалидна сума';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Сумата трябва да бъде по-голяма от нула';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Недостатъчен баланс';
 }

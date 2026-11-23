@@ -1022,4 +1022,26 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' sanaa \"Bitcoin\" tai \"Crypto\" maksun kuvaukseen. Tämä estää maksusi.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Valitse valuutta';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Valitse valuutta';
+
+  @override
+  String get exchangeAmountInputTitle => 'Syötä määrä';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Anna määrä';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Virheellinen määrä';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Määrän on oltava suurempi kuin nolla';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Saldo ei riitä';
 }

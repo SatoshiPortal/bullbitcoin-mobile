@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "لا",
   "fundExchangeSinpeWarningNoBitcoinDescription": " كلمة \"بيتكوين\" أو \"كريبتو\" في وصف الدفع هذا سيمنع دفعك.",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "رقم الحساب الفريد هذا خلق فقط من أجلك",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "يضاف هذا كرقم الحساب"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "يضاف هذا كرقم الحساب",
+  "exchangeCurrencyDropdownTitle": "العملة المختارة",
+  "exchangeAmountInputValidationInvalid": "المبلغ غير المسدد",
+  "exchangeAmountInputValidationInsufficient": "الرصيد غير الكافي",
+  "exchangeAmountInputValidationEmpty": "رجاءً إدخلْ كميةَ",
+  "exchangeCurrencyDropdownValidation": "يرجى اختيار العملة",
+  "exchangeAmountInputTitle": "المبلغ",
+  "exchangeAmountInputValidationZero": "يجب أن يكون المبلغ أكبر من الصفر"
 }

@@ -1011,4 +1011,26 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' کلمه “Bitcoin” یا “Crypto” در شرح پرداخت. این کار پرداخت شما را مسدود خواهد کرد.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'انتخاب سکه';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'لطفا یک ارز را انتخاب کنید';
+
+  @override
+  String get exchangeAmountInputTitle => 'ورودی';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'لطفا یک مقدار را وارد کنید';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'مقدار Invalid';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'مقدار باید بیشتر از صفر باشد';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'عدم تعادل';
 }

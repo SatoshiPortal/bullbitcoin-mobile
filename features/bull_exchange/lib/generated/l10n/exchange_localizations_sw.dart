@@ -1026,4 +1026,26 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' neno \"Bitcoin\" au \"Crypto\" kwenye maelezo ya malipo. Hii itazuia malipo yako.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Chagua Sarafu';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Tafadhali chagua sarafu';
+
+  @override
+  String get exchangeAmountInputTitle => 'Weka Kiasi';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Tafadhali weka kiasi';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Kiasi batili';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Kiasi lazima kiwe zaidi ya sifuri';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Salio halitoshi';
 }

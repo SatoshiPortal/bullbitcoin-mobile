@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Mat daalo",
   "fundExchangeSinpeWarningNoBitcoinDescription": " payment description mein \"Bitcoin\" ya \"Crypto\" shabd. Isse aapki payment block ho jayegi.",
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Ise account number ke roop mein jodein",
-  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Yeh unique account number sirf aapke liye banaya gaya hai"
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Yeh unique account number sirf aapke liye banaya gaya hai",
+  "exchangeCurrencyDropdownTitle": "Currency Select Karo",
+  "exchangeCurrencyDropdownValidation": "Kripya ek currency select karo",
+  "exchangeAmountInputTitle": "Amount Enter Karo",
+  "exchangeAmountInputValidationEmpty": "Kripya ek amount enter karo",
+  "exchangeAmountInputValidationInvalid": "Invalid amount",
+  "exchangeAmountInputValidationZero": "Amount zero se zyada hona chahiye",
+  "exchangeAmountInputValidationInsufficient": "Insufficient balance"
 }

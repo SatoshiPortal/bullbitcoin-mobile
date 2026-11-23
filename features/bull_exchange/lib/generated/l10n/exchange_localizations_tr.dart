@@ -1021,4 +1021,27 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' ödeme açıklamasında \"Bitcoin\" veya \"Crypto\" kelimesi. Bu, ödemenizi engelleyecektir.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Para Seç';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'Lütfen bir para birimi seçin';
+
+  @override
+  String get exchangeAmountInputTitle => 'Girin';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Lütfen bir miktar girin';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Invalid miktarı';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Miktarı sıfırdan daha büyük olmalıdır';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Yeterli bakiye';
 }

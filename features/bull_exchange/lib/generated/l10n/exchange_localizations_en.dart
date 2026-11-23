@@ -1020,4 +1020,27 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' the word \"Bitcoin\" or \"Crypto\" in the payment description. This will block your payment.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Select Currency';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Please select a currency';
+
+  @override
+  String get exchangeAmountInputTitle => 'Enter Amount';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Please enter an amount';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Invalid amount';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Amount must be greater than zero';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'Insufficient balance';
 }

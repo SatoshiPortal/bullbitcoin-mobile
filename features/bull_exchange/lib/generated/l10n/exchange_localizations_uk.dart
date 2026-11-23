@@ -1032,4 +1032,26 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' слово \"Bitcoin\" або \"Crypto\" в описі платежу. Заблокувати платіж.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Оберіть валюту';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Оберіть валюту';
+
+  @override
+  String get exchangeAmountInputTitle => 'Вхід';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Введіть суму';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Сума недійсна';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Кількість повинна бути більшою, ніж нуль';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Недостатній баланс';
 }

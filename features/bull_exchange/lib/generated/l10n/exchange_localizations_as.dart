@@ -1026,4 +1026,28 @@ class ExchangeLocalizationsAs extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' পৰিশোধৰ বিৱৰণত \"Bitcoin\" বা \"Crypto\" শব্দ। এইটোৱে আপোনাৰ পৰিশোধ ব্লক কৰিব।';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'মুদ্ৰা বাছক';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'অনুগ্ৰহ কৰি এটা মুদ্ৰা বাছক';
+
+  @override
+  String get exchangeAmountInputTitle => 'পৰিমাণ দিয়ক';
+
+  @override
+  String get exchangeAmountInputValidationEmpty =>
+      'অনুগ্ৰহ কৰি এটা পৰিমাণ দিয়ক';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'অবৈধ পৰিমাণ';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'পৰিমাণ শূন্যতকৈ বেছি হ\'ব লাগিব';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'অপৰ্যাপ্ত বেলেঞ্চ';
 }

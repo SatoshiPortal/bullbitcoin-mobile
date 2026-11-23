@@ -1037,6 +1037,31 @@ class ExchangeLocalizationsPt extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' a palavra \"Bitcoin\" ou \"Crypto\" na descrição de pagamento. Isso irá bloquear o seu pagamento.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Selecione a moeda';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'Por favor, selecione uma moeda';
+
+  @override
+  String get exchangeAmountInputTitle => 'Digite o valor';
+
+  @override
+  String get exchangeAmountInputValidationEmpty =>
+      'Por favor, insira um montante';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Montante inválido';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'O montante deve ser superior a zero';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'Balança insuficiente';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2010,4 +2035,29 @@ class ExchangeLocalizationsPtBr extends ExchangeLocalizationsPt {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' a palavra \"Bitcoin\" ou \"Crypto\" na descrição de pagamento. Isso irá bloquear o seu pagamento.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Selecione a moeda';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'Por favor, selecione uma moeda';
+
+  @override
+  String get exchangeAmountInputTitle => 'Digite o valor';
+
+  @override
+  String get exchangeAmountInputValidationEmpty =>
+      'Por favor, insira um montante';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Montante inválido';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'O montante deve ser superior a zero';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'Balança insuficiente';
 }

@@ -1031,4 +1031,26 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' სიტყვა „Bitcoin“ ან „Crypto“ გადახდის აღწერაში. ეს დაბლოკავს თქვენს გადახდას.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'აირჩიეთ ვალუტა';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'გთხოვთ, აირჩიოთ ვალუტა';
+
+  @override
+  String get exchangeAmountInputTitle => 'შეიყვანეთ თანხა';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'გთხოვთ, შეიყვანოთ თანხა';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'არასწორი თანხა';
+
+  @override
+  String get exchangeAmountInputValidationZero => 'თანხა უნდა იყოს ნულზე მეტი';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'არასაკმარისი ბალანსი';
 }

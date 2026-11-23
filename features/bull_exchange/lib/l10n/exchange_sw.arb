@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Ongeza hii kama nambari ya akaunti",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Nambari hii ya kipekee ya akaunti imeundwa kwa ajili yako pekee",
   "fundExchangeSinpeWarningNoBitcoin": "Usiweke",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " neno \"Bitcoin\" au \"Crypto\" kwenye maelezo ya malipo. Hii itazuia malipo yako."
+  "fundExchangeSinpeWarningNoBitcoinDescription": " neno \"Bitcoin\" au \"Crypto\" kwenye maelezo ya malipo. Hii itazuia malipo yako.",
+  "exchangeCurrencyDropdownTitle": "Chagua Sarafu",
+  "exchangeCurrencyDropdownValidation": "Tafadhali chagua sarafu",
+  "exchangeAmountInputTitle": "Weka Kiasi",
+  "exchangeAmountInputValidationEmpty": "Tafadhali weka kiasi",
+  "exchangeAmountInputValidationInvalid": "Kiasi batili",
+  "exchangeAmountInputValidationZero": "Kiasi lazima kiwe zaidi ya sifuri",
+  "exchangeAmountInputValidationInsufficient": "Salio halitoshi"
 }

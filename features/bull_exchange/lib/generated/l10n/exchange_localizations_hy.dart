@@ -1036,4 +1036,27 @@ class ExchangeLocalizationsHy extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' «Bitcoin» կամ «Crypto» բառը վճարման նկարագրության մեջ։ Սա կարգելափակի ձեր վճարումը։';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Ընտրեք արժույթ';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Խնդրում ենք ընտրել արժույթ';
+
+  @override
+  String get exchangeAmountInputTitle => 'Մուտքագրեք գումարը';
+
+  @override
+  String get exchangeAmountInputValidationEmpty =>
+      'Խնդրում ենք մուտքագրել գումար';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Անվավեր գումար';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Գումարը պետք է զրոյից մեծ լինի';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Անբավարար մնացորդ';
 }

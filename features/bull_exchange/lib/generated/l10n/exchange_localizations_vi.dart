@@ -1031,4 +1031,26 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' từ \"Bitcoin\" hoặc \"Crypto\" trong phần mô tả thanh toán. Điều này sẽ chặn khoản thanh toán của bạn.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Chọn tiền tệ';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'Vui lòng chọn một loại tiền tệ';
+
+  @override
+  String get exchangeAmountInputTitle => 'Nhập số tiền';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Vui lòng nhập số tiền';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Số tiền không hợp lệ';
+
+  @override
+  String get exchangeAmountInputValidationZero => 'Số tiền phải lớn hơn không';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Số dư không đủ';
 }

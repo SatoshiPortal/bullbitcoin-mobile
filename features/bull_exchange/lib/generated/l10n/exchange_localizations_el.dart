@@ -1039,4 +1039,26 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' τη λέξη \"Bitcoin\" ή \"Crypto\" στην περιγραφή πληρωμής. Αυτό θα εμποδίσει την πληρωμή σας.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Επιλέξτε νόμισμα';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Επιλέξτε ένα νόμισμα';
+
+  @override
+  String get exchangeAmountInputTitle => 'Εισάγετε το ποσό';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Παρακαλώ εισάγετε ένα ποσό';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Ακυρωμένο ποσό';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Το ποσό πρέπει να είναι μεγαλύτερο από το μηδέν';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'Ανεπαρκή ισορροπία';
 }

@@ -999,4 +999,26 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' คําว่า \"Bitcoin\" หรือ \"Crypto\" ในคําอธิบายการชําระเงิน นี่คือบล็อกการชําระเงินของคุณ.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'เลือกสกุลเงิน';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'เลือกสกุลเงิน';
+
+  @override
+  String get exchangeAmountInputTitle => 'กรอก';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'กรุณาใส่จํานวนเงิน';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'ปริมาณ';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'จํานวนเงินที่ต้องการมากกว่าศูนย์';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'สมดุล';
 }

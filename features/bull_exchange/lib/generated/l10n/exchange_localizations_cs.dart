@@ -1022,4 +1022,27 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' slovo \"Bitcoin\" nebo \"Crypto\" v popisu platby. Vaše platba zablokuje.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Vyberte měnu';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'Vyberte měnu';
+
+  @override
+  String get exchangeAmountInputTitle => 'Zadejte částku';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'Zadejte částku';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Neplatné množství';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Částka musí být větší než nulová';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'Nedostatečná rovnováha';
 }

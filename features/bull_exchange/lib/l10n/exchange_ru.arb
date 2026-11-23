@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Не поставить",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Этот уникальный номер аккаунта создан только для вас",
   "fundExchangeSinpeWarningNoBitcoinDescription": " слово «Bitcoin» или «Crypto» в описании оплаты. Это блокирует вашу оплату.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавить это как номер счета"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавить это как номер счета",
+  "exchangeCurrencyDropdownTitle": "Выберите валюту",
+  "exchangeAmountInputValidationInvalid": "Неверная сумма",
+  "exchangeAmountInputValidationInsufficient": "Недостаточный баланс",
+  "exchangeAmountInputValidationEmpty": "Пожалуйста, введите сумму",
+  "exchangeCurrencyDropdownValidation": "Пожалуйста, выберите валюту",
+  "exchangeAmountInputTitle": "Введите сумму",
+  "exchangeAmountInputValidationZero": "Сумма должна быть больше нуля"
 }

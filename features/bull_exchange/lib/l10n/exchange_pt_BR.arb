@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Não ponha",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Este número de conta única é criado apenas para você",
   "fundExchangeSinpeWarningNoBitcoinDescription": " a palavra \"Bitcoin\" ou \"Crypto\" na descrição de pagamento. Isso irá bloquear o seu pagamento.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Adicione isso como número de conta"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Adicione isso como número de conta",
+  "exchangeCurrencyDropdownTitle": "Selecione a moeda",
+  "exchangeAmountInputValidationInvalid": "Montante inválido",
+  "exchangeAmountInputValidationInsufficient": "Balança insuficiente",
+  "exchangeAmountInputValidationEmpty": "Por favor, insira um montante",
+  "exchangeCurrencyDropdownValidation": "Por favor, selecione uma moeda",
+  "exchangeAmountInputTitle": "Digite o valor",
+  "exchangeAmountInputValidationZero": "O montante deve ser superior a zero"
 }

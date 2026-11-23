@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "დაამატეთ ეს ანგარიშის ნომრად",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "ეს უნიკალური ანგარიშის ნომერი შექმნილია სპეციალურად თქვენთვის",
   "fundExchangeSinpeWarningNoBitcoin": "არ ჩაწეროთ",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " სიტყვა „Bitcoin“ ან „Crypto“ გადახდის აღწერაში. ეს დაბლოკავს თქვენს გადახდას."
+  "fundExchangeSinpeWarningNoBitcoinDescription": " სიტყვა „Bitcoin“ ან „Crypto“ გადახდის აღწერაში. ეს დაბლოკავს თქვენს გადახდას.",
+  "exchangeCurrencyDropdownTitle": "აირჩიეთ ვალუტა",
+  "exchangeCurrencyDropdownValidation": "გთხოვთ, აირჩიოთ ვალუტა",
+  "exchangeAmountInputTitle": "შეიყვანეთ თანხა",
+  "exchangeAmountInputValidationEmpty": "გთხოვთ, შეიყვანოთ თანხა",
+  "exchangeAmountInputValidationInvalid": "არასწორი თანხა",
+  "exchangeAmountInputValidationZero": "თანხა უნდა იყოს ნულზე მეტი",
+  "exchangeAmountInputValidationInsufficient": "არასაკმარისი ბალანსი"
 }

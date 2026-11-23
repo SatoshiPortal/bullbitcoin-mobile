@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "不要",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "这一独一无二的账户编号只是为你们创造的",
   "fundExchangeSinpeWarningNoBitcoinDescription": " 付款说明中的“现金”或“现金”一词。 这将阻碍你们的支付.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "添加这一编号为账户编号"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "添加这一编号为账户编号",
+  "exchangeCurrencyDropdownTitle": "选择性货币",
+  "exchangeAmountInputValidationInvalid": "无效数额",
+  "exchangeAmountInputValidationInsufficient": "结余不足",
+  "exchangeAmountInputValidationEmpty": "请列出数额",
+  "exchangeCurrencyDropdownValidation": "请选择货币",
+  "exchangeAmountInputTitle": "实际数额",
+  "exchangeAmountInputValidationZero": "数额必须大于零"
 }

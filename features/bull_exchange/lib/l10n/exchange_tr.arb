@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Koymayın",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Bu eşsiz hesap numarası sadece sizin için yaratıldı",
   "fundExchangeSinpeWarningNoBitcoinDescription": " ödeme açıklamasında \"Bitcoin\" veya \"Crypto\" kelimesi. Bu, ödemenizi engelleyecektir.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Bunu hesap numarası olarak ekleyin"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Bunu hesap numarası olarak ekleyin",
+  "exchangeCurrencyDropdownTitle": "Para Seç",
+  "exchangeAmountInputValidationInvalid": "Invalid miktarı",
+  "exchangeAmountInputValidationInsufficient": "Yeterli bakiye",
+  "exchangeAmountInputValidationEmpty": "Lütfen bir miktar girin",
+  "exchangeCurrencyDropdownValidation": "Lütfen bir para birimi seçin",
+  "exchangeAmountInputTitle": "Girin",
+  "exchangeAmountInputValidationZero": "Miktarı sıfırdan daha büyük olmalıdır"
 }

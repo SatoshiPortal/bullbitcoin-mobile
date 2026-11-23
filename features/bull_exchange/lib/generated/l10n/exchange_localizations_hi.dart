@@ -1022,6 +1022,28 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' भुगतान विवरण में \"बिटकॉइन\" या \"क्रिप्टो\" शब्द। यह आपके भुगतान को अवरुद्ध करेगा।।';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'मुद्रा';
+
+  @override
+  String get exchangeCurrencyDropdownValidation => 'कृपया एक मुद्रा चुनें';
+
+  @override
+  String get exchangeAmountInputTitle => 'राशि दर्ज करें';
+
+  @override
+  String get exchangeAmountInputValidationEmpty => 'कृपया राशि दर्ज करें';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'अमान्य राशि';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'राशि शून्य से अधिक होना चाहिए';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient => 'अपर्याप्त संतुलन';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -1988,4 +2010,29 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get fundExchangeSinpeWarningNoBitcoinDescription =>
       ' payment description mein \"Bitcoin\" ya \"Crypto\" shabd. Isse aapki payment block ho jayegi.';
+
+  @override
+  String get exchangeCurrencyDropdownTitle => 'Currency Select Karo';
+
+  @override
+  String get exchangeCurrencyDropdownValidation =>
+      'Kripya ek currency select karo';
+
+  @override
+  String get exchangeAmountInputTitle => 'Amount Enter Karo';
+
+  @override
+  String get exchangeAmountInputValidationEmpty =>
+      'Kripya ek amount enter karo';
+
+  @override
+  String get exchangeAmountInputValidationInvalid => 'Invalid amount';
+
+  @override
+  String get exchangeAmountInputValidationZero =>
+      'Amount zero se zyada hona chahiye';
+
+  @override
+  String get exchangeAmountInputValidationInsufficient =>
+      'Insufficient balance';
 }

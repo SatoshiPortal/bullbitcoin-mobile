@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Tragen Sie nicht",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Diese einzigartige Kontonummer wird nur für Sie erstellt.",
   "fundExchangeSinpeWarningNoBitcoinDescription": "das Wort „Bitcoin“ oder „Crypto“ in der Zahlungsbeschreibung. Dies wird Ihre Zahlung blockieren.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Dies als Kontonummer hinzufügen"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Dies als Kontonummer hinzufügen",
+  "exchangeCurrencyDropdownTitle": "Währung wählen",
+  "exchangeAmountInputValidationInvalid": "Ungültiger Betrag",
+  "exchangeAmountInputValidationInsufficient": "Unzureichendes Guthaben",
+  "exchangeAmountInputValidationEmpty": "Bitte geben Sie einen Betrag ein.",
+  "exchangeCurrencyDropdownValidation": "Bitte wählen Sie eine Währung.",
+  "exchangeAmountInputTitle": "Betrag eingeben",
+  "exchangeAmountInputValidationZero": "Betrag muss größer als Null sein"
 }

@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Thêm số này làm số tài khoản",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Số tài khoản riêng này được tạo dành riêng cho bạn",
   "fundExchangeSinpeWarningNoBitcoin": "Không được ghi",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " từ \"Bitcoin\" hoặc \"Crypto\" trong phần mô tả thanh toán. Điều này sẽ chặn khoản thanh toán của bạn."
+  "fundExchangeSinpeWarningNoBitcoinDescription": " từ \"Bitcoin\" hoặc \"Crypto\" trong phần mô tả thanh toán. Điều này sẽ chặn khoản thanh toán của bạn.",
+  "exchangeCurrencyDropdownTitle": "Chọn tiền tệ",
+  "exchangeCurrencyDropdownValidation": "Vui lòng chọn một loại tiền tệ",
+  "exchangeAmountInputTitle": "Nhập số tiền",
+  "exchangeAmountInputValidationEmpty": "Vui lòng nhập số tiền",
+  "exchangeAmountInputValidationInvalid": "Số tiền không hợp lệ",
+  "exchangeAmountInputValidationZero": "Số tiền phải lớn hơn không",
+  "exchangeAmountInputValidationInsufficient": "Số dư không đủ"
 }

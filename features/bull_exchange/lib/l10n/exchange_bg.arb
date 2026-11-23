@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Не поставяйте",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Този уникален номер на сметката е създаден специално за вас",
   "fundExchangeSinpeWarningNoBitcoinDescription": " думата \"Bitcoin\" или \"Crypto\" в описанието на плащането. Това ще блокира вашето плащане.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавете това като номер на сметката"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавете това като номер на сметката",
+  "exchangeCurrencyDropdownTitle": "Избери валута",
+  "exchangeCurrencyDropdownValidation": "Моля, изберете валута",
+  "exchangeAmountInputTitle": "Въведи сума",
+  "exchangeAmountInputValidationEmpty": "Моля, въведете сума",
+  "exchangeAmountInputValidationInvalid": "Невалидна сума",
+  "exchangeAmountInputValidationZero": "Сумата трябва да бъде по-голяма от нула",
+  "exchangeAmountInputValidationInsufficient": "Недостатъчен баланс"
 }

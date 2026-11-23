@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "লিখবেন না",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "এই বিশেষ অ্যাকাউন্ট নম্বরটি আপনার জন্যই তৈরি করা হয়েছে",
   "fundExchangeSinpeWarningNoBitcoinDescription": " পেমেন্ট বিবরণে \"Bitcoin\" বা \"Crypto\" শব্দটি রাখবেন না। এতে আপনার পেমেন্ট ব্লক হতে পারে।",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "এই নম্বরটি অ্যাকাউন্ট নম্বর হিসেবে যোগ করুন"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "এই নম্বরটি অ্যাকাউন্ট নম্বর হিসেবে যোগ করুন",
+  "exchangeCurrencyDropdownTitle": "মুদ্রা নির্বাচন করুন",
+  "exchangeAmountInputValidationInvalid": "অবৈধ পরিমাণ",
+  "exchangeAmountInputValidationInsufficient": "পর্যাপ্ত ব্যালেন্স নেই",
+  "exchangeAmountInputValidationEmpty": "অনুগ্রহ করে একটি পরিমাণ লিখুন",
+  "exchangeCurrencyDropdownValidation": "অনুগ্রহ করে একটি মুদ্রা নির্বাচন করুন",
+  "exchangeAmountInputTitle": "পরিমাণ লিখুন",
+  "exchangeAmountInputValidationZero": "পরিমাণ শূন্যের বেশি হতে হবে"
 }

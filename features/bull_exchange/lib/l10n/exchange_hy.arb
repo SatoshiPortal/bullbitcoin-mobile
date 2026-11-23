@@ -269,5 +269,12 @@
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Ավելացրեք սա որպես հաշվի համար",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Այս եզակի հաշվի համարը ստեղծված է հատուկ ձեզ համար",
   "fundExchangeSinpeWarningNoBitcoin": "Մի նշեք",
-  "fundExchangeSinpeWarningNoBitcoinDescription": " «Bitcoin» կամ «Crypto» բառը վճարման նկարագրության մեջ։ Սա կարգելափակի ձեր վճարումը։"
+  "fundExchangeSinpeWarningNoBitcoinDescription": " «Bitcoin» կամ «Crypto» բառը վճարման նկարագրության մեջ։ Սա կարգելափակի ձեր վճարումը։",
+  "exchangeAmountInputTitle": "Մուտքագրեք գումարը",
+  "exchangeAmountInputValidationEmpty": "Խնդրում ենք մուտքագրել գումար",
+  "exchangeAmountInputValidationInvalid": "Անվավեր գումար",
+  "exchangeAmountInputValidationInsufficient": "Անբավարար մնացորդ",
+  "exchangeCurrencyDropdownTitle": "Ընտրեք արժույթ",
+  "exchangeCurrencyDropdownValidation": "Խնդրում ենք ընտրել արժույթ",
+  "exchangeAmountInputValidationZero": "Գումարը պետք է զրոյից մեծ լինի"
 }

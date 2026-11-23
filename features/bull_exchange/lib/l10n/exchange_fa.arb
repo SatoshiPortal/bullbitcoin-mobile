@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "قرار ندهید",
   "fundExchangeSinpeWarningNoBitcoinDescription": " کلمه “Bitcoin” یا “Crypto” در شرح پرداخت. این کار پرداخت شما را مسدود خواهد کرد.",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "این شماره حساب منحصر به فرد فقط برای شما ایجاد شده است",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "اضافه کردن این به عنوان شماره حساب"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "اضافه کردن این به عنوان شماره حساب",
+  "exchangeCurrencyDropdownTitle": "انتخاب سکه",
+  "exchangeCurrencyDropdownValidation": "لطفا یک ارز را انتخاب کنید",
+  "exchangeAmountInputTitle": "ورودی",
+  "exchangeAmountInputValidationEmpty": "لطفا یک مقدار را وارد کنید",
+  "exchangeAmountInputValidationInvalid": "مقدار Invalid",
+  "exchangeAmountInputValidationZero": "مقدار باید بیشتر از صفر باشد",
+  "exchangeAmountInputValidationInsufficient": "عدم تعادل"
 }

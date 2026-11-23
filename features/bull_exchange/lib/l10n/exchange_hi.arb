@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "नहीं",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "यह अद्वितीय खाता संख्या आपके लिए बनाई गई है",
   "fundExchangeSinpeWarningNoBitcoinDescription": " भुगतान विवरण में \"बिटकॉइन\" या \"क्रिप्टो\" शब्द। यह आपके भुगतान को अवरुद्ध करेगा।।",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "इसे खाता संख्या के रूप में जोड़ें"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "इसे खाता संख्या के रूप में जोड़ें",
+  "exchangeCurrencyDropdownTitle": "मुद्रा",
+  "exchangeAmountInputValidationInvalid": "अमान्य राशि",
+  "exchangeAmountInputValidationInsufficient": "अपर्याप्त संतुलन",
+  "exchangeAmountInputValidationEmpty": "कृपया राशि दर्ज करें",
+  "exchangeCurrencyDropdownValidation": "कृपया एक मुद्रा चुनें",
+  "exchangeAmountInputTitle": "राशि दर्ज करें",
+  "exchangeAmountInputValidationZero": "राशि शून्य से अधिक होना चाहिए"
 }

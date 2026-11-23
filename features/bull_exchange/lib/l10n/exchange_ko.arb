@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "칫",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "이 독특한 계정 번호는 당신을 위해 다만 창조됩니다",
   "fundExchangeSinpeWarningNoBitcoinDescription": " 지불 설명에서 \"Bitcoin\"또는 \"Crypto\"라는 단어. 결제를 차단합니다.",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "계정 번호로 추가"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "계정 번호로 추가",
+  "exchangeCurrencyDropdownTitle": "통화 선택",
+  "exchangeAmountInputValidationInvalid": "잘못된 금액",
+  "exchangeAmountInputValidationInsufficient": "충분한 균형",
+  "exchangeAmountInputValidationEmpty": "금액",
+  "exchangeCurrencyDropdownValidation": "통화 선택",
+  "exchangeAmountInputTitle": "자주 묻는 질문",
+  "exchangeAmountInputValidationZero": "금액은 0 이상이어야합니다"
 }

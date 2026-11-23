@@ -269,5 +269,12 @@
   "fundExchangeSinpeWarningNoBitcoin": "Μην βάζεις",
   "fundExchangeSinpeWarningNoBitcoinDescription": " τη λέξη \"Bitcoin\" ή \"Crypto\" στην περιγραφή πληρωμής. Αυτό θα εμποδίσει την πληρωμή σας.",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Αυτός ο μοναδικός αριθμός λογαριασμού δημιουργείται μόνο για εσάς",
-  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Προσθέστε αυτό ως τον αριθμό λογαριασμού"
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Προσθέστε αυτό ως τον αριθμό λογαριασμού",
+  "exchangeCurrencyDropdownTitle": "Επιλέξτε νόμισμα",
+  "exchangeAmountInputValidationInvalid": "Ακυρωμένο ποσό",
+  "exchangeAmountInputValidationInsufficient": "Ανεπαρκή ισορροπία",
+  "exchangeAmountInputValidationEmpty": "Παρακαλώ εισάγετε ένα ποσό",
+  "exchangeCurrencyDropdownValidation": "Επιλέξτε ένα νόμισμα",
+  "exchangeAmountInputTitle": "Εισάγετε το ποσό",
+  "exchangeAmountInputValidationZero": "Το ποσό πρέπει να είναι μεγαλύτερο από το μηδέν"
 }
