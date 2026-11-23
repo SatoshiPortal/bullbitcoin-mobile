@@ -1,3 +1,5 @@
+import '../../purchase_test_support.dart';
+
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:flutter/rendering.dart';
@@ -6,14 +8,7 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
-import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
-import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bull_exchange/testing.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -28,8 +23,6 @@ class _MockBuyBloc extends Mock implements BuyBloc {}
 class _MockExchangeCubit extends Mock implements ExchangeCubit {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
-
-class _MockExchangeFacade extends Mock implements ExchangeFacade {}
 
 void main() {
   setUpAll(() async {
@@ -61,7 +54,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [BlocProvider<BuyBloc>.value(value: bloc)],
-          child: const BuyConfirmScreen(),
+          child: const BuyConfirmScreen(bitcoinAsset: 'assets/icons/btc.png'),
         ),
       ),
     );
@@ -193,19 +186,15 @@ void main() {
       when(() => exchange.state)
           .thenReturn(const ExchangeState(userSummary: user));
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
-      final access = _MockExchangeFacade();
-      when(() => access.guardTradingEntry())
-          .thenAnswer((_) async => const Ok(ExchangeAvailability.ready));
-      locator.pushNewScope(
-        init: (scope) {
-          scope.registerFactory<BuyBloc>(() => bloc);
-          scope.registerSingleton<ExchangeFacade>(access);
-        },
-      );
-      addTearDown(locator.popScope);
       final router = GoRouter(
         initialLocation: '/buy',
-        routes: BuyRouter.routes,
+        routes: BuyRouter.routes(
+          createBloc: () => bloc,
+          payoutField: emptyPurchaseField,
+          bitcoinAsset: 'assets/icons/btc.png',
+          onClose: (_) {},
+          openOrder: (_, _) {},
+        ),
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(

@@ -1,9 +1,7 @@
+import 'package:bull_exchange/testing.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

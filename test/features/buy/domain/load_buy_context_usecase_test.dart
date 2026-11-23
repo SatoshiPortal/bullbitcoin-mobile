@@ -1,13 +1,13 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import '../../../core/exchange/fake_exchange_users.dart';
+
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
+import 'package:bull_exchange/testing.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,14 +15,13 @@ import 'package:primitives/primitives.dart';
 
 import '../../../fake_index_price_reader.dart';
 
-class _MockGetUserSummary extends Mock
-    implements GetExchangeUserSummaryUsecase {}
+class _ExchangeUsers extends Mock implements ExchangeUserOperations {}
 
 class _MockGetSettings extends Mock implements Preferences {}
 
-class _MockGetWallets extends Mock implements GetWalletsUsecase {}
+class _Inventory extends Mock implements WalletInventory {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _MockGetNetworkFees extends Mock implements Fees {}
 
@@ -39,100 +38,136 @@ SettingsEntity _settings({Environment environment = Environment.mainnet}) =>
     );
 
 void main() {
-  late _MockGetUserSummary getUserSummary;
+  setUpAll(BullSdk.init);
+  tearDownAll(BullSdk.dispose);
+  late _ExchangeUsers getUserSummary;
   late _MockGetSettings getSettings;
-  late _MockGetWallets getWallets;
-  late _MockGetReceiveAddress getReceiveAddress;
+  late _Inventory getWallets;
+  late _Native getReceiveAddress;
   late _MockGetNetworkFees getNetworkFees;
   late FakeIndexPriceReader getIndexPrice;
   late LoadBuyContextUsecase usecase;
 
   setUp(() {
-    getUserSummary = _MockGetUserSummary();
+    getUserSummary = _ExchangeUsers();
     getSettings = _MockGetSettings();
-    getWallets = _MockGetWallets();
-    getReceiveAddress = _MockGetReceiveAddress();
+    getWallets = _Inventory();
+    getReceiveAddress = _Native();
     getNetworkFees = _MockGetNetworkFees();
     getIndexPrice = FakeIndexPriceReader();
     usecase = LoadBuyContextUsecase(
-      getExchangeUserSummaryUsecase: getUserSummary,
+      exchange: fakeExchangeUsers(getUserSummary, getUserSummary),
       getSettingsUsecase: getSettings,
-      getWalletsUsecase: getWallets,
-      getReceiveAddressUsecase: getReceiveAddress,
+      payouts: ExchangePayoutWallets(getWallets, getReceiveAddress),
       fees: getNetworkFees,
       getIndexPrice: getIndexPrice.call,
     );
   });
 
-  // Every method here wraps a core use-case that still throws. The point of
-  // the wrapper is that nothing raw escapes into the bloc.
-  test('a failed summary read is sanitized, reason kept for logs', () async {
-    when(getUserSummary.execute).thenThrow(Exception(_rawReason));
-
+  test('does not publish raw summary exceptions', () async {
+    when(getSettings.fetch).thenAnswer((_) async => Ok(_settings()));
+    when(getUserSummary.getUserSummary).thenThrow(Exception(_rawReason));
     final result = await usecase.userSummaryAndSettings();
-
-    switch (result) {
-      case Ok():
-        fail('a failed read must not produce a summary');
-      case Err(:final failure):
-        expect(failure, isA<BuyUnexpectedFailure>());
-        expect(failure.logMessage, contains('secret123'));
-    }
-  });
-
-  test('returns the wallets', () async {
-    when(getWallets.execute).thenAnswer((_) async => Ok(<Wallet>[]));
-
-    final result = await usecase.wallets();
-
-    expect((result as Ok<List<Wallet>, BuyFailure>).value, isEmpty);
-  });
-
-  test('a failed wallet read is sanitized', () async {
-    // The wallet use case returns a failure now rather than throwing: the
-    // repository is the try/catch boundary (#1895).
-    when(getWallets.execute).thenAnswer(
-      (_) async => const Err<List<Wallet>, WalletFailure>(
-        WalletStorageFailure(_rawReason),
-      ),
+    expect(result, isA<Err<Object, BuyFailure>>());
+    expect(
+      (result as Err<Object, BuyFailure>).failure.logMessage,
+      isNot(contains(_rawReason)),
     );
-
-    final result = await usecase.wallets();
-
-    final failure = (result as Err<List<Wallet>, BuyFailure>).failure;
-    expect(failure, isA<BuyUnexpectedFailure>());
-    // The wallet layer's reason must not survive into this feature's family.
-    expect(failure.logMessage, isNot(contains(_rawReason)));
   });
 
-  test('returns the payout address', () async {
-    final address = WalletAddress(
-      walletId: 'wallet-1',
-      index: 0,
-      address: 'bc1qpayoutaddress',
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
+  test('looks up only the two chains in the active environment', () async {
+    when(() => getWallets.walletsForNetwork(BitcoinNetwork.testnet))
+        .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
+    when(() => getWallets.walletsForNetwork(LiquidNetwork.testnet))
+        .thenAnswer((_) async => Ok(walletSelectionForTesting([])));
+    final result = await usecase.wallets(Environment.testnet);
+    expect((result as Ok<List<WalletRegistration>, BuyFailure>).value, isEmpty);
+    verifyInOrder([
+      () => getWallets.walletsForNetwork(BitcoinNetwork.testnet),
+      () => getWallets.walletsForNetwork(LiquidNetwork.testnet),
+    ]);
+    verifyNoMoreInteractions(getWallets);
+  });
+
+  test('does not treat a locked inventory as an empty wallet list', () async {
+    when(() => getWallets.walletsForNetwork(BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => const Err(KeystoreLockedFailure()));
+    final result = await usecase.wallets(Environment.mainnet);
+    expect(result, isA<Err<List<WalletRegistration>, BuyFailure>>());
+    verifyZeroInteractions(getReceiveAddress);
+  });
+
+  test('prefers a unique Liquid default without breaking a tie', () {
+    final bitcoin = walletRegistrationForTesting(
+      id: 'bitcoin',
+      network: BitcoinNetwork.mainnet,
+      isDefault: true,
     );
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) async => address);
-
-    final result = await usecase.receiveAddress(walletId: 'wallet-1');
-
-    expect((result as Ok<WalletAddress, BuyFailure>).value, address);
+    final liquid = walletRegistrationForTesting(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      isDefault: true,
+    );
+    final secondLiquid = walletRegistrationForTesting(
+      id: 'liquid-duplicate',
+      network: LiquidNetwork.mainnet,
+      isDefault: true,
+    );
+    expect(
+      LoadBuyContextUsecase.initialWallet([bitcoin, liquid]),
+      same(liquid),
+    );
+    expect(LoadBuyContextUsecase.initialWallet([bitcoin]), same(bitcoin));
+    expect(
+      LoadBuyContextUsecase.initialWallet([bitcoin, liquid, secondLiquid]),
+      isNull,
+    );
   });
 
-  test('a failed address derivation is sanitized, never raw', () async {
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenThrow(Exception(_rawReason));
+  test(
+    'uses the native current address only while the wallet is authorized',
+    () async {
+      final wallet = walletRegistrationForTesting(
+        id: 'buy-wallet',
+        network: BitcoinNetwork.mainnet,
+      );
+      final key = WalletKey(id: wallet.id, network: wallet.network);
+      const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
+      when(() => getWallets.readWallet(wallet.id))
+          .thenAnswer((_) async => Ok(wallet));
+      when(() => getReceiveAddress.receive(key, advance: false))
+          .thenAnswer((_) async => const Ok((address: address, index: 2)));
+      final issued = await usecase.receiveAddress(wallet: wallet);
+      expect((issued as Ok<String, BuyFailure>).value, address);
+      verify(() => getWallets.readWallet(wallet.id)).called(2);
 
-    final result = await usecase.receiveAddress(walletId: 'wallet-1');
+      var reads = 0;
+      when(() => getWallets.readWallet(wallet.id)).thenAnswer(
+        (_) async =>
+            ++reads == 1 ? Ok(wallet) : const Err(KeystoreLockedFailure()),
+      );
+      final invalidated = await usecase.receiveAddress(wallet: wallet);
+      expect(invalidated, isA<Err<String, BuyFailure>>());
+      verify(() => getReceiveAddress.receive(key, advance: false)).called(2);
+    },
+  );
 
-    switch (result) {
-      case Ok():
-        fail('a failed derivation must not report an address');
-      case Err(:final failure):
-        expect(failure, isA<BuyUnexpectedFailure>());
-    }
+  test('refuses an address issued for the wrong network', () async {
+    final wallet = walletRegistrationForTesting(
+      id: 'testnet-wallet',
+      network: BitcoinNetwork.testnet,
+    );
+    final key = WalletKey(id: wallet.id, network: wallet.network);
+    const mainnetAddress = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
+    when(() => getWallets.readWallet(wallet.id))
+        .thenAnswer((_) async => Ok(wallet));
+    when(() => getReceiveAddress.receive(key, advance: false))
+        .thenAnswer((_) async => const Ok((address: mainnetAddress, index: 0)));
+
+    expect(
+      await usecase.receiveAddress(wallet: wallet),
+      isA<Err<String, BuyFailure>>(),
+    );
   });
 
   test('returns Liquid fees on the configured testnet', () async {

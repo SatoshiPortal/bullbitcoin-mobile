@@ -9,3 +9,5 @@ library;
 
 export 'src/testing/testing.dart'
     show FakeSecureStoragePlatform, ExchangeKeychainProbe;
+export 'src/testing/wallet_inventory_fixtures.dart'
+    show walletRegistrationForTesting, walletSelectionForTesting;

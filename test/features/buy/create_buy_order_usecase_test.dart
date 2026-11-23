@@ -1,8 +1,7 @@
+import 'package:bull_exchange/testing.dart';
 import 'package:exchange/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
-import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +21,43 @@ class _MockBuyOrder extends Mock implements BuyOrder {}
 class _MockLogger extends Mock implements Logger {}
 
 void main() {
+  test(
+    'an environment change refuses payout before Payjoin or Exchange',
+    () async {
+      final orders = _MockOrders();
+      final settings = _MockSettingsRepository();
+      final receiver = _MockPayjoinReceiver();
+      final policy = _MockPayjoinPolicyAccess();
+      when(settings.fetch).thenAnswer(
+        (_) async => const Ok(
+          SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        ),
+      );
+      final usecase = CreateBuyOrderUsecase(
+        exchange: exchangeForTesting(orders: (_) => orders),
+        settingsRepository: settings,
+        payjoinReceiver: receiver,
+        payjoinPolicy: policy,
+      );
+      final result = await usecase.execute(
+        toAddress: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        isLiquid: false,
+        isOwner: true,
+        expectedEnvironment: Environment.mainnet,
+      );
+      expect(result, isA<Err<BuyOrder, BuyFailure>>());
+      verifyZeroInteractions(policy);
+      verifyZeroInteractions(receiver);
+      verifyZeroInteractions(orders);
+    },
+  );
+
   test('regtest refuses creation before backend or payjoin access', () async {
     final mainnet = _MockOrders();
     final testnet = _MockOrders();
