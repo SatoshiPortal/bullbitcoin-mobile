@@ -36,6 +36,30 @@ Map<String, Object?> _rpcError() => {
 };
 
 void main() {
+  test('strict envelope keeps rejected rows and their raw count', () async {
+    final api = bbx(
+      FakeHttp(
+        body: {
+          'result': {
+            'elements': [
+              _order(),
+              {'orderId': 'broken'},
+              _order(orderId: ''),
+            ],
+          },
+        },
+      ),
+    ).orders;
+    final page = valueOf(await api.listOrderSummaries(requireElements: true));
+    expect(page.rawCount, 3);
+    expect(page.orders, hasLength(1));
+    expect(page.rejected, hasLength(2));
+    final missing = bbx(FakeHttp(body: {'result': {}})).orders;
+    expect(
+      await failedCall(missing.listOrderSummaries(requireElements: true)),
+      isA<BbxResponseFormatFailure>(),
+    );
+  });
   group('complete order summary page', () {
     test('requires an explicit list, even for the last page', () async {
       for (final result in <Map<String, Object?>>[

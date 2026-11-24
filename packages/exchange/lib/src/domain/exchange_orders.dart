@@ -77,6 +77,7 @@ abstract interface class ExchangeOrders {
   Future<Result<Order, ExchangeFailure>> getOrder(String orderId);
 
   /// No matching transaction or no stored session returns `Ok(null)`.
+  /// Rejected rows make an absent transaction uncertain and return a failure.
   @useResult
   Future<Result<Order?, ExchangeFailure>> getOrderByTxId(String txId);
 
