@@ -98,6 +98,7 @@ ExchangeHomeScreen _dashboard({
   Future<void> Function()? refreshAccount,
 }) => ExchangeHomeScreen(
   watchDashboard: ExchangeSessionScope.watchDashboard,
+  watchUnreadSupportMessages: (_) => 0,
   exchange: () => locator<Exchange>(),
   preferences: () => locator<Preferences>(),
   brandAsset: Assets.logos.bbLogoSmall.path,

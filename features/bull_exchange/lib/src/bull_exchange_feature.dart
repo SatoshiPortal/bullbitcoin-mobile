@@ -180,6 +180,8 @@ final class BullExchangeFeature {
         currentAccess: () => exchange().currentAccess,
         watchAccess: () => exchange().watchAccess(),
         watchDashboard: ExchangeSessionScope.watchDashboard,
+        watchUnreadSupportMessages:
+            ExchangeSessionScope.watchUnreadSupportMessages,
         refreshAccount: ExchangeSessionScope.refresh,
         stopDca: ExchangeSessionScope.stopDca,
         onOpenSettings: onOpenSettings,
@@ -221,8 +223,7 @@ final class BullExchangeFeature {
         ),
         loginLabel: (context) => context.loc.exchangeLoginButton,
         failureMessage: failureMessage,
-        onMessagesRead: (context) =>
-            unawaited(ExchangeSessionScope.markSupportMessagesRead(context)),
+        onMessagesRead: ExchangeSessionScope.markSupportMessagesRead,
         onExit: (context, fromExchange) {
           if (fromExchange) {
             BullExchangeNavigation.goToDashboard(context);

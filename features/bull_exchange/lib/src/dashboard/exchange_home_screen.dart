@@ -29,6 +29,9 @@ typedef ExchangeDashboardState = ExchangeState;
 
 class ExchangeHomeScreen extends StatelessWidget {
   final ExchangeDashboardState Function(BuildContext) watchDashboard;
+
+  /// The unread support messages the chat icon shows; zero hides it.
+  final int Function(BuildContext) watchUnreadSupportMessages;
   final Exchange Function() exchange;
   final Preferences Function() preferences;
   final String brandAsset;
@@ -47,6 +50,7 @@ class ExchangeHomeScreen extends StatelessWidget {
 
   const ExchangeHomeScreen({
     required this.watchDashboard,
+    required this.watchUnreadSupportMessages,
     required this.exchange,
     required this.preferences,
     required this.brandAsset,
@@ -67,6 +71,7 @@ class ExchangeHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final unreadSupportMessages = watchUnreadSupportMessages(context);
     final ExchangeLoaded state;
     switch (watchDashboard(context)) {
       case ExchangeLoadFailed(:final failure):

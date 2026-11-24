@@ -16,6 +16,7 @@ typedef ExchangeDashboardHost = ({
   ExchangeAccess Function() currentAccess,
   Stream<ExchangeAccess> Function() watchAccess,
   ExchangeDashboardState Function(BuildContext) watchDashboard,
+  int Function(BuildContext) watchUnreadSupportMessages,
   Future<void> Function(BuildContext) refreshAccount,
   Future<void> Function(BuildContext) stopDca,
   void Function(BuildContext) onOpenSettings,
@@ -96,6 +97,7 @@ class _DashboardContentState extends State<_DashboardContent> {
     final host = widget.host;
     return ExchangeHomeScreen(
       watchDashboard: host.watchDashboard,
+      watchUnreadSupportMessages: host.watchUnreadSupportMessages,
       exchange: host.exchange,
       preferences: host.preferences,
       brandAsset: widget.brandAsset,

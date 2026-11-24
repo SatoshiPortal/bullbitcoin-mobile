@@ -8,6 +8,8 @@ import 'package:primitives/primitives.dart';
 
 import '../dashboard/exchange_home_screen.dart';
 import '../recipients/recipients_scope.dart';
+import '../support_chat/presentation/support_unread_bloc.dart';
+import '../support_chat/presentation/support_unread_machine.dart';
 import 'exchange_bloc.dart';
 import 'exchange_event.dart';
 import 'exchange_listener.dart';
@@ -38,8 +40,19 @@ class ExchangeSessionScope extends StatefulWidget {
   static ExchangeDashboardState watchDashboard(BuildContext context) =>
       context.select((ExchangeBloc bloc) => bloc.state);
 
-  static Future<void> refresh(BuildContext context) async =>
-      context.read<ExchangeBloc>().add(const ExchangeRefreshRequested());
+  static Future<void> refresh(BuildContext context) async {
+    context.read<ExchangeBloc>().add(const ExchangeRefreshRequested());
+    context.read<SupportUnreadBloc>().add(const UnreadRecheckRequested());
+  }
+
+  /// The unread support messages the chat icon shows; zero hides it.
+  static int watchUnreadSupportMessages(BuildContext context) => context.select(
+    (SupportUnreadBloc bloc) => supportUnreadBadge(bloc.state),
+  );
+
+  /// The support chat showed its newest messages.
+  static void markSupportMessagesRead(BuildContext context) =>
+      context.read<SupportUnreadBloc>().add(const UnreadChatShown());
 
   static Future<void> stopDca(BuildContext context) async =>
       context.read<ExchangeBloc>().add(const ExchangeStopDcaRequested());
@@ -76,15 +89,27 @@ class _ExchangeSessionScopeState extends State<ExchangeSessionScope> {
     },
   );
 
+  late final SupportUnreadBloc _unread = SupportUnreadBloc(
+    readCount: _capability.readUnreadSupportCount,
+    markRead: _capability.markSupportMessagesRead,
+    currentAccess: () => _capability.currentAccess,
+    accessChanges: _capability.watchAccess(),
+    supportMessages: _capability.watchSupportMessages(),
+  );
+
   @override
   void dispose() {
     unawaited(_bloc.close());
+    unawaited(_unread.close());
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => BlocProvider<ExchangeBloc>.value(
-    value: _bloc,
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider<ExchangeBloc>.value(value: _bloc),
+      BlocProvider<SupportUnreadBloc>.value(value: _unread),
+    ],
     child: RecipientsScope(
       exchange: widget.exchange,
       preferences: widget.preferences,
@@ -95,6 +120,7 @@ class _ExchangeSessionScopeState extends State<ExchangeSessionScope> {
           // The reconnect covers pushes from now on; this covers whatever was
           // pushed while the app was hidden and the socket was down.
           _bloc.add(const ExchangeRefreshRequested());
+          _unread.add(const UnreadRecheckRequested());
         },
         child: widget.child,
       ),
