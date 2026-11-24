@@ -4188,5 +4188,9 @@
   "exchangePayinReceived": "The exchange received your payment",
   "@exchangePayinReceived": {
     "description": "Sell/pay done: the exchange saw the payin (not 'order completed')"
+  },
+  "exchangePayinCoinsUnavailable": "Your wallet's coins could not be loaded. Try again.",
+  "@exchangePayinCoinsUnavailable": {
+    "description": "Coin selection on the sell or pay review: the wallet could not list its coins"
   }
 }
