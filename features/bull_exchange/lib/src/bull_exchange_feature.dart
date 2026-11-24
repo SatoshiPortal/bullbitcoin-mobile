@@ -30,6 +30,7 @@ import 'auth/exchange_auth_host.dart';
 import 'auth/exchange_auth_screen.dart';
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'buy/mount_buy.dart';
 import 'exchange_purchase_routes.dart';
 import 'funding/fund_exchange_router.dart';
 import 'kyc/exchange_kyc_host.dart';

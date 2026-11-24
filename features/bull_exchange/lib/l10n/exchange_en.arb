@@ -2908,6 +2908,18 @@
   "@buyUnexpectedError": {
     "description": "Generic error message shown when a buy order could not be created for any unrecognized reason, including connectivity failures, so it must not blame the amount"
   },
+  "buyPayoutAddressUnavailable": "Couldn't get a receive address from this wallet. Pick it again or choose another wallet.",
+  "@buyPayoutAddressUnavailable": {
+    "description": "Under the buy payout wallet dropdown when the picked app wallet gave no receive address; the wallet stays selected and nothing was ordered"
+  },
+  "buyPayoutFailed": "The exchange could not complete this payout. Open the order details or contact support.",
+  "@buyPayoutFailed": {
+    "description": "On the buy success page when the confirmed order was then cancelled or its payout failed"
+  },
+  "buyPayoutStillPending": "Your payout is still on its way. You can follow it in the order details.",
+  "@buyPayoutStillPending": {
+    "description": "On the buy success page when the payout could not be read for a while or is taking longer than expected; the order is confirmed"
+  },
   "dcaAccountUnavailableError": "Could not load your account. Check your connection, make sure you are logged in, and try again.",
   "@dcaAccountUnavailableError": {
     "description": "Shown when the exchange account summary cannot be loaded, so DCA setup cannot start. Deliberately covers three causes the boundary cannot tell apart: not logged in, no connection, and a backend error."

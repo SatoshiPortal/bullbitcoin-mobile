@@ -64,7 +64,6 @@ export 'src/dca/domain/usecases/set_dca_usecase.dart';
 export 'src/dca/domain/usecases/start_dca_usecase.dart';
 export 'src/dca/presentation/dca_bloc.dart';
 export 'src/dca/ui/screens/dca_success_screen.dart';
-export 'src/buy/ui/buy_router.dart' show BuyRouter;
 export 'src/exchange_payout_wallets.dart' show ExchangePayoutWallets;
 
 export 'src/limit_orders/domain/entities/limit_order_amount_limits.dart';

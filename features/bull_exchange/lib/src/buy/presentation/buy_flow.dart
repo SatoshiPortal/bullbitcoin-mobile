@@ -1201,6 +1201,10 @@ BuyFlowNext _led(List<BuyFlowEffect> effects, BuyFlowNext flow) =>
     : BuyFlowNext(flow.state, [...effects, ...flow.effects]);
 
 /// Back to the entry with the draft, the destination and the switch kept.
+/// The entry [request] was made from, as Back from the order shows it.
+BuyEntry buyEntryUnder(BuyOpen open, BuyRequest request) =>
+    _editEntry(open, request).state as BuyEntry;
+
 BuyFlowNext _editEntry(BuyOpen open, BuyRequest request) => _entryOf(
   open,
   transitionAmountEntry(
