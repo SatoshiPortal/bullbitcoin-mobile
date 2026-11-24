@@ -141,6 +141,26 @@ void main() {
     verify(() => scanUsecase.execute(startHeight: 709632)).called(1);
   });
 
+  testWidgets('uses the scan server tip when the chain tip is unknown', (
+    tester,
+  ) async {
+    when(() => harness.scanTipUsecase.execute())
+        .thenAnswer((_) async => const Ok(900000));
+    await loadWith(tester, spWalletData(minBirthdayHeight: 709656));
+    await tester.pumpAndSettle();
+    expect(find.text('Start scan from 709656'), findsOneWidget);
+    verify(() => harness.scanTipUsecase.execute()).called(1);
+  });
+
+  testWidgets('offers to resume an interrupted first scan', (tester) async {
+    await loadWith(tester, spWalletData(hasPendingScan: true));
+    expect(find.text('Scan unfinished'), findsOneWidget);
+    expect(find.byType(Slider), findsNothing);
+    await tester.tap(find.text('Resume scan'));
+    verify(() => scanUsecase.execute()).called(1);
+    verifyNever(() => harness.scanTipUsecase.execute());
+  });
+
   testWidgets('already scanned shows the next start read-only and resumes', (
     tester,
   ) async {

@@ -131,9 +131,10 @@ void main() {
     expect(find.text('Header validation'), findsOneWidget);
     expect(find.text('Clear scan state'), findsOneWidget);
     expect(find.text('Automatic scanning'), findsOneWidget);
+    expect(find.text('Minimum scan amount'), findsOneWidget);
     expect(find.text('Delete Silent Payments wallet'), findsOneWidget);
     // Wallet management rows use the shared settings row widget.
-    expect(find.byType(BullSettingsEntryItem), findsNWidgets(7));
+    expect(find.byType(BullSettingsEntryItem), findsNWidgets(8));
   });
 
   testWidgets('network is read-only after wallet creation', (tester) async {

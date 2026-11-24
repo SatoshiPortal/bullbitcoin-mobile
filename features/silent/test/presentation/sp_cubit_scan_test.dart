@@ -438,22 +438,17 @@ void main() {
       expect(cubit.state.error, isNull);
     });
 
-    test(
-      'stopScan() logs an Err without surfacing it as an error state',
-      () async {
-        when(() => stopUsecase.execute()).thenAnswer(
-          (_) async =>
-              const Err<void, SilentFailure>(SilentUnexpected('stop failed')),
-        );
-        await cubit.load();
+    test('stopScan() exposes a failure so the user can retry Stop', () async {
+      when(() => stopUsecase.execute()).thenAnswer(
+        (_) async =>
+            const Err<void, SilentFailure>(SilentUnexpected('stop failed')),
+      );
+      await cubit.load();
 
-        // Best-effort: the scan tears down async, so a failed stop is not the
-        // user's problem.
-        await cubit.stopScan();
+      await cubit.stopScan();
 
-        expect(cubit.state.error, isNull);
-      },
-    );
+      expect(cubit.state.error, isA<SilentUnexpected>());
+    });
 
     test(
       'stopScan() lets a thrown bug propagate instead of hiding it',

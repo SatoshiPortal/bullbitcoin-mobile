@@ -18,6 +18,7 @@ import 'package:silent/src/domain/entities/sp_balance.dart';
 import 'package:silent/src/domain/entities/sp_wallet.dart';
 import 'package:silent/src/presentation/sp_cubit.dart';
 import 'package:silent/src/domain/usecases/get_sp_auto_scan_usecase.dart';
+import 'package:silent/src/domain/usecases/get_sp_scan_server_tip_usecase.dart';
 import 'package:silent/src/domain/usecases/set_sp_auto_scan_usecase.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -35,6 +36,7 @@ SpWalletData spWalletData({
   Sats? confirmedSat,
   Sats? totalUnifiedSat,
   bool isScanning = false,
+  bool hasPendingScan = false,
   int? lastScannedHeight,
   List<SpPayment> history = const <SpPayment>[],
   List<SpCoin> coins = const <SpCoin>[],
@@ -51,6 +53,7 @@ SpWalletData spWalletData({
           totalUnifiedSat: totalUnifiedSat ?? confirmedSat ?? Sats.zero,
         ),
     isScanning: isScanning,
+    hasPendingScan: hasPendingScan,
     lastScannedHeight: lastScannedHeight,
   ),
   history: history,
@@ -66,6 +69,9 @@ SpWalletData spWalletData({
 
 class MockLoadSpWalletDataUsecase extends Mock
     implements LoadSpWalletDataUsecase {}
+
+class MockGetSpScanServerTipUsecase extends Mock
+    implements GetSpScanServerTipUsecase {}
 
 class MockWatchSpNotificationsUsecase extends Mock
     implements WatchSpNotificationsUsecase {}
@@ -95,6 +101,7 @@ class MockEnsureSpSessionUsecase extends Mock
 /// stays in the test's `setUp`.
 class SpCubitHarness {
   final loadUsecase = MockLoadSpWalletDataUsecase();
+  final scanTipUsecase = MockGetSpScanServerTipUsecase();
   final restampUsecase = MockRestampSpPaymentTimesUsecase();
   final watchUsecase = MockWatchSpNotificationsUsecase();
   final ensureUsecase = MockEnsureSpSessionUsecase();
@@ -118,8 +125,11 @@ class SpCubitHarness {
         .thenAnswer((_) async => const Ok<void, SilentFailure>(null));
     when(() => restampUsecase.execute())
         .thenReturn(const Ok<void, SilentFailure>(null));
+    when(() => scanTipUsecase.execute())
+        .thenAnswer((_) async => const Err(SilentBackendUnreachable()));
     return SpCubit(
       loadSpWalletDataUsecase: loadUsecase,
+      getScanServerTip: scanTipUsecase,
       restampSpPaymentTimesUsecase: restampUsecase,
       spNotificationsWatcher: SpNotificationsWatcher(
         watchSpNotificationsUsecase: watchUsecase,
