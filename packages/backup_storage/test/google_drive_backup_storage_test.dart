@@ -372,6 +372,28 @@ void main() {
     );
   }
 
+  test('discovery signs in and closes without revoking access', () async {
+    final view = ok(await storage.authorizeForDiscovery());
+    expect(view.account.id, 'first@example.invalid');
+    expect(google.signIns, 1);
+    expect(google.disconnects, 0);
+
+    expect(
+      ok(
+        await view.list(
+          mimeType: 'application/vnd.bull.backup+bip138',
+          namePrefix: 'bull-data-',
+        ),
+      ),
+      isEmpty,
+    );
+    await view.close();
+
+    expect(client.closes, 1);
+    expect(google.disconnects, 0);
+    expect(google.currentUser, isNotNull);
+  });
+
   test('noninteractive tokens never permit recovery UI', () async {
     final previous = GoogleSignInPlatform.instance;
     final tokens = _Tokens();

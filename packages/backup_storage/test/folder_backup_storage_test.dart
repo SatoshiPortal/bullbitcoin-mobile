@@ -190,6 +190,64 @@ void main() {
   );
 
   test(
+    'discovery reads another folder without replacing the configured grant',
+    () async {
+      final configured = await select();
+      final object = await create(configured);
+      configured.dispose();
+      final stored = await store.read();
+
+      platform.selection = 'second';
+      platform.files['other.bip138'] = bytes;
+      final view = ok(await storage.authorizeForDiscovery());
+      expect(view.account.id, isNot(configured.account.id));
+
+      expect(await store.read(), stored);
+      expect(platform.grants, {'first', 'second'});
+      final listed = ok(await view.list(mimeType: mimeType));
+      expect(listed.map((item) => item.name), ['other.bip138']);
+      expect(listed.single.durability, Durability.pending);
+
+      await view.close();
+      expect(platform.grants, {'first'});
+      final background = ok(
+        await FolderBackupStorage(store).authorize(interactive: false),
+      );
+      expect(background.account.id, configured.account.id);
+      expect(ok(await background.list(mimeType: mimeType)).map((i) => i.id), [
+        object.id,
+      ]);
+    },
+  );
+
+  test('discovery of the configured folder keeps its grant on close', () async {
+    final configured = await select();
+    final object = await create(configured);
+
+    final view = ok(await storage.authorizeForDiscovery());
+    expect(view.account.id, configured.account.id);
+    expect(
+      ok(await view.list(mimeType: mimeType)).single.durability,
+      Durability.pending,
+    );
+
+    await view.close();
+    expect(platform.grants, {'first'});
+    expect(ok(await configured.list(mimeType: mimeType)).single.id, object.id);
+  });
+
+  test('a closed discovery view cannot read or list', () async {
+    await select();
+    final view = ok(await storage.authorizeForDiscovery());
+    await view.close();
+
+    expect(
+      _failure(await view.list(mimeType: mimeType)),
+      isA<BackupStorageAuthorizationRequiredFailure>(),
+    );
+  });
+
+  test(
     'disconnect revokes before a concurrent reselection of the same folder',
     () async {
       final first = await select();
