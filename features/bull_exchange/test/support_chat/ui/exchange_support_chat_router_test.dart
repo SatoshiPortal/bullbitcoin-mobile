@@ -27,6 +27,7 @@ void main() {
           loginLabel: (_) => 'Sign in',
           failureMessage: (_, _) => fail('unexpected failure'),
           onExit: (_, _) => exits++,
+          onMessagesRead: (_) => fail('unexpected read receipt'),
         ),
       ],
     );

@@ -29,6 +29,7 @@ Future<void> _pumpLogin(
           return 'Network unavailable';
         },
         onExit: (_, _) {},
+        onMessagesRead: (_) => fail('unexpected read receipt'),
       ),
     ],
   );

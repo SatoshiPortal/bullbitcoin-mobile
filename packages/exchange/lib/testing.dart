@@ -16,5 +16,7 @@ export 'src/session/exchange_web_auth_datasource.dart';
 export 'src/session/get_exchange_account_usecase.dart';
 export 'src/session/get_exchange_announcements_usecase.dart';
 export 'src/session/get_exchange_web_settings_usecase.dart';
+export 'src/session/get_unread_support_message_count_usecase.dart';
+export 'src/session/mark_support_messages_read_usecase.dart';
 export 'src/session/save_exchange_preferences_usecase.dart';
 export 'src/session/watch_exchange_notifications_usecase.dart';

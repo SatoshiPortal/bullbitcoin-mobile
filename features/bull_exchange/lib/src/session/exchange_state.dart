@@ -13,6 +13,7 @@ abstract class ExchangeState with _$ExchangeState {
     @Default(false) bool isSaving,
     @Default([]) List<Announcement> announcements,
     @Default(false) bool loadingAnnouncements,
+    @Default(0) int unreadSupportMessages,
   }) = _ExchangeState;
 
   const ExchangeState._();

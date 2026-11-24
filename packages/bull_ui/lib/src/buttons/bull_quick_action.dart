@@ -22,6 +22,7 @@ class BullQuickAction extends StatelessWidget {
     this.semanticLabel,
     this.outlined = false,
     this.disabled = false,
+    this.badgeCount = 0,
     super.key,
   });
 
@@ -39,6 +40,17 @@ class BullQuickAction extends StatelessWidget {
   /// A hollow disc with a ring instead of a fill: the More cell.
   final bool outlined;
   final bool disabled;
+
+  /// A count shown on the icon. Nothing is shown at zero.
+  final int badgeCount;
+
+  Widget _badged(BuildContext context, Widget child) => Badge(
+    isLabelVisible: badgeCount > 0,
+    label: Text(badgeCount > 99 ? '99+' : '$badgeCount'),
+    backgroundColor: context.bull.error,
+    textColor: context.bull.onError,
+    child: child,
+  );
 
   void _activate(VoidCallback callback) {
     unawaited(HapticFeedback.selectionClick());
@@ -96,10 +108,13 @@ class BullQuickAction extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (flat)
-                          BullIcon(
-                            icon,
-                            size: BullQuickActionBar._iconSize,
-                            color: foreground,
+                          _badged(
+                            context,
+                            BullIcon(
+                              icon,
+                              size: BullQuickActionBar._iconSize,
+                              color: foreground,
+                            ),
                           )
                         else
                           Container(
@@ -113,10 +128,9 @@ class BullQuickAction extends StatelessWidget {
                                   : null,
                             ),
                             child: Center(
-                              child: BullIcon(
-                                icon,
-                                size: 24,
-                                color: foreground,
+                              child: _badged(
+                                context,
+                                BullIcon(icon, size: 24, color: foreground),
                               ),
                             ),
                           ),

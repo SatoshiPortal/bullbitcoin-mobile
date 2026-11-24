@@ -33,6 +33,7 @@ typedef ExchangeSupportChatHost = ({
   String Function(BuildContext) loginLabel,
   String Function(BuildContext, ExchangeFailure) failureMessage,
   void Function(BuildContext, bool fromExchange) onExit,
+  void Function(BuildContext) onMessagesRead,
 });
 
 /// Mounts Exchange routes in their host's navigation slots.
@@ -135,6 +136,7 @@ final class BullExchangeFeature {
               loginLabel: supportChat.loginLabel,
               failureMessage: supportChat.failureMessage,
               onExit: supportChat.onExit,
+              onMessagesRead: supportChat.onMessagesRead,
             ),
       kycRoute,
       settings == null

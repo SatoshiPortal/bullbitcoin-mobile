@@ -31,11 +31,15 @@ class ExchangeSupportChatScreen extends StatelessWidget {
     super.key,
     required this.exchange,
     required this.onExit,
+    required this.onMessagesRead,
     this.initialMessage,
   });
 
   final Exchange exchange;
   final VoidCallback onExit;
+
+  /// Called each time the newest messages have been shown to the user.
+  final VoidCallback onMessagesRead;
   final String? initialMessage;
 
   @override
@@ -84,7 +88,15 @@ class ExchangeSupportChatScreen extends StatelessWidget {
           backgroundColor: context.appColors.background,
         ),
         backgroundColor: context.appColors.background,
-        body: const _ChatBody(),
+        body: BlocListener<ExchangeSupportChatCubit, ExchangeSupportChatState>(
+          listenWhen: (previous, current) =>
+              previous.loadingMessages &&
+              !current.loadingMessages &&
+              current.failure == null &&
+              current.currentPage == 1,
+          listener: (_, _) => onMessagesRead(),
+          child: const _ChatBody(),
+        ),
       ),
     );
   }

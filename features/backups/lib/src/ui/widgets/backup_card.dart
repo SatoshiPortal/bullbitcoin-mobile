@@ -21,7 +21,7 @@ class BackupCard extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.banner,
+            color: colors.inverseSurface,
             borderRadius: BorderRadius.circular(context.bullShapes.card),
             boxShadow: [
               BoxShadow(
@@ -33,7 +33,7 @@ class BackupCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Image(image: icon, height: 32, width: 32, color: colors.onBanner),
+              Image(image: icon, height: 32, width: 32, color: colors.surface),
               const Gap(16),
               Expanded(
                 child: Column(
@@ -43,18 +43,18 @@ class BackupCard extends StatelessWidget {
                     BullText(
                       context.loc.backupCardTitle,
                       role: BullTextRole.body,
-                      color: colors.onBanner,
+                      color: colors.surface,
                     ),
                     BullText(
                       context.loc.backupCardSubtitle,
                       role: BullTextRole.body,
-                      color: colors.onBanner,
+                      color: colors.surface,
                     ),
                   ],
                 ),
               ),
               const Gap(8),
-              BullIcon(Icons.arrow_forward, color: colors.onBanner),
+              BullIcon(Icons.arrow_forward, color: colors.surface),
             ],
           ),
         ),

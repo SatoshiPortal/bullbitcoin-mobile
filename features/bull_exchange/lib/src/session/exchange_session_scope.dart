@@ -49,11 +49,19 @@ class ExchangeSessionScope extends StatelessWidget {
           summaryFailure: state.getUserSummaryFailure,
           stopDcaFailure: state.stopDcaFailure,
           announcements: state.announcements,
+          unreadSupportMessages: state.unreadSupportMessages,
         );
       });
 
   static Future<void> refresh(BuildContext context) =>
       context.read<ExchangeCubit>().fetchUserSummary();
+
+  static int watchUnreadSupportMessages(BuildContext context) => context.select(
+    (ExchangeCubit cubit) => cubit.state.unreadSupportMessages,
+  );
+
+  static Future<void> markSupportMessagesRead(BuildContext context) =>
+      context.read<ExchangeCubit>().markSupportMessagesRead();
 
   static Future<void> stopDca(BuildContext context) =>
       context.read<ExchangeCubit>().stopDca();
@@ -84,6 +92,10 @@ class ExchangeSessionScope extends StatelessWidget {
         currentAccess: () => capability.currentAccess,
         accessChanges: capability.watchAccess(),
         accountChanges: capability.watchAccountChanges(),
+        supportMessages: capability.watchSupportMessages(),
+        getUnreadSupportMessageCount:
+            capability.loadCurrentUnreadSupportMessageCount,
+        markSupportMessagesRead: capability.markCurrentSupportMessagesRead,
         connectNotifications: ({required reconnect}) =>
             capability.openCurrentNotifications(reconnect: reconnect),
         disconnectNotifications: capability.disconnectNotifications,

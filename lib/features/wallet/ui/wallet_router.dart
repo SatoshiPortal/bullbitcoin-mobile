@@ -27,6 +27,7 @@ class WalletRouter {
     required void Function(BuildContext) onCustomizeQuickActions,
     required ExchangePromptCubit exchangePrompt,
     required void Function(BuildContext) onActivateExchange,
+    required int Function(BuildContext) watchUnreadSupportMessages,
     required Widget Function() announcements,
     required NetworkWalletSetupCubit Function() createSetupCubit,
   }) => GoRoute(
@@ -48,6 +49,7 @@ class WalletRouter {
           onCustomizeQuickActions: onCustomizeQuickActions,
           exchangePrompt: exchangePrompt,
           onActivateExchange: onActivateExchange,
+          watchUnreadSupportMessages: watchUnreadSupportMessages,
           announcements: announcements(),
         ),
       );

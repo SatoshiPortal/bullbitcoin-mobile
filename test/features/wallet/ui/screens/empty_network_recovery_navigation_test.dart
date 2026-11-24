@@ -95,6 +95,7 @@ void main() {
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
+                watchUnreadSupportMessages: (_) => 0,
                 exchangePrompt: createExchangePromptCubit(
                   storage: _MemoryQuickActionsStorage(),
                   warning: (_) {},

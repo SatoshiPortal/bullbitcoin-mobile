@@ -150,6 +150,9 @@ class ExchangeRouter {
                 config.onExit(context);
               }
             },
+            onMessagesRead: (context) => unawaited(
+              ExchangeSessionScope.markSupportMessagesRead(context),
+            ),
           ),
   );
 }

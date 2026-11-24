@@ -29,6 +29,7 @@ typedef ExchangeDashboardState = ({
   ExchangeFailure? summaryFailure,
   ExchangeFailure? stopDcaFailure,
   List<Announcement> announcements,
+  int unreadSupportMessages,
 });
 
 class ExchangeHomeScreen extends StatelessWidget {
@@ -80,6 +81,7 @@ class ExchangeHomeScreen extends StatelessWidget {
     final dca = summary?.dca;
     final autoBuy = summary?.autoBuy;
     final isFundingRestricted = summary?.isFundingRestricted ?? true;
+    final unreadSupportMessages = state.unreadSupportMessages;
 
     if (notLoggedIn && getUserSummaryFailure != null) {
       return _WithExit(
@@ -263,6 +265,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                               ),
                               BullSupportButton.icon(
                                 label: context.loc.exchangeSupportChatTitle,
+                                unreadCount: unreadSupportMessages,
                               ),
                             ],
                           ),
