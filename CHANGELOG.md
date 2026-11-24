@@ -8,7 +8,11 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
-## [6.15.1] - Unreleased
+## [6.16.0] - Unreleased
+
+### Performance
+
+- **Faster repeat Bitcoin syncs**: the app reuses Bitcoin transactions and confirmation proofs already on the device. The first sync after updating also fills a local cache of parent transactions for later syncs; no wallet reimport is needed. The app still checks the Electrum server for new activity and chain changes. Liquid sync is unchanged.
 
 ### Bug Fixes
 
