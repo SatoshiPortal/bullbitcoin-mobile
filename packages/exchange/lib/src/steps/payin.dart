@@ -295,6 +295,31 @@ final class PayinCheckSessionRejected extends PayinCheck {
   const PayinCheckSessionRejected();
 }
 
+/// The answer of a [PayinVerify] look-up: [txSeen] is whether the source
+/// wallet or its network shows [txid] (null when that look-up failed), [order]
+/// the re-read of the order. Proof wins over doubt: a seen transaction or a
+/// payin the exchange shows settles it even when the other read failed; a
+/// payin is "not seen" only when both reads worked and show nothing.
+PayinCheck payinCheckFrom({
+  required String? txid,
+  required bool? txSeen,
+  required ExchangeRead<Order> order,
+}) {
+  if (order is ReadSessionRejected<Order>) {
+    return const PayinCheckSessionRejected();
+  }
+  if (order case ReadGot(value: final read) when !_awaitsPayin(read)) {
+    return PayinCheckSeenByExchange(read);
+  }
+  if (txSeen == true && txid != null) return PayinCheckSeenOnNetwork(txid);
+  final problem = ReadProblem.of(order);
+  if (problem != null) return PayinCheckFailed(problem);
+  if (txSeen == null && txid != null) {
+    return const PayinCheckFailed(ReadProblemUnreachable(isNetwork: true));
+  }
+  return const PayinCheckNotSeen();
+}
+
 /// The payin of a sell or pay order (state-machines Phase 3, composition
 /// §4.8 Payin), on the source's [BitcoinRail]. [P] is the wallet's signed
 /// spend.

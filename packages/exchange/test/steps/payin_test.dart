@@ -500,6 +500,53 @@ void main() {
     });
   });
 
+  group('payinCheckFrom', () {
+    PayinCheck check(
+      ExchangeRead<Order> order,
+      bool? txSeen, {
+      String? txid = 'tx1',
+    }) => payinCheckFrom(txid: txid, txSeen: txSeen, order: order);
+
+    const down = ReadUnreachable<Order>('down', isNetwork: true);
+
+    test('a 401 ends the session', () {
+      expect(check(_rejected, true), isA<PayinCheckSessionRejected>());
+    });
+
+    test('a payin the exchange shows settles it', () {
+      expect(
+        check(ReadGot(_seen), false),
+        isA<PayinCheckSeenByExchange>().having((c) => c.order, 'order', _seen),
+      );
+    });
+
+    test('a transaction the network shows settles it, whatever the order', () {
+      for (final read in [ReadGot(_o), down]) {
+        expect(
+          check(read, true),
+          isA<PayinCheckSeenOnNetwork>().having((c) => c.txid, 'txid', 'tx1'),
+        );
+      }
+    });
+
+    test('a failed read is a failed check, never "not seen"', () {
+      expect(
+        check(down, false),
+        isA<PayinCheckFailed>().having(
+          (c) => c.problem,
+          'problem',
+          _unreachable,
+        ),
+      );
+      expect(check(ReadGot(_o), null), isA<PayinCheckFailed>());
+    });
+
+    test('both reads worked and show nothing: not seen', () {
+      expect(check(ReadGot(_o), false), isA<PayinCheckNotSeen>());
+      expect(check(ReadGot(_o), null, txid: null), isA<PayinCheckNotSeen>());
+    });
+  });
+
   test('payin options come from the rails', () {
     expect(
       payinOptionsFor({
