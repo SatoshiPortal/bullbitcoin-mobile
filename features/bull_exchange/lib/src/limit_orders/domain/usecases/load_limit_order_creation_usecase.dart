@@ -106,17 +106,17 @@ class LoadLimitOrderCreationUsecase {
     final wallets = <LimitOrderWallet>[
       if (defaultWallets.bitcoinAddress.isNotEmpty)
         LimitOrderWallet(
-          type: LimitOrderWalletType.bitcoin,
+          type: BtcNetwork.bitcoin,
           address: defaultWallets.bitcoinAddress,
         ),
       if (defaultWallets.lightningAddress.isNotEmpty)
         LimitOrderWallet(
-          type: LimitOrderWalletType.lightning,
+          type: BtcNetwork.lightning,
           address: defaultWallets.lightningAddress,
         ),
       if (defaultWallets.liquidAddress.isNotEmpty)
         LimitOrderWallet(
-          type: LimitOrderWalletType.liquid,
+          type: BtcNetwork.liquid,
           address: defaultWallets.liquidAddress,
         ),
     ];

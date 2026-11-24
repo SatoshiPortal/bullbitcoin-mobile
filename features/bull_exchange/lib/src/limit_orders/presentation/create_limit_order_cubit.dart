@@ -146,8 +146,8 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
             isResolvingAddress: false,
             wallet: LimitOrderWallet(
               type: appWallet.network is LiquidNetwork
-                  ? LimitOrderWalletType.liquid
-                  : LimitOrderWalletType.bitcoin,
+                  ? BtcNetwork.liquid
+                  : BtcNetwork.bitcoin,
               address: value,
             ),
           ),
@@ -190,10 +190,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
       state.copyWith(
         isResolvingAddress: false,
         lightningAddressInvalid: false,
-        wallet: LimitOrderWallet(
-          type: LimitOrderWalletType.lightning,
-          address: address,
-        ),
+        wallet: LimitOrderWallet(type: BtcNetwork.lightning, address: address),
       ),
     );
   }

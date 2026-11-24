@@ -1,10 +1,8 @@
 import 'package:exchange/exchange.dart';
 import 'package:secrets/secrets.dart';
 
-enum LimitOrderWalletType { bitcoin, lightning, liquid }
-
 final class LimitOrderWallet {
-  final LimitOrderWalletType type;
+  final BtcNetwork type;
   final String address;
 
   LimitOrderWallet({required this.type, required this.address}) {

@@ -35,7 +35,7 @@ void main() {
   late MockValidateLightningAddressUsecase validateLnAddress;
 
   final bitcoinWallet = LimitOrderWallet(
-    type: LimitOrderWalletType.bitcoin,
+    type: BtcNetwork.bitcoin,
     address: 'bc1qexample',
   );
   final creationContext = LimitOrderCreationContext(
@@ -414,7 +414,7 @@ void main() {
     verify: (cubit) {
       expect(cubit.state.isResolvingAddress, isFalse);
       expect(cubit.state.selectedAppWalletId, 'w-btc');
-      expect(cubit.state.wallet?.type, LimitOrderWalletType.bitcoin);
+      expect(cubit.state.wallet?.type, BtcNetwork.bitcoin);
       expect(cubit.state.wallet?.address, 'bc1qderived');
     },
   );
@@ -444,7 +444,7 @@ void main() {
     act: (cubit) => cubit.setLightningAddress('sats@bullbitcoin.com'),
     verify: (cubit) {
       expect(cubit.state.lightningAddressInvalid, isFalse);
-      expect(cubit.state.wallet?.type, LimitOrderWalletType.lightning);
+      expect(cubit.state.wallet?.type, BtcNetwork.lightning);
       expect(cubit.state.wallet?.address, 'sats@bullbitcoin.com');
     },
   );

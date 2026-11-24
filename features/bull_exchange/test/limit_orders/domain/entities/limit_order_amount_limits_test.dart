@@ -1,4 +1,5 @@
 import 'package:bull_exchange/testing.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,7 +9,7 @@ void main() {
       final violation = LimitOrderAmountLimits.check(
         fiatAmount: 1, // 1000 sats < 100000
         userPrice: 100000,
-        network: LimitOrderWalletType.bitcoin,
+        network: BtcNetwork.bitcoin,
       );
 
       expect(violation, isNotNull);
@@ -21,7 +22,7 @@ void main() {
         LimitOrderAmountLimits.check(
           fiatAmount: 200, // 200000 sats
           userPrice: 100000,
-          network: LimitOrderWalletType.bitcoin,
+          network: BtcNetwork.bitcoin,
         ),
         isNull,
       );
@@ -31,7 +32,7 @@ void main() {
       final violation = LimitOrderAmountLimits.check(
         fiatAmount: 0.5, // 500 sats < 1000
         userPrice: 100000,
-        network: LimitOrderWalletType.liquid,
+        network: BtcNetwork.liquid,
       );
 
       expect(violation, isNotNull);
@@ -44,7 +45,7 @@ void main() {
         LimitOrderAmountLimits.check(
           fiatAmount: 2, // 2000 sats
           userPrice: 100000,
-          network: LimitOrderWalletType.liquid,
+          network: BtcNetwork.liquid,
         ),
         isNull,
       );
@@ -54,7 +55,7 @@ void main() {
       final violation = LimitOrderAmountLimits.check(
         fiatAmount: 30000, // 30,000,000 sats > 25,000,000
         userPrice: 100000,
-        network: LimitOrderWalletType.lightning,
+        network: BtcNetwork.lightning,
       );
 
       expect(violation, isNotNull);
@@ -67,7 +68,7 @@ void main() {
         LimitOrderAmountLimits.check(
           fiatAmount: 10000, // 10,000,000 sats
           userPrice: 100000,
-          network: LimitOrderWalletType.lightning,
+          network: BtcNetwork.lightning,
         ),
         isNull,
       );
@@ -78,7 +79,7 @@ void main() {
         LimitOrderAmountLimits.check(
           fiatAmount: 0,
           userPrice: 100000,
-          network: LimitOrderWalletType.bitcoin,
+          network: BtcNetwork.bitcoin,
         ),
         isNull,
       );

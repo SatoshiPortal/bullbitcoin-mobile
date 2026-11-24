@@ -237,8 +237,8 @@ void main() {
     final context = valueOf(await usecase.execute());
 
     expect(context.wallets.map((wallet) => wallet.type), [
-      LimitOrderWalletType.bitcoin,
-      LimitOrderWalletType.liquid,
+      BtcNetwork.bitcoin,
+      BtcNetwork.liquid,
     ]);
   });
 

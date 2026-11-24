@@ -1,10 +1,10 @@
-import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:exchange/exchange.dart';
 
 enum LimitOrderAmountViolationKind { belowMinimum, aboveMaximum }
 
 final class LimitOrderAmountViolation {
   final LimitOrderAmountViolationKind kind;
-  final LimitOrderWalletType network;
+  final BtcNetwork network;
   final double boundBtc;
 
   const LimitOrderAmountViolation({
@@ -30,20 +30,20 @@ abstract final class LimitOrderAmountLimits {
   static LimitOrderAmountViolation? check({
     required double fiatAmount,
     required double userPrice,
-    required LimitOrderWalletType network,
+    required BtcNetwork network,
   }) {
     if (fiatAmount <= 0 || userPrice <= 0) return null;
     final sats = (fiatAmount / userPrice * _satsPerBtc).round();
     switch (network) {
-      case LimitOrderWalletType.bitcoin:
+      case BtcNetwork.bitcoin:
         if (sats < minOnChainSats) {
           return _below(network, minOnChainSats);
         }
-      case LimitOrderWalletType.liquid:
+      case BtcNetwork.liquid:
         if (sats < minLiquidSats) {
           return _below(network, minLiquidSats);
         }
-      case LimitOrderWalletType.lightning:
+      case BtcNetwork.lightning:
         if (sats > maxLightningSats) {
           return LimitOrderAmountViolation(
             kind: LimitOrderAmountViolationKind.aboveMaximum,
@@ -55,12 +55,10 @@ abstract final class LimitOrderAmountLimits {
     return null;
   }
 
-  static LimitOrderAmountViolation _below(
-    LimitOrderWalletType network,
-    int boundSats,
-  ) => LimitOrderAmountViolation(
-    kind: LimitOrderAmountViolationKind.belowMinimum,
-    network: network,
-    boundBtc: boundSats / _satsPerBtc,
-  );
+  static LimitOrderAmountViolation _below(BtcNetwork network, int boundSats) =>
+      LimitOrderAmountViolation(
+        kind: LimitOrderAmountViolationKind.belowMinimum,
+        network: network,
+        boundBtc: boundSats / _satsPerBtc,
+      );
 }

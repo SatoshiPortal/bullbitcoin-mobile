@@ -4,7 +4,6 @@ import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_amount_limits.dart';
-import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/create_limit_order_cubit.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/create_limit_order_state.dart';
@@ -477,10 +476,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     return switch ((violation.kind, violation.network)) {
       (LimitOrderAmountViolationKind.aboveMaximum, _) =>
         context.loc.limitOrdersAmountAboveLightningMax(amount),
-      (
-        LimitOrderAmountViolationKind.belowMinimum,
-        LimitOrderWalletType.liquid,
-      ) =>
+      (LimitOrderAmountViolationKind.belowMinimum, BtcNetwork.liquid) =>
         context.loc.limitOrdersAmountBelowLiquidMin(amount),
       (LimitOrderAmountViolationKind.belowMinimum, _) =>
         context.loc.limitOrdersAmountBelowOnchainMin(amount),
@@ -594,13 +590,11 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     );
   }
 
-  String _walletName(BuildContext context, LimitOrderWalletType type) =>
-      switch (type) {
-        LimitOrderWalletType.bitcoin => context.loc.limitOrdersWalletBitcoin,
-        LimitOrderWalletType.lightning =>
-          context.loc.limitOrdersWalletLightning,
-        LimitOrderWalletType.liquid => context.loc.limitOrdersWalletLiquid,
-      };
+  String _walletName(BuildContext context, BtcNetwork type) => switch (type) {
+    BtcNetwork.bitcoin => context.loc.limitOrdersWalletBitcoin,
+    BtcNetwork.lightning => context.loc.limitOrdersWalletLightning,
+    BtcNetwork.liquid => context.loc.limitOrdersWalletLiquid,
+  };
 
   Widget _primaryButton(
     BuildContext context, {
