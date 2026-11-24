@@ -219,11 +219,16 @@ class SpCubit extends Cubit<SpState> {
 
   /// [to] is the Blindbit tip the scan runs up to.
   void _onScanStarted(int from, int to) {
+    // Once BWK starts the scan, the repository's pending start and the native
+    // checkpoint own resumption. An explicit retry height is only for a launch
+    // that failed before BWK started.
+    _scanStartToRetry = null;
     _etaEstimator.reset();
     final chainTip = state.chainTip;
     emit(
       state.copyWith(
         isScanning: true,
+        error: null,
         scanPhase: SpScanPhase.receive,
         scanStartTime: DateTime.now(),
         scanEtaSecs: null,
