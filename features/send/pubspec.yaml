@@ -42,6 +42,7 @@ dependencies:
   preferences:
   primitives:
   receive:
+  rust_bindings:
   satoshifier:
   scanning:
   secrets:
@@ -61,7 +62,6 @@ dev_dependencies:
   freezed: ^4.0.0
   get_it: ^9.1.1
   mocktail: ^1.0.4
-  rust_bindings:
 
 flutter:
   generate: true

@@ -554,7 +554,7 @@ Foreground consumers resolve a visible wallet by ID or list choices for a concre
 
 ### Wallet-independent chain operations
 
-Send and Payjoin consume the chain operations published by `sync` through `WalletConnectionPort`. The former `core/blockchain` adapters are removed. Electrum implements connection selection and fallback; Payjoin retains its script-based reconciliation for unrecognized transaction lookup replies, and Send retains authorization and presentation failure mapping.
+Send and Payjoin consume the chain operations published by `sync` through `WalletConnectionPort`. The former `core/blockchain` adapters are removed. Electrum implements connection selection and fallback. Refreshed Payjoin presence runs one targeted `SyncTransactionTarget` script pass with `fetchPrevTxouts: false` over every competing spend of a session, and an unknown answer is never treated as absence. Send retains authorization and presentation failure mapping.
 
 ### Native lifecycle ownership
 

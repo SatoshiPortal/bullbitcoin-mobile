@@ -7,6 +7,8 @@ library;
 
 export 'src/buttons/bull_field_action.dart';
 export 'src/chrome/bull_step_bar.dart';
+export 'src/payments/bull_payment_animation.dart';
+export 'src/payments/bull_payment_transition.dart';
 
 export 'package:flutter/services.dart'
     show SmartDashesType, SmartQuotesType, HapticFeedback;

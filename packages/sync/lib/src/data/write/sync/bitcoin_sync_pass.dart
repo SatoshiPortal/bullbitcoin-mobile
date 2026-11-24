@@ -7,6 +7,7 @@ import 'package:primitives/primitives.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/sync_completion.dart';
 import '../../../domain/sync_failure.dart';
+import '../../../domain/sync_transaction_target.dart';
 import '../../native_store_paths.dart';
 import '../datasources/bdk_electrum_datasource.dart';
 import '../datasources/bdk_wallet_store_datasource.dart';
@@ -29,6 +30,8 @@ Future<SyncPassOutcome> bitcoinSyncPass(
 }) async {
   final watch = Stopwatch()..start();
   final connection = params.connection;
+  final targets = params.targets;
+  final targeted = targets.isNotEmpty;
   final path = nativeWalletStoragePath(params.root, descriptor.key);
   if (BdkWalletStoreDatasource.network(descriptor.key.network) == null) {
     return SyncPassOutcome.failed(const SyncUnsupportedNetworkFailure());
@@ -56,7 +59,9 @@ Future<SyncPassOutcome> bitcoinSyncPass(
     final checkpoint = wallet.latestCheckpoint();
     final height = checkpoint.height;
     checkpoint.hash.dispose();
-    final mode = params.discover
+    final mode = targeted
+        ? SyncMode.targeted
+        : params.discover
         ? SyncMode.discovery
         : height == 0
         ? SyncMode.initialScan
@@ -66,12 +71,81 @@ Future<SyncPassOutcome> bitcoinSyncPass(
         ? null
         : prefillFromCache(cache, electrum, wallet);
     final batchSize = (connection.stopGap ~/ 4).clamp(50, 1000);
-    // Every pass covers the revealed scripts: the pinned bdk_chain full scan
-    // counts the stop gap from index 0 and can miss a revealed script beyond
-    // last-used + stop gap. Scan passes then add the unrevealed gap window.
+    // Every non-targeted pass covers the revealed scripts: the pinned
+    // bdk_chain full scan counts the stop gap from index 0 and can miss a
+    // revealed script beyond last-used + stop gap. Scan passes then add the
+    // unrevealed gap window.
     final before = wallet.staged();
     final cleanStage = before == null;
     before?.dispose();
+    if (targeted) {
+      // A targeted pass covers the wallet's own indices only, and judges its
+      // targets from the canonical transactions it applies, never from the id
+      // it was given. Coverage is per target: a proposal a receiver must judge
+      // carries counterparty outputs and sender inputs this wallet owns no
+      // script of, so one owned component is enough to cover the target.
+      final coverage = _coveredIndices(wallet, targets);
+      if (coverage.targets.isEmpty) {
+        // No target touches a script or outpoint this wallet owns: nothing was
+        // covered, so nothing may be reported absent.
+        reportChanges(false);
+        return SyncPassOutcome(
+          Ok(SyncCompletion(mode, watch.elapsed)),
+          retryable: false,
+          cacheDiagnostics: ElectrumCacheDatasource.describe(
+            opened: cache != null,
+            rebuilt: cache?.rebuilt ?? false,
+            prefill: prefill,
+            parents: null,
+          ),
+        );
+      }
+      failure = const SyncConnectionFailure();
+      final bdk.Update update;
+      try {
+        update = electrum.syncScriptIndices(
+          wallet,
+          externalIndices: coverage.indices.external,
+          internalIndices: coverage.indices.internal,
+          batchSize: batchSize,
+        );
+      } on bdk.SpkIndexException {
+        failure = const SyncStorageFailure();
+        rethrow;
+      }
+      failure = const SyncStorageFailure();
+      final bdk.UpdateTransactionObservations observations;
+      try {
+        observations = update.transactionObservations();
+        markMutation();
+        wallet.applyUpdate(update: update);
+      } finally {
+        update.dispose();
+      }
+      final presence = _targetPresence(wallet, coverage.targets, observations);
+      reportChanges(store.persist());
+      final evidence = cleanStage
+          ? _spendEvidence(wallet, trackedSpends)
+          : null;
+      if (evidence != null) reportSpendEvidence(evidence);
+      return SyncPassOutcome(
+        Ok(
+          SyncCompletion(
+            mode,
+            watch.elapsed,
+            visibleTransactionIds: presence.visible,
+            coveredTransactionIds: presence.conclusive,
+          ),
+        ),
+        retryable: false,
+        cacheDiagnostics: ElectrumCacheDatasource.describe(
+          opened: cache != null,
+          rebuilt: cache?.rebuilt ?? false,
+          prefill: prefill,
+          parents: null,
+        ),
+      );
+    }
     failure = const SyncConnectionFailure();
     final revealed = electrum.syncRevealedScripts(wallet, batchSize: batchSize);
     failure = const SyncStorageFailure();
@@ -453,4 +527,143 @@ void _disposeCanonical(List<bdk.CanonicalTx> transactions) {
       transitively?.dispose();
     }
   }
+}
+
+typedef _SpkIndices = ({List<int> external, List<int> internal});
+
+typedef _TargetCoverage = ({_SpkIndices indices, Set<String> targets});
+
+/// The wallet's own derivation indices the pass must cover to judge [targets],
+/// and which targets those indices actually cover.
+///
+/// An index comes from every output script they pay, resolved by the wallet
+/// itself, and from every outpoint they spend, resolved against the outputs
+/// this wallet ever held, spent included. A target is covered as soon as one
+/// of its components resolves to such an index: a proposal carries
+/// counterparty outputs and sender inputs this wallet owns nothing of, and
+/// requiring more than one owned component would leave a legitimate Payjoin
+/// uncovered.
+///
+/// An index that cannot be resolved is not guessed: a target this wallet owns
+/// no script or outpoint of is not covered, and the caller reports no proof
+/// rather than evidence.
+_TargetCoverage _coveredIndices(
+  bdk.Wallet wallet,
+  List<SyncTransactionTarget> targets,
+) {
+  final external = <int>{};
+  final internal = <int>{};
+  final covered = <String>{};
+  final lastRevealed = {
+    for (final keychain in bdk.KeychainKind.values)
+      keychain: wallet.derivationIndex(keychain: keychain),
+  };
+  bool remember(bdk.KeychainKind keychain, int index) {
+    // The lookahead index can recognize a script that cannot be queried by
+    // startSyncWithSpkIndices yet. Never reveal it during presence checking.
+    final last = lastRevealed[keychain];
+    if (last == null || index > last) return false;
+    switch (keychain) {
+      case bdk.KeychainKind.external_:
+        external.add(index);
+      case bdk.KeychainKind.internal:
+        internal.add(index);
+    }
+    return true;
+  }
+
+  final spentByOutpoint = <String, List<String>>{};
+  for (final target in targets) {
+    for (final outpoint in target.spentOutpoints) {
+      (spentByOutpoint['${outpoint.txId}:${outpoint.vout}'] ??= <String>[]).add(
+        target.txid,
+      );
+    }
+  }
+  if (spentByOutpoint.isNotEmpty) {
+    for (final output in wallet.listOutput()) {
+      try {
+        final ownedBy = spentByOutpoint[_outpoint(output.outpoint)];
+        if (ownedBy != null &&
+            remember(output.keychain, output.derivationIndex)) {
+          covered.addAll(ownedBy);
+        }
+      } finally {
+        output.outpoint.txid.dispose();
+        output.txout.scriptPubkey.dispose();
+        output.txout.value.dispose();
+        if (output.chainPosition case bdk.ConfirmedChainPosition(
+          :final confirmationBlockTime,
+          :final transitively,
+        )) {
+          confirmationBlockTime.blockId.hash.dispose();
+          transitively?.dispose();
+        }
+      }
+    }
+  }
+  for (final target in targets) {
+    for (final script in target.outputScripts) {
+      final native = bdk.Script(rawOutputScript: script);
+      try {
+        final derived = wallet.derivationOfSpk(spk: native);
+        if (derived != null && remember(derived.keychain, derived.index)) {
+          covered.add(target.txid);
+        }
+      } finally {
+        native.dispose();
+      }
+    }
+  }
+  return (
+    indices: (
+      external: external.toList(growable: false),
+      internal: internal.toList(growable: false),
+    ),
+    targets: covered,
+  );
+}
+
+/// Require this update as evidence even for an existing canonical transaction.
+/// A listed transaction without a valid anchor or unconfirmed observation
+/// never proves presence or absence, nor does a sighting BDK did not accept
+/// into the canonical graph.
+({Set<String> visible, Set<String> conclusive}) _targetPresence(
+  bdk.Wallet wallet,
+  Set<String> queried,
+  bdk.UpdateTransactionObservations observations,
+) {
+  final observed = {...observations.unconfirmed, ...observations.anchored};
+  final listed = observations.listed.toSet();
+  final visible = <String>{};
+  final conclusive = <String>{};
+  for (final id in queried) {
+    final txid = bdk.Txid.fromString(hex: id);
+    try {
+      final tx = wallet.getTx(txid: txid);
+      final seen = observed.contains(id);
+      if (tx == null) {
+        if (!seen && !listed.contains(id)) conclusive.add(id);
+        continue;
+      }
+      try {
+        if (seen) {
+          visible.add(id);
+          conclusive.add(id);
+        }
+      } finally {
+        tx.transaction.dispose();
+        if (tx.chainPosition case bdk.ConfirmedChainPosition(
+          :final confirmationBlockTime,
+          :final transitively,
+        )) {
+          confirmationBlockTime.blockId.hash.dispose();
+          transitively?.dispose();
+        }
+      }
+    } finally {
+      txid.dispose();
+    }
+  }
+  return (visible: visible, conclusive: conclusive);
 }

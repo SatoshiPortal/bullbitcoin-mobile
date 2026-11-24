@@ -53,6 +53,7 @@ import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usec
 import 'package:send/src/payment/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:send/src/payment/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
 import 'package:send/src/payment/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:send/src/payment/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:send/src/payment/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:send/src/payment/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:send/src/payment/domain/usecases/send_with_payjoin_usecase.dart';
@@ -132,6 +133,7 @@ class SendCubit extends Cubit<SendState>
     required this._createSendCrossChainSwapUsecase,
     required this._getSendCrossChainQuoteUsecase,
     required this._resolveLightningAddressUsecase,
+    required this._loadLnurlPayLimitsUsecase,
     required this._updateSendSwapPayinUsecase,
     required this._watchSendSwapUsecase,
     required this._getSwapLimitsAndFeesUsecase,
@@ -228,6 +230,7 @@ class SendCubit extends Cubit<SendState>
   final CreateSendCrossChainSwapUsecase _createSendCrossChainSwapUsecase;
   final GetSendCrossChainQuoteUsecase _getSendCrossChainQuoteUsecase;
   final ResolveLightningAddressUsecase _resolveLightningAddressUsecase;
+  final LoadLnurlPayLimitsUsecase _loadLnurlPayLimitsUsecase;
   final UpdateSendSwapPayinUsecase _updateSendSwapPayinUsecase;
   final WatchSendSwapUsecase _watchSendSwapUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
@@ -309,6 +312,7 @@ class SendCubit extends Cubit<SendState>
   int _selectedWalletGeneration = 0;
   int _utxoLoadGeneration = 0;
   int _paymentRequestInputGeneration = 0;
+  int _lightningInvoiceAttempt = 0;
   int _transactionGeneration = 0;
   int _nextRecipientId = 1;
   final Map<int, int> _recipientInputGenerations = {};
@@ -437,6 +441,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   void backClicked() {
+    _lightningInvoiceAttempt++;
     cancelPendingInternalRecipient();
     _invalidateSignedTransaction();
     if (state.step != SendStep.address) _dropBoltzSwap();
@@ -673,6 +678,7 @@ class SendCubit extends Cubit<SendState>
       state.copyWith(
         copiedRawPaymentRequest: sanitizedText,
         paymentRequest: null,
+        lnurlPay: null,
         recipientDrafts: recipients,
         recipientAmountsSat: recipientChanged
             ? const []
@@ -1384,6 +1390,7 @@ class SendCubit extends Cubit<SendState>
     final inputGeneration = _paymentRequestInputGeneration;
     PaymentRequest? confirmedRequest;
     bool isStale() =>
+        isClosed ||
         inputGeneration != _paymentRequestInputGeneration ||
         (confirmedRequest != null && state.paymentRequest != confirmedRequest);
     try {
@@ -1525,6 +1532,39 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(lightningInvoice: invoice));
       }
 
+      if (paymentRequest is LnAddressPaymentRequest) {
+        final hasExistingLimits = state.lnurlPayLimits != null;
+        final result = await _loadLnurlPayLimitsUsecase.execute(
+          paymentRequest.address,
+        );
+        if (isStale()) return;
+        switch (result) {
+          case Err(:final failure):
+            emit(
+              state.copyWith(
+                lnurlPay: null,
+                loadingBestWallet: false,
+                failure: failure,
+              ),
+            );
+            return;
+          case Ok(:final value):
+            emit(
+              state.copyWith(
+                lnurlPay: (recipient: paymentRequest.address, limits: value),
+                amount: hasExistingLimits ? state.amount : '',
+                amountEntryValid: hasExistingLimits && state.amountEntryValid,
+                amountConversion: hasExistingLimits
+                    ? state.amountConversion
+                    : null,
+                confirmedAmountSat: null,
+                confirmedConversion: null,
+                sendMax: false,
+              ),
+            );
+        }
+      }
+
       // [CHAIN SWAP LIFECYCLE — Step 1: trigger]
       // SelectBestWalletUsecase picks a same-network wallet with sufficient
       // funds first. A chain swap is only triggered when:
@@ -1563,7 +1603,8 @@ class SendCubit extends Cubit<SendState>
           request: paymentRequest,
           amountSat: state.hasMultipleRecipients
               ? state.totalFixedRecipientAmountSat
-              : paymentRequest.amountSat,
+              : state.lnurlPayLimits?.fixedAmountSat ??
+                    paymentRequest.amountSat,
         );
         switch (selection) {
           case Ok(:final value):
@@ -2380,6 +2421,30 @@ class SendCubit extends Cubit<SendState>
     // reported as such rather than as a generic prepare() failure.
     if (isSpMode && !await _confirmSpAmount()) return;
     if (isClosed) return;
+    if (state.paymentRequest is LnAddressPaymentRequest) {
+      final limits = state.lnurlPayLimits;
+      if (limits == null) {
+        emit(
+          state.copyWith(failure: const SendLnurlLimitsUnavailableFailure()),
+        );
+        return;
+      }
+      if (!limits.includes(state.effectiveAmountSat)) {
+        emit(
+          state.copyWith(
+            failure: SendLnurlAmountOutOfBoundsFailure(
+              limits.minimumSat,
+              limits.maximumSat,
+            ),
+          ),
+        );
+        return;
+      }
+      if (state.effectiveAmountSat > state.maxAvailableBalanceSat) {
+        emit(state.copyWith(failure: const SendInsufficientBalanceFailure()));
+        return;
+      }
+    }
     if (state.usesRecipientList) {
       if (!state.hasValidRecipientDrafts) {
         emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
@@ -2451,10 +2516,21 @@ class SendCubit extends Cubit<SendState>
       if (paymentRequest is Bolt11PaymentRequest) {
         invoice = paymentRequest;
       } else {
+        final inputGeneration = _paymentRequestInputGeneration;
+        final attempt = ++_lightningInvoiceAttempt;
+        final amountSat = state.effectiveAmountSat;
         final invoiceResult = await _resolveLightningAddressUsecase.execute(
           lightningAddress: state.paymentRequestAddress,
-          amountSat: state.effectiveAmountSat,
+          amountSat: amountSat,
         );
+        if (isClosed ||
+            inputGeneration != _paymentRequestInputGeneration ||
+            attempt != _lightningInvoiceAttempt ||
+            !state.amountConfirmedClicked ||
+            state.paymentRequest != paymentRequest ||
+            state.effectiveAmountSat != amountSat) {
+          return;
+        }
         switch (invoiceResult) {
           case Ok(:final value):
             invoice = value;

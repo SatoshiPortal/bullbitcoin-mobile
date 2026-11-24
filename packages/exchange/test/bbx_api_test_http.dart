@@ -13,6 +13,7 @@ class FakeBbxHttp implements HttpClientAdapter {
   final Object? body;
   final DioExceptionType? error;
   final List<RequestOptions> requests = [];
+  bool endHistoryAfterFirstPage = false;
 
   FakeBbxHttp({this.status = 200, this.body, this.error});
 
@@ -26,8 +27,17 @@ class FakeBbxHttp implements HttpClientAdapter {
     if (error case final type?) {
       throw DioException(requestOptions: options, type: type);
     }
+    final data = options.data;
+    final params = data is Map ? data['params'] : null;
+    final paginator = params is Map ? params['paginator'] : null;
+    final page = paginator is Map ? paginator['page'] : null;
+    final response = endHistoryAfterFirstPage && page is int && page > 1
+        ? {
+            'result': {'elements': <Object>[]},
+          }
+        : body;
     return ResponseBody.fromString(
-      jsonEncode(body),
+      jsonEncode(response),
       status,
       headers: {
         Headers.contentTypeHeader: [Headers.jsonContentType],

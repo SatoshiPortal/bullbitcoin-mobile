@@ -3,6 +3,8 @@ import 'package:swaps/swaps.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:swap_feature/src/swap_l10n.dart';
 import 'package:swap_feature/src/presentation/transfer_bloc.dart';
+import 'package:swap_feature/src/presentation/swap_failure_l10n.dart';
+import 'package:swap_feature/src/ui/swap_transition_policy.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -18,6 +20,15 @@ class SwapInProgressPage extends StatelessWidget {
     final orderSwap = context.select(
       (TransferBloc bloc) => bloc.state.orderSwap,
     );
+    final swapFailure = context.select(
+      (TransferBloc bloc) => bloc.state.swapFailure,
+    );
+    final fundingTxId = context.select((TransferBloc bloc) => bloc.state.txId);
+    final provisionalFailure =
+        swap != null &&
+        (swap.status == SwapStatus.failed ||
+            swap.status == SwapStatus.expired) &&
+        swapFundingMayHaveMoved(swap, orderSwap, fundingTxId: fundingTxId);
 
     return PopScope(
       canPop: false,
@@ -43,8 +54,23 @@ class SwapInProgressPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
                     children: [
+                      if (swapFailure != null) ...[
+                        Text(
+                          swapFailure.toTranslated(context),
+                          style: context.bullType.body.copyWith(
+                            color: context.appColors.error,
+                          ),
+                          textAlign: .center,
+                        ),
+                        const Gap(8),
+                      ],
                       if (swap?.status == SwapStatus.pending ||
-                          swap?.status == SwapStatus.paid) ...[
+                          swap?.status == SwapStatus.paid ||
+                          swap?.status == SwapStatus.claimable ||
+                          swap?.status == SwapStatus.canCoop ||
+                          (swap?.status == SwapStatus.completed &&
+                              swap?.refundTxid == null &&
+                              !(swap?.receiveTxid?.isNotEmpty ?? false))) ...[
                         const BullLoader.large(),
                         const Gap(8),
                         Text(
@@ -64,7 +90,8 @@ class SwapInProgressPage extends StatelessWidget {
                         ),
                       ],
                       if (swap?.status == SwapStatus.completed &&
-                          swap?.refundTxid == null) ...[
+                          swap?.refundTxid == null &&
+                          (swap?.receiveTxid?.isNotEmpty ?? false)) ...[
                         Text(
                           context.swapCopyForLocale.swapTransferCompletedTitle,
                           style: context.bullType.subtitle
@@ -126,7 +153,11 @@ class SwapInProgressPage extends StatelessWidget {
                       if (swap?.status == SwapStatus.failed ||
                           swap?.status == SwapStatus.expired) ...[
                         Text(
-                          swap?.status == SwapStatus.failed
+                          provisionalFailure
+                              ? context
+                                    .swapCopyForLocale
+                                    .swapTransferPendingTitle
+                              : swap?.status == SwapStatus.failed
                               ? context
                                     .swapCopyForLocale
                                     .transactionStatusSwapFailed
@@ -139,7 +170,11 @@ class SwapInProgressPage extends StatelessWidget {
                         ),
                         const Gap(8),
                         Text(
-                          swap?.status == SwapStatus.failed
+                          provisionalFailure
+                              ? context
+                                    .swapCopyForLocale
+                                    .swapTransferPendingMessage
+                              : swap?.status == SwapStatus.failed
                               ? context
                                     .swapCopyForLocale
                                     .transactionSwapDescChainFailed
@@ -162,7 +197,8 @@ class SwapInProgressPage extends StatelessWidget {
                   OrderSwapUnderReviewCard(orderSwap: orderSwap),
                   const Gap(16),
                 ],
-                if (!(swap?.status.isTerminal ?? false)) ...[
+                if (!(swap?.status.isTerminal ?? false) ||
+                    provisionalFailure) ...[
                   BullInfoCard(
                     description:
                         context.swapCopyForLocale.swapDoNotUninstallWarning,

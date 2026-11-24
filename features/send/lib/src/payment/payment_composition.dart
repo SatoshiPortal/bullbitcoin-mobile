@@ -26,6 +26,8 @@ import 'package:send/src/payment/domain/usecases/create_boltz_send_swap_usecase.
 import 'package:send/src/payment/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:send/src/payment/data/boltz_lnurl_pay_limits_repository.dart';
+import 'package:send/src/payment/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:send/src/payment/domain/usecases/resolve_lightning_address_usecase.dart';
 import 'package:send/src/payment/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:send/src/payment/domain/usecases/select_best_wallet_usecase.dart';
@@ -115,6 +117,9 @@ SendCubit createPaymentCubit({
     ),
     getSendCrossChainQuoteUsecase: GetSendCrossChainQuoteUsecase(d.orders),
     resolveLightningAddressUsecase: ResolveLightningAddressUsecase(),
+    loadLnurlPayLimitsUsecase: const LoadLnurlPayLimitsUsecase(
+      BoltzLnurlPayLimitsRepository(),
+    ),
     updateSendSwapPayinUsecase: UpdateSendSwapPayinUsecase(d.orders),
     watchSendSwapUsecase: WatchSendSwapUsecase(d.orders),
     sendWithPayjoinUsecase: SendWithPayjoinUsecase(d.payjoin.sender, spend),

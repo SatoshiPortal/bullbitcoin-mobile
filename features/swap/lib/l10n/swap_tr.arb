@@ -1,4 +1,5 @@
 {
+  "retry": "Tekrar dene",
   "@@locale": "tr",
   "save": "Kaydet",
   "@save": {

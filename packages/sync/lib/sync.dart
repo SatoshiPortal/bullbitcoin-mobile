@@ -26,6 +26,7 @@ export 'src/domain/wallet_values.dart';
 export 'src/domain/wallet_key.dart';
 export 'src/domain/sync_reason.dart';
 export 'src/domain/sync_completion.dart';
+export 'src/domain/sync_transaction_target.dart';
 export 'src/domain/bitcoin_spend.dart';
 export 'src/domain/spend.dart' hide signedForGeneration;
 export 'src/data/bitcoin_transaction_id.dart';

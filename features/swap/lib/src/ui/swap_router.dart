@@ -19,6 +19,15 @@ enum TransferRoute {
   const TransferRoute(this.path);
 }
 
+/// Cross-chain attempts own their navigation in the confirmation page.
+bool shouldNavigateOnTransferBroadcast(
+  TransferState previous,
+  TransferState current,
+) =>
+    previous.txId.isEmpty &&
+    current.txId.isNotEmpty &&
+    current.isSameChainTransfer;
+
 class SwapRouter {
   static GoRoute route({
     required TransferBloc Function() createTransfer,
@@ -55,8 +64,7 @@ class SwapRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<TransferBloc, TransferState>(
-              listenWhen: (previous, current) =>
-                  previous.txId.isEmpty && current.txId.isNotEmpty,
+              listenWhen: shouldNavigateOnTransferBroadcast,
               listener: (context, state) {
                 final orderSwap = state.orderSwap;
                 if (orderSwap != null) {

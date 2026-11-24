@@ -69,6 +69,8 @@ import 'package:send/src/payment/domain/usecases/validate_sp_amount_for_send_use
 import 'package:send/src/payment/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:send/src/payment/presentation/bloc/send_cubit.dart';
 import 'package:send/src/payment/presentation/bloc/send_state.dart';
+import 'package:send/src/payment/domain/lnurl_pay_limits_repository.dart';
+import 'package:send/src/payment/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -89,6 +91,9 @@ class _MockDetectBitcoinStringUsecase extends Mock
 class _MockPreferences extends Mock implements Preferences {}
 
 class _MockSend extends Mock implements Send {}
+
+class _MockLnurlPayLimitsRepository extends Mock
+    implements LnurlPayLimitsRepository {}
 
 class _MockFees extends Mock implements Fees {}
 
@@ -242,6 +247,7 @@ class _TestSendCubit extends SendCubit {
     required super.createSendCrossChainSwapUsecase,
     required super.getSendCrossChainQuoteUsecase,
     required super.resolveLightningAddressUsecase,
+    required super.loadLnurlPayLimitsUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
     required super.sendWithPayjoinUsecase,
@@ -353,6 +359,9 @@ void main() {
       createSendCrossChainSwapUsecase: _MockCreateSendCrossChainSwapUsecase(),
       getSendCrossChainQuoteUsecase: _MockGetSendCrossChainQuoteUsecase(),
       resolveLightningAddressUsecase: _MockResolveLightningAddressUsecase(),
+      loadLnurlPayLimitsUsecase: LoadLnurlPayLimitsUsecase(
+        _MockLnurlPayLimitsRepository(),
+      ),
       updateSendSwapPayinUsecase: _MockUpdateSendSwapPayinUsecase(),
       watchSendSwapUsecase: _MockWatchSendSwapUsecase(),
       sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),

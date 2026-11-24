@@ -34,7 +34,7 @@ Run `make workspace-graph` to regenerate. This inventory lists only direct decla
 | [`bull_recoverbull`](features/recoverbull/pubspec.yaml) | `convert` (`^3.1.2`), `crypto` (`^3.0.7`), `cupertino_ui` (`^1.1.6`), `drift` (`^2.35.4`), `flutter` (`SDK: flutter`), `flutter_bloc` (`^9.1.1`), `flutter_localizations` (`SDK: flutter`), `gif` (`^2.3.0`), `go_router` (`^18.1.4`), `http` (`^1.2.2`), `intl` (`any`), `material_ui` (`^1.11.0`), `meta` (`^1.17.0`), `recoverbull` (`git (see below)`), `sqlite3` (`^3.5.2`), `url_launcher` (`^6.3.2`) | `build_runner` (`^2.10.4`), `drift_dev` (`^2.35.3`), `file_picker` (`^13.3.3`), `flutter_lints` (`^6.0.0`), `flutter_test` (`SDK: flutter`) |
 | [`bull_reporting`](packages/bull_reporting/pubspec.yaml) | `flutter` (`SDK: flutter`), `package_info_plus` (`^10.2.2`), `sentry_flutter` (`^9.22.0`), `shared_preferences` (`^2.3.0`) | `flutter_test` (`SDK: flutter`), `lints` (`^6.1.0`) |
 | [`bull_tor`](packages/bull_tor/pubspec.yaml) | `connectivity_plus` (`^7.3.1`), `flutter` (`SDK: flutter`), `get_it` (`^9.1.1`), `meta` (`^1.17.0`), `path_provider` (`^2.1.5`), `socks5_proxy` (`^2.1.1`) | `flutter_test` (`SDK: flutter`), `lints` (`^6.1.0`), `test` (`^1.31.0`) |
-| [`bull_ui`](packages/bull_ui/pubspec.yaml) | `auto_size_text` (`^3.0.0`), `cupertino_ui` (`^1.1.6`), `custom_sliding_segmented_control` (`^2.0.0`), `flutter` (`SDK: flutter`), `flutter_localizations` (`SDK: flutter`), `gif` (`^2.3.0`), `intl` (`any`), `keyboard_actions` (`^5.0.3`), `material_ui` (`^1.11.0`), `qr_flutter` (`^4.1.0`), `shimmer` (`^4.0.0`), `timeago` (`^3.7.1`) | `flutter_lints` (`^6.0.0`), `flutter_test` (`SDK: flutter`) |
+| [`bull_ui`](packages/bull_ui/pubspec.yaml) | `auto_size_text` (`^3.0.0`), `cupertino_ui` (`^1.1.6`), `custom_sliding_segmented_control` (`^2.0.0`), `flutter` (`SDK: flutter`), `flutter_localizations` (`SDK: flutter`), `gif` (`^2.3.0`), `intl` (`any`), `keyboard_actions` (`^5.0.3`), `material_ui` (`^1.11.0`), `qr_flutter` (`^4.1.0`), `sensors_plus` (`7.1.1`), `shimmer` (`^4.0.0`), `timeago` (`^3.7.1`) | `flutter_lints` (`^6.0.0`), `flutter_test` (`SDK: flutter`) |
 | [`bull_ui_catalogue`](packages/bull_ui_catalogue/pubspec.yaml) | `flutter` (`SDK: flutter`), `material_ui` (`^1.11.0`), `widgetbook` (`^3.24.0`), `widgetbook_annotation` (`^3.11.0`) | `build_runner` (`^2.4.0`), `flutter_lints` (`^6.0.0`), `flutter_test` (`SDK: flutter`), `widgetbook_generator` (`^3.24.0`) |
 | [`coins`](features/coins/pubspec.yaml) | `flutter` (`SDK: flutter`), `flutter_bloc` (`^9.1.1`), `flutter_localizations` (`SDK: flutter`), `freezed_annotation` (`^3.1.0`), `go_router` (`^18.1.4`), `intl` (`any`), `meta` (`^1.17.0`) | `build_runner` (`^2.10.4`), `fake_async` (`^1.3.3`), `flutter_test` (`SDK: flutter`), `freezed` (`^4.0.0`), `material_ui` (`^1.11.0`), `mocktail` (`^1.0.4`) |
 | [`electrum`](packages/electrum/pubspec.yaml) | `convert` (`^3.1.2`), `drift` (`^2.35.4`), `flutter` (`SDK: flutter`), `meta` (`^1.17.0`), `socks5_proxy` (`^2.1.2`), `sqlite3` (`^3.9.1`) | `build_runner` (`^2.16.1`), `drift_dev` (`^2.35.3`), `flutter_test` (`SDK: flutter`), `mocktail` (`^1.0.5`), `test` (`^1.32.0`) |
@@ -172,6 +172,7 @@ Run `make workspace-graph` to regenerate. This inventory lists only direct decla
 | `provider` | [`settings`](features/settings/pubspec.yaml) (runtime) |
 | `qr_flutter` | [`bull_ui`](packages/bull_ui/pubspec.yaml) (runtime) |
 | `recoverbull` | [`bull_recoverbull`](features/recoverbull/pubspec.yaml) (runtime), [`secrets`](packages/secrets/pubspec.yaml) (runtime) |
+| `sensors_plus` | [`bull_ui`](packages/bull_ui/pubspec.yaml) (runtime) |
 | `sentry_flutter` | [`bb_mobile`](./pubspec.yaml) (runtime), [`bull_reporting`](packages/bull_reporting/pubspec.yaml) (runtime) |
 | `share_plus` | [`bb_mobile`](./pubspec.yaml) (runtime), [`bull_exchange`](features/bull_exchange/pubspec.yaml) (runtime), [`bull_logger`](packages/bull_logger/pubspec.yaml) (runtime) |
 | `shared_preferences` | [`background_tasks`](packages/background_tasks/pubspec.yaml) (runtime), [`bb_mobile`](./pubspec.yaml) (runtime), [`bull_ark`](features/ark/pubspec.yaml) (runtime), [`bull_exchange`](features/bull_exchange/pubspec.yaml) (runtime), [`bull_quick_actions`](features/quick_actions/pubspec.yaml) (runtime), [`bull_reporting`](packages/bull_reporting/pubspec.yaml) (runtime), [`settings`](features/settings/pubspec.yaml) (runtime), [`swaps`](packages/swaps/pubspec.yaml) (runtime), [`wizard`](features/wizard/pubspec.yaml) (runtime) |
@@ -248,6 +249,7 @@ Local path crates are shown and their own manifests are inventoried separately. 
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `boltz-client` | `runtime` | `git (see below)` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `flutter_rust_bridge` | `runtime` | `=2.13.0` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `hex` | `runtime` | `0.4` |
+| [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `lnurl-rs` | `runtime` | `0.9.0` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `openssl` | `runtime` | `0.10.64` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `reqwest` | `runtime` | `0.12` |
 | [`boltz`](packages/rust_bindings/rust/crates/boltz/Cargo.toml) | `rustls` | `runtime` | `0.23` |
@@ -301,7 +303,7 @@ Refs are taken from the manifests. Cargo patches are source redirects, not addit
 | `Dart: bb_mobile / bolt11_decoder (runtime)` | `https://github.com/fusion44/dart_bolt11_decoder` | `f5deec21fb0ac2ee507de1f683344b03f8cc92a3` | — |
 | `Dart: bb_mobile / ur (runtime)` | `https://github.com/bukata-sa/bc-ur-dart.git` | `5738f70d0ec3d50977ac3dd01fed62939600238b` | — |
 | `Dart: bull_recoverbull / recoverbull (runtime)` | `https://github.com/SatoshiPortal/recoverbull-client-dart.git` | `293b0d709f6c7775180f775c6a5fe99a39f175ce` | — |
-| `Dart: rust_bindings / bdk_dart (runtime)` | `https://github.com/SatoshiPortal/bdk-dart` | `9ba4d5001620a8a840f3b33de17a667c08629b98` | — |
+| `Dart: rust_bindings / bdk_dart (runtime)` | `https://github.com/SatoshiPortal/bdk-dart` | `5dc0c9a0f46a5c7356a523035f8bb0b43b2bba26` | — |
 | `Dart: secrets / recoverbull (runtime)` | `https://github.com/SatoshiPortal/recoverbull-client-dart.git` | `293b0d709f6c7775180f775c6a5fe99a39f175ce` | — |
 | `Dart: signers / ledger_bitcoin (runtime)` | `https://github.com/SatoshiPortal/ledger-flutter-plus-plugins` | `d71f36e95a763491adab95fc1f5abf86f532ac4e` | `packages/ledger-bitcoin` |
 | `Dart: signers / ur (runtime)` | `https://github.com/bukata-sa/bc-ur-dart.git` | `5738f70d0ec3d50977ac3dd01fed62939600238b` | — |

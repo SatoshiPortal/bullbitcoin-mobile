@@ -1,4 +1,5 @@
 {
+  "retry": "পুনৰ চেষ্টা কৰক",
   "@@locale": "as",
   "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
   "@oopsSomethingWentWrong": {

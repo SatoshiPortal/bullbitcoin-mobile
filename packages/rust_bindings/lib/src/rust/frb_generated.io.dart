@@ -486,6 +486,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   Lnurl dco_decode_lnurl(dynamic raw);
 
   @protected
+  LnurlPayBounds dco_decode_lnurl_pay_bounds(dynamic raw);
+
+  @protected
   LwkError dco_decode_lwk_error(dynamic raw);
 
   @protected
@@ -1178,6 +1181,9 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   Lnurl sse_decode_lnurl(SseDeserializer deserializer);
+
+  @protected
+  LnurlPayBounds sse_decode_lnurl_pay_bounds(SseDeserializer deserializer);
 
   @protected
   LwkError sse_decode_lwk_error(SseDeserializer deserializer);
@@ -2699,6 +2705,15 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   }
 
   @protected
+  void cst_api_fill_to_wire_lnurl_pay_bounds(
+    LnurlPayBounds apiObj,
+    wire_cst_lnurl_pay_bounds wireObj,
+  ) {
+    wireObj.min_sendable_msat = cst_encode_u_64(apiObj.minSendableMsat);
+    wireObj.max_sendable_msat = cst_encode_u_64(apiObj.maxSendableMsat);
+  }
+
+  @protected
   void cst_api_fill_to_wire_lwk_error(
     LwkError apiObj,
     wire_cst_lwk_error wireObj,
@@ -4149,6 +4164,12 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
 
   @protected
   void sse_encode_lnurl(Lnurl self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_lnurl_pay_bounds(
+    LnurlPayBounds self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_lwk_error(LwkError self, SseSerializer serializer);
@@ -7931,6 +7952,23 @@ class BullSdkWire implements BaseWire {
   late final _wire__boltz__api__lnurl__lnurl_fetch_invoice =
       _wire__boltz__api__lnurl__lnurl_fetch_invoicePtr
           .asFunction<void Function(int, ffi.Pointer<wire_cst_lnurl>, int)>();
+
+  void wire__boltz__api__lnurl__lnurl_fetch_pay_limits(
+    int port_,
+    ffi.Pointer<wire_cst_lnurl> that,
+  ) {
+    return _wire__boltz__api__lnurl__lnurl_fetch_pay_limits(port_, that);
+  }
+
+  late final _wire__boltz__api__lnurl__lnurl_fetch_pay_limitsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_cst_lnurl>)
+        >
+      >('frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_fetch_pay_limits');
+  late final _wire__boltz__api__lnurl__lnurl_fetch_pay_limits =
+      _wire__boltz__api__lnurl__lnurl_fetch_pay_limitsPtr
+          .asFunction<void Function(int, ffi.Pointer<wire_cst_lnurl>)>();
 
   void wire__boltz__api__lnurl__lnurl_get_voucher_max_amount(
     int port_,
@@ -12825,6 +12863,22 @@ final class wire_cst_lnurl extends ffi.Struct {
     ffi.Allocator $allocator, {
     required ffi.Pointer<wire_cst_list_prim_u_8_strict> value,
   }) => $allocator<wire_cst_lnurl>()..ref.value = value;
+}
+
+final class wire_cst_lnurl_pay_bounds extends ffi.Struct {
+  @ffi.Uint64()
+  external int min_sendable_msat;
+
+  @ffi.Uint64()
+  external int max_sendable_msat;
+
+  static ffi.Pointer<wire_cst_lnurl_pay_bounds> $allocate(
+    ffi.Allocator $allocator, {
+    required int min_sendable_msat,
+    required int max_sendable_msat,
+  }) => $allocator<wire_cst_lnurl_pay_bounds>()
+    ..ref.min_sendable_msat = min_sendable_msat
+    ..ref.max_sendable_msat = max_sendable_msat;
 }
 
 final class wire_cst_lwk_error extends ffi.Struct {

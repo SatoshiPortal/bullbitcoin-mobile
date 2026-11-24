@@ -66,6 +66,9 @@ import 'package:send/src/payment/domain/usecases/validate_coin_control_payment_r
 import 'package:send/src/payment/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_swap_route_usecase.dart';
+import 'package:send/src/payment/domain/lnurl_pay_limits.dart';
+import 'package:send/src/payment/domain/lnurl_pay_limits_repository.dart';
+import 'package:send/src/payment/domain/usecases/load_lnurl_pay_limits_usecase.dart';
 import 'package:swaps/swaps.dart' as boltz;
 import 'package:swaps/swaps.dart' show SwapRoute;
 import 'package:satoshifier/payment_request.dart';
@@ -104,6 +107,16 @@ class _MockDetectBitcoinStringUsecase extends Mock
 class _MockPreferences extends Mock implements Preferences {}
 
 class _MockSend extends Mock implements Send {}
+
+class _MockLnurlPayLimitsRepository extends Mock
+    implements LnurlPayLimitsRepository {}
+
+LnurlPayLimits _lnurlLimits(int minimumMsat, int maximumMsat) =>
+    LnurlPayLimits.fromMillisatoshis(
+      BigInt.from(minimumMsat),
+      BigInt.from(maximumMsat),
+    ) ??
+    (throw StateError('Invalid LNURL limits fixture'));
 
 class _MockFees extends Mock implements Fees {}
 
@@ -303,6 +316,7 @@ class _TestableSendCubit extends SendCubit {
     required super.createSendCrossChainSwapUsecase,
     required super.getSendCrossChainQuoteUsecase,
     required super.resolveLightningAddressUsecase,
+    required super.loadLnurlPayLimitsUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
     required super.transactions,
@@ -486,6 +500,7 @@ void main() {
   late _MockCreateSendCrossChainSwapUsecase createSendCrossChainSwapUsecase;
   late _MockGetSendCrossChainQuoteUsecase getSendCrossChainQuoteUsecase;
   late _MockResolveLightningAddressUsecase resolveLightningAddressUsecase;
+  late _MockLnurlPayLimitsRepository lnurlPayLimitsRepository;
   late _MockUpdateSendSwapPayinUsecase updateSendSwapPayinUsecase;
   late _MockWatchSendSwapUsecase watchSendSwapUsecase;
   late _MockGetSwapLimitsAndFeesUsecase getSwapLimitsAndFeesUsecase;
@@ -589,6 +604,9 @@ void main() {
       createSendCrossChainSwapUsecase: createSendCrossChainSwapUsecase,
       getSendCrossChainQuoteUsecase: getSendCrossChainQuoteUsecase,
       resolveLightningAddressUsecase: resolveLightningAddressUsecase,
+      loadLnurlPayLimitsUsecase: LoadLnurlPayLimitsUsecase(
+        lnurlPayLimitsRepository,
+      ),
       updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
       watchSendSwapUsecase: watchSendSwapUsecase,
       transactions: watchWalletTransactionByTxIdUsecase,
@@ -744,6 +762,9 @@ void main() {
     createSendCrossChainSwapUsecase = _MockCreateSendCrossChainSwapUsecase();
     getSendCrossChainQuoteUsecase = _MockGetSendCrossChainQuoteUsecase();
     resolveLightningAddressUsecase = _MockResolveLightningAddressUsecase();
+    lnurlPayLimitsRepository = _MockLnurlPayLimitsRepository();
+    when(() => lnurlPayLimitsRepository.read(any()))
+        .thenAnswer((_) async => Ok(_lnurlLimits(1000, 1000000000)));
     updateSendSwapPayinUsecase = _MockUpdateSendSwapPayinUsecase();
     watchSendSwapUsecase = _MockWatchSendSwapUsecase();
     getSwapLimitsAndFeesUsecase = _MockGetSwapLimitsAndFeesUsecase();
@@ -7054,6 +7075,130 @@ void main() {
         SendStep.address,
         reason: 'an obsolete continuation must not advance the current input',
       );
+    });
+
+    test(
+      'loads fixed LNURL limits only after confirming the recipient',
+      () async {
+        const recipient = 'user@example.com';
+        const request = PaymentRequest.lnAddress(address: recipient);
+        final cubit = buildCubit(wallet: stubPaymentRequestContinuation());
+        addTearDown(cubit.close);
+
+        when(() => detectBitcoinStringUsecase.execute(data: recipient))
+            .thenAnswer((_) async => request);
+        when(() => lnurlPayLimitsRepository.read(recipient))
+            .thenAnswer((_) async => Ok(_lnurlLimits(5000000, 5000000)));
+
+        await cubit.onChangedText(recipient);
+        verifyNever(() => lnurlPayLimitsRepository.read(recipient));
+        await cubit.continueOnAddressConfirmed();
+
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.hasFixedRequestAmount, isTrue);
+        expect(cubit.state.effectiveAmountSat, 5000);
+        await cubit.amountChanged(amount: '2000');
+        expect(cubit.state.effectiveAmountSat, 5000);
+        verify(() => lnurlPayLimitsRepository.read(recipient)).called(1);
+      },
+    );
+
+    test(
+      'does not request an invoice for an out-of-range LNURL amount',
+      () async {
+        const recipient = 'user@example.com';
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.amount,
+            paymentRequest: const PaymentRequest.lnAddress(address: recipient),
+            lnurlPay: (
+              recipient: recipient,
+              limits: _lnurlLimits(5000000, 10000000),
+            ),
+            amount: '4999',
+            inputAmountCurrencyCode: 'sats',
+          ),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendLnurlAmountOutOfBoundsFailure>());
+        verifyNever(
+          () => resolveLightningAddressUsecase.execute(
+            lightningAddress: recipient,
+            amountSat: any(named: 'amountSat'),
+          ),
+        );
+      },
+    );
+
+    test('ignores old LNURL limits when a new recipient is typed', () async {
+      const first = 'first@example.com';
+      const second = 'second@example.com';
+      final cubit = buildCubit(wallet: stubPaymentRequestContinuation());
+      addTearDown(cubit.close);
+      final origin = Completer<Result<LnurlPayLimits, SendFailure>>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: first),
+      ).thenAnswer((_) async => const PaymentRequest.lnAddress(address: first));
+      when(() => detectBitcoinStringUsecase.execute(data: second)).thenAnswer(
+        (_) async => const PaymentRequest.lnAddress(address: second),
+      );
+      when(() => lnurlPayLimitsRepository.read(first))
+          .thenAnswer((_) => origin.future);
+      await cubit.onChangedText(first);
+      final initial = cubit.continueOnAddressConfirmed();
+      await untilCalled(() => lnurlPayLimitsRepository.read(first));
+      await cubit.onChangedText(second);
+
+      origin.complete(Ok(_lnurlLimits(5000000, 5000000)));
+      await initial;
+
+      expect(cubit.state.paymentRequestAddress, second);
+      expect(cubit.state.lnurlPayLimits, isNull);
+      expect(cubit.state.step, SendStep.address);
+    });
+
+    test('ignores an invoice response from a canceled LNURL attempt', () async {
+      const recipient = 'user@example.com';
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final entry = SendState(
+        step: SendStep.amount,
+        selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+        paymentRequest: const PaymentRequest.lnAddress(address: recipient),
+        lnurlPay: (recipient: recipient, limits: _lnurlLimits(1000, 10000000)),
+        amount: '5000',
+        inputAmountCurrencyCode: 'sats',
+      );
+      cubit.setStateForTest(entry);
+      final first = Completer<Result<Bolt11PaymentRequest, SendFailure>>();
+      final second = Completer<Result<Bolt11PaymentRequest, SendFailure>>();
+      var attempt = 0;
+      when(
+        () => resolveLightningAddressUsecase.execute(
+          lightningAddress: recipient,
+          amountSat: 5000,
+        ),
+      ).thenAnswer((_) => (++attempt == 1 ? first : second).future);
+
+      final canceled = cubit.onAmountConfirmed();
+      cubit.backClicked();
+      cubit.setStateForTest(entry);
+      final active = cubit.onAmountConfirmed();
+      expect(attempt, 2);
+
+      first.complete(const Err(SendInvoiceExpiredFailure()));
+      await canceled;
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.amountConfirmedClicked, isTrue);
+
+      second.complete(const Err(SendInvalidPaymentRequestFailure()));
+      await active;
+      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+      expect(cubit.state.amountConfirmedClicked, isFalse);
     });
 
     test('validates scanned raw input before continuing', () async {

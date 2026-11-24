@@ -1,4 +1,5 @@
 {
+  "retry": "Thử lại",
   "@@locale": "vi",
   "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",
   "save": "Lưu",

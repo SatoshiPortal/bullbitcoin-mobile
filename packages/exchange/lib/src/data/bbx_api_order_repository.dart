@@ -1,6 +1,5 @@
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/generic_extensions.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/entities/dca.dart';
@@ -15,6 +14,7 @@ typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
 );
 
 final class BbxApiOrderRepository implements ExchangeOrders {
+  static const _maximumPages = 1000;
   final RunOrderOperation _read;
   final RunOrderOperation _write;
   final bool _isTestnet;
@@ -170,11 +170,10 @@ final class BbxApiOrderRepository implements ExchangeOrders {
 
   @override
   Future<Result<Order?, ExchangeFailure>> getOrderByTxId(String txId) => _read(
-    (api) async => switch (await _listOrderSummaries(api)) {
-      Ok(:final value) => switch (value.firstWhereOrNull(
-        (s) => orderSummaryMatchesTxId(s, txId),
-      )) {
+    (api) async => switch (await _listOrderSummaries(api, txId: txId)) {
+      Ok(:final value) => switch (value.match) {
         final summary? => _mapOrder<Order>(summary),
+        null when value.rejected => const Err(ExchangeOrderLoadFailure()),
         null => const Ok(null),
       },
       Err(:final failure) => Err(failure),
@@ -193,7 +192,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
-        for (final summary in value) {
+        for (final summary in value.orders) {
           switch (_mapOrder<Order>(summary)) {
             case Ok(value: final order):
               if (type == null || order.orderType == type) orders.add(order);
@@ -358,28 +357,58 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     }
   }
 
-  Future<Result<List<bbx.OrderSummary>, ExchangeFailure>> _listOrderSummaries(
-    bbx.Bbx api,
-  ) async {
-    switch (await api.orders.listOrderSummaries()) {
-      case Ok(:final value):
-        for (final rejected in value.rejected) {
-          log.severe(
-            message: 'Error parsing order element',
-            error: rejected.runtimeType.toString(),
-            trace: StackTrace.current,
-          );
-        }
-        return Ok(value.orders);
-      case Err(failure: bbx.BbxMissingCredentialFailure()):
-        return const Ok([]);
-      case Err(:final failure):
-        return Err(switch (_mapFailure(failure)) {
-          final ExchangeCredentialReadFailure failure => failure,
-          final ExchangeSessionRejectedFailure failure => failure,
-          _ => const ExchangeOrderLoadFailure(),
-        });
+  Future<
+    Result<
+      ({List<bbx.OrderSummary> orders, bbx.OrderSummary? match, bool rejected}),
+      ExchangeFailure
+    >
+  >
+  _listOrderSummaries(bbx.Bbx api, {String? txId}) async {
+    final orders = <bbx.OrderSummary>[];
+    final seen = <String>{};
+    var hasRejected = false;
+    for (var page = 1; page <= _maximumPages; page++) {
+      switch (await api.orders.listOrderSummaries(
+        page: page,
+        requireElements: true,
+      )) {
+        case Ok(:final value):
+          for (final rejected in value.rejected) {
+            log.severe(
+              message: 'Error parsing order element',
+              error: rejected.runtimeType.toString(),
+              trace: StackTrace.current,
+            );
+          }
+          hasRejected = hasRejected || value.rejected.isNotEmpty;
+          if (value.rawCount == 0) {
+            return Ok((orders: orders, match: null, rejected: hasRejected));
+          }
+          final previousLength = seen.length;
+          for (final summary in value.orders) {
+            if (txId != null && orderSummaryMatchesTxId(summary, txId)) {
+              return Ok((
+                orders: const [],
+                match: summary,
+                rejected: hasRejected,
+              ));
+            }
+            if (seen.add(summary.orderId) && txId == null) orders.add(summary);
+          }
+          if (seen.length == previousLength && value.rejected.isEmpty) {
+            return const Err(ExchangeOrderLoadFailure());
+          }
+        case Err(failure: bbx.BbxMissingCredentialFailure()) when page == 1:
+          return const Ok((orders: [], match: null, rejected: false));
+        case Err(:final failure):
+          return Err(switch (_mapFailure(failure)) {
+            final ExchangeCredentialReadFailure failure => failure,
+            final ExchangeSessionRejectedFailure failure => failure,
+            _ => const ExchangeOrderLoadFailure(),
+          });
+      }
     }
+    return const Err(ExchangeOrderLoadFailure());
   }
 
   static bbx.SepaPaymentProcessor? _sepaPaymentProcessor(

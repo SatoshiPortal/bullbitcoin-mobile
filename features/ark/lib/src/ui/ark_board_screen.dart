@@ -58,6 +58,8 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
 
   /// The review last shown: what the success screen says reached Ark.
   ArkBoardPreparation? _confirmed;
+  String? _transitionId;
+  bool _showTransition = false;
 
   bool _left = false;
 
@@ -115,7 +117,10 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     _leaveIfUnsettled(owner.state);
     _subscription = owner.stream.listen((next) {
       if (mounted && identical(owner, widget.cubit)) {
-        setState(() => _settle(next));
+        setState(() {
+          _settle(next);
+          if (next is ArkBoardReviewed) _showTransition = false;
+        });
         _leaveIfUnsettled(next);
       }
     });
@@ -132,6 +137,8 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.cubit, widget.cubit)) {
       unawaited(_subscription.cancel());
+      _showTransition = false;
+      _transitionId = null;
       _listen();
     }
   }
@@ -206,7 +213,17 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
           onPressed: busy
               ? null
               : () {
-                  if (_current(owner, reviewed)) unawaited(owner.confirm());
+                  if (_current(owner, reviewed)) {
+                    final submission = owner.confirm();
+                    if (owner.state is ArkBoardBusy &&
+                        reviewed.failure is! ArkReviewExpiredFailure) {
+                      setState(() {
+                        _transitionId = reviewed.preparation.operationId;
+                        _showTransition = true;
+                      });
+                    }
+                    unawaited(submission);
+                  }
                 },
         ),
       ],
@@ -217,7 +234,9 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
   /// reaches Ark, and the way to this Board's details.
   Widget _success(ArkOperation operation) {
     final l10n = arkLocalizationsOf(context);
-    final completed = operation.status == ArkOperationStatus.succeeded;
+    final completed =
+        operation.status == ArkOperationStatus.succeeded &&
+        (_transitionId == null || operation.id == _transitionId);
     // For a Board the native reference is its funding transaction.
     final txid = operation.nativeReference;
     final net = _confirmed?.net;
@@ -281,7 +300,10 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
       ),
       onClose: widget.onClose ?? () => Navigator.pop(context),
       actions: [
-        if (view != null && txid != null)
+        if (view != null &&
+            txid != null &&
+            txid.trim().isNotEmpty &&
+            (_transitionId == null || operation.id == _transitionId))
           BullButton.secondary(
             label: l10n.viewDetails,
             onPressed: () => view(txid),
@@ -294,6 +316,40 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
   Widget build(BuildContext context) {
     final owner = widget.cubit;
     final state = owner.state;
+    final transitionId = _transitionId;
+    if (_showTransition && transitionId != null) {
+      final operation = switch (state) {
+        ArkBoardSubmitted(:final operation)
+            when operation.id == transitionId &&
+                operation.kind == ArkOperationKind.board =>
+          operation,
+        _ => null,
+      };
+      final phase = switch (operation?.status) {
+        ArkOperationStatus.succeeded => BullPaymentPhase.success,
+        ArkOperationStatus.failed ||
+        ArkOperationStatus.conflicted => BullPaymentPhase.failed,
+        _ => BullPaymentPhase.sending,
+      };
+      void dismiss() {
+        if (mounted &&
+            identical(owner, widget.cubit) &&
+            _transitionId == transitionId) {
+          setState(() => _showTransition = false);
+        }
+      }
+
+      final l10n = arkLocalizationsOf(context);
+      return BullPaymentTransition(
+        network: BullPaymentNetwork.ark,
+        phase: phase,
+        status: operation?.status.toTranslated(context) ?? l10n.loading,
+        skipLabel: BullUiLocalizations.of(context).paymentViewStatus,
+        onSkip: dismiss,
+        onBackdropTap: dismiss,
+        onDone: dismiss,
+      );
+    }
     switch ((state, _settled)) {
       case (final ArkBoardEditing editing, _):
         return _amount(owner, editing);

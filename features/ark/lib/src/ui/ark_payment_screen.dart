@@ -59,6 +59,8 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
   bool _scanFailed = false;
   // The quote this screen confirmed, kept only to restate its amount once sent.
   ArkQuote? _confirmed;
+  bool _showTransition = false;
+  String? _transitionId;
   late StreamSubscription<ArkPaymentState> _subscription;
 
   bool _owns(ArkPaymentCubit owner, ArkAccountId account) =>
@@ -80,7 +82,9 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     _left = false;
     _subscription = owner.stream.listen((next) {
       if (_owns(owner, account)) {
-        setState(() {});
+        setState(() {
+          if (next is ArkPaymentEditing) _showTransition = false;
+        });
         _leaveIfUnsettled(next);
       }
     });
@@ -135,6 +139,9 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
   /// Like the app's other completed flows.
   Widget _success(ArkAccountId account, ArkOperation operation) {
     final l10n = context.loc;
+    final completed =
+        operation.status == ArkOperationStatus.succeeded &&
+        (_transitionId == null || operation.id == _transitionId);
     final confirmed = _confirmed;
     final amount = confirmed != null && confirmed.account == account
         ? confirmed.net
@@ -145,13 +152,26 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     final view = widget.onViewDetails;
     return BullSuccessScreen(
       title: l10n.send,
-      headline: l10n.paymentSent,
+      headline: completed
+          ? l10n.paymentSent
+          : operation.status == ArkOperationStatus.succeeded
+          ? l10n.pending
+          : operation.status.toTranslated(context),
+      icon: completed
+          ? null
+          : ExcludeSemantics(
+              child: BullIcon(
+                BullIcons.schedule,
+                size: 32,
+                color: context.bull.textMuted,
+              ),
+            ),
       amountLine: amount == null
           ? null
           : fiat == null
           ? formatArkSats(context, amount)
           : '${formatArkSats(context, amount)} · ~$fiat',
-      message: operation.status == ArkOperationStatus.succeeded
+      message: completed
           ? null
           : BullText(
               l10n.paymentPendingNote,
@@ -162,10 +182,10 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
             ),
       onClose: _home,
       actions: [
-        if ((view, operation.nativeReference) case (
-          final open?,
-          final reference?,
-        ))
+        if ((view, operation.nativeReference)
+            case (final open?, final reference?)
+            when reference.trim().isNotEmpty &&
+                (_transitionId == null || operation.id == _transitionId))
           BullButton.secondary(
             label: l10n.viewDetails,
             onPressed: () => open(reference),
@@ -193,6 +213,8 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
       _scanIntent = null;
       _scanFailed = false;
       _confirmed = null;
+      _showTransition = false;
+      _transitionId = null;
       ++_phase;
       _listen();
     } else if (oldWidget.onScan != widget.onScan) {
@@ -286,7 +308,14 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
       owner.edit();
     } else {
       _confirmed = state.quote;
-      unawaited(owner.confirm());
+      final submission = owner.confirm();
+      if (owner.state case ArkPaymentSubmitting(:final operationId)) {
+        setState(() {
+          _showTransition = true;
+          _transitionId = operationId;
+        });
+      }
+      unawaited(submission);
     }
   }
 
@@ -401,6 +430,42 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
     final account = owner.account;
     final state = owner.state;
     final phase = _phase;
+    final transitionId = _transitionId;
+    if (_showTransition && transitionId != null) {
+      final operation = switch (state) {
+        ArkPaymentSubmitted(:final operation)
+            when operation.id == transitionId &&
+                operation.kind == ArkOperationKind.payment =>
+          operation,
+        _ => null,
+      };
+      final transitionPhase = switch (operation?.status) {
+        ArkOperationStatus.succeeded => BullPaymentPhase.success,
+        ArkOperationStatus.failed ||
+        ArkOperationStatus.conflicted => BullPaymentPhase.failed,
+        _ => BullPaymentPhase.sending,
+      };
+      final network = switch (_confirmed?.destinationKind) {
+        ArkDestinationKind.bitcoin => BullPaymentNetwork.bitcoin,
+        ArkDestinationKind.bolt11 => BullPaymentNetwork.lightning,
+        ArkDestinationKind.ark || null => BullPaymentNetwork.ark,
+      };
+      void dismiss() {
+        if (_owns(owner, account) && _transitionId == transitionId) {
+          setState(() => _showTransition = false);
+        }
+      }
+
+      return BullPaymentTransition(
+        network: network,
+        phase: transitionPhase,
+        status: operation?.status.toTranslated(context) ?? l10n.loading,
+        skipLabel: BullUiLocalizations.of(context).paymentViewStatus,
+        onSkip: dismiss,
+        onBackdropTap: dismiss,
+        onDone: dismiss,
+      );
+    }
     final editing = state is ArkPaymentEditing || state is ArkPaymentQuoting;
     final review =
         state is ArkPaymentReview &&

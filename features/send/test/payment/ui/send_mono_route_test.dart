@@ -341,6 +341,30 @@ void main() {
     );
     expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
   });
+
+  testWidgets('mono Confirm starts one animated payment for repeated taps', (
+    tester,
+  ) async {
+    final cubit = await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(sendType: SendType.bitcoin),
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    final confirm = tester.widget<BullButton>(find.byType(BullButton));
+
+    confirm.onPressed();
+    confirm.onPressed();
+    await tester.pump();
+
+    expect(find.byType(BullPaymentTransition), findsOneWidget);
+    verify(cubit.onConfirmTransactionClicked).called(1);
+
+    pending.complete();
+    await tester.pump();
+    expect(find.byType(BullPaymentTransition), findsNothing);
+  });
+
   testWidgets('mono MAX review shows the actual drain recipient amount', (
     tester,
   ) async {
