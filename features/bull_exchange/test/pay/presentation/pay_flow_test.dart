@@ -1,3 +1,5 @@
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:exchange/exchange.dart';
@@ -36,6 +38,8 @@ final _events = <String, PayFlowEvent>{
     OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(payOrder()))),
   ),
   'confirm': PayConfirmPressed(payNow),
+  'spendFees': const PaySpendChanged(SpendFeesLoaded(1, payFees)),
+  'spendRbf': const PaySpendChanged(SpendRbfChanged(enabled: false)),
   'payin': PayPayinChanged(
     PayinBuildAnswered<PayinSpend>(
       1,
@@ -80,8 +84,10 @@ const _moves = <(String, String), Type>{
   ('source', 'back'): PayAmount,
   ('source', 'session'): PaySessionEnded,
   ('ordering', 'order'): PayOrdering,
+  ('ordering', 'spendFees'): PayOrdering,
   ('ordering', 'session'): PaySessionEnded,
   ('review', 'confirm'): PayPaying,
+  ('review', 'spendRbf'): PayOrdering,
   ('review', 'back'): PaySource,
   ('review', 'session'): PaySessionEnded,
   ('paying', 'payin'): PayPaying,
@@ -210,6 +216,7 @@ void main() {
         'tx-1',
         WatchWatching<Order>(sinpe, 0, 0, 1),
       ),
+      paying.spend,
     );
     final next = transitionPayFlow(
       watching,
@@ -239,5 +246,40 @@ void main() {
       (next.state as PayDone).latest.payoutStatus,
       OrderPayoutStatus.completed,
     );
+  });
+
+  group('spend options', () {
+    test('Confirm waits until the fee estimates are in', () {
+      final review = payReviewState as PayOrdering;
+      final waiting = PayOrdering(
+        review.open,
+        review.request,
+        review.order,
+        const SpendFeesUnavailable('w-1', 1),
+      );
+      final next = transitionPayFlow(waiting, PayConfirmPressed(payNow));
+      expect(identical(next.state, waiting), isTrue);
+      expect(next.effects, isEmpty);
+    });
+
+    test('the options chosen on the review build the payin', () {
+      final changed = applyPay(payReviewState, const [
+        PaySpendChanged(SpendFeePicked(FeeSelection.slow)),
+        PaySpendChanged(SpendRbfChanged(enabled: false)),
+      ]);
+      final next = transitionPayFlow(changed, PayConfirmPressed(payNow));
+      final build =
+          (next.state as PayPaying).payin as PayinBuilding<PayinSpend>;
+      expect(build.spend.options.fee, const PayinFeeRate(500));
+      expect(build.spend.options.replaceByFee, isFalse);
+    });
+
+    test('once paying, options can no longer change', () {
+      final next = transitionPayFlow(
+        payPayingState,
+        const PaySpendChanged(SpendPayjoinChanged(enabled: false)),
+      );
+      expect(identical(next.state, payPayingState), isTrue);
+    });
   });
 }

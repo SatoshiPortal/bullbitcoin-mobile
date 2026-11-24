@@ -1,3 +1,5 @@
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -101,10 +103,18 @@ final paySourceState = applyPay(payAmountState, const [
 final payOrderingState = applyPay(paySourceState, const [
   PaySourcePicked(payAppWallet),
 ]);
+const payFees = FeeOptions(
+  fastest: RelativeFee(2500),
+  economic: RelativeFee(1250),
+  slow: RelativeFee(500),
+  minRelay: RelativeFee(25),
+);
+
 final payReviewState = applyPay(payOrderingState, [
   PayOrderChanged(
     OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(payOrder()))),
   ),
+  const PaySpendChanged(SpendFeesLoaded(1, payFees)),
 ]);
 final payPayingState = applyPay(payReviewState, [PayConfirmPressed(payNow)]);
 final payDoneState = PayDone(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:bull_exchange/src/payin/outcome_watch_runner.dart';
@@ -26,6 +27,7 @@ typedef PayFlowCalls = ({
   Future<ExchangeRead<Order>> Function(Order order) refresh,
   PayoutRequirementsCalls requirements,
   PayinCalls payin,
+  SpendOptionsCalls spend,
   ExchangeWriteGate gate,
 });
 
@@ -95,6 +97,7 @@ PayFlowCalls payFlowCallsOf(
         readOfResult(await orders.refreshPayOrder(order.orderId)),
     requirements: payoutRequirementsCallsOf(exchange, session),
     payin: payinCallsOf(exchange, session, wallets),
+    spend: spendOptionsCallsOf(session, wallets),
     gate: exchange.writeGate,
   );
 }
@@ -144,6 +147,9 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
       _payin = PayinRunner(calls.payin, calls.gate, session, (event) {
         if (!isClosed) add(PayPayinChanged(event));
       });
+      _spend = SpendOptionsRunner(calls.spend, (event) {
+        if (!isClosed) add(PaySpendChanged(event));
+      });
       _receipt = OutcomeWatchRunner(calls.payin.readOrder, (event) {
         if (!isClosed) add(PayReceiptChanged(event));
       });
@@ -157,6 +163,7 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
   final PayFlowCalls? _calls;
   PayoutRequirementsRunner? _requirements;
   PayinRunner? _payin;
+  SpendOptionsRunner? _spend;
   OutcomeWatchRunner<Order>? _receipt;
   late final StreamSubscription<ExchangeAccess> _access;
   final Map<int, DateTime> _sentAt = {};
@@ -192,6 +199,8 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
           _order(calls, effect);
         case PayPayinEffect(:final effect):
           _payin?.run([effect]);
+        case PaySpendEffect(:final effect):
+          _spend?.run([effect]);
         case PayReceiptEffect(:final effect):
           _receipt?.run(effect);
       }
@@ -291,6 +300,7 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
   Future<void> close() async {
     _requirements?.close();
     _payin?.close();
+    _spend?.close();
     _receipt?.close();
     for (final timer in _quoteTimers.values) {
       timer.cancel();

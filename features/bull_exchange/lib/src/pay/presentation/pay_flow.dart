@@ -1,4 +1,5 @@
 import 'package:bull_exchange/src/payin/payin_runner.dart';
+import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
@@ -227,10 +228,13 @@ final class PayOrdering extends PayFlowState {
   /// [OrderSessionEnded].
   final PayOrderState order;
 
-  const PayOrdering(this.open, this.request, this.order);
+  /// How the payin will be built, chosen on the review.
+  final SpendOptionsState spend;
+
+  const PayOrdering(this.open, this.request, this.order, this.spend);
 
   @override
-  List<Object?> get _props => [open, request, order];
+  List<Object?> get _props => [open, request, order, spend];
 }
 
 final class PayPaying extends PayFlowState {
@@ -242,10 +246,13 @@ final class PayPaying extends PayFlowState {
   /// [PayinLeftPending] or [PayinSessionEnded].
   final PayPayinState payin;
 
-  const PayPaying(this.open, this.request, this.quoted, this.payin);
+  /// The options the payin started with; Back to the review keeps them.
+  final SpendOptionsState spend;
+
+  const PayPaying(this.open, this.request, this.quoted, this.payin, this.spend);
 
   @override
-  List<Object?> get _props => [open, request, quoted, payin];
+  List<Object?> get _props => [open, request, quoted, payin, spend];
 }
 
 /// The exchange received the payin, and for a SINPE payout the receipt
@@ -351,6 +358,13 @@ final class PayConfirmPressed extends PayFlowEvent {
   const PayConfirmPressed(this.at);
 }
 
+/// A change of the review's spend options (or one of their answers).
+final class PaySpendChanged extends PayFlowEvent {
+  final SpendOptionsEvent event;
+
+  const PaySpendChanged(this.event);
+}
+
 final class PayPayinChanged extends PayFlowEvent {
   final PayPayinEvent event;
 
@@ -440,6 +454,15 @@ final class PayOrderEffect extends PayFlowEffect {
   final OrderStepEffect<PayRequest> effect;
 
   const PayOrderEffect(this.effect);
+
+  @override
+  Object get _value => effect;
+}
+
+final class PaySpendEffect extends PayFlowEffect {
+  final SpendOptionsEffect effect;
+
+  const PaySpendEffect(this.effect);
 
   @override
   Object get _value => effect;
@@ -560,6 +583,7 @@ PayFlowNext _loading(PayLoading state, PayFlowEvent event) {
         PayOrderChanged() ||
         PayConfirmPressed() ||
         PayPayinChanged() ||
+        PaySpendChanged() ||
         PayReceiptChanged() ||
         PayVisibilityChanged() ||
         PaySessionChanged():
@@ -606,6 +630,7 @@ PayFlowNext _recipient(PayRecipient state, PayFlowEvent event) =>
       PayOrderChanged() ||
       PayConfirmPressed() ||
       PayPayinChanged() ||
+      PaySpendChanged() ||
       PayReceiptChanged() ||
       PayDonePressed() ||
       PayVisibilityChanged() ||
@@ -651,6 +676,7 @@ PayFlowNext _requirements(PayRequirements state, PayFlowEvent event) {
         PayOrderChanged() ||
         PayConfirmPressed() ||
         PayPayinChanged() ||
+        PaySpendChanged() ||
         PayReceiptChanged() ||
         PayDonePressed() ||
         PaySessionChanged():
@@ -744,6 +770,7 @@ PayFlowNext _amount(PayAmount state, PayFlowEvent event) => switch (event) {
   PayOrderChanged() ||
   PayConfirmPressed() ||
   PayPayinChanged() ||
+  PaySpendChanged() ||
   PayReceiptChanged() ||
   PayDonePressed() ||
   PayVisibilityChanged() ||
@@ -774,12 +801,9 @@ bool _sourceAllowed(PayinSource source) => switch (source) {
 PayFlowNext _source(PaySource state, PayFlowEvent event) => switch (event) {
   PaySourcePicked(:final source) =>
     _sourceAllowed(source)
-        ? _order(
+        ? _startOrder(
             state.open,
             PayRequest(state.recipient, state.amount, source),
-            orderCreateStart<PayRequest, Order>(
-              PayRequest(state.recipient, state.amount, source),
-            ),
           )
         : PayFlowNext.stay(state),
   PayBackPressed() => _editAmount(state.open, state.recipient, state.amount),
@@ -793,41 +817,79 @@ PayFlowNext _source(PaySource state, PayFlowEvent event) => switch (event) {
   PayOrderChanged() ||
   PayConfirmPressed() ||
   PayPayinChanged() ||
+  PaySpendChanged() ||
   PayReceiptChanged() ||
   PayDonePressed() ||
   PayVisibilityChanged() ||
   PaySessionChanged() => PayFlowNext.stay(state),
 };
 
+/// The order step of a new order: the spend options start beside it.
+PayFlowNext _startOrder(PayOpen open, PayRequest request) {
+  final spend = spendOptionsStart(request.source);
+  final next = _order(
+    open,
+    request,
+    spend.state,
+    orderCreateStart<PayRequest, Order>(request),
+  );
+  return PayFlowNext(next.state, [
+    ...next.effects,
+    for (final effect in spend.effects) PaySpendEffect(effect),
+  ]);
+}
+
+/// The order step in [order]; a quote points the spend options' previews at
+/// its deposit and amount.
+PayFlowNext _review(
+  PayOpen open,
+  PayRequest request,
+  PayOrderState order,
+  SpendOptionsState spend,
+  List<PayFlowEffect> effects,
+) {
+  if (order case OrderQuoted(:final quoted)) {
+    final synced = spendTargetFor(spend, quoted.order, request.source);
+    return PayFlowNext(PayOrdering(open, request, order, synced.state), [
+      ...effects,
+      for (final effect in synced.effects) PaySpendEffect(effect),
+    ]);
+  }
+  return PayFlowNext(PayOrdering(open, request, order, spend), effects);
+}
+
 PayFlowNext _order(
   PayOpen open,
   PayRequest request,
+  SpendOptionsState spend,
   OrderStepNext<PayRequest, Order> next, [
-  DateTime? committedAt,
+  ({DateTime at, PayinSpendOptions? options})? commit,
 ]) {
   final effects = [for (final effect in next.effects) PayOrderEffect(effect)];
   return switch (next.state) {
     OrderCommitted(:final quoted) ||
-    OrderPlaced(placed: final quoted) => switch (committedAt) {
-      final at? => _payin(
+    OrderPlaced(placed: final quoted) => switch (commit) {
+      (:final at, :final options)? => _payin(
         open,
         request,
         quoted,
+        spend,
         payinStart<PayinSpend>(
           payPayinPolicy,
           order: quoted.order,
           source: request.source,
           now: at,
+          options: options,
           openEntry: openPayinEntryFor(quoted.id, open.context.openEntries),
         ),
         effects,
       ),
-      null => PayFlowNext(
-        PayOrdering(
-          open,
-          request,
-          OrderQuoted<PayRequest, Order>(quoted, const QuoteLive()),
-        ),
+      null => _review(
+        open,
+        request,
+        OrderQuoted<PayRequest, Order>(quoted, const QuoteLive()),
+        spend,
+        const [],
       ),
     },
     OrderLeft() => PayFlowNext(
@@ -840,24 +902,47 @@ PayFlowNext _order(
     OrderCreateFailed() ||
     OrderVerifying() ||
     OrderUnverified() ||
-    OrderQuoted() => PayFlowNext(
-      PayOrdering(open, request, next.state),
-      effects,
-    ),
+    OrderQuoted() => _review(open, request, next.state, spend, effects),
   };
 }
 
 PayFlowNext _ordering(PayOrdering state, PayFlowEvent event) {
   final PayOrderEvent stepEvent;
-  DateTime? committedAt;
+  ({DateTime at, PayinSpendOptions? options})? commit;
   switch (event) {
     case PayOrderChanged(:final event):
       stepEvent = event;
+    case PaySpendChanged(:final event):
+      var spend = transitionSpendOptions(state.spend, event);
+      if (state.order case OrderQuoted(:final quoted)) {
+        final synced = spendTargetFor(
+          spend.state,
+          quoted.order,
+          state.request.source,
+        );
+        spend = SpendOptionsNext(synced.state, [
+          ...spend.effects,
+          ...synced.effects,
+        ]);
+      }
+      if (spend.state == state.spend && spend.effects.isEmpty) {
+        return PayFlowNext.stay(state);
+      }
+      return PayFlowNext(
+        PayOrdering(state.open, state.request, state.order, spend.state),
+        [for (final effect in spend.effects) PaySpendEffect(effect)],
+      );
     case PayRetryPressed():
       stepEvent = const OrderRetryPressed();
+    // Confirm needs the spend options: never a default fee.
     case PayConfirmPressed(:final at):
+      switch (spendOptionsChosen(state.spend)) {
+        case SpendNotChosen():
+          return PayFlowNext.stay(state);
+        case SpendChosen(:final options):
+          commit = (at: at, options: options);
+      }
       stepEvent = const OrderCommitPressed();
-      committedAt = at;
     case PayBackPressed():
       stepEvent = const OrderBackPressed();
     case PayContextLoaded() ||
@@ -878,7 +963,7 @@ PayFlowNext _ordering(PayOrdering state, PayFlowEvent event) {
     state,
     transitionOrderStep(payOrderPolicy, state.order, stepEvent),
     state.order,
-    (next) => _order(state.open, state.request, next, committedAt),
+    (next) => _order(state.open, state.request, state.spend, next, commit),
   );
 }
 
@@ -886,6 +971,7 @@ PayFlowNext _payin(
   PayOpen open,
   PayRequest request,
   QuotedOrder<Order> quoted,
+  SpendOptionsState spend,
   PayinNext<PayinSpend> next, [
   List<PayFlowEffect> before = const [],
 ]) {
@@ -910,6 +996,7 @@ PayFlowNext _payin(
           QuotedOrder(order.orderId, order),
           const QuoteRefreshing(0),
         ),
+        spend,
       ),
       [...effects, PayOrderEffect(OrderRefresh<PayRequest>(order.orderId))],
     ),
@@ -918,6 +1005,7 @@ PayFlowNext _payin(
         open,
         request,
         OrderQuoted<PayRequest, Order>(quoted, const QuoteRefreshing(0)),
+        spend,
       ),
       [...effects, PayOrderEffect(OrderRefresh<PayRequest>(quoted.id))],
     ),
@@ -940,7 +1028,7 @@ PayFlowNext _payin(
     PayinRefusedByExchange() ||
     PayinOrderEnded() ||
     PayinDepositRefused() => PayFlowNext(
-      PayPaying(open, request, quoted, next.state),
+      PayPaying(open, request, quoted, next.state, spend),
       effects,
     ),
   };
@@ -995,6 +1083,7 @@ PayFlowNext _paying(PayPaying state, PayFlowEvent event) {
         PaySourcePicked() ||
         PayOrderChanged() ||
         PayConfirmPressed() ||
+        PaySpendChanged() ||
         PayReceiptChanged() ||
         PaySessionChanged():
       return PayFlowNext.stay(state);
@@ -1003,7 +1092,8 @@ PayFlowNext _paying(PayPaying state, PayFlowEvent event) {
     state,
     transitionPayin(payPayinPolicy, state.payin, stepEvent),
     state.payin,
-    (next) => _payin(state.open, state.request, state.quoted, next),
+    (next) =>
+        _payin(state.open, state.request, state.quoted, state.spend, next),
   );
 }
 
@@ -1057,6 +1147,7 @@ PayFlowNext _done(PayDone state, PayFlowEvent event) {
         PayOrderChanged() ||
         PayConfirmPressed() ||
         PayPayinChanged() ||
+        PaySpendChanged() ||
         PaySessionChanged():
       return PayFlowNext.stay(state);
   }
@@ -1082,6 +1173,7 @@ PayFlowNext _terminal(PayFlowState state, PayFlowEvent event) =>
       PayOrderChanged() ||
       PayConfirmPressed() ||
       PayPayinChanged() ||
+      PaySpendChanged() ||
       PayReceiptChanged() ||
       PayVisibilityChanged() ||
       PaySessionChanged() => PayFlowNext.stay(state),

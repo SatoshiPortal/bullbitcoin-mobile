@@ -99,7 +99,7 @@ void main() {
       ..add(PayConfirmPressed(payNow))
       ..add(PayConfirmPressed(payNow));
     await _settle();
-    expect(calls.log, ['load', 'rate CAD', 'create 1', 'build w-1']);
+    expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
     expect((bloc.state as PayPaying).payin, isA<PayinSendFailed<PayinSpend>>());
   });
 }
