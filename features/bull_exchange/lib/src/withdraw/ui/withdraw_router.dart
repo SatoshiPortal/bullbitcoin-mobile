@@ -34,7 +34,6 @@ enum _VirtualPayeeActivationChoice { activated, regularSepa }
 typedef ExchangeWithdrawalHost = ({
   Exchange Function() exchange,
   Preferences Function() preferences,
-  bool Function(BuildContext) isLoggedIn,
   void Function(BuildContext, String) openOrder,
 });
 
@@ -42,11 +41,6 @@ GoRoute withdrawRoute(ExchangeWithdrawalHost host, String brandAsset) =>
     GoRoute(
       path: WithdrawRoute.withdraw.path,
       name: WithdrawRoute.withdraw.name,
-      redirect: (context, state) {
-        final notLoggedIn = !host.isLoggedIn(context);
-        if (notLoggedIn) return BullExchangeNavigation.dashboardPath;
-        return null;
-      },
       builder: (context, state) {
         return BlocProvider(
           create: (_) {

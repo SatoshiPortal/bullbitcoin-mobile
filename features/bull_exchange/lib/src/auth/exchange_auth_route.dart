@@ -51,7 +51,13 @@ GoRoute exchangeAuthRoute({
     }
     // A stored key is the only way out forward (B2): the route never waits
     // for the account read.
+    final resume = state.uri.queryParameters['resume'];
     void onSignedIn() {
+      // The route guard sent the user here from [resume] (INT-13).
+      if (resume != null && resume.startsWith('/')) {
+        context.pushReplacement(resume);
+        return;
+      }
       if (fromSupport) {
         final isIOSNonSuperuser = showWebsiteOnly(context);
         context.goNamed(

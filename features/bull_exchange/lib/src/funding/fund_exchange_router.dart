@@ -29,10 +29,7 @@ import 'domain/usecases/list_funding_institutions_usecase.dart';
 import 'domain/usecases/open_funding_payment_link_usecase.dart';
 import 'domain/usecases/register_responsibility_consent_usecase.dart';
 
-typedef ExchangeFundingHost = ({
-  Exchange Function() exchange,
-  bool Function(BuildContext) isLoggedIn,
-});
+typedef ExchangeFundingHost = ({Exchange Function() exchange});
 
 enum FundExchangeRoute {
   fundExchange('/fund-exchange'),
@@ -99,12 +96,6 @@ class FundExchangeRouter {
     GoRoute(
       name: FundExchangeRoute.fundExchange.name,
       path: FundExchangeRoute.fundExchange.path,
-      redirect: (context, state) {
-        if (!host.isLoggedIn(context)) {
-          return BullExchangeNavigation.dashboardPath;
-        }
-        return null;
-      },
       builder: (context, state) {
         return BlocProvider(
           create: (_) {

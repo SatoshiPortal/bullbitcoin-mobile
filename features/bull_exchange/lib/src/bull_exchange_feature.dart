@@ -167,7 +167,6 @@ final class BullExchangeFeature {
       withdrawal: (
         exchange: exchange,
         preferences: preferences,
-        isLoggedIn: ExchangeSessionScope.hasAccount,
         openOrder: (context, orderId) => TransactionsNavigation.openDetails(
           context,
           TransactionDetailsTarget.order(orderId),
@@ -201,10 +200,7 @@ final class BullExchangeFeature {
           color: context.appColors.onSurface,
         ),
       ),
-      funding: (
-        exchange: exchange,
-        isLoggedIn: ExchangeSessionScope.hasAccount,
-      ),
+      funding: (exchange: exchange),
       kyc: ExchangeKycHost(
         loadConfiguration: () => exchange().loadKyc(),
         failureMessage: failureMessage,

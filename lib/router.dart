@@ -30,7 +30,7 @@ import 'package:bull_exchange/bull_exchange.dart'
         ExchangeFailureL10n,
         ExchangeHomeAction,
         ExchangeSessionScope,
-        ExchangeTradingGuard,
+        ExchangeRouteGuard,
         PayRoute,
         SellRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
@@ -250,7 +250,7 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    onEnter: ExchangeTradingGuard(
+    onEnter: ExchangeRouteGuard(
       navigatorKey: rootNavigatorKey,
       checkAvailability: locator<Exchange>().guardTradingEntry,
       resolveAccess: locator<Exchange>().resolveAccess,

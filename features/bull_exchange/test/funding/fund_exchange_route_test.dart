@@ -11,10 +11,7 @@ void main() {
     unavailableRedirectPath: '/wallet',
     brandAssetPath: 'unused',
     onExit: (_) {},
-    funding: (
-      exchange: () => fail('unexpected exchange operation'),
-      isLoggedIn: (_) => false,
-    ),
+    funding: (exchange: () => fail('unexpected exchange operation')),
   );
 
   test('Confidential SEPA stays top level and COP input stays nested', () {
@@ -36,27 +33,5 @@ void main() {
       feature.routes.whereType<GoRoute>().map((route) => route.name),
       isNot(contains(FundExchangeRoute.fundExchange.name)),
     );
-  });
-
-  testWidgets('a signed-out entry reaches the dashboard without loading data', (
-    tester,
-  ) async {
-    final router = GoRouter(
-      initialLocation: '/fund-exchange',
-      routes: [
-        ...feature.fundingRoutes,
-        GoRoute(
-          path: BullExchangeNavigation.dashboardPath,
-          builder: (_, _) => const Text('Dashboard'),
-        ),
-      ],
-    );
-    addTearDown(router.dispose);
-
-    await tester.pumpWidget(
-      WidgetsApp.router(color: const Color(0xffffffff), routerConfig: router),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Dashboard'), findsOneWidget);
   });
 }

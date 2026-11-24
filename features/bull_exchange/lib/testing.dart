@@ -95,6 +95,7 @@ export 'src/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
 export 'src/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 export 'src/limit_orders/presentation/create_limit_order_cubit.dart';
 export 'src/limit_orders/presentation/create_limit_order_state.dart';
+export 'src/ui/exchange_route_guard.dart';
 
 Future<Result<AutoBuyStatus, AutoBuyFailure>> autoBuyStatusForTesting(
   Exchange exchange,
