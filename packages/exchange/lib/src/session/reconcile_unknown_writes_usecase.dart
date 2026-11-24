@@ -128,7 +128,8 @@ final class ReconcileUnknownWritesUsecase {
             UnknownWriteKind.defaultWalletSave ||
             UnknownWriteKind.recipientCreate ||
             UnknownWriteKind.preferencesSave ||
-            UnknownWriteKind.orderCreate => confirmSettlement(order),
+            UnknownWriteKind.orderCreate ||
+            UnknownWriteKind.payin => confirmSettlement(order),
           },
           Err() => null,
         };
@@ -154,6 +155,13 @@ final class ReconcileUnknownWritesUsecase {
       case UnknownWriteKind.preferencesSave:
         return switch (await _getUserSummary(environment)) {
           Ok(:final value) => preferencesSettlement(entry.request, value),
+          Err() => null,
+        };
+      case UnknownWriteKind.payin:
+        final orderId = entry.orderId;
+        if (orderId == null) return null;
+        return switch (await _orders(environment).getOrder(orderId)) {
+          Ok(value: final order) => payinSettlement(order),
           Err() => null,
         };
       case UnknownWriteKind.orderCreate:
@@ -205,6 +213,24 @@ UnknownWriteSettlement? confirmSettlement(Order order) =>
       OrderStatus.rejected ||
       OrderStatus.failed => UnknownWriteSettlement.orderEnded,
       OrderStatus.unknown => null,
+    };
+
+/// A payin took effect once the exchange saw one: any payin status past
+/// awaiting payment, a refused payin included (the bitcoin went out). An
+/// order that ended without seeing it no longer takes it. Otherwise the
+/// transaction may still be on its way, so the entry stays open and no
+/// second payin is offered.
+UnknownWriteSettlement? payinSettlement(Order order) =>
+    switch (order.payinStatus) {
+      OrderPayinStatus.inProgress ||
+      OrderPayinStatus.underReview ||
+      OrderPayinStatus.awaitingConfirmation ||
+      OrderPayinStatus.completed ||
+      OrderPayinStatus.rejected => UnknownWriteSettlement.applied,
+      OrderPayinStatus.notStarted ||
+      OrderPayinStatus.awaitingPayment ||
+      OrderPayinStatus.unknown =>
+        order.orderStatus.isTerminal ? UnknownWriteSettlement.orderEnded : null,
     };
 
 /// Whether an accelerate took effect can't be read back. It is finished once

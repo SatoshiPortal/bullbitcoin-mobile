@@ -96,7 +96,8 @@ bool journalEntryHoldsGate(UnknownWriteKind kind) => switch (kind) {
   UnknownWriteKind.dcaCreate ||
   UnknownWriteKind.limitOrderCreate ||
   UnknownWriteKind.defaultWalletSave ||
-  UnknownWriteKind.preferencesSave => true,
+  UnknownWriteKind.preferencesSave ||
+  UnknownWriteKind.payin => true,
   UnknownWriteKind.recipientCreate || UnknownWriteKind.orderCreate => false,
 };
 

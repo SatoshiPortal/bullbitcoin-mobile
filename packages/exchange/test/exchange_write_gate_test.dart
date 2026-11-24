@@ -228,6 +228,7 @@ void main() {
           UnknownWriteKind.recipientCreate: false,
           UnknownWriteKind.preferencesSave: true,
           UnknownWriteKind.orderCreate: false,
+          UnknownWriteKind.payin: true,
         },
       );
     },

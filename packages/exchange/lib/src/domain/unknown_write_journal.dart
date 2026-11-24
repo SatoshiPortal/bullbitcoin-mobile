@@ -17,7 +17,11 @@ enum UnknownWriteKind {
   preferencesSave('preferences_save'),
 
   /// A buy, sell, pay or withdraw order create (`OrderCreateJournalRequest`).
-  orderCreate('order_create');
+  orderCreate('order_create'),
+
+  /// A sell or pay payin broadcast whose outcome is unknown: the bitcoin may
+  /// be on its way to the order's deposit.
+  payin('payin');
 
   /// The stored value; never renamed.
   final String wire;

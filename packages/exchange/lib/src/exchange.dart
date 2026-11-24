@@ -960,6 +960,29 @@ final class Exchange {
     );
   }
 
+  /// Records a sell or pay payin of [session] whose broadcast outcome is
+  /// unknown (`runPayinBroadcast`'s `journalUnknown`), before the flow moves
+  /// to verifying it. Until a re-read of [orderId] settles it, the entry
+  /// holds the write gate. Nothing happens without a journal.
+  Future<void> journalUnknownPayin(
+    ExchangeSession session, {
+    required String orderId,
+    required BtcNetwork network,
+    String? txid,
+  }) async {
+    final journal = _unknownWrites;
+    if (journal == null) return;
+    await UnknownWriteRecorder(journal).record(
+      UnknownWriteDraft(
+        kind: UnknownWriteKind.payin,
+        environment: session.environment,
+        sessionEpoch: session.epoch,
+        orderId: orderId,
+        request: {'orderId': orderId, 'network': network.name, 'txid': ?txid},
+      ),
+    );
+  }
+
   Future<int?> _epochOf(ExchangeEnvironment environment) async =>
       switch (await _readSessionPoint()) {
         Ok(:final value) when value.environment == environment => value.epoch,

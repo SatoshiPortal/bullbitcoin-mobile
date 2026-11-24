@@ -11,6 +11,7 @@ Order _order({
   String orderId = 'o-1',
   OrderStatus orderStatus = OrderStatus.awaitingConfirmation,
   OrderPayoutStatus payoutStatus = OrderPayoutStatus.notStarted,
+  OrderPayinStatus payinStatus = OrderPayinStatus.completed,
   String? bitcoinTransactionId,
   double payinAmount = 100,
   double payoutAmount = 0.001,
@@ -27,7 +28,7 @@ Order _order({
   payinMethod: OrderPaymentMethod.cadBalance,
   payoutMethod: OrderPaymentMethod.bitcoin,
   orderStatus: orderStatus,
-  payinStatus: OrderPayinStatus.completed,
+  payinStatus: payinStatus,
   payoutStatus: payoutStatus,
   createdAt: createdAt ?? DateTime.utc(2026, 11, 23),
   bitcoinAddress: 'tb1qbuy',
@@ -137,6 +138,125 @@ UserSummary _summary({
 );
 
 void main() {
+  group('payin settlement', () {
+    final table = {
+      OrderPayinStatus.inProgress: UnknownWriteSettlement.applied,
+      OrderPayinStatus.underReview: UnknownWriteSettlement.applied,
+      OrderPayinStatus.awaitingConfirmation: UnknownWriteSettlement.applied,
+      OrderPayinStatus.completed: UnknownWriteSettlement.applied,
+      OrderPayinStatus.rejected: UnknownWriteSettlement.applied,
+      OrderPayinStatus.notStarted: null,
+      OrderPayinStatus.awaitingPayment: null,
+      OrderPayinStatus.unknown: null,
+    };
+
+    test('names every payin status', () {
+      expect(table.keys, containsAll(OrderPayinStatus.values));
+    });
+
+    for (final MapEntry(key: status, value: settlement) in table.entries) {
+      test('$status on a live order -> $settlement', () {
+        expect(
+          payinSettlement(
+            _order(orderStatus: OrderStatus.inProgress, payinStatus: status),
+          ),
+          settlement,
+        );
+      });
+    }
+
+    test('an order that ended without seeing the payin ends the entry', () {
+      for (final status in [
+        OrderStatus.expired,
+        OrderStatus.orderExpired,
+        OrderStatus.canceled,
+      ]) {
+        expect(
+          payinSettlement(
+            _order(
+              orderStatus: status,
+              payinStatus: OrderPayinStatus.awaitingPayment,
+            ),
+          ),
+          UnknownWriteSettlement.orderEnded,
+        );
+      }
+    });
+
+    test('the use case re-reads the order and settles a seen payin', () async {
+      final journal = InMemoryUnknownWriteJournal();
+      final _ = await journal.record(
+        const UnknownWriteDraft(
+          kind: UnknownWriteKind.payin,
+          environment: ExchangeEnvironment.testnet,
+          orderId: 'o-1',
+          request: {'orderId': 'o-1', 'network': 'bitcoin', 'txid': 't1'},
+        ),
+      );
+      final orders = _Orders({
+        'o-1': Ok(
+          _order(
+            orderStatus: OrderStatus.inProgress,
+            payinStatus: OrderPayinStatus.awaitingConfirmation,
+          ),
+        ),
+      });
+      final result = await ReconcileUnknownWritesUsecase(
+        journal: journal,
+        orders: (_) => orders,
+        getUserSummary: (_) async => const Err(ExchangeNetworkFailure()),
+        listRecentLimitOrders: () async => const Err(ExchangeNetworkFailure()),
+        getDefaultWallets: () async => const Err(ExchangeNetworkFailure()),
+        recipients: _Recipients([const Err(RecipientsNetworkFailure())]),
+      ).execute(ExchangeEnvironment.testnet);
+
+      expect(orders.reads, ['o-1']);
+      expect(
+        result,
+        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
+            .having(
+              (r) => r.value,
+              'value',
+              const UnknownWriteReconciliation(settled: 1, open: 0),
+            ),
+      );
+    });
+
+    test('Exchange.journalUnknownPayin records the order and txid', () async {
+      final journal = InMemoryUnknownWriteJournal();
+      final exchange = exchangeForTesting(unknownWrites: journal);
+
+      await exchange.journalUnknownPayin(
+        const ExchangeSession(
+          environment: ExchangeEnvironment.mainnet,
+          epoch: 3,
+          sessionId: 's',
+        ),
+        orderId: 'o-1',
+        network: BtcNetwork.liquid,
+        txid: 't1',
+      );
+
+      final open = await journal.open(ExchangeEnvironment.mainnet);
+      expect(
+        open,
+        isA<Ok<List<UnknownWrite>, UnknownWriteJournalFailure>>().having(
+          (r) => r.value.single,
+          'entry',
+          isA<UnknownWrite>()
+              .having((e) => e.kind, 'kind', UnknownWriteKind.payin)
+              .having((e) => e.orderId, 'orderId', 'o-1')
+              .having((e) => e.sessionEpoch, 'epoch', 3)
+              .having((e) => e.request, 'request', {
+                'orderId': 'o-1',
+                'network': 'liquid',
+                'txid': 't1',
+              }),
+        ),
+      );
+    });
+  });
+
   group('confirm settlement', () {
     final table = {
       OrderStatus.inProgress: UnknownWriteSettlement.applied,
