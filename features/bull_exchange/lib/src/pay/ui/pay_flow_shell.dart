@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/ui/review_details.dart';
+import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
@@ -95,6 +98,8 @@ class _PayFlowShellState extends State<PayFlowShell> {
           ui: widget.ui,
           onEvent: bloc.add,
           now: clock.now,
+          states: bloc.stream,
+          current: () => bloc.state,
         );
         return PopScope(
           canPop: state is PayClosed,
@@ -129,7 +134,21 @@ List<Page<void>> payPagesFor(
   required ExchangePayinUi ui,
   required void Function(PayFlowEvent event) onEvent,
   required DateTime Function() now,
+  Stream<PayFlowState> states = const Stream.empty(),
+  PayFlowState Function()? current,
 }) {
+  SpendOptionsState spendOf(PayFlowState state) => switch (state) {
+    PayOrdering(:final spend) => spend,
+    PayLoading() ||
+    PayRecipient() ||
+    PayRequirements() ||
+    PayAmount() ||
+    PaySource() ||
+    PayPaying() ||
+    PayDone() ||
+    PaySessionEnded() ||
+    PayClosed() => const SpendOptionsNone(),
+  };
   Page<void> page(LocalKey key, Widget child) =>
       MaterialPage(key: key, child: child);
   Page<void> status(
@@ -255,7 +274,7 @@ List<Page<void>> payPagesFor(
     ],
     PayAmount(:final amount) => amountPages(amount),
     PaySource(:final open, :final amount) => sourcePages(open, amount),
-    PayOrdering(:final open, :final request, :final order) => [
+    PayOrdering(:final open, :final request, :final order, :final spend) => [
       ...sourcePages(open, request.amount),
       switch (order) {
         OrderQuoted(:final quoted, :final status) => page(
@@ -270,7 +289,46 @@ List<Page<void>> payPagesFor(
                 ),
                 ...sellReviewRows(context, quoted.order),
               ],
+              deadline: quoted.order.confirmationDeadline,
+              refreshLabel: context.loc.payPriceRefreshIn,
+              details: [
+                ?payinDepositRow(
+                  context,
+                  label: context.loc.payDepositAddress,
+                  order: quoted.order,
+                  source: request.source,
+                  ui: ui,
+                ),
+                ...recipientReviewRows(
+                  context,
+                  recipient: request.recipient,
+                  methodLabel: context.loc.payRecipientType,
+                  nameLabel: context.loc.payRecipientName,
+                ),
+                SpendOptionsSection(
+                  spend: spend,
+                  changes: states.map(spendOf),
+                  current: () => spendOf(current?.call() ?? state),
+                  labels: (
+                    feePriority: context.loc.payFeePriority,
+                    fastest: context.loc.payFastest,
+                    networkFees: context.loc.payNetworkFees,
+                    advancedSettings: context.loc.payAdvancedSettings,
+                    advancedOptions: context.loc.payAdvancedOptions,
+                    replaceByFee: context.loc.payRbfActivated,
+                    selectCoins: context.loc.paySelectCoinsManually,
+                    done: context.loc.payDone,
+                    feesUnavailable: context.loc.payErrorFeesUnavailable,
+                  ),
+                  payjoinOffered: payjoinOffered(quoted.order, request.source),
+                  amountSat: payinAmountSat(quoted.order),
+                  exchangeRate: payinExchangeRate(quoted.order),
+                  fiatCurrency: quoted.order.payoutCurrency,
+                  onEvent: (event) => onEvent(PaySpendChanged(event)),
+                ),
+              ],
               status: status,
+              canConfirm: spendOptionsChosen(spend) is SpendChosen,
               onConfirm: () => onEvent(PayConfirmPressed(now())),
               onRetry: () => onEvent(const PayRetryPressed()),
               onBack: () => onEvent(const PayBackPressed()),

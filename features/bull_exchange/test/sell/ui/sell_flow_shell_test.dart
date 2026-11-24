@@ -1,3 +1,4 @@
+import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
@@ -93,6 +94,7 @@ void main() {
       _reviewWith(const QuoteLive()),
       events: events,
     );
+    await tester.ensureVisible(find.text(labels.sellConfirmPayment));
     await tester.tap(find.text(labels.sellConfirmPayment));
     expect(
       events.single,
@@ -100,11 +102,59 @@ void main() {
     );
     events.clear();
     await _pump(tester, _reviewWith(const QuoteRefreshing(0)), events: events);
+    await tester.ensureVisible(find.text(labels.sellConfirmPayment));
     await tester.tap(find.text(labels.sellConfirmPayment));
     expect(events, isEmpty);
     await _pump(tester, _reviewWith(const QuoteUnavailable()), events: events);
+    await tester.ensureVisible(find.text(labels.retry));
     await tester.tap(find.text(labels.retry));
     expect(events.single, isA<SellRetryPressed>());
+  });
+
+  testWidgets('the review shows the deposit, payout and spend options', (
+    tester,
+  ) async {
+    final labels = await _pump(tester, sellReviewState);
+    expect(find.text(labels.sellPriceWillRefreshIn), findsOneWidget);
+    expect(find.text(labels.sellDepositAddress), findsOneWidget);
+    expect(find.text('bc1qdeposit'), findsOneWidget);
+    expect(find.text(labels.sellPayoutRecipient), findsOneWidget);
+    expect(find.text(labels.sellCadBalance), findsOneWidget);
+    expect(find.text(labels.sellFeePriority), findsOneWidget);
+    expect(find.text(labels.sellFastest), findsOneWidget);
+    expect(find.text(labels.sellSendPaymentNetworkFees), findsOneWidget);
+    expect(find.text(labels.sellAdvancedSettings), findsOneWidget);
+  });
+
+  testWidgets('Confirm waits for the fee estimates; a failure offers Retry', (
+    tester,
+  ) async {
+    final review = sellReviewState as SellOrdering;
+    final events = <SellFlowEvent>[];
+    final labels = await _pump(
+      tester,
+      SellOrdering(
+        review.open,
+        review.request,
+        review.order,
+        const SpendFeesUnavailable('w-1', 1),
+      ),
+      events: events,
+    );
+    expect(find.text(labels.sellErrorFeesUnavailable), findsOneWidget);
+    await tester.ensureVisible(find.text(labels.sellConfirmPayment));
+    await tester.tap(find.text(labels.sellConfirmPayment));
+    expect(events, isEmpty);
+    await tester.ensureVisible(find.text(labels.retry));
+    await tester.tap(find.text(labels.retry));
+    expect(
+      events.single,
+      isA<SellSpendChanged>().having(
+        (e) => e.event,
+        'event',
+        isA<SpendRetryPressed>(),
+      ),
+    );
   });
 
   testWidgets('a refused payin shows Leave, never a send', (tester) async {

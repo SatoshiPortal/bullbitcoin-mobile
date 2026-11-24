@@ -2,6 +2,7 @@ import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullCountdown,
         BullFadingLinearProgress,
         BullScrollableColumn,
         BullTypographyX,
@@ -10,7 +11,10 @@ import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A quoted sell or pay order and its Confirm: Confirm only on a live
-/// quote; a refresh in flight is busy; an unavailable quote offers Retry.
+/// quote whose payin options are chosen ([canConfirm]); a refresh in flight
+/// is busy; an unavailable quote offers Retry. Under the rows: the price
+/// countdown to [deadline] and the [details] (deposit, payout, spend
+/// options).
 class QuoteReviewPage extends StatelessWidget {
   const QuoteReviewPage({
     super.key,
@@ -20,10 +24,18 @@ class QuoteReviewPage extends StatelessWidget {
     required this.onConfirm,
     required this.onRetry,
     required this.onBack,
+    this.deadline,
+    this.refreshLabel,
+    this.details = const [],
+    this.canConfirm = true,
   });
 
   final String title;
   final List<(String, String)> rows;
+  final DateTime? deadline;
+  final String? refreshLabel;
+  final List<Widget> details;
+  final bool canConfirm;
   final QuoteStatus status;
   final VoidCallback onConfirm;
   final VoidCallback onRetry;
@@ -55,6 +67,22 @@ class QuoteReviewPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
                   const Gap(16),
+                  if ((deadline, refreshLabel) case (
+                    final deadline?,
+                    final refreshLabel?,
+                  ))
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          refreshLabel,
+                          style: context.bullType.body.copyWith(
+                            color: context.appColors.outline,
+                          ),
+                        ),
+                        BullCountdown(until: deadline),
+                      ],
+                    ),
                   for (final (label, value) in rows)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -79,6 +107,7 @@ class QuoteReviewPage extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ...details,
                   const Spacer(),
                   if (status is QuoteUnavailable) ...[
                     Text(
@@ -96,7 +125,7 @@ class QuoteReviewPage extends StatelessWidget {
                   ],
                   BullButton.primary(
                     label: context.loc.sellConfirmPayment,
-                    onPressed: live ? onConfirm : null,
+                    onPressed: live && canConfirm ? onConfirm : null,
                   ),
                   const Gap(24),
                 ],

@@ -112,6 +112,12 @@ void main() {
   ) async {
     final events = <PayFlowEvent>[];
     final labels = await _pump(tester, payReviewState, events: events);
+    expect(find.text(labels.payPriceRefreshIn), findsOneWidget);
+    expect(find.text(labels.payDepositAddress), findsOneWidget);
+    expect(find.text(labels.payRecipientType), findsOneWidget);
+    expect(find.text(labels.payFeePriority), findsOneWidget);
+    expect(find.text(labels.payAdvancedSettings), findsOneWidget);
+    await tester.ensureVisible(find.text(labels.sellConfirmPayment));
     await tester.tap(find.text(labels.sellConfirmPayment));
     expect(
       events.single,

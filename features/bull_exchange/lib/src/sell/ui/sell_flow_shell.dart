@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/ui/review_details.dart';
+import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
@@ -16,7 +19,8 @@ import 'package:bull_exchange/src/sell/ui/screens/sell_payout_page.dart';
 import 'package:bull_exchange/src/session/exchange_session_scope.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/flow_status_page.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSuccessScreen;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullDetailsTableItem, BullSuccessScreen;
 import 'package:clock/clock.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -94,6 +98,8 @@ class _SellFlowShellState extends State<SellFlowShell> {
           ui: widget.ui,
           onEvent: bloc.add,
           now: clock.now,
+          states: bloc.stream,
+          current: () => bloc.state,
         );
         return PopScope(
           canPop: state is SellClosed,
@@ -129,7 +135,22 @@ List<Page<void>> sellPagesFor(
   required ExchangePayinUi ui,
   required void Function(SellFlowEvent event) onEvent,
   required DateTime Function() now,
+  Stream<SellFlowState> states = const Stream.empty(),
+  SellFlowState Function()? current,
 }) {
+  SpendOptionsState spendOf(SellFlowState state) => switch (state) {
+    SellOrdering(:final spend) => spend,
+    SellLoading() ||
+    SellAmount() ||
+    SellSource() ||
+    SellPayoutPick() ||
+    SellRecipient() ||
+    SellRequirements() ||
+    SellPaying() ||
+    SellDone() ||
+    SellSessionEnded() ||
+    SellClosed() => const SpendOptionsNone(),
+  };
   Page<void> page(LocalKey key, Widget child) =>
       MaterialPage(key: key, child: child);
   Page<void> status(
@@ -277,7 +298,7 @@ List<Page<void>> sellPagesFor(
         ),
       ),
     ],
-    SellOrdering(:final open, :final request, :final order) => [
+    SellOrdering(:final open, :final request, :final order, :final spend) => [
       ...orderBase(open, request),
       switch (order) {
         OrderQuoted(:final quoted, :final status) => page(
@@ -286,7 +307,57 @@ List<Page<void>> sellPagesFor(
             builder: (context) => QuoteReviewPage(
               title: context.loc.sellTitle,
               rows: sellReviewRows(context, quoted.order),
+              deadline: quoted.order.confirmationDeadline,
+              refreshLabel: context.loc.sellPriceWillRefreshIn,
+              details: [
+                ?payinDepositRow(
+                  context,
+                  label: context.loc.sellDepositAddress,
+                  order: quoted.order,
+                  source: request.source,
+                  ui: ui,
+                ),
+                ...switch (request.payout) {
+                  SellToBalance() => [
+                    BullDetailsTableItem(
+                      label: context.loc.sellPayoutRecipient,
+                      displayValue: _balanceName(
+                        context,
+                        request.amount.market.currency,
+                      ),
+                    ),
+                  ],
+                  SellToRecipient(:final recipient) => recipientReviewRows(
+                    context,
+                    recipient: recipient,
+                    methodLabel: context.loc.recipientsPayoutMethod,
+                    nameLabel: context.loc.sellPayoutRecipient,
+                  ),
+                },
+                SpendOptionsSection(
+                  spend: spend,
+                  changes: states.map(spendOf),
+                  current: () => spendOf(current?.call() ?? state),
+                  labels: (
+                    feePriority: context.loc.sellFeePriority,
+                    fastest: context.loc.sellFastest,
+                    networkFees: context.loc.sellSendPaymentNetworkFees,
+                    advancedSettings: context.loc.sellAdvancedSettings,
+                    advancedOptions: context.loc.sellAdvancedOptions,
+                    replaceByFee: context.loc.sellReplaceByFeeActivated,
+                    selectCoins: context.loc.sellSelectCoinsManually,
+                    done: context.loc.sellDone,
+                    feesUnavailable: context.loc.sellErrorFeesUnavailable,
+                  ),
+                  payjoinOffered: payjoinOffered(quoted.order, request.source),
+                  amountSat: payinAmountSat(quoted.order),
+                  exchangeRate: payinExchangeRate(quoted.order),
+                  fiatCurrency: quoted.order.payoutCurrency,
+                  onEvent: (event) => onEvent(SellSpendChanged(event)),
+                ),
+              ],
               status: status,
+              canConfirm: spendOptionsChosen(spend) is SpendChosen,
               onConfirm: () => onEvent(SellConfirmPressed(now())),
               onRetry: () => onEvent(const SellRetryPressed()),
               onBack: () => onEvent(const SellBackPressed()),
@@ -446,3 +517,14 @@ List<(String, String)> sellReviewRows(BuildContext context, Order order) => [
       : (null, null);
   return amount == null ? null : (amount, currency ?? order.payoutCurrency);
 }
+
+String _balanceName(BuildContext context, FiatCurrency currency) =>
+    switch (currency) {
+      FiatCurrency.cad => context.loc.sellCadBalance,
+      FiatCurrency.crc => context.loc.sellCrcBalance,
+      FiatCurrency.eur => context.loc.sellEurBalance,
+      FiatCurrency.usd => context.loc.sellUsdBalance,
+      FiatCurrency.mxn => context.loc.sellMxnBalance,
+      FiatCurrency.ars => context.loc.sellArsBalance,
+      FiatCurrency.cop => context.loc.sellCopBalance,
+    };
