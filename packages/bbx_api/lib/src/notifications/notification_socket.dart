@@ -171,9 +171,22 @@ class BbxNotificationSocket {
       );
       _channel = channel;
       ({Object? error})? endedEarly;
+      void opened() {
+        if (!_isConnecting) return;
+        _handshake?.abandon();
+        _isConnected = true;
+        _isConnecting = false;
+        _hasConnectionFailure = false;
+        _failuresInARow = 0;
+        _log(BbxNotificationLogLevel.fine, 'WebSocket connected successfully');
+      }
+
       _subscription = channel.stream.listen(
         (message) {
-          if (identical(_attempt, attempt)) _handleMessage(message);
+          if (!identical(_attempt, attempt)) return;
+          // A frame proves the upgrade, even before `ready` is seen.
+          opened();
+          _handleMessage(message);
         },
         // Until the handshake ends, connect alone decides the attempt's
         // outcome (a refused handshake also errors and closes the stream); an
@@ -201,11 +214,7 @@ class BbxNotificationSocket {
       if (!identical(_attempt, attempt)) {
         return const Ok(null);
       }
-      _isConnected = true;
-      _isConnecting = false;
-      _hasConnectionFailure = false;
-      _failuresInARow = 0;
-      _log(BbxNotificationLogLevel.fine, 'WebSocket connected successfully');
+      opened();
       switch (endedEarly) {
         case (error: final Object error):
           _handleError(error);
