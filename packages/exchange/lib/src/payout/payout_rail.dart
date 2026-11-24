@@ -6,6 +6,7 @@ import '../domain/entities/order.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_type.dart';
+import 'payout_requirement.dart';
 
 /// Why a recipient is paid: the rail decides per purpose which extra steps
 /// a payout needs (composition §3.1).
@@ -89,6 +90,16 @@ sealed class PayoutRail<D extends RecipientDetails> {
   /// account when only one row fits.
   List<AccountRow> accountRows(D details);
 
+  /// What must hold before an order for [purpose] can pay [details] on this
+  /// rail, in the order the payout step asks for it. Empty for most rails.
+  List<PayoutRequirement> requirements(D details, PayoutPurpose purpose) =>
+      const [];
+
+  /// The same account on the rail the user can fall back to when a
+  /// requirement of this one can't be met (Confidential SEPA → SEPA), or
+  /// null when there is none.
+  RecipientDetails? fallback(D details) => null;
+
   @override
   String toString() => 'PayoutRail(${type.name})';
 }
@@ -126,6 +137,19 @@ final class InteracEmailRail extends PayoutRail<InteracEmailCadDetails> {
   @override
   List<AccountRow> accountRows(InteracEmailCadDetails details) =>
       _rows([(AccountField.email, details.email)]);
+
+  /// Asked for every Interac payout, as BBX does: without a question and
+  /// answer on the order or the recipient the payout never leaves NOT_READY.
+  @override
+  List<PayoutRequirement> requirements(
+    InteracEmailCadDetails details,
+    PayoutPurpose purpose,
+  ) => [
+    InteracSecurityRequired(
+      question: details.securityQuestion,
+      answer: details.securityAnswer,
+    ),
+  ];
 }
 
 final class BillPaymentRail extends PayoutRail<BillPaymentCadDetails> {
@@ -226,6 +250,18 @@ final class ConfidentialSepaRail extends PayoutRail<SepaEurDetails> {
   @override
   List<AccountRow> accountRows(SepaEurDetails details) =>
       _rows([(AccountField.iban, details.iban)]);
+
+  @override
+  List<PayoutRequirement> requirements(
+    SepaEurDetails details,
+    PayoutPurpose purpose,
+  ) => [
+    const VirtualIbanRequired(),
+    VirtualPayeeRequired(alreadyActive: details.isVirtualPayeeActive),
+  ];
+
+  @override
+  RecipientDetails fallback(SepaEurDetails details) => details.asRegular();
 }
 
 final class SpeiClabeRail extends PayoutRail<SpeiClabeMxnDetails> {
@@ -472,6 +508,11 @@ final class DetailsOnRail<D extends RecipientDetails> {
   String? get displayName => rail.displayName(details);
 
   List<AccountRow> get accountRows => rail.accountRows(details);
+
+  List<PayoutRequirement> requirements(PayoutPurpose purpose) =>
+      rail.requirements(details, purpose);
+
+  RecipientDetails? get fallback => rail.fallback(details);
 }
 
 DetailsOnRail<D> _on<D extends RecipientDetails>(

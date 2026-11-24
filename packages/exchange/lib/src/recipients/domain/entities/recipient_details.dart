@@ -279,6 +279,19 @@ class SepaEurDetails extends RecipientDetails {
     isConfidential: true,
   );
 
+  /// The same account, paid out through regular SEPA.
+  SepaEurDetails asRegular() => SepaEurDetails._(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    iban: iban,
+    isCorporate: isCorporate,
+    firstname: firstname,
+    lastname: lastname,
+    corporateName: corporateName,
+    virtualPayeeStatus: virtualPayeeStatus,
+  );
+
   @override
   RecipientType get type => isConfidential
       ? RecipientType.confidentialSepaEur
