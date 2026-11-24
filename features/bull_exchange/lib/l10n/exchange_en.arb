@@ -1283,6 +1283,26 @@
   "@exchangeBitcoinWalletsDeleteFailed": {
     "description": "Error shown when a default wallet address cannot be deleted"
   },
+  "exchangeBitcoinWalletsBusy": "Another exchange request is still running. Try again in a moment.",
+  "@exchangeBitcoinWalletsBusy": {
+    "description": "Default wallets: a save or delete was refused because another exchange write runs or is unsettled"
+  },
+  "exchangeBitcoinWalletsUnsetSuccess": "Wallet address removed",
+  "@exchangeBitcoinWalletsUnsetSuccess": {
+    "description": "Default wallets: shown after an address is removed (DW-3; was the 'saved' message)"
+  },
+  "exchangeBitcoinWalletsUnsetOutcomeUnknown": "We could not tell whether this address was removed. Check again before you change it.",
+  "@exchangeBitcoinWalletsUnsetOutcomeUnknown": {
+    "description": "Default wallets: the removal may have reached the exchange and the re-read failed"
+  },
+  "exchangeBitcoinWalletsCheckAgain": "Check again",
+  "@exchangeBitcoinWalletsCheckAgain": {
+    "description": "Default wallets: re-read the wallets after an unknown save or removal"
+  },
+  "exchangeBitcoinWalletsSessionEnded": "You are no longer signed in to the exchange. Sign in again to edit your default wallets.",
+  "@exchangeBitcoinWalletsSessionEnded": {
+    "description": "Default wallets: the exchange session the screen was opened for ended"
+  },
   "destinationExpectedType": "Enter or scan a valid {type}.",
   "@destinationExpectedType": {
     "placeholders": {

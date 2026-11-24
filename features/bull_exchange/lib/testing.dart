@@ -10,8 +10,12 @@ import 'src/autobuy/domain/autobuy_status.dart';
 import 'src/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
 import 'src/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
-import 'src/default_wallets/presentation/default_wallets_cubit.dart';
+import 'src/default_wallets/presentation/default_wallets_bloc.dart';
+import 'src/default_wallets/presentation/default_wallets_machine.dart';
 
+export 'src/default_wallets/presentation/default_wallets_bloc.dart'
+    show DefaultWalletsBloc;
+export 'src/default_wallets/presentation/default_wallets_machine.dart';
 export 'src/pay/domain/get_pay_order_usecase.dart' show GetPayOrderUsecase;
 export 'src/pay/domain/pay_failure.dart';
 export 'src/pay/presentation/pay_bloc.dart';
@@ -106,10 +110,12 @@ Future<Result<void, AutoBuyFailure>> disableAutoBuyForTesting(
   Preferences preferences,
 ) => SetAutoBuyUsecase(preferences, exchange).execute(enabled: false);
 
-DefaultWalletsCubit defaultWalletsCubitForTesting({
+Future<DefaultWalletsEvent> defaultWalletsEffectForTesting(
+  DefaultWalletsEffect effect, {
   required Exchange exchange,
   required Future<String?> Function(BtcNetwork, String) validate,
-}) => DefaultWalletsCubit(
+}) => runDefaultWalletsEffect(
+  effect,
   exchange: exchange,
   validateDestination: ValidateDefaultWalletDestinationUsecase(validate),
 );

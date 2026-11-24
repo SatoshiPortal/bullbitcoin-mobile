@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 
 extension DefaultWalletsFailureL10n on DefaultWalletsFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    DefaultWalletsLoadFailure() => context.loc.exchangeBitcoinWalletsLoadFailed,
     DefaultWalletsEmptyAddressFailure() =>
       context.loc.exchangeBitcoinWalletsAddressEmpty,
     DefaultWalletsInvalidAddressFailure(:final type) =>
@@ -15,8 +14,7 @@ extension DefaultWalletsFailureL10n on DefaultWalletsFailure {
         BtcNetwork.lightning => context.loc.exchangeDcaAddressLabelLightning,
       }),
     DefaultWalletsSaveFailure() => context.loc.exchangeBitcoinWalletsSaveFailed,
-    DefaultWalletsSaveOutcomeUnknownFailure() =>
-      context.loc.exchangeBitcoinWalletsSaveOutcomeUnknown,
+    DefaultWalletsBusyFailure() => context.loc.exchangeBitcoinWalletsBusy,
     DefaultWalletsDeleteFailure() =>
       context.loc.exchangeBitcoinWalletsDeleteFailed,
   };

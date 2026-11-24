@@ -103,7 +103,7 @@ class _Native extends Mock implements WalletNativeLifecycle {}
 class _Rates extends Mock implements ExchangeLimitOrders {}
 
 /// The Bitcoin destination check the default-wallet editor uses.
-Future<String?> _validateBitcoin(WalletAddressType _, String raw) async =>
+Future<String?> _validateBitcoin(BtcNetwork _, String raw) async =>
     (await const PaymentDestinations().validate(
       raw,
       acceptedTypes: const {PaymentDestinationType.bitcoin},
@@ -193,51 +193,68 @@ void main() {
     }
   }
 
+  const session = ExchangeSession(
+    environment: ExchangeEnvironment.testnet,
+    epoch: 1,
+    sessionId: 's',
+  );
+
   for (final failure in const [
     ExchangeNotAuthenticatedFailure(),
     ExchangeCredentialReadFailure(),
     ExchangeUnexpectedFailure(),
   ]) {
     test(
-      'default wallet operations retain state and do not report ${failure.runtimeType}',
+      'default wallet operations answer a closed result and do not report ${failure.runtimeType}',
       () async {
         const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
-        var failLoad = false;
-        final cubit = defaultWalletsCubitForTesting(
-          validate: _validateBitcoin,
-          exchange: exchangeForTesting(
-            getDefaultWallets: () async => failLoad
-                ? Err(failure)
-                : const Ok(
-                    DefaultWallets(
-                      bitcoin: DefaultWallet(
-                        recipientId: 'recipient',
-                        walletType: BtcNetwork.bitcoin,
-                        address: address,
-                      ),
-                    ),
-                  ),
-            saveDefaultWallet: ({
-              required walletType,
-              required address,
-              existingRecipientId,
-            }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
-            deleteDefaultWallet: ({
-              required recipientId,
-              required walletType,
-              required address,
-            }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
+        final exchange = exchangeForTesting(
+          access: fixedAccessForTesting(const ExchangeAccessSignedIn(session)),
+          getDefaultWallets: () async => Err(failure),
+          saveDefaultWallet: ({
+            required walletType,
+            required address,
+            existingRecipientId,
+          }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
+          deleteDefaultWallet: ({
+            required recipientId,
+            required walletType,
+            required address,
+          }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
+        );
+        Future<DefaultWalletsEvent> run(DefaultWalletsEffect effect) =>
+            defaultWalletsEffectForTesting(
+              effect,
+              exchange: exchange,
+              validate: _validateBitcoin,
+            );
+
+        expect(
+          await run(const FetchDefaultWallets(session, 1)),
+          isA<WalletsLoaded>().having(
+            (e) => e.read,
+            'read',
+            isNot(isA<ReadGot<DefaultWallets>>()),
           ),
         );
-        addTearDown(cubit.close);
-        await cubit.loadDefaultWallets();
-        await cubit.saveWallet(BtcNetwork.bitcoin);
-        expect(cubit.state.saveError, isNotNull);
-        await cubit.deleteWallet(BtcNetwork.bitcoin);
-        expect(cubit.state.saveError, isNotNull);
-        failLoad = true;
-        await cubit.loadDefaultWallets();
-        expect(cubit.state.loadError, isNotNull);
+        expect(
+          await run(
+            const SaveDefaultWallet(session, BtcNetwork.bitcoin, 2, address),
+          ),
+          isA<SlotSaveAnswered>(),
+        );
+        expect(
+          await run(
+            const UnsetDefaultWallet(
+              session,
+              BtcNetwork.bitcoin,
+              3,
+              recipientId: 'recipient',
+              address: address,
+            ),
+          ),
+          isA<SlotUnsetAnswered>(),
+        );
         noReport();
       },
     );
@@ -246,13 +263,20 @@ void main() {
   test(
     'default wallet loading does not report or swallow programmer errors',
     () async {
-      final cubit = defaultWalletsCubitForTesting(
-        validate: _validateBitcoin,
-        exchange: _users(_Thrown(StateError('synthetic programming error'))),
+      await expectLater(
+        defaultWalletsEffectForTesting(
+          const FetchDefaultWallets(session, 1),
+          exchange: exchangeForTesting(
+            access: fixedAccessForTesting(
+              const ExchangeAccessSignedIn(session),
+            ),
+            getDefaultWallets: () =>
+                throw StateError('synthetic programming error'),
+          ),
+          validate: _validateBitcoin,
+        ),
+        throwsStateError,
       );
-      addTearDown(cubit.close);
-
-      await expectLater(cubit.loadDefaultWallets(), throwsStateError);
       noReport();
     },
   );

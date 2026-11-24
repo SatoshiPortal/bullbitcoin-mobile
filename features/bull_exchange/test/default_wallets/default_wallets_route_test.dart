@@ -1,7 +1,12 @@
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/src/bull_exchange_feature.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:exchange/exchange.dart' show DefaultWallets;
+import 'package:exchange/exchange.dart'
+    show
+        DefaultWallets,
+        ExchangeAccessSignedIn,
+        ExchangeEnvironment,
+        ExchangeSession;
 import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +20,15 @@ void main() {
     ) async {
       var loads = 0;
       final exchange = exchangeForTesting(
+        access: fixedAccessForTesting(
+          const ExchangeAccessSignedIn(
+            ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: 1,
+              sessionId: 's',
+            ),
+          ),
+        ),
         getDefaultWallets: () async {
           loads++;
           return const Ok(DefaultWallets());
