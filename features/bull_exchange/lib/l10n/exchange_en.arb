@@ -4000,5 +4000,69 @@
   "exchangePlatformNotAllowedError": "The exchange can't be turned on on this device.",
   "@exchangePlatformNotAllowedError": {
     "description": "Shown when platform policy does not allow turning the exchange on"
+  },
+  "exchangeStepReadFailed": "We couldn't load this from the exchange right now. Try again.",
+  "@exchangeStepReadFailed": {
+    "description": "A read the flow needs failed (server unreachable for another reason than the network, or an unreadable answer)"
+  },
+  "exchangeStepNotSent": "Nothing was sent to the exchange. Check your connection and try again.",
+  "@exchangeStepNotSent": {
+    "description": "A write never left the app (signed out, key unreadable, unreachable before sending)"
+  },
+  "exchangeStepNotApplied": "The exchange did not apply this request. You can try again.",
+  "@exchangeStepNotApplied": {
+    "description": "A re-read after an unknown write outcome showed the write did not take effect"
+  },
+  "exchangeStepWriteRefused": "The exchange refused this request.",
+  "@exchangeStepWriteRefused": {
+    "description": "The exchange refused a write without a more specific reason"
+  },
+  "exchangeOrderBelowMinimum": "Minimum amount is {amount} {currency}",
+  "@exchangeOrderBelowMinimum": {
+    "description": "The exchange refused an order below its minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeOrderAboveMaximum": "Maximum amount is {amount} {currency}",
+  "@exchangeOrderAboveMaximum": {
+    "description": "The exchange refused an order above its maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangePayeeInactive": "This recipient is not activated for Confidential SEPA yet.",
+  "@exchangePayeeInactive": {
+    "description": "The exchange refused a Confidential SEPA payout because the recipient's virtual payee is not active"
+  },
+  "exchangeWriteGateBusy": "Another exchange request is still in progress. Wait for it to finish, then try again.",
+  "@exchangeWriteGateBusy": {
+    "description": "The account's one-write-at-a-time gate refused a write because another one is in flight"
+  },
+  "exchangeWriteGateUnsettled": "An earlier exchange request is still being checked. Try again once it is settled.",
+  "@exchangeWriteGateUnsettled": {
+    "description": "The gate refused a write because an earlier money-moving write has an unknown outcome not yet settled"
+  },
+  "exchangeWriteGateJournalUnreadable": "We couldn't check your earlier exchange requests. Try again.",
+  "@exchangeWriteGateJournalUnreadable": {
+    "description": "The gate refused a write because the journal of unknown writes could not be read"
+  },
+  "exchangeStepUnverified": "We couldn't check whether the exchange received this. Check again before you start a new one.",
+  "@exchangeStepUnverified": {
+    "description": "A re-read after an unknown write outcome failed; the write may have taken effect"
+  },
+  "exchangeStepTimedOut": "This is taking longer than expected. You can check again or leave and come back later.",
+  "@exchangeStepTimedOut": {
+    "description": "A bounded wait (activation, payment watch) reached its limit"
   }
 }
