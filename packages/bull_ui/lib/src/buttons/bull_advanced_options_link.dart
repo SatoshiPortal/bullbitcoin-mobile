@@ -8,23 +8,33 @@ class BullAdvancedOptionsLink extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
+    this.color,
+    this.bold = false,
   });
 
   final String label;
   final VoidCallback? onPressed;
 
+  /// Text colour; defaults to `context.bull.primary`.
+  final Color? color;
+  final bool bold;
+
   @override
-  Widget build(BuildContext context) => TextButton(
-    onPressed: onPressed,
-    style: TextButton.styleFrom(
-      foregroundColor: context.bull.primary,
-      disabledForegroundColor: context.bull.primary.withValues(alpha: 0.5),
-      minimumSize: const Size(48, 48),
-      tapTargetSize: MaterialTapTargetSize.padded,
-      textStyle: context.bullType.body.copyWith(
-        decoration: TextDecoration.underline,
+  Widget build(BuildContext context) {
+    final foreground = color ?? context.bull.primary;
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: foreground,
+        disabledForegroundColor: foreground.withValues(alpha: 0.5),
+        minimumSize: const Size(48, 48),
+        tapTargetSize: MaterialTapTargetSize.padded,
+        textStyle: context.bullType.body.copyWith(
+          decoration: TextDecoration.underline,
+          fontWeight: bold ? FontWeight.w700 : null,
+        ),
       ),
-    ),
-    child: Text(label),
-  );
+      child: Text(label),
+    );
+  }
 }
