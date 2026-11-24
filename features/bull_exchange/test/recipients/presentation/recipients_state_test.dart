@@ -3,32 +3,27 @@ import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../recipient_fixture.dart';
+
 void main() {
   test('shared rows keep backend order and deduplicate by recipient ID', () {
-    const own = RecipientViewModel(
-      id: 'own',
-      type: RecipientType.sepaEur,
-      isOwner: true,
-    );
-    const other = RecipientViewModel(
-      id: 'other',
-      type: RecipientType.sepaEur,
+    final own = recipientFixture('own', RecipientType.sepaEur, isOwner: true);
+    final other = recipientFixture(
+      'other',
+      RecipientType.sepaEur,
       isOwner: false,
     );
-    const unknown = RecipientViewModel(
-      id: 'unknown',
-      type: RecipientType.interacEmailCad,
-    );
+    final unknown = recipientFixture('unknown', RecipientType.interacEmailCad);
     final state = RecipientsState(
       allowedRecipientFilters: RecipientFilterCriteria(),
-      recipients: const [own, other, unknown, own],
+      recipients: [own, other, unknown, own],
     );
     expect(state.selectableRecipients, [own, other, unknown]);
   });
 
   for (final type in RecipientType.standardTypes) {
     test('shared $type rows preserve unknown ownership from the backend', () {
-      final recipient = RecipientViewModel(id: 'backend-row', type: type);
+      final recipient = recipientFixture('backend-row', type);
       final state = RecipientsState(
         allowedRecipientFilters: RecipientFilterCriteria(
           types: [type],
@@ -41,9 +36,9 @@ void main() {
   }
 
   test('shared getter does not apply a second owner or type policy', () {
-    const recipient = RecipientViewModel(
-      id: 'backend-row',
-      type: RecipientType.interacEmailCad,
+    final recipient = recipientFixture(
+      'backend-row',
+      RecipientType.interacEmailCad,
       isOwner: false,
     );
     final state = RecipientsState(
@@ -51,7 +46,7 @@ void main() {
         types: [RecipientType.sepaEur],
         isOwner: true,
       ),
-      recipients: const [recipient],
+      recipients: [recipient],
     );
     expect(state.selectableRecipients, [recipient]);
   });

@@ -9,7 +9,6 @@ import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipients_list_tab.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
-import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
 import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/recipients/recipients_scope.dart';
@@ -21,6 +20,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../recipient_fixture.dart';
+
 class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
@@ -29,13 +30,10 @@ class _MockWatchVirtualIban extends Mock implements WatchVirtualIbanUsecase {}
 class _MockGetAccountOwnerName extends Mock
     implements GetAccountOwnerNameUsecase {}
 
-const _recipient = RecipientViewModel(
-  id: 'saved-sepa',
+final _recipient = recipientFixture(
+  'saved-sepa',
+  RecipientType.sepaEur,
   isOwner: true,
-  type: RecipientType.sepaEur,
-  firstname: 'Satoshi',
-  lastname: 'Nakamoto',
-  iban: 'FR7616958000016918327146718',
 );
 
 void main() {
@@ -91,7 +89,7 @@ void main() {
             ),
             jurisdictionFilter: Jurisdiction.europe,
             confidentialSepaAvailability: availability,
-            recipients: const [_recipient],
+            recipients: [_recipient],
           ),
     );
     await tester.pumpWidget(
@@ -173,7 +171,7 @@ void main() {
         ),
       ),
     );
-    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+    verifyNever(() => bloc.add(RecipientsEvent.selected(_recipient)));
 
     events.add(const Ok(PendingVirtualIban()));
     await tester.pump();
@@ -252,7 +250,7 @@ void main() {
       isFalse,
     );
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
+    verify(() => bloc.add(RecipientsEvent.selected(_recipient)))
         .called(1);
     verifyNever(() => bloc.add(const RecipientsEvent.virtualIbanActivated()));
     verifyNever(
@@ -290,13 +288,13 @@ void main() {
     final loc = await pumpList(tester);
     await tester.tap(find.text('Satoshi Nakamoto'));
     await tester.pump();
-    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+    verifyNever(() => bloc.add(RecipientsEvent.selected(_recipient)));
     expect(
       tester.widget<BullButton>(find.byType(BullButton)).disabled,
       isFalse,
     );
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
+    verify(() => bloc.add(RecipientsEvent.selected(_recipient)))
         .called(1);
   });
 
@@ -310,7 +308,7 @@ void main() {
     verify(
       () => bloc.add(const RecipientsEvent.searchChanged('another account')),
     ).called(1);
-    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+    verifyNever(() => bloc.add(RecipientsEvent.selected(_recipient)));
   });
 
   testWidgets('loading and missing rows block selection', (tester) async {
@@ -322,7 +320,7 @@ void main() {
         isOwner: true,
       ),
       jurisdictionFilter: Jurisdiction.europe,
-      recipients: const [_recipient],
+      recipients: [_recipient],
     );
     await pumpList(tester, initialState: initial, updates: updates.stream);
     await tester.tap(find.text('Satoshi Nakamoto'));
@@ -342,7 +340,7 @@ void main() {
         isTrue,
       );
     }
-    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+    verifyNever(() => bloc.add(RecipientsEvent.selected(_recipient)));
   });
 
   testWidgets('an active caller hook blocks another selection', (tester) async {
@@ -350,7 +348,7 @@ void main() {
     await tester.tap(find.text('Satoshi Nakamoto'));
     await tester.pump();
     expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
-    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+    verifyNever(() => bloc.add(RecipientsEvent.selected(_recipient)));
   });
 
   testWidgets('a failed confidentiality check still permits regular SEPA', (
@@ -366,7 +364,7 @@ void main() {
         jurisdictionFilter: Jurisdiction.europe,
         failedToLoadConfidentialSepaAvailability:
             const RecipientsNetworkFailure(),
-        recipients: const [_recipient],
+        recipients: [_recipient],
       ),
     );
     await tester.tap(find.text('Satoshi Nakamoto'));
@@ -376,15 +374,17 @@ void main() {
       isFalse,
     );
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
+    verify(() => bloc.add(RecipientsEvent.selected(_recipient)))
         .called(1);
   });
 
   testWidgets('a failed confidentiality check blocks confidential rows', (
     tester,
   ) async {
-    final confidential = _recipient.copyWith(
-      type: RecipientType.confidentialSepaEur,
+    final confidential = recipientFixture(
+      'saved-sepa',
+      RecipientType.confidentialSepaEur,
+      isOwner: true,
     );
     await pumpList(
       tester,
@@ -417,7 +417,7 @@ void main() {
           isOwner: true,
         ),
         jurisdictionFilter: Jurisdiction.europe,
-        recipients: const [_recipient],
+        recipients: [_recipient],
         loadedPages: 1,
         totalRecipients: 100,
       ),
@@ -453,11 +453,10 @@ void main() {
   testWidgets(
     'callback list accepts backend-supplied non-EUR rows with unknown ownership',
     (tester) async {
-      const recipient = RecipientViewModel(
-        id: 'sinpe',
-        type: RecipientType.sinpeMovilCrc,
-        ownerName: 'Saved SINPE',
-        phoneNumber: '88888888',
+      final recipient = recipientFixture(
+        'sinpe',
+        RecipientType.sinpeMovilCrc,
+        name: 'Saved SINPE',
       );
       final loc = await pumpList(
         tester,
@@ -467,7 +466,7 @@ void main() {
             isOwner: true,
           ),
           jurisdictionFilter: Jurisdiction.costaRica,
-          recipients: const [recipient],
+          recipients: [recipient],
         ),
       );
       await tester.tap(find.text('Saved SINPE'));
@@ -477,7 +476,7 @@ void main() {
         isFalse,
       );
       await tester.tap(find.text(loc.recipientsContinue));
-      verify(() => bloc.add(const RecipientsEvent.selected(recipient)))
+      verify(() => bloc.add(RecipientsEvent.selected(recipient)))
           .called(1);
     },
   );
@@ -485,19 +484,22 @@ void main() {
   testWidgets(
     'returning list hides rows outside its explicit owner and type criteria',
     (tester) async {
-      final unknown = _recipient.copyWith(
-        id: 'unknown',
-        name: 'Unknown owner',
-        isOwner: null,
+      final unknown = recipientFixture(
+        'unknown',
+        RecipientType.sepaEur,
+        firstname: 'Unknown',
+        lastname: 'owner',
       );
-      final other = _recipient.copyWith(
-        id: 'other',
-        name: 'Other owner',
+      final other = recipientFixture(
+        'other',
+        RecipientType.sepaEur,
+        firstname: 'Other',
+        lastname: 'owner',
         isOwner: false,
       );
-      const wrongType = RecipientViewModel(
-        id: 'wrong-type',
-        type: RecipientType.interacEmailCad,
+      final wrongType = recipientFixture(
+        'wrong-type',
+        RecipientType.interacEmailCad,
         name: 'Wrong type',
         isOwner: true,
       );
@@ -524,8 +526,10 @@ void main() {
     testWidgets(
       'unavailable confidentiality cannot advance (strict rows: $enforceFilter)',
       (tester) async {
-        final confidential = _recipient.copyWith(
-          type: RecipientType.confidentialSepaEur,
+        final confidential = recipientFixture(
+          'saved-sepa',
+          RecipientType.confidentialSepaEur,
+          isOwner: true,
         );
         await pumpList(
           tester,

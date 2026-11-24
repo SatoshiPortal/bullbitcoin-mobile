@@ -17,6 +17,8 @@ import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../recipient_fixture.dart';
+
 class _MockGetRecipients extends Mock implements GetRecipientsUsecase {}
 
 class _MockAddRecipient extends Mock implements AddRecipientUsecase {}
@@ -34,9 +36,9 @@ class _MockGetAccountOwnerName extends Mock
 class _MockGetPreferredJurisdiction extends Mock
     implements GetPreferredJurisdictionUsecase {}
 
-const _recipient = RecipientViewModel(
-  id: 'r1',
-  type: RecipientType.sinpeMovilCrc,
+final _recipient = recipientFixture(
+  'r1',
+  RecipientType.sinpeMovilCrc,
   phoneNumber: '8888-8888',
 );
 
@@ -420,7 +422,7 @@ void main() {
       );
       addTearDown(bloc.close);
 
-      bloc.add(const RecipientsSelected(_recipient));
+      bloc.add(RecipientsSelected(_recipient));
       await pumpEventQueue();
 
       expect(
@@ -458,7 +460,7 @@ void main() {
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
-      bloc.add(const RecipientsSelected(_recipient));
+      bloc.add(RecipientsSelected(_recipient));
       await pumpEventQueue();
 
       expect(bloc.state.failedToSelectRecipient, isNull);

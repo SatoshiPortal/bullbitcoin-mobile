@@ -13,6 +13,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../recipient_fixture.dart';
+
 class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
@@ -21,22 +23,13 @@ typedef _SelectionHook = Future<void>? Function(
   required bool isNew,
 });
 
-const _ownSepa = RecipientViewModel(
-  id: 'own-sepa',
-  type: RecipientType.sepaEur,
-  isOwner: true,
-  firstname: 'Satoshi',
-  lastname: 'Nakamoto',
-  iban: 'FR7616958000016918327146718',
-);
-
 void main() {
   setUpAll(() => registerFallbackValue(const RecipientsEvent.started()));
 
   for (final invalid in [
-    _ownSepa.copyWith(id: 'other-owner', isOwner: false),
-    _ownSepa.copyWith(id: 'unknown-owner', isOwner: null),
-    _ownSepa.copyWith(id: 'wrong-type', type: RecipientType.interacEmailCad),
+    recipientFixture('other-owner', RecipientType.sepaEur, isOwner: false),
+    recipientFixture('unknown-owner', RecipientType.sepaEur),
+    recipientFixture('wrong-type', RecipientType.interacEmailCad, isOwner: true),
   ]) {
     for (final isNew in [false, true]) {
       testWidgets(
@@ -204,9 +197,11 @@ void main() {
       (tester) async {
         final bloc = _MockRecipientsBloc();
         final type = RecipientType.confidentialSepaEur;
-        final recipient = _ownSepa.copyWith(
-          type: type,
-          isVirtualPayeeActive: true,
+        final recipient = recipientFixture(
+          'own-sepa',
+          type,
+          isOwner: true,
+          virtualPayeeActive: true,
         );
         whenListen(
           bloc,
@@ -291,7 +286,7 @@ void main() {
           expect(result, isNull);
         } else {
           expect(result?.id, recipient.id);
-          expect(result?.iban, recipient.iban);
+          expect(result?.iban, 'FR7616958000016918327146718');
           expect(result?.type, type);
           expect(result?.displayName, 'Satoshi Nakamoto');
           expect(result?.isVirtualPayeeActive, isTrue);
@@ -365,11 +360,10 @@ void main() {
       final onSelected = hook;
       expect(onSelected, isNotNull);
       if (onSelected == null) return;
-      const recipient = RecipientViewModel(
-        id: 'interac',
-        type: RecipientType.interacEmailCad,
+      final recipient = recipientFixture(
+        'interac',
+        RecipientType.interacEmailCad,
         isOwner: true,
-        email: 'satoshi@example.com',
         securityQuestion: 'Existing question',
         securityAnswer: 'Existing answer',
       );
@@ -378,9 +372,9 @@ void main() {
       expect(selections.map((entry) => entry.$2), [true, false]);
       for (final (selection, _) in selections) {
         expect(selection.id, recipient.id);
-        expect(selection.email, recipient.email);
-        expect(selection.securityQuestion, recipient.securityQuestion);
-        expect(selection.securityAnswer, recipient.securityAnswer);
+        expect(selection.email, 'satoshi@example.com');
+        expect(selection.securityQuestion, 'Existing question');
+        expect(selection.securityAnswer, 'Existing answer');
       }
       expect(find.byType(RecipientSelectionScreen), findsOneWidget);
     },

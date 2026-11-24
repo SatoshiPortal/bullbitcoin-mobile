@@ -1,5 +1,4 @@
 import 'package:exchange/exchange.dart';
-import 'package:bull_exchange/bull_exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
