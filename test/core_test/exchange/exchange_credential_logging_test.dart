@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bull_exchange/testing.dart';
 import 'package:dio/dio.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
@@ -103,22 +102,14 @@ void main() {
     'an order action refuses unavailable credentials without reporting',
     () async {
       storage.scripted.add(Exception(_sensitive));
-      final operation = RefreshBuyOrderUsecase(
-        exchange: testExchange(
-          _NoRequest(),
-          isTestnet: true,
-          readApiKey: () => repository.readActiveApiKey(isTestnet: true),
-        ),
-        settingsRepository: _Settings(),
-      );
-      final result = await operation.execute(orderId: 'synthetic-order');
+      final orders = testExchange(
+        _NoRequest(),
+        isTestnet: true,
+        readApiKey: () => repository.readActiveApiKey(isTestnet: true),
+      ).orders(ExchangeEnvironment.testnet);
       expect(
-        result,
-        isA<Err<dynamic, BuyFailure>>().having(
-          (r) => r.failure,
-          'failure',
-          isA<BuyUnexpectedFailure>(),
-        ),
+        await orders.refreshBuyOrder('synthetic-order'),
+        isA<Err<BuyOrder, ExchangeFailure>>(),
       );
       expect(reporter.calls, 0);
     },
