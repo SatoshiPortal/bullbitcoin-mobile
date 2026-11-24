@@ -292,20 +292,24 @@ void main() {
   }
 
   test('every state is reachable', () {
-    final reached = <Type>{};
-    var frontier = [fundFlowStart(_session).state];
-    reached.add(frontier.single.runtimeType);
-    while (frontier.isNotEmpty) {
+    // Walk states, not types: the first state of a type found is not always
+    // the one the events lead on from (attempt ids, chosen rails).
+    final seen = <FundFlowState>{fundFlowStart(_session).state};
+    var frontier = seen.toList();
+    for (var depth = 0; frontier.isNotEmpty && depth < 12; depth++) {
       final next = <FundFlowState>[];
       for (final state in frontier) {
         for (final event in _events) {
           final target = transitionFundFlow(state, event).state;
-          if (reached.add(target.runtimeType)) next.add(target);
+          if (seen.add(target)) next.add(target);
         }
       }
       frontier = next;
     }
-    expect(reached, {for (final state in _states) state.runtimeType});
+    expect(
+      {for (final state in seen) state.runtimeType},
+      {for (final state in _states) state.runtimeType},
+    );
   });
 
   group('behaviour', () {
