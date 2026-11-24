@@ -28,8 +28,6 @@ const _accountPaths = [
   '/withdraw/confirmation',
   '/fund-exchange',
   '/fund-exchange/cop-bank-transfer-input',
-  '/fund-exchange-sinpe',
-  '/fund-exchange-confidential-sepa',
   '/dca',
   '/auto-buy',
   '/limit-orders/create',
@@ -269,7 +267,7 @@ void main() {
     expect(signIn.queryParameters['resume'], '/limit-orders/abc?from=home');
   });
 
-  for (final path in ['/buy', '/withdraw', '/fund-exchange-sinpe', '/dca']) {
+  for (final path in ['/buy', '/withdraw', '/fund-exchange', '/dca']) {
     testWidgets('$path stays on Home until access can be retried', (
       tester,
     ) async {
@@ -289,7 +287,7 @@ void main() {
       final router = await _pumpRouter(tester, exchange, path);
       router.push(path);
       await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, '/home');
+      expect(router.state.uri.path, '/home');
       expect(find.text('Home'), findsOneWidget);
       expect(find.text('Trading is unavailable.'), findsOneWidget);
       await tester.tap(find.text('Retry'));
@@ -316,7 +314,7 @@ void main() {
       final router = await _pumpRouter(tester, exchange, path);
       router.push(path);
       await tester.pumpAndSettle();
-      final signIn = router.routeInformationProvider.value.uri;
+      final signIn = router.state.uri;
       expect(signIn.path, '/exchange/auth');
       expect(signIn.queryParameters['resume'], path);
       expect(find.text('Target'), findsNothing);
@@ -324,7 +322,7 @@ void main() {
       signedIn = true;
       await tester.tap(find.text('Sign in'));
       await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, path);
+      expect(router.state.uri.path, path);
       expect(find.text('Target'), findsOneWidget);
     });
   }
@@ -340,7 +338,7 @@ void main() {
       router.push(path);
       await tester.pumpAndSettle();
       expect(
-        router.routeInformationProvider.value.uri.path,
+        router.state.uri.path,
         '/exchange/landing',
       );
       expect(find.text('Website only'), findsOneWidget);
