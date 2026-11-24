@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
@@ -57,6 +58,15 @@ final class _Calls {
     },
     requirements: requirements,
     payin: payin,
+    spend: (
+      fees: () async {
+        log.add('fees');
+        return sellFees;
+      },
+      coins: (walletId) async => const [],
+      presets: (shape, fees) async => const {},
+      custom: (shape, fee) async => const BitcoinFeePreviewSlot(),
+    ),
     gate: ExchangeWriteGate(),
   );
 }
@@ -95,7 +105,7 @@ void main() {
       ..add(SellConfirmPressed(sellNow))
       ..add(SellConfirmPressed(sellNow));
     await _settle();
-    expect(calls.log, ['load', 'rate CAD', 'create 1', 'build w-1']);
+    expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
     expect(
       (bloc.state as SellPaying).payin,
       isA<PayinSendFailed<PayinSpend>>(),

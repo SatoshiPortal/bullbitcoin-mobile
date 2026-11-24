@@ -1,4 +1,5 @@
 import 'package:bull_exchange/src/payin/payin_runner.dart';
+import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
@@ -287,10 +288,13 @@ final class SellOrdering extends SellFlowState {
   /// [OrderSessionEnded].
   final SellOrderState order;
 
-  const SellOrdering(this.open, this.request, this.order);
+  /// How the payin will be built, chosen on the review.
+  final SpendOptionsState spend;
+
+  const SellOrdering(this.open, this.request, this.order, this.spend);
 
   @override
-  List<Object?> get _props => [open, request, order];
+  List<Object?> get _props => [open, request, order, spend];
 }
 
 /// Paying the committed order in.
@@ -303,10 +307,19 @@ final class SellPaying extends SellFlowState {
   /// [PayinLeftPending] or [PayinSessionEnded].
   final SellPayinState payin;
 
-  const SellPaying(this.open, this.request, this.quoted, this.payin);
+  /// The options the payin started with; Back to the review keeps them.
+  final SpendOptionsState spend;
+
+  const SellPaying(
+    this.open,
+    this.request,
+    this.quoted,
+    this.payin,
+    this.spend,
+  );
 
   @override
-  List<Object?> get _props => [open, request, quoted, payin];
+  List<Object?> get _props => [open, request, quoted, payin, spend];
 }
 
 /// The exchange received the payin (under review included). Says "payment
@@ -407,6 +420,13 @@ final class SellConfirmPressed extends SellFlowEvent {
   const SellConfirmPressed(this.at);
 }
 
+/// A change of the review's spend options (or one of their answers).
+final class SellSpendChanged extends SellFlowEvent {
+  final SpendOptionsEvent event;
+
+  const SellSpendChanged(this.event);
+}
+
 final class SellPayinChanged extends SellFlowEvent {
   final SellPayinEvent event;
 
@@ -491,6 +511,15 @@ final class SellOrderEffect extends SellFlowEffect {
   final OrderStepEffect<SellRequest> effect;
 
   const SellOrderEffect(this.effect);
+
+  @override
+  Object get _value => effect;
+}
+
+final class SellSpendEffect extends SellFlowEffect {
+  final SpendOptionsEffect effect;
+
+  const SellSpendEffect(this.effect);
 
   @override
   Object get _value => effect;
@@ -609,6 +638,7 @@ SellFlowNext _loading(SellLoading state, SellFlowEvent event) {
         SellOrderChanged() ||
         SellConfirmPressed() ||
         SellPayinChanged() ||
+        SellSpendChanged() ||
         SellVisibilityChanged() ||
         SellSessionChanged():
       return SellFlowNext.stay(state);
@@ -702,6 +732,7 @@ SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
   SellOrderChanged() ||
   SellConfirmPressed() ||
   SellPayinChanged() ||
+  SellSpendChanged() ||
   SellDonePressed() ||
   SellVisibilityChanged() ||
   SellSessionChanged() => SellFlowNext.stay(state),
@@ -734,6 +765,7 @@ SellFlowNext _source(SellSource state, SellFlowEvent event) => switch (event) {
   SellOrderChanged() ||
   SellConfirmPressed() ||
   SellPayinChanged() ||
+  SellSpendChanged() ||
   SellDonePressed() ||
   SellVisibilityChanged() ||
   SellSessionChanged() => SellFlowNext.stay(state),
@@ -741,12 +773,9 @@ SellFlowNext _source(SellSource state, SellFlowEvent event) => switch (event) {
 
 SellFlowNext _payout(SellPayoutPick state, SellFlowEvent event) =>
     switch (event) {
-      SellPayoutPicked(choice: SellPayoutChoice.balance) => _order(
+      SellPayoutPicked(choice: SellPayoutChoice.balance) => _startOrder(
         state.open,
         SellRequest(state.amount, state.source, const SellToBalance()),
-        orderCreateStart<SellRequest, Order>(
-          SellRequest(state.amount, state.source, const SellToBalance()),
-        ),
       ),
       SellPayoutPicked(choice: SellPayoutChoice.recipient) => SellFlowNext(
         SellRecipient(state.open, state.amount, state.source),
@@ -763,6 +792,7 @@ SellFlowNext _payout(SellPayoutPick state, SellFlowEvent event) =>
       SellOrderChanged() ||
       SellConfirmPressed() ||
       SellPayinChanged() ||
+      SellSpendChanged() ||
       SellDonePressed() ||
       SellVisibilityChanged() ||
       SellSessionChanged() => SellFlowNext.stay(state),
@@ -802,6 +832,7 @@ SellFlowNext _recipient(SellRecipient state, SellFlowEvent event) =>
       SellOrderChanged() ||
       SellConfirmPressed() ||
       SellPayinChanged() ||
+      SellSpendChanged() ||
       SellDonePressed() ||
       SellVisibilityChanged() ||
       SellSessionChanged() => SellFlowNext.stay(state),
@@ -813,12 +844,9 @@ SellFlowNext _requirementsNext(
   PayinSource source,
   RequirementsNext next,
 ) => switch (next.state) {
-  RequirementsReady(:final ready) => _order(
+  RequirementsReady(:final ready) => _startOrder(
     open,
     SellRequest(amount, source, SellToRecipient(ready)),
-    orderCreateStart<SellRequest, Order>(
-      SellRequest(amount, source, SellToRecipient(ready)),
-    ),
   ),
   RequirementsCancelled() => SellFlowNext(SellRecipient(open, amount, source)),
   RequirementsSessionEnded() => _ended,
@@ -850,6 +878,7 @@ SellFlowNext _requirements(SellRequirements state, SellFlowEvent event) {
         SellOrderChanged() ||
         SellConfirmPressed() ||
         SellPayinChanged() ||
+        SellSpendChanged() ||
         SellDonePressed() ||
         SellSessionChanged():
       return SellFlowNext.stay(state);
@@ -892,37 +921,74 @@ SellFlowNext _orderLeft(SellOpen open, SellRequest request) =>
       ),
     };
 
+/// The order step of a new order: the spend options start beside it.
+SellFlowNext _startOrder(SellOpen open, SellRequest request) {
+  final spend = spendOptionsStart(request.source);
+  final next = _order(
+    open,
+    request,
+    spend.state,
+    orderCreateStart<SellRequest, Order>(request),
+  );
+  return SellFlowNext(next.state, [
+    ...next.effects,
+    for (final effect in spend.effects) SellSpendEffect(effect),
+  ]);
+}
+
+/// The order step in [order]; a quote points the spend options' previews at
+/// its deposit and amount.
+SellFlowNext _review(
+  SellOpen open,
+  SellRequest request,
+  SellOrderState order,
+  SpendOptionsState spend,
+  List<SellFlowEffect> effects,
+) {
+  if (order case OrderQuoted(:final quoted)) {
+    final synced = spendTargetFor(spend, quoted.order, request.source);
+    return SellFlowNext(SellOrdering(open, request, order, synced.state), [
+      ...effects,
+      for (final effect in synced.effects) SellSpendEffect(effect),
+    ]);
+  }
+  return SellFlowNext(SellOrdering(open, request, order, spend), effects);
+}
+
 SellFlowNext _order(
   SellOpen open,
   SellRequest request,
+  SpendOptionsState spend,
   OrderStepNext<SellRequest, Order> next, [
-  DateTime? committedAt,
+  ({DateTime at, PayinSpendOptions? options})? commit,
 ]) {
   final effects = [for (final effect in next.effects) SellOrderEffect(effect)];
   return switch (next.state) {
     OrderCommitted(:final quoted) ||
-    OrderPlaced(placed: final quoted) => switch (committedAt) {
-      final at? => _payin(
+    OrderPlaced(placed: final quoted) => switch (commit) {
+      (:final at, :final options)? => _payin(
         open,
         request,
         quoted,
+        spend,
         payinStart<PayinSpend>(
           sellPayinPolicy,
           order: quoted.order,
           source: request.source,
           now: at,
+          options: options,
           openEntry: openPayinEntryFor(quoted.id, open.context.openEntries),
         ),
         effects,
       ),
       // Only Confirm commits (sellOrderPolicy locks), and it carries
       // its time; keep the review otherwise.
-      null => SellFlowNext(
-        SellOrdering(
-          open,
-          request,
-          OrderQuoted<SellRequest, Order>(quoted, const QuoteLive()),
-        ),
+      null => _review(
+        open,
+        request,
+        OrderQuoted<SellRequest, Order>(quoted, const QuoteLive()),
+        spend,
+        const [],
       ),
     },
     OrderLeft() => SellFlowNext(_orderLeft(open, request).state, effects),
@@ -932,24 +998,47 @@ SellFlowNext _order(
     OrderCreateFailed() ||
     OrderVerifying() ||
     OrderUnverified() ||
-    OrderQuoted() => SellFlowNext(
-      SellOrdering(open, request, next.state),
-      effects,
-    ),
+    OrderQuoted() => _review(open, request, next.state, spend, effects),
   };
 }
 
 SellFlowNext _ordering(SellOrdering state, SellFlowEvent event) {
   final SellOrderEvent stepEvent;
-  DateTime? committedAt;
+  ({DateTime at, PayinSpendOptions? options})? commit;
   switch (event) {
     case SellOrderChanged(:final event):
       stepEvent = event;
+    case SellSpendChanged(:final event):
+      var spend = transitionSpendOptions(state.spend, event);
+      if (state.order case OrderQuoted(:final quoted)) {
+        final synced = spendTargetFor(
+          spend.state,
+          quoted.order,
+          state.request.source,
+        );
+        spend = SpendOptionsNext(synced.state, [
+          ...spend.effects,
+          ...synced.effects,
+        ]);
+      }
+      if (spend.state == state.spend && spend.effects.isEmpty) {
+        return SellFlowNext.stay(state);
+      }
+      return SellFlowNext(
+        SellOrdering(state.open, state.request, state.order, spend.state),
+        [for (final effect in spend.effects) SellSpendEffect(effect)],
+      );
     case SellRetryPressed():
       stepEvent = const OrderRetryPressed();
+    // Confirm needs the spend options: never a default fee.
     case SellConfirmPressed(:final at):
+      switch (spendOptionsChosen(state.spend)) {
+        case SpendNotChosen():
+          return SellFlowNext.stay(state);
+        case SpendChosen(:final options):
+          commit = (at: at, options: options);
+      }
       stepEvent = const OrderCommitPressed();
-      committedAt = at;
     case SellBackPressed():
       stepEvent = const OrderBackPressed();
     case SellContextLoaded() ||
@@ -970,7 +1059,7 @@ SellFlowNext _ordering(SellOrdering state, SellFlowEvent event) {
     state,
     transitionOrderStep(sellOrderPolicy, state.order, stepEvent),
     state.order,
-    (next) => _order(state.open, state.request, next, committedAt),
+    (next) => _order(state.open, state.request, state.spend, next, commit),
   );
 }
 
@@ -980,6 +1069,7 @@ SellFlowNext _payin(
   SellOpen open,
   SellRequest request,
   QuotedOrder<Order> quoted,
+  SpendOptionsState spend,
   PayinNext<PayinSpend> next, [
   List<SellFlowEffect> before = const [],
 ]) {
@@ -1002,6 +1092,7 @@ SellFlowNext _payin(
           QuotedOrder(order.orderId, order),
           const QuoteRefreshing(0),
         ),
+        spend,
       ),
       [...effects, SellOrderEffect(OrderRefresh<SellRequest>(order.orderId))],
     ),
@@ -1011,6 +1102,7 @@ SellFlowNext _payin(
         open,
         request,
         OrderQuoted<SellRequest, Order>(quoted, const QuoteRefreshing(0)),
+        spend,
       ),
       [...effects, SellOrderEffect(OrderRefresh<SellRequest>(quoted.id))],
     ),
@@ -1033,7 +1125,7 @@ SellFlowNext _payin(
     PayinRefusedByExchange() ||
     PayinOrderEnded() ||
     PayinDepositRefused() => SellFlowNext(
-      SellPaying(open, request, quoted, next.state),
+      SellPaying(open, request, quoted, next.state, spend),
       effects,
     ),
   };
@@ -1114,6 +1206,7 @@ SellFlowNext _paying(SellPaying state, SellFlowEvent event) {
         SellRequirementsChanged() ||
         SellOrderChanged() ||
         SellConfirmPressed() ||
+        SellSpendChanged() ||
         SellSessionChanged():
       return SellFlowNext.stay(state);
   }
@@ -1121,7 +1214,8 @@ SellFlowNext _paying(SellPaying state, SellFlowEvent event) {
     state,
     transitionPayin(sellPayinPolicy, state.payin, stepEvent),
     state.payin,
-    (next) => _payin(state.open, state.request, state.quoted, next),
+    (next) =>
+        _payin(state.open, state.request, state.quoted, state.spend, next),
   );
 }
 
@@ -1140,6 +1234,7 @@ SellFlowNext _terminal(SellFlowState state, SellFlowEvent event) =>
       SellOrderChanged() ||
       SellConfirmPressed() ||
       SellPayinChanged() ||
+      SellSpendChanged() ||
       SellVisibilityChanged() ||
       SellSessionChanged() => SellFlowNext.stay(state),
     };

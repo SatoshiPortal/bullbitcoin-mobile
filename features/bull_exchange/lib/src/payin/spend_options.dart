@@ -477,6 +477,25 @@ SpendOptionsNext spendOptionsStart(PayinSource source) => switch (source) {
   ),
 };
 
+/// [spend] pointed at the quoted [order]'s on-chain deposit and amount
+/// (its previews price that payin); a stay for any other rail.
+SpendOptionsNext spendTargetFor(
+  SpendOptionsState spend,
+  Order order,
+  PayinSource source,
+) => switch (source.rail.rail.depositOf(order)) {
+  DepositGiven(target: OnchainDeposit(:final address)) =>
+    transitionSpendOptions(
+      spend,
+      SpendTargetSet(
+        SpendPreviewTarget(address, (order.payinAmount * 100000000).round()),
+      ),
+    ),
+  DepositGiven() ||
+  DepositNotGiven() ||
+  DepositOnOtherRail() => SpendOptionsNext.stay(spend),
+};
+
 /// What Confirm may build with.
 @immutable
 sealed class SpendChoice {

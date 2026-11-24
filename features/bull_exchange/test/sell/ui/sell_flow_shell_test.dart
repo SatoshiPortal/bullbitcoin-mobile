@@ -18,8 +18,8 @@ import '../sell_fixtures.dart';
 
 final ExchangePayinUi _ui = (
   walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
-  addressViewer:
-      (context, text, {style, color, textAlign}) => Text(text, style: style),
+  addressViewer: (context, text, {style, color, textAlign}) =>
+      Text(text, style: style),
   openWalletHome: (context) {},
   openOrder: (context, orderId, {required returnToExchange}) {},
   openPayjoinTransaction: (context, txid) {},
@@ -58,6 +58,7 @@ SellFlowState _reviewWith(QuoteStatus status) {
     review.open,
     review.request,
     OrderQuoted(QuotedOrder<Order>('s-1', sellOrder()), status),
+    review.spend,
   );
 }
 
@@ -116,6 +117,7 @@ void main() {
         paying.request,
         paying.quoted,
         PayinRefusedByExchange<PayinSpend>(sellOrder(), 'tx-1'),
+        paying.spend,
       ),
       events: events,
     );

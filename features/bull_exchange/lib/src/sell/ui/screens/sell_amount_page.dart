@@ -93,10 +93,13 @@ class _SellAmountPageState extends State<SellAmountPage> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () =>
-                    widget.onEvent(const SellAmountChanged(AmountUnitToggled())),
+                onPressed: () => widget.onEvent(
+                  const SellAmountChanged(AmountUnitToggled()),
+                ),
                 child: Text(
-                  inBitcoin ? market.currency.code : context.loc.sellBitcoinAmount,
+                  inBitcoin
+                      ? market.currency.code
+                      : context.loc.sellBitcoinAmount,
                 ),
               ),
             ),

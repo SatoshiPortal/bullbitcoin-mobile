@@ -1,3 +1,5 @@
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -109,10 +111,27 @@ final sellOrderingFromRecipient = applySell(sellRecipientState, [
 final sellOrderingState = applySell(sellPayoutState, const [
   SellPayoutPicked(SellPayoutChoice.balance),
 ]);
+const sellFees = FeeOptions(
+  fastest: RelativeFee(2500),
+  economic: RelativeFee(1250),
+  slow: RelativeFee(500),
+  minRelay: RelativeFee(25),
+);
+
+/// The review's payin options once the fee estimates are in: fastest, RBF
+/// on, the wallet picks the coins, payjoin on.
+const sellDefaultOptions = PayinSpendOptions(
+  fee: PayinFeeRate(2500),
+  replaceByFee: true,
+  coins: {},
+  payjoin: true,
+);
+
 final sellReviewState = applySell(sellOrderingState, [
   SellOrderChanged(
     OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(sellOrder()))),
   ),
+  const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
 ]);
 final sellPayingState = applySell(sellReviewState, [
   SellConfirmPressed(sellNow),

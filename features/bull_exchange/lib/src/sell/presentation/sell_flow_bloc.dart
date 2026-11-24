@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
@@ -25,6 +26,7 @@ typedef SellFlowCalls = ({
   Future<ExchangeRead<Order>> Function(Order order) refresh,
   PayoutRequirementsCalls requirements,
   PayinCalls payin,
+  SpendOptionsCalls spend,
   ExchangeWriteGate gate,
 });
 
@@ -109,6 +111,7 @@ SellFlowCalls sellFlowCallsOf(
     },
     requirements: payoutRequirementsCallsOf(exchange, session),
     payin: payinCallsOf(exchange, session, wallets),
+    spend: spendOptionsCallsOf(session, wallets),
     gate: exchange.writeGate,
   );
 }
@@ -158,6 +161,9 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
       _payin = PayinRunner(calls.payin, calls.gate, session, (event) {
         if (!isClosed) add(SellPayinChanged(event));
       });
+      _spend = SpendOptionsRunner(calls.spend, (event) {
+        if (!isClosed) add(SellSpendChanged(event));
+      });
     }
     _access = accessChanges.listen((access) {
       if (!isClosed) add(SellSessionChanged(access.signedInSession));
@@ -168,6 +174,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
   final SellFlowCalls? _calls;
   PayoutRequirementsRunner? _requirements;
   PayinRunner? _payin;
+  SpendOptionsRunner? _spend;
   late final StreamSubscription<ExchangeAccess> _access;
   final Map<int, DateTime> _sentAt = {};
   final Map<String, Timer> _quoteTimers = {};
@@ -202,6 +209,8 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
           _order(calls, effect);
         case SellPayinEffect(:final effect):
           _payin?.run([effect]);
+        case SellSpendEffect(:final effect):
+          _spend?.run([effect]);
       }
     }
   }
@@ -301,6 +310,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
   Future<void> close() async {
     _requirements?.close();
     _payin?.close();
+    _spend?.close();
     for (final timer in _quoteTimers.values) {
       timer.cancel();
     }

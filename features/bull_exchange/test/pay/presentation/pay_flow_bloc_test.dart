@@ -1,3 +1,4 @@
+import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow_bloc.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
@@ -52,6 +53,15 @@ final class _Calls {
     refresh: (order) async => ReadGot<Order>(payOrder()),
     requirements: requirements,
     payin: payin,
+    spend: (
+      fees: () async {
+        log.add('fees');
+        return payFees;
+      },
+      coins: (walletId) async => const [],
+      presets: (shape, fees) async => const {},
+      custom: (shape, fee) async => const BitcoinFeePreviewSlot(),
+    ),
     gate: ExchangeWriteGate(),
   );
 }

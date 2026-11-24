@@ -259,8 +259,11 @@ List<Page<void>> sellPagesFor(
     SellAmount(:final open, :final amount) => amountPages(open, amount),
     SellSource(:final open, :final amount) => sourcePages(open, amount),
     SellPayoutPick(:final open, :final amount) => payoutPages(open, amount),
-    SellRecipient(:final open, :final amount, :final refused) =>
-      recipientPages(open, amount, refused: refused),
+    SellRecipient(:final open, :final amount, :final refused) => recipientPages(
+      open,
+      amount,
+      refused: refused,
+    ),
     SellRequirements(:final open, :final amount, :final requirements) => [
       ...recipientPages(open, amount),
       page(
@@ -426,10 +429,7 @@ List<Page<void>> sellPagesFor(
 /// The rows of a quoted sell or payment order.
 List<(String, String)> sellReviewRows(BuildContext context, Order order) => [
   (context.loc.sellOrderNumber, '${order.orderNumber}'),
-  (
-    context.loc.sellPayinAmount,
-    '${order.payinAmount} ${order.payinCurrency}',
-  ),
+  (context.loc.sellPayinAmount, '${order.payinAmount} ${order.payinCurrency}'),
   (
     context.loc.sellPayoutAmount,
     FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),

@@ -1,3 +1,5 @@
+import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
 import 'package:exchange/exchange.dart';
@@ -37,6 +39,8 @@ final _events = <String, SellFlowEvent>{
     OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(sellOrder()))),
   ),
   'confirm': SellConfirmPressed(sellNow),
+  'spendFees': const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
+  'spendRbf': const SellSpendChanged(SpendRbfChanged(enabled: false)),
   'payin': SellPayinChanged(
     PayinBuildAnswered<PayinSpend>(
       1,
@@ -72,8 +76,10 @@ const _moves = <(String, String), Type>{
   ('requirements', 'back'): SellRecipient,
   ('requirements', 'session'): SellSessionEnded,
   ('ordering', 'order'): SellOrdering,
+  ('ordering', 'spendFees'): SellOrdering,
   ('ordering', 'session'): SellSessionEnded,
   ('review', 'confirm'): SellPaying,
+  ('review', 'spendRbf'): SellOrdering,
   ('review', 'back'): SellPayoutPick,
   ('review', 'session'): SellSessionEnded,
   ('paying', 'payin'): SellPaying,
@@ -88,7 +94,13 @@ const _moves = <(String, String), Type>{
 
 SellPaying _paying(SellPayinState payin) {
   final paying = sellPayingState as SellPaying;
-  return SellPaying(paying.open, paying.request, paying.quoted, payin);
+  return SellPaying(
+    paying.open,
+    paying.request,
+    paying.quoted,
+    payin,
+    paying.spend,
+  );
 }
 
 void main() {
@@ -192,7 +204,7 @@ void main() {
           PayinBuild<PayinSpend>(
             sellOrder(),
             const OnchainDeposit('bc1qdeposit'),
-            'w-1',
+            const PayinWalletSpend('w-1', sellDefaultOptions),
             1,
           ),
         ),
@@ -208,6 +220,7 @@ void main() {
           QuotedOrder('s-1', sellOrder() as Order),
           const QuoteRefreshing(0),
         ),
+        review.spend,
       );
       final next = transitionSellFlow(refreshing, SellConfirmPressed(sellNow));
       expect(identical(next.state, refreshing), isTrue);
@@ -229,6 +242,87 @@ void main() {
     });
   });
 
+  group('spend options', () {
+    test('a new order reads the fee estimates beside the create', () {
+      final next = transitionSellFlow(
+        sellPayoutState,
+        const SellPayoutPicked(SellPayoutChoice.balance),
+      );
+      expect(
+        (next.state as SellOrdering).spend,
+        const SpendFeesLoading('w-1', 1),
+      );
+      expect(next.effects, contains(const SellSpendEffect(SpendLoadFees(1))));
+    });
+
+    test('the quote points the previews at its deposit and amount', () {
+      final review = sellReviewState as SellOrdering;
+      expect(
+        (review.spend as SpendOptionsReady).target,
+        const SpendPreviewTarget('bc1qdeposit', 20000),
+      );
+    });
+
+    test('Confirm waits while the fee estimates load or failed', () {
+      final review = sellReviewState as SellOrdering;
+      for (final spend in const [
+        SpendFeesLoading('w-1', 1),
+        SpendFeesUnavailable('w-1', 1),
+      ]) {
+        final waiting = SellOrdering(
+          review.open,
+          review.request,
+          review.order,
+          spend,
+        );
+        final next = transitionSellFlow(waiting, SellConfirmPressed(sellNow));
+        expect(identical(next.state, waiting), isTrue);
+        expect(next.effects, isEmpty);
+      }
+    });
+
+    test('the options chosen on the review build the payin', () {
+      final changed = applySell(sellReviewState, const [
+        SellSpendChanged(SpendFeePicked(FeeSelection.economic)),
+        SellSpendChanged(SpendRbfChanged(enabled: false)),
+        SellSpendChanged(SpendPayjoinChanged(enabled: false)),
+      ]);
+      final next = transitionSellFlow(changed, SellConfirmPressed(sellNow));
+      final build =
+          (next.state as SellPaying).payin as PayinBuilding<PayinSpend>;
+      expect(
+        build.spend.options,
+        const PayinSpendOptions(
+          fee: PayinFeeRate(1250),
+          replaceByFee: false,
+          coins: {},
+          payjoin: false,
+        ),
+      );
+    });
+
+    test('once the payin started, options can no longer change', () {
+      final next = transitionSellFlow(
+        sellPayingState,
+        const SellSpendChanged(SpendFeePicked(FeeSelection.slow)),
+      );
+      expect(identical(next.state, sellPayingState), isTrue);
+    });
+
+    test('Back before anything was sent keeps the chosen options', () {
+      final changed = applySell(sellReviewState, [
+        const SellSpendChanged(SpendFeePicked(FeeSelection.slow)),
+        SellConfirmPressed(sellNow),
+      ]);
+      expect(changed, isA<SellPaying>());
+      final back = transitionSellFlow(changed, const SellBackPressed()).state;
+      expect(
+        ((back as SellOrdering).spend as SpendOptionsReady).selection,
+        FeeSelection.slow,
+      );
+    });
+  });
+
   group('payin', () {
     test('an order with an open payin entry starts in Verifying', () {
       final review = sellReviewState as SellOrdering;
@@ -245,7 +339,7 @@ void main() {
         SellContext(review.open.context.summary, [entry]),
       );
       final next = transitionSellFlow(
-        SellOrdering(open, review.request, review.order),
+        SellOrdering(open, review.request, review.order, review.spend),
         SellConfirmPressed(sellNow),
       );
       expect(
