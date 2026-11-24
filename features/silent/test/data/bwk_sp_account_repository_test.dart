@@ -38,6 +38,7 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   final Object? disposeError;
   final Object? stopScanError;
   Object? scanOnceError;
+  Object? clearScanError;
   final Object? restampError;
   final Stream<SpNotification> notifications;
   bool session;
@@ -61,7 +62,10 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   int? lastScannedHeight() => lastScannedHeightValue;
 
   @override
-  void clearScanState() => clearCalls++;
+  void clearScanState() {
+    clearCalls++;
+    if (clearScanError case final error?) throw error;
+  }
 
   @override
   Future<void> dispose() async {
@@ -858,6 +862,75 @@ void main() {
       expect(result, isA<Ok<void, SilentFailure>>());
       expect(ffi.scanStarts, isEmpty);
     });
+
+    test('a decision made during Clear expires when Clear ends', () async {
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final files = _PendingScanFiles();
+      final (repo, ffi) = await open(files);
+      files.beforeWrite = (pending) async {
+        if (pending != null) return;
+        entered.complete();
+        await release.future;
+      };
+
+      final clear = repo.clearScanState();
+      await entered.future;
+      final revision = repo.scanRevision;
+      release.complete();
+      expect(await clear, isA<Ok<void, SilentFailure>>());
+      await repo.scanOnce(automatic: (revision: revision));
+      expect(ffi.scanStarts, isEmpty);
+    });
+
+    test(
+      'a newer header tip invalidates a queued automatic decision',
+      () async {
+        final events = StreamController<SpNotification>();
+        addTearDown(events.close);
+        final (repo, ffi) = await open(
+          _PendingScanFiles(),
+          notifications: events.stream,
+        );
+        final revision = repo.scanRevision;
+        events.add(
+          const SpNotification.headerProgressStarted(
+            phase: HeaderProgressPhase.initialSync,
+            start: 900000,
+            end: 970181,
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        final result = await repo.scanOnce(automatic: (revision: revision));
+
+        expect(result, isA<Ok<void, SilentFailure>>());
+        expect(ffi.scanStarts, isEmpty);
+      },
+    );
+
+    test(
+      'failed Clear preserves an existing Stop on disk and in memory',
+      () async {
+        final files = _PendingScanFiles();
+        final (repo, ffi) = await open(files);
+        await repo.stopScan();
+        ffi.clearScanError = const SpError.other(message: 'clear failed');
+        files.beforeWrite = (_) async {
+          throw const FileSystemException('disk full');
+        };
+
+        expect(await repo.clearScanState(), isA<Err<void, SilentFailure>>());
+        await repo.scanOnce(automatic: (revision: repo.scanRevision));
+
+        expect(ffi.clearCalls, 1);
+        expect(ffi.scanStarts, isEmpty);
+        expect(await files.readPendingScan(tempDir.path), (
+          startHeight: null,
+          isPaused: true,
+        ));
+      },
+    );
   });
 
   group('restampMissingTimestamps', () {

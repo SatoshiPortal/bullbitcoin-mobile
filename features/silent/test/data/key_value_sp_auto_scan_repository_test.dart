@@ -110,6 +110,26 @@ void main() {
       expect(storage.entries[_storageKey], 'false');
     });
 
+    test('a failed opt-out write is still effective in this session', () async {
+      final storage = FakeSecureStoragePlatform(
+        entries: {_storageKey: 'true'},
+        writesFail: true,
+      );
+      final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
+
+      expect(
+        await repo.save(isEnabled: false),
+        isA<Err<void, SilentFailure>>(),
+      );
+      expect(await repo.warmUp(), isA<Ok<void, SilentFailure>>());
+
+      expect(repo.isEnabledNow, isFalse);
+      expect(storage.entries[_storageKey], 'true');
+      storage.writesFail = false;
+      expect(await repo.save(isEnabled: true), isA<Ok<void, SilentFailure>>());
+      expect(repo.isEnabledNow, isTrue);
+    });
+
     test('save writes the opt-in and applies it right away', () async {
       final storage = FakeSecureStoragePlatform();
       final repo = KeyValueSpAutoScanRepository(storage: spKeychain(storage));
