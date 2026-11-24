@@ -8,9 +8,12 @@ import 'package:primitives/primitives.dart';
 
 import 'src/data/ark_background_task.dart';
 import 'src/data/ark_repository_impl.dart';
+import 'src/domain/ark_exit_funding.dart';
 import 'src/domain/ark_failure.dart';
+import 'src/domain/ark_reserve_top_up_port.dart';
 import 'src/domain/repositories/ark_account_registry_repository.dart';
 import 'src/domain/repositories/ark_reminder_repository.dart';
+import 'src/domain/usecases/run_ark_exits_usecase.dart';
 import 'src/domain/usecases/read_ark_usecase.dart';
 import 'src/domain/usecases/run_ark_background_usecase.dart';
 import 'src/domain/usecases/update_ark_expiry_warning_usecase.dart';
@@ -25,11 +28,19 @@ final class ArkMaintenance {
   final ArkAccountRegistryRepository accounts;
   final ArkStageBudget budget;
 
+  /// Pays waiting exits' fees from Secure Bitcoin; foreground only.
+  final ArkReserveTopUpPort? _exitTopUp;
+
+  /// What waiting exits need, for the screens to show.
+  final ArkExitFunding? _exitFunding;
+
   ArkMaintenance({
     required ArkClient client,
     required this.reminders,
     required this.accounts,
     required this.budget,
+    this._exitTopUp,
+    this._exitFunding,
   }) : _repository = ArkRepositoryImpl(client);
 
   RunArkBackgroundUsecase get _renew => RunArkBackgroundUsecase(
@@ -37,13 +48,39 @@ final class ArkMaintenance {
     UpdateArkExpiryWarningUsecase(reminders),
   );
 
+  /// Delivery, then renewal, then exits: the exit pass reads the observation
+  /// renewal just refreshed. Each lane runs whatever the others returned; the
+  /// first failure is reported.
   Future<Result<void, ArkFailure>> runForeground(ArkAccountId account) async {
     final delivery = await RunArkSavedClaimsUsecase(
       _repository,
       budget,
     ).execute(account);
     final renewal = await _renew.execute(account);
-    return delivery is Err ? delivery : renewal;
+    final exits = await runExits(account);
+    if (delivery is Err) return delivery;
+    if (renewal is Err) return renewal;
+    return exits;
+  }
+
+  /// Moves started exits forward, then claims the finished ones, within what
+  /// the user authorized when starting them. Foreground only.
+  Future<Result<void, ArkFailure>> runExits(ArkAccountId account) async {
+    final progress = await ProgressArkExitsUsecase(
+      _repository,
+      budget,
+      topUp: _exitTopUp,
+      funding: _exitFunding,
+    ).execute(account);
+    final claims = await ClaimArkExitsUsecase(
+      _repository,
+      budget,
+    ).execute(account);
+    if (progress case Err(:final failure)) return Err(failure);
+    return switch (claims) {
+      Ok() => const Ok(null),
+      Err(:final failure) => Err(failure),
+    };
   }
 
   BackgroundTaskHandler backgroundHandler() => arkRenewalHandler(

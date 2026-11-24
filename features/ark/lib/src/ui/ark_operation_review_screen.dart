@@ -42,8 +42,39 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
   void _listen() {
     final owner = widget.cubit;
     final account = owner.account;
-    _subscription = owner.stream.listen((_) {
-      if (_owns(owner, account)) setState(() {});
+    // A new owner is a new operation: it may leave once of its own.
+    _left = false;
+    _subscription = owner.stream.listen((next) {
+      if (_owns(owner, account)) {
+        setState(() {});
+        _leaveIfDone(next);
+      }
+    });
+  }
+
+  bool _left = false;
+
+  /// Sent, or not knowable yet: no page of its own. A snackbar says so, Ark
+  /// refreshes and checks it, and the screen closes, as the app's flows do.
+  void _leaveIfDone(ArkOperationState state) {
+    if (_left) return;
+    final l10n = arkLocalizationsOf(context);
+    final message = switch (state) {
+      ArkOperationSubmitted(:final operation) => operation.status.toTranslated(
+        context,
+      ),
+      ArkOperationUncertain() => l10n.uncertainChecking,
+      _ => null,
+    };
+    if (message == null) return;
+    _left = true;
+    final owner = widget.cubit;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Only for the owner that left: never a replacement's handlers.
+      if (!mounted || !identical(owner, widget.cubit)) return;
+      BullSnackBar.show(context, message: message);
+      widget.onReconcile();
+      unawaited(Navigator.maybePop(context));
     });
   }
 
@@ -71,6 +102,10 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
   bool _exitProgress(ArkOperationCubit owner, ArkQuote quote) =>
       owner.request is ArkExitProgressQuoteRequest ||
       quote.kind == ArkOperationKind.exitProgress;
+
+  // A payment review reads like the Send flow's own confirmation step.
+  bool _payment(ArkOperationCubit owner) =>
+      owner.request is ArkPaymentQuoteRequest;
 
   bool _hasReviewFacts(ArkOperationCubit owner, ArkQuote quote) {
     if (owner.request case ArkEmergencyExitQuoteRequest request) {
@@ -120,19 +155,6 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     if (_current(owner, account, rendered)) unawaited(widget.cubit.load());
   }
 
-  void _reconcile(
-    ArkOperationCubit owner,
-    ArkAccountId account,
-    ArkOperationState rendered,
-  ) {
-    if (!_current(owner, account, rendered) ||
-        (rendered is! ArkOperationSubmitted &&
-            rendered is! ArkOperationUncertain)) {
-      return;
-    }
-    widget.onReconcile();
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
@@ -151,149 +173,128 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                 bottom: BullSpacing.sm,
               ),
               child: BullTopBar(
-                title: l10n.review,
-                titleWidget: BullText(l10n.review, role: BullTextRole.subtitle),
+                title: _payment(owner) ? l10n.send : l10n.review,
+                titleWidget: BullText(
+                  _payment(owner) ? l10n.send : l10n.review,
+                  role: BullTextRole.subtitle,
+                ),
                 onBack: () => Navigator.pop(context),
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (state is ArkOperationLoading ||
-                        state is ArkOperationSubmitting)
-                      BullText(l10n.loading, style: null),
-                    if (state case final ArkOperationFailed failed) ...[
-                      BullInfoBar(
-                        message: failed.failure.toTranslated(context),
-                        tone: BullInfoTone.warning,
+              // Loading or submitting: Bull's cubes in the middle.
+              child:
+                  state is ArkOperationLoading ||
+                      state is ArkOperationSubmitting
+                  ? const Center(child: BullLoader.large())
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: BullSpacing.md,
                       ),
-                      _button(
-                        context,
-                        l10n.review,
-                        () => _retry(owner, account, failed),
-                      ),
-                    ],
-                    if (state case final ArkOperationReview reviewed) ...[
-                      if (reviewed.quote.account != account)
-                        BullInfoBar(message: l10n.unavailable),
-                      if (reviewed.quote.account == account) ...[
-                        if (_exitProgress(owner, reviewed.quote) ||
-                            owner.request is ArkEmergencyExitQuoteRequest)
-                          BullInfoBar(
-                            message: l10n.exitProgressReviewWarning,
-                            tone: BullInfoTone.warning,
-                          ),
-                        if (!_hasReviewFacts(owner, reviewed.quote))
-                          BullInfoBar(
-                            message: l10n.exitProgressReviewIncomplete,
-                          ),
-                        if (_hasReviewFacts(owner, reviewed.quote))
-                          _quoteHero(context, owner, reviewed.quote),
-                        BullDetailsTable(
-                          items: [
-                            BullDetailsTableItem(
-                              label: l10n.amount,
-                              displayValue: reviewed.quote.amount.value
-                                  .toString(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (state case final ArkOperationFailed failed) ...[
+                            // Refused: why, in red, as the app shows it.
+                            BullText(
+                              failed.failure.toTranslated(context),
+                              role: BullTextRole.body,
+                              fontWeight: FontWeight.w500,
+                              color: context.bull.error,
+                              textAlign: TextAlign.center,
+                              maxLines: 5,
                             ),
-                            BullDetailsTableItem(
-                              label: _exitProgress(owner, reviewed.quote)
-                                  ? l10n.exitProgressEstimatedFee
-                                  : l10n.feeInSats,
-                              displayValue: reviewed.quote.fee.value.toString(),
+                            _button(
+                              context,
+                              l10n.review,
+                              () => _retry(owner, account, failed),
                             ),
-                            if (_exitProgress(owner, reviewed.quote) ||
-                                owner.request
-                                    is ArkEmergencyExitQuoteRequest) ...[
-                              BullDetailsTableItem(
-                                label: l10n.exitProgressFeeRate,
-                                displayValue:
-                                    reviewed.quote.feeRate?.satsPerVbyte
-                                        .toString() ??
-                                    l10n.unknown,
+                          ],
+                          if (state case final ArkOperationReview reviewed) ...[
+                            if (reviewed.quote.account != account)
+                              BullText(
+                                l10n.unavailable,
+                                role: BullTextRole.body,
+                                fontWeight: FontWeight.w500,
+                                color: context.bull.error,
+                                textAlign: TextAlign.center,
                               ),
-                              BullDetailsTableItem(
-                                label: l10n.exitProgressReserveExposure,
-                                displayValue:
-                                    reviewed
-                                        .quote
-                                        .confirmedReserveExposure
-                                        ?.value
-                                        .toString() ??
-                                    l10n.unknown,
+                            if (reviewed.quote.account == account &&
+                                _payment(owner) &&
+                                reviewed.quote.kind == ArkOperationKind.payment)
+                              ..._paymentReview(context, owner, reviewed.quote),
+                            if (reviewed.quote.account == account &&
+                                !(_payment(owner) &&
+                                    reviewed.quote.kind ==
+                                        ArkOperationKind.payment)) ...[
+                              if (_hasReviewFacts(owner, reviewed.quote))
+                                _quoteHero(context, owner, reviewed.quote),
+                              BullDetailsTable(
+                                items: [
+                                  BullDetailsTableItem(
+                                    label: l10n.amount,
+                                    displayValue: reviewed.quote.amount.value
+                                        .toString(),
+                                  ),
+                                  BullDetailsTableItem(
+                                    label: _exitProgress(owner, reviewed.quote)
+                                        ? l10n.exitProgressEstimatedFee
+                                        : l10n.feeInSats,
+                                    displayValue: reviewed.quote.fee.value
+                                        .toString(),
+                                  ),
+                                  if (_exitProgress(owner, reviewed.quote) ||
+                                      owner.request
+                                          is ArkEmergencyExitQuoteRequest) ...[
+                                    BullDetailsTableItem(
+                                      label: l10n.exitProgressFeeRate,
+                                      displayValue:
+                                          reviewed.quote.feeRate?.satsPerVbyte
+                                              .toString() ??
+                                          l10n.unknown,
+                                    ),
+                                    BullDetailsTableItem(
+                                      label: l10n.exitProgressReserveExposure,
+                                      displayValue:
+                                          reviewed
+                                              .quote
+                                              .confirmedReserveExposure
+                                              ?.value
+                                              .toString() ??
+                                          l10n.unknown,
+                                    ),
+                                  ],
+                                  if (reviewed.quote.maxClaimFee
+                                      case final maximum?)
+                                    BullDetailsTableItem(
+                                      label: l10n.exitMaximumClaimFee,
+                                      displayValue: maximum.value.toString(),
+                                    ),
+                                  BullDetailsTableItem(
+                                    label: l10n.netInSats,
+                                    displayValue: reviewed.quote.net.value
+                                        .toString(),
+                                  ),
+                                  if (reviewed.quote.destination
+                                      case final destination?)
+                                    BullDetailsTableItem(
+                                      label: l10n.destination,
+                                      displayValue: destination,
+                                    ),
+                                  for (final id in reviewed.quote.selectedIds)
+                                    BullDetailsTableItem(
+                                      label: l10n.id,
+                                      displayValue: id,
+                                    ),
+                                ],
                               ),
                             ],
-                            if (reviewed.quote.maxClaimFee case final maximum?)
-                              BullDetailsTableItem(
-                                label: l10n.exitMaximumClaimFee,
-                                displayValue: maximum.value.toString(),
-                              ),
-                            BullDetailsTableItem(
-                              label: l10n.netInSats,
-                              displayValue: reviewed.quote.net.value.toString(),
-                            ),
-                            if (reviewed.quote.destination
-                                case final destination?)
-                              BullDetailsTableItem(
-                                label: l10n.destination,
-                                displayValue: destination,
-                              ),
-                            for (final id in reviewed.quote.selectedIds)
-                              BullDetailsTableItem(
-                                label: l10n.id,
-                                displayValue: id,
-                              ),
                           ],
-                        ),
-                      ],
-                    ],
-                    if (state case ArkOperationSubmitted(:final operation)) ...[
-                      _submittedHero(context, owner, operation),
-                      BullDetailsTable(
-                        items: [
-                          BullDetailsTableItem(
-                            label: l10n.id,
-                            displayValue: operation.id,
-                          ),
-                          BullDetailsTableItem(
-                            label: l10n.state,
-                            displayValue: operation.status.toTranslated(
-                              context,
-                            ),
-                          ),
+                          // Sent or unclear: the screen is closing.
+                          const Gap(BullSpacing.md),
                         ],
                       ),
-                    ],
-                    if (state case ArkOperationUncertain(
-                      :final operationId,
-                    )) ...[
-                      BullInfoBar(
-                        message: l10n.uncertain,
-                        tone: BullInfoTone.warning,
-                      ),
-                      BullDetailsTable(
-                        items: [
-                          BullDetailsTableItem(
-                            label: l10n.id,
-                            displayValue: operationId,
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (state is ArkOperationSubmitted ||
-                        state is ArkOperationUncertain)
-                      _button(
-                        context,
-                        l10n.refresh,
-                        () => _reconcile(owner, account, state),
-                      ),
-                    const Gap(BullSpacing.md),
-                  ],
-                ),
-              ),
+                    ),
             ),
             if (state case final ArkOperationReview reviewed)
               if (reviewed.quote.account == account)
@@ -355,53 +356,98 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     );
   }
 
-  Widget _submittedHero(
+  List<Widget> _paymentReview(
     BuildContext context,
     ArkOperationCubit owner,
-    ArkOperation operation,
+    ArkQuote quote,
   ) {
     final l10n = arkLocalizationsOf(context);
-    // A backend success describes this operation, never chain finality.
-    final title = operation.status == ArkOperationStatus.succeeded
-        ? switch ((owner.request, operation.kind)) {
-            (ArkRenewalQuoteRequest(), ArkOperationKind.renewal) =>
-              l10n.operationRenewalStarted,
-            (ArkEmergencyExitQuoteRequest(), ArkOperationKind.emergencyExit) =>
-              l10n.emergencyExitStarted,
-            (ArkPaymentQuoteRequest(), ArkOperationKind.payment) =>
-              l10n.paymentSent,
-            _ => null,
-          }
+    final observation = widget.displayData;
+    final price = observation?.account == owner.account
+        ? observation?.price
         : null;
-    final payment = title != null && operation.kind == ArkOperationKind.payment;
-    final color = payment ? context.bull.success : context.bull.warning;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: BullSpacing.lg),
-      child: Column(
-        children: [
-          if (title != null) ...[
-            Container(
-              padding: const EdgeInsets.all(BullSpacing.md),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: BullIcon(
-                payment ? BullIcons.check : BullIcons.schedule,
-                size: 32,
-                color: color,
-              ),
-            ),
-            const Gap(BullSpacing.md),
-          ],
-          BullText(
-            title ?? operation.status.toTranslated(context),
-            role: BullTextRole.headline,
-            textAlign: TextAlign.center,
+    return [
+      const Gap(BullSpacing.md),
+      Center(
+        child: Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: context.bull.surfaceContainerHighest,
           ),
+          child: ExcludeSemantics(
+            child: BullIcon(
+              BullIcons.arrowUpward,
+              size: 28,
+              color: context.bull.text,
+            ),
+          ),
+        ),
+      ),
+      const Gap(BullSpacing.md),
+      Semantics(
+        header: true,
+        child: BullText(
+          l10n.confirmSend,
+          role: BullTextRole.body,
+          textAlign: TextAlign.center,
+        ),
+      ),
+      const Gap(BullSpacing.xs),
+      BullText(
+        formatArkSats(context, quote.net),
+        role: BullTextRole.headline,
+        fontWeight: FontWeight.w700,
+        textAlign: TextAlign.center,
+      ),
+      const Gap(BullSpacing.lg),
+      BullDetailsTable(
+        items: [
+          BullDetailsTableItem(label: l10n.fromLabel, displayValue: l10n.title),
+          BullDetailsTableItem(
+            label: l10n.toLabel,
+            displayValue: quote.destination ?? l10n.unknown,
+            copyValue: quote.destination,
+            copiedMessage: l10n.copied,
+            displayWidget: BullText(
+              quote.destination ?? l10n.unknown,
+              role: BullTextRole.body,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          BullDetailsTableItem(
+            label: l10n.amountLabel,
+            displayValue: formatArkSats(context, quote.net),
+            displayWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BullText(
+                  formatArkSats(context, quote.net),
+                  role: BullTextRole.body,
+                  fontWeight: FontWeight.w500,
+                ),
+                ArkFiatAmount(
+                  amount: quote.net,
+                  price: price,
+                  approximate: true,
+                ),
+              ],
+            ),
+          ),
+          BullDetailsTableItem(
+            label: l10n.networkFees,
+            displayValue: formatArkSats(context, quote.fee),
+          ),
+          if (quote.amount != quote.net)
+            BullDetailsTableItem(
+              label: l10n.totalLabel,
+              displayValue: formatArkSats(context, quote.amount),
+            ),
         ],
       ),
-    );
+    ];
   }
 
   Widget _button(

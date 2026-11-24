@@ -9,7 +9,9 @@ import 'package:primitives/primitives.dart';
 
 import 'ark_maintenance_setup.dart';
 import 'ark_notification_setup.dart';
+import 'src/domain/ark_exit_funding.dart';
 import 'src/domain/ark_failure.dart';
+import 'src/domain/ark_reserve_top_up_port.dart';
 import 'src/domain/ark_expiry_warning.dart';
 import 'src/domain/repositories/ark_reminder_repository.dart';
 import 'src/domain/repositories/ark_account_registry_repository.dart';
@@ -41,6 +43,18 @@ final class ArkForegroundMaintenance {
     }
   }
 
+  /// The exit lane alone, for a host polling while an exit is under way.
+  Future<Result<void, ArkFailure>> runExits(ArkAccountId account) async {
+    if (_closing) return const Err(ArkServiceUnavailableFailure());
+    final pass = _maintenance.runExits(account);
+    _active.add(pass);
+    try {
+      return await pass;
+    } finally {
+      _active.remove(pass);
+    }
+  }
+
   Future<void> close() async {
     _closing = true;
     try {
@@ -60,6 +74,8 @@ openArkForegroundMaintenance({
   required ArkClient client,
   required ArkAccountRegistryRepository accounts,
   required bool initializeNew,
+  ArkReserveTopUpPort? exitTopUp,
+  ArkExitFunding? exitFunding,
 }) async {
   final copy = arkExpiryCopy(locale);
   final initialized = await initializeArkNotifications(locale);
@@ -92,6 +108,8 @@ openArkForegroundMaintenance({
         reminders: reminders,
         accounts: accounts,
         budget: const ArkUnlimitedStageBudget(),
+        exitTopUp: exitTopUp,
+        exitFunding: exitFunding,
       ),
       ready,
     ),

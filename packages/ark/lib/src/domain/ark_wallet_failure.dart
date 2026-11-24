@@ -17,6 +17,7 @@ enum ArkFailureReason {
   recoveryRequired,
   writerBusy,
   insufficientFunds,
+  exitFeesShort,
   outcomeUnknown,
   native,
   budgetExhausted,
@@ -59,6 +60,19 @@ final class ArkRecoveryRequiredFailure extends ArkWalletFailure {
 final class ArkInsufficientFundsFailure extends ArkWalletFailure {
   const ArkInsufficientFundsFailure()
     : super(ArkFailureReason.insufficientFunds);
+}
+
+/// An emergency exit has a transaction to broadcast but the on-chain reserve
+/// cannot pay its fee yet. Nothing was broadcast; the exit waits.
+final class ArkExitFeesShortFailure extends ArkWalletFailure {
+  /// What the confirmed reserve lacks to pay the fee now.
+  final Sats missing;
+
+  /// Already received by the reserve but not yet confirmed.
+  final Sats incoming;
+
+  const ArkExitFeesShortFailure({required this.missing, required this.incoming})
+    : super(ArkFailureReason.exitFeesShort);
 }
 
 final class ArkOutcomeUnknownFailure extends ArkWalletFailure {

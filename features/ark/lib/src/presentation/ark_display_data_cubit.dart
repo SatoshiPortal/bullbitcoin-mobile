@@ -40,7 +40,10 @@ final class ArkDisplayDataCubit extends Cubit<ArkDisplayDataState> {
   Future<void> load() async {
     if (isClosed) return;
     final epoch = ++_epoch;
-    emit(const ArkDisplayDataLoading());
+    // A reload keeps the values on screen until fresh ones replace them:
+    // clearing them first made every wallet change flash "Unavailable".
+    // Display only; Board re-checks funds natively when it prepares.
+    if (state is! ArkDisplayDataReady) emit(const ArkDisplayDataLoading());
     final result = await _read.execute(account);
     if (isClosed || epoch != _epoch) return;
     emit(switch (result) {

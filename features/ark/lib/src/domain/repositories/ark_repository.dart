@@ -25,9 +25,23 @@ abstract interface class ArkRepository {
     ArkAccountId account,
     ArkSubmission submission,
   );
+
+  /// Broadcasts the due transactions of exits in progress.
+  @useResult
+  Future<Result<ArkOperation?, ArkFailure>> progressStartedExits(
+    ArkAccountId account,
+  );
+
+  /// Claims claimable exits within the authority recorded when each started.
+  @useResult
+  Future<Result<List<ArkOperation>, ArkFailure>> claimAuthorized(
+    ArkAccountId account,
+  );
   @useResult
   Future<Result<ArkReceiveDestination, ArkFailure>> receive(
     ArkAccountId account,
     ArkReceiveRequest request,
   );
+  @useResult
+  Future<Result<DateTime, ArkFailure>> nextRound(ArkAccountId account);
 }

@@ -8,11 +8,17 @@ import 'package:bull_ark/src/presentation/ark_cubit.dart';
 import 'package:bull_ark/src/ui/ark_account_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullBorderedTile,
         BullButton,
+        BullInfoCard,
+        BullRefreshIndicator,
+        CustomSemanticsAction,
+        SingleChildScrollView,
+        BullTopBar,
         BullDetailsTable,
         BullDetailsTableItem,
-        SizedBox;
+        SizedBox,
+        VoidCallback;
+import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -26,6 +32,7 @@ ArkSnapshot observation({
   bool missing = false,
   ArkRecoveryStatus recovery = ArkRecoveryStatus.complete,
   ArkRenewalStatus renewal = ArkRenewalStatus.current,
+  List<ArkMovement> movements = const [],
 }) => ArkSnapshot(
   account: owner ?? account(),
   revision: 2,
@@ -36,6 +43,7 @@ ArkSnapshot observation({
   confirmedReserve: missing ? null : Sats.fromInt(56),
   recovery: recovery,
   renewal: renewal,
+  movements: movements,
 );
 
 class Client extends FakeArkClient {
@@ -86,15 +94,24 @@ ArkAccountScreen screen(
   enabled: enabled,
   onSend: () => calls.add('send'),
   onReceive: () => calls.add('receive'),
-  onBoard: () => calls.add('board'),
   onVtxos: () => calls.add('vtxos'),
-  onExits: () => calls.add('exits'),
-  onInfo: () => calls.add('info'),
+  onSettings: () => calls.add('settings'),
 );
 BullButton button(WidgetTester tester, String label) =>
     tester.widget<BullButton>(find.widgetWithText(BullButton, label));
 List<BullButton> buttons(WidgetTester tester) =>
     tester.widgetList<BullButton>(find.byType(BullButton)).toList();
+
+/// Pull-to-refresh is the wallet's refresh entry, as on the app's wallets.
+VoidCallback refresh(WidgetTester tester) {
+  final onRefresh = tester
+      .widget<BullRefreshIndicator>(find.byType(BullRefreshIndicator))
+      .onRefresh;
+  return () => unawaited(onRefresh());
+}
+
+VoidCallback settings(WidgetTester tester) =>
+    tester.widget<BullTopBar>(find.byType(BullTopBar)).onAction ?? () {};
 Map<String, String?> amounts(WidgetTester tester) => {
   for (final table in tester.widgetList<BullDetailsTable>(
     find.byType(BullDetailsTable),
@@ -105,21 +122,53 @@ Map<String, String?> amounts(WidgetTester tester) => {
 const historical = 'Last observed data. Refresh before reviewing a payment.';
 
 void main() {
-  testWidgets('mount reads only and shows three exact sats balances', (
+  testWidgets(
+    'mount reads only and shows the balance without a pending frame',
+    (tester) async {
+      final client = Client()..snapshot = Ok(observation());
+      final cubit = controller(client);
+      final calls = <String>[];
+      await tester.pumpWidget(app(screen(cubit, calls)));
+      await tester.pump();
+      expect(client.calls, ['read']);
+      expect(calls, isEmpty);
+      expect(find.text('1,234 sats'), findsOneWidget);
+      // Like the app's wallets: pending funds are listed, not framed.
+      expect(amounts(tester), isEmpty);
+      expect(find.textContaining('Pending (sats)'), findsNothing);
+    },
+  );
+  testWidgets('observed zero pending and reserve leave only the balance', (
     tester,
   ) async {
-    final client = Client()..snapshot = Ok(observation());
-    final cubit = controller(client);
-    final calls = <String>[];
-    await tester.pumpWidget(app(screen(cubit, calls)));
+    final cubit = controller(
+      Client()
+        ..snapshot = Ok(
+          ArkSnapshot(
+            account: account(),
+            revision: 2,
+            observedAt: DateTime.utc(2026, 11, 16),
+            spendable: Sats.fromInt(1234),
+            pending: Sats.zero,
+            confirmedReserve: Sats.zero,
+          ),
+        ),
+    );
+    await tester.pumpWidget(app(screen(cubit, [])));
     await tester.pump();
-    expect(client.calls, ['read']);
-    expect(calls, isEmpty);
-    expect(amounts(tester), {
-      'Spendable (sats)': '1234',
-      'Pending (sats)': '42',
-      'On-chain fee reserve (sats)': '56',
-    });
+    expect(find.text('1,234 sats'), findsOneWidget);
+    expect(amounts(tester), isEmpty);
+  });
+  testWidgets('settings action opens Ark settings even while funded-off', (
+    tester,
+  ) async {
+    final cubit = controller(Client()..snapshot = Ok(observation()));
+    final calls = <String>[];
+    await tester.pumpWidget(app(screen(cubit, calls, enabled: false)));
+    await tester.pump();
+    expect(find.byTooltip('Ark settings'), findsOneWidget);
+    settings(tester)();
+    expect(calls, ['settings']);
   });
   testWidgets(
     'explicit refresh deduplicates while actual synchronization remains pending',
@@ -131,9 +180,9 @@ void main() {
       final cubit = controller(client);
       await tester.pumpWidget(app(screen(cubit, [])));
       await tester.pump();
-      final refresh = button(tester, 'Refresh').onPressed;
-      refresh();
-      refresh();
+      final action = refresh(tester);
+      action();
+      action();
       await tester.pump();
       expect(client.calls, ['read', 'sync']);
       expect(client.arguments.last, (account(), false));
@@ -141,6 +190,28 @@ void main() {
       await tester.pump();
     },
   );
+  testWidgets('refresh without the pull gesture is a named semantics action', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final reply = Completer<Result<ArkPassOutcome, ArkWalletFailure>>();
+    final client = Client()
+      ..snapshot = Ok(observation())
+      ..passReply = reply;
+    await tester.pumpWidget(app(screen(controller(client), [])));
+    await tester.pump();
+    final id = CustomSemanticsAction.getIdentifier(
+      const CustomSemanticsAction(label: 'Refresh'),
+    );
+    final node = tester.getSemantics(find.byType(SingleChildScrollView));
+    expect(node.getSemanticsData().customSemanticsActionIds, contains(id));
+    node.owner?.performAction(node.id, SemanticsAction.customAction, id);
+    await tester.pump();
+    expect(client.calls, ['read', 'sync']);
+    reply.complete(Ok(ArkPassOutcome(snapshot: observation())));
+    await tester.pump();
+    handle.dispose();
+  });
   testWidgets('loading and null observations are not zero balances', (
     tester,
   ) async {
@@ -170,7 +241,7 @@ void main() {
     await tester.pump();
     expect((cubit.state as ArkViewFailed).lastObserved?.stale, false);
     expect(find.text(historical), findsOneWidget);
-    expect(amounts(tester)['Spendable (sats)'], '1234');
+    expect(find.text('1,234 sats'), findsOneWidget);
   });
   testWidgets('stale observed data is qualified separately from failure', (
     tester,
@@ -208,9 +279,11 @@ void main() {
       );
       await tester.pump();
       expect(amounts(tester), isEmpty);
-      expect(find.text('1234'), findsNothing);
-      expect(find.byType(BullBorderedTile), findsNothing);
-      expect(find.text('Unavailable'), findsWidgets);
+      expect(find.text('1,234 sats'), findsNothing);
+      expect(find.byType(BullInfoCard), findsNothing);
+      // No snapshot of its own: the app's error state, with a retry.
+      expect(find.text('Ark is unavailable. Try again.'), findsOneWidget);
+      expect(find.widgetWithText(BullButton, 'Try again'), findsOneWidget);
     });
   }
   for (final sameAccount in [false, true]) {
@@ -224,9 +297,13 @@ void main() {
         final newCalls = <String>[];
         await tester.pumpWidget(app(screen(a, oldCalls)));
         await tester.pump();
-        final old = buttons(tester).map((b) => b.onPressed).toList();
+        final old = [
+          ...buttons(tester).map((b) => b.onPressed),
+          settings(tester),
+          refresh(tester),
+        ];
         final attention = tester
-            .widget<BullBorderedTile>(find.byType(BullBorderedTile))
+            .widget<BullInfoCard>(find.byType(BullInfoCard))
             .onTap;
         final original = account();
         final owner = sameAccount
@@ -281,21 +358,18 @@ void main() {
         final oldPayments = [
           'Send',
           'Receive',
-          'Board to Ark',
         ].map((label) => button(tester, label).onPressed).toList();
         await tester.pumpWidget(app(screen(cubit, calls, enabled: false)));
         for (final callback in oldPayments) {
           callback();
         }
-        for (final label in ['Send', 'Receive', 'Board to Ark']) {
+        for (final label in ['Send', 'Receive']) {
           expect(button(tester, label).disabled, true);
           button(tester, label).onPressed();
         }
         expect(calls, isEmpty);
-        for (final label in ['VTXOs', 'Emergency exit', 'Ark info']) {
-          button(tester, label).onPressed();
-        }
-        expect(calls, ['vtxos', 'exits', 'info']);
+        settings(tester)();
+        expect(calls, ['settings']);
       },
     );
   }
@@ -314,8 +388,11 @@ void main() {
       await tester.pump();
       reply.complete(Ok(observation()));
       await tester.pump();
-      expect(find.text('1234'), findsNothing);
-      final callbacks = buttons(tester).map((b) => b.onPressed).toList();
+      expect(find.text('1,234 sats'), findsNothing);
+      final callbacks = [
+        ...buttons(tester).map((b) => b.onPressed),
+        settings(tester),
+      ];
       await tester.pumpWidget(app(const SizedBox.shrink()));
       for (final callback in callbacks) {
         callback();

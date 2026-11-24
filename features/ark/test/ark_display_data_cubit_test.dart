@@ -40,7 +40,7 @@ ArkDisplayData observation({ArkAccountId? owner, Sats? available}) =>
 
 void main() {
   test(
-    'source changes invalidate a displayed balance before reloading',
+    'a source change keeps the shown balance until the reload replaces it',
     () async {
       final source = Source();
       final cubit = ArkDisplayDataCubit(
@@ -55,7 +55,11 @@ void main() {
       await loaded;
       expect(cubit.state, isA<ArkDisplayDataReady>());
       source.updates.add(null);
-      expect(cubit.state, isA<ArkDisplayDataLoading>());
+      // No flash of "Unavailable" while reloading.
+      expect(
+        (cubit.state as ArkDisplayDataReady).source.available,
+        Sats.fromInt(42),
+      );
       expect(source.calls, [account(), account()]);
       final published = cubit.stream.first;
       source.replies.last.complete(
@@ -104,7 +108,6 @@ void main() {
       );
       await pending;
       pending = cubit.load();
-      expect(cubit.state, isA<ArkDisplayDataLoading>());
       source.replies.last.complete(const Err(ArkServiceUnavailableFailure()));
       await pending;
       expect(cubit.state, isA<ArkDisplayDataUnavailable>());

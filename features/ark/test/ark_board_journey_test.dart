@@ -2,6 +2,8 @@ import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkBoardReview;
 import 'package:bull_ark/src/domain/usecases/prepare_ark_board_usecase.dart';
+import 'package:bull_ark/src/data/ark_repository_impl.dart';
+import 'package:bull_ark/src/domain/usecases/read_ark_board_minimum_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/read_ark_board_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/confirm_ark_board_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_board_cubit.dart';
@@ -16,6 +18,7 @@ import 'fake_ark_client.dart';
 ArkBoardPreparation prepared({
   ArkAccountId? owner,
   String binding = 'original-review',
+  int amount = 1000,
 }) => ArkBoardPreparation(
   operationId: 'original-operation',
   reviewBinding: binding,
@@ -23,7 +26,7 @@ ArkBoardPreparation prepared({
   sourceWalletId: 'source-wallet',
   sourceParent: account().parent,
   sourceGeneration: 7,
-  fundingAmount: Sats.fromInt(1000),
+  fundingAmount: Sats.fromInt(amount),
   minerFee: Sats.fromInt(100),
   arkFee: Sats.fromInt(10),
   net: Sats.fromInt(990),
@@ -35,9 +38,31 @@ ArkBoardPreparation prepared({
   configGeneration: 2,
 );
 
+/// Reads [minimum] as the observed server minimum; none when null.
+ReadArkBoardMinimumUsecase minimumReader([Sats? minimum]) {
+  final client = FakeArkClient()
+    ..snapshot = minimum == null
+        ? const Err(ArkUnavailableFailure())
+        : Ok(
+            ArkSnapshot(
+              account: account(),
+              revision: 1,
+              observedAt: DateTime.utc(2026),
+              serverInfo: ArkServerInfo(
+                publicKey: 'server-key',
+                minimumBoard: minimum,
+              ),
+            ),
+          );
+  return ReadArkBoardMinimumUsecase(ArkRepositoryImpl(client));
+}
+
 void main() {
   test('facade issues Board review only through journal read and captures original identity', () async {
-    final funding = FakeArkBoardFunding()..observed = Ok(prepared());
+    // The host answers an unknown outcome once signing may have begun.
+    final funding = FakeArkBoardFunding()
+      ..observed = Ok(prepared())
+      ..confirmed = const Err(ArkSubmissionUncertainFailure('host-operation'));
     final preferences = Preferences();
     final facade = createArkFacade(
       client: FakeArkClient(),
@@ -118,12 +143,14 @@ void main() {
   test('prepare then trusted read reviews the original operation with no sign/confirm on creation', () async {
     final funding = FakeArkBoardFunding()
       ..prepared = Ok(prepared())
-      ..observed = Ok(prepared());
+      ..observed = Ok(prepared())
+      ..confirmed = const Err(ArkSubmissionUncertainFailure('host-operation'));
     final preferences = Preferences();
     final cubit = ArkBoardCubit(
       PrepareArkBoardUsecase(funding, preferences),
       ReadArkBoardUsecase(funding),
       ConfirmArkBoardUsecase(funding, preferences),
+      minimumReader(),
       config: config(),
     );
     addTearDown(cubit.close);
@@ -140,6 +167,32 @@ void main() {
     expect(funding.calls, ['prepare', 'read', 'confirm']);
   });
 
+  test('a refusal before signing keeps the review and says why', () async {
+    final funding = FakeArkBoardFunding()
+      ..prepared = Ok(prepared())
+      ..observed = Ok(prepared())
+      ..confirmed = const Err(ArkServiceUnavailableFailure());
+    final preferences = Preferences();
+    final cubit = ArkBoardCubit(
+      PrepareArkBoardUsecase(funding, preferences),
+      ReadArkBoardUsecase(funding),
+      ConfirmArkBoardUsecase(funding, preferences),
+      minimumReader(),
+      config: config(),
+    );
+    addTearDown(cubit.close);
+    await cubit.prepare(Sats.fromInt(1000));
+    await cubit.confirm();
+    expect(
+      cubit.state,
+      isA<ArkBoardReviewed>().having(
+        (s) => s.failure,
+        'reason',
+        isA<ArkServiceUnavailableFailure>(),
+      ),
+    );
+  });
+
   test('uncertain preparation keeps its original ID and never silently prepares again', () async {
     final funding = FakeArkBoardFunding()
       ..prepared = const Err(
@@ -150,6 +203,7 @@ void main() {
       PrepareArkBoardUsecase(funding, preferences),
       ReadArkBoardUsecase(funding),
       ConfirmArkBoardUsecase(funding, preferences),
+      minimumReader(),
       config: config(),
     );
     addTearDown(cubit.close);
@@ -173,12 +227,16 @@ void main() {
     () async {
       final funding = FakeArkBoardFunding()
         ..prepared = Ok(prepared())
-        ..observed = Ok(prepared());
+        ..observed = Ok(prepared())
+        ..confirmed = const Err(
+          ArkSubmissionUncertainFailure('original-operation'),
+        );
       final preferences = Preferences();
       final cubit = ArkBoardCubit(
         PrepareArkBoardUsecase(funding, preferences),
         ReadArkBoardUsecase(funding),
         ConfirmArkBoardUsecase(funding, preferences),
+        minimumReader(),
         config: config(),
       );
       addTearDown(cubit.close);
@@ -274,4 +332,74 @@ void main() {
       expect(funding.calls, ['confirm', 'confirm']);
     },
   );
+
+  group('Board minimum', () {
+    ArkBoardCubit board(ReadArkBoardMinimumUsecase reader) {
+      final funding = FakeArkBoardFunding()..prepared = Ok(prepared());
+      final preferences = Preferences();
+      final cubit = ArkBoardCubit(
+        PrepareArkBoardUsecase(funding, preferences),
+        ReadArkBoardUsecase(funding),
+        ConfirmArkBoardUsecase(funding, preferences),
+        reader,
+        config: config(),
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    test('the use case reads the observed server minimum', () async {
+      expect(
+        await minimumReader(Sats.fromInt(20000)).execute(account()),
+        Sats.fromInt(20000),
+      );
+      expect(await minimumReader().execute(account()), isNull);
+    });
+
+    test('the use case ignores another account and missing info', () async {
+      final client = FakeArkClient()
+        ..snapshot = Ok(
+          ArkSnapshot(
+            account: account(),
+            revision: 1,
+            observedAt: DateTime.utc(2026),
+          ),
+        );
+      final reader = ReadArkBoardMinimumUsecase(ArkRepositoryImpl(client));
+      expect(await reader.execute(account()), isNull);
+      final other = ArkAccountId(
+        parent: account().parent,
+        network: account().network,
+        serverIdentity: 'other-server',
+      );
+      expect(await minimumReader(Sats.fromInt(20000)).execute(other), isNull);
+    });
+
+    test('the cubit loads the minimum before the amount is typed', () async {
+      final cubit = board(minimumReader(Sats.fromInt(20000)));
+      expect(cubit.minimum, isNull);
+      await cubit.loadMinimum();
+      expect(cubit.minimum, Sats.fromInt(20000));
+    });
+
+    test(
+      'a server refusal replaces the minimum with its current one',
+      () async {
+        final funding = FakeArkBoardFunding()
+          ..prepared = Err(ArkBoardBelowMinimumFailure(Sats.fromInt(30000)));
+        final refused = ArkBoardCubit(
+          PrepareArkBoardUsecase(funding, Preferences()),
+          ReadArkBoardUsecase(funding),
+          ConfirmArkBoardUsecase(funding, Preferences()),
+          minimumReader(Sats.fromInt(20000)),
+          config: config(),
+        );
+        addTearDown(refused.close);
+        await refused.loadMinimum();
+        await refused.prepare(Sats.fromInt(25000));
+        expect(refused.state, isA<ArkBoardEditing>());
+        expect(refused.minimum, Sats.fromInt(30000));
+      },
+    );
+  });
 }

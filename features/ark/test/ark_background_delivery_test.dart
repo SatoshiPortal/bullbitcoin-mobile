@@ -127,7 +127,13 @@ void main() {
       budget: budget,
     );
     expect(await maintenance.runForeground(account()), isA<Ok>());
-    expect(client.calls, ['read', 'submit', 'renew']);
+    expect(client.calls, [
+      'read',
+      'submit',
+      'renew',
+      'progressStartedExits',
+      'claimAuthorized',
+    ]);
   });
 
   test('foreground renewal still runs after saved delivery fails', () async {
@@ -139,7 +145,13 @@ void main() {
       budget: budget,
     );
     expect(await maintenance.runForeground(account()), isA<Err>());
-    expect(client.calls, ['read', 'submit', 'renew']);
+    expect(client.calls, [
+      'read',
+      'submit',
+      'renew',
+      'progressStartedExits',
+      'claimAuthorized',
+    ]);
   });
 
   test('foreground reports delivery failure when both stages fail', () async {
@@ -160,7 +172,48 @@ void main() {
         isA<ArkFeatureStorageFailure>(),
       ),
     );
-    expect(client.calls, ['read', 'submit', 'renew']);
+    expect(client.calls, [
+      'read',
+      'submit',
+      'renew',
+      'progressStartedExits',
+      'claimAuthorized',
+    ]);
+  });
+
+  test(
+    'foreground reports a failed claim pass after the other lanes',
+    () async {
+      client.claimed = const Err(ArkUnavailableFailure());
+      final maintenance = ArkMaintenance(
+        client: client,
+        reminders: Reminders(),
+        accounts: registry,
+        budget: budget,
+      );
+      final result = await maintenance.runForeground(account());
+      expect(
+        result,
+        isA<Err<void, ArkFailure>>().having(
+          (result) => result.failure,
+          'claim failure',
+          isA<ArkServiceUnavailableFailure>(),
+        ),
+      );
+      expect(client.calls.last, 'claimAuthorized');
+    },
+  );
+
+  test('an exhausted budget admits no claim pass', () async {
+    budget.allowed = false;
+    final maintenance = ArkMaintenance(
+      client: client,
+      reminders: Reminders(),
+      accounts: registry,
+      budget: budget,
+    );
+    await maintenance.runForeground(account());
+    expect(client.calls, isNot(contains('claimAuthorized')));
   });
 
   test('persisted protected funded-off account delivers original claim before keyed sync failure', () async {

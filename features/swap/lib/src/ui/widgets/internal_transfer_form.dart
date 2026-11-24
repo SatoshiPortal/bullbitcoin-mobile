@@ -116,7 +116,6 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
             rawAmount: _amount,
           );
     final failure = widget.failure ?? transfer?.failure;
-    final minimum = transfer?.minimum;
     final showFailure =
         failure != null &&
         (_amount.isNotEmpty || failure is SwapUnsupportedNetworkFailure);
@@ -260,15 +259,9 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                         },
                         role: BullTextRole.label,
                         color: context.bull.error,
-                      )
-                    else if (minimum != null)
-                      BullText(
-                        context.swapCopyForLocale.swapArkMinimum(
-                          _format(minimum),
-                        ),
-                        role: BullTextRole.label,
-                        color: context.bull.textMuted,
                       ),
+                    // The minimum shows only once an amount is typed below
+                    // it, in red above.
                     if (transfer?.usesArk ?? false) ...[
                       const Gap(BullSpacing.md),
                       BullText(

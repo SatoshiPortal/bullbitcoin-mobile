@@ -56,18 +56,28 @@ class _ArkClaimRecoveryScreenState extends State<ArkClaimRecoveryScreen> {
       _ => null,
     };
     return BullScaffold(
+      backgroundColor: context.bull.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(BullSpacing.md),
+          padding: const EdgeInsets.fromLTRB(
+            BullSpacing.md,
+            BullSpacing.zero,
+            BullSpacing.md,
+            BullSpacing.md,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BullTopBar(
                 title: l10n.signedClaimRecovery,
+                titleWidget: BullText(
+                  l10n.signedClaimRecovery,
+                  role: BullTextRole.title,
+                ),
                 onBack: () => Navigator.pop(context),
               ),
-              BullInfoBar(message: l10n.sameSignedClaim),
-              if (selection != null)
+              const Gap(BullSpacing.md),
+              if (selection != null) ...[
                 BullDetailsTable(
                   items: [
                     BullDetailsTableItem(
@@ -100,9 +110,13 @@ class _ArkClaimRecoveryScreenState extends State<ArkClaimRecoveryScreen> {
                     ),
                   ],
                 ),
+                const Gap(BullSpacing.md),
+              ],
               if (state is ArkClaimRecoveryLoading ||
-                  state is ArkClaimRecoverySubmitting)
-                BullText(l10n.loading, style: null),
+                  state is ArkClaimRecoverySubmitting) ...[
+                const Center(child: BullLoader.large()),
+                const Gap(BullSpacing.sm),
+              ],
               if (state is ArkClaimRecoveryReady ||
                   state is ArkClaimRecoverySubmitting)
                 BullButton.big(
@@ -113,20 +127,27 @@ class _ArkClaimRecoveryScreenState extends State<ArkClaimRecoveryScreen> {
                   textColor: context.bull.onPrimary,
                 ),
               if (state case ArkClaimRecoveryFailed(:final failure)) ...[
-                BullInfoBar(
-                  message: failure.toTranslated(context),
-                  tone: BullInfoTone.warning,
+                // Refused: why, in red, as the app shows it.
+                BullText(
+                  failure.toTranslated(context),
+                  role: BullTextRole.body,
+                  fontWeight: FontWeight.w500,
+                  color: context.bull.error,
+                  textAlign: TextAlign.center,
+                  maxLines: 5,
                 ),
+                const Gap(BullSpacing.sm),
                 BullButton.big(
                   label: l10n.refresh,
                   onPressed: widget.cubit.load,
                   bgColor: context.bull.surface,
                   textColor: context.bull.text,
+                  outlined: true,
                 ),
               ],
               if (state case ArkClaimRecoveryFinished(:final operation)) ...[
-                BullInfoBar(
-                  message: switch (operation.status) {
+                BullText(
+                  switch (operation.status) {
                     ArkOperationStatus.succeeded => l10n.claimConfirmed,
                     ArkOperationStatus.conflicted => l10n.claimConflict,
                     ArkOperationStatus.pending => l10n.pendingOperation,
@@ -135,13 +156,17 @@ class _ArkClaimRecoveryScreenState extends State<ArkClaimRecoveryScreen> {
                     ArkOperationStatus.admitted ||
                     ArkOperationStatus.outcomeUnknown => l10n.uncertain,
                   },
-                  tone: BullInfoTone.warning,
+                  role: BullTextRole.body,
+                  textAlign: TextAlign.center,
+                  maxLines: 5,
                 ),
+                const Gap(BullSpacing.sm),
                 BullButton.big(
                   label: l10n.refresh,
                   onPressed: widget.cubit.load,
                   bgColor: context.bull.surface,
                   textColor: context.bull.text,
+                  outlined: true,
                 ),
               ],
             ],

@@ -7,13 +7,15 @@ import 'package:bull_ark/src/domain/usecases/create_ark_receive_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/request_ark_receive_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_receive_cubit.dart';
 import 'package:bull_ark/src/ui/ark_receive_screen.dart';
+import 'package:bull_ark/src/ui/ark_review.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullCopyField, BullDetailsTable, BullDetailsTableItem, BullQrCode;
-import 'package:bull_ui/testing.dart';
+    show BullBorderedTile, BullButton, BullQrCode;
+import 'package:flutter/services.dart' show SystemChannels;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 
+import 'ark_information_widget_test.dart' show app;
 import 'ark_operations_test.dart' show account, Preferences;
 import 'fake_ark_client.dart';
 
@@ -52,9 +54,8 @@ ArkReceiveCubit controller(
   account: id ?? account(),
 );
 
-Widget app(Widget child) => MaterialApp(
-  theme: ThemeData(extensions: testBullExtensions),
-  home: child,
+BullButton createRequest(WidgetTester tester) => tester.widget<BullButton>(
+  find.widgetWithText(BullButton, 'Create request'),
 );
 
 void main() {
@@ -67,14 +68,40 @@ void main() {
       await cubit.request(lightning: true, amount: '1000');
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
       await tester.pumpAndSettle();
-      final field = tester.widget<BullCopyField>(find.byType(BullCopyField));
-      expect(field.label, 'Lightning invoice');
-      expect(field.text, destination().value);
-      expect(field.clipboardText, destination().value);
+      // Already ready: nothing is requested again on open.
+      expect(client.calls, ['receive']);
+      expect(find.text('Invoice'), findsOneWidget);
+      final tile = find.byType(BullBorderedTile);
+      expect(
+        find.descendant(of: tile, matching: find.text(destination().value)),
+        findsOneWidget,
+      );
       final qr = tester.widget<BullQrCode>(find.byType(BullQrCode));
       expect(qr.data, destination().value);
       expect(qr.semanticsLabel, 'Lightning invoice');
+      // A tap copies exactly the displayed value.
+      final copied = <Object?>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') copied.add(call.arguments);
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      await tester.tap(tile);
+      await tester.pump();
+      expect(copied, [
+        {'text': destination().value},
+      ]);
+      expect(find.text('Copied to clipboard'), findsOneWidget);
       expect(client.calls, ['receive']);
+      await tester.pump(const Duration(seconds: 4)); // Snackbar timer.
     },
   );
   testWidgets(
@@ -98,18 +125,19 @@ void main() {
       addTearDown(old.close);
       addTearDown(replacement.close);
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: old)));
-      await tester.tap(find.text('Lightning invoice'));
+      // The old owner's automatic Ark address request stays pending.
       await tester.pump();
-      await tester.enterText(find.byType(TextField), '1000');
-      await tester.tap(find.text('Create request'));
+      expect(oldClient.calls, ['receive']);
+      await tester.tap(find.text('Lightning'));
       await tester.pump();
+      expect(find.byType(TextField), findsOneWidget);
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: replacement)));
       await tester.pump();
       final amountFieldsAfterReplacement = find
           .byType(TextField)
           .evaluate()
           .length;
-      await tester.tap(find.text('Create request'));
+      // The replacement asks for its own Ark address, as on opening.
       await tester.pumpAndSettle();
       oldClient.reply.complete(Ok(destination()));
       await tester.pumpAndSettle();
@@ -133,11 +161,12 @@ void main() {
         ..destination = const Err(ArkUnavailableFailure());
       final cubit = controller(client);
       addTearDown(cubit.close);
+      // Opening asks for the Ark address once; its refusal shows in red.
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
-      await tester.tap(find.text('Create request'));
       await tester.pumpAndSettle();
       expect(find.text('Ark is unavailable. Try again.'), findsOneWidget);
-      expect(find.byType(BullDetailsTable), findsNothing);
+      expect(find.byType(ArkReviewFact), findsNothing);
+      expect(find.byType(BullBorderedTile), findsNothing);
       expect(find.byType(BullQrCode), findsNothing);
       expect(client.calls, ['receive']);
     },
@@ -232,31 +261,47 @@ void main() {
   testWidgets(
     'saved receive fee and net render exact amounts with explicit sats labels',
     (tester) async {
-      final client = FakeArkClient()..destination = Ok(destination());
+      final client = FakeArkClient()
+        ..destination = Ok(
+          ArkReceiveDestination(
+            kind: ArkDestinationKind.ark,
+            value: 'public-ark-address',
+          ),
+        );
       final cubit = controller(client);
       addTearDown(cubit.close);
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
-      await tester.tap(find.text('Lightning invoice'));
+      await tester.pumpAndSettle();
+      // Opening asked for the Ark address only.
+      expect(client.calls, ['receive']);
+      client.destination = Ok(destination());
+      await tester.tap(find.text('Lightning'));
       await tester.pump();
+      expect(createRequest(tester).disabled, true);
       await tester.enterText(find.byType(TextField), '1000');
+      await tester.pump();
+      expect(client.calls, ['receive']);
       await tester.tap(find.text('Create request'));
       await tester.pumpAndSettle();
       expect(find.text('lnbcrt1public-test-invoice'), findsOneWidget);
-      expect(find.text('Fee (sats)'), findsOneWidget);
-      expect(find.text('Net amount (sats)'), findsOneWidget);
-      final rows = tester
-          .widget<BullDetailsTable>(find.byType(BullDetailsTable))
-          .items
-          .whereType<BullDetailsTableItem>();
+      expect(find.text('Create request'), findsNothing);
+      final rows = {
+        for (final fact in tester.widgetList<ArkReviewFact>(
+          find.byType(ArkReviewFact),
+        ))
+          fact.label: fact.value,
+      };
+      expect(rows['Fee (sats)'], '100');
+      expect(rows['Net amount (sats)'], '900');
+      expect(client.calls, ['receive', 'receive']);
       expect(
-        rows.singleWhere((r) => r.label == 'Fee (sats)').displayValue,
-        '100',
+        client.arguments.whereType<(ArkAccountId, ArkReceiveRequest)>().last.$2,
+        isA<ArkBolt11ReceiveRequest>().having(
+          (r) => r.amount.value,
+          'invoice amount',
+          BigInt.from(1000),
+        ),
       );
-      expect(
-        rows.singleWhere((r) => r.label == 'Net amount (sats)').displayValue,
-        '900',
-      );
-      expect(client.calls, ['receive']);
     },
   );
 }

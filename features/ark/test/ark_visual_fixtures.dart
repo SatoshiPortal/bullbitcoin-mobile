@@ -27,36 +27,8 @@ typedef ArkVisualCapture = Future<void> Function(
   Future<void> Function(WidgetTester)? arrange,
 });
 
-Widget arkFeeReserveVisualFixture() {
-  final source = information.config();
-  return ArkInformationScreen(
-    config: source,
-    snapshot: ArkSnapshot(
-      account: source.id,
-      revision: 2,
-      observedAt: DateTime.utc(2026, 11, 18),
-      stale: false,
-      confirmedReserve: Sats.zero,
-      reserveAddress: 'bcrt1qpublicfeereservefixtureforhostrenderonly',
-    ),
-  );
-}
-
 /// Package-owned screen fixtures expose widgets, never internal controllers.
 Future<void> captureArkVisualFixtures(ArkVisualCapture capture) async {
-  await capture(
-    'ArkInfoFeeReserve',
-    ArkInformationScreen(
-      snapshot: ArkSnapshot(
-        account: information.config().id,
-        revision: 2,
-        observedAt: DateTime.utc(2026, 11, 18),
-        confirmedReserve: Sats.zero,
-        reserveAddress: 'bcrt1qpublicfeereservefixtureforhostrenderonly',
-      ),
-      config: information.config(),
-    ),
-  );
   final client = wallet.Client()..snapshot = Ok(wallet.observation());
   final cubit = wallet.controller(client);
   await capture('SendArkWallet', wallet.screen(cubit, []));
@@ -76,10 +48,7 @@ Future<void> captureArkVisualFixtures(ArkVisualCapture capture) async {
   addTearDown(receiver.close);
   await capture('SendArkReceiveEditing', ArkReceiveScreen(cubit: receiver));
   await receiver.request(lightning: false, amount: '');
-  await capture(
-    'SendArkReceive',
-    ArkReceiveScreen(cubit: receiver, onShare: (_) {}),
-  );
+  await capture('SendArkReceive', ArkReceiveScreen(cubit: receiver));
   final sender = payment.PaymentRig();
   await capture(
     'SendArkScan',
@@ -141,16 +110,25 @@ Future<void> captureArkVisualFixtures(ArkVisualCapture capture) async {
   );
   await capture(
     'Vtxos',
-    ArkVtxosScreen(snapshot: vtxos.view(), onRenew: (_) {}),
+    ArkVtxosScreen(
+      snapshot: vtxos.view(),
+      renewalThresholdBlocks: 1008,
+      onRenew: (_) async => false,
+    ),
   );
   await capture(
     'VtxosEmpty',
     ArkVtxosScreen(
       snapshot: vtxos.view(values: []),
-      onRenew: (_) {},
+      renewalThresholdBlocks: 1008,
+      onRenew: (_) async => false,
     ),
   );
   await capture('EmergencyExit', exits.Harness(exits.view()).screen);
+  await capture(
+    'EmergencyExitOnline',
+    exits.Harness(exits.view(online: true), withSend: true).screen,
+  );
   await capture(
     'ExitEmpty',
     exits.Harness(exits.view(rows: [], exits: ArkExitStatus.none)).screen,

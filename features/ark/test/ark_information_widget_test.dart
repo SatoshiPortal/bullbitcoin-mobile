@@ -8,7 +8,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullDetailsTable,
         BullDetailsTableItem,
         BullAmountScope,
-        BullAmountSnapshot;
+        BullAmountSnapshot,
+        bullUiLocalizationsDelegate;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
@@ -38,16 +39,19 @@ Widget app(
   supportedLocales: ArkLocalizations.supportedLocales,
   localizationsDelegates: const [
     ArkLocalizations.delegate,
+    bullUiLocalizationsDelegate,
     ...GlobalMaterialLocalizations.delegates,
   ],
   theme: ThemeData(extensions: testBullExtensions),
-  home: amountPreferences == null
-      ? child
-      : BullAmountScope(
+  // Above the navigator, as in the app, so pushed pages share the scope.
+  builder: amountPreferences == null
+      ? null
+      : (context, navigator) => BullAmountScope(
           snapshot: amountPreferences,
           writeUnit: (_) async => false,
-          child: child,
+          child: navigator ?? const SizedBox.shrink(),
         ),
+  home: child,
 );
 
 Map<String, String?> details(WidgetTester tester) => {
@@ -109,22 +113,40 @@ void main() {
       app(ArkInformationScreen(snapshot: observed, config: config())),
     );
     await tester.pumpAndSettle();
+    expect(details(tester), containsPair('Ark server', 'ark.example.com'));
+    expect(details(tester), containsPair('Server public key', 'public…er-key'));
+    expect(
+      tester
+          .widgetList<BullDetailsTableItem>(find.byType(BullDetailsTableItem))
+          .firstWhere((row) => row.label == 'Server public key')
+          .copyValue,
+      'public-server-key',
+    );
+    expect(details(tester), containsPair('Minimum board amount', '1,200 sats'));
     expect(
       details(tester),
-      containsPair('Public server key', 'public-server-key'),
+      containsPair('Maximum VTXO amount', '800,000 sats'),
+    );
+    expect(details(tester), containsPair('Required confirmations', '3'));
+    expect(details(tester), containsPair('Round interval', '10 sec'));
+    expect(
+      details(tester),
+      containsPair('VTXO lifetime', '4,320 blocks (~30 days)'),
     );
     expect(
       details(tester),
-      containsPair('Minimum boarding amount (sats)', '1200'),
+      containsPair('Auto-renew before expiry', '1,008 blocks (~7 days)'),
     );
     expect(
       details(tester),
-      containsPair('Maximum VTXO amount (sats)', '800000'),
+      containsPair('Primary Esplora', 'esplora.nodl.example.com'),
     );
-    expect(details(tester), containsPair('Board confirmations', '3'));
-    expect(details(tester), containsPair('Round interval (seconds)', '10'));
-    expect(details(tester), containsPair('VTXO lifetime (blocks)', '4320'));
     expect(find.textContaining('without Tor'), findsOneWidget);
+    expect(details(tester).keys.take(3), [
+      'Ark server',
+      'Primary Esplora',
+      'Unreachable-only fallback',
+    ]);
   });
 
   testWidgets('missing observed limits remain unavailable in French', (
@@ -148,13 +170,45 @@ void main() {
     );
     expect(
       details(tester),
-      containsPair('Montant minimum de dépôt (sats)', 'Indisponible'),
+      containsPair('Montant minimum de dépôt', 'Indisponible'),
     );
     expect(
       details(tester),
-      containsPair('Intervalle des rounds (secondes)', 'Indisponible'),
+      containsPair('Intervalle des rounds', 'Indisponible'),
     );
-    expect(find.textContaining('Dernières données observées.'), findsOneWidget);
+    expect(
+      details(tester),
+      containsPair('Montant maximum d’un VTXO', 'Indisponible'),
+    );
+    expect(find.textContaining('Dernières données observées.'), findsNothing);
     expect(find.textContaining('sans Tor'), findsOneWidget);
   });
+
+  for (final (language, label, value) in [
+    ('en', 'Maximum VTXO amount', 'No limit'),
+    ('fr', 'Montant maximum d’un VTXO', 'Aucune limite'),
+  ]) {
+    testWidgets('a server without a VTXO maximum shows no limit ($language)', (
+      tester,
+    ) async {
+      final observed = ArkSnapshot(
+        account: account(),
+        revision: 2,
+        observedAt: DateTime.utc(2026),
+        stale: false,
+        serverInfo: ArkServerInfo(
+          publicKey: 'public-server-key',
+          minimumBoard: Sats.fromInt(1200),
+        ),
+      );
+      await tester.pumpWidget(
+        app(
+          ArkInformationScreen(snapshot: observed, config: config()),
+          language: language,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(details(tester), containsPair(label, value));
+    });
+  }
 }

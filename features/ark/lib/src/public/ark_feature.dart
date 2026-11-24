@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ark/ark.dart';
 import 'package:bloc/bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/widgets.dart' show StreamBuilder;
 import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
@@ -12,10 +13,18 @@ import '../data/create_ark_facade.dart';
 import '../domain/ark_account_selection_port.dart';
 import '../domain/ark_board_funding_port.dart';
 import '../domain/ark_display_data_port.dart';
+import '../domain/ark_exit_destination_port.dart';
+import '../domain/ark_exit_funding.dart';
+import '../domain/ark_reserve_top_up_port.dart';
+import '../domain/usecases/fund_ark_exit_start_usecase.dart';
+import '../domain/usecases/read_ark_exit_destination_usecase.dart';
 import '../domain/usecases/read_ark_display_data_usecase.dart';
+import '../domain/usecases/read_ark_next_round_usecase.dart';
+import '../presentation/ark_next_round_cubit.dart';
 import '../presentation/ark_display_data_cubit.dart';
 import '../domain/ark_provisioning_port.dart';
 import '../domain/repositories/ark_account_registry_repository.dart';
+import '../domain/repositories/ark_repository.dart';
 import '../domain/usecases/load_ark_settings_usecase.dart';
 import '../domain/usecases/read_ark_usecase.dart';
 import '../domain/usecases/enable_ark_usecase.dart';
@@ -27,6 +36,7 @@ import '../domain/usecases/request_ark_receive_usecase.dart';
 import '../domain/usecases/review_ark_payment_usecase.dart';
 import '../domain/usecases/parse_ark_destination_usecase.dart';
 import '../domain/usecases/prepare_ark_board_usecase.dart';
+import '../domain/usecases/read_ark_board_minimum_usecase.dart';
 import '../domain/usecases/read_ark_board_usecase.dart';
 import '../domain/usecases/confirm_ark_board_usecase.dart';
 import '../presentation/ark_cubit.dart';
@@ -41,6 +51,8 @@ import '../ui/ark_account_screen.dart';
 import '../ui/ark_payment_screen.dart';
 import '../ui/ark_scanner.dart';
 import '../ui/ark_receive_screen.dart';
+import '../ui/ark_exit_start_sheet.dart';
+import '../ui/ark_renew_sheet.dart';
 import '../ui/ark_vtxos_screen.dart';
 import '../ui/ark_information_screen.dart';
 import '../ui/ark_exits_screen.dart';
@@ -49,7 +61,7 @@ import '../ui/ark_operation_review_screen.dart';
 import '../ui/ark_snapshot_page.dart';
 import '../ui/ark_unavailable_screen.dart';
 import '../ui/ark_board_screen.dart';
-import '../ui/ark_exit_progress_fee_screen.dart';
+import '../ui/ark_movement_details_screen.dart';
 import 'ark_facade.dart';
 import 'ark_transfer_facade.dart';
 import 'ark_navigation.dart';
@@ -64,7 +76,6 @@ enum _Kind {
   exits,
   review,
   board,
-  progressFee,
   exitRequest,
 }
 
@@ -78,7 +89,6 @@ const _paths = {
   _Kind.exits: '/ark/exits',
   _Kind.review: '/ark/review',
   _Kind.board: '/ark/board',
-  _Kind.progressFee: '/ark/exit-progress',
   _Kind.exitRequest: '/ark/exit-request',
 };
 Object _configuration(ArkAccountConfig c) => (
@@ -109,7 +119,22 @@ final class ArkFeature {
   final ArkProvisioningPort _provisioning;
   final ArkBoardFundingPort _boardFunding;
   final ArkDisplayDataPort? _displayData;
+  final ArkExitDestinationPort? _exitDestination;
+  final ArkExitFunding? _exitFunding;
+
+  /// Sends the exit fees from Secure Bitcoin to the reserve when it is short.
+  final ArkReserveTopUpPort? _exitTopUp;
   final ArkScanner? _scanner;
+
+  /// The host's wallet-card artwork, so the Ark wallet matches the app's
+  /// other wallet cards; without it the card is a plain dark surface.
+  final Widget? _walletBackground;
+
+  /// Returns to the app's home; without it, a finished flow just closes.
+  final void Function(BuildContext context)? _onHome;
+
+  /// The app's confirmation arrow, so Ark's confirm screens match Send's.
+  final Widget? _confirmIcon;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
   final _ownerListeners = <VoidCallback>{};
@@ -139,6 +164,12 @@ final class ArkFeature {
     required ArkBoardFundingPort boardFunding,
     this._displayData,
     this._scanner,
+    this._walletBackground,
+    this._onHome,
+    this._confirmIcon,
+    this._exitDestination,
+    this._exitFunding,
+    this._exitTopUp,
   }) : _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
@@ -262,7 +293,9 @@ class _ArkPage extends StatefulWidget {
 
 class _ArkPageState extends State<_ArkPage> {
   BlocBase<Object?>? _owner;
+  ArkOperationCubit? _renewOwner;
   ArkDisplayDataCubit? _displayOwner;
+  ArkNextRoundCubit? _nextRoundOwner;
   StreamSubscription<ArkDisplayDataState>? _displaySubscription;
   StreamSubscription<ArkSettingsState>? _originSubscription;
   int _generation = 0;
@@ -331,8 +364,17 @@ class _ArkPageState extends State<_ArkPage> {
     ++_generation;
     final owner = _owner;
     _owner = null;
+    // Closing the renew cubit also dismisses its sheet.
+    final renewal = _renewOwner;
+    _renewOwner = null;
+    if (renewal != null && !renewal.isClosed) {
+      _observeCleanup(renewal.close());
+    }
     final display = _displayOwner;
     _displayOwner = null;
+    final rounds = _nextRoundOwner;
+    _nextRoundOwner = null;
+    if (rounds != null) _observeCleanup(rounds.close());
     final displaySubscription = _displaySubscription;
     _displaySubscription = null;
     if (displaySubscription != null) {
@@ -374,6 +416,7 @@ class _ArkPageState extends State<_ArkPage> {
         ),
         SetArkEnabledUsecase(repository, feature._preferences),
       );
+      _nextRoundOwner = ArkNextRoundCubit(ReadArkNextRoundUsecase(repository));
     } else if (widget.kind == _Kind.review) {
       final entry = widget.entry;
       final ArkQuoteRequest request;
@@ -415,21 +458,18 @@ class _ArkPageState extends State<_ArkPage> {
       _loading = false;
       if (result case Ok(:final value)) {
         _enabled = value.enabled;
+        final board = widget.kind == _Kind.board && value.enabled
+            ? await _board(feature, repository)
+            : null;
+        if (board != null &&
+            (!mounted || generation != _generation || !_validEntry())) {
+          await board.close();
+          return;
+        }
         if ((widget.kind != _Kind.payment && widget.kind != _Kind.board) ||
             value.enabled) {
           _owner = switch (widget.kind) {
-            _Kind.board => ArkBoardCubit(
-              PrepareArkBoardUsecase(
-                feature._boardFunding,
-                feature._preferences,
-              ),
-              ReadArkBoardUsecase(feature._boardFunding),
-              ConfirmArkBoardUsecase(
-                feature._boardFunding,
-                feature._preferences,
-              ),
-              config: feature._config,
-            ),
+            _Kind.board when board != null => board,
             _Kind.payment => ArkPaymentCubit(
               ReviewArkPaymentUsecase(
                 const ParseArkDestinationUsecase(),
@@ -472,6 +512,7 @@ class _ArkPageState extends State<_ArkPage> {
         _owner != null &&
         const {
           _Kind.account,
+          _Kind.vtxos,
           _Kind.board,
           _Kind.payment,
           _Kind.receive,
@@ -521,8 +562,25 @@ class _ArkPageState extends State<_ArkPage> {
     ArkQuoteRequest? request,
     List<String>? claimIds,
     ArkSettingsState? publication,
+  }) => unawaited(
+    _push(
+      owner,
+      kind,
+      request: request,
+      claimIds: claimIds,
+      publication: publication,
+    ),
+  );
+
+  /// Opens [kind]; completes when that page closes, or null if not opened.
+  Future<Object?>? _push(
+    BlocBase<Object?> owner,
+    _Kind kind, {
+    ArkQuoteRequest? request,
+    List<String>? claimIds,
+    ArkSettingsState? publication,
   }) {
-    if (!_live(owner)) return;
+    if (!_live(owner)) return null;
     if (owner is ArkSettingsCubit) {
       final settings = publication?.settings;
       if (publication is! ArkSettingsReady ||
@@ -530,7 +588,7 @@ class _ArkPageState extends State<_ArkPage> {
           settings == null ||
           _configuration(settings.config) !=
               _configuration(widget.feature._config)) {
-        return;
+        return null;
       }
     }
     final origin = _Origin(
@@ -539,7 +597,7 @@ class _ArkPageState extends State<_ArkPage> {
       publication is ArkSettingsReady ? publication : null,
       _origin,
     );
-    if (!origin.valid) return;
+    if (!origin.valid) return null;
     final entry = _Entry(
       widget.feature,
       widget.feature._config,
@@ -549,7 +607,7 @@ class _ArkPageState extends State<_ArkPage> {
       claimIds: claimIds == null ? null : List.unmodifiable(claimIds),
     );
     final path = _paths[kind];
-    if (path != null) unawaited(context.push(path, extra: entry));
+    return path == null ? null : context.push<Object?>(path, extra: entry);
   }
 
   Widget _observed(ArkCubit owner, ArkSnapshot snapshot) {
@@ -559,15 +617,10 @@ class _ArkPageState extends State<_ArkPage> {
     return switch (widget.kind) {
       _Kind.vtxos => ArkVtxosScreen(
         snapshot: snapshot,
-        onRenew: (ids) {
-          if (_live(owner)) {
-            _open(
-              owner,
-              _Kind.review,
-              request: ArkQuoteRequest.renewal(ids: ids),
-            );
-          }
-        },
+        renewalThresholdBlocks: widget.feature._config.renewalThresholdBlocks,
+        // Boarding is new money: offer it only while Ark is enabled.
+        onBoard: _enabled ? () => _open(owner, _Kind.board) : null,
+        onRenew: (ids) => _renew(owner, ids),
       ),
       _Kind.exitRequest => ArkExitRequestScreen(
         snapshot: snapshot,
@@ -576,21 +629,187 @@ class _ArkPageState extends State<_ArkPage> {
           _ => null,
         },
         onReview: (request) => _open(owner, _Kind.review, request: request),
+        quote: _quote,
+        secureBitcoinAddress: switch (widget.feature._exitDestination) {
+          final destination? => () => ReadArkExitDestinationUsecase(
+            destination,
+          ).execute(widget.feature._config.id),
+          null => null,
+        },
+        onStarted: (outcome) => _exitStarted(owner, outcome),
+        fundFees: switch ((
+          widget.feature._exitTopUp,
+          widget.feature._exitFunding,
+        )) {
+          (final port?, final funding?) =>
+            (quote) => FundArkExitStartUsecase(port, funding).execute(
+              widget.feature._config.id,
+              quote: quote,
+              reserveAddress: snapshot.reserveAddress,
+            ),
+          _ => null,
+        },
       ),
       _Kind.info => ArkInformationScreen(
         snapshot: snapshot,
         config: widget.feature._config,
       ),
-      _ => ArkExitsScreen(
+      _ => switch (widget.feature._exitFunding) {
+        final funding? => StreamBuilder<void>(
+          stream: funding.changes,
+          builder: (_, _) => _exits(owner, snapshot, funding.needed),
+        ),
+        null => _exits(owner, snapshot, null),
+      },
+    };
+  }
+
+  Widget _exits(ArkCubit owner, ArkSnapshot snapshot, Sats? waitingForFunds) =>
+      ArkExitsScreen(
         snapshot: snapshot,
+        waitingForFunds: waitingForFunds,
         onRefresh: () {
           if (_live(owner)) unawaited(owner.refresh());
         },
-        onReviewExit: () => _open(owner, _Kind.exitRequest),
-        onReviewProgress: () => _open(owner, _Kind.progressFee),
-        onReviewClaim: (ids) => _open(owner, _Kind.exitRequest, claimIds: ids),
-      ),
+        // Back from a new exit, the list shows it.
+        onReviewExit: () => unawaited(
+          _push(owner, _Kind.exitRequest)?.then((_) {
+            if (_live(owner)) unawaited(owner.refresh());
+          }),
+        ),
+        onSendOnChain: () => _open(owner, _Kind.payment),
+      );
+
+  /// Opens the Board funded by [txid] in Ark's activity details.
+  Future<void> _boardDetails(BlocBase<Object?> owner, String txid) =>
+      _movementDetails(
+        owner,
+        (m) => m.kind == ArkMovementKind.board && m.transactionId == txid,
+      );
+
+  /// Opens the payment Ark recorded as [reference]: its movement, or the
+  /// transaction it sent.
+  Future<void> _paymentDetails(BlocBase<Object?> owner, String reference) =>
+      _movementDetails(
+        owner,
+        (m) =>
+            m.kind == ArkMovementKind.payment &&
+            (m.id == reference || m.transactionId == reference),
+      );
+
+  /// Opens the movement [matches] picks, observed afresh when the last
+  /// observation does not have it yet; leaving its details returns home,
+  /// as Send's do. Not observed yet: the Ark wallet, where it will show.
+  Future<void> _movementDetails(
+    BlocBase<Object?> owner,
+    bool Function(ArkMovement movement) matches,
+  ) async {
+    final feature = widget.feature;
+    final account = feature._config.id;
+    ArkMovement? find(Result<ArkSnapshot, ArkFailure> read) => switch (read) {
+      Ok(:final value) => value.movements.where(matches).firstOrNull,
+      Err() => null,
     };
+    final read = ReadArkUsecase(feature._repository);
+    var movement = find(await read.execute(account));
+    if (movement == null) {
+      await SynchronizeArkUsecase(feature._repository)
+          .execute(account, renew: false);
+      movement = find(await read.execute(account));
+    }
+    if (!_live(owner) || !mounted) return;
+    final found = movement;
+    if (found == null) {
+      _open(owner, _Kind.account);
+      return;
+    }
+    // Closing these details goes home directly, as Send's do.
+    unawaited(
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) =>
+              ArkMovementDetailsScreen(movement: found, onClose: _home),
+        ),
+      ),
+    );
+  }
+
+  /// The app's home when the host offers one, else just this page closed.
+  void _home() {
+    if (!mounted) return;
+    final home = widget.feature._onHome;
+    if (home != null) {
+      home(context);
+    } else {
+      Navigator.of(context).maybePop();
+    }
+  }
+
+  /// A quote for this account; whoever takes it loads and closes it.
+  ArkOperationCubit _quote(ArkQuoteRequest request) {
+    final feature = widget.feature;
+    return ArkOperationCubit(
+      QuoteArkOperationUsecase(feature._repository, feature._preferences),
+      ConfirmArkOperationUsecase(feature._repository, feature._preferences),
+      freshArkOperationId,
+      account: feature._config.id,
+      request: request,
+    );
+  }
+
+  /// Back to the exits list, which refreshes to show the new exit.
+  void _exitStarted(BlocBase<Object?> owner, ArkExitOutcome outcome) {
+    if (!_live(owner) || !mounted) return;
+    final l10n = arkLocalizationsOf(context);
+    BullSnackBar.show(
+      context,
+      message: switch (outcome) {
+        ArkExitOutcome.started => l10n.operationExitStarted,
+        ArkExitOutcome.uncertain => l10n.uncertain,
+      },
+    );
+    Navigator.pop(context);
+  }
+
+  /// Reviews a renewal in a sheet over the VTXO details. The sheet's cubit
+  /// lives only as long as the sheet; a started or uncertain renewal
+  /// refreshes the observed account.
+  /// True once a renewal started, or may have.
+  Future<bool> _renew(ArkCubit owner, List<String> ids) async {
+    if (!_live(owner) || _renewOwner != null) return false;
+    final feature = widget.feature;
+    final cubit = ArkOperationCubit(
+      QuoteArkOperationUsecase(feature._repository, feature._preferences),
+      ConfirmArkOperationUsecase(feature._repository, feature._preferences),
+      freshArkOperationId,
+      account: feature._config.id,
+      request: ArkQuoteRequest.renewal(ids: ids),
+    );
+    _renewOwner = cubit;
+    unawaited(cubit.load());
+    final price = switch (_displayOwner?.state) {
+      ArkDisplayDataReady(:final source) when source.account == cubit.account =>
+        source.price,
+      _ => null,
+    };
+    final outcome = await ArkRenewSheet.show(
+      context,
+      cubit: cubit,
+      price: price,
+    );
+    if (identical(_renewOwner, cubit)) _renewOwner = null;
+    await cubit.close();
+    if (outcome == null || !_live(owner) || !mounted) return false;
+    final l10n = arkLocalizationsOf(context);
+    BullSnackBar.show(
+      context,
+      message: switch (outcome) {
+        ArkRenewOutcome.started => l10n.operationRenewalStarted,
+        ArkRenewOutcome.uncertain => l10n.uncertain,
+      },
+    );
+    unawaited(owner.refresh());
+    return true;
   }
 
   Future<String?> _scanPayment() async {
@@ -620,6 +839,21 @@ class _ArkPageState extends State<_ArkPage> {
     return null;
   }
 
+  Future<ArkBoardCubit> _board(
+    ArkFeature feature,
+    ArkRepository repository,
+  ) async {
+    final cubit = ArkBoardCubit(
+      PrepareArkBoardUsecase(feature._boardFunding, feature._preferences),
+      ReadArkBoardUsecase(feature._boardFunding),
+      ConfirmArkBoardUsecase(feature._boardFunding, feature._preferences),
+      ReadArkBoardMinimumUsecase(repository),
+      config: feature._config,
+    );
+    await cubit.loadMinimum();
+    return cubit;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_validEntry()) return const ArkUnavailableScreen();
@@ -645,6 +879,7 @@ class _ArkPageState extends State<_ArkPage> {
         onExits: () => _open(owner, _Kind.exits, publication: publication),
         onOpenAccount: (_) =>
             _open(owner, _Kind.account, publication: publication),
+        nextRound: _nextRoundOwner,
       ),
       ArkPaymentCubit() => ArkPaymentScreen(
         cubit: owner,
@@ -656,15 +891,23 @@ class _ArkPageState extends State<_ArkPage> {
           _ => '',
         },
         onReconcile: () => _open(owner, _Kind.vtxos),
+        // A finished payment returns home, wherever it was started from.
+        onHome: _home,
+        onViewDetails: (reference) =>
+            unawaited(_paymentDetails(owner, reference)),
+        confirmIcon: widget.feature._confirmIcon,
       ),
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
         displayData: displayData,
-      ), // Share honestly absent.
+      ),
       ArkBoardCubit() => ArkBoardScreen(
         cubit: owner,
         displayData: displayData,
         onReconcile: () => _open(owner, _Kind.vtxos),
+        onViewDetails: (txid) => unawaited(_boardDetails(owner, txid)),
+        onClose: _home,
+        confirmIcon: widget.feature._confirmIcon,
       ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,
@@ -682,34 +925,22 @@ class _ArkPageState extends State<_ArkPage> {
         cubit: owner,
         displayData: displayData,
         enabled: _enabled,
+        walletBackground: widget.feature._walletBackground,
         onSend: () => _open(owner, _Kind.payment),
         onReceive: () => _open(owner, _Kind.receive),
-        onBoard: () => _open(owner, _Kind.board),
         onVtxos: () => _open(owner, _Kind.vtxos),
-        onExits: () => _open(owner, _Kind.exits),
-        onInfo: () => _open(owner, _Kind.info),
+        // Settings is a root entry: it carries no origin, account or quote.
+        onSettings: () {
+          if (_live(owner)) ArkNavigation.open(context);
+        },
       ),
-      ArkCubit() when widget.kind == _Kind.progressFee =>
-        ArkExitProgressFeeScreen(
-          config: widget.feature._config,
-          onReviewRequest: (config, rate) {
-            if (_live(owner) && identical(config, widget.feature._config)) {
-              _open(
-                owner,
-                _Kind.review,
-                request: ArkQuoteRequest.exitProgress(feeRate: rate),
-              );
-            }
-          },
-        ),
       ArkCubit() => ArkSnapshotPage(
         cubit: owner,
         builder: (snapshot) => _observed(owner, snapshot),
       ),
-      _ when _loading => BullScaffold(
-        body: Center(
-          child: BullText(arkLocalizationsOf(context).loading, style: null),
-        ),
+      // Bull's loading cubes while Ark opens, as elsewhere in the app.
+      _ when _loading => const BullScaffold(
+        body: Center(child: BullLoader.large()),
       ),
       _ => const ArkUnavailableScreen(),
     };

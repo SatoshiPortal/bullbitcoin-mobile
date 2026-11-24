@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 import '../domain/ark_board_preparation.dart';
 import '../domain/ark_failure.dart';
 import '../domain/usecases/prepare_ark_board_usecase.dart';
+import '../domain/usecases/read_ark_board_minimum_usecase.dart';
 import '../domain/usecases/read_ark_board_usecase.dart';
 import '../domain/usecases/confirm_ark_board_usecase.dart';
 
@@ -23,7 +24,11 @@ final class ArkBoardBusy extends ArkBoardState {
 
 final class ArkBoardReviewed extends ArkBoardState {
   final ArkBoardPreparation preparation;
-  const ArkBoardReviewed(this.preparation);
+
+  /// Why the last confirm was refused before anything was signed.
+  final ArkFailure? failure;
+
+  const ArkBoardReviewed(this.preparation, [this.failure]);
 }
 
 final class ArkBoardPending extends ArkBoardState {
@@ -42,16 +47,33 @@ final class ArkBoardCubit extends Cubit<ArkBoardState> {
   final PrepareArkBoardUsecase _prepare;
   final ReadArkBoardUsecase _read;
   final ConfirmArkBoardUsecase _confirm;
+  final ReadArkBoardMinimumUsecase _readMinimum;
   String? _operationId;
+  Sats? _minimum;
+
+  /// The source the user asked to board from, kept for a re-quote.
+  String? _expectedSource;
   ArkBoardCubit(
     this._prepare,
     this._read,
-    this._confirm, {
+    this._confirm,
+    this._readMinimum, {
     required this.config,
   }) : super(const ArkBoardEditing());
 
+  /// The server's minimum Board amount, once known.
+  Sats? get minimum => _minimum;
+
+  /// Await before showing the amount screen, so the minimum is known while
+  /// the amount is typed rather than only after a refused Board.
+  Future<void> loadMinimum() async {
+    final minimum = await _readMinimum.execute(config.id);
+    if (!isClosed && minimum != null) _minimum = minimum;
+  }
+
   Future<void> prepare(Sats amount, {String? expectedSourceWalletId}) async {
     if (isClosed || state is! ArkBoardEditing) return;
+    _expectedSource = expectedSourceWalletId;
     emit(const ArkBoardBusy());
     final result = await _prepare.execute(
       config,
@@ -64,14 +86,15 @@ final class ArkBoardCubit extends Cubit<ArkBoardState> {
         _operationId = value.operationId;
         await _readOriginal(value.operationId);
       case Err(:final failure):
-        final preAdmissionRefusal = switch (failure) {
-          ArkBoardBelowMinimumFailure(:final minimum) =>
-            minimum.value > BigInt.zero,
-          ArkInvalidRequestFailure() ||
-          ArkPaymentInsufficientFundsFailure() => true,
-          _ => false,
-        };
-        if (_operationId == null && preAdmissionRefusal) {
+        // The server's refusal carries its current minimum.
+        if (failure case ArkBoardBelowMinimumFailure(:final minimum)
+            when minimum.value > BigInt.zero) {
+          _minimum = minimum;
+        }
+        // The host answers an unknown outcome once a reservation may exist;
+        // any other answer is a refusal with nothing held: the amount
+        // screen shows why and the user may try again.
+        if (_operationId == null && failure is! ArkSubmissionUncertainFailure) {
           emit(ArkBoardEditing(failure));
           return;
         }
@@ -108,11 +131,39 @@ final class ArkBoardCubit extends Cubit<ArkBoardState> {
     final current = state;
     if (current is! ArkBoardReviewed) return;
     emit(const ArkBoardBusy());
+    // An expired review cannot be signed: price the same amount again and
+    // show that fresh review to confirm.
+    if (current.failure is ArkReviewExpiredFailure) {
+      return _requote(current);
+    }
     final result = await _confirm.execute(config.id, current.preparation);
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
         emit(ArkBoardSubmitted(value));
+      case Err(:final failure) when failure is! ArkSubmissionUncertainFailure:
+        // Refused before signing: nothing left the wallet. Stay on the
+        // review and say why, as the app does under its confirm buttons.
+        emit(ArkBoardReviewed(current.preparation, failure));
+      case Err(:final failure):
+        emit(ArkBoardPending(_operationId, failure));
+    }
+  }
+
+  Future<void> _requote(ArkBoardReviewed expired) async {
+    final amount = expired.preparation.fundingAmount;
+    final result = await _prepare.execute(
+      config,
+      amount,
+      expectedSourceWalletId: _expectedSource,
+    );
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        _operationId = value.operationId;
+        await _readOriginal(value.operationId);
+      case Err(:final failure) when failure is! ArkSubmissionUncertainFailure:
+        emit(ArkBoardReviewed(expired.preparation, failure));
       case Err(:final failure):
         emit(ArkBoardPending(_operationId, failure));
     }
