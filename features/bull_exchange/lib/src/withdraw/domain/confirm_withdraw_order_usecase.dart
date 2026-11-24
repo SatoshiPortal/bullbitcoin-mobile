@@ -84,7 +84,7 @@ class ConfirmWithdrawOrderUsecase {
         case WriteOutcomeUnknown():
           // The request may have reached the server and confirmed the order:
           // the order itself says whether it did, never a retry.
-          return _confirmedAfterUnknownOutcome(
+          return await _confirmedAfterUnknownOutcome(
             repo,
             orderId: orderId,
             interacSecurityDetails: interacSecurityDetails,

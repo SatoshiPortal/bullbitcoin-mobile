@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:exchange/testing.dart';
 import 'package:test/test.dart';
 
 typedef _S = ServerConfirmState<String, String>;

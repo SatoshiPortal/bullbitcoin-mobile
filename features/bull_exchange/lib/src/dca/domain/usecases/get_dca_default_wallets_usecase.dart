@@ -10,8 +10,7 @@ import 'package:primitives/primitives.dart';
 class GetDcaDefaultWalletsUsecase {
   final Exchange _exchange;
 
-  const GetDcaDefaultWalletsUsecase({required Exchange exchange})
-    : _exchange = exchange;
+  const GetDcaDefaultWalletsUsecase({required this._exchange});
 
   @useResult
   Future<Result<DefaultWallets, DcaFailure>> execute() async {

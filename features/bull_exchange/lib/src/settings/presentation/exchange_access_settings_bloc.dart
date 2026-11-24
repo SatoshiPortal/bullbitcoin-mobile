@@ -32,10 +32,8 @@ class ExchangeAccessSettingsBloc
     final next = transitionAccessSettings(previous, event);
     if (next == previous) return;
     emit(next);
-    if (previous is! AccessSettingsWorking && next case AccessSettingsWorking(
-      :final attempt,
-    )) {
-      unawaited(_run(attempt));
+    if (previous is! AccessSettingsWorking && next is AccessSettingsWorking) {
+      unawaited(_run(next.attempt));
     }
   }
 

@@ -65,10 +65,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._spend,
-    ReadPayPayinTxidUsecase readPayPayinTxidUsecase =
-        const ReadPayPayinTxidUsecase(),
-  }) : _readPayPayinTxidUsecase = readPayPayinTxidUsecase,
-       super(PayRecipientSelectionState()) {
+    this._readPayPayinTxidUsecase = const ReadPayPayinTxidUsecase(),
+  }) : super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
     on<PayRecipientSelected>(_onRecipientSelected);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);

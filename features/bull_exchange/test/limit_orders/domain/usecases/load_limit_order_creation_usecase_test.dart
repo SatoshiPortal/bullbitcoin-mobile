@@ -186,15 +186,18 @@ void main() {
   });
 
   test('skips a balance in a currency the app has no market for', () async {
-    when(() => getUserSummary.execute()).thenAnswer(
-      (_) async => userSummary(
-        balances: const [
-          UserBalance(amount: 10, currencyCode: 'JPY'),
-          UserBalance(amount: 20, currencyCode: 'EUR'),
-        ],
-        currency: 'JPY',
-      ),
-    );
+    when(() => exchangeReads.getUserSummary(ExchangeEnvironment.mainnet))
+        .thenAnswer(
+          (_) async => Ok(
+            userSummary(
+              balances: const [
+                UserBalance(amount: 10, currencyCode: 'JPY'),
+                UserBalance(amount: 20, currencyCode: 'EUR'),
+              ],
+              currency: 'JPY',
+            ),
+          ),
+        );
 
     final context = valueOf(await usecase.execute());
 
@@ -203,11 +206,14 @@ void main() {
   });
 
   test('refuses an account funded only in unknown currencies', () async {
-    when(() => getUserSummary.execute()).thenAnswer(
-      (_) async => userSummary(
-        balances: const [UserBalance(amount: 10, currencyCode: 'JPY')],
-      ),
-    );
+    when(() => exchangeReads.getUserSummary(ExchangeEnvironment.mainnet))
+        .thenAnswer(
+          (_) async => Ok(
+            userSummary(
+              balances: const [UserBalance(amount: 10, currencyCode: 'JPY')],
+            ),
+          ),
+        );
 
     final result = await usecase.execute();
 

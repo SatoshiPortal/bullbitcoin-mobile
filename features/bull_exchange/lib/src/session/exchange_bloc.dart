@@ -14,24 +14,14 @@ import 'exchange_state.dart';
 /// session that started it.
 class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   ExchangeBloc({
-    required Future<Result<UserSummary, ExchangeFailure>> Function(
-      ExchangeSession,
-    )
-    getAccount,
-    required Future<Result<List<Announcement>, ExchangeFailure>> Function(
-      ExchangeSession,
-    )
-    getAnnouncements,
-    required Future<Result<void, ExchangeFailure>> Function(ExchangeSession)
-    stopDca,
+    required this._getAccount,
+    required this._getAnnouncements,
+    required this._stopDca,
     required ExchangeAccess Function() currentAccess,
     required Stream<ExchangeAccess> accessChanges,
     required Stream<NotificationMessage> accountChanges,
     Future<void> Function()? reconcileUnknownWrites,
-  }) : _getAccount = getAccount,
-       _getAnnouncements = getAnnouncements,
-       _stopDca = stopDca,
-       _reconcileUnknownWrites = reconcileUnknownWrites ?? _nothing,
+  }) : _reconcileUnknownWrites = reconcileUnknownWrites ?? _nothing,
        super(const ExchangeSignedOut()) {
     on<ExchangeEvent>(_onEvent, transformer: sequential());
     add(ExchangeAccessChanged(currentAccess()));

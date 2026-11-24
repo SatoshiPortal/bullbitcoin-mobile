@@ -22,8 +22,8 @@ final class JournalingExchangeRecipients implements ExchangeRecipients {
   const JournalingExchangeRecipients(
     this._recipients,
     this._recorder, {
-    required Future<int?> Function(ExchangeEnvironment) readEpoch,
-  }) : _readEpoch = readEpoch;
+    required this._readEpoch,
+  });
 
   @override
   Future<Result<Recipient, RecipientsFailure>> saveRecipient(

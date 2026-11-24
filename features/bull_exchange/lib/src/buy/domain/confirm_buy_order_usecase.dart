@@ -59,7 +59,7 @@ class ConfirmBuyOrderUsecase {
         case WriteOutcomeUnknown():
           // The request may have confirmed the order: the order says whether
           // it did, never a retry.
-          return _confirmedAfterUnknownOutcome(repo, orderId);
+          return await _confirmedAfterUnknownOutcome(repo, orderId);
       }
     } on Exception catch (e, st) {
       log.severe(

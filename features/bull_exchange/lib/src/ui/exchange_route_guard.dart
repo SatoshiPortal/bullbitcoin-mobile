@@ -2,7 +2,6 @@ import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../autobuy/autobuy_mount.dart';

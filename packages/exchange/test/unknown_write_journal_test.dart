@@ -82,7 +82,7 @@ void main() {
           Clock.fixed(DateTime.utc(2026, 11, 23, 11)),
           () => journal.record(_dca),
         );
-        await journal.record(_mainnet);
+        _ok(await journal.record(_mainnet));
 
         final testnet = _ok(await journal.open(ExchangeEnvironment.testnet));
         final mainnet = _ok(await journal.open(ExchangeEnvironment.mainnet));

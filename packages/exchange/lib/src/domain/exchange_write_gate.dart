@@ -114,7 +114,7 @@ final class ExchangeWriteGate {
   final UnknownWriteJournal? _journal;
   final _inFlight = <ExchangeEnvironment, FinancialWriteKind>{};
 
-  ExchangeWriteGate({UnknownWriteJournal? journal}) : _journal = journal;
+  ExchangeWriteGate({this._journal});
 
   /// The write in flight for [environment], if any.
   FinancialWriteKind? inFlight(ExchangeEnvironment environment) =>

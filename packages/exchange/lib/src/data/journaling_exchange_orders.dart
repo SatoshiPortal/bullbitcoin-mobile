@@ -37,7 +37,7 @@ final class UnknownWriteRecorder {
         log.severe(
           message:
               'Could not journal an exchange write with an unknown outcome',
-          error: failure.logMessage,
+          error: failure.logMessage ?? failure,
           trace: StackTrace.current,
         );
     }
@@ -55,10 +55,9 @@ final class JournalingExchangeOrders implements ExchangeOrders {
   const JournalingExchangeOrders(
     this._orders,
     this._recorder, {
-    required ExchangeEnvironment environment,
-    required Future<int?> Function() readEpoch,
-  }) : _environment = environment,
-       _readEpoch = readEpoch;
+    required this._environment,
+    required this._readEpoch,
+  });
 
   Future<UnknownWriteDraft> _draft(
     UnknownWriteKind kind,

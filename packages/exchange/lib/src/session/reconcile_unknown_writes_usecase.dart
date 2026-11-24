@@ -58,25 +58,15 @@ final class ReconcileUnknownWritesUsecase {
   final ExchangeRecipients _recipients;
 
   const ReconcileUnknownWritesUsecase({
-    required UnknownWriteJournal journal,
-    required ExchangeOrders Function(ExchangeEnvironment) orders,
-    required Future<Result<UserSummary, ExchangeFailure>> Function(
-      ExchangeEnvironment,
-    )
-    getUserSummary,
+    required this._journal,
+    required this._orders,
+    required this._getUserSummary,
 
     /// The account's most recent limit orders in every status.
-    required Future<Result<List<LimitOrder>, ExchangeFailure>> Function()
-    listRecentLimitOrders,
-    required Future<Result<DefaultWallets, ExchangeFailure>> Function()
-    getDefaultWallets,
-    required ExchangeRecipients recipients,
-  }) : _journal = journal,
-       _orders = orders,
-       _getUserSummary = getUserSummary,
-       _listRecentLimitOrders = listRecentLimitOrders,
-       _getDefaultWallets = getDefaultWallets,
-       _recipients = recipients;
+    required this._listRecentLimitOrders,
+    required this._getDefaultWallets,
+    required this._recipients,
+  });
 
   /// At most this many recipient pages are read for one entry; a longer
   /// list leaves the entry open.

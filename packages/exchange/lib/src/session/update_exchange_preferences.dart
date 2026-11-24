@@ -35,12 +35,10 @@ class UpdateExchangePreferences {
   final ExchangeSession? Function() _currentSession;
 
   const UpdateExchangePreferences({
-    required ReadExchangeSummary readSummary,
-    required WriteExchangePreferences write,
-    required ExchangeSession? Function() currentSession,
-  }) : _readSummary = readSummary,
-       _write = write,
-       _currentSession = currentSession;
+    required this._readSummary,
+    required this._write,
+    required this._currentSession,
+  });
 
   @useResult
   Future<Result<void, ExchangeFailure>> execute(
