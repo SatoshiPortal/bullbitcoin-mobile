@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 
 import '../domain/catalog/exchange_catalog.dart';
 import '../domain/catalog/market.dart';
-import '../domain/entities/order.dart';
+import '../domain/entities/sepa_payment_processor.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_type.dart';
