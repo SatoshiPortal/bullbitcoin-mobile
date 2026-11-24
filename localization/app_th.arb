@@ -305,10 +305,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "โหลด ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "Mnemonic",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -3547,10 +3543,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "ค่าเริ่มต้นกระเป๋าสตางค์",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "เพิ่มฉลาก",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4358,9 +4350,7 @@
   "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
   "recipientsTypeConfidentialSepaDescription": "รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ",
   "sellPayoutBalance": "เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน",
-  "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
   "sellPayoutTitle": "เลือกผู้รับเงิน",
-  "sellPayoutNewBadge": "ใหม่",
   "coreScreensOutputsExceedInputs": "เอาต์พุตมากกว่าอินพุต: ธุรกรรมนี้ไม่ถูกต้องและเครือข่ายจะปฏิเสธ",
   "swapUnderReviewTitle": "Swap อยู่ระหว่างการตรวจสอบ",
   "swapUnderReviewDescription": "Swap นี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",

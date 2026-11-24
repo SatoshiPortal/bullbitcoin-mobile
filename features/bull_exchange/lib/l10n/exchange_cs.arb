@@ -500,15 +500,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
   "recipientsFieldBankAccountIban": "Číslo bankovního účtu (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu",
-  "withdrawOwnershipQuestion": "Kdo má tento účet?",
-  "withdrawOwnershipOtherAccount": "To je někdo jiný účet",
-  "withdrawAboveMaxAmountError": "Maximální částka je {amount} {currency}",
-  "withdrawBelowMinAmountError": "Minimální částka je {amount} {currency}",
-  "withdrawUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
   "withdrawConfirmTitle": "Potvrzení výběru",
   "withdrawConfirmAmount": "Množství",
   "withdrawConfirmButton": "Potvrzení výběru",
-  "withdrawOwnershipMyAccount": "Můj účet",
   "withdrawAmountTitle": "Sdraw fiat",
   "withdrawConfirmRecipientName": "Název příjemce",
   "withdrawSuccessOrderDetails": "Detaily objednávky",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "Bezpečnostní otázka musí mít 3–40 znaků",
   "withdrawInteracSecurityAnswerLengthError": "Bezpečnostní odpověď musí mít 3–40 znaků",
   "withdrawInteracSecurityAnswerFormatError": "Použijte písmena, číslice nebo spojovníky bez mezer",
-  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "withdrawConfidentialSepaNotActivatedError": "Aktivujte prosím možnost důvěrné platby pro tohoto příjemce SEPA.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,14 +967,6 @@
   "dcaAccountUnavailableError": "Váš účet se nepodařilo načíst. Zkontrolujte připojení, ujistěte se, že jste přihlášeni, a zkuste to znovu.",
   "dcaLightningAddressRequiredError": "Zadejte Lightning adresu pro příjem vašich nákupů.",
   "dcaOrderCreationError": "Opakovaný nákup se nepodařilo vytvořit. Zkuste to prosím později.",
-  "payPleasePayInvoice": "Tuto fakturu prosím vyplňte",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "Payin částka",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "Pokročilé možnosti",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -999,25 +983,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "Výplatní částka",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "Síťové poplatky",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "Maximální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "Nahrávání ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "Platba v postupu!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "Kompletní KYC",
   "@sellCompleteKYC": {
@@ -1027,49 +995,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Bleskové sítě",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "Externí peněženka",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "Neplatný stav",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "S touto peněženkou se snažíte prodat minimální částku, která může být prodána.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "Kč Čeština",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "Vyberte síť",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "Množství",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "Žádné podrobnosti",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "Zobrazit QR kód",
   "@sellShowQrCode": {
@@ -1095,25 +1031,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "Objednávky dokončeno!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "Tuto fakturu prosím vyplňte",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "Vyberte síť",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "Čeština Čeština",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "Cena bude obnovena v ",
   "@sellPriceWillRefreshIn": {
@@ -1134,10 +1054,6 @@
   "sellBalanceWillBeCredited": "Vaše zůstatek na účtu bude připsána po přijetí transakce na klíč.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
-  },
-  "payExchangeRate": "Směnný kurz",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
   },
   "copyDialogButton": "Čeština",
   "@copyDialogButton": {
@@ -1171,17 +1087,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "Nejsou k dispozici žádné fakturační údaje",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "Čeština",
-  "payDescriptionLabel": "Popis platby (volitelné)",
-  "payDescriptionHint": "Přidejte poznámku k této platbě",
   "payPaymentDescription": "Popis platby",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1189,18 +1095,6 @@
   "sellQrCode": "QR kód",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "Přejděte domů",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "Nedostatečná vyváženost v zvolené peněžence dokončit tuto prodejní objednávku.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "Vybrat Peněženka",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "Pokračovat",
   "@payContinue": {
@@ -1214,10 +1108,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "Platit z jiné Bitcoin peněženky",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "Prioritní priority",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1225,14 +1115,6 @@
   "sellPayinAmount": "Payin částka",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
-  },
-  "sellBitcoinPriceLabel": "Bitcoin Cena",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
-  "payBitcoinPrice": "Bitcoin Cena",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "Čeština Čeština",
   "@sellMxnBalance": {
@@ -1254,16 +1136,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "Která peněženka chcete platit?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "Čeština",
   "@sellFastest": {
@@ -1285,10 +1159,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "Bitcoin částka",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "Směnný kurz",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1296,10 +1166,6 @@
   "sellTitle": "Prodej Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "Kč Čeština",
   "@sellUsdBalance": {
@@ -1317,21 +1183,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "Minimální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "Výplatní příjemce",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "Tekutý síť",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "Vybrat Peněženka",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "Referenční číslo",
   "@paySinpeNumeroComprobante": {
@@ -1344,10 +1198,6 @@
   "payRecipientName": "Název příjemce",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "Potvrzení platby",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "Potvrzení platby",
   "@sellConfirmPayment": {
@@ -1365,49 +1215,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "Externí peněženka",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "Detaily objednávky",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "S touto peněženkou se snažíte prodat nad maximální částku, která může být prodána.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Tekutý síť",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "Prodejní objednávka nebyla nalezena. Prosím, zkuste to znovu.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "Pokročilé možnosti",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "Podrobnosti o pomoc",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "Číslo objednávky",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "Čeština",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "Prodej v průběhu...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "Pokročilé nastavení",
   "@payAdvancedSettings": {
@@ -1417,14 +1243,6 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "payCompleted": "Platba dokončena!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
-  },
   "sellAdvancedSettings": "Pokročilé nastavení",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
@@ -1433,10 +1251,6 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "sellSendPaymentContinue": "Pokračovat",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "closeDialogButton": "Zavřít",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
@@ -1444,14 +1258,10 @@
   "viewerTapToCopy": "Klepněte pro kopírování",
   "invoiceViewerTitle": "Faktura",
   "paySinpeReceipt": "Účtenka SINPE",
-  "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
   "copiedToClipboard": "Zkopírováno do schránky",
   "sellPayoutBalance": "Přidat k zůstatku mého účtu",
-  "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
   "sellPayoutTitle": "Vybrat příjemce",
-  "sellPayoutNewBadge": "NOVÉ",
   "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
   "sendSelectedUtxosInsufficient": "Vybrané utxos nepokrývá požadovaná částka",
   "@sendSelectedUtxosInsufficient": {

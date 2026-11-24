@@ -93,7 +93,6 @@
   "sendSelectAmount": "Betrag auswählen",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Netzwerk auswählen",
-  "sellLoadingGeneric": "Wird geladen…",
   "bip85Mnemonic": "Mnemonic",
   "receiveShareInvoice": "Invoice teilen",
   "transactionSwapDescChainFailed": "Es gab ein Problem mit Ihrem Swap. Bitte wenden Sie sich an den Support, falls das Guthaben nicht innerhalb von 24 Stunden zurückerstattet wurde.",
@@ -1118,7 +1117,6 @@
     }
   },
   "importQrDeviceWalletName": "Name der Wallet",
-  "defaultWalletsLabel": "Standard-Wallets",
   "receiveAddLabel": "Bezeichnung hinzufügen",
   "receiveInvoiceExpiry": "Invoice läuft ab in {time}",
   "@receiveInvoiceExpiry": {
@@ -1629,9 +1627,7 @@
   "settingsPayjoinSatsUnit": "sats",
   "recipientsTypeConfidentialSepaDescription": "Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen.",
   "sellPayoutBalance": "Meinem Kontoguthaben hinzufügen",
-  "sellPayoutSepaDescription": "Auszahlungen erscheinen als von Leonod gesendet",
   "sellPayoutTitle": "Empfänger auswählen",
-  "sellPayoutNewBadge": "NEU",
   "allSeedViewSwapLinkedWallet": "Verknüpfte Wallet: {fingerprint}",
   "allSeedViewSwapMnemonicTitle": "Swap-Wiederherstellungsphrase",
   "allSeedViewDeleteSwapMnemonicTitle": "Swap-Wiederherstellungsphrase löschen?",

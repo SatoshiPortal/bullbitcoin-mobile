@@ -267,10 +267,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "Φόρισμα...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "Mnemonic",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -2711,10 +2707,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "Default Wallets",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "Add Label",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4346,9 +4338,7 @@
   "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
   "recipientsTypeConfidentialSepaDescription": "Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας",
   "sellPayoutBalance": "Προσθήκη στο υπόλοιπο του λογαριασμού μου",
-  "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
   "sellPayoutTitle": "Επιλογή παραλήπτη",
-  "sellPayoutNewBadge": "ΝΕΟ",
   "coreScreensOutputsExceedInputs": "Οι έξοδοι υπερβαίνουν τις εισόδους: αυτή η συναλλαγή είναι άκυρη και το δίκτυο θα την απορρίψει.",
   "swapUnderReviewTitle": "Ανταλλαγή υπό έλεγχο",
   "swapUnderReviewDescription": "Αυτή η ανταλλαγή απαιτεί χειροκίνητο έλεγχο. Επικοινωνήστε με την υποστήριξη για βοήθεια. Εάν δεν έχετε λογαριασμό υποστήριξης, χρειάζεται μόνο να δημιουργήσετε έναν· δεν απαιτείται KYC.",

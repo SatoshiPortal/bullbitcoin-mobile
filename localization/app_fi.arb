@@ -255,7 +255,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Oletuslompakot",
   "confirmButton": "Vahvista",
   "recoveryPhraseTitle": "Tallenna siemenlauseen\nsanat oikeassa järjestyksessä",
   "storeItSafelyMessage": "Säilytä se turvallisessa paikassa.",
@@ -1241,7 +1240,6 @@
   "exchangeDcaAddressLabelBitcoin": "Bitcoin-osoite",
   "exchangeDcaAddressLabelLightning": "Lightning-osoite",
   "exchangeDcaAddressLabelLiquid": "Liquid-osoite",
-  "sellLoadingGeneric": "Ladataan...",
   "allSeedViewTitle": "Näytä siemenlauseet",
   "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos käytössä on paljon siemenlauseita.",
   "allSeedViewNoSeedsFound": "Siemenlauseita ei löytynyt.",
@@ -1611,9 +1609,7 @@
   "copiedToClipboard": "Kopioitu leikepöydälle",
   "recipientsTypeConfidentialSepaDescription": "Nostot näkyvät siirtoina itsellesi tilisi nimellä",
   "sellPayoutBalance": "Lisää tilini saldoon",
-  "sellPayoutSepaDescription": "Nostot näkyvät Leonodin lähettäminä",
   "sellPayoutTitle": "Valitse vastaanottaja",
-  "sellPayoutNewBadge": "UUSI",
   "coreScreensOutputsExceedInputs": "Tulosteet ylittävät syötteet: tämä transaktio on virheellinen, ja verkko hylkää sen.",
   "swapUnderReviewTitle": "Swap tarkistettavana",
   "swapUnderReviewDescription": "Tämä swap vaatii manuaalisen tarkistuksen. Ota yhteyttä tukeen saadaksesi apua. Jos sinulla ei ole tukitiliä, sinun tarvitsee vain luoda sellainen; KYC ei ole pakollinen.",

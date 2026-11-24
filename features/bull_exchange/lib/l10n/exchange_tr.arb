@@ -500,16 +500,10 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir.",
   "recipientsFieldBankAccountIban": "Banka hesap numarası (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür",
-  "withdrawOwnershipQuestion": "Bu hesap kime ait?",
-  "withdrawOwnershipOtherAccount": "Bu başka birinin hesabı",
-  "withdrawAboveMaxAmountError": "En fazla miktarı {amount} {currency}",
-  "withdrawBelowMinAmountError": "Minimum miktar {amount} {currency}",
   "withdrawAmountContinue": "Devam etmeye devam et",
-  "withdrawUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
   "withdrawConfirmTitle": "Onay",
   "withdrawConfirmAmount": "$",
   "withdrawConfirmButton": "Onay",
-  "withdrawOwnershipMyAccount": "Bu benim hesabım",
   "withdrawAmountTitle": "Withdraw fiat",
   "withdrawConfirmRecipientName": "Recipient name",
   "withdrawSuccessOrderDetails": "Sipariş detayları",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "Güvenlik sorusu 3–40 karakter olmalıdır",
   "withdrawInteracSecurityAnswerLengthError": "Güvenlik cevabı 3–40 karakter olmalıdır",
   "withdrawInteracSecurityAnswerFormatError": "Boşluk kullanmadan harf, rakam veya kısa çizgi kullanın",
-  "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
-  "withdrawConfidentialSepaNotActivatedError": "Lütfen bu SEPA alıcısı için gizli ödeme seçeneğini etkinleştirin.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,14 +967,6 @@
   "dcaAccountUnavailableError": "Hesabınız yüklenemedi. Bağlantınızı kontrol edin, giriş yaptığınızdan emin olun ve tekrar deneyin.",
   "dcaLightningAddressRequiredError": "Satın alımlarınızı almak için bir Lightning adresi girin.",
   "dcaOrderCreationError": "Yinelenen alım oluşturulamadı. Lütfen daha sonra tekrar deneyin.",
-  "payPleasePayInvoice": "Lütfen bu faturayı ödeme",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "Payin miktarı",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "Gelişmiş seçenekler",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -999,25 +983,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "Payout amount",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "Network ücretleri",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "Bu cüzdanla ödeyebileceğiniz en yüksek tutar {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "Yükleniyor...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "İlerlemede Ödeme!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "Tamamlanan KC",
   "@sellCompleteKYC": {
@@ -1027,49 +995,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "Dış cüzdan cüzdan",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "Invalid state",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "Bu cüzdanla satılabilecek minimum miktarın altında satmaya çalışıyorsunuz.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "EUR EUR EUR EUR EUR EUR Denge dengesi",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "Network Select Network",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "Hiçbir fatura verileri mevcut",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "$",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "Bu satış siparişi zaten doğrulandı.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "Mevcut hiçbir detay mevcut değildir",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "Göster QR kodu",
   "@sellShowQrCode": {
@@ -1095,25 +1031,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "Sipariş tamamlandı!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "Lütfen bu faturayı ödeme",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "Network Select Network",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "CAD CAD CAD Denge dengesi",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "Fiyat yenilenecek ",
   "@sellPriceWillRefreshIn": {
@@ -1135,10 +1055,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "Değişim oranı",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "Kopya kopya",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1159,10 +1075,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "Devam etmeye devam et",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1175,17 +1087,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "Hiçbir fatura verileri mevcut",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "Bu faturayı nasıl ödemek istiyorsunuz?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "Pay",
-  "payDescriptionLabel": "Ödeme açıklaması (isteğe bağlı)",
-  "payDescriptionHint": "Bu ödeme için bir not ekleyin",
   "payPaymentDescription": "Ödeme açıklaması",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1193,18 +1095,6 @@
   "sellQrCode": "QR Kodu",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "Eve git",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "Seçilen cüzdanda bu satış siparişini tamamlamak için yeterli bir denge.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "Cüzdan seçin",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "Devam etmeye devam et",
   "@payContinue": {
@@ -1218,10 +1108,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "Başka bir Bitcoin cüzdanından ödeme",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "Ücret Önceliği",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1230,17 +1116,9 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "sellBitcoinPriceLabel": "Bitcoin Fiyatı",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "closeDialogButton": "Close",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "Bitcoin Fiyatı",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "MXN Denge dengesi",
   "@sellMxnBalance": {
@@ -1262,16 +1140,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "Bu faturayı nasıl ödemek istiyorsunuz?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "Hangi cüzdan ödeme yapmak istiyorsunuz?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "En hızlı",
   "@sellFastest": {
@@ -1293,10 +1163,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "Bitcoin miktarı",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "Değişim oranı",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1304,10 +1170,6 @@
   "sellTitle": "Bitcoin satmak",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "USD USD USD USD USD USD Denge dengesi",
   "@sellUsdBalance": {
@@ -1325,21 +1187,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "Bu cüzdanla ödeyebileceğiniz en düşük tutar {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "Payout alıcı",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "Sıvı Ağ Ağı",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "Cüzdan seçin",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "Referans numarası",
   "@paySinpeNumeroComprobante": {
@@ -1352,10 +1202,6 @@
   "payRecipientName": "Recipient name",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "Ödemeyi Onaylayın",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "Doğru ödeme",
   "@sellConfirmPayment": {
@@ -1373,49 +1219,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "Dış cüzdan cüzdan",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "Sipariş Detayları",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Sıvı Ağ Ağı",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "Satış siparişi bulunamadı. Lütfen tekrar deneyin.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "Gelişmiş seçenekler",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "Güvenilir ayrıntılar",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "Sipariş numarası",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "Done",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "İlerlemede Sat...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "Gelişmiş Ayarlar",
   "@payAdvancedSettings": {
@@ -1424,14 +1246,6 @@
   "sellSendPaymentNetworkFees": "Network ücretleri",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "Ödeme Tamamlandı!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "Gelişmiş Ayarlar",
   "@sellAdvancedSettings": {
@@ -1444,14 +1258,10 @@
   "viewerTapToCopy": "Kopyalamak için dokunun",
   "invoiceViewerTitle": "Fatura",
   "paySinpeReceipt": "SINPE Makbuzu",
-  "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
-  "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
   "copiedToClipboard": "Panoya kopyalandı",
   "sellPayoutBalance": "Hesap bakiyeme ekle",
-  "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
   "sellPayoutTitle": "Alıcı Seç",
-  "sellPayoutNewBadge": "YENİ",
   "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
   "sendSelectedUtxosInsufficient": "Seçilmiş utxos gerekli miktarda kapsamaz",
   "@sendSelectedUtxosInsufficient": {

@@ -277,10 +277,6 @@
   "@sendSelectAmount": {
     "description": "Label for selecting the amount to send"
   },
-  "sellLoadingGeneric": "A carregar...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "transactionStatusPaymentInProgress": "Pagamento em Progresso",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -4085,10 +4081,6 @@
   "@pickPinInsteadButton": {
     "description": "Button label to switch to PIN input"
   },
-  "defaultWalletsLabel": "Carteiras padrão",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "recoverButton": "Recuperar",
   "@recoverButton": {
     "description": "Button label to recover wallet"
@@ -4369,9 +4361,7 @@
   "copiedToClipboard": "Copiado para a área de transferência",
   "recipientsTypeConfidentialSepaDescription": "Os saques aparecem como uma transferência para você mesmo com o nome da sua conta",
   "sellPayoutBalance": "Adicionar ao saldo da minha conta",
-  "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
   "sellPayoutTitle": "Selecionar destinatário",
-  "sellPayoutNewBadge": "NOVO",
   "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede vai rejeitá-la.",
   "swapUnderReviewTitle": "Swap em análise",
   "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",

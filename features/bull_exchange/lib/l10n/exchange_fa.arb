@@ -500,15 +500,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند.",
   "recipientsFieldBankAccountIban": "شماره حساب بانکی (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند",
-  "withdrawOwnershipMyAccount": "این حساب من است",
-  "withdrawOwnershipOtherAccount": "این حساب شخص دیگری است",
   "withdrawSuccessTitle": "خروج اجباری",
   "withdrawSuccessOrderDetails": "جزئیات سفارش",
   "withdrawConfirmBankAccount": "حساب بانکی",
-  "withdrawOwnershipQuestion": "این حساب به چه کسی تعلق دارد؟?",
-  "withdrawUnauthenticatedError": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
-  "withdrawBelowMinAmountError": "حداقل مقدار {amount} {currency} است",
-  "withdrawAboveMaxAmountError": "حداکثر مقدار {amount} {currency} است",
   "withdrawAmountContinue": "ادامه",
   "withdrawConfirmTitle": "تایید خروج",
   "withdrawConfirmAmount": "مبلغ",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "پرسش امنیتی باید ۳ تا ۴۰ نویسه باشد",
   "withdrawInteracSecurityAnswerLengthError": "پاسخ امنیتی باید ۳ تا ۴۰ نویسه باشد",
   "withdrawInteracSecurityAnswerFormatError": "از حروف، اعداد یا خط تیره بدون فاصله استفاده کنید",
-  "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
-  "withdrawConfidentialSepaNotActivatedError": "لطفاً گزینه پرداخت محرمانه را برای این گیرنده SEPA فعال کنید.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,10 +967,6 @@
   "dcaAccountUnavailableError": "بارگیری حساب شما امکان‌پذیر نبود. اتصال خود را بررسی کنید، مطمئن شوید وارد شده‌اید و دوباره تلاش کنید.",
   "dcaLightningAddressRequiredError": "برای دریافت خریدهای خود یک آدرس Lightning وارد کنید.",
   "dcaOrderCreationError": "ایجاد خرید تکرارشونده امکان‌پذیر نبود. لطفاً بعداً دوباره تلاش کنید.",
-  "sellBitcoinPriceLabel": "Bitcoin Price",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "sellViewDetailsButton": "مشاهده جزئیات",
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
@@ -990,18 +978,6 @@
   "sellKycPendingDescription": "ابتدا باید تایید هویت را تکمیل کنید",
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
-  },
-  "sellLoadingGeneric": "بارگذاری ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPleasePayInvoice": "لطفا این فاکتور را پرداخت کنید",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "پرداخت",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
   },
   "sellAdvancedOptions": "گزینه های پیشرفته",
   "@sellAdvancedOptions": {
@@ -1019,21 +995,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "پرداخت مبلغ",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "هزینه های شبکه",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "حداکثر مبلغی که با این کیف‌پول می‌توانید پرداخت کنید {amount} است.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "payPaymentInProgress": "پرداخت در پیشرفت!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "کامل KYC",
   "@sellCompleteKYC": {
@@ -1043,49 +1007,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "شبکه Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "کیف پول خارجی",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "ایالت Invalid",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "شما در حال تلاش برای فروش زیر حداقل مبلغی هستید که می توانید با این کیف پول به فروش برسانید.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "یورو یورو تعادل تعادل تعادل",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "انتخاب شبکه",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "هیچ اطلاعات صورتحساب در دسترس نیست",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "مبلغ",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "این سفارش فروش تاکنون تایید شده است.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "جزئیات موجود",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "کد QR",
   "@sellShowQrCode": {
@@ -1107,25 +1039,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "دستور تکمیل شده!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "لطفا این فاکتور را پرداخت کنید",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "انتخاب شبکه",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "CAD تعادل تعادل تعادل",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "قیمت در ",
   "@sellPriceWillRefreshIn": {
@@ -1147,10 +1063,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "نرخ تبادل",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "کپی رایت",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1171,10 +1083,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "ادامه",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1187,17 +1095,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "هیچ اطلاعات صورتحساب در دسترس نیست",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "چگونه می خواهید این فاکتور را پرداخت کنید؟?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "پرداخت دستمزد",
-  "payDescriptionLabel": "توضیحات پرداخت (اختیاری)",
-  "payDescriptionHint": "یادداشتی برای این پرداخت اضافه کنید",
   "payPaymentDescription": "توضیحات پرداخت",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1205,18 +1103,6 @@
   "sellQrCode": "کد QR",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "به خانه برو",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش فروش.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "انتخاب کیف پول",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "ادامه",
   "@payContinue": {
@@ -1230,10 +1116,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "پرداخت از کیف پول Bitcoin دیگر",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "اولویت هزینه",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1245,10 +1127,6 @@
   "closeDialogButton": "نزدیک",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "Bitcoin Price",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "MXN تعادل تعادل تعادل",
   "@sellMxnBalance": {
@@ -1266,16 +1144,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "چگونه می خواهید این فاکتور را پرداخت کنید؟?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "از کدام کیف پول می خواهید پرداخت کنید؟?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "سریع ترین",
   "@sellFastest": {
@@ -1297,10 +1167,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "مقدار Bitcoin",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "نرخ تبادل",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1308,10 +1174,6 @@
   "sellTitle": "فروش Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "دلار آمریکا تعادل تعادل تعادل",
   "@sellUsdBalance": {
@@ -1325,21 +1187,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "حداقل مبلغی که با این کیف‌پول می‌توانید پرداخت کنید {amount} است.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "دریافت کننده پرداخت",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "شبکه نقدینگی",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "انتخاب کیف پول",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "شماره مرجع",
   "@paySinpeNumeroComprobante": {
@@ -1352,10 +1202,6 @@
   "payRecipientName": "نام اضطراری",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "تایید پرداخت",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "تایید پرداخت",
   "@sellConfirmPayment": {
@@ -1373,49 +1219,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "کیف پول خارجی",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "جزئیات سفارش",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "شما در حال تلاش برای فروش بیش از حداکثر مبلغی هستید که می توانید با این کیف پول به فروش برسانید.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "شبکه نقدینگی",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "سفارش فروش پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "گزینه های پیشرفته",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "جزئیات اضطراری",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "شماره سفارش",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "انجام کارها",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "فروش در پیشرفت ...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "تنظیمات پیشرفته",
   "@payAdvancedSettings": {
@@ -1424,14 +1246,6 @@
   "sellSendPaymentNetworkFees": "هزینه های شبکه",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "پرداخت کامل!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "تنظیمات پیشرفته",
   "@sellAdvancedSettings": {
@@ -1444,14 +1258,10 @@
   "viewerTapToCopy": "برای کپی ضربه بزنید",
   "invoiceViewerTitle": "صورتحساب",
   "paySinpeReceipt": "رسید SINPE",
-  "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
-  "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
   "copiedToClipboard": "در کلیپ‌بورد کپی شد",
   "sellPayoutBalance": "افزودن به موجودی حساب من",
-  "sellPayoutSepaDescription": "برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند",
   "sellPayoutTitle": "انتخاب گیرنده",
-  "sellPayoutNewBadge": "جدید",
   "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
   "sendSelectedUtxosInsufficient": "نسخه های انتخاب شده حاوی مقدار مورد نیاز نیستند",
   "@sendSelectedUtxosInsufficient": {

@@ -58,10 +58,6 @@
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
   },
-  "sellLoadingGeneric": "بارگذاری ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -3153,10 +3149,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "کیف پول های شکست خورده",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "اضافه کردن برچسب",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4370,9 +4362,7 @@
   "copiedToClipboard": "در کلیپ‌بورد کپی شد",
   "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند",
   "sellPayoutBalance": "افزودن به موجودی حساب من",
-  "sellPayoutSepaDescription": "برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند",
   "sellPayoutTitle": "انتخاب گیرنده",
-  "sellPayoutNewBadge": "جدید",
   "coreScreensOutputsExceedInputs": "خروجی‌ها از ورودی‌ها بیشترند: این تراکنش نامعتبر است و شبکه آن را رد خواهد کرد.",
   "swapUnderReviewTitle": "مبادله در حال بررسی",
   "swapUnderReviewDescription": "این مبادله به بررسی دستی نیاز دارد. برای دریافت کمک با پشتیبانی تماس بگیرید. اگر حساب پشتیبانی ندارید، فقط کافی است یکی بسازید؛ KYC لازم نیست.",

@@ -377,7 +377,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "ডিফল্ট Wallets",
   "confirmButton": "নিশ্চিত কৰক",
   "recoveryPhraseTitle": "আপোনাৰ recovery phrase সঠিক ক্ৰমত লিখি ৰাখক\n",
   "storeItSafelyMessage": "ইয়াক কোনো সুৰক্ষিত ঠাইত সংৰক্ষণ কৰক।",
@@ -3033,10 +3032,6 @@
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
   },
-  "sellLoadingGeneric": "লোড হৈছে...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "allSeedViewTitle": "Seed দৰ্শক",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -3379,9 +3374,7 @@
   "copiedToClipboard": "ক্লিপবৰ্ডত কপি কৰা হৈছে",
   "recipientsTypeConfidentialSepaDescription": "উত্তোলনসমূহ আপোনাৰ একাউণ্টৰ নামত নিজৰ একাউণ্টলৈ কৰা স্থানান্তৰ হিচাপে দেখা যায়",
   "sellPayoutBalance": "মোৰ একাউণ্টৰ বেলেঞ্চত যোগ কৰক",
-  "sellPayoutSepaDescription": "উলিওৱা ধন Leonod-এ পঠোৱা হিচাপে দেখা যায়",
   "sellPayoutTitle": "প্ৰাপক বাছক",
-  "sellPayoutNewBadge": "নতুন",
   "coreScreensOutputsExceedInputs": "আউটপুট ইনপুটতকৈ বেছি: এই লেনদেনটো অবৈধ আৰু নেটৱৰ্কে ইয়াক নাকচ কৰিব।",
   "swapUnderReviewTitle": "Swap পৰ্যালোচনাধীন",
   "swapUnderReviewDescription": "এই Swap ৰ বাবে হাতে-কলমে পৰ্যালোচনাৰ প্ৰয়োজন। সহায়তাৰ বাবে সহায়তা দলৰ সৈতে যোগাযোগ কৰক। আপোনাৰ সহায়তা একাউন্ট নাথাকিলে, আপুনি কেৱল এটা সৃষ্টি কৰিলেই হ'ব; KYC প্ৰয়োজন নাই।",

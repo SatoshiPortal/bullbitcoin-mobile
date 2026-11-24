@@ -305,10 +305,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "Yükleniyor...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "Mnemonik",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -3543,10 +3539,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "Varsayılan Cüzdanlar",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "Add Label",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4354,9 +4346,7 @@
   "copiedToClipboard": "Panoya kopyalandı",
   "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür",
   "sellPayoutBalance": "Hesap bakiyeme ekle",
-  "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
   "sellPayoutTitle": "Alıcı Seç",
-  "sellPayoutNewBadge": "YENİ",
   "coreScreensOutputsExceedInputs": "Çıktılar girdileri aşıyor: bu işlem geçersiz ve ağ tarafından reddedilecek.",
   "swapUnderReviewTitle": "Takas inceleniyor",
   "swapUnderReviewDescription": "Bu takas manuel inceleme gerektiriyor. Yardım için destekle iletişime geçin. Destek hesabınız yoksa yalnızca bir hesap oluşturmanız yeterlidir; KYC gerekmez.",

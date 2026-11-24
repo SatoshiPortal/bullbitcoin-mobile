@@ -305,10 +305,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "로드 중 ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "Mnemonic의 특징",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -3547,10 +3543,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "기본 지갑",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "상표 추가",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4354,9 +4346,7 @@
   "copiedToClipboard": "클립보드에 복사되었습니다",
   "recipientsTypeConfidentialSepaDescription": "출금 내역은 본인 계좌명으로 자신에게 이체한 것으로 표시됩니다",
   "sellPayoutBalance": "내 계정 잔액에 추가",
-  "sellPayoutSepaDescription": "출금 내역의 송금인이 Leonod로 표시됩니다",
   "sellPayoutTitle": "수신자 선택",
-  "sellPayoutNewBadge": "신규",
   "coreScreensOutputsExceedInputs": "출력이 입력을 초과합니다. 이 거래는 유효하지 않으며 네트워크에서 거부됩니다.",
   "swapUnderReviewTitle": "검토 중인 스왑",
   "swapUnderReviewDescription": "이 스왑은 수동 검토가 필요합니다. 지원팀에 문의하세요. 지원 계정이 없다면 계정만 만들면 되며 KYC는 필요하지 않습니다.",

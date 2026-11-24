@@ -500,16 +500,10 @@
   "recipientsConfidentialSepaNameMustMatchHint": "আপনার ব্যাংক এবং ভার্চুয়াল IBAN অ্যাকাউন্টের নাম মিলতে হবে, না হলে ট্রান্সফার স্বয়ংক্রিয়ভাবে ফেরত পাঠানো হবে।",
   "recipientsFieldBankAccountIban": "ব্যাংক অ্যাকাউন্ট নম্বর (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "উত্তোলনগুলি আপনার অ্যাকাউন্টের নামে নিজের অ্যাকাউন্টে স্থানান্তর হিসেবে দেখা যায়",
-  "withdrawOwnershipQuestion": "এই অ্যাকাউন্টটি কার?",
-  "withdrawOwnershipOtherAccount": "এটি অন্য কারও অ্যাকাউন্ট",
-  "withdrawAboveMaxAmountError": "সর্বোচ্চ পরিমাণ হলো {amount} {currency}",
-  "withdrawBelowMinAmountError": "ন্যূনতম পরিমাণ হলো {amount} {currency}",
   "withdrawAmountContinue": "চালিয়ে যান",
-  "withdrawUnauthenticatedError": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
   "withdrawConfirmTitle": "উত্তোলন নিশ্চিত করুন",
   "withdrawConfirmAmount": "পরিমাণ",
   "withdrawConfirmButton": "উত্তোলন নিশ্চিত করুন",
-  "withdrawOwnershipMyAccount": "এটি আমার অ্যাকাউন্ট",
   "withdrawAmountTitle": "ফিয়াট উত্তোলন",
   "withdrawConfirmRecipientName": "প্রাপক নাম",
   "withdrawSuccessOrderDetails": "অর্ডারের বিবরণ",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "নিরাপত্তা প্রশ্ন 3-40 অক্ষরের হতে হবে",
   "withdrawInteracSecurityAnswerLengthError": "নিরাপত্তা উত্তর 3-40 অক্ষরের হতে হবে",
   "withdrawInteracSecurityAnswerFormatError": "স্পেস ছাড়া অক্ষর, সংখ্যা বা হাইফেন ব্যবহার করুন",
-  "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
-  "withdrawConfidentialSepaNotActivatedError": "অনুগ্রহ করে এই SEPA প্রাপকের জন্য গোপনীয় পেমেন্ট বিকল্পটি সক্রিয় করুন।",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,14 +967,6 @@
   "dcaAccountUnavailableError": "আপনার অ্যাকাউন্ট লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করুন, আপনি লগ ইন করেছেন কিনা নিশ্চিত করুন এবং আবার চেষ্টা করুন।",
   "dcaLightningAddressRequiredError": "আপনার কেনাকাটা পেতে একটি Lightning ঠিকানা লিখুন।",
   "dcaOrderCreationError": "পুনরাবৃত্ত কেনা তৈরি করা যায়নি। পরে আবার চেষ্টা করুন।",
-  "payPleasePayInvoice": "এই চালানটি পরিশোধ করুন",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "পে-ইন পরিমাণ",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -999,25 +983,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "পাওআউট পরিমাণ",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "নেটওয়ার্ক ফি",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "এই ওয়ালেট দিয়ে আপনি সর্বোচ্চ {amount} পরিশোধ করতে পারেন।",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "লোড হচ্ছে..।",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "পেমেন্ট চলছে!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "KYC সম্পূর্ণ করুন",
   "@sellCompleteKYC": {
@@ -1027,49 +995,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "লাইটনিং নেটওয়ার্ক",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "বাহ্যিক ওয়ালেট",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "অবৈধ অবস্থা",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বনিম্ন পরিমাণের কম বিক্রি করার চেষ্টা করছেন।",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "EUR ব্যালেন্স",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "নেটওয়ার্ক নির্বাচন করুন",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "চালান তথ্য উপলব্ধ নয়",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "পরিমাণ",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "এই বিক্রয় অর্ডারটি ইতিমধ্যে নিশ্চিত করা হয়েছে।",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE পাঠানো!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "কোনো তথ্য উপলব্ধ নয়",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "QR code দেখুন",
   "@sellShowQrCode": {
@@ -1095,25 +1031,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "অর্ডার সম্পন্ন!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "অনুগ্রহ করে এই ইনভয়েস পরিশোধ করুন",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "নেটওয়ার্ক নির্বাচন করুন",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "CAD ব্যালেন্স",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "নির্বাচিত ওয়ালেটে এই পেমেন্ট অর্ডারটি সম্পূর্ণ করতে পর্যাপ্ত টাকা নেই।",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "মূল্য রিফ্রেশ হবে ",
   "@sellPriceWillRefreshIn": {
@@ -1135,10 +1055,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "বিনিময় হার",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "কপি",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1159,10 +1075,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "চালিয়ে যান",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "Bitcoin অন-চেইন",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1175,17 +1087,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "কোনো ইনভয়েস ডেটা পাওয়া যায়নি",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "আপনি কীভাবে এই ইনভয়েস পরিশোধ করতে চান?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "পরিশোধ করুন",
-  "payDescriptionLabel": "পেমেন্টের বিবরণ (ঐচ্ছিক)",
-  "payDescriptionHint": "এই পেমেন্টের জন্য একটি নোট যোগ করুন",
   "payPaymentDescription": "পেমেন্টের বিবরণ",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1193,18 +1095,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "হোমে যান",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "এই বিক্রয় অর্ডার সম্পন্ন করতে নির্বাচিত ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই।",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "ওয়ালেট নির্বাচন করুন",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "চালিয়ে যান",
   "@payContinue": {
@@ -1218,10 +1108,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "অন্য একটি বিটকয়েন ওয়ালেট থেকে পেমেন্ট করুন",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "ফি অগ্রাধিকার",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1230,17 +1116,9 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "sellBitcoinPriceLabel": "বিটকয়েন মূল্য",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "closeDialogButton": "বন্ধ",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "বিটকয়েন মূল্য",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "MXN ব্যালেন্স",
   "@sellMxnBalance": {
@@ -1262,16 +1140,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "এই চালানটি আপনি কীভাবে পরিশোধ করতে চান?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "আপনি কোন ওয়ালেট থেকে পেমেন্ট করতে চান?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "সবচেয়ে দ্রুত",
   "@sellFastest": {
@@ -1293,10 +1163,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "বিটকয়েন পরিমাণ",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "বিনিময় হার",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1304,10 +1170,6 @@
   "sellTitle": "Bitcoin বিক্রি করুন",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "আপনি প্রমাণীকৃত নন। অনুগ্রহ করে চালিয়ে যেতে লগ ইন করুন।",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "USD ব্যালেন্স",
   "@sellUsdBalance": {
@@ -1325,21 +1187,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "এই ওয়ালেট দিয়ে আপনি সর্বনিম্ন {amount} পরিশোধ করতে পারেন।",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "পেআউট প্রাপক",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "লিকুইড নেটওয়ার্ক",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "ওয়ালেট নির্বাচন করুন",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "রেফারেন্স নম্বর",
   "@paySinpeNumeroComprobante": {
@@ -1352,10 +1202,6 @@
   "payRecipientName": "প্রাপকের নাম",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "পেমেন্ট নিশ্চিত করুন",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "পেমেন্ট নিশ্চিত করুন",
   "@sellConfirmPayment": {
@@ -1373,49 +1219,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "বহিরাগত ওয়ালেট",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "আদেশের বিবরণ",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বোচ্চ পরিমাণের বেশি বিক্রি করার চেষ্টা করছেন।",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Liquid Network",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "বিক্রয় অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "প্রাপকের বিবরণ",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "অর্ডার নম্বর",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "সম্পন্ন",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "বিক্রয় চলছে...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "উন্নত সেটিংস",
   "@payAdvancedSettings": {
@@ -1424,14 +1246,6 @@
   "sellSendPaymentNetworkFees": "নেটওয়ার্ক ফি",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "পেমেন্ট সম্পূর্ণ হয়েছে!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "চেইন-ভিত্তিক বিটকয়েন",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "উন্নত সেটিংস",
   "@sellAdvancedSettings": {
@@ -1447,14 +1261,10 @@
   },
   "viewerTapToCopy": "কপি করতে ট্যাপ করুন",
   "invoiceViewerTitle": "চালান",
-  "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
-  "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
   "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
   "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
   "sellPayoutBalance": "আমার অ্যাকাউন্ট ব্যালেন্সে যোগ করুন",
-  "sellPayoutSepaDescription": "উত্তোলনগুলি Leonod থেকে পাঠানো হিসেবে দেখায়",
   "sellPayoutTitle": "প্রাপক নির্বাচন করুন",
-  "sellPayoutNewBadge": "নতুন",
   "broadcastSignedTxErrorOutcomeUnknown": "আপনার লেনদেন সম্প্রচারিত হয়েছে কি না আমরা নিশ্চিত করতে পারিনি। আবার চেষ্টা করার আগে একটি ব্লক এক্সপ্লোরারে দেখে নিন।",
   "sendSelectedUtxosInsufficient": "নির্বাচিত UTXO প্রয়োজনীয় পরিমাণ কভার করে না",
   "@sendSelectedUtxosInsufficient": {

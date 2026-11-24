@@ -302,10 +302,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "লোড হচ্ছে..।",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "receiveShareInvoice": "চালান শেয়ার করুন",
   "@receiveShareInvoice": {
     "description": "Button to share invoice"
@@ -3484,10 +3480,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "ডিফল্ট ওয়ালেটসমূহ",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "লেবেল যোগ করুন",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4441,9 +4433,7 @@
   "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
   "recipientsTypeConfidentialSepaDescription": "উত্তোলনগুলি আপনার অ্যাকাউন্টের নামে নিজের অ্যাকাউন্টে স্থানান্তর হিসেবে দেখা যায়",
   "sellPayoutBalance": "আমার অ্যাকাউন্ট ব্যালেন্সে যোগ করুন",
-  "sellPayoutSepaDescription": "উত্তোলনগুলি Leonod থেকে পাঠানো হিসেবে দেখায়",
   "sellPayoutTitle": "প্রাপক নির্বাচন করুন",
-  "sellPayoutNewBadge": "নতুন",
   "coreScreensOutputsExceedInputs": "আউটপুট ইনপুটের চেয়ে বেশি: এই লেনদেনটি অবৈধ এবং নেটওয়ার্ক এটি প্রত্যাখ্যান করবে।",
   "swapUnderReviewTitle": "সোয়াপ পর্যালোচনাধীন",
   "swapUnderReviewDescription": "এই সোয়াপের জন্য ম্যানুয়াল পর্যালোচনা প্রয়োজন। সহায়তার জন্য সাপোর্টে যোগাযোগ করুন। আপনার সাপোর্ট অ্যাকাউন্ট না থাকলে শুধু একটি তৈরি করুন; KYC প্রয়োজন নেই।",

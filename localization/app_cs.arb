@@ -402,10 +402,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "Nahrávání ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "Čeština",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -3458,10 +3454,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "Výchozí peněženky",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "Přidat štítek",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4354,9 +4346,7 @@
   "copiedToClipboard": "Zkopírováno do schránky",
   "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu",
   "sellPayoutBalance": "Přidat k zůstatku mého účtu",
-  "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
   "sellPayoutTitle": "Vybrat příjemce",
-  "sellPayoutNewBadge": "NOVÉ",
   "coreScreensOutputsExceedInputs": "Výstupy převyšují vstupy: tato transakce je neplatná a síť ji odmítne.",
   "swapUnderReviewTitle": "Swap je v kontrole",
   "swapUnderReviewDescription": "Tento swap vyžaduje ruční kontrolu. Obraťte se na podporu. Pokud nemáte účet podpory, stačí si jej vytvořit; KYC není vyžadováno.",

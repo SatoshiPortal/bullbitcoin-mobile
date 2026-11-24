@@ -288,7 +288,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Гаманець за замовчуванням",
   "confirmButton": "Підтвердження",
   "recoveryPhraseTitle": "Напишіть слово відновлення\nв правильному порядку",
   "storeItSafelyMessage": "Зберігайте його кудись безпечно.",
@@ -434,7 +433,6 @@
   "coreScreensExternalTransfer": "Зовнішній обмін",
   "connectHardwareWalletKrux": "Кошик",
   "receiveSelectNetwork": "Оберіть мережу",
-  "sellLoadingGeneric": "Завантаження.",
   "bip85Mnemonic": "Мінуси",
   "receiveShareInvoice": "Надіслати запит",
   "testBackupWarningMessage": "Без резервної копії ви в кінцевому підсумку втратите доступ до ваших грошей. Важливо зробити резервну копію.",
@@ -1620,9 +1618,7 @@
   "copiedToClipboard": "Скопійовано в буфер обміну",
   "recipientsTypeConfidentialSepaDescription": "Зняття коштів відображаються як переказ самому собі з іменем вашого рахунку",
   "sellPayoutBalance": "Додати до балансу мого рахунку",
-  "sellPayoutSepaDescription": "Виведення відображаються як перекази від Leonod",
   "sellPayoutTitle": "Вибрати одержувача",
-  "sellPayoutNewBadge": "НОВЕ",
   "coreScreensOutputsExceedInputs": "Виходи перевищують входи: ця транзакція недійсна, і мережа її відхилить.",
   "swapUnderReviewTitle": "Обмін на перевірці",
   "swapUnderReviewDescription": "Цей обмін потребує ручної перевірки. Зверніться до підтримки по допомогу. Якщо у вас немає облікового запису підтримки, достатньо його створити; KYC не потрібен.",

@@ -2899,10 +2899,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Портфейли по подразбиране",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "Добави етикет",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -3661,7 +3657,6 @@
   "exchangeDcaAddressLabelBitcoin": "Bitcoin адрес",
   "exchangeDcaAddressLabelLightning": "Lightning адрес",
   "exchangeDcaAddressLabelLiquid": "Liquid адрес",
-  "sellLoadingGeneric": "Зареждане...",
   "allSeedViewTitle": "Преглед на seed фразите",
   "allSeedViewLoadingMessage": "Зареждането може да отнеме известно време, ако имате много seed фрази на това устройство.",
   "allSeedViewNoSeedsFound": "Не са намерени seed фрази.",
@@ -3763,9 +3758,7 @@
   "copiedToClipboard": "Копирано в клипборда",
   "recipientsTypeConfidentialSepaDescription": "Тегленията се показват като превод към вас самите с името на вашата сметка",
   "sellPayoutBalance": "Добавяне към баланса по моята сметка",
-  "sellPayoutSepaDescription": "Тегленията се показват като изпратени от Leonod",
   "sellPayoutTitle": "Избор на получател",
-  "sellPayoutNewBadge": "НОВО",
   "coreScreensOutputsExceedInputs": "Изходите надвишават входовете: тази транзакция е невалидна и мрежата ще я отхвърли.",
   "swapUnderReviewTitle": "Обменът се проверява",
   "swapUnderReviewDescription": "Този обмен изисква ръчна проверка. Свържете се с поддръжката за съдействие. Ако нямате акаунт за поддръжка, трябва само да създадете такъв; KYC не се изисква.",

@@ -500,16 +500,10 @@
   "recipientsConfidentialSepaNameMustMatchHint": "आपके बैंक और वर्चुअल IBAN खातों के नाम मेल खाने चाहिए, वरना ट्रांसफ़र अपने-आप लौटा दिए जाएँगे।",
   "recipientsFieldBankAccountIban": "बैंक खाता संख्या (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "निकासी आपके खाते के नाम से खुद को किए गए ट्रांसफ़र के रूप में दिखाई देती है",
-  "withdrawOwnershipQuestion": "यह कौन है?",
-  "withdrawOwnershipOtherAccount": "यह किसी और का खाता है",
-  "withdrawAboveMaxAmountError": "अधिकतम राशि है {amount} {currency}",
-  "withdrawBelowMinAmountError": "न्यूनतम राशि है {amount} {currency}",
   "withdrawAmountContinue": "जारी",
-  "withdrawUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।।",
   "withdrawConfirmTitle": "वापसी की पुष्टि करें",
   "withdrawConfirmAmount": "राशि",
   "withdrawConfirmButton": "वापसी की पुष्टि करें",
-  "withdrawOwnershipMyAccount": "यह मेरा खाता है",
   "withdrawAmountTitle": "वापसी",
   "withdrawConfirmRecipientName": "Recipient name",
   "withdrawSuccessOrderDetails": "ऑर्डर विवरण",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "सुरक्षा प्रश्न 3–40 अक्षरों का होना चाहिए",
   "withdrawInteracSecurityAnswerLengthError": "सुरक्षा उत्तर 3–40 अक्षरों का होना चाहिए",
   "withdrawInteracSecurityAnswerFormatError": "बिना स्पेस के अक्षर, अंक या हाइफ़न का उपयोग करें",
-  "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
-  "withdrawConfidentialSepaNotActivatedError": "कृपया इस SEPA प्राप्तकर्ता के लिए गोपनीय भुगतान विकल्प सक्रिय करें।",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,14 +967,6 @@
   "dcaAccountUnavailableError": "आपका खाता लोड नहीं हो सका। अपना कनेक्शन जाँचें, सुनिश्चित करें कि आप लॉग इन हैं और फिर से प्रयास करें।",
   "dcaLightningAddressRequiredError": "अपनी खरीदारी प्राप्त करने के लिए एक Lightning पता दर्ज करें।",
   "dcaOrderCreationError": "आवर्ती खरीद नहीं बनाई जा सकी। कृपया बाद में फिर से प्रयास करें।",
-  "payPleasePayInvoice": "कृपया इस चालान का भुगतान करें",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "भुगतान राशि",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "उन्नत विकल्प",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -999,25 +983,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "प्राप्ति राशि",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "नेटवर्क शुल्क",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "इस वॉलेट से आप अधिकतम {amount} का भुगतान कर सकते हैं।",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "लोड ..।",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "भुगतान प्रगति में है!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "पूरा KYC",
   "@sellCompleteKYC": {
@@ -1027,49 +995,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "बाहरी वॉलेट",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "अमान्य स्थिति",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "आप इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि से कम बेचने की कोशिश कर रहे हैं।",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "EUR शेष",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "नेटवर्क चुनें",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "कोई चालान डेटा उपलब्ध नहीं",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "राशि",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "यह बिक्री ऑर्डर पहले ही पुष्टि हो चुका है।",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "कोई विवरण उपलब्ध नहीं",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "QR code दिखाएं",
   "@sellShowQrCode": {
@@ -1095,25 +1031,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "ऑर्डर पूर्ण!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "कृपया यह invoice चुकाएं",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "नेटवर्क चुनें",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "CAD शेष",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष राशि नहीं है।",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "मूल्य रिफ्रेश होगा ",
   "@sellPriceWillRefreshIn": {
@@ -1135,10 +1055,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "विनिमय दर",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "कॉपी",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1159,10 +1075,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "जारी",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "Bitcoin ऑन-चेन",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1175,17 +1087,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "कोई invoice डेटा उपलब्ध नहीं",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "आप इस invoice का भुगतान कैसे करना चाहते हैं?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "भुगतान करें",
-  "payDescriptionLabel": "भुगतान विवरण (वैकल्पिक)",
-  "payDescriptionHint": "इस भुगतान के लिए एक नोट जोड़ें",
   "payPaymentDescription": "भुगतान विवरण",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1193,18 +1095,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "होम पर जाएं",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "इस बिक्री ऑर्डर को पूरा करने के लिए चुने गए वॉलेट में अपर्याप्त शेष है।",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "वॉलेट चुनें",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "जारी रखें",
   "@payContinue": {
@@ -1218,10 +1108,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "किसी अन्य Bitcoin वॉलेट से भुगतान करें",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "शुल्क प्राथमिकता",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1230,17 +1116,9 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "sellBitcoinPriceLabel": "बिटकॉइन मूल्य",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "closeDialogButton": "बंद",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "Bitcoin मूल्य",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "MXN शेष",
   "@sellMxnBalance": {
@@ -1262,16 +1140,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "आप इस चालान का भुगतान कैसे करना चाहते हैं?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "आप किस वॉलेट से भुगतान करना चाहते हैं?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "सबसे तेज़",
   "@sellFastest": {
@@ -1293,10 +1163,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "Bitcoin राशि",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "विनिमय दर",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1304,10 +1170,6 @@
   "sellTitle": "Bitcoin बेचें",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "USD शेष",
   "@sellUsdBalance": {
@@ -1325,21 +1187,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "इस वॉलेट से आप न्यूनतम {amount} का भुगतान कर सकते हैं।",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "भुगतान प्राप्तकर्ता",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "वॉलेट चुनें",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "संदर्भ संख्या",
   "@paySinpeNumeroComprobante": {
@@ -1352,10 +1202,6 @@
   "payRecipientName": "प्राप्तकर्ता का नाम",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "भुगतान की पुष्टि करें",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "भुगतान की पुष्टि करें",
   "@sellConfirmPayment": {
@@ -1373,49 +1219,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "बाहरी वॉलेट",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "आदेश विवरण",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "आप इस वॉलेट से बेची जा सकने वाली अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Liquid Network",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "बिक्री ऑर्डर नहीं मिला। कृपया पुनः प्रयास करें।",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "उन्नत विकल्प",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "प्राप्तकर्ता का विवरण",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "ऑर्डर नंबर",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "हो गया",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "बिक्री प्रगति में है...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "उन्नत सेटिंग",
   "@payAdvancedSettings": {
@@ -1424,14 +1246,6 @@
   "sellSendPaymentNetworkFees": "नेटवर्क शुल्क",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "भुगतान पूर्ण हुआ!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin ऑन-चेन",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "उन्नत सेटिंग्स",
   "@sellAdvancedSettings": {
@@ -1447,14 +1261,10 @@
   },
   "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
   "invoiceViewerTitle": "चालान",
-  "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
-  "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
   "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
   "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
   "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
-  "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
   "sellPayoutTitle": "प्राप्तकर्ता चुनें",
-  "sellPayoutNewBadge": "नया",
   "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
   "sendSelectedUtxosInsufficient": "चुने गए UTXO आवश्यक राशि को कवर नहीं करते",
   "@sendSelectedUtxosInsufficient": {

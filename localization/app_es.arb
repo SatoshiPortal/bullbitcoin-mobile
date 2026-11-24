@@ -289,7 +289,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Billeteras predeterminadas",
   "confirmButton": "Confirmar",
   "recoveryPhraseTitle": "Escribe tu frase de recuperación\nen el orden correcto",
   "storeItSafelyMessage": "Guárdala en un lugar seguro.",
@@ -1258,7 +1257,6 @@
   "exchangeDcaAddressLabelBitcoin": "Dirección Bitcoin",
   "exchangeDcaAddressLabelLightning": "Dirección Lightning",
   "exchangeDcaAddressLabelLiquid": "Dirección Liquid",
-  "sellLoadingGeneric": "Cargando...",
   "allSeedViewTitle": "Visualizador de Semillas",
   "allSeedViewLoadingMessage": "Esto puede tardar un tiempo en cargar si tiene muchas semillas en este dispositivo.",
   "allSeedViewNoSeedsFound": "No se encontraron semillas.",
@@ -1631,9 +1629,7 @@
   "coinsSweepTitle": "Barrer monedas",
   "recipientsTypeConfidentialSepaDescription": "Los retiros aparecen como una transferencia a ti mismo con el nombre de tu cuenta",
   "sellPayoutBalance": "Agregar a mi saldo de cuenta",
-  "sellPayoutSepaDescription": "Los retiros aparecen como enviados por Leonod",
   "sellPayoutTitle": "Seleccionar destinatario",
-  "sellPayoutNewBadge": "NUEVO",
   "allSeedViewSwapLinkedWallet": "Billetera vinculada: {fingerprint}",
   "allSeedViewSwapMnemonicTitle": "Frase mnemónica de intercambios",
   "allSeedViewDeleteSwapMnemonicTitle": "¿Eliminar la frase mnemónica de intercambios?",

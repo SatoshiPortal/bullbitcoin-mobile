@@ -275,10 +275,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "التعبئة...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "Mnemonic",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -3132,10 +3128,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "الجدار الافتراضي",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "Add Label",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4353,9 +4345,7 @@
   "copiedToClipboard": "تم النسخ إلى الحافظة",
   "recipientsTypeConfidentialSepaDescription": "تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك",
   "sellPayoutBalance": "إضافة إلى رصيد حسابي",
-  "sellPayoutSepaDescription": "تظهر عمليات السحب على أنها مرسلة من Leonod",
   "sellPayoutTitle": "اختر المستلم",
-  "sellPayoutNewBadge": "جديد",
   "coreScreensOutputsExceedInputs": "المخرجات تتجاوز المدخلات: هذه المعاملة غير صالحة وسترفضها الشبكة.",
   "swapUnderReviewTitle": "المبادلة قيد المراجعة",
   "swapUnderReviewDescription": "تتطلب هذه المبادلة مراجعة يدوية. تواصل مع الدعم للحصول على المساعدة. إذا لم يكن لديك حساب دعم، فعليك فقط إنشاء حساب؛ لا يلزم KYC.",

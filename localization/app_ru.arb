@@ -96,7 +96,6 @@
   "sendSelectAmount": "Выберите сумму",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Выберите сеть",
-  "sellLoadingGeneric": "Загрузка...",
   "bip85Mnemonic": "Mnemonic",
   "receiveShareInvoice": "Счет-фактура",
   "transactionSwapDescChainFailed": "С вашим свопом возникла проблема. Свяжитесь с поддержкой, если средства не будут возвращены в течение 24 часов.",
@@ -1161,7 +1160,6 @@
     }
   },
   "importQrDeviceWalletName": "Название",
-  "defaultWalletsLabel": "По умолчанию",
   "receiveAddLabel": "Добавить этикетку",
   "receiveInvoiceExpiry": "Срок действия счета-фактуры в {time}",
   "@receiveInvoiceExpiry": {
@@ -1641,9 +1639,7 @@
   "copiedToClipboard": "Скопировано в буфер обмена",
   "recipientsTypeConfidentialSepaDescription": "Выводы средств отображаются как перевод самому себе с именем вашего счёта",
   "sellPayoutBalance": "Добавить к балансу моего счёта",
-  "sellPayoutSepaDescription": "Выводы отображаются как переводы от Leonod",
   "sellPayoutTitle": "Выбрать получателя",
-  "sellPayoutNewBadge": "НОВОЕ",
   "coreScreensOutputsExceedInputs": "Выходы превышают входы: эта транзакция недействительна, и сеть её отклонит.",
   "swapUnderReviewTitle": "Своп на проверке",
   "swapUnderReviewDescription": "Этот своп требует ручной проверки. Обратитесь в поддержку за помощью. Если у вас нет аккаунта поддержки, достаточно просто создать его; KYC не требуется.",

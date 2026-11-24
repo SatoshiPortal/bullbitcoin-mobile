@@ -509,19 +509,11 @@
   "withdrawSuccessTitle": "Withdrawal Shuru Hua",
   "withdrawSuccessOrderDetails": "Order details",
   "withdrawConfirmBankAccount": "Bank account",
-  "withdrawOwnershipQuestion": "Ye account kiska hai?",
-  "withdrawOwnershipMyAccount": "Ye mera account hai",
-  "withdrawOwnershipOtherAccount": "Ye kisi aur ka account hai",
-  "withdrawUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
-  "withdrawBelowMinAmountError": "Minimum amount hai {amount} {currency}",
-  "withdrawAboveMaxAmountError": "Maximum amount {amount} {currency} hai",
   "withdrawInteracSecurityDetailsTitle": "Transfer security details",
   "withdrawInteracSaveAsDefault": "In details ko default ke roop mein save karein",
   "withdrawInteracSecurityQuestionLengthError": "Security question 3-40 characters ka hona chahiye",
   "withdrawInteracSecurityAnswerLengthError": "Security answer 3-40 characters ka hona chahiye",
   "withdrawInteracSecurityAnswerFormatError": "Spaces ke bina letters, numbers ya hyphens use karein",
-  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.",
-  "withdrawConfidentialSepaNotActivatedError": "Kripya is SEPA recipient ke liye confidential payment option activate karein.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -979,53 +971,13 @@
   "@sellTitle": {
     "description": "AppBar title for sell screen"
   },
-  "sellSelectWallet": "Wallet Chuniye",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
-  },
   "sellWhichWalletQuestion": "Kis wallet se bechna chahte ho?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "sellExternalWallet": "Bahari wallet",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "sellFromAnotherWallet": "Doosre Bitcoin wallet se becho",
   "@sellFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
-  },
-  "sellAboveMaxAmountError": "Aap maximum raashi se zyada bechne ki koshish kar rahe ho is wallet se.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellBelowMinAmountError": "Aap minimum raashi se kam bechne ki koshish kar rahe ho is wallet se.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "sellInsufficientBalanceError": "Chunhe wallet mein itna balance nahi hai yeh sell order poora karne ke liye.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellUnauthenticatedError": "Aap logged in nahi ho. Jaari rakhne ke liye login karo.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "sellOrderNotFoundError": "Sell order nahi mila. Dobara koshish karo.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "sellOrderAlreadyConfirmedError": "Yeh sell order pehle hi confirm ho chuka hai.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
-  "sellSelectNetwork": "Network Chuniye",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "sellHowToPayInvoice": "Yeh invoice kaise pay karna chahte ho?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
   },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
@@ -1135,10 +1087,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellPleasePayInvoice": "Yeh invoice pay karo",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
   "sellBitcoinAmount": "Bitcoin raashi",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
@@ -1155,48 +1103,18 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "sellNoInvoiceData": "Koi invoice data nahi hai",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellInProgress": "Bechna jari hai...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
-  },
-  "sellGoHome": "Ghar jao",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellOrderCompleted": "Order poora hua!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
   "sellBalanceWillBeCredited": "Aapka account balance credit ho jayega jab aapka transaction onchain 1 confirmation le lega.",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
   "payTitle": "Pay Karo",
-  "payDescriptionLabel": "Bhugtan vivaran (vaikalpik)",
-  "payDescriptionHint": "Is bhugtan ke liye ek note jodein",
   "payPaymentDescription": "Bhugtan vivaran",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
-  "payPaymentInProgress": "Payment Ho Rahi Hai!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
-  },
   "payPriceRefreshIn": "Kimat refresh hogi ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "payWhichWallet": "Kis wallet se pay karna chahte ho?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
-  },
-  "payExternalWalletDescription": "Doosre Bitcoin wallet se pay karo",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
   },
   "payRbfActivated": "Replace-by-fee chalu hai",
   "@payRbfActivated": {
@@ -1218,14 +1136,6 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "sellSendPaymentContinue": "Continue",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
-  "sellBitcoinPriceLabel": "Bitcoin Price",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "sellViewDetailsButton": "Details dekho",
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
@@ -1238,10 +1148,6 @@
   "@sellKycPendingDescription": {
     "description": "Description explaining user must complete KYC before proceeding"
   },
-  "sellLoadingGeneric": "Load ho raha hai...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "payRecipientType": "Recipient type",
   "@payRecipientType": {
     "description": "Label for recipient type"
@@ -1250,73 +1156,9 @@
   "@payRecipientName": {
     "description": "Label for recipient name"
   },
-  "payRecipientDetails": "Recipient details",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
-  },
-  "payNoDetailsAvailable": "Koi details uplabdh nahi",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
-  },
-  "paySelectWallet": "Wallet Chunein",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
-  },
-  "payExternalWallet": "External wallet",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payAboveMaxAmountError": "Is wallet se aap zyada se zyada {amount} pay kar sakte hain.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "payBelowMinAmountError": "Is wallet se aap kam se kam {amount} pay kar sakte hain.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
-  "payInsufficientBalanceError": "Is pay order ko poora karne ke liye selected wallet mein balance kam hai.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "payUnauthenticatedError": "Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
-  "paySelectNetwork": "Network Chunein",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payHowToPayInvoice": "Aap is invoice ko kaise pay karna chahte hain?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "payConfirmPayment": "Payment Confirm Karein",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
-  },
   "payOrderNumber": "Order number",
   "@payOrderNumber": {
     "description": "Label for order number"
-  },
-  "payPayinAmount": "Payin amount",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
-  "payPayoutAmount": "Payout amount",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
-  "payExchangeRate": "Exchange rate",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
   },
   "payPayFromWallet": "Wallet se pay karein",
   "@payPayFromWallet": {
@@ -1362,18 +1204,6 @@
   "@payContinue": {
     "description": "Button to continue to next step"
   },
-  "payPleasePayInvoice": "Kripya is invoice ko pay karein",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payBitcoinAmount": "Bitcoin amount",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
-  "payBitcoinPrice": "Bitcoin Price",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
-  },
   "payCopyInvoice": "Invoice Copy karein",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
@@ -1386,14 +1216,6 @@
   "@payQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "payNoInvoiceData": "Koi invoice data uplabdh nahi",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "payInvalidState": "Invalid state",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
   "payViewDetails": "Details dekhein",
   "@payViewDetails": {
     "description": "Button to view order details"
@@ -1401,10 +1223,6 @@
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
-  },
-  "payCompleted": "Payment Poora Hua!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
   },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
@@ -1438,23 +1256,15 @@
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
   },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
   "viewerTapToCopy": "Copy karne ke liye tap karo",
   "invoiceViewerTitle": "Invoice",
-  "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
-  "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
   "copiedToClipboard": "Clipboard par copy kiya gaya",
   "sellPayoutBalance": "Mere account balance mein jodein",
-  "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
   "sellPayoutTitle": "Recipient Select Karo",
-  "sellPayoutNewBadge": "NAYA",
   "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
   "sendSelectedUtxosInsufficient": "Chunne hue UTXOs zaruri rashi ke liye kaafi nahi hain",
   "@sendSelectedUtxosInsufficient": {

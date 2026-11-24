@@ -306,10 +306,6 @@
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
   },
-  "sellLoadingGeneric": "लोड ..।",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "bip85Mnemonic": "मेन्यूनिक",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -3548,10 +3544,6 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "defaultWalletsLabel": "डिफ़ॉल्ट वॉलेट",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "receiveAddLabel": "लेबल जोड़ें",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -4452,9 +4444,7 @@
   "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
   "recipientsTypeConfidentialSepaDescription": "निकासी आपके खाते के नाम से खुद को किए गए ट्रांसफ़र के रूप में दिखाई देती है",
   "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
-  "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
   "sellPayoutTitle": "प्राप्तकर्ता चुनें",
-  "sellPayoutNewBadge": "नया",
   "coreScreensOutputsExceedInputs": "आउटपुट इनपुट से अधिक हैं: यह लेनदेन अमान्य है और नेटवर्क इसे अस्वीकार कर देगा।",
   "swapUnderReviewTitle": "समीक्षा के अधीन स्वैप",
   "swapUnderReviewDescription": "इस स्वैप की मैन्युअल समीक्षा आवश्यक है। सहायता के लिए सपोर्ट से संपर्क करें। यदि आपके पास सपोर्ट खाता नहीं है, तो आपको बस एक बनाना है; KYC आवश्यक नहीं है।",

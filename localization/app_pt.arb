@@ -97,7 +97,6 @@
   "sendSelectAmount": "Selecione o valor",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Selecione Rede",
-  "sellLoadingGeneric": "A carregar...",
   "bip85Mnemonic": "Mnemónica",
   "receiveShareInvoice": "Compartilhar Fatura",
   "transactionSwapDescChainFailed": "Houve um problema com seu swap. Entre em contato com o suporte se os fundos não forem devolvidos em até 24 horas.",
@@ -1162,7 +1161,6 @@
     }
   },
   "importQrDeviceWalletName": "Nome da carteira",
-  "defaultWalletsLabel": "Carteiras padrão",
   "receiveAddLabel": "Adicionar etiqueta",
   "receiveInvoiceExpiry": "A fatura expira em {time}",
   "@receiveInvoiceExpiry": {
@@ -1638,9 +1636,7 @@
   "copiedToClipboard": "Copiado para a área de transferência",
   "recipientsTypeConfidentialSepaDescription": "Os levantamentos aparecem como uma transferência para si próprio com o nome da sua conta",
   "sellPayoutBalance": "Adicionar ao saldo da minha conta",
-  "sellPayoutSepaDescription": "Os levantamentos aparecem como enviados pela Leonod",
   "sellPayoutTitle": "Selecionar destinatário",
-  "sellPayoutNewBadge": "NOVO",
   "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede irá rejeitá-la.",
   "swapUnderReviewTitle": "Swap em análise",
   "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",

@@ -500,16 +500,10 @@
   "recipientsConfidentialSepaNameMustMatchHint": "Τα ονόματα στην τράπεζά σας και στον εικονικό IBAN πρέπει να ταιριάζουν, διαφορετικά οι μεταφορές θα επιστρέφονται αυτόματα.",
   "recipientsFieldBankAccountIban": "Αριθμός τραπεζικού λογαριασμού (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας",
-  "withdrawOwnershipQuestion": "Ποιος ανήκει σε αυτόν τον λογαριασμό?",
-  "withdrawOwnershipOtherAccount": "Αυτός είναι ο λογαριασμός κάποιου άλλου",
-  "withdrawAboveMaxAmountError": "Μέγιστη ποσότητα είναι {amount} {currency}",
-  "withdrawBelowMinAmountError": "Ελάχιστη ποσότητα είναι {amount} {currency}",
   "withdrawAmountContinue": "Συνεχίστε να συνεχίζετε",
-  "withdrawUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
   "withdrawConfirmTitle": "Επιβεβαίωση απόσυρσης",
   "withdrawConfirmAmount": "Ποσο Ποσό Ποσο",
   "withdrawConfirmButton": "Επιβεβαίωση απόσυρσης",
-  "withdrawOwnershipMyAccount": "Αυτός είναι ο λογαριασμός μου",
   "withdrawAmountTitle": "Mdraw fiat",
   "withdrawConfirmRecipientName": "Μαθητές όνομα",
   "withdrawSuccessOrderDetails": "Διατάξει λεπτομέρειες",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "Η ερώτηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες",
   "withdrawInteracSecurityAnswerLengthError": "Η απάντηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες",
   "withdrawInteracSecurityAnswerFormatError": "Χρησιμοποιήστε γράμματα, αριθμούς ή παύλες χωρίς κενά",
-  "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
-  "withdrawConfidentialSepaNotActivatedError": "Ενεργοποιήστε την επιλογή εμπιστευτικής πληρωμής για αυτόν τον παραλήπτη SEPA.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,14 +967,6 @@
   "dcaAccountUnavailableError": "Δεν ήταν δυνατή η φόρτωση του λογαριασμού σας. Ελέγξτε τη σύνδεσή σας, βεβαιωθείτε ότι έχετε συνδεθεί και δοκιμάστε ξανά.",
   "dcaLightningAddressRequiredError": "Εισαγάγετε μια διεύθυνση Lightning για να λαμβάνετε τις αγορές σας.",
   "dcaOrderCreationError": "Δεν ήταν δυνατή η δημιουργία της επαναλαμβανόμενης αγοράς. Δοκιμάστε ξανά αργότερα.",
-  "payPleasePayInvoice": "Πληρώστε αυτό το τιμολόγιο",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "Ποσό Payin",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "Προχωρημένες επιλογές",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -999,25 +983,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "Ποσό πληρωμής",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "Network χρεώσεις",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "Το μέγιστο ποσό που μπορείτε να πληρώσετε με αυτό το πορτοφόλι είναι {amount}.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "Φόρισμα...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "Πληρωμή σε εξέλιξη!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "Πλήρης KYC",
   "@sellCompleteKYC": {
@@ -1027,49 +995,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Δίκτυο Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "Εξωτερικό πορτοφόλι",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "Ακυρωμένη πολιτεία",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "Προσπαθείτε να πουλήσετε κάτω από το ελάχιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "EUR EUR EUR EUR EUR EUR ισορροπία ισορροπία",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "Επιλέξτε Network",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "Δεν υπάρχουν διαθέσιμα δεδομένα τιμολογίων",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "Ποσο Ποσό Ποσο",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "Αυτή η σειρά πώλησης έχει ήδη επιβεβαιωθεί.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE ENVIADO!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "Δεν υπάρχουν διαθέσιμες λεπτομέρειες",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "Show QR code",
   "@sellShowQrCode": {
@@ -1095,25 +1031,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "Η τάξη ολοκληρώθηκε!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "Πληρώστε αυτό το τιμολόγιο",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "Επιλέξτε Network",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "CAD CAD CAD CAD ισορροπία ισορροπία",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@sellPriceWillRefreshIn": {
@@ -1135,10 +1055,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "Συναλλαγματική ισοτιμία",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "Αντιγραφή",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1159,10 +1075,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "Συνεχίστε να συνεχίζετε",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1175,17 +1087,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "Δεν υπάρχουν διαθέσιμα δεδομένα τιμολογίων",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "Πώς θέλετε να πληρώσετε αυτό το τιμολόγιο?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "Pay",
-  "payDescriptionLabel": "Περιγραφή πληρωμής (προαιρετικό)",
-  "payDescriptionHint": "Προσθέστε μια σημείωση για αυτήν την πληρωμή",
   "payPaymentDescription": "Περιγραφή πληρωμής",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1193,18 +1095,6 @@
   "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "Πήγαινε σπίτι",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πώλησης.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "Επιλέξτε Wallet",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "Συνεχίστε να συνεχίζετε",
   "@payContinue": {
@@ -1218,10 +1108,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "Πληρώστε από ένα άλλο πορτοφόλι Bitcoin",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "Προτεραιότητα",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1230,17 +1116,9 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "sellBitcoinPriceLabel": "Bitcoin Price",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "closeDialogButton": "Κλείστε κοντά",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "Bitcoin Price",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "MXN ισορροπία ισορροπία",
   "@sellMxnBalance": {
@@ -1262,16 +1140,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "Πώς θέλετε να πληρώσετε αυτό το τιμολόγιο?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "Ποιο πορτοφόλι θέλετε να πληρώσετε από?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "Πιο γρήγορα",
   "@sellFastest": {
@@ -1293,10 +1163,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "Bitcoin ποσό Bitcoin",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "Συναλλαγματική ισοτιμία",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1304,10 +1170,6 @@
   "sellTitle": "Πουλά Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "USD USD USD USD USD USD ισορροπία ισορροπία",
   "@sellUsdBalance": {
@@ -1325,21 +1187,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "Το ελάχιστο ποσό που μπορείτε να πληρώσετε με αυτό το πορτοφόλι είναι {amount}.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "Payout παραλήπτη παραλήπτη",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "Επιλέξτε Wallet",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "Αριθμός αναφοράς",
   "@paySinpeNumeroComprobante": {
@@ -1352,10 +1202,6 @@
   "payRecipientName": "Μαθητές όνομα",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "Επιβεβαίωση πληρωμών",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "Επιβεβαίωση πληρωμής",
   "@sellConfirmPayment": {
@@ -1373,49 +1219,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "Εξωτερικό πορτοφόλι",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "Λεπτομέρειες παραγγελίας",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "Προσπαθείτε να πουλήσετε πάνω από το μέγιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "Liquid Network",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "Η σειρά πώλησης δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "Προχωρημένες επιλογές",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "Μαθητές λεπτομέρειες",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "Αριθμός εντολών",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "Έγινε",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "Πουλήστε στην πρόοδο...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "Προχωρημένες ρυθμίσεις",
   "@payAdvancedSettings": {
@@ -1424,14 +1246,6 @@
   "sellSendPaymentNetworkFees": "Network χρεώσεις",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "Πληρωμένη πληρωμή!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "Bitcoin on-chain",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "Προχωρημένες ρυθμίσεις",
   "@sellAdvancedSettings": {
@@ -1444,14 +1258,10 @@
   "viewerTapToCopy": "Πατήστε για αντιγραφή",
   "invoiceViewerTitle": "Τιμολόγιο",
   "paySinpeReceipt": "Απόδειξη SINPE",
-  "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
-  "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
   "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
   "sellPayoutBalance": "Προσθήκη στο υπόλοιπο του λογαριασμού μου",
-  "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
   "sellPayoutTitle": "Επιλογή παραλήπτη",
-  "sellPayoutNewBadge": "ΝΕΟ",
   "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
   "sendSelectedUtxosInsufficient": "Το επιλεγμένο utxos δεν καλύπτει απαιτούμενο ποσό",
   "@sendSelectedUtxosInsufficient": {

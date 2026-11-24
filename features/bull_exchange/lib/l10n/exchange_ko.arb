@@ -500,16 +500,10 @@
   "recipientsConfidentialSepaNameMustMatchHint": "은행 계좌와 가상 IBAN 계좌의 이름이 일치해야 하며, 그렇지 않으면 송금이 자동으로 반환됩니다.",
   "recipientsFieldBankAccountIban": "은행 계좌번호 (IBAN)",
   "recipientsTypeConfidentialSepaDescription": "출금 내역은 본인 계좌명으로 자신에게 이체한 것으로 표시됩니다",
-  "withdrawOwnershipQuestion": "이 계정은 누구에게 속합니까?",
-  "withdrawOwnershipOtherAccount": "이것은 다른 사람의 계정입니다",
-  "withdrawAboveMaxAmountError": "최대 금액은 {amount} {currency}",
-  "withdrawBelowMinAmountError": "최소 금액은 {amount} {currency}",
   "withdrawAmountContinue": "계속하기",
-  "withdrawUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
   "withdrawConfirmTitle": "자주 묻는 질문",
   "withdrawConfirmAmount": "계정 정보",
   "withdrawConfirmButton": "자주 묻는 질문",
-  "withdrawOwnershipMyAccount": "내 계정",
   "withdrawAmountTitle": "인출 fiat",
   "withdrawConfirmRecipientName": "이름 *",
   "withdrawSuccessOrderDetails": "자주 묻는 질문",
@@ -520,8 +514,6 @@
   "withdrawInteracSecurityQuestionLengthError": "보안 질문은 3~40자여야 합니다",
   "withdrawInteracSecurityAnswerLengthError": "보안 답변은 3~40자여야 합니다",
   "withdrawInteracSecurityAnswerFormatError": "공백 없이 문자, 숫자 또는 하이픈을 사용하세요",
-  "withdrawUnexpectedError": "출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
-  "withdrawConfidentialSepaNotActivatedError": "이 SEPA 수신자에 대해 기밀 결제 옵션을 활성화해 주세요.",
   "limitOrdersTitle": "Limit orders",
   "limitOrdersActiveTitle": "Active limit orders",
   "limitOrdersCreateNew": "Create new",
@@ -975,14 +967,6 @@
   "dcaAccountUnavailableError": "계정을 불러올 수 없습니다. 인터넷 연결과 로그인 상태를 확인한 뒤 다시 시도하세요.",
   "dcaLightningAddressRequiredError": "구매한 비트코인을 받을 Lightning 주소를 입력하세요.",
   "dcaOrderCreationError": "반복 구매를 생성할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "payPleasePayInvoice": "결제하기",
-  "@payPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "payPayinAmount": "Payin 금액",
-  "@payPayinAmount": {
-    "description": "Label for amount user pays in"
-  },
   "sellAdvancedOptions": "고급 옵션",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -999,25 +983,9 @@
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "payPayoutAmount": "결제 금액",
-  "@payPayoutAmount": {
-    "description": "Label for amount user receives"
-  },
   "payNetworkFees": "네트워크 수수료",
   "@payNetworkFees": {
     "description": "Label for network fees amount"
-  },
-  "payAboveMaxAmountError": "이 지갑으로 결제할 수 있는 최대 금액은 {amount}입니다.",
-  "@payAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
-  },
-  "sellLoadingGeneric": "로드 중 ...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
-  "payPaymentInProgress": "결제 진행 중!",
-  "@payPaymentInProgress": {
-    "description": "Title for payment in progress screen"
   },
   "sellCompleteKYC": "완료 KYC",
   "@sellCompleteKYC": {
@@ -1027,49 +995,17 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payLightningNetwork": "Lightning 네트워크",
-  "@payLightningNetwork": {
-    "description": "Option for Lightning Network payment"
-  },
-  "sellExternalWallet": "외부 지갑",
-  "@sellExternalWallet": {
-    "description": "Option for external wallet"
-  },
-  "payInvalidState": "잘못된 상태",
-  "@payInvalidState": {
-    "description": "Error message for invalid state"
-  },
-  "sellBelowMinAmountError": "이 지갑과 함께 판매 할 수있는 최소 금액 아래 판매하려고합니다.",
-  "@sellBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellEurBalance": "EUR 유로 (주)",
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
-  },
-  "sellSelectNetwork": "네트워크",
-  "@sellSelectNetwork": {
-    "description": "Screen title for network selection"
-  },
-  "payNoInvoiceData": "사용 가능한 청구서",
-  "@payNoInvoiceData": {
-    "description": "Message when no invoice data available"
   },
   "paySinpeMonto": "계정 정보",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
   },
-  "sellOrderAlreadyConfirmedError": "이 판매 순서는 이미 확인되었습니다.",
-  "@sellOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySinpeEnviado": "SINPE 엔비 아도!",
   "@paySinpeEnviado": {
     "description": "Success message for SINPE payment (Spanish, kept as is)"
-  },
-  "payNoDetailsAvailable": "자주 묻는 질문",
-  "@payNoDetailsAvailable": {
-    "description": "Message when recipient details not available"
   },
   "sellShowQrCode": "QR 코드 보기",
   "@sellShowQrCode": {
@@ -1095,25 +1031,9 @@
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
-  "sellOrderCompleted": "주문 완료!",
-  "@sellOrderCompleted": {
-    "description": "Success message for completed order"
-  },
-  "sellPleasePayInvoice": "결제하기",
-  "@sellPleasePayInvoice": {
-    "description": "Title for receive payment screen"
-  },
-  "paySelectNetwork": "네트워크",
-  "@paySelectNetwork": {
-    "description": "Screen title for network selection"
-  },
   "sellCadBalance": "자료실 (주)",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "payInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 지불 순서를 완료합니다.",
-  "@payInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
   },
   "sellPriceWillRefreshIn": "가격은 상쾌합니다 ",
   "@sellPriceWillRefreshIn": {
@@ -1135,10 +1055,6 @@
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
-  "payExchangeRate": "환율",
-  "@payExchangeRate": {
-    "description": "Label for exchange rate"
-  },
   "copyDialogButton": "관련 기사",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -1159,10 +1075,6 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "sellSendPaymentContinue": "계속하기",
-  "@sellSendPaymentContinue": {
-    "description": "Continue button on sell payment"
-  },
   "sellBitcoinOnChain": "비트코인",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
@@ -1175,17 +1087,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "sellNoInvoiceData": "사용 가능한 청구서",
-  "@sellNoInvoiceData": {
-    "description": "Message when no invoice data available"
-  },
-  "sellHowToPayInvoice": "이 청구서를 지불하려면 어떻게해야합니까?",
-  "@sellHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "payTitle": "결제하기",
-  "payDescriptionLabel": "결제 설명 (선택 사항)",
-  "payDescriptionHint": "이 결제에 대한 메모를 추가하세요",
   "payPaymentDescription": "결제 설명",
   "@payTitle": {
     "description": "Screen title for pay feature"
@@ -1193,18 +1095,6 @@
   "sellQrCode": "QR 코드",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
-  },
-  "sellGoHome": "오시는 길",
-  "@sellGoHome": {
-    "description": "Button to go to home screen"
-  },
-  "sellInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 판매 주문을 완료합니다.",
-  "@sellInsufficientBalanceError": {
-    "description": "Error message for insufficient balance"
-  },
-  "sellSelectWallet": "지갑 선택",
-  "@sellSelectWallet": {
-    "description": "Dropdown to choose source wallet"
   },
   "payContinue": "계속하기",
   "@payContinue": {
@@ -1218,10 +1108,6 @@
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
-  "payExternalWalletDescription": "다른 Bitcoin 지갑에서 지불",
-  "@payExternalWalletDescription": {
-    "description": "Description for external wallet option"
-  },
   "sellFeePriority": "요금 우선",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
@@ -1230,17 +1116,9 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "sellBitcoinPriceLabel": "Bitcoin 가격",
-  "@sellBitcoinPriceLabel": {
-    "description": "Label for Bitcoin price display"
-  },
   "closeDialogButton": "뚱 베어",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "payBitcoinPrice": "Bitcoin 가격",
-  "@payBitcoinPrice": {
-    "description": "Label for Bitcoin exchange rate"
   },
   "sellMxnBalance": "비트 코인 (주)",
   "@sellMxnBalance": {
@@ -1262,16 +1140,8 @@
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "payHowToPayInvoice": "이 청구서를 지불하려면 어떻게해야합니까?",
-  "@payHowToPayInvoice": {
-    "description": "Question for payment method selection"
-  },
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
-  },
-  "payWhichWallet": "어떤 지갑에서 지불 하시겠습니까?",
-  "@payWhichWallet": {
-    "description": "Question prompt for wallet selection"
   },
   "sellFastest": "빠른 속도",
   "@sellFastest": {
@@ -1293,10 +1163,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "payBitcoinAmount": "비트 코인 금액",
-  "@payBitcoinAmount": {
-    "description": "Label for Bitcoin amount"
-  },
   "sellExchangeRate": "환율",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -1304,10 +1170,6 @@
   "sellTitle": "비트코인",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "sellUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
-  "@sellUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
   },
   "sellUsdBalance": "100원 (주)",
   "@sellUsdBalance": {
@@ -1325,21 +1187,9 @@
   "@paySinpeNumeroOrden": {
     "description": "Label for order number in SINPE details"
   },
-  "payBelowMinAmountError": "이 지갑으로 결제할 수 있는 최소 금액은 {amount}입니다.",
-  "@payBelowMinAmountError": {
-    "description": "Error message for amount below minimum"
-  },
   "sellPayoutRecipient": "Payout 수신자",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
-  },
-  "payLiquidNetwork": "액체 네트워크",
-  "@payLiquidNetwork": {
-    "description": "Option for Liquid Network payment"
-  },
-  "paySelectWallet": "지갑 선택",
-  "@paySelectWallet": {
-    "description": "Label for wallet selection dropdown in payment"
   },
   "paySinpeNumeroComprobante": "참고 번호",
   "@paySinpeNumeroComprobante": {
@@ -1352,10 +1202,6 @@
   "payRecipientName": "이름 *",
   "@payRecipientName": {
     "description": "Label for recipient name"
-  },
-  "payConfirmPayment": "결제방법",
-  "@payConfirmPayment": {
-    "description": "Button text to confirm and execute payment"
   },
   "sellConfirmPayment": "결제방법",
   "@sellConfirmPayment": {
@@ -1373,49 +1219,25 @@
   "@payFastest": {
     "description": "Display text for fastest fee option"
   },
-  "payExternalWallet": "외부 지갑",
-  "@payExternalWallet": {
-    "description": "Option for external wallet"
-  },
   "payOrderDetails": "주문 세부 사항",
   "@payOrderDetails": {
     "description": "Title for SINPE order details screen"
-  },
-  "sellAboveMaxAmountError": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
-  "@sellAboveMaxAmountError": {
-    "description": "Error message for amount above maximum"
   },
   "sellLiquidNetwork": "액체 네트워크",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "sellOrderNotFoundError": "판매 주문은 찾을 수 없습니다. 다시 시도하십시오.",
-  "@sellOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
   "payAdvancedOptions": "고급 옵션",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
-  },
-  "payRecipientDetails": "자주 묻는 질문",
-  "@payRecipientDetails": {
-    "description": "Label for recipient details"
   },
   "sellOrderNumber": "주문 번호",
   "@sellOrderNumber": {
     "description": "Label for order number"
   },
-  "payUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
-  "@payUnauthenticatedError": {
-    "description": "Error message for unauthenticated user"
-  },
   "payDone": "한국어",
   "@payDone": {
     "description": "Button to close bottom sheet"
-  },
-  "sellInProgress": "진행 중...",
-  "@sellInProgress": {
-    "description": "Message for sell in progress"
   },
   "payAdvancedSettings": "고급 설정",
   "@payAdvancedSettings": {
@@ -1424,14 +1246,6 @@
   "sellSendPaymentNetworkFees": "네트워크 수수료",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payCompleted": "결제 완료!",
-  "@payCompleted": {
-    "description": "Title for payment completed screen"
-  },
-  "payBitcoinOnchain": "비트코인",
-  "@payBitcoinOnchain": {
-    "description": "Option for Bitcoin on-chain payment"
   },
   "sellAdvancedSettings": "고급 설정",
   "@sellAdvancedSettings": {
@@ -1444,14 +1258,10 @@
   "viewerTapToCopy": "복사하려면 탭하세요",
   "invoiceViewerTitle": "인보이스",
   "paySinpeReceipt": "SINPE 영수증",
-  "sellUnexpectedError": "판매 주문을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
-  "sellErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
   "copiedToClipboard": "클립보드에 복사되었습니다",
   "sellPayoutBalance": "내 계정 잔액에 추가",
-  "sellPayoutSepaDescription": "출금 내역의 송금인이 Leonod로 표시됩니다",
   "sellPayoutTitle": "수신자 선택",
-  "sellPayoutNewBadge": "신규",
   "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
   "sendSelectedUtxosInsufficient": "선택된 utxos는 필요한 금액을 커버하지 않습니다",
   "@sendSelectedUtxosInsufficient": {

@@ -97,7 +97,6 @@
   "sendSelectAmount": "Seleziona l'importo",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Seleziona la rete",
-  "sellLoadingGeneric": "Caricamento...",
   "bip85Mnemonic": "Mnemonica",
   "receiveShareInvoice": "Condividi la fattura",
   "transactionSwapDescChainFailed": "Si è verificato un problema con il tuo swap. Contatta il supporto se i fondi non sono stati restituiti entro 24 ore.",
@@ -1163,7 +1162,6 @@
     }
   },
   "importQrDeviceWalletName": "Nome del portafoglio",
-  "defaultWalletsLabel": "Portafogli predefiniti",
   "receiveAddLabel": "Aggiungi l'etichetta",
   "receiveInvoiceExpiry": "La fattura scade in {time}",
   "@receiveInvoiceExpiry": {
@@ -1632,9 +1630,7 @@
   "copiedToClipboard": "Copiato negli appunti",
   "recipientsTypeConfidentialSepaDescription": "I prelievi appaiono come un trasferimento a sé stessi con il nome del proprio conto",
   "sellPayoutBalance": "Aggiungi al saldo del mio account",
-  "sellPayoutSepaDescription": "I prelievi appaiono come inviati da Leonod",
   "sellPayoutTitle": "Seleziona destinatario",
-  "sellPayoutNewBadge": "NUOVO",
   "torSettingsExternalProxyUnavailable": "Proxy SOCKS5 non disponibile",
   "walletSpExperimental": "Sperimentale",
   "walletSpTitle": "Silent Payments",

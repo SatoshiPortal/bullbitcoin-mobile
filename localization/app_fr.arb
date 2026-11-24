@@ -287,7 +287,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Portefeuilles par défaut",
   "confirmButton": "Confirmer",
   "recoveryPhraseTitle": "Notez votre phrase de récupération\ndans le bon ordre",
   "storeItSafelyMessage": "Conservez-la dans un endroit sûr.",
@@ -1292,7 +1291,6 @@
   "exchangeDcaAddressLabelBitcoin": "Adresse Bitcoin",
   "exchangeDcaAddressLabelLightning": "Adresse Lightning",
   "exchangeDcaAddressLabelLiquid": "Adresse Liquid",
-  "sellLoadingGeneric": "Chargement...",
   "allSeedViewTitle": "Visualiseur de Graines",
   "allSeedViewLoadingMessage": "Cela peut prendre un certain temps à charger si vous avez beaucoup de graines sur cet appareil.",
   "allSeedViewNoSeedsFound": "Aucune graine trouvée.",
@@ -1649,9 +1647,7 @@
   "settingsPayjoinSatsUnit": "sats",
   "recipientsTypeConfidentialSepaDescription": "Les retraits apparaissent comme un virement à vous-même au nom de votre compte",
   "sellPayoutBalance": "Ajouter à mon solde de compte",
-  "sellPayoutSepaDescription": "Les retraits apparaissent comme envoyés par Leonod",
   "sellPayoutTitle": "Sélectionner le destinataire",
-  "sellPayoutNewBadge": "NOUVEAU",
   "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",

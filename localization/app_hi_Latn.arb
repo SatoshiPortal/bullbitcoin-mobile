@@ -1056,10 +1056,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Default Wallets",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "confirmButton": "Confirm Karo",
   "@confirmButton": {
     "description": "Button label to confirm action"
@@ -3783,10 +3779,6 @@
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
   },
-  "sellLoadingGeneric": "Load ho raha hai...",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4360,9 +4352,7 @@
   "copiedToClipboard": "Clipboard par copy kiya gaya",
   "recipientsTypeConfidentialSepaDescription": "Withdrawals aapke account ke naam se khud ko kiye gaye transfer ke roop mein dikhte hain",
   "sellPayoutBalance": "Mere account balance mein jodein",
-  "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
   "sellPayoutTitle": "Recipient Select Karo",
-  "sellPayoutNewBadge": "NAYA",
   "coreScreensOutputsExceedInputs": "Outputs inputs se zyada hain: yeh transaction invalid hai aur network ise reject kar dega.",
   "swapUnderReviewTitle": "Swap under review",
   "swapUnderReviewDescription": "Is swap ki manual review ki zaroorat hai. Madad ke liye support se sampark karo. Agar aapke paas support account nahi hai, toh bas ek bana lo; KYC ki zaroorat nahi hai.",

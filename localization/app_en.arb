@@ -1179,10 +1179,6 @@
       }
     }
   },
-  "defaultWalletsLabel": "Default Wallets",
-  "@defaultWalletsLabel": {
-    "description": "Label for default wallets"
-  },
   "confirmButton": "Confirm",
   "@confirmButton": {
     "description": "Button label to confirm action"
@@ -4034,10 +4030,6 @@
   "@exchangeDcaAddressLabelLiquid": {
     "description": "Label for Liquid address in DCA settings"
   },
-  "sellLoadingGeneric": "Loading…",
-  "@sellLoadingGeneric": {
-    "description": "Generic loading message"
-  },
   "allSeedViewTitle": "Seed Viewer",
   "@allSeedViewTitle": {
     "description": "Title for the seed viewer screen"
@@ -4910,17 +4902,9 @@
   "@sellPayoutBalance": {
     "description": "EUR Sell payout option matching BBX: credit the user's exchange account balance."
   },
-  "sellPayoutSepaDescription": "Withdrawals appear as sent by Leonod",
-  "@sellPayoutSepaDescription": {
-    "description": "EUR Sell regular SEPA explanation matching BBX: the bank transfer appears as sent by Leonod."
-  },
   "sellPayoutTitle": "Select recipient",
   "@sellPayoutTitle": {
     "description": "Title for the EUR Sell payout selection screen, matching BBX Select recipient."
-  },
-  "sellPayoutNewBadge": "NEW",
-  "@sellPayoutNewBadge": {
-    "description": "New-feature badge on the EUR Sell Confidential SEPA option. Store the final display form, including locale-specific capitalization; do not uppercase at runtime."
   },
   "allSeedViewSwapLinkedWallet": "Linked wallet: {fingerprint}",
   "@allSeedViewSwapLinkedWallet": {
