@@ -4064,5 +4064,21 @@
   "exchangeStepTimedOut": "This is taking longer than expected. You can check again or leave and come back later.",
   "@exchangeStepTimedOut": {
     "description": "A bounded wait (activation, payment watch) reached its limit"
+  },
+  "exchangeAmountNoRate": "The bitcoin price is not available right now. Try again.",
+  "@exchangeAmountNoRate": {
+    "description": "The amount step has no price for the chosen currency"
+  },
+  "exchangeAmountKycNeeded": "Complete your identity verification to use this amount.",
+  "@exchangeAmountKycNeeded": {
+    "description": "The amount needs a higher KYC level than the account has"
+  },
+  "exchangeStepVerifying": "Checking with the exchange…",
+  "@exchangeStepVerifying": {
+    "description": "A write's outcome is unknown and the flow is re-reading it"
+  },
+  "exchangeFlowSessionEnded": "Your exchange session ended. Sign in again to continue.",
+  "@exchangeFlowSessionEnded": {
+    "description": "A trading flow's exchange session ended (signed out, environment switched or rejected by the server)"
   }
 }
