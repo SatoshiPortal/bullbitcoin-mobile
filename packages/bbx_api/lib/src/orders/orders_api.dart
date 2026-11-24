@@ -67,10 +67,12 @@ final class OrdersApi {
   /// With [requireCompletePage], only an explicit empty element list proves
   /// the end of pagination and an undecodable row rejects the whole page.
   /// The ordinary history listing tolerates both omissions and rejected rows.
+  /// [requireElements] requires the envelope but still tolerates rejected rows.
   Future<Result<OrderSummaryList, BbxFailure>> listOrderSummaries({
     int page = 1,
     int pageSize = 50,
     bool requireCompletePage = false,
+    bool requireElements = false,
   }) => _transport.request(
     endpoint,
     'listOrderSummaries',
@@ -81,16 +83,21 @@ final class OrdersApi {
     read: (result) {
       final element = read<Map<String, dynamic>>(result, 'result');
       final elements = element['elements'];
-      if (elements == null && !requireCompletePage) {
+      if (elements == null && !requireCompletePage && !requireElements) {
         return const OrderSummaryList(orders: []);
       }
       final orders = <OrderSummary>[];
       final rejected = <BbxResponseFormatFailure>[];
-      for (final order in read<List<dynamic>>(elements, 'elements')) {
+      final rows = read<List<dynamic>>(elements, 'elements');
+      for (final order in rows) {
         try {
-          orders.add(
-            parseOrderSummary(read<Map<String, dynamic>>(order, 'elements')),
+          final summary = parseOrderSummary(
+            read<Map<String, dynamic>>(order, 'elements'),
           );
+          if (requireElements && summary.orderId.trim().isEmpty) {
+            throw BbxFormatException('orderId');
+          }
+          orders.add(summary);
         } on BbxFormatException catch (e) {
           if (requireCompletePage) rethrow;
           rejected.add(BbxResponseFormatFailure(e.reason));

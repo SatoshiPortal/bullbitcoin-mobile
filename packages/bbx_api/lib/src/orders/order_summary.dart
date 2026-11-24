@@ -150,4 +150,7 @@ class OrderSummaryList {
   final List<BbxResponseFormatFailure> rejected;
 
   const OrderSummaryList({required this.orders, this.rejected = const []});
+
+  /// Number of wire elements, including rejected rows.
+  int get rawCount => orders.length + rejected.length;
 }
