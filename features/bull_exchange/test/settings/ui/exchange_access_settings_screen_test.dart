@@ -266,6 +266,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(loc.settingsErrorSavingSetting), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
-    await changes.close();
+    // The bloc cancelled its subscription when the screen went; the done
+    // event of a cancelled single-subscription stream is never delivered, so
+    // awaiting close() would never complete.
+    expect(changes.hasListener, isFalse);
+    unawaited(changes.close());
   });
 }
