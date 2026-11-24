@@ -115,26 +115,24 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   );
 
   @override
-  Future<Result<SellOrder, ExchangeFailure>> placeSellOrder({
+  Future<ExchangeWrite<SellOrder>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
     bool usePayjoin = false,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.sellToBalance(
-        fiatCurrency: currency.code,
-        bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
-        usePayjoin: usePayjoin,
-        fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
-        bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placeSellOrder',
+    (api) => api.orders.sellToBalance(
+      fiatCurrency: currency.code,
+      bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
+      usePayjoin: usePayjoin,
+      fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+      bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
     ),
   );
 
   @override
-  Future<Result<FiatPaymentOrder, ExchangeFailure>> placePayOrder({
+  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -143,42 +141,38 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     bool usePayjoin = false,
     String? securityQuestion,
     String? securityAnswer,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.sellToRecipient(
-        recipientId: recipientId,
-        paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
-        bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
-        usePayjoin: usePayjoin,
-        fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
-        bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
-        paymentDescription: paymentDescription?.isNotEmpty == true
-            ? paymentDescription
-            : null,
-        securityQuestion: securityQuestion,
-        securityAnswer: securityAnswer,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placePayOrder',
+    (api) => api.orders.sellToRecipient(
+      recipientId: recipientId,
+      paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
+      bitcoinNetwork: BtcNetworkWire.orderNetwork(network),
+      usePayjoin: usePayjoin,
+      fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+      bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
+      paymentDescription: paymentDescription?.isNotEmpty == true
+          ? paymentDescription
+          : null,
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
     ),
   );
 
   @override
-  Future<Result<WithdrawOrder, ExchangeFailure>> placeWithdrawalOrder({
+  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
-  }) => _write(
-    (api) => _readOrder(
-      api.orders.createWithdrawalOrder(
-        fiatAmount: fiatAmount,
-        recipientId: recipientId,
-        paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
-        securityQuestion: securityQuestion,
-        securityAnswer: securityAnswer,
-      ),
-      creatingOrder: true,
+  }) => _orderCreate(
+    'placeWithdrawalOrder',
+    (api) => api.orders.createWithdrawalOrder(
+      fiatAmount: fiatAmount,
+      recipientId: recipientId,
+      paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
     ),
   );
 
@@ -323,6 +317,26 @@ final class BbxApiOrderRepository implements ExchangeOrders {
       Err(:final failure) => Err(_mapFailure(failure)),
     };
   }
+
+  /// Creates an order through [_orderWrite], logging a refusal by its codes
+  /// only (the server's text can quote the request).
+  Future<ExchangeWrite<T>> _orderCreate<T extends Order>(
+    String operation,
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call,
+  ) => _orderWrite<T>(operation, (api) async {
+    final result = await call(api);
+    if (result case Err(
+      failure: bbx.BbxRpcFailure(:final apiCode, :final code) ||
+          bbx.BbxOrderLimitFailure(:final apiCode, :final code) ||
+          bbx.BbxConfidentialSepaInactiveFailure(:final apiCode, :final code),
+    )) {
+      log.warning(
+        'Exchange order creation refused',
+        error: {'apiCode': apiCode, 'rpcCode': code},
+      );
+    }
+    return result;
+  });
 
   /// Runs the order write [call] in the write session and classifies it. A
   /// reply of another order type, or one that can't be mapped, is

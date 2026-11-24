@@ -151,7 +151,7 @@ final class JournalingExchangeOrders implements ExchangeOrders {
   );
 
   @override
-  Future<Result<SellOrder, ExchangeFailure>> placeSellOrder({
+  Future<ExchangeWrite<SellOrder>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
@@ -164,7 +164,7 @@ final class JournalingExchangeOrders implements ExchangeOrders {
   );
 
   @override
-  Future<Result<FiatPaymentOrder, ExchangeFailure>> placePayOrder({
+  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -185,7 +185,7 @@ final class JournalingExchangeOrders implements ExchangeOrders {
   );
 
   @override
-  Future<Result<WithdrawOrder, ExchangeFailure>> placeWithdrawalOrder({
+  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,

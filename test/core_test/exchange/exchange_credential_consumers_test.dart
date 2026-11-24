@@ -89,12 +89,12 @@ void main() {
             paymentProcessor: SepaPaymentProcessor.regular,
             network: BtcNetwork.bitcoin,
           ),
-          isA<Err>().having(
-            (r) => r.failure,
-            'failure',
+          isA<WriteNotSent<FiatPaymentOrder>>().having(
+            (r) => r.reason,
+            'reason',
             storageFailure
-                ? isA<ExchangeCredentialReadFailure>()
-                : isA<ExchangeNotAuthenticatedFailure>(),
+                ? ExchangeNotSentReason.credentialUnavailable
+                : ExchangeNotSentReason.signedOut,
           ),
         );
       },

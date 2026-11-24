@@ -25,15 +25,19 @@ abstract interface class ExchangeOrders {
 
   /// [usePayjoin] asks the exchange to receive the payin through payjoin, which
   /// makes it publish a `bip21URI` on the returned order. Bitcoin on-chain only.
+  ///
+  /// The sell, pay and withdrawal creates answer [ExchangeWrite]: a create
+  /// that may have reached the server is [WriteOutcomeUnknown] (the order may
+  /// exist), never a failure that invites a second create.
   @useResult
-  Future<Result<SellOrder, ExchangeFailure>> placeSellOrder({
+  Future<ExchangeWrite<SellOrder>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
     bool usePayjoin = false,
   });
   @useResult
-  Future<Result<FiatPaymentOrder, ExchangeFailure>> placePayOrder({
+  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -44,7 +48,7 @@ abstract interface class ExchangeOrders {
     String? securityAnswer,
   });
   @useResult
-  Future<Result<WithdrawOrder, ExchangeFailure>> placeWithdrawalOrder({
+  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,

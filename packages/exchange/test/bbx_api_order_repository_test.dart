@@ -104,6 +104,14 @@ Matcher _fails(Matcher matcher) => isA<Err<dynamic, ExchangeFailure>>().having(
   matcher,
 );
 
+Matcher _refused(Matcher reason) =>
+    isA<WriteRefused<dynamic>>().having((w) => w.reason, 'reason', reason);
+
+T _createdOf<T>(ExchangeWrite<T> write) => switch (write) {
+  WriteDone(:final value) => value,
+  _ => fail('expected a created order, got $write'),
+};
+
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Ok() => fail('expected an Err, got Ok'),
   Err(:final failure) => failure,
@@ -844,7 +852,7 @@ void main() {
   });
 
   group('placeSellOrder', () {
-    Future<Result<SellOrder, ExchangeFailure>> sell(
+    Future<ExchangeWrite<SellOrder>> sell(
       FakeBbxHttp http, {
       bool usePayjoin = false,
     }) => _repository(http).placeSellOrder(
@@ -860,7 +868,7 @@ void main() {
 
     test('sends sellToBalance without usePayjoin when false', () async {
       final http = created();
-      expect(_valueOf(await sell(http)), isA<SellOrder>());
+      expect(_createdOf(await sell(http)), isA<SellOrder>());
       expect((http.requests.single.data as Map)['method'], 'sellToBalance');
       expect(_params(http), {
         'fiatCurrency': 'EUR',
@@ -880,7 +888,7 @@ void main() {
       });
     });
 
-    test('a single minimum limit is the minimum failure', () async {
+    test('a single minimum limit is a refusal naming it', () async {
       expect(
         await sell(
           FakeBbxHttp(
@@ -894,25 +902,30 @@ void main() {
             },
           ),
         ),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.minimum)
-              .having((e) => e.amount, 'minAmount', 10)
-              .having((e) => e.currency, 'currency', 'EUR'),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit,
+            'orderLimit',
+            const ExchangeOrderLimit(
+              ExchangeOrderAmountBound.minimum,
+              10,
+              'EUR',
+            ),
+          ),
         ),
       );
     });
 
-    test('another order type is the cast error, as before', () async {
+    test('another order type is an unknown outcome: an order exists', () async {
       expect(
         await sell(FakeBbxHttp(body: {'result': orderJsonFixture()})),
-        _fails(isA<ExchangeOrderLoadFailure>()),
+        isA<WriteOutcomeUnknown<SellOrder>>(),
       );
     });
   });
 
   group('placePayOrder', () {
-    Future<Result<FiatPaymentOrder, ExchangeFailure>> pay(
+    Future<ExchangeWrite<FiatPaymentOrder>> pay(
       FakeBbxHttp http, {
       SepaPaymentProcessor? processor,
       String? description,
@@ -938,7 +951,7 @@ void main() {
       test('sends the ${processor.name} processor and payjoin', () async {
         final http = created();
         expect(
-          _valueOf(await pay(http, processor: processor, usePayjoin: true)),
+          _createdOf(await pay(http, processor: processor, usePayjoin: true)),
           isA<FiatPaymentOrder>(),
         );
         expect((http.requests.single.data as Map)['method'], 'sellToRecipient');
@@ -971,13 +984,19 @@ void main() {
       });
     });
 
-    test('an inactive virtual payee is the activation exception', () async {
+    test('an inactive virtual payee is a refusal naming it', () async {
       expect(
         await pay(
           FakeBbxHttp(body: _notActivated),
           processor: SepaPaymentProcessor.confidential,
         ),
-        _fails(isA<ExchangeConfidentialSepaInactiveFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.payeeInactive,
+            'payeeInactive',
+            true,
+          ),
+        ),
       );
     });
 
@@ -1001,8 +1020,8 @@ void main() {
             },
           ),
         ),
-        _fails(
-          isA<ExchangeOrderRejectedFailure>()
+        _refused(
+          isA<ExchangeRefusal>()
               .having((e) => e.apiCode, 'apiCode', 'ERR_ORD_PO404')
               .having((e) => e.rpcCode, 'rpcCode', -32603)
               .having(
@@ -1019,20 +1038,24 @@ void main() {
       expect(logs, isNot(contains('Account details')));
     });
 
-    test('a maximum limit is the maximum failure', () async {
+    test('a maximum limit is a refusal naming it', () async {
       expect(
         await pay(FakeBbxHttp(body: _limits([(500, _max)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>()
-              .having((e) => e.bound, 'bound', ExchangeOrderAmountBound.maximum)
-              .having((e) => e.amount, 'maxAmount', 500),
+        _refused(
+          isA<ExchangeRefusal>()
+              .having(
+                (r) => r.orderLimit?.bound,
+                'bound',
+                ExchangeOrderAmountBound.maximum,
+              )
+              .having((r) => r.orderLimit?.amount, 'maxAmount', 500),
         ),
       );
     });
   });
 
   group('placeWithdrawalOrder', () {
-    Future<Result<WithdrawOrder, ExchangeFailure>> withdraw(
+    Future<ExchangeWrite<WithdrawOrder>> withdraw(
       FakeBbxHttp http, {
       SepaPaymentProcessor? processor,
       String? question,
@@ -1051,7 +1074,7 @@ void main() {
     test('sends the amount, recipient and processor', () async {
       final http = created();
       expect(
-        _valueOf(
+        _createdOf(
           await withdraw(http, processor: SepaPaymentProcessor.confidential),
         ),
         isA<WithdrawOrder>(),
@@ -1080,12 +1103,12 @@ void main() {
       });
     });
 
-    test('limits and an inactive payee are typed failures', () async {
+    test('limits and an inactive payee are refusals naming them', () async {
       expect(
         await withdraw(FakeBbxHttp(body: _limits([(20, _min)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>().having(
-            (e) => e.bound,
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit?.bound,
             'bound',
             ExchangeOrderAmountBound.minimum,
           ),
@@ -1093,9 +1116,9 @@ void main() {
       );
       expect(
         await withdraw(FakeBbxHttp(body: _limits([(20, _max)]))),
-        _fails(
-          isA<ExchangeOrderLimitFailure>().having(
-            (e) => e.bound,
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.orderLimit?.bound,
             'bound',
             ExchangeOrderAmountBound.maximum,
           ),
@@ -1103,7 +1126,13 @@ void main() {
       );
       expect(
         await withdraw(FakeBbxHttp(body: _notActivated)),
-        _fails(isA<ExchangeConfidentialSepaInactiveFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.payeeInactive,
+            'payeeInactive',
+            true,
+          ),
+        ),
       );
     });
 
@@ -1114,7 +1143,13 @@ void main() {
           question: 'q',
           answer: 'secret',
         ),
-        _fails(isA<ExchangeOrderRejectedFailure>()),
+        _refused(
+          isA<ExchangeRefusal>().having(
+            (r) => r.toString(),
+            'text',
+            isNot(contains('secret')),
+          ),
+        ),
       );
     });
   });
