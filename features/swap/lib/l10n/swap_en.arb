@@ -1,4 +1,5 @@
 {
+  "retry": "Retry",
   "@@locale": "en",
   "oopsSomethingWentWrong": "Oops! Something went wrong",
   "@oopsSomethingWentWrong": {

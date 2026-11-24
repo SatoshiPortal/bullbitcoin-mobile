@@ -45,6 +45,7 @@ import 'package:swap_feature/src/domain/usecases/get_swap_exchange_rate_usecase.
 import 'package:swap_feature/src/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:swap_feature/src/domain/usecases/get_swap_route_usecase.dart';
 import 'package:swap_feature/src/presentation/transfer_confirm_error.dart';
+import 'package:swap_feature/src/presentation/order_payin_retry_policy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -129,6 +130,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final VerifyTransferLockupUsecase _verifyChainSwapAmountSendUsecase;
   final Spend _spend;
   final OrderSwaps _orders;
+  RejectedOrderPayin? _rejectedOrderPayin;
+
+  bool get canRetryRejectedOrderPayin =>
+      _rejectedOrderPayin?.allows(state.orderSwap) ?? false;
   final _spendPreviews = SpendFeePreview();
 
   bool _insufficientSpend(SpendFailure failure) =>
@@ -2472,6 +2477,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferConfirmed event,
     Emitter<TransferState> emit,
   ) async {
+    final rejectedPayin = _rejectedOrderPayin;
+    _rejectedOrderPayin = null;
     emit(
       state.copyWith(
         txId: '',
@@ -2518,11 +2525,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           }
           final refreshed =
               (refreshResult as Ok<OrderSwapRecord, SwapFailure>).value;
-          final payinStatus = refreshed.order?.payinStatus.trim().toLowerCase();
-          if (payinStatus == 'completed') {
+          if (rejectedPayin == null || !rejectedPayin.allows(refreshed)) {
             emit(state.copyWith(orderSwap: refreshed));
             return;
           }
+          emit(state.copyWith(orderSwap: refreshed));
         }
         if (!fromWallet.isLiquid) {
           final admission = await _checkSwapSpendAdmissionUsecase.execute(
@@ -2537,6 +2544,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         // authoritative; a refusal there must preserve broadcast uncertainty.
         final broadcastStartResult = await _orders.markBroadcastUnknown(
           orderSwap.localId,
+          requireReady:
+              orderSwap.localStatus == OrderSwapLocalStatus.readyToBroadcast,
         );
         if (broadcastStartResult case Err(:final failure)) {
           emit(state.copyWith(swapFailure: failure));
@@ -2544,6 +2553,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         }
         final broadcasting =
             (broadcastStartResult as Ok<OrderSwapRecord, SwapFailure>).value;
+        final latestOrder = state.orderSwap;
+        if (latestOrder == null ||
+            latestOrder.localId != orderSwap.localId ||
+            latestOrder.hasFundsMoved ||
+            latestOrder.localStatus.isTerminal ||
+            latestOrder.localStatus == OrderSwapLocalStatus.payinBroadcast ||
+            latestOrder.localStatus == OrderSwapLocalStatus.payoutInProgress ||
+            latestOrder.order?.payinStatus.trim().toLowerCase() ==
+                'completed') {
+          return;
+        }
+        if (orderSwap.localStatus == OrderSwapLocalStatus.broadcastUnknown &&
+            (rejectedPayin == null || !rejectedPayin.allows(broadcasting))) {
+          emit(state.copyWith(orderSwap: broadcasting));
+          return;
+        }
         // Persisted uncertainty remains conservative even if admission refuses:
         // an earlier submission may still be awaiting observation.
         emit(state.copyWith(orderSwap: broadcasting));
@@ -2591,6 +2616,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           case Ok(:final value):
             txId = value.txid;
           case Err(:final failure):
+            final proof = RejectedOrderPayin.fromFirstAttempt(
+              orderSwap,
+              failure,
+            );
+            if (proof?.allows(state.orderSwap) ?? false) {
+              _rejectedOrderPayin = proof;
+            }
             emit(state.copyWith(swapFailure: _spendFailure(failure)));
             return;
         }
@@ -2616,6 +2648,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         return;
       } else if (state.swap case final ChainSwap swap
           when !state.isSameChainTransfer) {
+        if (swap.pendingLockupTx?.isNotEmpty ?? false) {
+          emit(state.copyWith(swapFailure: const SwapLockupPendingFailure()));
+          return;
+        }
         if (!fromWallet.isLiquid) {
           final admission = await _checkSwapSpendAdmissionUsecase.execute(
             fromWallet.key,
@@ -2661,7 +2697,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             };
             // A Liquid I/O error can occur after LWK submitted the lockup.
             // Only a definite refusal can make this swap safe to fund again.
-            if (swapFailure is! SwapLockupPendingFailure) {
+            if (swap.pendingLockupTx == null &&
+                swapFailure is! SwapLockupPendingFailure) {
               final _ = await _dropPendingSwapLockupUsecase.execute(swap.id);
             }
             emit(state.copyWith(swapFailure: swapFailure));

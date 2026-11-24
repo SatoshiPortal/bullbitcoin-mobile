@@ -1,4 +1,5 @@
 {
+  "retry": "Réessayer",
   "@@locale": "fr",
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
   "save": "Sauvegarder",

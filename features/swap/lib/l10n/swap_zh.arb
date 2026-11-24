@@ -1,4 +1,5 @@
 {
+  "retry": "重试",
   "@@locale": "zh",
   "save": "Save",
   "oopsSomethingWentWrong": "Oops! 某些错误",

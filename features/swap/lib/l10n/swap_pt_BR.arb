@@ -1,4 +1,5 @@
 {
+  "retry": "Tentar novamente",
   "@@locale": "pt_BR",
   "save": "Salvar",
   "@save": {
