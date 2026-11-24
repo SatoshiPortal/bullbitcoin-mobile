@@ -40,6 +40,8 @@ abstract interface class ExchangeOrders {
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
+    String? securityQuestion,
+    String? securityAnswer,
   });
   @useResult
   Future<Result<WithdrawOrder, ExchangeFailure>> placeWithdrawalOrder({

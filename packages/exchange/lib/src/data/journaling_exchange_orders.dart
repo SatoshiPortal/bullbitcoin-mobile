@@ -171,6 +171,8 @@ final class JournalingExchangeOrders implements ExchangeOrders {
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
+    String? securityQuestion,
+    String? securityAnswer,
   }) => _orders.placePayOrder(
     orderAmount: orderAmount,
     recipientId: recipientId,
@@ -178,6 +180,8 @@ final class JournalingExchangeOrders implements ExchangeOrders {
     paymentDescription: paymentDescription,
     paymentProcessor: paymentProcessor,
     usePayjoin: usePayjoin,
+    securityQuestion: securityQuestion,
+    securityAnswer: securityAnswer,
   );
 
   @override

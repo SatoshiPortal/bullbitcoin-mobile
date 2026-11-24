@@ -172,8 +172,9 @@ final class OrdersApi {
 
   /// Creates a sell order paid out to the recipient [recipientId].
   ///
-  /// See [sellToBalance] for [usePayjoin]. Fails with a
-  /// [BbxOrderLimitFailure] or a [BbxConfidentialSepaInactiveFailure].
+  /// See [sellToBalance] for [usePayjoin]. The Interac security question and
+  /// answer are sent only together, as for [createWithdrawalOrder]. Fails
+  /// with a [BbxOrderLimitFailure] or a [BbxConfidentialSepaInactiveFailure].
   Future<Result<OrderSummary, BbxFailure>> sellToRecipient({
     required String recipientId,
     required String bitcoinNetwork,
@@ -182,6 +183,8 @@ final class OrdersApi {
     double? fiatAmount,
     double? bitcoinAmount,
     String? paymentDescription,
+    String? securityQuestion,
+    String? securityAnswer,
   }) => _createOrder('sellToRecipient', {
     'recipientId': recipientId,
     if (paymentProcessor != null) 'paymentProcessor': paymentProcessor.value,
@@ -189,6 +192,11 @@ final class OrdersApi {
     if (usePayjoin) 'usePayjoin': true,
     ..._amount(fiatAmount: fiatAmount, bitcoinAmount: bitcoinAmount),
     'paymentDescription': ?paymentDescription,
+    if (securityQuestion != null && securityAnswer != null)
+      'paymentProcessorData': {
+        'securityQuestion': securityQuestion,
+        'securityAnswer': securityAnswer,
+      },
   });
 
   /// Creates a withdrawal of [fiatAmount] from the fiat balance to the

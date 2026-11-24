@@ -236,6 +236,30 @@ void main() {
       );
       expect(_sent(http), contains('"paymentProcessor":"REGULAR_SEPA"'));
     });
+
+    test('sends the Interac security details only together', () async {
+      valueOf(
+        await orders.sellToRecipient(
+          recipientId: 'r-1',
+          bitcoinNetwork: 'bitcoin',
+          fiatAmount: 20,
+          securityQuestion: 'Pet?',
+          securityAnswer: 'rex',
+        ),
+      );
+      expect(
+        _sent(http),
+        _rpc('sellToRecipient', {
+          'recipientId': 'r-1',
+          'bitcoinNetwork': 'bitcoin',
+          'fiatAmount': 20.0,
+          'paymentProcessorData': {
+            'securityQuestion': 'Pet?',
+            'securityAnswer': 'rex',
+          },
+        }),
+      );
+    });
   });
 
   group('createWithdrawalOrder', () {

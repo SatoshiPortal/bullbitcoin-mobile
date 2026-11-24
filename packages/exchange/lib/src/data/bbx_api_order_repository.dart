@@ -141,6 +141,8 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
+    String? securityQuestion,
+    String? securityAnswer,
   }) => _write(
     (api) => _readOrder(
       api.orders.sellToRecipient(
@@ -153,6 +155,8 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         paymentDescription: paymentDescription?.isNotEmpty == true
             ? paymentDescription
             : null,
+        securityQuestion: securityQuestion,
+        securityAnswer: securityAnswer,
       ),
       creatingOrder: true,
     ),
